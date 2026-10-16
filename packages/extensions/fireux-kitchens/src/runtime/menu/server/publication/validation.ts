@@ -38,6 +38,14 @@ export async function assertKitchenMenuCanPublish(
     date?: string
   }
 ) {
+  if (
+    input.menuData.audience !== undefined &&
+    !['public', 'private_link'].includes(String(input.menuData.audience))
+  )
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Protected group access is not configured.',
+    })
   if (input.menuData.schedule === 'daily' && !input.date)
     throw createError({
       statusCode: 400,

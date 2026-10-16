@@ -172,3 +172,69 @@ test('venue Menu entrance is singular while existing Menu and QR destinations st
   )
   assert.equal(routes.menuRouteIndexPath({ kind: 'root' }), '/menus')
 })
+
+test('protected group fails closed before detail or document content is assembled', async () => {
+  const scopedTarget = load(
+    '../runtime/menu/server/ownership/scoped-target.ts',
+    'scopedTarget',
+    {
+      getRuntimeFirestore: () => ({
+        collection: () => ({
+          where: () => ({
+            limit: () => ({
+              get: async () => ({
+                docs: [
+                  {
+                    id: 'm',
+                    data: () => ({
+                      status: 'published',
+                      audience: 'protected_group',
+                    }),
+                  },
+                ],
+              }),
+            }),
+          }),
+        }),
+      }),
+      readMenuKitchenPlaceData: async () => ({}),
+      readRecordString: (record, key) => String(record[key] || ''),
+      createError: (value) =>
+        Object.assign(new Error(value.statusMessage), value),
+      menuKitchenIdentity: () => {
+        throw new Error('Must not assemble content')
+      },
+    }
+  )
+  await assert.rejects(
+    scopedTarget('directory-menu', 'wedding', {
+      appId: 'a',
+      kitchenId: 'k',
+      kitchenSlug: 'venue',
+      rootKitchenData: {},
+    }),
+    (error) => error.statusCode === 403
+  )
+})
+
+test('collection entrance preserves its purpose while Browse remains the venue Menu', () => {
+  const path = load(
+    '../runtime/menu/utils/menu-route.ts',
+    'menuRouteIndexPath',
+    { MenuRouteContexts: ['generic', 'collection'] }
+  )
+  const scope = { kind: 'directory', kitchenSlug: 'venue' }
+  assert.equal(path(scope, 'collection'), '/kitchens/venue/menu.collection')
+  assert.equal(path(scope), '/kitchens/venue/menu')
+})
+
+test('delivery entrance keeps its service without changing individual Menu and QR paths', () => {
+  const path = load(
+    '../runtime/menu/utils/menu-route.ts',
+    'menuRouteIndexPath',
+    { MenuRouteContexts: ['generic', 'collection', 'delivery'] }
+  )
+  const scope = { kind: 'directory', kitchenSlug: 'venue' }
+  assert.equal(path(scope, 'delivery'), '/kitchens/venue/menu.delivery')
+  assert.equal(path(scope), '/kitchens/venue/menu')
+})

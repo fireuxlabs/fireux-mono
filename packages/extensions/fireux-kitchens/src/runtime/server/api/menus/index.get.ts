@@ -6,6 +6,7 @@ export default defineLiveReadHandler((event) => {
   const query = getQuery(event)
   return readMenuDirectoryPage({
     kitchenSlug: query.kitchenSlug,
+    service: query.service,
     cursor: query.cursor,
     limit: query.limit,
   })

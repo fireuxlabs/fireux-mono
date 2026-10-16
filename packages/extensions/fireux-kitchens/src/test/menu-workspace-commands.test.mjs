@@ -34,10 +34,11 @@ const targets = {
     `${id}/menus/${menu}/sections/${section}/items`,
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
 }
-const metadata = load('../runtime/menu/utils/menu-metadata.ts', {}, [
-  'normalizeMenuMetadataPatch',
-  'normalizeMenuDocument',
-])
+const metadata = load(
+  '../runtime/menu/utils/menu-metadata.ts',
+  {},
+  ['normalizeMenuMetadataPatch', 'normalizeMenuDocument']
+)
 const creationInput = load(
   '../runtime/menu/utils/menu-create-input.ts',
   metadata,
@@ -151,6 +152,7 @@ function harness({
   )
   const dependencies = {
     ...targets,
+    readPlaceCurrencyCode: (place) => place.default_currency_code || '',
     ...capacity,
     ...nameHelpers,
     ...payload,
@@ -536,4 +538,19 @@ test('Menu formats are explicit, detached and limited to interactive or document
       format: 'document',
     })
   )
+})
+
+test('audience accepts only the implemented policies and detaches caller input', () => {
+  for (const audience of ['public', 'private_link']) {
+    const input = { audience }
+    const patch = metadata.normalizeMenuMetadataPatch(input)
+    input.audience = 'changed'
+    assert.deepEqual(patch, { audience })
+  }
+  for (const audience of ['protected_group', 'unknown', null, {}])
+    assert.throws(() => metadata.normalizeMenuMetadataPatch({ audience }))
+})
+
+test('Menu metadata no longer accepts promotion pricing', () => {
+  assert.throws(() => metadata.normalizeMenuMetadataPatch({pricing: null}), /Unsupported Menu field/)
 })

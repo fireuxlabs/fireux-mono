@@ -1,3 +1,4 @@
+import type { PublicKitchenPromotion } from '../../kitchen/models/promotion.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
@@ -29,6 +30,7 @@ export type MenuManifestAddOn = {
 }
 
 export type MenuManifestItem = {
+  promotionLabel?: string
   id: string
   dishId: string
   itemKind: DishItemKind
@@ -49,6 +51,8 @@ export type MenuManifestSection = {
 }
 
 export type MenuManifestContent = {
+  promotions?: PublicKitchenPromotion[]
+  audience?: 'private_link' | 'protected_group'
   id: string
   name: string
   description: string
@@ -112,6 +116,7 @@ export type MenuManifest = {
 export type MenuDocumentFileKind = 'photo' | 'pdf' | 'document'
 
 export type MenuDocumentPayload = MenuKitchenPresentation & {
+  audience?: 'private_link' | 'protected_group'
   offerings?: KitchenPublicOffering[]
   id: string
   name: string

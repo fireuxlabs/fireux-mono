@@ -19,6 +19,7 @@ export type KitchenMenu = FireuxStamped & {
   schedule?: 'regular' | 'daily'
   /** Dates explicitly released for public browsing; content remains section-owned. */
   published_dates?: string[]
+  audience?: 'public' | 'private_link' | 'protected_group'
   format?: 'interactive' | 'document'
   doc?: KitchenMenuDocument
 }

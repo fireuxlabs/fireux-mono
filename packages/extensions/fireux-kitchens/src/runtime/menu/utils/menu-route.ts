@@ -37,11 +37,16 @@ export const directoryMenuRouteScope = (
   kitchenSlug: text(kitchenSlug),
 })
 
-export function menuRouteIndexPath(scope: MenuRouteScope) {
+export function menuRouteIndexPath(
+  scope: MenuRouteScope,
+  context: 'generic' | 'collection' | 'delivery' = 'generic'
+) {
   if (scope.kind === 'root' || scope.kind === 'tenant') return '/menus'
 
   const kitchenSlug = segment(scope.kitchenSlug)
-  return kitchenSlug ? `/kitchens/${kitchenSlug}/menu` : ''
+  return kitchenSlug
+    ? `/kitchens/${kitchenSlug}/menu${context === 'generic' ? '' : `.${context}`}`
+    : ''
 }
 
 export const menuContextualMenuId = (

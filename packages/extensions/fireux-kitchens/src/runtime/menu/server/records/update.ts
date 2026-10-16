@@ -56,6 +56,11 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
         statusCode: 404,
         statusMessage: 'Menu was not found.',
       })
+    if (menu.data?.schedule === 'daily' && changes.audience)
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Audience settings are for ordinary Menus.',
+      })
     if (menu.data?.schedule === 'daily' && changes.doc?.url)
       throw createError({
         statusCode: 400,

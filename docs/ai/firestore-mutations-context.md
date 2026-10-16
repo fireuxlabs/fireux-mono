@@ -327,6 +327,16 @@ remain transitional owners. The offline sellables planner is review-only and
 does not authorize or implement live migration. See the Misebox context and
 the sellables/menu-workspace-command tests for the exercised authority boundary.
 
+Kitchen Promotions use the Kitchen-owned `kitchen/server/promotions/target.ts`
+and protected `write.ts` command. Records live independently of Menus at
+`kitchens/<id>/promotions`. Save validates current Kitchen authority, venue currency,
+ordinary interactive Menu/section ownership and active weekday/scope conflicts.
+The explicit scheduled-price migration preserves its preimage, creates a promotion
+and clears the old Menu field in one guarded transaction; it never changes normal
+Sellable or placement prices. Public price presentation consumes the new owner,
+while Order pricing and writes remain separate. See the Misebox context and
+`kitchen-promotions.test.mjs` for the bounded contract.
+
 ## Ownership boundaries and verification
 
 Core owns the path-based Client primitives plus target types, validation, and

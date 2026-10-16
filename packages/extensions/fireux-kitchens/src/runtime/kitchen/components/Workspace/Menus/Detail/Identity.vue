@@ -19,7 +19,7 @@
         v-if="menu.status === 'published' && publicUrl"
         :to="publicUrl"
         target="_blank"
-        label="View public Menu"
+        label="Open Menu"
         icon="i-lucide-external-link"
         color="neutral"
         variant="outline"

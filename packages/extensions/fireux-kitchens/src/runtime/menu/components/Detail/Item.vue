@@ -31,6 +31,9 @@
         </span>
       </div>
 
+      <p v-if="item.promotionLabel" class="mt-1 text-sm text-primary">
+        {{ item.promotionLabel }}
+      </p>
       <p v-if="item.description" class="menu-browse-item__description">
         {{ item.description }}
       </p>
@@ -56,22 +59,28 @@
           </ul>
         </div>
 
-        <div
+        <component
+          :is="collapseExtras ? 'details' : 'div'"
           v-if="item.addOns.length"
           class="menu-browse-item__options menu-browse-item__options--add-ons"
           data-menu-item-price-kind="add-on"
           :data-menu-item-option-count="item.addOns.length"
         >
-          <p :id="addOnsLabelId" class="menu-browse-item__options-label">
+          <component
+            :is="collapseExtras ? 'summary' : 'p'"
+            :id="addOnsLabelId"
+            class="menu-browse-item__options-label"
+            :class="{ 'cursor-pointer': collapseExtras }"
+          >
             {{ optionalExtrasLabel }}
-          </p>
+          </component>
           <ul :aria-labelledby="`${itemNameId} ${addOnsLabelId}`">
             <li v-for="addOn in item.addOns" :key="addOn.id">
               <span>{{ addOn.label }}</span>
               <span>{{ addOnPrice(addOn.price) }}</span>
             </li>
           </ul>
-        </div>
+        </component>
       </div>
     </div>
   </article>
@@ -84,6 +93,7 @@ import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { MenuManifestItem } from '../../models/menu-detail.model.ts'
 
 const props = defineProps<{
+  collapseExtras?: boolean
   accessibilityId: string
   availableOptionsLabel: string
   currencyCode: string

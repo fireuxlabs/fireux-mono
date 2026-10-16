@@ -127,7 +127,14 @@ export function useMenu(
       `sproochli=${sproochliLanguage.value}`,
     ].join('|')
   )
-  const indexPath = computed(() => menuRouteIndexPath(routeScope.value))
+  const indexPath = computed(() =>
+    menuRouteIndexPath(
+      routeScope.value,
+      menuContext.value === 'collection' || menuContext.value === 'delivery'
+        ? menuContext.value
+        : 'generic'
+    )
+  )
   const menuPath = computed(() =>
     menuRoutePath({
       scope: routeScope.value,

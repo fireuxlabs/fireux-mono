@@ -1,3 +1,4 @@
+import { readMenuPromotions } from '../../../kitchen/server/promotions/read'
 import { createError } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
@@ -31,6 +32,7 @@ const menuDataForManifest = (
 
   return {
     ...rootMenuData,
+    ...(sourceMenu.audience ? { audience: sourceMenu.audience } : {}),
     ...(name ? { name } : {}),
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
@@ -54,8 +56,20 @@ export async function buildMenuManifestPayload(
     })
   }
 
+  const promotions = scope.daily
+    ? []
+    : await readMenuPromotions(
+        source.kitchen_id || '',
+        source.menu_id || menuId,
+        scope.kitchenTimezone || '',
+        currencyCode
+      )
   const manifest: MenuManifest = {
     content: {
+      ...(promotions.length ? { promotions } : {}),
+      ...(menuData.audience === 'private_link'
+        ? { audience: 'private_link' as const }
+        : {}),
       id: menuId,
       name: readRecordString(menuData, 'name') || menuId,
       description: readRecordString(menuData, 'description'),

@@ -52,6 +52,14 @@ const publishedMenuData = async (kitchenId: string, menuId: string) => {
     })
   }
 
+  if (
+    data.audience !== undefined &&
+    !['public', 'private_link'].includes(String(data.audience))
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'This Menu requires protected access.',
+    })
   return data
 }
 
@@ -63,6 +71,14 @@ export async function readRootMenuTarget(
     .doc(menuId)
     .get()
   const rootMenuData = rootSnap.data() || {}
+  if (
+    rootMenuData.audience !== undefined &&
+    !['public', 'private_link'].includes(String(rootMenuData.audience))
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'This Menu requires protected access.',
+    })
   if (
     !rootSnap.exists ||
     readRecordString(rootMenuData, 'status') !== 'published'

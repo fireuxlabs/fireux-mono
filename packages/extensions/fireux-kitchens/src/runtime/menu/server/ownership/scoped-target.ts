@@ -36,6 +36,14 @@ export const scopedTarget = async (
   }
   const menuDocument = menuSnapshot.docs[0]!
   const menuData = menuDocument.data()
+  if (
+    menuData.audience !== undefined &&
+    !['public', 'private_link'].includes(String(menuData.audience))
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'This Menu requires protected access.',
+    })
   const sourceMenuId = menuDocument.id
   const identity = menuKitchenIdentity(input.rootKitchenData, placeData)
   const kitchenPlaceId = input.kitchenId

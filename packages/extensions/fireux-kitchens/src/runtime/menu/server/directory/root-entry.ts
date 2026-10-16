@@ -106,6 +106,7 @@ export async function ensureKitchenMenuRootEntry(
   const description = readRecordString(input.menuData, 'description')
   const rootPatch = {
     kind: 'menu',
+    audience: input.menuData.audience || 'public',
     status: readRecordString(input.menuData, 'status') || 'draft',
     name: readRecordString(input.menuData, 'name') || input.menuId,
     ...(description

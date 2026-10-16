@@ -38,7 +38,7 @@
         :data-menu-index-kind="menus.length ? 'list' : 'empty'"
       >
         <slot name="header">
-          <UPageHeader title="Menus" :description="tenantPageDescription" />
+          <UPageHeader title="Menu" />
         </slot>
 
         <UPageBody>
@@ -59,6 +59,12 @@
                 <p v-if="menu.description" class="mt-1 text-sm text-muted">
                   {{ menu.description }}
                 </p>
+                <KitchenDetailOfferingTimes
+                  v-if="menu.offerings?.length"
+                  :offerings="menu.offerings"
+                  compact
+                  class="mt-3"
+                />
               </NuxtLink>
             </template>
             <template v-else>
@@ -151,10 +157,6 @@ const errorDetail = computed(() => {
   }
   return failure.data?.statusMessage || failure.statusMessage || failure.message
 })
-const tenantPageDescription = isTenant
-  ? `Browse ${fireux.appName}'s live menus.`
-  : 'Browse this kitchen’s live menus.'
-
 useSeoMeta({
   robots: () => (error.value ? 'noindex, nofollow' : undefined),
 })

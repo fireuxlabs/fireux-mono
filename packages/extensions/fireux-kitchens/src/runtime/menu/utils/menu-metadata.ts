@@ -11,7 +11,14 @@ export function normalizeMenuMetadataPatch(
   if (
     !Object.keys(value).length ||
     Object.keys(value).some(
-      (key) => !['name', 'description', 'sort_order', 'doc'].includes(key)
+      (key) =>
+        ![
+          'name',
+          'description',
+          'sort_order',
+          'doc',
+          'audience',
+        ].includes(key)
     )
   )
     throw new Error('Unsupported Menu field.')
@@ -40,6 +47,13 @@ export function normalizeMenuMetadataPatch(
     )
       throw new Error('Menu order must be a whole number.')
     result.sort_order = value.sort_order
+  }
+  if ('audience' in value) {
+    if (!['public', 'private_link'].includes(String(value.audience)))
+      throw new Error(
+        'Choose Public or Private link. Protected groups require secure access setup.'
+      )
+    result.audience = value.audience as 'public' | 'private_link'
   }
   if ('doc' in value) result.doc = normalizeMenuDocument(value.doc)
   return result

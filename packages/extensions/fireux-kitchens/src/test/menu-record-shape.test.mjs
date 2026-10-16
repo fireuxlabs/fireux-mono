@@ -43,11 +43,11 @@ test('new Menu is catalogue-only without duplicated relationship or unused setti
     sort_order: 0,
   })
   const menu = defaultMenu({
-    kind: 'food',
+    kind: 'main',
     created: 'created',
     updated: 'updated',
   })
-  assert.equal(menu.name, 'Food')
+  assert.equal(menu.name, 'Main')
   for (const key of [
     'id',
     'kitchen_id',

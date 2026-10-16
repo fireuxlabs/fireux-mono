@@ -208,3 +208,11 @@ test('a document-format draft cannot publish without its document', async () => 
   await assert.rejects(h.publish(), /Upload a Menu document/)
   assert.notEqual(h.records.get(menuPath).status, 'published')
 })
+
+test('publishing a private-link Menu keeps the audience on its stable doorway', async () => {
+  const h = harness()
+  h.records.get(menuPath).audience = 'private_link'
+  await h.publish()
+  assert.equal(h.records.get(menuPath).status, 'published')
+  assert.equal(h.records.get(rootPath).audience, 'private_link')
+})

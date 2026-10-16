@@ -21,7 +21,11 @@
         :disabled="!canWrite || busy"
         @click="publishOrRepublish"
       >
-        Publish Menu
+        {{
+          menu.audience === 'private_link'
+            ? 'Publish private link'
+            : 'Publish publicly'
+        }}
       </UButton>
 
       <UButton
@@ -31,7 +35,11 @@
         variant="soft"
         icon="i-lucide-external-link"
       >
-        Open public Menu
+        {{
+          menu.audience === 'private_link'
+            ? 'Open private link'
+            : 'Open public Menu'
+        }}
       </UButton>
       <UButton
         v-if="isPublished && publicQrUrl"
@@ -160,14 +168,17 @@ const menuStatus = computed(() =>
 )
 const title = computed(() => {
   if (!isPublished.value) return 'Publish this Menu'
-  return 'This Menu is live'
+  return 'This Menu is published'
 })
 const description = computed(() => {
-  if (!isPublished.value) {
-    return 'Publishing makes this Menu available through its public doorway.'
-  }
-
-  return 'Open the public Menu to check the current guest experience.'
+  const privateLink = menu.value?.audience === 'private_link'
+  return isPublished.value
+    ? privateLink
+      ? 'Available to anyone with the link. Hidden from public Menu lists; no password is required.'
+      : 'Listed on the venue’s Menu page and available to everyone.'
+    : privateLink
+      ? 'Publishing makes the link available to guests. It stays off public Menu lists; no password is required.'
+      : 'Publishing lists this Menu on the venue’s Menu page and makes it available to everyone.'
 })
 
 async function publishOrRepublish() {

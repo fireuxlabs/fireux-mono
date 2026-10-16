@@ -21,6 +21,7 @@ export function projectMenuDirectoryEntry(
 ): MenuDirectoryEntry | null {
   const { id, data } = document
   if (readRecordString(data, 'status') !== 'published') return null
+  if (data.audience !== undefined && data.audience !== 'public') return null
   const source = scopedKitchen
     ? menuSourceFromData(data, {
         kitchenAppId: scopedKitchen.appId,
@@ -58,6 +59,10 @@ export function projectMenuDirectoryEntry(
         ...(source.kitchen_name ? { kitchen_name: source.kitchen_name } : {}),
       }
     : null
+  const contentAudience = (
+    scopedKitchen ? data : hasSource ? context.menuData : data
+  )?.audience
+  if (contentAudience !== undefined && contentAudience !== 'public') return null
   const orderingData = scopedKitchen ? data : context.menuData
   const ordering =
     orderingData && orderingData.schedule !== 'daily'
@@ -122,7 +127,13 @@ export function projectMenuDirectoryEntry(
     ...(contexts.length ? { contexts } : {}),
     ...(kind !== 'doc' && ordering?.order_types.length
       ? {
-          offering_options: publicMenuOrderTypes(ordering).map(
+          offering_options: [
+            ...publicMenuOrderTypes(ordering),
+            ...ordering.order_types.filter(
+              (option) =>
+                option.type === 'room_service' && !option.availability?.paused
+            ),
+          ].map(
             ({
               kitchen_offering_id,
               kitchen_offering_name,

@@ -210,3 +210,48 @@ test('Kitchen attachments project document kind and root documents preserve thei
     'photo'
   )
 })
+
+test('private and protected Menus never enter scoped or global discovery, including stale public doorways', () => {
+  const scoped = { appId: 'a', kitchenId: 'k', kitchenSlug: 'venue' }
+  for (const audience of ['private_link', 'protected_group', 'unknown']) {
+    const document = {
+      id: 'm',
+      data: { status: 'published', name: 'Wedding', audience },
+    }
+    assert.equal(project(document, scoped), null)
+    const root = {
+      id: 'root',
+      data: {
+        status: 'published',
+        name: 'Wedding',
+        source: { app_id: 'a', kitchen_id: 'k', menu_id: 'm' },
+      },
+    }
+    assert.equal(
+      project(root, null, { menuData: { status: 'published', audience } }),
+      null
+    )
+  }
+})
+
+test('directory exposes enabled room-service schedules without changing public order types', () => {
+  const projectRoomMenu = compileFunction(
+    stripTypeScriptTypes(projectionSource) + '; return projectMenuDirectoryEntry',
+    ['documentKindFromFile', 'readRecordString', 'guestDiscoverableMenuContexts', 'readKitchenMenuOrdering', 'menuSourceFromData', 'readKitchenPublicOfferings', 'publicMenuOrderTypes']
+  )(
+    () => 'document',
+    (record, key) => typeof record[key] === 'string' ? record[key] : '',
+    () => [],
+    () => ({ order_types: [
+      { type: 'room_service', kitchen_offering_id: 'rooms', kitchen_offering_name: 'Evening' },
+      { type: 'room_service', kitchen_offering_id: 'paused', availability: { paused: true } },
+      { type: 'pre_order', kitchen_offering_id: 'preorder' },
+    ] }),
+    () => ({}),
+    () => [{ id: 'rooms', paused: false, hours: { windows: [{}] } }],
+    () => [],
+  )
+  const result = projectRoomMenu({ id: 'main', data: { status: 'published', slug: 'main', name: 'Main' } }, { kitchenId: 'k', appId: 'a' }, {})
+  assert.deepEqual(result.offering_options.map((option) => option.kitchen_offering_id), ['rooms'])
+  assert.equal(result.offerings[0].id, 'rooms')
+})

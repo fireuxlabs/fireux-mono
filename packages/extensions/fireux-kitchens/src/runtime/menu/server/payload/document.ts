@@ -29,6 +29,9 @@ export function buildMenuDocumentPayload(
   return {
     kind: 'document',
     document: {
+      ...(data.audience === 'private_link'
+        ? { audience: 'private_link' as const }
+        : {}),
       id: menuId,
       name: readRecordString(data, 'name') || menuId,
       description: readRecordString(data, 'description'),

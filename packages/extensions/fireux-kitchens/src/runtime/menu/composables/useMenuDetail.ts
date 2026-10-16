@@ -1,5 +1,7 @@
+import { promotionPricedSections } from '../../kitchen/utils/promotions/pricing'
+import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOfferingNow'
 import { computed, ref, watch } from 'vue'
-import { setResponseStatus, useRoute } from '#imports'
+import { useRoute } from '#imports'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import {
@@ -10,11 +12,7 @@ import {
 import { useMenu } from './useMenu'
 import { useMenuThemeSurface } from './useMenuThemeSurface'
 import { resolveMenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
-import {
-  menuCanonicalPath,
-  rootMenuRouteScope,
-  type MenuRouteScope,
-} from '../utils/menu-route'
+import { menuCanonicalPath, type MenuRouteScope } from '../utils/menu-route'
 import { guestMenuSurfaceOptions } from '../utils/menu-context'
 
 export function useMenuDetail(props: {
@@ -50,7 +48,23 @@ export function useMenuDetail(props: {
   )
 
   const hasMenu = computed(() => renderKind.value !== 'unavailable')
-  const activeDetailMenu = computed(() => detailMenu.value)
+  const { now: pricingNow } = useKitchenOfferingNow()
+  const activeDetailMenu = computed(() => {
+    const manifest = detailMenu.value
+    return manifest
+      ? {
+          ...manifest,
+          content: {
+            ...manifest.content,
+            sections: promotionPricedSections(
+              manifest.content.sections,
+              manifest.content.promotions,
+              pricingNow.value
+            ),
+          },
+        }
+      : null
+  })
   const menuName = computed(
     () =>
       activeDetailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
@@ -180,7 +194,12 @@ export function useMenuDetail(props: {
       menuDescription.value ||
       `Browse ${menuName.value}.`,
     path: canonicalPath,
-    robots: () => (failure.value ? 'noindex, nofollow' : undefined),
+    robots: () =>
+      failure.value ||
+      detailMenu.value?.content.audience ||
+      documentMenu.value?.audience
+        ? 'noindex, nofollow'
+        : undefined,
   })
 
   return {

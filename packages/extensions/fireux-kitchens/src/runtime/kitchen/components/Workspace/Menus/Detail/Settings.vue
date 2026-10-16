@@ -4,7 +4,16 @@
       <WorkspaceKitchenMenusEditDetails />
       <WorkspaceKitchenMenusDetailSummary />
     </div>
+    <WorkspaceKitchenMenusDetailAudience />
     <WorkspaceKitchenMenusDetailOfferings />
+    <UButton
+      to="/workspace/kitchen/promotions"
+      label="Promotions"
+      icon="i-lucide-badge-percent"
+      color="neutral"
+      variant="soft"
+      class="justify-self-start"
+    />
     <WorkspaceKitchenMenusDetailRemove />
   </section>
 </template>

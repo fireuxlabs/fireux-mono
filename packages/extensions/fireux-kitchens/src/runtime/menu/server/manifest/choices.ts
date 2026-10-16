@@ -135,7 +135,11 @@ export async function readKitchenMenuChoices(
       id: doc.id,
       data: doc.data() || {},
     }))
-    .filter((row) => readRecordString(row.data, 'status') === 'published')
+    .filter(
+      (row) =>
+        readRecordString(row.data, 'status') === 'published' &&
+        (row.data.audience === undefined || row.data.audience === 'public')
+    )
     .sort(
       (left, right) =>
         numberValue(left.data.sort_order) -

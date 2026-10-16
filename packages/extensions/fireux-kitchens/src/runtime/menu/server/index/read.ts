@@ -1,3 +1,4 @@
+import { menuServiceOfferings } from '../../utils/service-menu'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -23,12 +24,13 @@ import {
 } from './projection'
 
 export type ReadMenuDirectoryPageInput = {
+  service?: unknown
   kitchenSlug?: unknown
   cursor?: unknown
   limit?: unknown
 }
 
-export async function readMenuDirectoryPage(
+async function readMenuDirectoryBatch(
   input: ReadMenuDirectoryPageInput = {}
 ): Promise<MenuDirectoryPage> {
   const db = getRuntimeFirestore()
@@ -110,6 +112,50 @@ export async function readMenuDirectoryPage(
       ? encodeCursor(documents[documents.length - 1]?.id || '')
       : null
   return { scope, items, nextCursor }
+}
+
+/** Filter before returning a service page; skipped raw pages must not hide later matches. */
+export async function readMenuDirectoryPage(
+  input: ReadMenuDirectoryPageInput = {}
+): Promise<MenuDirectoryPage> {
+  if (input.service === undefined || input.service === '')
+    return readMenuDirectoryBatch(input)
+  if (
+    input.service !== 'collection' &&
+    input.service !== 'delivery' &&
+    input.service !== 'table' &&
+    input.service !== 'room_service'
+  )
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Unknown Menu service.',
+    })
+  const limit = pageSize(input.limit)
+  let cursor = input.cursor
+  let page: MenuDirectoryPage
+  const items: MenuDirectoryPage['items'] = []
+  do {
+    page = await readMenuDirectoryBatch({
+      ...input,
+      cursor,
+      limit: Math.max(1, limit - items.length),
+    })
+    items.push(
+      ...page.items.filter(
+        (menu) =>
+          menuServiceOfferings(
+            menu,
+            input.service as
+              | 'collection'
+              | 'delivery'
+              | 'table'
+              | 'room_service'
+          ).length > 0
+      )
+    )
+    cursor = page.nextCursor
+  } while (cursor && items.length < limit)
+  return { scope: page.scope, items, nextCursor: page.nextCursor }
 }
 
 function pageSize(value: unknown) {

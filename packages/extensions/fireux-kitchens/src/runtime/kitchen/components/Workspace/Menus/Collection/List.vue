@@ -30,6 +30,12 @@
             "
             :description="menu.description"
           >
+            <UBadge
+              v-if="menu.audience === 'private_link'"
+              color="neutral"
+              variant="outline"
+              >Private link</UBadge
+            >
             <UBadge color="neutral" variant="soft">{{
               menuStatus(menu) === 'published'
                 ? 'Published'

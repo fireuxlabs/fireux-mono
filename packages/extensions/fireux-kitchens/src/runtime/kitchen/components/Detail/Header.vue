@@ -29,7 +29,10 @@ import { computed } from 'vue'
 import { placeContactLinks } from 'fireux-places/runtime/place/utils/place-contact'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useRoute } from '#imports'
-import { menuRouteIndexPath, directoryMenuRouteScope } from '../../../menu/utils/menu-route'
+import {
+  menuRouteIndexPath,
+  directoryMenuRouteScope,
+} from '../../../menu/utils/menu-route'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 const props = defineProps<{
@@ -39,7 +42,7 @@ const props = defineProps<{
 const route = useRoute()
 const navigation = computed(() => [
   {
-    label: 'Menus',
+    label: 'Menu',
     to: {
       path: menuRouteIndexPath(directoryMenuRouteScope(props.kitchen.slug)),
       query: route.query,

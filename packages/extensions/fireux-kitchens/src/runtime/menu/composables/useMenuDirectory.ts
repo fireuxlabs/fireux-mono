@@ -39,6 +39,7 @@ export type MenuDirectoryOutcome =
 
 type UseMenuDirectoryOptions = {
   routeScope?: MaybeRefOrGetter<MenuRouteScope>
+  service?: 'collection' | 'delivery' | 'table' | 'room_service'
   pageSize?: number
 }
 
@@ -84,6 +85,7 @@ export function useMenuDirectory(
   const baseEndpoint = computed(() => {
     const query = new URLSearchParams({ limit: String(pageSize) })
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+    if (options.service) query.set('service', options.service)
 
     return `/api/menus?${query.toString()}`
   })
@@ -94,6 +96,7 @@ export function useMenuDirectory(
       `scope=${routeScope.value.kind}`,
       `kitchen=${encodeURIComponent(kitchenSlug.value)}`,
       `limit=${pageSize}`,
+      `service=${options.service || 'browse'}`,
     ].join('|')
   )
   const pageCount = ref(1)
@@ -179,9 +182,10 @@ export function useMenuDirectory(
   function menuLink(menuId: string) {
     return menuRoutePath({
       scope: routeScope.value,
-      menuId: routeScope.value.kind === 'root'
-        ? menuId
-        : collection.value.find(menu => menu.id === menuId)?.slug,
+      menuId:
+        routeScope.value.kind === 'root'
+          ? menuId
+          : collection.value.find((menu) => menu.id === menuId)?.slug,
     })
   }
 

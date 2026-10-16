@@ -1941,8 +1941,116 @@ completion checks.
 
 The public Kitchen entrance is `/kitchens/<slug>/menu`, labelled Menu. Its route
 lists only published Menus using the existing scoped directory reader, with simple
-browse links and no service-choice funnel. The old collection route has no alias
+browse links and All menus as the default. Collection and Delivery choices appear only when
+the existing service-filtered reader finds an eligible published public Menu. The old collection route has no alias
 or redirect. Individual Menu and QR destinations retain `/kitchens/<slug>/menus/<menu>`
 and its `/qr` page, independently of the collection entrance, preserving existing
 QR destinations. Root discovery remains `/menus`; Workspace remains plural.
 Verify `menu-public-slug.test.mjs`, discovery and public QR checks.
+
+The public Menu entrance reuses the existing Kitchen presentation for its logo,
+venue name and address through `kitchen/components/Detail/MenuHeader.vue`. Menu cards consume
+published offering hours through `KitchenDetailOfferingTimes`; no availability is
+inferred from missing schedules. The entrance uses the same content for QR, direct
+and website arrivals and retains a Venue information link. No referrer-based flow,
+additional record reader or ordering action is introduced.
+
+## Ordinary Menu audience
+
+Publication state and audience are independent. Absent audience retains Public
+behavior for existing records. Public Menus are discoverable; Private link Menus
+are excluded from root/scoped directories and cross-Menu choices, but remain
+readable by their published direct links. The source Menu is authoritative even
+when a root doorway has stale audience metadata. Metadata updates synchronize
+root audience in the same existing transaction. Private-link detail pages declare
+noindex/nofollow; that is a discovery preference, not authentication.
+`Detail/Audience.vue` owns the ordinary-Menu control and Publishing explains each
+result. Daily specials does not expose this control. Protected group is visibly
+unavailable, rejected by metadata/publication, and denied by shared detail/file
+resolution; no password verifier or credentials are stored in the development-open
+database. Real protected content requires separate secure storage and file delivery.
+No live database Rules or stored files are changed by this implementation.
+Verify discovery, publication, public-slug and audience metadata tests.
+
+## Customer Menu service surfaces
+
+`/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
+public service surfaces, not named Menus.
+`Detail/ServiceMenu.vue` consumes the existing live reader through
+`/api/menus/service/items`. It returns the eligible public source manifests, and
+the existing venue clock refreshes their price presentation without refetching
+for time alone. The endpoint scans all eligible public published Menu
+pages, reuses their public detail payloads and combines interactive items.
+`service-sections.ts` merges section labels and deduplicates catalogue Dish
+identity across placements while retaining distinct commercial offers. A current
+service takes precedence over a future window; otherwise the next serving window
+supplies the shown price. An active scheduled promotion wins over normal terms
+for the same serving time, independently of source order. Equal commercial terms
+share schedules; differing offers remain available under Other serving times and
+prices. Items
+without catalogue identity retain their scoped placement identity. Shared serving
+times appear once per section; differing schedules remain beside their items.
+Document Menus remain accessible through All menus, rather than inventing items
+from files. Daily specials remains separate. The surface has no cart or ordering
+actions; service configuration and order execution are unchanged. Configured
+service schedules are shown, not a promise of order/timeslot acceptance.
+The public Menu entrance keeps All menus as the default and shows Collection
+and Delivery only when its service-filtered reader finds an eligible published public Menu.
+Eligibility uses the existing explicit collection/delivery options and schedules, with table mapped to
+`dine_in` options already filtered by the existing table QR channel policy;
+Delivery does not infer address coverage or enable checkout. All four views reuse
+one renderer and item projection, without copied Menu records. At your table has
+a dedicated `/kitchens/<slug>/table-service/<table>` entrance. Its required table
+label is displayed and retained in the path through section browsing and refresh.
+It has no public selector button, availability lookup on that page, table picker
+or All menus switch. Missing/invalid table links do not open a tableless surface;
+table pages declare noindex. The table label is presentation context, not a table
+session or order authority. No tables or orders are created or modified.
+Room service has a separate `/kitchens/<slug>/room-service/<room>` entrance,
+with a required room label in its path. It is absent from the public selector and
+performs no public availability lookup there. The route supplies the room number
+to the shared presentation; section anchors retain that path, and there is no room
+picker or All menus switch. Missing/invalid room links do not open a roomless
+surface. Room-specific pages declare noindex. The room label is presentation
+context, not proof of a stay or order authority. Existing `room_service`
+interactions supply items/times; no room assignment, session or order is created.
+Verify `menu-service-view.test.mjs`, public route/discovery checks and consuming
+App rendering, including mobile, duplicate items and serving times.
+
+## Kitchen Promotions
+
+Promotions are Kitchen-owned records at `kitchens/<id>/promotions`, separate
+from Menu metadata and Daily specials. The Workspace capability is
+`/workspace/kitchen/promotions`, composed by `Workspace/Promotions/Index.vue`
+and its focused Editor. `useKitchenPromotions` reuses settled Kitchen authority,
+Menu/child-collection readers and scoped authenticated commands. Menu Settings
+links to this capability rather than owning another price editor.
+
+The first supported kind is `fixed_price`: name, active/paused status, Menu ID,
+optional section IDs, integer hundredths, venue currency and venue-local weekdays.
+An empty section list targets the whole Menu. The protected command in
+`kitchen/server/promotions/write.ts` validates actor/Kitchen authority, ordinary
+interactive Menu ownership, active sections and currency. It rejects intersecting
+active offers for the same Menu sections and weekdays. Pause an offer to withdraw
+it; normal catalogue, Sellable, placement and extra prices are never rewritten.
+Meal deals, included choice groups, supplements to bundles and catalogue-item
+promotion targeting have no implemented contract yet; no placeholder bundle
+model or editor is registered.
+
+`kitchen/server/promotions/read.ts` projects only active offers for the authoritative
+source Menu into public manifests, with the venue timezone. The pure
+`kitchen/utils/promotions/pricing.ts` applies base and required-variant prices,
+retaining extras. Browse resolves today's local price; service surfaces resolve
+now when open or the local day of their next serving window. Existing serving
+hours determine availability. This remains presentation pricing: Order resolution,
+submission, totals and saved records are unchanged and need a separately
+authorized ordering pass.
+
+The explicit migration command moves a stored Menu scheduled price into a
+Kitchen promotion and clears `Menu.pricing` in one transaction. Its deterministic
+record ID makes retries idempotent, and the promotion retains the source path and
+previous pricing for audit. It is a bounded cutover, not a runtime fallback:
+Menu metadata no longer accepts pricing and public readers use only Promotions.
+No unrelated Menus, prices, Orders or live database Rules are migrated.
+Verify `kitchen-promotions.test.mjs`, `menu-pricing.test.mjs`, service-view and
+Menu metadata/publication checks, then inspect Workspace and guest surfaces.
