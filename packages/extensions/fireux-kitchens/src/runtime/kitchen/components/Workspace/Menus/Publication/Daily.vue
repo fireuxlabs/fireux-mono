@@ -63,7 +63,7 @@
           color="neutral"
           variant="outline"
           :loading="busy"
-          :disabled="!canWrite || busy"
+          :disabled="!canManage || busy"
           @click="confirmWithdrawal = true"
         />
         <UButton
@@ -143,6 +143,7 @@ const {
   sectionsPending,
   sectionsError,
   canWrite,
+  canManage,
 } = useKitchenMenuRecordContext()
 const { select } = useMenuRecordView()
 const { mutate } = useMenuMutation()
@@ -189,7 +190,12 @@ const qrUrl = computed(() => {
   return path && origin ? new URL(path, origin).href : ''
 })
 async function save(published: boolean) {
-  if (!canWrite.value || busy.value || !isMenuDate(date.value)) return
+  if (
+    !(published ? canWrite.value : canManage.value) ||
+    busy.value ||
+    !isMenuDate(date.value)
+  )
+    return
   const isCurrent = captureScope()
   busy.value = true
   error.value = ''

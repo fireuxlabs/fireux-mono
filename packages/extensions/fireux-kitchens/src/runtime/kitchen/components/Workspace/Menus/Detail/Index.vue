@@ -23,7 +23,12 @@
       <UAlert
         v-if="!canWrite"
         color="neutral"
-        title="Read-only Menu"
+        :title="
+          menu.schedule === 'daily' &&
+          !['premium', 'business'].includes(subscription)
+            ? 'Daily specials require Plus'
+            : 'Read-only Menu'
+        "
         class="mb-4"
       />
       <WorkspaceKitchenMenusDetailSettings v-if="view === 'details'" />
@@ -40,8 +45,16 @@ import { computed } from 'vue'
 import { provideKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 import { provideMenuRecordView } from '../../../../composables/workspace/menus/useMenuRecordView'
-const { menu, menuSlug, pending, error, outcome, canWrite, selectedKitchen } =
-  provideKitchenMenuRecordContext()
+const {
+  menu,
+  menuSlug,
+  pending,
+  error,
+  outcome,
+  canWrite,
+  subscription,
+  selectedKitchen,
+} = provideKitchenMenuRecordContext()
 const { scope, entryView, clearView } = useMenuRecordNavigation()
 const recordScope = computed(() => `${scope.value}/${menuSlug.value}`)
 const { view } = provideMenuRecordView(

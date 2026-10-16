@@ -108,11 +108,19 @@ function createKitchenMenuRecordContext() {
     outcome.value === 'ready' ? record.menu.value : null
   )
   const menuId = computed(() => menu.value?.id || '')
-  const canWrite = computed(
+  const canManage = computed(
     () =>
       Boolean(menu.value) &&
       hasAccess.value &&
       ['user', 'admin', 'dev'].includes(String(session.appUser.value?.role))
+  )
+  const canWrite = computed(
+    () =>
+      canManage.value &&
+      (menu.value?.schedule !== 'daily' ||
+        ['premium', 'business'].includes(
+          session.appUser.value?.subscription || 'free'
+        ))
   )
   const currencyCode = computed(() =>
     readPlaceCurrencyCode(kitchen.place.value)
@@ -233,6 +241,7 @@ function createKitchenMenuRecordContext() {
     error,
     outcome,
     canWrite,
+    canManage,
     currencyCode,
     subscription,
     offerings: offerings.offerings,

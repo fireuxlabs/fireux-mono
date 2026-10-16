@@ -59,7 +59,7 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
   const actor = await readKitchenMutationActor(event),
     id = randomUUID()
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    await requireKitchenMutationAuthority(tx, actor, kitchenId)
+    const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
     const [menu, section, dish] = await Promise.all([
       tx.read(serverKitchenMenusTarget(kitchenId), menuId),
       tx.read(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId),
@@ -70,6 +70,14 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
         statusCode: 404,
         statusMessage:
           'Select an existing Menu section and Dish from this Kitchen.',
+      })
+    if (
+      menu.data?.schedule === 'daily' &&
+      !['premium', 'business'].includes(access.subscription)
+    )
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Daily specials require Plus.',
       })
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     tx.create(serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId), id, {
@@ -127,8 +135,11 @@ export async function updateKitchenMenuItem(
   }
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    // Subscription is account state. No tier removes essential menu operation.
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    const access = await requireKitchenMutationAuthority(
+      mutations,
+      actor,
+      kitchenId
+    )
     const target = serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)
     const [menu, section, item] = await Promise.all([
       mutations.read(serverKitchenMenusTarget(kitchenId), menuId),
@@ -142,6 +153,14 @@ export async function updateKitchenMenuItem(
       throw createError({
         statusCode: 404,
         statusMessage: 'Menu item was not found in this kitchen.',
+      })
+    if (
+      menu.data?.schedule === 'daily' &&
+      !['premium', 'business'].includes(access.subscription)
+    )
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Daily specials require Plus.',
       })
     if (
       item.data?.sellable_id &&

@@ -1909,3 +1909,11 @@ association workflow; Menu source-upload records remain separate from Menu
 creation. The current physical map is in `docs/concepts/components.md` and
 the source-owned reader/scope tests. Existing context providers, Kitchen
 selection, serving checks, commands and authority remain the same owners.
+
+Daily specials editing requires the acting User's Plus entitlement, independently
+of Kitchen authority. Free accounts can read retained daily selections and withdraw
+published dates, but cannot create, copy, edit or publish daily content. The record
+context separates `canManage` (Kitchen authority) from `canWrite` (content editing);
+section/item commands enforce the daily editing tier inside their transactions.
+Verify `daily-menu.test.mjs`, `daily-menu-publication.test.mjs` and
+`menu-workspace-commands.test.mjs`.

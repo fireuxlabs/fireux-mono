@@ -78,6 +78,7 @@ function harness({
   associated = true,
   role = 'user',
   menuStatus = 'published',
+  schedule = 'regular',
   missingItem = false,
   menuName = 'Food',
   menuSlug = 'food',
@@ -86,7 +87,7 @@ function harness({
   sellableId,
 } = {}) {
   const calls = []
-  const menu = { name: menuName, slug: menuSlug, status: menuStatus }
+  const menu = { name: menuName, slug: menuSlug, status: menuStatus, schedule }
   const actor = { uid: 'cook', runtimeAppId: 'misebox-app' }
   const tx = {
     async read(target, id) {
@@ -497,3 +498,20 @@ test('adopted placements reject every legacy commercial field but retain curatio
   )
   assert.equal(h.calls[0][0], 'update')
 })
+
+for (const subscription of ['free', 'premium', 'business']) {
+  test(`Daily item editing requires Plus: ${subscription}`, async () => {
+    const h = harness({ subscription, schedule: 'daily' })
+    const request = h.updateKitchenMenuItem(
+      {},
+      { ...item, changes: { price: 14 } }
+    )
+    if (subscription === 'free') {
+      await assert.rejects(request, /Daily specials require Plus/)
+      assert.equal(
+        h.calls.some((call) => call[0] === 'update'),
+        false
+      )
+    } else await request
+  })
+}
