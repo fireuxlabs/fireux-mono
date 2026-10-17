@@ -20,6 +20,14 @@
     <p v-else-if="!offering.enabled" class="text-sm text-muted">
       Enable this offering when you are ready to check its customer links.
     </p>
+    <UButton
+      v-else-if="offering.collection_timing === 'next_day' && entries.length"
+      :to="`${origin}/kitchens/${encodeURIComponent(kitchenSlug)}/menu.collection?offering=${encodeURIComponent(offering.id)}`"
+      :label="'View ' + offering.name"
+      target="_blank"
+      color="neutral"
+      variant="soft"
+    />
     <div v-else-if="entries.length" class="divide-y divide-default">
       <div
         v-for="entry in entries"
@@ -48,7 +56,11 @@
     <template #footer>
       <div class="flex flex-wrap gap-3">
         <UButton
-          :to="openWorkspace ? undefined : '/workspace/kitchen/settings/integrations'"
+          :to="
+            openWorkspace
+              ? undefined
+              : '/workspace/kitchen/settings/integrations'
+          "
           @click="openWorkspace?.('/workspace/kitchen/settings/integrations')"
           label="Add a website button"
           color="neutral"
@@ -56,7 +68,9 @@
           trailing-icon="i-lucide-arrow-right"
         />
         <UButton
-          :to="openWorkspace ? undefined : '/workspace/kitchen/identity/payments'"
+          :to="
+            openWorkspace ? undefined : '/workspace/kitchen/identity/payments'
+          "
           @click="openWorkspace?.('/workspace/kitchen/identity/payments')"
           label="Payment settings"
           color="neutral"

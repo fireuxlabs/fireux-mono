@@ -42,6 +42,14 @@ function servingDay(offering: KitchenPublicOffering, now: Date) {
   const today = promotionDays.indexOf(
     promotionDay(timezone, now) as (typeof promotionDays)[number]
   )
+  if (offering.collection_timing === 'next_day' && today >= 0 && status.known) {
+    for (let offset = 1; offset <= 7; offset++) {
+      const day = promotionDays[(today + offset) % 7]!
+      if (offering.hours?.windows.some((window) => window.days.includes(day)))
+        return { day, rank: offset * 1440 }
+    }
+    return { day: '', rank: Number.MAX_SAFE_INTEGER }
+  }
   if (today < 0 || !status.known)
     return { day: '', rank: Number.MAX_SAFE_INTEGER }
   if (status.open) return { day: promotionDays[today]!, rank: 0 }

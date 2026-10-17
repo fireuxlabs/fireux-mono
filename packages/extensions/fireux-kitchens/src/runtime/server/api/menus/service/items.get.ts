@@ -12,6 +12,7 @@ export default defineLiveReadHandler(async (event) => {
       statusCode: 400,
       statusMessage: 'Kitchen is required.',
     })
+  const offering = String(getQuery(event).offering || '').trim()
   const service = getQuery(event).service
   if (
     service !== 'collection' &&
@@ -28,6 +29,7 @@ export default defineLiveReadHandler(async (event) => {
   do {
     const page = await readMenuDirectoryPage({
       kitchenSlug,
+      offering,
       service,
       cursor,
       limit: 50,
@@ -46,7 +48,7 @@ export default defineLiveReadHandler(async (event) => {
           return payload.kind === 'manifest'
             ? {
                 manifest: payload.manifest,
-                offerings: menuServiceOfferings(menu, service),
+                offerings: menuServiceOfferings(menu, service, offering),
               }
             : null
         })

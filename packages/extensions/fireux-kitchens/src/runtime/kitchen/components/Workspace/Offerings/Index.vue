@@ -1,6 +1,15 @@
 <template>
   <section class="workspace-surface">
-    <p class="text-muted">Choose how customers can get food, then set the eligible menus and serving times.</p>
+    <p class="text-muted">
+      Choose how customers can get food, then set the eligible menus and serving
+      times.
+    </p>
+    <UButton
+      label="Add offering"
+      icon="i-lucide-plus"
+      :disabled="!canWrite"
+      @click="createOpen = true"
+    />
     <UButton
       to="/workspace/kitchen/settings/integrations"
       label="Set up ordering"
@@ -22,7 +31,10 @@
       <section class="space-y-4">
         <div>
           <h2 class="text-xl font-semibold">Services</h2>
-          <p class="text-sm text-muted">Table service uses staff; QR table ordering and Kiosk let customers order themselves. Pre-order is for advance meal requests.</p>
+          <p class="text-sm text-muted">
+            Table service uses staff; QR table ordering and Kiosk let customers
+            order themselves. Pre-order is for advance meal requests.
+          </p>
         </div>
         <div class="grid items-start gap-4 lg:grid-cols-2">
           <UCard v-for="entry in entries" :key="entry.option.key">
@@ -103,6 +115,46 @@
       </section>
     </template>
     <UAlert v-else title="Choose a Kitchen to configure services" />
+    <section
+      v-if="advanceOfferings.length"
+      class="divide-y divide-default"
+      aria-label="Named offerings"
+    >
+      <NuxtLink
+        v-for="offering in advanceOfferings"
+        :key="offering.id"
+        :to="`/workspace/kitchen/services/${offering.id}`"
+        class="flex items-center justify-between gap-3 py-4"
+      >
+        <span
+          ><span class="font-medium">{{ offering.name }}</span
+          ><span class="ml-2 text-sm text-muted"
+            >Next-day collection · {{ offering.enabled ? 'On' : 'Off' }}</span
+          ></span
+        >
+        <UIcon name="i-lucide-chevron-right" />
+      </NuxtLink>
+    </section>
+    <UModal
+      v-model:open="createOpen"
+      title="Add offering"
+      description="Create a separate collection offering with its own menus and hours."
+    >
+      <template #body
+        ><WorkspaceKitchenOfferingsCreate
+          v-if="createOpen"
+          :kitchen-id="kitchenId"
+          :active="createOpen"
+          :disabled="!canWrite"
+          :menus="menus"
+          :menus-outcome="menusOutcome"
+          :timezone="timezone"
+          :venue-hours="venueHours"
+          :capture-intent="captureIntent"
+          :save="configure"
+          @created="openCreated"
+      /></template>
+    </UModal>
     <UModal
       v-model:open="setupOpen"
       :title="selectedOption?.label || 'Offering'"
@@ -163,6 +215,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { navigateTo } from '#imports'
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'
 import {
   kitchenOfferingOptions,
@@ -183,6 +236,7 @@ const {
   menus,
   menusOutcome,
   timezone,
+  venueHours,
   configure,
 } = useKitchenOfferings()
 const entries = computed(() =>
@@ -194,6 +248,16 @@ const entries = computed(() =>
     ),
   }))
 )
+const createOpen = ref(false)
+const advanceOfferings = computed(() =>
+  offerings.value.filter(
+    (offering) => offering.collection_timing === 'next_day'
+  )
+)
+function openCreated(id: string) {
+  createOpen.value = false
+  void navigateTo(`/workspace/kitchen/services/${encodeURIComponent(id)}`)
+}
 const setupOpen = ref(false)
 const selectedOption = ref<KitchenOfferingOption>()
 const selectedOfferingId = ref('')
@@ -221,6 +285,7 @@ function openSetup(option: KitchenOfferingOption, enabled?: boolean) {
 watch(
   ownerScope,
   () => {
+    createOpen.value = false
     setupOpen.value = false
     selectedOfferingId.value = ''
     selectedOption.value = undefined

@@ -195,6 +195,15 @@ export function useKitchenOfferings(
       storageKitchenId.value ? place.value?.timezone || '' : ''
     ),
     placeOutcome,
+    venueHours: computed(() =>
+      storageKitchenId.value && place.value
+        ? {
+            ...place.value.business_hours,
+            timezone: place.value.timezone,
+            source: 'custom' as const,
+          }
+        : null
+    ),
     menus: computed(() =>
       ['ready', 'empty'].includes(menusOutcome.value)
         ? collection.menus.value

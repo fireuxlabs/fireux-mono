@@ -88,6 +88,27 @@
         :capture-intent="captureOfferingIntent"
       />
     </UCard>
+    <UCard
+      v-if="offering.interactions.some((row) => row.type === 'collection')"
+    >
+      <MoleculesFormsEditableSelect
+        label="Earliest collection"
+        :value="offering.collection_timing || 'same_day'"
+        :options="[
+          { label: 'Same day', value: 'same_day' },
+          { label: 'From tomorrow', value: 'next_day' },
+        ]"
+        :disabled="!canWrite || busy"
+        :capture-intent="captureOfferingIntent"
+        :update="
+          (value, current) =>
+            updateOffering(
+              { collection_timing: value as 'same_day' | 'next_day' },
+              current
+            )
+        "
+      />
+    </UCard>
     <div class="grid items-start gap-4 lg:grid-cols-2">
       <WorkspaceKitchenOfferingsMenus
         :key="'menus:' + offering.id"

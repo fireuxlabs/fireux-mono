@@ -129,7 +129,8 @@ test('offering and interaction switches both gate ordering; Menu IDs establish m
       enabled: false,
       order_types: [],
     })
-  assert.equal(kitchenMenuOrdering([active], 'food').enabled, true)
+  assert.equal(kitchenMenuOrdering([active], 'food').enabled, false)
+  assert.equal(kitchenMenuOrdering([active], 'food').order_types.length, 1)
   assert.equal(kitchenMenuOrdering([active], 'renamed-food').enabled, false)
   assert.deepEqual(normalizeKitchenOfferings({ services: [active] }), [])
 })

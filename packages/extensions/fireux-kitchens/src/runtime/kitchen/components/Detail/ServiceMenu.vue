@@ -46,6 +46,12 @@
     >
       Table {{ tableNumber }}
     </p>
+    <p
+      v-if="selectedOffering?.collection_timing === 'next_day'"
+      class="text-sm text-muted"
+    >
+      Order today for collection from tomorrow, during the hours below.
+    </p>
     <template v-if="presentation">
       <p v-if="menus.pending.value" role="status" class="text-sm text-muted">
         Loading food and drinks…
@@ -172,7 +178,7 @@
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import { setResponseStatus, useHead, useSeoMeta } from '#imports'
+import { setResponseStatus, useHead, useSeoMeta, useRoute } from '#imports'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useKitchenDetail } from '../../composables/useKitchenDetail'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
@@ -191,18 +197,29 @@ const props = defineProps<{
 }>()
 const slug = toRef(props, 'kitchenSlug')
 const service = toRef(props, 'service')
-const serviceLabel = computed(() =>
-  service.value === 'room_service'
-    ? 'Room service'
-    : service.value === 'table'
-      ? 'At your table'
-      : service.value === 'delivery'
-        ? 'Delivery'
-        : 'Collection'
+const route = useRoute()
+const offeringId = computed(() =>
+  typeof route.query.offering === 'string' ? route.query.offering : ''
+)
+const selectedOffering = computed(() =>
+  menus.data.value?.sources
+    .flatMap((source) => source.offerings)
+    .find((offering) => offering.id === offeringId.value)
+)
+const serviceLabel = computed(
+  () =>
+    selectedOffering.value?.name ||
+    (service.value === 'room_service'
+      ? 'Room service'
+      : service.value === 'table'
+        ? 'At your table'
+        : service.value === 'delivery'
+          ? 'Delivery'
+          : 'Collection')
 )
 const endpoint = computed(
   () =>
-    `/api/menus/service/items?service=${service.value}&kitchenSlug=${encodeURIComponent(slug.value)}`
+    `/api/menus/service/items?service=${service.value}&kitchenSlug=${encodeURIComponent(slug.value)}${offeringId.value ? '&offering=' + encodeURIComponent(offeringId.value) : ''}`
 )
 const menus = useLiveAsyncData<{ sources: MenuServiceSource[] }>(
   computed(() => `menu-service-items:${service.value}:${slug.value}`),

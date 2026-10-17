@@ -37,7 +37,18 @@ export function readOfferingUpdate(input: unknown) {
   const body = object(input)
   allowed(body, ['kitchenId', 'offeringId', 'changes'])
   const changes = { ...object(body.changes) }
-  allowed(changes, ['name', 'enabled', 'menu_ids', 'hours'])
+  allowed(changes, [
+    'name',
+    'enabled',
+    'menu_ids',
+    'hours',
+    'collection_timing',
+  ])
+  if (
+    'collection_timing' in changes &&
+    !['same_day', 'next_day'].includes(String(changes.collection_timing))
+  )
+    fail('Choose same-day or next-day collection.')
   if ('name' in changes) changes.name = name(changes.name)
   if ('enabled' in changes && typeof changes.enabled !== 'boolean')
     fail('Invalid offering switch.')
@@ -90,6 +101,18 @@ export function readOfferingUpdate(input: unknown) {
 }
 
 export function requireConfiguredOffering(offering: KitchenOffering) {
+  if (
+    offering.collection_timing &&
+    !offering.interactions.some((row) => row.type === 'collection')
+  )
+    fail('Collection timing requires a Collection option.')
+  if (
+    offering.collection_timing === 'next_day' &&
+    offering.interactions.some(
+      (row) => row.type === 'collection' && row.asap_enabled === true
+    )
+  )
+    fail('Turn off immediate collection before choosing next-day collection.')
   if (!offering.enabled) return
   if (!offering.menu_ids.length)
     fail('Select at least one Menu before enabling this offering.')

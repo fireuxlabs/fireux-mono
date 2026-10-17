@@ -736,3 +736,69 @@ test('complete paged children participate in configuration conflicts and malform
   )
   assert.equal(malformed.writes.length, 0)
 })
+
+test('separate Picnic configuration creates one new record and preserves Collection and Delivery byte for byte', async () => {
+  const main = saved({
+    enabled: true,
+    interactions: [{ type: 'collection', enabled: true }],
+  })
+  const delivery = saved({
+    id: 'delivery',
+    name: 'Delivery',
+    enabled: true,
+    interactions: [{ type: 'delivery', enabled: true }],
+  })
+  const h = harness({ offerings: [main, delivery] })
+  const before = structuredClone([...h.records])
+  const result = await h.configureKitchenOffering(
+    {},
+    {
+      ...configure(),
+      name: 'Picnic',
+      createSeparate: true,
+      collection_timing: 'next_day',
+      enabled: false,
+      interactions: [
+        { type: 'collection', changes: { ...changes(), asap_enabled: false } },
+      ],
+    }
+  )
+  assert.equal(result.offering.id, 'created-1')
+  assert.equal(result.offering.collection_timing, 'next_day')
+  assert.equal(result.offering.enabled, false)
+  assert.equal(h.writes.length, 1)
+  assert.equal(h.writes[0][0], 'create')
+  for (const [path, data] of before)
+    assert.deepEqual(h.records.get(path), data, path)
+  assert.ok(
+    h.writes.every(([, path]) => path === 'kitchens/k/offerings/created-1')
+  )
+})
+
+test('separate creation cannot target an existing offering and invalid timing fails before authority or writes', async () => {
+  for (const patch of [
+    { createSeparate: true, offeringId: 'saved' },
+    { collection_timing: '24_hours' },
+    { option: 'delivery', collection_timing: 'next_day' },
+  ]) {
+    const h = harness()
+    await assert.rejects(() =>
+      h.configureKitchenOffering({}, { ...configure(), ...patch })
+    )
+    assert.equal(h.actors, 0)
+    assert.deepEqual(h.writes, [])
+  }
+})
+
+test('next-day collection rejects immediate pickup without writing any record', async () => {
+  const h = harness()
+  await assert.rejects(
+    () =>
+      h.configureKitchenOffering(
+        {},
+        { ...configure(), createSeparate: true, collection_timing: 'next_day' }
+      ),
+    /immediate collection/
+  )
+  assert.deepEqual(h.writes, [])
+})

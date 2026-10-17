@@ -5,7 +5,8 @@ export type MenuService = 'collection' | 'delivery' | 'table' | 'room_service'
 /** Explicit enabled service options only; names never determine eligibility. */
 export function menuServiceOfferings(
   menu: MenuDirectoryEntry,
-  service: MenuService
+  service: MenuService,
+  offeringId?: string
 ) {
   const ids = new Set(
     (menu.offering_options || [])
@@ -18,6 +19,9 @@ export function menuServiceOfferings(
   )
   return (menu.offerings || []).filter(
     (offering) =>
+      (offeringId
+        ? offering.id === offeringId
+        : offering.collection_timing !== 'next_day') &&
       ids.has(offering.id) &&
       !offering.paused &&
       Boolean(offering.hours?.windows.length)

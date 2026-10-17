@@ -324,3 +324,18 @@ test('meal deals keep set prices and filter by the venue-local serving day', () 
   assert.equal(rows[0].items[0].item.price, 15)
   assert.equal(rows[0].items[0].item.mealDeal.groups[0].dishes[1].supplement, 3)
 })
+
+test('next-day collection uses the next local collection day while ordinary service prices stay unchanged', () => {
+  const picnic = source('picnic')
+  picnic.offerings[0].collection_timing = 'next_day'
+  const saturday = new Date('2026-10-17T20:00:00Z')
+  assert.equal(serviceSections([picnic], saturday)[0].items[0].item.price, 11)
+  const ordinary = source('ordinary')
+  assert.equal(serviceSections([ordinary], saturday)[0].items[0].item.price, 13)
+  assert.equal(ordinary.manifest.content.sections[0].items[0].price, 13)
+  const sundayNight = new Date('2026-10-18T20:00:00Z')
+  assert.equal(
+    serviceSections([picnic], sundayNight)[0].items[0].item.price,
+    13
+  )
+})

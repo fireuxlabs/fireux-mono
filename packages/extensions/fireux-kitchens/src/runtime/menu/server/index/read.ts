@@ -139,13 +139,21 @@ async function readMenuDirectoryBatch(
         scopes.set(snapshot.id, scope)
         contexts.set(
           snapshot.id,
-          await readScopedMenuDirectoryContext(db, scope, ['online', 'collection', 'delivery'].includes(text(input.service)))
+          await readScopedMenuDirectoryContext(
+            db,
+            scope,
+            ['online', 'collection', 'delivery'].includes(text(input.service))
+          )
         )
       })
     )
   }
   const scopedContext = scopedKitchen
-    ? await readScopedMenuDirectoryContext(db, scopedKitchen, ['online', 'collection', 'delivery'].includes(text(input.service)))
+    ? await readScopedMenuDirectoryContext(
+        db,
+        scopedKitchen,
+        ['online', 'collection', 'delivery'].includes(text(input.service))
+      )
     : null
   const items = documents
     .map((document) => {
@@ -202,25 +210,48 @@ export async function readMenuDirectoryPage(
       limit: Math.max(1, limit - items.length),
     })
     const eligible = page.items.filter(
-        (menu) =>
-          !input.service ||
-          (input.service === 'online'
-            ? menuServiceOfferings(menu, 'collection').length > 0 ||
-              menuServiceOfferings(menu, 'delivery').length > 0
-            : menuServiceOfferings(
-            menu,
-            input.service as
-              | 'collection'
-              | 'delivery'
-              | 'table'
-              | 'room_service'
-          ).length > 0)
-      )
+      (menu) =>
+        !input.service ||
+        (input.service === 'online'
+          ? menuServiceOfferings(menu, 'collection', text(input.offering))
+              .length > 0 ||
+            menuServiceOfferings(menu, 'delivery', text(input.offering))
+              .length > 0
+          : menuServiceOfferings(
+              menu,
+              input.service as
+                | 'collection'
+                | 'delivery'
+                | 'table'
+                | 'room_service',
+              text(input.offering)
+            ).length > 0)
+    )
     for (const menu of eligible) {
-      if (input.offering && !menu.offerings?.some(offering => offering.id === text(input.offering))) continue
-      if (!search) { items.push(menu); continue }
-      const dishes = await readMatchingMenuDishes(getRuntimeFirestore(), menu, search)
-      const metadata = [menu.name, menu.description, menu.source?.kitchen_name, menu.kitchen?.name].filter(Boolean).join(' ')
+      if (
+        input.offering &&
+        !menu.offerings?.some(
+          (offering) => offering.id === text(input.offering)
+        )
+      )
+        continue
+      if (!search) {
+        items.push(menu)
+        continue
+      }
+      const dishes = await readMatchingMenuDishes(
+        getRuntimeFirestore(),
+        menu,
+        search
+      )
+      const metadata = [
+        menu.name,
+        menu.description,
+        menu.source?.kitchen_name,
+        menu.kitchen?.name,
+      ]
+        .filter(Boolean)
+        .join(' ')
       if (dishes.length || matchesFoodSearch(metadata, search))
         items.push({ ...menu, matching_dishes: dishes })
     }

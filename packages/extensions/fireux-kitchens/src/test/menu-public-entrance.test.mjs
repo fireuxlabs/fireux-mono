@@ -45,9 +45,12 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   })
   app.component('UPageCard', {
     props: ['to'],
-    setup: (props, ctx) => () => h('a', { href: props.to }, ctx.slots.footer?.()),
+    setup: (props, ctx) => () =>
+      h('a', { href: props.to }, ctx.slots.footer?.()),
   })
-  app.component('UBadge',{setup:(_,ctx)=>()=>h('span',ctx.slots.default?.())})
+  app.component('UBadge', {
+    setup: (_, ctx) => () => h('span', ctx.slots.default?.()),
+  })
   app.component('DiagnosticsDebugPanel', { render: () => null })
   const html = await renderToString(app)
   for (const card of cards)
@@ -93,6 +96,7 @@ async function currency(service, place) {
       statusCode: ref(0),
       ready: Promise.resolve(),
     }),
+    useRoute: () => ({ query: {} }),
     useHead: () => {},
     useSeoMeta: () => {},
     setResponseStatus: () => {},

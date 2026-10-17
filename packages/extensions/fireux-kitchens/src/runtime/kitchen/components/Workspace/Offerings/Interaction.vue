@@ -44,7 +44,10 @@
       />
       <WorkspaceKitchenOfferingsTiming
         :config="orderConfig"
-        :allow-asap="config.type !== 'pre_order'"
+        :allow-asap="
+          config.type !== 'pre_order' &&
+          offering.collection_timing !== 'next_day'
+        "
         :disabled="disabled"
         :interaction-label="label"
         :time-label="config.type === 'pre_order' ? 'Dining' : 'Offering'"

@@ -19,6 +19,9 @@ export function readKitchenPublicOfferings(
       return {
         id: offering.id,
         name: offering.name,
+        ...(offering.collection_timing
+          ? { collection_timing: offering.collection_timing }
+          : {}),
         ...(offering.hours ? { hours: offering.hours } : {}),
         paused:
           ordering.length > 0 &&

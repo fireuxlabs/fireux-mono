@@ -91,7 +91,7 @@ function load(pages, calls) {
     menuServiceOfferings,
     (value) => value || 24,
     (value) => new Error(value.statusMessage),
-    value => String(value || '').trim(),
+    (value) => String(value || '').trim(),
     async (_db, menu) => menu.testMatches || [],
     (text, query) => text.toLowerCase().includes(query.toLowerCase()),
     () => ({})
@@ -120,70 +120,126 @@ test('service pagination scans past ineligible pages and preserves the next raw 
   )
 })
 test('combined online portal scans past a full ineligible page before returning collection and delivery', async () => {
-  const scope = { kind: 'root' }, calls = []
+  const scope = { kind: 'root' },
+    calls = []
   const pickup = menu('Pickup only')
-  pickup.offering_options = pickup.offering_options.filter(row => row.type === 'collection')
+  pickup.offering_options = pickup.offering_options.filter(
+    (row) => row.type === 'collection'
+  )
   const courier = menu('Delivery only')
-  courier.offering_options = courier.offering_options.filter(row => row.type === 'delivery')
-  const read = load([
-    {scope, items: Array.from({length:24}, (_,i)=>({id:`breakfast-${i}`})), nextCursor:'after-breakfast'},
-    {scope, items:[pickup], nextCursor:'after-pickup'},
-    {scope, items:[courier], nextCursor:'after-delivery'},
-  ], calls)
-  const result = await read({service:'online',limit:2})
-  assert.deepEqual(result.items.map(row=>row.name),['Pickup only','Delivery only'])
-  assert.equal(result.nextCursor,'after-delivery')
-  assert.deepEqual(calls.map(row=>row.cursor),[undefined,'after-breakfast','after-pickup'])
+  courier.offering_options = courier.offering_options.filter(
+    (row) => row.type === 'delivery'
+  )
+  const read = load(
+    [
+      {
+        scope,
+        items: Array.from({ length: 24 }, (_, i) => ({ id: `breakfast-${i}` })),
+        nextCursor: 'after-breakfast',
+      },
+      { scope, items: [pickup], nextCursor: 'after-pickup' },
+      { scope, items: [courier], nextCursor: 'after-delivery' },
+    ],
+    calls
+  )
+  const result = await read({ service: 'online', limit: 2 })
+  assert.deepEqual(
+    result.items.map((row) => row.name),
+    ['Pickup only', 'Delivery only']
+  )
+  assert.equal(result.nextCursor, 'after-delivery')
+  assert.deepEqual(
+    calls.map((row) => row.cursor),
+    [undefined, 'after-breakfast', 'after-pickup']
+  )
 })
 test('online portal omits paused services and missing serving windows', async () => {
   const paused = menu('Paused')
-  paused.offerings.forEach(row=>row.paused=true)
+  paused.offerings.forEach((row) => (row.paused = true))
   const unscheduled = menu('No times')
-  unscheduled.offerings.forEach(row=>row.hours.windows=[])
-  const result = await load([{scope:{kind:'root'},items:[paused,unscheduled],nextCursor:null}],[])({service:'online'})
-  assert.deepEqual(result.items,[])
+  unscheduled.offerings.forEach((row) => (row.hours.windows = []))
+  const result = await load(
+    [
+      {
+        scope: { kind: 'root' },
+        items: [paused, unscheduled],
+        nextCursor: null,
+      },
+    ],
+    []
+  )({ service: 'online' })
+  assert.deepEqual(result.items, [])
 })
 test('service scanner reports a failed later raw page instead of returning a false empty result', async () => {
-  const calls=[]
-  const read=load([
-    {scope:{kind:'root'},items:[{id:'breakfast'}],nextCursor:'next'},
-    new Error('Read unavailable'),
-  ],calls)
-  await assert.rejects(read({service:'online'}),/Read unavailable/)
-  assert.equal(calls.length,2)
+  const calls = []
+  const read = load(
+    [
+      {
+        scope: { kind: 'root' },
+        items: [{ id: 'breakfast' }],
+        nextCursor: 'next',
+      },
+      new Error('Read unavailable'),
+    ],
+    calls
+  )
+  await assert.rejects(read({ service: 'online' }), /Read unavailable/)
+  assert.equal(calls.length, 2)
 })
-test('food search scans beyond nonmatching eligible menus before pagination and keeps matching names', async()=>{
-  const later=menu('Dinner')
-  later.testMatches=[{id:'margherita',name:'Pizza Margherita'}]
-  const scope={kind:'root'}, calls=[]
-  const read=load([
-    {scope,items:[menu('Breakfast')],nextCursor:'later'},
-    {scope,items:[later],nextCursor:'more'},
-  ],calls)
-  const result=await read({service:'online',search:'margherita',limit:1})
-  assert.equal(result.items.length,1)
-  assert.equal(result.items[0].name,'Dinner')
-  assert.deepEqual(result.items[0].matching_dishes,later.testMatches)
-  assert.equal(result.nextCursor,'more')
-  assert.deepEqual(calls.map(row=>row.cursor),[undefined,'later'])
+test('food search scans beyond nonmatching eligible menus before pagination and keeps matching names', async () => {
+  const later = menu('Dinner')
+  later.testMatches = [{ id: 'margherita', name: 'Pizza Margherita' }]
+  const scope = { kind: 'root' },
+    calls = []
+  const read = load(
+    [
+      { scope, items: [menu('Breakfast')], nextCursor: 'later' },
+      { scope, items: [later], nextCursor: 'more' },
+    ],
+    calls
+  )
+  const result = await read({
+    service: 'online',
+    search: 'margherita',
+    limit: 1,
+  })
+  assert.equal(result.items.length, 1)
+  assert.equal(result.items[0].name, 'Dinner')
+  assert.deepEqual(result.items[0].matching_dishes, later.testMatches)
+  assert.equal(result.nextCursor, 'more')
+  assert.deepEqual(
+    calls.map((row) => row.cursor),
+    [undefined, 'later']
+  )
 })
-test('a dish match on a delivery-only menu cannot leak into Collection search',async()=>{
-  const delivery=menu('Delivery only')
-  delivery.offering_options=delivery.offering_options.filter(option=>option.type==='delivery')
-  delivery.testMatches=[{id:'pizza',name:'Pizza'}]
-  const result=await load([{scope:{kind:'root'},items:[delivery],nextCursor:null}],[])({service:'collection',search:'pizza'})
-  assert.deepEqual(result.items,[])
+test('a dish match on a delivery-only menu cannot leak into Collection search', async () => {
+  const delivery = menu('Delivery only')
+  delivery.offering_options = delivery.offering_options.filter(
+    (option) => option.type === 'delivery'
+  )
+  delivery.testMatches = [{ id: 'pizza', name: 'Pizza' }]
+  const result = await load(
+    [{ scope: { kind: 'root' }, items: [delivery], nextCursor: null }],
+    []
+  )({ service: 'collection', search: 'pizza' })
+  assert.deepEqual(result.items, [])
 })
-test('offering browse filters before pagination and ignores menus from other offerings',async()=>{
-  const breakfast=menu('Breakfast')
-  breakfast.offerings=[{id:'breakfast'}]
-  const lunch=menu('Lunch')
-  lunch.offerings=[{id:'lunch'}]
-  const result=await load([
-    {scope:{kind:'directory'},items:[lunch],nextCursor:'next'},
-    {scope:{kind:'directory'},items:[breakfast],nextCursor:null},
-  ],[])({offering:'breakfast',limit:1})
-  assert.deepEqual(result.items.map(row=>row.name),['Breakfast'])
+test('offering browse filters before pagination and ignores menus from other offerings', async () => {
+  const breakfast = menu('Breakfast')
+  breakfast.offerings = [{ id: 'breakfast' }]
+  const lunch = menu('Lunch')
+  lunch.offerings = [{ id: 'lunch' }]
+  const result = await load(
+    [
+      { scope: { kind: 'directory' }, items: [lunch], nextCursor: 'next' },
+      { scope: { kind: 'directory' }, items: [breakfast], nextCursor: null },
+    ],
+    []
+  )({ offering: 'breakfast', limit: 1 })
+  assert.deepEqual(
+    result.items.map((row) => row.name),
+    ['Breakfast']
+  )
 })
 test('unknown service does not silently fall back to Browse', async () => {
   const calls = []
@@ -595,4 +651,33 @@ test('dedicated table and room labels reject punctuation-only context', () => {
     assert.equal(tableServiceTableNumber(label), '')
     assert.equal(roomServiceRoomNumber(label), '')
   }
+})
+
+test('Picnic is isolated from main Collection and requires its exact offering entrance', () => {
+  const picnic = {
+    id: 'picnic',
+    name: 'Picnic',
+    paused: false,
+    collection_timing: 'next_day',
+    hours: { windows: [{}] },
+  }
+  const row = menu()
+  row.offerings.push(picnic)
+  row.offering_options.push({
+    type: 'collection',
+    kitchen_offering_id: 'picnic',
+  })
+  assert.deepEqual(
+    menuServiceOfferings(row, 'collection').map((x) => x.id),
+    ['collection']
+  )
+  assert.deepEqual(
+    menuServiceOfferings(row, 'collection', 'picnic').map((x) => x.id),
+    ['picnic']
+  )
+  assert.deepEqual(
+    menuServiceOfferings(row, 'delivery').map((x) => x.id),
+    ['delivery']
+  )
+  assert.deepEqual(menuServiceOfferings(row, 'collection', 'unknown'), [])
 })

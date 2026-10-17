@@ -4,6 +4,7 @@ import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.
 export type KitchenPublicOffering = {
   id: string
   name: string
+  collection_timing?: 'same_day' | 'next_day'
   hours?: WeekdayTimeWindowsConfig
   paused: boolean
 }

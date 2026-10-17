@@ -2138,3 +2138,27 @@ Offering records and commands remain its backing configuration. Named food
 experiences such as Picnic are not new service types. Core's shared Workspace
 sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
+
+
+## Separate advance-collection offerings
+
+Services exposes Add offering for named collection experiences such as Picnic.
+Creation reuses the existing configure command with explicit `createSeparate`;
+it creates one new Kitchen offering and never replaces an existing Collection or
+Delivery record. The form selects Menu IDs and independent collection hours,
+with a button to copy the venue opening hours as an editable snapshot. Creation
+starts off; existing publication and Menu readiness checks still apply before
+availability is enabled. No Dish prices, Promotions or Order records are written.
+
+`KitchenOffering.collection_timing` distinguishes `same_day` and `next_day`.
+Next-day means the next local calendar collection day, rather than a rolling
+24-hour delay. The record remains a Collection offering, not a new service type.
+The normal Collection projection excludes advance offerings; an explicit
+`menu.collection?offering=<id>` entrance selects that offering alone. Public
+portal discovery keeps its name as a quiet link, including when it reuses a Menu
+also used by main Collection. Named service views show next-day information and
+weekly collection hours; normal Collection and Delivery schedules stay unchanged.
+The Menu service projection remains browse-only; submitted Orders, payment and
+fulfilment execution are outside this change. See `offering-command-internals`,
+`offering-tool-internals`, `menu-service-view`, `menu-other-offerings` and
+`menu-pricing` tests in fireux-kitchens.

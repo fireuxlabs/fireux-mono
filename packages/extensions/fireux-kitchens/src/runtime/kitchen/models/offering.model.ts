@@ -11,12 +11,13 @@ export type KitchenOffering = {
   name: string
   enabled: boolean
   menu_ids: string[]
+  collection_timing?: 'same_day' | 'next_day'
   hours?: WeekdayTimeWindowsConfig
   interactions: KitchenOfferingInteraction[]
 }
 
 export type KitchenOfferingChanges = Partial<
-  Pick<KitchenOffering, 'name' | 'enabled' | 'menu_ids'>
+  Pick<KitchenOffering, 'name' | 'enabled' | 'menu_ids' | 'collection_timing'>
 > & { hours?: WeekdayTimeWindowsConfig | null }
 
 export type KitchenOfferingInteractionChanges = Omit<

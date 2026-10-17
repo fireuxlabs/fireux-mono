@@ -39,6 +39,8 @@ export function readOfferingConfiguration(input: unknown) {
           'enabled',
           'interactions',
           'activateShared',
+          'createSeparate',
+          'collection_timing',
         ].includes(key)
     )
   )
@@ -51,10 +53,24 @@ export function readOfferingConfiguration(input: unknown) {
   if ('activateShared' in body && typeof body.activateShared !== 'boolean')
     fail('Review the shared offering settings before saving.')
   const isNew = body.offeringId === undefined
+  if (
+    'createSeparate' in body &&
+    (typeof body.createSeparate !== 'boolean' || !isNew)
+  )
+    fail('Create a separate offering without an existing offering id.')
+  if (body.collection_timing !== undefined && option.key !== 'collection')
+    fail('Collection timing requires Collection.')
   const base = readOfferingUpdate({
     kitchenId: body.kitchenId,
     offeringId: isNew ? 'new-offering' : body.offeringId,
-    changes: { name: body.name, menu_ids: body.menu_ids, hours: body.hours },
+    changes: {
+      name: body.name,
+      menu_ids: body.menu_ids,
+      hours: body.hours,
+      ...(body.collection_timing !== undefined
+        ? { collection_timing: body.collection_timing }
+        : {}),
+    },
   })
   if (
     !Array.isArray(body.interactions) ||
@@ -85,6 +101,7 @@ export function readOfferingConfiguration(input: unknown) {
   return {
     ...base,
     isNew,
+    createSeparate: body.createSeparate === true,
     option,
     enabled: body.enabled,
     interactions,
@@ -105,6 +122,7 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
     )
     if (
       config.isNew &&
+      !config.createSeparate &&
       offerings.some((offering) =>
         offering.interactions.some((row) =>
           (config.option.types as readonly string[]).includes(row.type)
@@ -144,6 +162,12 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
       name: config.changes.name!,
       menu_ids: config.changes.menu_ids!,
       hours: config.changes.hours!,
+      ...(config.changes.collection_timing || current?.collection_timing
+        ? {
+            collection_timing:
+              config.changes.collection_timing || current?.collection_timing,
+          }
+        : {}),
       enabled: current?.enabled || config.enabled,
       interactions: [
         ...others,

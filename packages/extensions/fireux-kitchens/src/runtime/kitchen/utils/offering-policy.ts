@@ -53,6 +53,10 @@ export function normalizeKitchenOfferings(value: unknown): KitchenOffering[] {
             )
           ),
         ],
+        ...(row.collection_timing === 'same_day' ||
+        row.collection_timing === 'next_day'
+          ? { collection_timing: row.collection_timing }
+          : {}),
         ...(hours ? { hours } : {}),
         interactions,
       },

@@ -162,44 +162,61 @@ test('current Offering setup emits completion once and clears its own busy state
   assert.equal(h.state.busy.value, false)
   h.scope.stop()
 })
-test('new Offering creation forwards local intent and cannot navigate after a cancelled credential wait', async () => {
+test('separate Offering creation forwards local intent and cannot complete after cancellation', async () => {
   const scope = vue.effectScope(),
     credentials = deferred(),
     calls = [],
-    routes = []
+    events = []
+  const props = vue.reactive({
+    kitchenId: 'k',
+    active: true,
+    disabled: false,
+    menus: [],
+    menusOutcome: 'ready',
+    timezone: 'Europe/Zurich',
+    venueHours: null,
+    captureIntent: () => () => true,
+    save: async (input, current) => {
+      await credentials.promise
+      if (!current()) throw new Error('Form closed.')
+      calls.push(input)
+      return { offering: { id: 'new' } }
+    },
+  })
   const state = scope.run(() =>
     load(
       base + 'Workspace/Offerings/Create.vue',
-      'submit,open,name',
+      'submit,name,menuIds,hoursText',
       {
         ...vue,
         useCommandScope,
-        defineProps: () => ({
-          captureIntent: () => () => true,
-          create: async (name, current) => {
-            await credentials.promise
-            if (!current()) throw new Error('Form closed.')
-            calls.push(name)
-            return { ok: true, offering: { id: 'new' } }
-          },
+        defineProps: () => props,
+        defineEmits:
+          () =>
+          (...args) =>
+            events.push(args),
+        formatWeekdayTimeText: () => '',
+        parseWeekdayTimeText: () => ({
+          timezone: 'Europe/Zurich',
+          windows: [{ days: ['tuesday'], open: '07:00', close: '20:00' }],
         }),
-        navigateTo: (path) => routes.push(path),
       },
       true
     )
   )
-  state.open.value = true
-  state.name.value = 'Lunch'
-  const saving = state.submit()
-  state.open.value = false
-  state.open.value = true
-  credentials.resolve('token')
-  await saving
+  state.name.value = 'Picnic'
+  state.menuIds.value = ['picnic']
+  state.hoursText.value = 'Tuesday 07:00 - 20:00'
+  const pending = state.submit()
+  props.active = false
+  props.active = true
+  credentials.resolve()
+  await pending
   assert.deepEqual(calls, [])
-  assert.deepEqual(routes, [])
+  assert.deepEqual(events, [])
   scope.stop()
 })
-for (const path of ['Ordering/Setup.vue', 'Workspace/Offerings/Index.vue']) {
+for (const path of ['Workspace/Offerings/Index.vue']) {
   test(`${path} retains its modal during child refresh and closes it on sticky owner changes`, () => {
     const scope = vue.effectScope(),
       ownerScope = vue.ref(0),
@@ -273,50 +290,56 @@ test('an existing Offering draft never becomes a create after a masked refresh o
   h.scope.stop()
 })
 
-test('a saved Offering with failed navigation offers its exact editor without retrying creation', async () => {
+test('separate Offering creation saves only its own configuration and emits the committed id once', async () => {
   const scope = vue.effectScope(),
-    calls = []
-  const committed = { ok: true, offering: { id: 'saved' } }
+    calls = [],
+    events = []
+  const props = vue.reactive({
+    kitchenId: 'k',
+    active: true,
+    disabled: false,
+    menus: [],
+    menusOutcome: 'ready',
+    timezone: 'Europe/Zurich',
+    venueHours: null,
+    captureIntent: () => () => true,
+    save: async (input) => {
+      calls.push(input)
+      return { offering: { id: 'picnic' } }
+    },
+  })
   const state = scope.run(() =>
     load(
       base + 'Workspace/Offerings/Create.vue',
-      'submit,open,name,error,busy,createdOfferingId',
+      'submit,name,menuIds,hoursText',
       {
         ...vue,
         useCommandScope,
-        defineProps: () => ({
-          captureIntent: () => () => true,
-          create: async (name) => {
-            calls.push(name)
-            return committed
-          },
-        }),
-        navigateTo: async () => {
-          throw new Error('Navigation failed')
+        defineProps: () => props,
+        defineEmits: () => (event, id) => {
+          events.push([event, id])
+          props.active = false
         },
+        formatWeekdayTimeText: () => '',
+        parseWeekdayTimeText: () => ({
+          timezone: 'Europe/Zurich',
+          windows: [{ days: ['tuesday'], open: '07:00', close: '20:00' }],
+        }),
       },
       true
     )
   )
-  state.open.value = true
-  state.name.value = 'Lunch'
-  assert.equal(await state.submit(), committed)
-  assert.equal(state.createdOfferingId.value, 'saved')
-  assert.equal(state.open.value, true)
-  assert.equal(state.busy.value, false)
-  assert.match(state.error.value, /offering was saved/)
+  state.name.value = 'Picnic'
+  state.menuIds.value = ['picnic-menu']
+  state.hoursText.value = 'Tuesday 07:00 - 20:00'
   await state.submit()
-  assert.deepEqual(calls, ['Lunch'])
-  const source = readFileSync(
-    new URL(base + 'Workspace/Offerings/Create.vue', import.meta.url),
-    'utf8'
-  )
-  const actions = source.match(/<template #actions>([\s\S]*?)<\/template>/)[1]
-  assert.match(actions, /<UButton[\s\S]*label="Open offering"/)
-  assert.match(
-    actions,
-    /:to="'\/workspace\/kitchen\/offerings\/' \+ createdOfferingId"/
-  )
-  assert.doesNotMatch(source, /:actions=/)
+  await state.submit()
+  assert.equal(calls.length, 1)
+  assert.equal(calls[0].createSeparate, true)
+  assert.equal(calls[0].collection_timing, 'next_day')
+  assert.equal(calls[0].enabled, false)
+  assert.deepEqual(calls[0].menu_ids, ['picnic-menu'])
+  assert.ok(!('offeringId' in calls[0]))
+  assert.deepEqual(events, [['created', 'picnic']])
   scope.stop()
 })

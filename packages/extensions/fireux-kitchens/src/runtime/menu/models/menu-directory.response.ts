@@ -27,7 +27,7 @@ export type MenuDirectoryEntry = {
   file_kind?: 'photo' | 'pdf' | 'document'
   name: string
   description?: string
-  other_offerings?: Array<{ id: string; name: string }>
+  other_offerings?: Array<{ id: string; name: string; service?: 'collection' }>
   matching_dishes?: Array<{ id: string; name: string }>
   status: 'published'
   sort_order?: number

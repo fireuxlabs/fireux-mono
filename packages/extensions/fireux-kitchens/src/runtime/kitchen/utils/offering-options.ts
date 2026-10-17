@@ -60,10 +60,14 @@ export function offeringsForOption(
   offerings: KitchenOffering[],
   option: KitchenOfferingOption
 ) {
-  return offerings.filter((offering) =>
-    offering.interactions.some((interaction) =>
-      (option.types as readonly string[]).includes(interaction.type)
-    )
+  return offerings.filter(
+    (offering) =>
+      !(
+        option.key === 'collection' && offering.collection_timing === 'next_day'
+      ) &&
+      offering.interactions.some((interaction) =>
+        (option.types as readonly string[]).includes(interaction.type)
+      )
   )
 }
 export function offeringOptionEnabled(

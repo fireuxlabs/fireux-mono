@@ -81,3 +81,9 @@ Services names the Workspace setup surface. Offering remains the backing Kitchen
 record connecting menus, serving times and interactions; it is not a second
 customer label for Collection or Delivery. Recipes and Ingredients belong to
 Prep & Production; Menus and Services belong to customer-facing menu setup.
+
+
+A named offering such as **Picnic** can use Collection with next-day timing and
+its own menus and collection hours. It appears through its named entrance;
+creating it does not edit the main Collection or Delivery setup. “From tomorrow”
+uses the venue’s local calendar, rather than meaning 24 hours from now.
