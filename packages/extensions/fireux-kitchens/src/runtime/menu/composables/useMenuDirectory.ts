@@ -40,7 +40,7 @@ export type MenuDirectoryOutcome =
 
 type UseMenuDirectoryOptions = {
   routeScope?: MaybeRefOrGetter<MenuRouteScope>
-  service?: 'collection' | 'delivery' | 'table' | 'room_service'
+  service?: MaybeRefOrGetter<'online' | 'collection' | 'delivery' | 'table' | 'room_service'>
   pageSize?: number
 }
 
@@ -82,14 +82,18 @@ export function useMenuDirectory(
       ? String(routeScope.value.kitchenSlug || '').trim()
       : ''
   )
+  const service = computed(() => toValue(options.service))
   const pageSize = normalizePageSize(options.pageSize)
   const baseEndpoint = computed(() => {
     const query = new URLSearchParams({ limit: String(pageSize) })
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    if (options.service) query.set('service', options.service)
+    if (service.value) query.set('service', service.value)
 
     return `/api/menus?${query.toString()}`
   })
+  // Reactive service changes refresh this owner through baseEndpoint; replacing
+  // its AsyncData key as well races the old live connection during disposal.
+  const initialService = service.value
   const key = computed(() =>
     [
       'menu-collection',
@@ -97,14 +101,18 @@ export function useMenuDirectory(
       `scope=${routeScope.value.kind}`,
       `kitchen=${encodeURIComponent(kitchenSlug.value)}`,
       `limit=${pageSize}`,
-      `service=${options.service || 'browse'}`,
+      `service=${initialService || 'browse'}`,
     ].join('|')
   )
   const pageCount = ref(1)
+  const loadingMore = ref(false)
+  const loadMoreError = ref<unknown>(null)
   watch(
     baseEndpoint,
     () => {
       pageCount.value = 1
+      loadingMore.value = false
+      loadMoreError.value = null
     },
     { flush: 'sync' }
   )
@@ -118,8 +126,6 @@ export function useMenuDirectory(
       ),
     { watch: [baseEndpoint] }
   )
-  const loadingMore = ref(false)
-  const loadMoreError = ref<unknown>(null)
   const ready = state.then(() => undefined)
   const collection = computed<MenuDirectoryEntry[]>(
     () => state.data.value?.items ?? []
@@ -194,18 +200,20 @@ export function useMenuDirectory(
 
   async function loadMore() {
     if (!hasMore.value || loadingMore.value) return false
+    const requestEndpoint = baseEndpoint.value
     loadingMore.value = true
     loadMoreError.value = null
     pageCount.value++
     try {
       await state.refresh()
+      if (requestEndpoint !== baseEndpoint.value) return false
       if (state.error.value) throw state.error.value
       return true
     } catch (error) {
-      loadMoreError.value = error
+      if (requestEndpoint === baseEndpoint.value) loadMoreError.value = error
       return false
     } finally {
-      loadingMore.value = false
+      if (requestEndpoint === baseEndpoint.value) loadingMore.value = false
     }
   }
 

@@ -177,6 +177,7 @@ export async function readMenuDirectoryPage(
   if (
     input.service !== undefined &&
     input.service !== '' &&
+    input.service !== 'online' &&
     input.service !== 'collection' &&
     input.service !== 'delivery' &&
     input.service !== 'table' &&
@@ -200,14 +201,17 @@ export async function readMenuDirectoryPage(
       ...page.items.filter(
         (menu) =>
           !input.service ||
-          menuServiceOfferings(
+          (input.service === 'online'
+            ? menuServiceOfferings(menu, 'collection').length > 0 ||
+              menuServiceOfferings(menu, 'delivery').length > 0
+            : menuServiceOfferings(
             menu,
             input.service as
               | 'collection'
               | 'delivery'
               | 'table'
               | 'room_service'
-          ).length > 0
+          ).length > 0)
       )
     )
     cursor = page.nextCursor

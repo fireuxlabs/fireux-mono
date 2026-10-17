@@ -2,9 +2,14 @@
   <UPage>
     <UPageBody class="space-y-6">
       <MenuCollectionHeader />
-      <MenuCollectionResults :menus="menus" />
+      <MoleculesStateCard v-if="pending && !loadingMore" surface="collection" title="Loading menus" loading />
+      <MoleculesStateCard v-else-if="error" surface="collection" title="Menus unavailable" description="Menus could not be loaded. Please try again." state="error">
+        <template #actions><UButton label="Try again" @click="refresh()" /></template>
+      </MoleculesStateCard>
+      <MenuCollectionResults v-show="(!pending || loadingMore) && !error" :menus="menus" @service-change="service = $event" />
+      <UAlert v-if="loadMoreError && !error" title="More menus could not be loaded" description="Try loading more again." color="error" />
       <CollectionPagination
-        :has-more="hasMore"
+        :has-more="hasMore && !error"
         :loading="loadingMore"
         @load-more="loadMore"
       />
@@ -22,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useMenuDirectory } from '../../menu/composables/useMenuDirectory'
@@ -43,12 +49,14 @@ definePageMeta({
   },
 })
 const { appName } = useFireUXConfig()
+const service = ref<'online' | 'collection' | 'delivery'>('online')
 const {
+  pending, error, refresh, loadMoreError,
   collection: menus,
   hasMore,
   loadingMore,
   loadMore,
-} = useMenuDirectory()
+} = useMenuDirectory({ service })
 useSeo({
   title: `${appName} | Menus`,
   description: 'Browse live kitchen menus.',

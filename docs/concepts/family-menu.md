@@ -496,3 +496,14 @@ Pre-order, Table service, QR table ordering and Kiosk options directly. It does
 not rename Table service as POS or split this mixed set into misleading Channels
 and Services groups. Existing Offering setup dialogs retain command authority,
 shared schedule semantics and independent table-channel switches.
+
+The public portal requests the server directory’s combined `online` service
+filter (Collection or Delivery), or the selected individual service. The existing
+raw-page scanner fills eligible pages before returning their cursor, so unrelated
+menus cannot hide later service matches. The route owns loading, failure/retry
+and later-page failure feedback; Results retains local search/selection while
+hidden during refresh and distinguishes a settled empty service from no search
+matches. Service changes reset pagination and refresh the same live reader owner.
+Verify `menu-service-view.test.mjs`, `menu-portal-states.test.mjs` and
+`menu-live.test.mjs`. This remains Menu pagination; venue grouping combines only
+loaded eligible menus, not an independently stored venue catalogue.

@@ -20,7 +20,7 @@
         :color="service === choice.value ? 'primary' : 'neutral'"
         :variant="service === choice.value ? 'solid' : 'soft'"
         :aria-pressed="service === choice.value"
-        @click="service = choice.value"
+        @click="service = choice.value; emit('service-change', choice.value || 'online')"
       >{{ choice.label }}</UButton>
     </nav>
     <div v-if="visibleItems.length" class="menu-discovery-grid">
@@ -42,7 +42,13 @@
         </NuxtLink>
       </article>
     </div>
-    <UAlert v-else title="No matching menus" description="Try another search or service." color="neutral" variant="soft" />
+    <UAlert
+      v-else
+      :title="query ? 'No matching menus' : 'No menus available for this service'"
+      :description="query ? 'Try another search.' : 'Try another service or check back later.'"
+      color="neutral"
+      variant="soft"
+    />
   </section>
 </template>
 <script setup lang="ts">
@@ -52,6 +58,7 @@ import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
 import { directoryMenuRouteScope, rootMenuRouteScope, menuRoutePath, menuRouteIndexPath } from '../../utils/menu-route'
 
 const props = defineProps<{ menus: MenuDirectoryEntry[] }>()
+const emit = defineEmits<{ (event: 'service-change', service: 'online' | 'collection' | 'delivery'): void }>()
 const service = ref<'' | 'collection' | 'delivery'>('')
 const choices = [
   { label: 'Collection & delivery', value: '' as const },

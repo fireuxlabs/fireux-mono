@@ -12,7 +12,7 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     { id: 'paused', name: 'Paused', source: { kitchen_slug: 'elsewhere' }, offering_options: [{type:'collection',paused:true}] },
   ]
   const script = source.split('<script setup lang="ts">')[1].split('</script>')[0].replace(/^import.*\n/gm, '')
-  const deps = { computed, ref, defineProps: () => ({menus:rows}), useCollectionSearch: ({items}) => ({query:ref(''),visibleItems:items,visibleCount:computed(()=>items.value.length)}), directoryMenuRouteScope: kitchenSlug=>({kind:'directory',kitchenSlug}), rootMenuRouteScope:()=>({kind:'root'}), menuRouteIndexPath:(scope,service)=>`/kitchens/${scope.kitchenSlug}/menu.${service}`, menuRoutePath:({scope,menuId})=>`/kitchens/${scope.kitchenSlug}/menus/${menuId}` }
+  const deps = { computed, ref, defineEmits: () => () => {}, defineProps: () => ({menus:rows}), useCollectionSearch: ({items}) => ({query:ref(''),visibleItems:items,visibleCount:computed(()=>items.value.length)}), directoryMenuRouteScope: kitchenSlug=>({kind:'directory',kitchenSlug}), rootMenuRouteScope:()=>({kind:'root'}), menuRouteIndexPath:(scope,service)=>`/kitchens/${scope.kitchenSlug}/menu.${service}`, menuRoutePath:({scope,menuId})=>`/kitchens/${scope.kitchenSlug}/menus/${menuId}` }
   const api = compileFunction(`${stripTypeScriptTypes(script)}; return {service,visibleItems,destination,servingTimes,groups}`, Object.keys(deps))(...Object.values(deps))
   assert.equal(api.visibleItems.value.length,1)
   assert.equal(api.groups.value.length,1)

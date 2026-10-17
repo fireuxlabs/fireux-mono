@@ -27,15 +27,19 @@ test('Menu directory uses the shared live projection and replaces unpublished re
   let published = true
   const menu = { id: 'first', status: 'published' }
   const later = { id: 'later', status: 'published' }
-  const fetch = async (_url, options) =>
-    options?.query?.cursor
+  const fetch = async (_url, options) => {
+    endpoint = _url
+    return options?.query?.cursor
       ? { scope: { kind: 'root' }, items: [later], nextCursor: null }
       : {
           scope: { kind: 'root' },
           items: published ? [menu] : [],
           nextCursor: 'second',
         }
+  }
   let state
+  let endpoint
+  let directoryKey
   const dependencies = {
     computed,
     ref,
@@ -43,6 +47,7 @@ test('Menu directory uses the shared live projection and replaces unpublished re
     toValue,
     readLivePages,
     useLiveAsyncData: (_key, handler) => {
+      directoryKey = _key
       state = {
         data: ref({
           scope: { kind: 'root' },
@@ -72,12 +77,21 @@ test('Menu directory uses the shared live projection and replaces unpublished re
     Object.keys(dependencies)
   )(...Object.values(dependencies))
   const scope = effectScope()
-  const directory = scope.run(() => useDirectory())
+  const service = ref('online')
+  const directory = scope.run(() => useDirectory({service}))
   await directory.loadMore()
   assert.deepEqual(
     directory.collection.value.map((item) => item.id),
     ['first', 'later']
   )
+  assert.match(endpoint,/service=online/)
+  const previousKey = directoryKey.value
+  service.value='delivery'
+  assert.equal(directoryKey.value,previousKey, 'Service switch refreshes the existing reader instead of replacing its live owner')
+  await state.refresh()
+  assert.match(endpoint,/service=delivery/)
+  assert.deepEqual(directory.collection.value.map(item=>item.id),['first'])
+  await directory.loadMore()
   published = false
   // The shared transport invokes this read on a Firestore event (proved in Core's live-client test).
   await state.refresh()
