@@ -27,6 +27,7 @@ export namespace KitchenCard {
     subtitle: string
 
     // Status/label chips
+    hasPublishedMenu?: boolean
     serviceLabels?: string[]
     badges: string[]
 
@@ -65,6 +66,7 @@ export namespace KitchenCard {
 }
 
 export type KitchenSurface = {
+  has_published_menu?: boolean
   service_labels?: string[]
   status?: Kitchen['identity']['status']
   // View surface only: Place-like fields are a resolved read projection of the

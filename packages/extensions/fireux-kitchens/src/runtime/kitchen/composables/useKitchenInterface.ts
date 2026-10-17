@@ -147,6 +147,7 @@ export function useKitchenInterface() {
 
       name,
       serviceLabels: kitchen.service_labels || [],
+      hasPublishedMenu: kitchen.has_published_menu === true,
       badges,
 
       shortName,

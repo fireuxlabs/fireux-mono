@@ -485,8 +485,11 @@ Kitchen directory cards list a public label-only service summary from enabled
 Kitchen offerings with attached menus. Staff table service and QR table ordering
 are distinct; both Workspace and directory use `tableChannelEnabled`, including
 its established default when channel configuration is absent. The existing
-Kitchen directory read owns this projection, not a reader per card. Empty settings
-show “Service details not published.” Labels do not claim current opening hours
+Kitchen directory read owns this projection, not a reader per card. The Browse menus badge is derived from a public published Menu by the Menu-owned
+`server/index/browse-availability.ts` reader, independently of service settings.
+Private-link, protected-group, draft and archived Menus do not grant the badge.
+The read scans past private published records in bounded pages; empty service
+settings add no filler message. Labels do not claim current opening hours
 or kiosk availability. Verify `kitchen-service-summary.test.mjs`.
 
 Menu and service terms are defined in [the service glossary](menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.

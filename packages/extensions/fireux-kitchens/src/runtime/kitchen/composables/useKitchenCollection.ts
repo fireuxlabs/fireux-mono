@@ -4,7 +4,7 @@ import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model.ts'
 
-export type KitchenCollectionRecord = Kitchen & { place: Place; service_labels?: string[] }
+export type KitchenCollectionRecord = Kitchen & { place: Place; service_labels?: string[]; has_published_menu?: boolean }
 
 export type UseKitchenCollectionReturn = {
   collection: ComputedRef<KitchenCollectionRecord[]>

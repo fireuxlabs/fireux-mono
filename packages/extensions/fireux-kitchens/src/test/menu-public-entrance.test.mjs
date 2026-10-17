@@ -24,6 +24,8 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   const cards = ['la-tapberne', 'luna-piccante', 'baeren-ringgenberg'].map(
     (slug) => ({
       name: slug,
+      hasPublishedMenu: slug !== 'luna-piccante',
+      serviceLabels: ['Browse menus'],
       to: '/kitchens/' + slug,
       badges: [],
       categoryLabels: [],
@@ -43,13 +45,16 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   })
   app.component('UPageCard', {
     props: ['to'],
-    setup: (props) => () => h('a', { href: props.to }, 'Menu'),
+    setup: (props, ctx) => () => h('a', { href: props.to }, ctx.slots.footer?.()),
   })
+  app.component('UBadge',{setup:(_,ctx)=>()=>h('span',ctx.slots.default?.())})
   app.component('DiagnosticsDebugPanel', { render: () => null })
   const html = await renderToString(app)
   for (const card of cards)
     assert.ok(html.includes(`href="${card.to}/menu"`), html)
   assert.ok(!html.includes('/menus"'), html)
+  assert.equal((html.match(/Browse menus/g) || []).length, 2)
+  assert.ok(!html.includes('Service details not published'), html)
 })
 async function currency(service, place) {
   const spine = readFileSync(

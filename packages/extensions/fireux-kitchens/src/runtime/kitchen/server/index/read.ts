@@ -1,3 +1,4 @@
+import { hasPublishedPublicMenu } from '../../../menu/server/index/browse-availability'
 import { readKitchenOfferings } from '../offerings/read'
 import { kitchenServiceSummary } from '../../utils/service-summary'
 import { FieldPath } from 'firebase-admin/firestore'
@@ -23,7 +24,7 @@ export type ReadKitchensInput = {
 /** Server-resolved Kitchens. Every Kitchen includes its canonical same-ID Place. */
 export async function readKitchens(
   input: ReadKitchensInput = {}
-): Promise<Array<Kitchen & { place: Place; service_labels?: string[] }>> {
+): Promise<Array<Kitchen & { place: Place; service_labels?: string[]; has_published_menu?: boolean }>> {
   const requestedPlaceId = text(input.placeId)
   if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
     throw createError({
@@ -69,8 +70,15 @@ export async function readKitchens(
     .filter(
       (kitchen) => input.includeHidden === true || kitchen.identity.visibility
     )
-  return Promise.all(kitchens.map(async kitchen => ({
-    ...kitchen,
-    service_labels: kitchenServiceSummary(await readKitchenOfferings(db, kitchen.id)),
-  })))
+  return Promise.all(kitchens.map(async kitchen => {
+    const [offerings, hasPublishedMenu] = await Promise.all([
+      readKitchenOfferings(db, kitchen.id),
+      hasPublishedPublicMenu(db, kitchen.id),
+    ])
+    return {
+      ...kitchen,
+      service_labels: kitchenServiceSummary(offerings),
+      has_published_menu: kitchen.identity.visibility && hasPublishedMenu,
+    }
+  }))
 }

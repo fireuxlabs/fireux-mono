@@ -68,10 +68,17 @@
           >
             {{ cell.description }}
           </p>
-          <ul v-if="cell.services.length" class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted" :aria-label="`Services at ${cell.title}`">
-            <li v-for="service in cell.services" :key="service">{{ service }}</li>
-          </ul>
-          <p v-else class="mt-4 text-sm text-muted">Service details not published.</p>
+          <div class="mt-4 flex flex-wrap gap-2" :aria-label="`Services at ${cell.title}`">
+            <UBadge v-if="cell.hasPublishedMenu" color="neutral" variant="subtle">Browse menus</UBadge>
+            <UBadge
+              v-for="service in cell.services"
+              :key="service"
+              color="neutral"
+              variant="subtle"
+            >
+              {{ service }}
+            </UBadge>
+          </div>
         </template>
       </UPageCard>
     </li>
@@ -93,12 +100,13 @@ import type { KitchenCard } from '../../models/kitchen-interface.model'
 const props = defineProps<{ cards: KitchenCard.Card[] }>()
 const cells = computed<
   Array<
-    CollectionCellData & { logo: string; logoText: string; backdrop?: string; services: string[] }
+    CollectionCellData & { logo: string; logoText: string; backdrop?: string; services: string[]; hasPublishedMenu: boolean }
   >
 >(() =>
   props.cards.map((card) => ({
     title: card.name,
-    services: card.serviceLabels || [],
+    hasPublishedMenu: card.hasPublishedMenu === true,
+    services: (card.serviceLabels || []).filter(label => label !== 'Browse menus'),
     description: card.tagline,
     image: card.discoveryImageUrl,
     logo: card.logoImageUrl,
