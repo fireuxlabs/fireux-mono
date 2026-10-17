@@ -195,9 +195,12 @@ membership. Offer preferences do not grant Store authority. There is no automati
 welcome prompt, completion command, or profile-reset endpoint.
 
 Public browsing uses the existing App navigation configuration in
-`app/app.config.ts`. `/kitchens` presents venues; `/menus` presents each published
-Menu directly, with secondary venue names and Collection/Delivery filters.
-Menu discovery reuses its directory response without an additional Kitchen read.
+`app/app.config.ts`. `/kitchens` presents venues; `/menus` groups eligible public
+published Collection/Delivery Menus by venue. Food search matches active placed
+Dish names or Menu/venue text before pagination, shows matching names and retains
+the selected service entrance. Menu discovery reuses its directory response
+without an additional client Kitchen read. See the food-search section in
+`docs/concepts/family-menu.md` for read ownership and regression checks.
 The public Kitchen reader uses published records for every role and does not
 inject hidden Kitchens for administrators. Kitchen/Place presentation and
 Firebase-hosted media retain their domain owners.

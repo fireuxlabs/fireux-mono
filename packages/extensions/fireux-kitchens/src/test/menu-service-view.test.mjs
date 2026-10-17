@@ -76,6 +76,10 @@ function load(pages, calls) {
       'menuServiceOfferings',
       'pageSize',
       'createError',
+      'text',
+      'readMatchingMenuDishes',
+      'matchesFoodSearch',
+      'getRuntimeFirestore',
     ]
   )(
     async (input) => {
@@ -86,7 +90,11 @@ function load(pages, calls) {
     },
     menuServiceOfferings,
     (value) => value || 24,
-    (value) => new Error(value.statusMessage)
+    (value) => new Error(value.statusMessage),
+    value => String(value || '').trim(),
+    async (_db, menu) => menu.testMatches || [],
+    (text, query) => text.toLowerCase().includes(query.toLowerCase()),
+    () => ({})
   )
 }
 test('service pagination scans past ineligible pages and preserves the next raw cursor', async () => {
@@ -143,6 +151,28 @@ test('service scanner reports a failed later raw page instead of returning a fal
   ],calls)
   await assert.rejects(read({service:'online'}),/Read unavailable/)
   assert.equal(calls.length,2)
+})
+test('food search scans beyond nonmatching eligible menus before pagination and keeps matching names', async()=>{
+  const later=menu('Dinner')
+  later.testMatches=[{id:'margherita',name:'Pizza Margherita'}]
+  const scope={kind:'root'}, calls=[]
+  const read=load([
+    {scope,items:[menu('Breakfast')],nextCursor:'later'},
+    {scope,items:[later],nextCursor:'more'},
+  ],calls)
+  const result=await read({service:'online',search:'margherita',limit:1})
+  assert.equal(result.items.length,1)
+  assert.equal(result.items[0].name,'Dinner')
+  assert.deepEqual(result.items[0].matching_dishes,later.testMatches)
+  assert.equal(result.nextCursor,'more')
+  assert.deepEqual(calls.map(row=>row.cursor),[undefined,'later'])
+})
+test('a dish match on a delivery-only menu cannot leak into Collection search',async()=>{
+  const delivery=menu('Delivery only')
+  delivery.offering_options=delivery.offering_options.filter(option=>option.type==='delivery')
+  delivery.testMatches=[{id:'pizza',name:'Pizza'}]
+  const result=await load([{scope:{kind:'root'},items:[delivery],nextCursor:null}],[])({service:'collection',search:'pizza'})
+  assert.deepEqual(result.items,[])
 })
 test('unknown service does not silently fall back to Browse', async () => {
   const calls = []

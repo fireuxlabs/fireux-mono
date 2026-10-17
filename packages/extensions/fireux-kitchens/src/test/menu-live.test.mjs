@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, watch, effectScope, toValue } from 'vue'
+import { computed, ref, watch, effectScope, toValue, nextTick } from 'vue'
 const source = stripTypeScriptTypes(
   readFileSync(
     new URL('../runtime/menu/composables/useMenuDirectory.ts', import.meta.url),
@@ -23,7 +23,8 @@ const pageSource = stripTypeScriptTypes(
 ).replace(/^export /gm, '')
 const readLivePages = compileFunction(`${pageSource}; return readLivePages`)()
 
-test('Menu directory uses the shared live projection and replaces unpublished records across loaded pages', async () => {
+test('Menu directory uses the shared live projection and replaces unpublished records across loaded pages', async (t) => {
+  t.mock.timers.enable({apis:['setTimeout']})
   let published = true
   const menu = { id: 'first', status: 'published' }
   const later = { id: 'later', status: 'published' }
@@ -78,7 +79,8 @@ test('Menu directory uses the shared live projection and replaces unpublished re
   )(...Object.values(dependencies))
   const scope = effectScope()
   const service = ref('online')
-  const directory = scope.run(() => useDirectory({service}))
+  const search = ref('')
+  const directory = scope.run(() => useDirectory({service,search}))
   await directory.loadMore()
   assert.deepEqual(
     directory.collection.value.map((item) => item.id),
@@ -99,5 +101,11 @@ test('Menu directory uses the shared live projection and replaces unpublished re
     directory.collection.value.map((item) => item.id),
     ['later']
   )
+  search.value='Margherita'
+  await nextTick()
+  t.mock.timers.tick(250)
+  await state.refresh()
+  assert.match(endpoint,/search=Margherita/)
+  assert.deepEqual(directory.collection.value,[], 'Search resets the loaded page count')
   scope.stop()
 })

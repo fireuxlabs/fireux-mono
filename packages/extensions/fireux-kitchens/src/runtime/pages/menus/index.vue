@@ -6,7 +6,7 @@
       <MoleculesStateCard v-else-if="error" surface="collection" title="Menus unavailable" description="Menus could not be loaded. Please try again." state="error">
         <template #actions><UButton label="Try again" @click="refresh()" /></template>
       </MoleculesStateCard>
-      <MenuCollectionResults v-show="(!pending || loadingMore) && !error" :menus="menus" @service-change="service = $event" />
+      <MenuCollectionResults :hide-results="(pending && !loadingMore) || Boolean(error)" :menus="menus" @service-change="service = $event" @search-change="search = $event" />
       <UAlert v-if="loadMoreError && !error" title="More menus could not be loaded" description="Try loading more again." color="error" />
       <CollectionPagination
         :has-more="hasMore && !error"
@@ -49,6 +49,7 @@ definePageMeta({
   },
 })
 const { appName } = useFireUXConfig()
+const search = ref('')
 const service = ref<'online' | 'collection' | 'delivery'>('online')
 const {
   pending, error, refresh, loadMoreError,
@@ -56,7 +57,7 @@ const {
   hasMore,
   loadingMore,
   loadMore,
-} = useMenuDirectory({ service })
+} = useMenuDirectory({ service, search })
 useSeo({
   title: `${appName} | Menus`,
   description: 'Browse live kitchen menus.',

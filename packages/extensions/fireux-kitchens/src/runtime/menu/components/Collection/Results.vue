@@ -3,13 +3,14 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
       <UInput
         v-model="query"
-        placeholder="Search menus"
-        aria-label="Search menus"
+        placeholder="Search food or venues"
+        aria-label="Search food or venues"
         icon="i-lucide-search"
         size="xl"
         class="directory-search"
+        maxlength="120"
       />
-      <span class="text-sm text-muted" aria-live="polite">
+      <span v-if="!hideResults" class="text-sm text-muted" aria-live="polite">
         {{ groups.length }} {{ groups.length === 1 ? 'result' : 'results' }}
       </span>
     </div>
@@ -23,6 +24,7 @@
         @click="service = choice.value; emit('service-change', choice.value || 'online')"
       >{{ choice.label }}</UButton>
     </nav>
+    <template v-if="!hideResults">
     <div v-if="visibleItems.length" class="menu-discovery-grid">
       <article v-for="group in groups" :key="group.id" class="menu-discovery-entry">
         <p v-if="group.venue" class="text-sm text-muted">{{ group.venue }}</p>
@@ -31,6 +33,9 @@
           <UIcon name="i-lucide-arrow-up-right" class="mt-1 size-5 shrink-0" aria-hidden="true" />
         </NuxtLink>
         <p v-for="description in group.descriptions" :key="description" class="text-sm leading-relaxed text-muted">{{ description }}</p>
+        <ul v-if="group.matchingDishes.length" class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-highlighted" aria-label="Matching food">
+          <li v-for="dish in group.matchingDishes" :key="dish.id">{{ dish.name }}</li>
+        </ul>
         <KitchenDetailOfferingTimes :offerings="group.offerings" compact />
         <div class="flex flex-wrap gap-2">
           <UButton v-for="action in group.actions" :key="action.to" :to="action.to" color="primary" variant="soft">
@@ -44,21 +49,21 @@
     </div>
     <UAlert
       v-else
-      :title="query ? 'No matching menus' : 'No menus available for this service'"
-      :description="query ? 'Try another search.' : 'Try another service or check back later.'"
+      :title="query.trim() ? 'No matching menus' : 'No menus available for this service'"
+      :description="query.trim() ? 'Try another search.' : 'Try another service or check back later.'"
       color="neutral"
       variant="soft"
     />
+    </template>
   </section>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { computed, ref, watch } from 'vue'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
-import { directoryMenuRouteScope, rootMenuRouteScope, menuRoutePath, menuRouteIndexPath } from '../../utils/menu-route'
+import { directoryMenuRouteScope, menuRouteIndexPath } from '../../utils/menu-route'
 
-const props = defineProps<{ menus: MenuDirectoryEntry[] }>()
-const emit = defineEmits<{ (event: 'service-change', service: 'online' | 'collection' | 'delivery'): void }>()
+const props = defineProps<{ menus: MenuDirectoryEntry[]; hideResults?: boolean }>()
+const emit = defineEmits<{ (event: 'service-change', service: 'online' | 'collection' | 'delivery'): void; (event: 'search-change', query: string): void }>()
 const service = ref<'' | 'collection' | 'delivery'>('')
 const choices = [
   { label: 'Collection & delivery', value: '' as const },
@@ -71,15 +76,9 @@ const menus = computed(() => props.menus.filter(menu =>
     (!service.value || option.type === service.value) && !option.paused
   )
 ))
-const { query, visibleItems } = useCollectionSearch({
-  items: menus,
-  makeCard: (menu: MenuDirectoryEntry) => ({
-    title: menu.name,
-    description: menu.description,
-    venue: menu.source?.kitchen_name || menu.kitchen?.name,
-  }),
-  initialVariant: 'cell',
-})
+const query = ref('')
+watch(query, value => emit('search-change', value))
+const visibleItems = menus
 const servingTimes = (menu: MenuDirectoryEntry) => (menu.offerings || []).filter(offering =>
   !offering.paused && menu.offering_options?.some(option =>
     option.kitchen_offering_id === offering.id && !option.paused &&
@@ -87,14 +86,6 @@ const servingTimes = (menu: MenuDirectoryEntry) => (menu.offerings || []).filter
     (!service.value || option.type === service.value)
   )
 )
-const destination = (menu: MenuDirectoryEntry) => {
-  const scope = menu.source?.kitchen_slug
-    ? directoryMenuRouteScope(menu.source.kitchen_slug)
-    : rootMenuRouteScope()
-  return service.value && scope.kind === 'directory'
-    ? menuRouteIndexPath(scope, service.value)
-    : menuRoutePath({ scope, menuId: menu.slug || menu.source?.menu_slug || menu.id })
-}
 
 const groups = computed(() => {
   const grouped = new Map<string, MenuDirectoryEntry[]>()
@@ -106,18 +97,26 @@ const groups = computed(() => {
   }
   return [...grouped].map(([id, entries]) => {
     const first = entries[0]!
-    const slug = first.source?.kitchen_slug
+    const scope = directoryMenuRouteScope(first.source!.kitchen_slug!)
+    const actions = choices
+      .filter(choice => choice.value &&
+        (!service.value || choice.value === service.value) &&
+        entries.some(menu => menu.offering_options?.some(option =>
+          option.type === choice.value && !option.paused)))
+      .map(choice => ({
+        label: choice.label,
+        to: menuRouteIndexPath(scope, choice.value || undefined),
+      }))
     return {
       id,
       menus: entries,
+      matchingDishes: [...new Map(entries.flatMap(menu => menu.matching_dishes || []).map(dish => [dish.id, dish])).values()],
       venue: first.source?.kitchen_name || first.kitchen?.name,
       descriptions: [...new Set(entries.map(menu => menu.description).filter(Boolean))],
       offerings: [...new Map(entries.flatMap(servingTimes).map(offering => [offering.id, offering])).values()],
-      actions: choices.filter(choice => choice.value && (!service.value || choice.value === service.value) && entries.some(menu => menu.offering_options?.some(option => option.type === choice.value && !option.paused))).map(choice => ({ label: choice.label, to: menuRouteIndexPath(directoryMenuRouteScope(slug!), choice.value || undefined) })),
-      browseTo: menuRouteIndexPath(directoryMenuRouteScope(slug!)),
-      to: slug
-        ? menuRouteIndexPath(directoryMenuRouteScope(slug), service.value || (entries.some(menu => menu.offering_options?.some(option => option.type === 'collection' && !option.paused)) ? 'collection' : 'delivery'))
-        : destination(first),
+      actions,
+      browseTo: menuRouteIndexPath(scope),
+      to: actions[0]?.to || menuRouteIndexPath(scope),
     }
   })
 })

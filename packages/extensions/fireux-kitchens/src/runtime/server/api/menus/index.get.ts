@@ -7,6 +7,7 @@ export default defineLiveReadHandler((event) => {
   return readMenuDirectoryPage({
     kitchenSlug: query.kitchenSlug,
     service: query.service,
+    search: query.search,
     cursor: query.cursor,
     limit: query.limit,
   })

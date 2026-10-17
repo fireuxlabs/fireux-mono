@@ -1,3 +1,4 @@
+import { readMatchingMenuDishes, matchesFoodSearch } from './food-search'
 import { MenuStorage } from '../../models/menu-storage.model'
 import { menuServiceOfferings } from '../../utils/service-menu'
 import { FieldPath } from 'firebase-admin/firestore'
@@ -18,6 +19,7 @@ import { readScopedMenuDirectoryContext } from './context'
 import { projectMenuDirectoryEntry } from './projection'
 
 export type ReadMenuDirectoryPageInput = {
+  search?: unknown
   service?: unknown
   kitchenSlug?: unknown
   cursor?: unknown
@@ -187,6 +189,7 @@ export async function readMenuDirectoryPage(
       statusCode: 400,
       statusMessage: 'Unknown Menu service.',
     })
+  const search = text(input.search).slice(0, 120)
   const limit = pageSize(input.limit)
   let cursor = input.cursor
   let page: MenuDirectoryPage
@@ -197,8 +200,7 @@ export async function readMenuDirectoryPage(
       cursor,
       limit: Math.max(1, limit - items.length),
     })
-    items.push(
-      ...page.items.filter(
+    const eligible = page.items.filter(
         (menu) =>
           !input.service ||
           (input.service === 'online'
@@ -213,7 +215,13 @@ export async function readMenuDirectoryPage(
               | 'room_service'
           ).length > 0)
       )
-    )
+    for (const menu of eligible) {
+      if (!search) { items.push(menu); continue }
+      const dishes = await readMatchingMenuDishes(getRuntimeFirestore(), menu, search)
+      const metadata = [menu.name, menu.description, menu.source?.kitchen_name, menu.kitchen?.name].filter(Boolean).join(' ')
+      if (dishes.length || matchesFoodSearch(metadata, search))
+        items.push({ ...menu, matching_dishes: dishes })
+    }
     cursor = page.nextCursor
   } while (cursor && items.length < limit)
   return { scope: page.scope, items, nextCursor: page.nextCursor }

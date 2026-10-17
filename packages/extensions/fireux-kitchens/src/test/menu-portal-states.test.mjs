@@ -17,7 +17,7 @@ async function page(changes={}) {
   app.component('MenuCollectionHeader',{render:()=>null})
   app.component('DiagnosticsDebugPanel',{render:()=>null})
   app.component('CollectionPagination',{render:()=>null})
-  app.component('MenuCollectionResults',{setup:(_,ctx)=>()=>h('section',{...ctx.attrs,'data-results':''},'Loaded menus')})
+  app.component('MenuCollectionResults',{props:['hideResults'],setup:(props,ctx)=>()=>h('section',{...ctx.attrs,style:props.hideResults ? {display:'none'} : undefined,'data-results':''},'Loaded menus')})
   for(const name of ['MoleculesStateCard','UAlert']) app.component(name,{props:['title','description'],setup:(props,ctx)=>()=>h('div',[props.title,props.description,ctx.slots.actions?.()])})
   let retry
   app.component('UButton',{props:['label'],setup:(props,ctx)=>{retry=ctx.attrs.onClick;return()=>h('button',props.label)}})
@@ -54,7 +54,7 @@ test('result template distinguishes a genuinely empty service from an unmatched 
   const resultSource=readFileSync(new URL('../runtime/menu/components/Collection/Results.vue',import.meta.url),'utf8')
   const template=resultSource.slice(10,resultSource.lastIndexOf('</template>'))
   async function empty(query) {
-    const app=createSSRApp({setup:()=>({query,groups:[],visibleItems:[],choices:[],service:''}),render:compile(template)})
+    const app=createSSRApp({setup:()=>({query,groups:[],visibleItems:[],choices:[],service:'',hideResults:false}),render:compile(template)})
     app.component('UInput',{render:()=>null})
     app.component('UAlert',{props:['title','description'],setup:props=>()=>h('div',props.title+' '+props.description)})
     return renderToString(app)

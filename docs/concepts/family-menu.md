@@ -510,3 +510,21 @@ matches. Service changes reset pagination and refresh the same live reader owner
 Verify `menu-service-view.test.mjs`, `menu-portal-states.test.mjs` and
 `menu-live.test.mjs`. This remains Menu pagination; venue grouping combines only
 loaded eligible menus, not an independently stored venue catalogue.
+
+## Food search in the portal
+
+The directory accepts a bounded `search` string alongside its service filter.
+`menu/server/index/food-search.ts` reads active section placements of eligible
+public published Menus and joins their current non-archived Dishes. Case and
+accent-insensitive name matches are returned as `matching_dishes`, containing
+only IDs and names. Menu/venue metadata remains searchable; document Menus have
+no inferred dish contents. Prices, options and Orders are not part of search.
+The existing raw-page scanner applies search before filling the result page.
+
+`useMenuDirectory` debounces search, resets pagination and refreshes its existing
+live owner. Portal controls remain visible during reads; Results combines matching
+dishes once per venue and keeps the selected Collection/Delivery destination.
+This is a read-time search over current records, not a second catalogue or search
+index. Query cost grows with scanned eligible Menu content. Verify
+`menu-food-search.test.mjs`, `menu-canonical-discovery.test.mjs`,
+`menu-service-view.test.mjs` and the portal/live-reader checks.

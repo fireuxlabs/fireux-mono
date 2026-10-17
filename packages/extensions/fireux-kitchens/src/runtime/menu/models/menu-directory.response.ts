@@ -27,6 +27,7 @@ export type MenuDirectoryEntry = {
   file_kind?: 'photo' | 'pdf' | 'document'
   name: string
   description?: string
+  matching_dishes?: Array<{ id: string; name: string }>
   status: 'published'
   sort_order?: number
   contexts?: MenuRouteContext[]
