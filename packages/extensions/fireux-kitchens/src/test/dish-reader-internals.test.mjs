@@ -1,3 +1,8 @@
+import {
+  readDishCatalogueQuery,
+  dishCatalogueQuery,
+  dishCatalogueReturn,
+} from '../runtime/kitchen/utils/dish-catalogue-route.ts'
 import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -725,6 +730,9 @@ test('combined catalogue filters food and drinks and opens each in its correct e
       '({ kind, visibleDishes, dishLink, query, clearFilters, category })',
       {
         useRoute: () => ({ query: {} }),
+        useRouter: () => ({ replace: async () => {} }),
+        readDishCatalogueQuery,
+        dishCatalogueQuery,
         useKitchenDishesContext: () => context,
         computed,
         ref,
@@ -770,5 +778,134 @@ test('combined catalogue filters food and drinks and opens each in its correct e
     f.state.dishes.value.find((item) => item.id === 'tea').name,
     'Tea'
   )
+  f.scope.stop()
+})
+
+function catalogueView(f, query = {}) {
+  const { context } = kindContext(f, 'all')
+  const route = reactive({ path: '/workspace/kitchen/food/dishes', query })
+  const destinations = []
+  const view = f.scope.run(() =>
+    load(
+      'kitchen/components/Workspace/Dishes/Collection/Index.vue',
+      '({ kind, query, category, filter, view, page, pageDishes, dishLink })',
+      {
+        useRoute: () => route,
+        useRouter: () => ({
+          replace: async (destination) => {
+            destinations.push(destination)
+            route.query = destination.query
+          },
+        }),
+        useKitchenDishesContext: () => context,
+        computed,
+        ref,
+        watch,
+        dishCategories,
+        dishCategoryLabel,
+        readDishCatalogueQuery,
+        dishCatalogueQuery,
+        buildMissingDishImageSuggestions: () => [],
+        buildMissingDrinkImageSuggestions: () => [],
+      }
+    )
+  )
+  return { view, route, destinations }
+}
+const catalogueRows = () =>
+  Array.from({ length: 100 }, (_, n) => ({
+    id: `drink-${n}`,
+    name: `Cola ${String(n).padStart(3, '0')}`,
+    item_kind: 'drink',
+    price: 4,
+  }))
+
+test('Food & drinks item round trip restores kind, search, filters, layout and page', async () => {
+  const f = workspaceFixture()
+  f.settle(catalogueRows())
+  const { view, route } = catalogueView(f)
+  view.kind.value = 'drink'
+  view.query.value = 'Cola'
+  view.filter.value = 'image'
+  view.view.value = 'grid'
+  await nextTick()
+  view.page.value = 2
+  await nextTick()
+  assert.equal(route.query.page, '2')
+  assert.equal(route.query.kind, 'drink')
+  const link = new URL(
+    view.dishLink(view.pageDishes.value[0].id, 'drink'),
+    'http://localhost'
+  )
+  const returnTo = dishCatalogueReturn(Object.fromEntries(link.searchParams))
+  assert.equal(returnTo.path, '/workspace/kitchen/food/dishes')
+  assert.deepEqual(returnTo.query, route.query)
+  const restored = catalogueView(f, returnTo.query).view
+  assert.equal(restored.kind.value, 'drink')
+  assert.equal(restored.query.value, 'Cola')
+  assert.equal(restored.filter.value, 'image')
+  assert.equal(restored.view.value, 'grid')
+  assert.equal(restored.page.value, 2)
+  assert.equal(restored.pageDishes.value[0].id, view.pageDishes.value[0].id)
+  assert.equal(f.state.dishes.value[0].price, 4)
+  f.scope.stop()
+})
+
+test('restored catalogue page survives loading, clamps after results settle, and resets when filters change', async () => {
+  const f = workspaceFixture()
+  f.raw.pending.value = true
+  const { view } = catalogueView(f, { kind: 'drink', page: '3' })
+  assert.equal(view.page.value, 3)
+  await nextTick()
+  assert.equal(view.page.value, 3)
+  f.settle(catalogueRows())
+  await nextTick()
+  assert.equal(view.page.value, 3)
+  f.settle(catalogueRows().slice(0, 45))
+  await nextTick()
+  assert.equal(view.page.value, 2)
+  view.query.value = '001'
+  await nextTick()
+  assert.equal(view.page.value, 1)
+  f.scope.stop()
+})
+
+test('catalogue return keeps food categories and accepts only catalogue state', () => {
+  assert.deepEqual(
+    dishCatalogueReturn({
+      kind: 'food',
+      category: 'mains',
+      search: 'pizza',
+      filter: 'description',
+      layout: 'list',
+      page: '2',
+      view: 'pricing',
+      menu: 'other',
+    }).query,
+    {
+      kind: 'food',
+      category: 'mains',
+      search: 'pizza',
+      filter: 'description',
+      layout: 'list',
+      page: '2',
+    }
+  )
+  for (const page of ['0', '-1', 'NaN', '1.5', ['2']])
+    assert.equal(readDishCatalogueQuery({ page }).page, 1)
+})
+
+test('first Kitchen resolution does not reset a restored catalogue page', async () => {
+  const f = workspaceFixture()
+  f.workspace.id.value = ''
+  f.workspace.outcome.value = 'pending'
+  const { view } = catalogueView(f, { page: '2' })
+  await nextTick()
+  assert.equal(view.page.value, 2)
+  f.workspace.id.value = 'mine'
+  f.workspace.outcome.value = 'ready'
+  f.settle(catalogueRows())
+  await nextTick()
+  assert.equal(view.page.value, 2)
   f.scope.stop()
 })

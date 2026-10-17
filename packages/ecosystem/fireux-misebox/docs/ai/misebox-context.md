@@ -339,7 +339,11 @@ directory are contextual routes, hidden from the sidebar. Food & drinks, Menus
 and Services have direct sidebar entrances; Promotions is a child of Menus.
 The combined catalogue reads the existing live Dish collection once, filters
 All/Food/Drinks locally, and opens each kind's existing create/detail editor.
-Kind-specific detail contexts retain their filtering and authority.
+Kind-specific detail contexts retain their filtering and authority. Catalogue
+URLs and editor return links retain kind, search, category, completeness filter,
+layout and page using `kitchen/utils/dish-catalogue-route.ts`. Both editors return
+to the combined catalogue; initial loading preserves the requested page, while
+settled shorter results clamp it. See `dish-reader-internals.test.mjs`.
 Kitchen Ingredients Create links an existing shared catalogue record, and Delete
 removes only that Kitchen association through the direct
 `kitchen/server/ingredients/create.ts` and `delete.ts` owners.

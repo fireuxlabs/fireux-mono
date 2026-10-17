@@ -3,7 +3,7 @@
     <NuxtLink
       :to="catalogueReturn"
       class="text-sm text-muted inline-flex items-center gap-2"
-      ><UIcon name="i-lucide-arrow-left" />{{ catalogue.title }}</NuxtLink
+      ><UIcon name="i-lucide-arrow-left" />Food &amp; drinks</NuxtLink
     >
     <NuxtLink v-if="menuReturn" :to="menuReturn" class="text-sm text-primary"
       >← Back to menu selection</NuxtLink
@@ -109,6 +109,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { dishCatalogueReturn } from '../../../../utils/dish-catalogue-route'
 import { useRoute, navigateTo } from '#imports'
 import { useDishDelete } from '../../../../composables/dish/useDishDelete'
 import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
@@ -152,14 +153,7 @@ async function removeDish() {
   toast.add({ title: `${label} deleted`, icon: 'i-heroicons-check-circle' })
   await navigateTo(destination)
 }
-const catalogueReturn = computed(() => ({
-  path: catalogue.path,
-  query: Object.fromEntries(
-    ['category', 'search', 'filter', 'layout'].flatMap((key) =>
-      typeof route.query[key] === 'string' ? [[key, route.query[key]]] : []
-    )
-  ),
-}))
+const catalogueReturn = computed(() => dishCatalogueReturn(route.query))
 const menuReturn = computed(() =>
   typeof route.query.menu === 'string' &&
   typeof route.query.section === 'string'

@@ -38,8 +38,13 @@ references; document content uses the Menu's `doc` attachment. Both use the same
 creation, publication, audience and QR flow. Daily specials retain their separate
 per-date publication feature.
 
-Kitchen's Food and Drinks catalogues partition the same Dish family by
-`item_kind`; Menu names do not classify Dishes. Named services reference stable
+Kitchen's combined Food & drinks catalogue filters the same Dish family by
+`item_kind`; Menu names do not classify Dishes. Its URL retains kind, search,
+category, completeness filter, layout and page. Food and drink editors return to
+that combined catalogue through `kitchen/utils/dish-catalogue-route.ts`; loading
+does not reset a restored page, and settled results clamp an obsolete page.
+`dish-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
+resolution. Kind-specific editors retain their existing authority. Named services reference stable
 Menu IDs and own eligibility and serving schedules.
 
 ## Shared spine

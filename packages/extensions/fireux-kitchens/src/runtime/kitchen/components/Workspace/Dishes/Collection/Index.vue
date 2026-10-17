@@ -236,7 +236,12 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
+import { useRoute, useRouter } from '#imports'
+import {
+  readDishCatalogueQuery,
+  dishCatalogueQuery,
+  type DishCatalogueState,
+} from '../../../../utils/dish-catalogue-route'
 import {
   dishCategories,
   dishCategoryLabel,
@@ -259,21 +264,19 @@ const {
   catalogue,
 } = useKitchenDishesContext()
 const route = useRoute()
+const router = useRouter()
+const initial = readDishCatalogueQuery(route.query)
 const kindFilters = [
   { value: 'all', label: 'All' },
   { value: 'food', label: 'Food' },
   { value: 'drink', label: 'Drinks' },
 ] as const
-const kind = ref('all')
+const kind = ref<DishCatalogueState['kind']>(initial.kind)
 watch(kind, () => {
   category.value = 'all'
 })
-const query = ref(
-  typeof route.query.search === 'string' ? route.query.search : ''
-)
-const category = ref(
-  typeof route.query.category === 'string' ? route.query.category : 'all'
-)
+const query = ref(initial.search)
+const category = ref(initial.category)
 const organise = ref(false)
 const kindDishes = computed(() =>
   dishes.value.filter(
@@ -304,14 +307,20 @@ const clearFilters = () => {
   filter.value = 'all'
   category.value = 'all'
 }
-const filter = ref(
-  typeof route.query.filter === 'string' ? route.query.filter : 'all'
-)
-const view = ref<'grid' | 'list'>(
-  route.query.layout === 'grid' ? 'grid' : 'list'
+const filter = ref<DishCatalogueState['filter']>(initial.filter)
+const view = ref<DishCatalogueState['layout']>(initial.layout)
+const catalogueQuery = computed(() =>
+  dishCatalogueQuery({
+    kind: kind.value,
+    search: query.value,
+    category: category.value,
+    filter: filter.value,
+    layout: view.value,
+    page: page.value,
+  })
 )
 const dishLink = (id: string, itemKind: string) =>
-  `/workspace/kitchen/food/${itemKind === 'drink' ? 'drinks' : 'dishes'}/${encodeURIComponent(id)}?${new URLSearchParams({ category: category.value, search: query.value, filter: filter.value, layout: view.value })}`
+  `/workspace/kitchen/food/${itemKind === 'drink' ? 'drinks' : 'dishes'}/${encodeURIComponent(id)}?${new URLSearchParams(catalogueQuery.value)}`
 const aiOpen = ref(false)
 const normalize = (value: unknown) =>
   String(value || '')
@@ -319,19 +328,22 @@ const normalize = (value: unknown) =>
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
-const filters = computed(() => [
-  { value: 'all', label: 'All', count: kindDishes.value.length },
-  {
-    value: 'image',
-    label: 'Missing image',
-    count: kindDishes.value.filter((d) => !d.image?.trim()).length,
-  },
-  {
-    value: 'description',
-    label: 'Missing description',
-    count: kindDishes.value.filter((d) => !d.description?.trim()).length,
-  },
-])
+const filters = computed(
+  () =>
+    [
+      { value: 'all', label: 'All', count: kindDishes.value.length },
+      {
+        value: 'image',
+        label: 'Missing image',
+        count: kindDishes.value.filter((d) => !d.image?.trim()).length,
+      },
+      {
+        value: 'description',
+        label: 'Missing description',
+        count: kindDishes.value.filter((d) => !d.description?.trim()).length,
+      },
+    ] as const
+)
 const visibleDishes = computed(() =>
   kindDishes.value
     .filter(
@@ -350,22 +362,40 @@ const visibleDishes = computed(() =>
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
 )
-const page = ref(1)
+const page = ref(initial.page)
 const pageSize = 40
 const pageDishes = computed(() =>
   visibleDishes.value.slice((page.value - 1) * pageSize, page.value * pageSize)
 )
-watch([query, kind, category, filter, kitchenId], () => {
+watch([query, kind, category, filter], () => {
   page.value = 1
 })
 watch(
-  () => visibleDishes.value.length,
-  (count) => {
+  [() => visibleDishes.value.length, outcome],
+  ([count]) => {
+    if (!['ready', 'empty'].includes(outcome.value)) return
     page.value = Math.min(page.value, Math.max(1, Math.ceil(count / pageSize)))
-  }
+  },
+  { immediate: true }
+)
+watch(
+  catalogueQuery,
+  (next) => {
+    if (route.path !== catalogue.path) return
+    if (
+      Object.entries(next).every(([key, value]) => route.query[key] === value)
+    )
+      return
+    void router.replace({
+      path: route.path,
+      query: { ...route.query, ...next },
+    })
+  },
+  { flush: 'post' }
 )
 watch(kitchenId, (_next, previous) => {
   if (!previous) return
+  page.value = 1
   organise.value = false
   kind.value = 'all'
   query.value = ''
