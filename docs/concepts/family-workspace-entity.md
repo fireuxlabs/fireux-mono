@@ -39,7 +39,10 @@ map in `workspace.md`. The family deltas are:
 
 Kitchen and Project `Workspace/Navigation.vue` components supply the selected
 logo and name both to the sidebar switcher and, through `identityOnly`, to the
-shared Workspace navbar. Dropdown choices use entity images without selection
+shared Workspace navbar. When an identity component is available, identity stays
+on the left and the page title appears immediately before the subscription
+control on the right at medium and wider breakpoints. Compact mobile headers
+omit that secondary title. Dropdown choices use entity images without selection
 ticks. App landing nav adapters supply page information; they do not build a
 second selected-identity projection. The shared EntitySwitcher accepts an explicit
 `to` destination. Kitchen supplies its App-aware Kitchen entry path; the

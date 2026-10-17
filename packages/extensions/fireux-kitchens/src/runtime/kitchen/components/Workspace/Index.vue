@@ -41,36 +41,13 @@
     "
     @create="openCreate"
   />
-  <WorkspaceCapability
-    v-else-if="index.multipleKitchenView.value"
-    collection-label="Kitchens"
-    aria-label="Kitchen workspace"
-  >
-    <template #collection-panel>
-      <WorkspaceKitchenHomeCollection
-        :index="index"
-        :can-create="creation.canCreate.value"
-        @create="openCreate"
-      />
-    </template>
-    <template #single-panel>
-      <WorkspaceKitchenHomeSingle
-        ref="single"
-        :selected="selected"
-        :can-update="workspace.outcome.value === 'ready'"
-      />
-    </template>
-  </WorkspaceCapability>
-  <WorkspaceKitchenHomeSingle
-    v-else
-    ref="single"
-    :selected="selected"
-    :can-update="workspace.outcome.value === 'ready'"
-  />
-  <WorkspaceKitchenHomeDiscovery
-    v-if="!dedicatedAppName && landingState !== 'ready'"
-    :selected="false"
-  />
+  <section v-else class="grid gap-4" aria-label="Selected Kitchen">
+    <WorkspaceKitchenHomeSingle
+      ref="single"
+      :selected="selected"
+      :can-update="workspace.outcome.value === 'ready'"
+    />
+  </section>
   <WorkspaceKitchenHomeCreate
     v-if="creation.canCreate.value"
     v-model:open="createOpen"

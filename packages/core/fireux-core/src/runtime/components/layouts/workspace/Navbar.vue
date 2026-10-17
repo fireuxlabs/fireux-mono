@@ -16,13 +16,7 @@
             v-if="identityComponent"
             identity-only
           />
-          <span
-            :class="
-              identityComponent
-                ? 'hidden truncate text-sm text-muted md:inline'
-                : ''
-            "
-          >
+          <span v-if="!identityComponent">
             <slot name="title">{{ title }}</slot>
           </span>
         </div>
@@ -30,6 +24,12 @@
 
       <template #right>
         <div class="flex items-center gap-2">
+          <span
+            v-if="identityComponent"
+            class="hidden max-w-64 truncate text-sm text-muted md:inline"
+          >
+            <slot name="title">{{ title }}</slot>
+          </span>
           <UserSubscriptionControl always-visible />
           <slot name="right">
             <UButton
@@ -104,7 +104,9 @@ const toast = useToast()
 const infoOpen = ref(false)
 const copyingPageJson = ref(false)
 const mounted = ref(false)
-onMounted(() => { mounted.value = true })
+onMounted(() => {
+  mounted.value = true
+})
 const { state: pageState, copy } = useWorkspacePageState(
   workspaceNav.currentWorkspace.value
 )

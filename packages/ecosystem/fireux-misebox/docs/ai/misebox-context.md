@@ -327,7 +327,14 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 | Settings | `/settings`, `/identity` | listing, venue profile, hours, appearance, payments, integrations, access |
 | Developer          | `/developer`      | index, test; dev, training and preview remain hidden               |
 
-Home is the single primary arrival entrance. Overview and the Menu setup tool
+Home is the single primary arrival entrance. Its settled selected-Kitchen view
+contains the App header, Kitchen AI and the selected Kitchen card. Operators
+with multi-Kitchen management and more than one available Kitchen get the
+existing visible Kitchen selector in the top toolbar, above AI, using the existing
+selection command. The toolbar omits its full-width divider; the selector wraps
+its choices within the available width. Home has no capability shortcuts,
+status badge or Kitchen collection panel; empty/access/error states retain their
+existing owners. Overview and the Menu setup tool
 directory are contextual routes, hidden from the sidebar. Food & drinks, Menus
 and Services have direct sidebar entrances; Promotions is a child of Menus.
 The combined catalogue reads the existing live Dish collection once, filters
