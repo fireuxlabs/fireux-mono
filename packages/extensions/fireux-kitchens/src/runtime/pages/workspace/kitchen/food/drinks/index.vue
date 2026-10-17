@@ -27,7 +27,7 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-drinks',
     label: 'Drinks',
-    group: 'Menus & Recipes',
+    group: 'Menus',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-utensils',
     icon: 'i-lucide-glass-water',

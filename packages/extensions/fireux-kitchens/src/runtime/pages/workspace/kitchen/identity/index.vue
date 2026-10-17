@@ -13,7 +13,7 @@
         <WorkspaceFreemium
           family="kitchen"
           capability="identity"
-          page-label="Identity"
+          page-label="Kitchen listing"
           hide-description
           placement="top"
         />
@@ -28,16 +28,17 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroIn
 import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
 const identity = useKitchenIdentity()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-const navTitle = 'Identity'
+const navTitle = 'Kitchen listing'
 
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-identity',
-    label: 'Identity',
-    group: 'Identity',
+    label: 'Kitchen listing',
+    group: 'Settings',
     groupDisplay: 'nested',
     groupIndex: true,
     groupIcon: 'i-lucide-id-card',

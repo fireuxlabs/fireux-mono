@@ -211,7 +211,7 @@ const pendingSummaries = computed(() =>
 const groupPresentation: Record<string, string> = {
   'Orders & Service': 'Follow orders from arrival to handoff.',
   'Prep & Production': 'Plan the work before service starts.',
-  'Menus & Recipes': 'Keep what you serve and how you make it together.',
+  'Menus': 'Keep what you serve and how you make it together.',
   'Stock & Purchasing': 'Buy, receive and account for what the kitchen uses.',
   'Food Safety': 'Checks, evidence and follow-up throughout the day.',
   Reports: 'Review results from recorded kitchen activity.',

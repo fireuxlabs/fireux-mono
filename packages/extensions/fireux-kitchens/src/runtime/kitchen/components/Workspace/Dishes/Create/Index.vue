@@ -150,7 +150,7 @@ const addDish = async () => {
       {
         name: dishName,
         description: normalizeString(description.value),
-        item_kind: catalogue.itemKind,
+        item_kind: catalogue.itemKind === 'drink' ? 'drink' : 'food',
       },
       { kitchenId: resolvedKitchenId }
     )

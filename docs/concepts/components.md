@@ -463,7 +463,7 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
   between groups updates its route tree and every consumer together; its domain
   component, command and data owners do not move merely because navigation does.
   Explicit product route contracts can differ: Kitchen Menus stays at
-  `/workspace/kitchen/menus` inside the Menus & Recipes sidebar group. This
+  `/workspace/kitchen/menus` inside the Menus sidebar group. This
   exception does not move the group's other capabilities out of `/food`.
 - A capability has one primary sidebar destination. Contextual shortcuts can
   link to it elsewhere; avoid duplicate primary entries.
@@ -478,7 +478,7 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
   Core uses that route as the group label's destination and omits it from the
   children. The label navigates and opens the group; Nuxt UI's separate chevron
   retains collapse control. Groups without an index retain their trigger-only
-  behavior. Kitchen Identity, Menus & Recipes, Orders, Prep & Production,
+  behavior. Kitchen Identity, Menus, Orders, Prep & Production,
   Food Safety, Team, Settings, Stock & Purchasing, Reports and Developer consume it; no group data or
   command ownership is introduced. A group index is a compact summary, existing
   basic controls where useful, and route-owned child links. Large working boards

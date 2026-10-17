@@ -1050,10 +1050,12 @@ venue fields and commands. Project retains its name and the connected App's
 published description/image boundary. Their named Identity components
 compose domain readers, editors and navigation; routes supply page framing.
 
-Kitchen Identity uses its group label to open the index and expand Venue profile,
-Operating hours and Appearance. There is no separate Overview sidebar entry.
-The index composes a Kitchen listing card for URL, status and
-directory visibility plus links derived from child route metadata. Venue profile
+Kitchen Settings groups Kitchen listing, Venue profile, Operating hours, Appearance,
+Payments, Integrations and Access using explicit route-owned children. Identity
+has no separate sidebar group. The focused listing page composes URL, status and
+directory visibility controls; Settings owns the sibling links. Home is the single
+primary arrival entrance; Overview and Menu setup remain contextual routes.
+Food & drinks, Menus and Services are direct capability entrances. Venue profile
 owns the current-value venue sections. Focused side panels
 compose the Place-owned inline editors also used by the public Place edit route. The Kitchen Workspace
 passes its explicit mutation authority. Currency remains Place-owned; Kitchen
@@ -1444,3 +1446,12 @@ acceptance have their own verification boundaries.
 Property readers, presentation, onboarding, Identity and Reservations consume the
 same pure `property/utils/normalize-property.ts` root validator. It owns no
 reactive state or I/O; manual parsing and UI mapping remain separate.
+
+## Workspace sidebar density
+
+Core `layouts/workspace.vue` cycles compact icons, expanded labels with normal
+group behaviour, and expanded labels with every group initially open. The control
+beside the brand names its next action in its tooltip and accessible label.
+Changing mode remounts accordion defaults without changing the active destination
+or domain readers. `navigation/workspace-sidebar-mode.ts` owns the small cycle;
+verify `workspace-sidebar-mode.test.mjs` and `workspace-active-destination.test.mjs`.

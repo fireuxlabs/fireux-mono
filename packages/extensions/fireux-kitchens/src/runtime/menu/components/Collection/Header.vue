@@ -1,6 +1,6 @@
 <template>
   <UPageHeader
-    title="Find your next meal"
+    title="Bon Appétit"
     :ui="{
       root: 'border-0 pt-2 pb-2 sm:pt-4 sm:pb-4',
       title: 'directory-title',

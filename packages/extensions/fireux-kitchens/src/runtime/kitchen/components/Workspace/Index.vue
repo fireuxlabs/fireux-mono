@@ -68,8 +68,8 @@
     :can-update="workspace.outcome.value === 'ready'"
   />
   <WorkspaceKitchenHomeDiscovery
-    v-if="!dedicatedAppName"
-    :selected="landingState === 'ready'"
+    v-if="!dedicatedAppName && landingState !== 'ready'"
+    :selected="false"
   />
   <WorkspaceKitchenHomeCreate
     v-if="creation.canCreate.value"

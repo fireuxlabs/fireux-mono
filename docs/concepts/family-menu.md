@@ -528,3 +528,31 @@ This is a read-time search over current records, not a second catalogue or searc
 index. Query cost grows with scanned eligible Menu content. Verify
 `menu-food-search.test.mjs`, `menu-canonical-discovery.test.mjs`,
 `menu-service-view.test.mjs` and the portal/live-reader checks.
+
+`menu/components/Cards/FoodVenue.vue` presents each portal venue result with
+its existing logo/name, Menu heading, matching food, and one schedule/action row
+per eligible service. Results retains grouping, filtering and reader coordination;
+the card adds no acquisition. OfferingTimes can omit repeated schedule names in
+these already labelled service rows. Other menus remain a secondary browse link.
+
+Portal food cards show other offerings as quiet name-only links from enabled
+Kitchen setup. `menu/server/index/other-offerings.ts` excludes public Menu IDs
+already attached to enabled Collection/Delivery, and omits private, unpublished
+and Daily-special content. Repeated names with the same uncovered Menu set are
+collated; service variants over the same covered menus add no links.
+The existing venue browse entrance accepts `?offering=<id>`; its server directory
+filters that offering before pagination and its header uses the saved offering
+name. Times stay on the destination, not on secondary portal links. No new
+Offering identity, price or Order command is introduced. Verify
+`menu-other-offerings.test.mjs` and the offering-browse pagination regression.
+
+Kitchen service configuration is a separate visible Workspace capability at
+`/workspace/kitchen/services` (and `/services/<offering>` for an existing record).
+`Workspace/Offerings/Index.vue` composes the unchanged scoped reader and setup
+controls; navigation and Menu/hour/integration links use this entrance. Orders
+keeps its board. No redirects, duplicate setup owners or record migration are added.
+
+The visible Workspace capability is Services. The Menus navigation group and
+`/menu-setup` overview exclude Recipes and Ingredients, which are children of
+Prep & Production. Source Overview/Menus.vue follows the same metadata; recipe
+and ingredient routes keep their domain readers and commands.

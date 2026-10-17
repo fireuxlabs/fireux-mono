@@ -8,7 +8,7 @@
             label: identity.selectedKitchen.value?.name || 'Kitchen',
             to: workspaceEntryPath,
           },
-          { label: 'Identity', to: '/workspace/kitchen/identity' },
+          { label: 'Settings', to: '/workspace/kitchen/settings' },
           { label: 'Venue profile' },
         ]"
       />

@@ -315,36 +315,24 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 
 | Sidebar group      | Route prefix      | Pages                                                              |
 | ------------------ | ----------------- | ------------------------------------------------------------------ |
-| Orders             | `/orders`         | index, board (local views and filters), offerings, fulfilment      |
+| Orders             | `/orders`         | index, board (local views and filters) |
 | Prep & Production  | `/prep`           | index, plan, stations, batches                                     |
-| Menus & Recipes    | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food`   |
+| Food & drinks | `/food/dishes` | combined catalogue; kind-specific creation and detail editors |
+| Menus | `/menus` | collection, editor, publication, QR; Promotions child |
+| Services | `/services` | customer service eligibility and schedules |
 | Stock & Purchasing | `/stock`          | index, inventory, purchasing, receiving, suppliers, waste          |
 | Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                        |
 | Team               | `/team`           | index, people; Responsibilities remains a section anchor in people |
 | Reports            | `/reports`        | index, finance, performance, costs, waste-report                   |
-| Identity           | `/identity`       | index, profile, operating-hours, appearance                        |
-| Settings           | `/settings`       | index summary, kiosks, integrations, access                        |
+| Settings | `/settings`, `/identity` | listing, venue profile, hours, appearance, payments, integrations, access |
 | Developer          | `/developer`      | index, test; dev, training and preview remain hidden               |
 
-Overview remains a standalone entry. Kitchen's Menus & Recipes group has a useful
-index at `/workspace/kitchen/menus-recipes`. Its route declares `nav.groupIndex`:
-the Menus & Recipes group label navigates to that index and expands its children,
-with a separate chevron for collapsing. There is no Overview child link. `Workspace/Overview/MenusRecipes.vue` composes the capability entrances from
-the same route navigation metadata as the sidebar; Drinks remains a contextual
-link resolved from its hidden route metadata. Existing capability destinations,
-including `/workspace/kitchen/menus`, are unchanged. This is Kitchen-owned
-navigation composition, not a Food domain or a shared Core group framework.
-The index is a lightweight tool directory. It lists available, handler-backed tools
-from the existing Kitchen capability tool directory and routes operators to the
-owning capability for context and authority checks. It starts no summary readers,
-shows no operational counts or readiness, and writes no selection or records.
-Four panels retain their domain identity icons. Each tool group begins with a
-magnifying-glass Browse link; Food & drinks has separate Browse Food and Browse
-Drinks groups. These five Browse entrances reuse existing collection destinations. Create links
-open supported creation flows; Recipe Create opens the existing collection form
-with a consumed `create=1` query intent. Update and Delete need a selected record
-and are not collection shortcuts on this index. Menu Delete is not advertised:
-its dormant component has no supported connected lifecycle/dependency policy.
+Home is the single primary arrival entrance. Overview and the Menu setup tool
+directory are contextual routes, hidden from the sidebar. Food & drinks, Menus
+and Services have direct sidebar entrances; Promotions is a child of Menus.
+The combined catalogue reads the existing live Dish collection once, filters
+All/Food/Drinks locally, and opens each kind's existing create/detail editor.
+Kind-specific detail contexts retain their filtering and authority.
 Kitchen Ingredients Create links an existing shared catalogue record, and Delete
 removes only that Kitchen association through the direct
 `kitchen/server/ingredients/create.ts` and `delete.ts` owners.
@@ -374,18 +362,13 @@ description, translated names/descriptions and validated preparation; identity,
 Kitchen ownership and unknown patch fields are rejected before the write primitive.
 Its optional architecture disclosure is dynamically imported only in development
 and contains source annotations, not operational payloads.
-Kitchen Identity uses its group label to open the index at
-`/workspace/kitchen/identity` and expand Venue profile, Operating hours and
-Appearance. There is no separate Overview child. The chevron independently
-expands or collapses the group without navigating. The same index-link contract
-applies to Orders, Prep & Production, Menus & Recipes, Food Safety and Team.
-Settings also has a real index summary with links derived from its route-owned
-children: Kiosks, Integrations and Access. Its label opens that index and expands
-the group. Index destinations are not repeated as children; groups without a
-working index remain expand-only. All current Kitchen sidebar groups now have a
-working index, including Stock & Purchasing, Reports and Developer. Orders,
-Prep & Production, Food Safety and Team use a small domain-owned GroupIndex
-presentation consuming the same route metadata as the sidebar; their existing
+Settings owns explicit navigation children for Kitchen listing, Venue profile,
+Operating hours, Appearance, Payments, Integrations and Access. Existing editor
+routes and domain commands remain unchanged; Identity has no separate sidebar
+group. Settings renders the same route-owned children as the sidebar. Menus,
+Orders, Prep & Production, Food Safety and Team retain index-link navigation.
+Stock & Purchasing, Reports and Developer retain their existing group indexes.
+Their existing
 working screens remain children at `/orders/board`, `/prep/plan`,
 `/food-safety/checks` and `/team/people`. Indexes do not initialize those working
 controllers or invent configuration stores. Existing small controls remain with
@@ -419,11 +402,8 @@ presentation (branding, currency and Kitchen palette). Kitchen identity and Menu
 readers consume it directly; Kitchen identity does not depend on Menu ownership.
 Verify this projection with `kitchen-identity-shape.test.mjs`.
 
-Kitchen Workspace has one Identity index at `/workspace/kitchen/identity`,
-which composes Kitchen listing controls and links sourced from the children's
-route metadata. Identity is the clickable sidebar group index, with Venue profile,
-Operating hours and Appearance underneath. The index may offer a few direct
-controls; substantial configuration belongs in purposeful child pages.
+Kitchen listing at `/workspace/kitchen/identity` is a focused Settings child
+composing the existing listing controls. Settings owns its sibling editor links.
 `/workspace/kitchen/identity/profile` owns the five focused venue edit sections;
 `/workspace/kitchen/identity/operating-hours` owns venue and Kitchen schedules;
 `/workspace/kitchen/identity/appearance` owns Kitchen menu palette editing.
@@ -1171,7 +1151,7 @@ paused interactions and missing offering identities fail closed on the server.
 
 The Operating hours page composes the venue editor, Kitchen operating schedule
 and named offering schedules. `Workspace/Offerings` configures each offering at
-`/workspace/kitchen/offerings/<offeringId>`. Its name, master switch, Menus
+`/workspace/kitchen/services/<offeringId>`. Its name, master switch, Menus
 and serving hours are separate from the selected interaction's settings.
 New offerings start disabled with browse configured and no selected Menus or hours.
 Selecting an interaction in the editor performs no write and enables nothing.
@@ -1865,19 +1845,20 @@ Kitchen working collection pages distinguish target readiness, loading, failure 
 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports two Menus, with Main and Drinks as new-Kitchen starters, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
-The current Kitchen Orders surfaces are the index, `/orders/board` and
-`/orders/channels` under `/workspace/kitchen`. The board includes persisted empty
-and populated open orders alongside submitted states, with one scoped editor.
-Channels groups interaction settings and menu serving schedules without a separate
-saved-offerings inventory. Payment settings are a Kitchen Identity child at
-`/workspace/kitchen/identity/payments`; Delivery configuration is consumed inside
-Channels. Existing Offering/Fulfilment storage and trusted command authority stay
-with Kitchen; Menu names and Order channel vocabulary are unchanged.
+Kitchen Orders has its index and `/orders/board` under `/workspace/kitchen`.
+Services is a separate visible capability at `/workspace/kitchen/services`,
+alongside Menus in the Menus navigation group. Its existing configuration overview is
+`Workspace/Offerings/Index.vue`; individual setup uses `/services/<offering>`.
+It reuses the existing scoped Offering reader and setup commands, including
+Delivery settings. Payment settings remain a Kitchen Identity child at
+`/workspace/kitchen/identity/payments`. The old Orders/Channels route and sidebar
+child are removed without aliases. No Offering/Fulfilment storage, price or
+Order-processing command changes accompany this move.
 
 Payments presentation is composed directly by `Workspace/Identity/Payments/Index.vue`;
 Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
 Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
-The Orders configuration separates channel entrances from service/fulfilment choices.
+Services configures the existing service choices and their menus and serving times.
 Library stage previews share `Library/Orders/Preview.vue`; success presentation is
 `Library/Orders/Success.vue`, with local example state and shared validation retained.
 
@@ -2138,3 +2119,11 @@ venue with matching schedules and a quiet link to other menus. Full venue servic
 discovery belongs to Place and `/kitchens`, not this food portal.
 
 Menu and service terms are defined in [the service glossary](../../../../../docs/concepts/menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.
+
+Kitchen navigation exposes Food & drinks, Menus (with Promotions) and Services
+directly, separate from Prep & Production (Prep plan, Recipes, Ingredients, Stations, Batches).
+Services is the visible setup name at `/workspace/kitchen/services`; existing
+Offering records and commands remain its backing configuration. Named food
+experiences such as Picnic are not new service types. Core's shared Workspace
+sidebar cycles compact, expanded and expand-all using its existing navigation
+projection; active-route resolution and command authority remain unchanged.

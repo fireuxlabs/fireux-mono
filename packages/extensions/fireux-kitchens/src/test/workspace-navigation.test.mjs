@@ -78,63 +78,55 @@ test('Kitchen primary navigation has unique destinations backed by actual pages'
   }
 })
 
-test('Menus & Recipes group index preserves capability destinations independently of route prefixes', () => {
-  const group = 'Menus & Recipes'
-  const index = navigation(join(root, 'menus-recipes.vue'))
-  assert.equal(index.group, group)
-  assert.equal(index.groupIndex, true)
-  assert.equal(index.groupDisplay, 'nested')
-  assert.equal(index.hidden, undefined)
-
-  const expected = [
-    ['Menus & Recipes', '/workspace/kitchen/menus-recipes'],
-    ['Menus', '/workspace/kitchen/menus'],
-    ['Food & drinks', '/workspace/kitchen/food/dishes'],
-    ['Recipes', '/workspace/kitchen/food/recipes'],
-    ['Ingredients', '/workspace/kitchen/food/ingredients'],
-  ]
-  assert.deepEqual(
-    destinations
-      .filter((item) => item.group === group)
-      .map((item) => [item.label, item.to])
-      .sort((left, right) => left[1].localeCompare(right[1])),
-    expected.sort((left, right) => left[1].localeCompare(right[1]))
+test('Food & drinks, Menus and Services are direct entrances without duplicate overview groups', () => {
+  for (const [file, label] of [
+    ['food/dishes/index.vue', 'Food & drinks'],
+    ['menus/index.vue', 'Menus'],
+    ['services/index.vue', 'Services'],
+  ]) {
+    const nav = navigation(join(root, file))
+    assert.equal(nav.label, label)
+    assert.equal(nav.group, '')
+    assert.notEqual(nav.hidden, true)
+  }
+  for (const file of [
+    'overview/index.vue',
+    'menu-setup.vue',
+    'food/drinks/index.vue',
+  ])
+    assert.equal(navigation(join(root, file)).hidden, true)
+  assert.ok(
+    destinations.some((item) => item.to === '/workspace/kitchen/promotions')
   )
-
-  // Drinks remains a contextual capability in this group, not a duplicate
-  // primary sidebar entrance alongside Food & drinks.
-  const drinks = navigation(join(root, 'food/drinks/index.vue'))
-  assert.equal(drinks.group, group)
-  assert.equal(drinks.hidden, true)
-  assert.equal(drinks.key, 'workspace-kitchen-drinks')
 })
 
-test('Identity group opens its index and has distinct profile, hours and appearance children', () => {
-  const index = navigation(join(root, 'identity/index.vue'))
-  assert.equal(index.group, 'Identity')
-  assert.equal(index.groupIndex, true)
-  assert.equal(index.label, 'Identity')
-  assert.equal(index.groupDisplay, 'nested')
+test('Settings owns all existing venue configuration entrances exactly once', () => {
+  const settings = navigation(join(root, 'settings/index.vue'))
+  assert.equal(settings.groupIndex, true)
   assert.deepEqual(
-    destinations
-      .filter((item) => item.group === 'Identity')
-      .map((item) => item.to)
-      .sort(),
+    settings.children.map((item) => item.to),
     [
       '/workspace/kitchen/identity',
-      '/workspace/kitchen/identity/appearance',
-      '/workspace/kitchen/identity/operating-hours',
-      '/workspace/kitchen/identity/payments',
       '/workspace/kitchen/identity/profile',
+      '/workspace/kitchen/identity/operating-hours',
+      '/workspace/kitchen/identity/appearance',
+      '/workspace/kitchen/identity/payments',
+      '/workspace/kitchen/settings/integrations',
+      '/workspace/kitchen/settings/access',
     ]
   )
-})
-
-test('retired Place editor route is removed and all Identity tools have explicit destinations', () => {
+  for (const file of [
+    'index',
+    'profile',
+    'operating-hours',
+    'appearance',
+    'payments',
+  ]) {
+    const nav = navigation(join(root, `identity/${file}.vue`))
+    assert.equal(nav.hidden, true)
+    assert.equal(nav.group, 'Settings')
+  }
   assert.equal(existsSync(join(root, 'identity/place.vue')), false)
-  const profile = navigation(join(root, 'identity/profile.vue'))
-  assert.equal(profile.label, 'Venue profile')
-  assert.equal(profile.group, 'Identity')
 })
 
 test('Menu record, import and research routes all live in the direct Menu subtree', () => {
@@ -177,7 +169,7 @@ test('all Kitchen groups with working indexes link their labels without duplicat
 
 test('every Kitchen sidebar group has one working index and operational screens retain child destinations', () => {
   const explicit = ['orders', 'prep', 'food-safety', 'team', 'settings']
-  const grouped = ['stock', 'reports', 'developer', 'identity']
+  const grouped = ['stock', 'reports', 'developer']
   for (const name of [...explicit, ...grouped]) {
     const index = navigation(join(root, name, 'index.vue'))
     assert.equal(index.groupIndex, true, name)
@@ -205,16 +197,24 @@ test('every Kitchen sidebar group has one working index and operational screens 
     )
   }
   assert.ok(
-    destinations.some((item) => item.to === '/workspace/kitchen/identity/payments')
+    destinations.some(
+      (item) => item.to === '/workspace/kitchen/identity/payments'
+    )
   )
 })
 
-test('Orders has its board and channel configuration and retired board perspectives have no routes', () => {
+test('Orders contains the board and Services is a separate visible capability', () => {
   const index = navigation(join(root, 'orders/index.vue'))
   assert.deepEqual(
     index.children.map((item) => item.label),
-    ['Order board', 'Channels']
+    ['Order board']
   )
+  const offerings = navigation(join(root, 'services/index.vue'))
+  assert.equal(offerings.label, 'Services')
+  assert.equal(offerings.key, 'workspace-kitchen-services')
+  assert.notEqual(offerings.hidden, true)
+  assert.ok(!index.children.some((item) => item.to.includes('/services')))
+  assert.equal(existsSync(join(root, 'orders/channels/index.vue')), false)
   for (const old of [
     'orders/all.vue',
     'orders/queue.vue',
@@ -224,4 +224,23 @@ test('Orders has its board and channel configuration and retired board perspecti
     'orders/tables/edit.vue',
   ])
     assert.equal(existsSync(join(root, old)), false, old)
+})
+
+test('Recipes and Ingredients are production children outside the Menus group', () => {
+  const prep = navigation(join(root, 'prep/index.vue'))
+  for (const [label, path] of [
+    ['Recipes', 'recipes'],
+    ['Ingredients', 'ingredients'],
+  ]) {
+    assert.ok(
+      prep.children.some(
+        (child) =>
+          child.label === label &&
+          child.to === `/workspace/kitchen/food/${path}`
+      )
+    )
+    const record = navigation(join(root, `food/${path}/index.vue`))
+    assert.equal(record.group, 'Prep & Production')
+    assert.equal(record.hidden, true)
+  }
 })

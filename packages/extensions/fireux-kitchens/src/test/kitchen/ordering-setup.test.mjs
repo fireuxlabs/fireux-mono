@@ -177,7 +177,7 @@ test('service saves capture input and use explicit Kitchen rather than Workspace
   draft.menu_ids.push('other')
   h.token.resolve('token')
   await Promise.resolve()
-  assert.equal(h.calls[0][0], '/api/workspace/kitchen/offerings/configure')
+  assert.equal(h.calls[0][0], '/api/workspace/kitchen/services/configure')
   assert.deepEqual(h.calls[0][1].body, {
     kitchenId: 'local',
     menu_ids: ['food'],
@@ -629,7 +629,7 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
   assert.match(source, /outcome === 'pending'/)
   assert.match(source, /!selectedKitchen/)
   for (const path of [
-    'components/Workspace/Orders/Channels.vue',
+    'components/Workspace/Offerings/Index.vue',
     'components/Workspace/Offerings/Setup.vue',
     'components/Workspace/Offerings/Interaction.vue',
   ])

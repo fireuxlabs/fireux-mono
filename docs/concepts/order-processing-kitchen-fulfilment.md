@@ -139,19 +139,18 @@ changes; do not retain retired execution paths as current source pointers.
 
 ## Workspace configuration surfaces
 
-Orders has its index, one board, and `/workspace/kitchen/orders/channels`.
-`Workspace/Orders/Channels.vue` groups the existing Kitchen interaction settings
-and menu serving schedules; Breakfast and Lunch remain menu names, not channel
-identities. The separate saved-offerings inventory is removed. Delivery zones
-are configured within Channels. Payment methods live at
-`/workspace/kitchen/identity/payments` and retain the Kitchen-owned Fulfilment
-reader and command. This is a surface consolidation, not a stored-record migration
-or a change to the basic Order channel vocabulary.
+Orders has its index and board. Service configuration lives separately at
+`/workspace/kitchen/services`, implemented by `Workspace/Offerings/Index.vue`.
+The existing setup and individual Offering pages reuse Kitchen records and
+commands; the old Orders/Channels entrance is removed without aliases. Delivery
+settings remain composed here and payment methods remain at
+`/workspace/kitchen/identity/payments`. This navigation change does not alter
+Order processing, prices or the stored channel vocabulary.
 
 Payments presentation is composed directly by `Workspace/Identity/Payments/Index.vue`;
 Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
 Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
-The Orders configuration separates channel entrances from service/fulfilment choices.
+Services configures the existing service choices and their menus and serving times.
 Library stage previews share `Library/Orders/Preview.vue`; success presentation is
 `Library/Orders/Success.vue`, with local example state and shared validation retained.
 

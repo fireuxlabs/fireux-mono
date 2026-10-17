@@ -11,9 +11,17 @@ import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/wo
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { useKitchenWorkspaceDishes } from './useKitchenWorkspaceDishes'
 
-export type KitchenDishCatalogueKind = 'food' | 'drink'
+export type KitchenDishCatalogueKind = 'all' | 'food' | 'drink'
 
 const catalogueByKind = {
+  all: {
+    itemKind: 'all',
+    singular: 'item',
+    plural: 'items',
+    title: 'Food & drinks',
+    path: '/workspace/kitchen/food/dishes',
+    icon: 'i-lucide-utensils',
+  },
   food: {
     itemKind: 'food',
     singular: 'dish',
@@ -46,7 +54,11 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   const pageState = useWorkspacePageState('kitchen')
   const selectedDishId = ref('')
   const dishes = computed(() =>
-    source.dishes.value.filter((dish) => dish.item_kind === itemKind)
+    source.dishes.value.filter((dish) =>
+      itemKind === 'all'
+        ? dish.item_kind === 'food' || dish.item_kind === 'drink'
+        : dish.item_kind === itemKind
+    )
   )
   const outcome = computed(() =>
     source.outcome.value === 'ready'
@@ -79,8 +91,8 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
     return {
       status: status as 'loading' | 'error' | 'empty' | 'ready',
       capability: defineWorkspaceCapabilityContext({
-        id: `kitchen.${catalogue.plural}`,
-        subject: catalogue.singular === 'dish' ? 'Dish' : 'Drink',
+        id: `kitchen.${itemKind === 'drink' ? 'drinks' : 'dishes'}`,
+        subject: itemKind === 'drink' ? 'Drink' : 'Dish',
         primitives: {
           create: {
             available:
@@ -122,7 +134,7 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
 
   watchEffect(() => {
     pageState.publish({
-      [catalogue.plural]: state.value.dishes,
+      [itemKind === 'drink' ? 'drinks' : 'dishes']: state.value.dishes,
       selectedDishId: state.value.selectedDishId,
       derived: derived.value,
     })

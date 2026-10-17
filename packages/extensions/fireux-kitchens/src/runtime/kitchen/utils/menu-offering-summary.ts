@@ -28,7 +28,7 @@ export function menuOfferingSummaries(input: {
       hours: offering.hours,
       sharedMenuCount: new Set(offering.menu_ids).size,
       configurePath:
-        '/workspace/kitchen/orders/channels/' + encodeURIComponent(offering.id),
+        '/workspace/kitchen/services/' + encodeURIComponent(offering.id),
       interactions: offering.interactions.map((interaction) => {
         const context =
           interaction.type === 'browse'

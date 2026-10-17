@@ -78,7 +78,7 @@ test('named offerings sharing a Menu and interaction keep distinct identities an
   )
   assert.equal(
     rows[0].configurePath,
-    '/workspace/kitchen/orders/channels/breakfast'
+    '/workspace/kitchen/services/breakfast'
   )
   assert.equal(
     rows[0].interactions[1].customerUrl,

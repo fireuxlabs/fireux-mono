@@ -102,7 +102,7 @@ function bindingFixture() {
       return toValue(target)
     },
     settle(rows) {
-      raw.value = rows.map(row => ({ price: 12, ...row }))
+      raw.value = rows.map((row) => ({ price: 12, ...row }))
       raw.pending.value = false
       raw.promise.value = Promise.resolve()
     },
@@ -678,13 +678,97 @@ test('actual Dish Preparation and Menu perspectives render failed linked reads w
   assert.doesNotMatch(menus, /No menus in this kitchen|Loading menus/)
 })
 
-
 test('Dish projection preserves canonical pricing and excludes the removed deal flag', () => {
-  const input = { id: 'margherita', price: 13, price_options: [{ label: 'Large', quantity: 0, unit: '', price: 18 }], add_ons: [{ id: 'cheese', label: 'Cheese', price: 2 }], is_deal: true }
+  const input = {
+    id: 'margherita',
+    price: 13,
+    price_options: [{ label: 'Large', quantity: 0, unit: '', price: 18 }],
+    add_ons: [{ id: 'cheese', label: 'Cheese', price: 2 }],
+    is_deal: true,
+  }
   const dish = normalizeDish(input)
   assert.equal(dish.price, 13)
   assert.deepEqual(dish.price_options, input.price_options)
   assert.deepEqual(dish.add_ons, input.add_ons)
   assert.equal(Object.hasOwn(dish, 'is_deal'), false)
   assert.equal(normalizeDish({ id: 'new-dish' }).price, 0)
+})
+
+test('combined Food & drinks catalogue retains both kinds and responds to live removal and owner changes', async () => {
+  const f = workspaceFixture()
+  const { context } = kindContext(f, 'all')
+  assert.deepEqual(
+    context.dishes.value.map((item) => item.id),
+    ['soup', 'tea']
+  )
+  assert.equal(context.catalogue.title, 'Food & drinks')
+  assert.equal(context.derived.value.capability.primitives.read.count, 2)
+  f.settle([{ id: 'tea', name: 'Tea', item_kind: 'drink' }])
+  await nextTick()
+  assert.deepEqual(
+    context.dishes.value.map((item) => item.id),
+    ['tea']
+  )
+  assert.equal(context.outcome.value, 'ready')
+  f.workspace.id.value = 'other'
+  assert.deepEqual(context.dishes.value, [])
+  assert.equal(context.selectedDishId.value, '')
+  f.scope.stop()
+})
+
+test('combined catalogue filters food and drinks and opens each in its correct editor', async () => {
+  const f = workspaceFixture()
+  const { context } = kindContext(f, 'all')
+  const view = f.scope.run(() =>
+    load(
+      'kitchen/components/Workspace/Dishes/Collection/Index.vue',
+      '({ kind, visibleDishes, dishLink, query, clearFilters, category })',
+      {
+        useRoute: () => ({ query: {} }),
+        useKitchenDishesContext: () => context,
+        computed,
+        ref,
+        watch,
+        dishCategories,
+        dishCategoryLabel,
+        buildMissingDishImageSuggestions: () => [],
+        buildMissingDrinkImageSuggestions: () => [],
+      }
+    )
+  )
+  assert.deepEqual(
+    view.visibleDishes.value.map((item) => item.id),
+    ['soup', 'tea']
+  )
+  view.kind.value = 'drink'
+  await nextTick()
+  assert.deepEqual(
+    view.visibleDishes.value.map((item) => item.id),
+    ['tea']
+  )
+  assert.match(
+    view.dishLink('tea', 'drink'),
+    /^\/workspace\/kitchen\/food\/drinks\/tea\?/
+  )
+  view.kind.value = 'food'
+  await nextTick()
+  assert.deepEqual(
+    view.visibleDishes.value.map((item) => item.id),
+    ['soup']
+  )
+  assert.match(
+    view.dishLink('soup', 'food'),
+    /^\/workspace\/kitchen\/food\/dishes\/soup\?/
+  )
+  view.clearFilters()
+  view.query.value = 'tea'
+  assert.deepEqual(
+    view.visibleDishes.value.map((item) => item.id),
+    ['tea']
+  )
+  assert.equal(
+    f.state.dishes.value.find((item) => item.id === 'tea').name,
+    'Tea'
+  )
+  f.scope.stop()
 })

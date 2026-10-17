@@ -62,7 +62,7 @@ export function projectMenuDirectoryEntry(
     id,
     slug: readRecordString(data, 'slug'),
     kind,
-    ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
+    ...(context.otherOfferings?.length ? {other_offerings: context.otherOfferings} : {}),    ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',

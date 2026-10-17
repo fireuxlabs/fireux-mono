@@ -38,8 +38,8 @@
           variant="soft"
         />
         <UButton
-          to="/workspace/kitchen/overview"
-          label="Overview"
+          to="/workspace/kitchen/services"
+          label="Services"
           icon="i-lucide-layout-dashboard"
           color="neutral"
           variant="ghost"

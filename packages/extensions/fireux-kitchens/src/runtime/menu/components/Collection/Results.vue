@@ -26,26 +26,7 @@
     </nav>
     <template v-if="!hideResults">
     <div v-if="visibleItems.length" class="menu-discovery-grid">
-      <article v-for="group in groups" :key="group.id" class="menu-discovery-entry">
-        <p v-if="group.venue" class="text-sm text-muted">{{ group.venue }}</p>
-        <NuxtLink :to="group.to" class="group flex items-start justify-between gap-4">
-          <h2 class="text-2xl font-semibold tracking-tight group-hover:text-primary">{{ group.menus.map(menu => menu.name).join(' · ') }}</h2>
-          <UIcon name="i-lucide-arrow-up-right" class="mt-1 size-5 shrink-0" aria-hidden="true" />
-        </NuxtLink>
-        <p v-for="description in group.descriptions" :key="description" class="text-sm leading-relaxed text-muted">{{ description }}</p>
-        <ul v-if="group.matchingDishes.length" class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-highlighted" aria-label="Matching food">
-          <li v-for="dish in group.matchingDishes" :key="dish.id">{{ dish.name }}</li>
-        </ul>
-        <KitchenDetailOfferingTimes :offerings="group.offerings" compact />
-        <div class="flex flex-wrap gap-2">
-          <UButton v-for="action in group.actions" :key="action.to" :to="action.to" color="primary" variant="soft">
-            {{ action.label }}
-          </UButton>
-        </div>
-        <NuxtLink :to="group.browseTo" class="self-start text-sm text-muted hover:text-primary">
-          Other menus at {{ group.venue || 'this venue' }}
-        </NuxtLink>
-      </article>
+      <FoodVenueCard v-for="group in groups" :key="group.id" :venue="group" />
     </div>
     <UAlert
       v-else
@@ -59,6 +40,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import FoodVenueCard from '../Cards/FoodVenue.vue'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
 import { directoryMenuRouteScope, menuRouteIndexPath } from '../../utils/menu-route'
 
@@ -105,16 +87,28 @@ const groups = computed(() => {
           option.type === choice.value && !option.paused)))
       .map(choice => ({
         label: choice.label,
+        icon: choice.value === 'collection' ? 'i-lucide-shopping-bag' : 'i-lucide-truck',
         to: menuRouteIndexPath(scope, choice.value || undefined),
+        offerings: [...new Map(entries.flatMap(menu =>
+          (menu.offerings || []).filter(offering => !offering.paused &&
+            menu.offering_options?.some(option => option.kitchen_offering_id === offering.id &&
+              option.type === choice.value && !option.paused))
+        ).map(offering => [offering.id, offering])).values()],
       }))
     return {
       id,
       menus: entries,
       matchingDishes: [...new Map(entries.flatMap(menu => menu.matching_dishes || []).map(dish => [dish.id, dish])).values()],
-      venue: first.source?.kitchen_name || first.kitchen?.name,
+      name: first.source?.kitchen_name || first.kitchen?.name || '',
+      logo: first.kitchen?.logo_image_url,
+      title: entries.map(menu => menu.name).join(' & '),
       descriptions: [...new Set(entries.map(menu => menu.description).filter(Boolean))],
       offerings: [...new Map(entries.flatMap(servingTimes).map(offering => [offering.id, offering])).values()],
       actions,
+      otherOfferings: [...new Map(entries.flatMap(menu => menu.other_offerings || []).map(offering => [offering.id, {
+        ...offering,
+        to: `${menuRouteIndexPath(scope)}?offering=${encodeURIComponent(offering.id)}`,
+      }])).values()],
       browseTo: menuRouteIndexPath(scope),
       to: actions[0]?.to || menuRouteIndexPath(scope),
     }
@@ -125,6 +119,5 @@ const groups = computed(() => {
 .menu-collection { gap: 1.5rem; }
 .directory-search { width: min(100%, 32rem); }
 .menu-discovery-grid { display: grid; gap: 1.5rem 2.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.menu-discovery-entry { display: flex; flex-direction: column; gap: .85rem; border-top: 1px solid var(--ui-border); padding-block: 1.5rem; min-width: 0; }
-@media (max-width: 640px) { .menu-discovery-grid { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+@media (max-width: 640px) { .menu-discovery-grid { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } }
 </style>

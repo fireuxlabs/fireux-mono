@@ -7,12 +7,11 @@
           label: identity.selectedKitchen.value?.name || 'Kitchen',
           to: workspaceEntryPath,
         },
-        { label: 'Identity' },
+        { label: 'Settings', to: '/workspace/kitchen/settings' },
+        { label: 'Kitchen listing' },
       ]"
     />
-    <p class="text-sm text-muted">
-      Manage your Kitchen listing, venue profile, hours and appearance.
-    </p>
+    <p class="text-sm text-muted">Manage your Kitchen’s directory listing.</p>
     <WorkspaceKitchenIdentityListing :identity="identity" />
     <USkeleton
       v-if="
@@ -37,35 +36,6 @@
       :state="identity.outcome.value"
       surface="bare"
     />
-    <section
-      aria-label="Identity pages"
-      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-    >
-      <NuxtLink
-        v-for="item in children"
-        :key="item.key"
-        :to="item.to"
-        :aria-label="item.label"
-        class="group block min-w-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      >
-        <UCard class="h-full transition-colors group-hover:ring-primary/50">
-          <div class="flex items-start gap-3">
-            <UIcon
-              :name="item.icon || 'i-lucide-id-card'"
-              class="mt-0.5 size-5 shrink-0 text-primary"
-            />
-            <div class="min-w-0 flex-1">
-              <h2 class="font-semibold text-highlighted">{{ item.label }}</h2>
-              <p class="mt-2 text-sm text-muted">{{ item.description }}</p>
-            </div>
-            <UIcon
-              name="i-lucide-arrow-right"
-              class="mt-0.5 size-4 shrink-0 text-muted"
-            />
-          </div>
-        </UCard>
-      </NuxtLink>
-    </section>
     <ClientOnly
       ><DiagnosticsDebugPanel v-bind="debug" title="Identity overview debug"
     /></ClientOnly>
@@ -73,7 +43,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import {
@@ -83,16 +52,6 @@ import {
 import type { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const navigation = useNav(['workspace'])
-const children = computed(() =>
-  navigation.items.value
-    .filter(
-      (item) =>
-        item.group === 'Identity' &&
-        item.to.startsWith('/workspace/kitchen/identity/')
-    )
-    .sort((a, b) => a.order - b.order)
-)
 const debug = computed(() =>
   defineDevDebugPayload({
     objectOrigin: 'passed',
@@ -103,10 +62,6 @@ const debug = computed(() =>
     derived: {
       kitchenId: props.identity.kitchenId.value,
       status: props.identity.status.value,
-      children: children.value.map((item) => ({
-        label: item.label,
-        to: item.to,
-      })),
     },
   })
 )

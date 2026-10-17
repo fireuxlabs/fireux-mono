@@ -6,7 +6,7 @@ Role: map, not canon
 
 Parent: [Menu family](family-menu.md). Related: [Product language](product-language.md).
 
-Use these terms in Menu discovery and Kitchen service setup. This is a vocabulary
+Use these terms in Menu discovery and Kitchen Services setup. This is a vocabulary
 map, not a new storage model. Current source and tests establish behaviour.
 
 ## Food and venue
@@ -73,3 +73,11 @@ venue offering. Table, room and kiosk customer entrances carry their own context
 The current setup chooser does not expose every conceptual combination, including
 a separate counter-ordering option. Do not claim every glossary entry is configured
 or available at every venue. Refresh this map when service vocabulary changes.
+
+Workspace entry: `/workspace/kitchen/services`, separate from Orders.
+The Services overview and individual setup reuse the existing records and commands.
+
+Services names the Workspace setup surface. Offering remains the backing Kitchen
+record connecting menus, serving times and interactions; it is not a second
+customer label for Collection or Delivery. Recipes and Ingredients belong to
+Prep & Production; Menus and Services belong to customer-facing menu setup.

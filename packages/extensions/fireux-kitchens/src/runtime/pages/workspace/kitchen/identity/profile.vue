@@ -36,10 +36,11 @@ definePageMeta({
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-identity-profile',
     label: 'Venue profile',
     description: 'Name, branding, photos, contact details and location',
-    group: 'Identity',
+    group: 'Settings',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-id-card',

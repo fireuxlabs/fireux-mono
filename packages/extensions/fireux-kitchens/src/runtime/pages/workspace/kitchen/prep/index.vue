@@ -17,7 +17,7 @@ definePageMeta({
     key: 'workspace-kitchen-prep',
     label: 'Prep & Production',
     description:
-      'Organise preparation, stations and batch records. Recipe definitions stay in Menus & Recipes.',
+      'Manage recipes, ingredients, preparation, stations and batch records.',
     groupIndex: true,
     icon: 'i-lucide-cooking-pot',
     order: 20,
@@ -31,6 +31,8 @@ definePageMeta({
         to: '/workspace/kitchen/prep/plan',
         icon: 'i-lucide-clipboard-list',
       },
+      { label: 'Recipes', to: '/workspace/kitchen/food/recipes', icon: 'i-lucide-book-open' },
+      { label: 'Ingredients', to: '/workspace/kitchen/food/ingredients', icon: 'i-lucide-carrot' },
       { label: 'Stations', to: '/workspace/kitchen/stations' },
       { label: 'Batches', to: '/workspace/kitchen/prep/batches' },
     ],

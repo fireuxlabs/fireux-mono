@@ -41,6 +41,7 @@ export type MenuDirectoryOutcome =
 type UseMenuDirectoryOptions = {
   routeScope?: MaybeRefOrGetter<MenuRouteScope>
   service?: MaybeRefOrGetter<'online' | 'collection' | 'delivery' | 'table' | 'room_service'>
+  offering?: MaybeRefOrGetter<string>
   search?: MaybeRefOrGetter<string>
   pageSize?: number
 }
@@ -94,6 +95,8 @@ export function useMenuDirectory(
     const query = new URLSearchParams({ limit: String(pageSize) })
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
     if (service.value) query.set('service', service.value)
+    const offering = toValue(options.offering)
+    if (offering) query.set('offering', offering)
     if (search.value) query.set('search', search.value)
 
     return `/api/menus?${query.toString()}`

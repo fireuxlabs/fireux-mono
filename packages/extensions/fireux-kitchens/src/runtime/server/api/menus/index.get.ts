@@ -8,6 +8,7 @@ export default defineLiveReadHandler((event) => {
     kitchenSlug: query.kitchenSlug,
     service: query.service,
     search: query.search,
+    offering: query.offering,
     cursor: query.cursor,
     limit: query.limit,
   })

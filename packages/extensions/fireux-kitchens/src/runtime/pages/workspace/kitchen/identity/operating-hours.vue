@@ -10,7 +10,7 @@
             class="mb-4"
             :ui="{ list: 'flex-wrap' }"
             :items="[
-              { label: 'Identity', to: '/workspace/kitchen/identity' },
+              { label: 'Settings', to: '/workspace/kitchen/settings' },
               { label: 'Operating hours' },
             ]"
           /><WorkspaceKitchenOperatingHours />
@@ -28,11 +28,12 @@ definePageMeta({
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-operating-hours',
     label: 'Operating hours',
     description:
       'Venue opening hours, Kitchen working hours and offering schedules',
-    group: 'Identity',
+    group: 'Settings',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-clock',

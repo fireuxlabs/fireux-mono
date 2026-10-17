@@ -25,6 +25,33 @@
     >
   </WorkspaceSingleCard>
   <p v-else class="fx-type-caption">Choose a Kitchen from the collection.</p>
+  <nav
+    v-if="selected"
+    aria-label="Kitchen tools"
+    class="grid gap-3 sm:grid-cols-3"
+  >
+    <UButton
+      to="/workspace/kitchen/food/dishes"
+      label="Food &amp; drinks"
+      icon="i-lucide-utensils"
+      color="neutral"
+      variant="outline"
+    />
+    <UButton
+      to="/workspace/kitchen/menus"
+      label="Menus"
+      icon="i-lucide-book-open"
+      color="neutral"
+      variant="outline"
+    />
+    <UButton
+      to="/workspace/kitchen/services"
+      label="Services"
+      icon="i-lucide-shopping-bag"
+      color="neutral"
+      variant="outline"
+    />
+  </nav>
   <WorkspaceKitchenHomeEdit v-model:open="editOpen" />
 </template>
 <script setup lang="ts">

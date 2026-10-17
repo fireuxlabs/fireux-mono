@@ -28,9 +28,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-ingredients',
     label: 'Ingredients',
-    group: 'Menus & Recipes',
+    group: 'Prep & Production',
+    hidden: true,
     groupDisplay: 'nested',
-    groupIcon: 'i-lucide-utensils',
+    groupIcon: 'i-lucide-cooking-pot',
     icon: 'i-lucide-carrot',
     position: 'top',
     order: 33,

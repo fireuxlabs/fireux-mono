@@ -41,6 +41,7 @@ definePageMeta({
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-overview',
     label: 'Overview',
     group: '',

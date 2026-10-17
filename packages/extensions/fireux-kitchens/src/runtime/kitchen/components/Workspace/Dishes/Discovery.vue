@@ -1,7 +1,7 @@
 <template>
   <div>
     <WorkspaceKitchenResearchGuide
-      :capability="catalogue.plural"
+      :capability="catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'"
     />
     <WorkspaceKitchenResearchSegue
       :capability="catalogue.title"

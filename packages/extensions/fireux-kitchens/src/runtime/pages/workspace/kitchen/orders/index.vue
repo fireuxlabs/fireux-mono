@@ -13,7 +13,7 @@ definePageMeta({
     key: 'workspace-kitchen-orders',
     label: 'Orders',
     description:
-      'View orders and configure how customers and staff order.',
+      'View and manage customer orders.',
     groupIndex: true,
     group: '',
     icon: 'i-lucide-receipt-text',
@@ -24,7 +24,6 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       {label:'Order board',to:'/workspace/kitchen/orders/board',icon:'i-lucide-panels-top-left'},
-      {label:'Channels',to:'/workspace/kitchen/orders/channels',icon:'i-lucide-waypoints'},
     ],
   },
   requiresAuth: false,

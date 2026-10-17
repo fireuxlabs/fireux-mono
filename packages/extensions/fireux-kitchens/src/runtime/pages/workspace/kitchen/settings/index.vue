@@ -27,6 +27,31 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       {
+        label: 'Kitchen listing',
+        to: '/workspace/kitchen/identity',
+        icon: 'i-lucide-store',
+      },
+      {
+        label: 'Venue profile',
+        to: '/workspace/kitchen/identity/profile',
+        icon: 'i-lucide-map-pin',
+      },
+      {
+        label: 'Operating hours',
+        to: '/workspace/kitchen/identity/operating-hours',
+        icon: 'i-lucide-clock',
+      },
+      {
+        label: 'Appearance',
+        to: '/workspace/kitchen/identity/appearance',
+        icon: 'i-lucide-palette',
+      },
+      {
+        label: 'Payments',
+        to: '/workspace/kitchen/identity/payments',
+        icon: 'i-lucide-credit-card',
+      },
+      {
         label: 'Integrations',
         icon: 'i-lucide-plug',
         to: '/workspace/kitchen/settings/integrations',

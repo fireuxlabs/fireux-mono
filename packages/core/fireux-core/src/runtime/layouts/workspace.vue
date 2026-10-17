@@ -3,6 +3,7 @@
     <UDashboardSidebar
       id="core-workspace"
       v-model:open="open"
+      v-model:collapsed="sidebarCollapsed"
       collapsible
       class="h-svh max-h-svh border-r-0"
       :ui="{
@@ -19,9 +20,16 @@
           >
             <AppBrandWordmark size="card" alt="FireUX" />
           </NuxtLink>
-          <UDashboardSidebarCollapse
-            :class="collapsed ? 'mx-auto' : 'ml-auto'"
-          />
+          <UTooltip :text="sidebarNext.label">
+            <UButton
+              :class="collapsed ? 'mx-auto' : 'ml-auto'"
+              :icon="sidebarNext.icon"
+              :aria-label="sidebarNext.label"
+              color="neutral"
+              variant="ghost"
+              @click="sidebarMode = sidebarNext.mode"
+            />
+          </UTooltip>
         </div>
       </template>
 
@@ -29,7 +37,7 @@
         <div class="flex h-full min-h-0 flex-col gap-3">
           <UNavigationMenu
             v-if="topNavItems.length"
-            :key="`${workspace}:${activeNavGroup}:${groupVisit}`"
+            :key="`${workspace}:${activeNavGroup}:${groupVisit}:${sidebarMode}`"
             tooltip
             :popover="{ mode: 'click' }"
             :collapsed="collapsed ?? false"
@@ -151,6 +159,7 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
 import { useNuxtApp, useRoute } from '#imports'
 import { computed, ref } from 'vue'
+import { workspaceSidebarNext, type WorkspaceSidebarMode } from '../composables/navigation/workspace-sidebar-mode'
 import type { NavigationMenuItem } from '@nuxt/ui'
 import WorkspaceEntitySwitcher from '../components/Workspace/EntitySwitcher.vue'
 import {
@@ -166,6 +175,12 @@ import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
+const sidebarMode = ref<WorkspaceSidebarMode>('expanded')
+const sidebarNext = computed(() => workspaceSidebarNext(sidebarMode.value))
+const sidebarCollapsed = computed({
+  get: () => sidebarMode.value === 'compact',
+  set: (value: boolean) => { sidebarMode.value = value ? 'compact' : 'expanded' },
+})
 // Remount the accordion defaults when revisiting an already-active group index.
 const groupVisit = ref(0)
 const isDevelopment = import.meta.dev
@@ -234,7 +249,7 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
             }
           : undefined,
         active: activeNavGroup.value === item.label,
-        defaultOpen: activeNavGroup.value === item.label,
+        defaultOpen: sidebarMode.value === 'all' || activeNavGroup.value === item.label,
         children: item.children.map((child) => ({
           ...child,
           active: destinationActive(child.to),
@@ -273,7 +288,7 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
         value: `group:${label}`,
         type: 'trigger',
         active: label === activeNavGroup.value,
-        defaultOpen: label === activeNavGroup.value,
+        defaultOpen: sidebarMode.value === 'all' || label === activeNavGroup.value,
         children: [],
       }
       groups.set(label, group)

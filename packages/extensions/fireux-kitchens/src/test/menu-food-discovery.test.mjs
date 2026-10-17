@@ -18,6 +18,8 @@ test('Menu discovery retains each menu, filters services and preserves destinati
   assert.equal(api.groups.value.length,1)
   assert.equal(api.groups.value[0].menus.length,1)
   assert.equal(api.groups.value[0].actions.length,2)
+  assert.deepEqual(api.groups.value[0].actions[0].offerings,[{id:'pickup'}])
+  assert.deepEqual(api.groups.value[0].actions[1].offerings,[{id:'courier'}])
   assert.equal(api.groups.value[0].to,'/kitchens/baren/menu.collection')
   assert.equal(api.groups.value[0].offerings.length,2)
   api.service.value='collection'

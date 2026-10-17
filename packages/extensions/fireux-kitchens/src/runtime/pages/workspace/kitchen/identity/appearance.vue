@@ -8,7 +8,7 @@
             class="mb-4"
             :ui="{ list: 'flex-wrap' }"
             :items="[
-              { label: 'Identity', to: '/workspace/kitchen/identity' },
+              { label: 'Settings', to: '/workspace/kitchen/settings' },
               { label: 'Appearance' },
             ]"
           /><WorkspaceKitchenAppearance />
@@ -26,10 +26,11 @@ definePageMeta({
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-appearance',
     label: 'Appearance',
     description: 'Menu colours and a preview of your public menu',
-    group: 'Identity',
+    group: 'Settings',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-palette',

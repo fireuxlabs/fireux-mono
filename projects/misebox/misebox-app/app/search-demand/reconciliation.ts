@@ -105,7 +105,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/Channels.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/Index.vue',
         ],
       },
       {
@@ -247,7 +247,7 @@ export const kitchenReconciliation = {
         'Prove one client order through operator confirmation, fulfilment and saved sales evidence; a service session is not the architectural service layer.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/channels/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/services/index.vue',
       ],
       source_capability_ids: ['orders-service'],
       source_observation_ids: ['independent-operators-2026'],
@@ -397,7 +397,7 @@ export const kitchenReconciliation = {
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-options.ts',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/integrations.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/payments.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/channels/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/services/index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/qr.vue',
       ],
       source_capability_ids: ['menus', 'orders-service'],

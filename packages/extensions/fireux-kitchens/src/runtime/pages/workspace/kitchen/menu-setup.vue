@@ -1,15 +1,15 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-menus-recipes-overview">
+    <UDashboardPanel id="workspace-kitchen-menu-setup">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Menus & Recipes"
+        ><LayoutsWorkspaceNavbar title="Menus"
       /></template>
-      <template #body><MenusRecipesOverview /></template>
+      <template #body><MenusOverview /></template>
     </UDashboardPanel>
   </div>
 </template>
 <script setup lang="ts">
-import MenusRecipesOverview from '../../../kitchen/components/Workspace/Overview/MenusRecipes.vue'
+import MenusOverview from '../../../kitchen/components/Workspace/Overview/Menus.vue'
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',
@@ -19,9 +19,10 @@ definePageMeta({
   requiresSelection: false,
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    key: 'workspace-kitchen-menus-recipes-overview',
-    label: 'Menus & Recipes',
-    group: 'Menus & Recipes',
+    hidden: true,
+    key: 'workspace-kitchen-menu-setup',
+    label: 'Menus',
+    group: 'Menus',
     groupDisplay: 'nested',
     groupIndex: true,
     groupIcon: 'i-lucide-utensils',

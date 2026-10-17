@@ -26,9 +26,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-recipes',
     label: 'Recipes',
-    group: 'Menus & Recipes',
+    group: 'Prep & Production',
+    hidden: true,
     groupDisplay: 'nested',
-    groupIcon: 'i-lucide-utensils',
+    groupIcon: 'i-lucide-cooking-pot',
     icon: 'i-lucide-notebook-tabs',
     position: 'top',
     order: 32,

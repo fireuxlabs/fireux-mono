@@ -20,7 +20,7 @@
       :key="row.id"
       class="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm"
     >
-      <span class="font-medium text-highlighted">{{ row.name }}</span>
+      <span v-if="showNames" class="font-medium text-highlighted">{{ row.name }}</span>
       <span :class="row.open ? 'font-medium text-success' : 'text-muted'">{{
         row.label
       }}</span>
@@ -46,9 +46,10 @@ const props = withDefaults(
   defineProps<{
     offerings: KitchenPublicOffering[]
     compact?: boolean
+    showNames?: boolean
     emptyMessage?: string
   }>(),
-  { compact: false, emptyMessage: '' }
+  { compact: false, showNames: true, emptyMessage: '' }
 )
 const { now } = useKitchenOfferingNow()
 const rows = computed(() =>

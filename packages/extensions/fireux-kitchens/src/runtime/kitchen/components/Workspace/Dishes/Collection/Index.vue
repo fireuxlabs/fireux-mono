@@ -13,28 +13,55 @@
           @click="aiOpen = true"
         />
         <UButton
-          v-if="!readOnly && (outcome === 'ready' || outcome === 'empty')"
+          v-if="
+            catalogue.itemKind !== 'all' &&
+            !readOnly &&
+            (outcome === 'ready' || outcome === 'empty')
+          "
           :label="`Add ${catalogue.singular}`"
           icon="i-lucide-plus"
           :to="catalogue.createPath"
         />
+        <template
+          v-if="
+            catalogue.itemKind === 'all' &&
+            !readOnly &&
+            ['ready', 'empty'].includes(outcome)
+          "
+        >
+          <UButton
+            label="Add dish"
+            to="/workspace/kitchen/food/dishes/create"
+            icon="i-lucide-plus"
+          />
+          <UButton
+            label="Add drink"
+            to="/workspace/kitchen/food/drinks/create"
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-plus"
+          />
+        </template>
       </template>
     </WorkspaceKitchenCollectionHeader>
 
-    <nav class="catalogue-tabs" aria-label="Food and drink catalogue">
-      <NuxtLink
-        to="/workspace/kitchen/food/dishes"
-        :aria-current="catalogue.itemKind === 'food' ? 'page' : undefined"
-        :class="{ selected: catalogue.itemKind === 'food' }"
-        ><UIcon name="i-lucide-cooking-pot" /> Dishes</NuxtLink
+    <div
+      v-if="catalogue.itemKind === 'all'"
+      class="catalogue-tabs"
+      role="group"
+      aria-label="Food and drink catalogue"
+    >
+      <button
+        v-for="option in kindFilters"
+        :key="option.value"
+        type="button"
+        :aria-pressed="kind === option.value"
+        :class="{ selected: kind === option.value }"
+        @click="kind = option.value"
       >
-      <NuxtLink
-        to="/workspace/kitchen/food/drinks"
-        :aria-current="catalogue.itemKind === 'drink' ? 'page' : undefined"
-        :class="{ selected: catalogue.itemKind === 'drink' }"
-        ><UIcon name="i-lucide-glass-water" /> Drinks</NuxtLink
-      >
-    </nav>
+        {{ option.label }}
+      </button>
+    </div>
 
     <WorkspaceKitchenCollectionToolbar
       v-if="outcome === 'ready' || outcome === 'empty'"
@@ -66,7 +93,7 @@
     </WorkspaceKitchenCollectionToolbar>
     <div
       v-if="
-        catalogue.itemKind === 'food' &&
+        (catalogue.itemKind === 'food' || kind === 'food') &&
         (outcome === 'ready' || outcome === 'empty')
       "
       class="catalogue-filters"
@@ -134,7 +161,11 @@
         @click="clearFilters"
       />
       <UButton
-        v-else-if="!readOnly && (outcome === 'ready' || outcome === 'empty')"
+        v-else-if="
+          catalogue.itemKind !== 'all' &&
+          !readOnly &&
+          (outcome === 'ready' || outcome === 'empty')
+        "
         :label="`Add ${catalogue.singular}`"
         :to="catalogue.createPath"
         icon="i-lucide-plus"
@@ -150,9 +181,7 @@
         :description="dish.description"
         :meta="
           [
-            catalogue.itemKind === 'food'
-              ? dishCategoryLabel(dish.category)
-              : '',
+            dish.item_kind === 'food' ? dishCategoryLabel(dish.category) : '',
             dish.spec ? 'Spec added' : '',
           ]
             .filter(Boolean)
@@ -161,7 +190,7 @@
         :list="view === 'list'"
         expanded
         link
-        :to="dishLink(dish.id)"
+        :to="dishLink(dish.id, dish.item_kind)"
       />
     </div>
 
@@ -208,7 +237,10 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { dishCategories, dishCategoryLabel } from '../../../../models/dish.model'
+import {
+  dishCategories,
+  dishCategoryLabel,
+} from '../../../../models/dish.model'
 import { computed, ref, watch } from 'vue'
 import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
 import {
@@ -227,6 +259,15 @@ const {
   catalogue,
 } = useKitchenDishesContext()
 const route = useRoute()
+const kindFilters = [
+  { value: 'all', label: 'All' },
+  { value: 'food', label: 'Food' },
+  { value: 'drink', label: 'Drinks' },
+] as const
+const kind = ref('all')
+watch(kind, () => {
+  category.value = 'all'
+})
 const query = ref(
   typeof route.query.search === 'string' ? route.query.search : ''
 )
@@ -234,21 +275,31 @@ const category = ref(
   typeof route.query.category === 'string' ? route.query.category : 'all'
 )
 const organise = ref(false)
+const kindDishes = computed(() =>
+  dishes.value.filter(
+    (dish) => kind.value === 'all' || dish.item_kind === kind.value
+  )
+)
+const foodDishes = computed(() =>
+  dishes.value.filter((dish) => dish.item_kind === 'food')
+)
 const categoryFilters = computed(() =>
   [
-    { value: 'all', label: 'All dishes', count: dishes.value.length },
+    { value: 'all', label: 'All dishes', count: foodDishes.value.length },
     ...dishCategories.map((item) => ({
       ...item,
-      count: dishes.value.filter((dish) => dish.category === item.value).length,
+      count: foodDishes.value.filter((dish) => dish.category === item.value)
+        .length,
     })),
     {
       value: 'uncategorised',
       label: 'Uncategorised',
-      count: dishes.value.filter((dish) => !dish.category).length,
+      count: foodDishes.value.filter((dish) => !dish.category).length,
     },
   ].filter((item) => item.value === 'all' || item.count > 0)
 )
 const clearFilters = () => {
+  kind.value = 'all'
   query.value = ''
   filter.value = 'all'
   category.value = 'all'
@@ -259,8 +310,8 @@ const filter = ref(
 const view = ref<'grid' | 'list'>(
   route.query.layout === 'grid' ? 'grid' : 'list'
 )
-const dishLink = (id: string) =>
-  `${catalogue.path}/${encodeURIComponent(id)}?${new URLSearchParams({ category: category.value, search: query.value, filter: filter.value, layout: view.value })}`
+const dishLink = (id: string, itemKind: string) =>
+  `/workspace/kitchen/food/${itemKind === 'drink' ? 'drinks' : 'dishes'}/${encodeURIComponent(id)}?${new URLSearchParams({ category: category.value, search: query.value, filter: filter.value, layout: view.value })}`
 const aiOpen = ref(false)
 const normalize = (value: unknown) =>
   String(value || '')
@@ -269,20 +320,20 @@ const normalize = (value: unknown) =>
     .toLowerCase()
     .trim()
 const filters = computed(() => [
-  { value: 'all', label: 'All', count: dishes.value.length },
+  { value: 'all', label: 'All', count: kindDishes.value.length },
   {
     value: 'image',
     label: 'Missing image',
-    count: dishes.value.filter((d) => !d.image?.trim()).length,
+    count: kindDishes.value.filter((d) => !d.image?.trim()).length,
   },
   {
     value: 'description',
     label: 'Missing description',
-    count: dishes.value.filter((d) => !d.description?.trim()).length,
+    count: kindDishes.value.filter((d) => !d.description?.trim()).length,
   },
 ])
 const visibleDishes = computed(() =>
-  dishes.value
+  kindDishes.value
     .filter(
       (dish) =>
         (category.value === 'all' ||
@@ -304,7 +355,7 @@ const pageSize = 40
 const pageDishes = computed(() =>
   visibleDishes.value.slice((page.value - 1) * pageSize, page.value * pageSize)
 )
-watch([query, category, filter, kitchenId], () => {
+watch([query, kind, category, filter, kitchenId], () => {
   page.value = 1
 })
 watch(
@@ -316,6 +367,7 @@ watch(
 watch(kitchenId, (_next, previous) => {
   if (!previous) return
   organise.value = false
+  kind.value = 'all'
   query.value = ''
   filter.value = 'all'
   category.value = 'all'
@@ -324,12 +376,14 @@ watch(kitchenId, (_next, previous) => {
 const suggestions = computed(() =>
   catalogue.itemKind === 'drink'
     ? buildMissingDrinkImageSuggestions(dishes.value)
-    : buildMissingDishImageSuggestions(dishes.value)
+    : buildMissingDishImageSuggestions(
+        dishes.value.filter((dish) => dish.item_kind === 'food')
+      )
 )
 const actionTargets = computed(() =>
   dishes.value.flatMap((dish) =>
     ['update', 'delete'].map((action) => ({
-      actionId: `kitchen.${catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'}.${action}-${catalogue.singular}`,
+      actionId: `kitchen.${dish.item_kind === 'drink' ? 'drinks' : 'dishes'}.${action}-${dish.item_kind === 'drink' ? 'drink' : 'dish'}`,
       targetId: dish.id,
       label: dish.name,
     }))
@@ -353,7 +407,7 @@ const actionTargets = computed(() =>
   gap: 28px;
   border-bottom: 1px solid var(--ui-border);
 }
-.catalogue-tabs a {
+.catalogue-tabs button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -362,7 +416,7 @@ const actionTargets = computed(() =>
   border-bottom: 2px solid transparent;
   font-weight: 500;
 }
-.catalogue-tabs a.selected {
+.catalogue-tabs button.selected {
   color: var(--ui-primary);
   border-color: var(--ui-primary);
 }

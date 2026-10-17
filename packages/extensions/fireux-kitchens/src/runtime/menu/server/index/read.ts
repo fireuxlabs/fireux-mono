@@ -19,6 +19,7 @@ import { readScopedMenuDirectoryContext } from './context'
 import { projectMenuDirectoryEntry } from './projection'
 
 export type ReadMenuDirectoryPageInput = {
+  offering?: unknown
   search?: unknown
   service?: unknown
   kitchenSlug?: unknown
@@ -138,13 +139,13 @@ async function readMenuDirectoryBatch(
         scopes.set(snapshot.id, scope)
         contexts.set(
           snapshot.id,
-          await readScopedMenuDirectoryContext(db, scope)
+          await readScopedMenuDirectoryContext(db, scope, ['online', 'collection', 'delivery'].includes(text(input.service)))
         )
       })
     )
   }
   const scopedContext = scopedKitchen
-    ? await readScopedMenuDirectoryContext(db, scopedKitchen)
+    ? await readScopedMenuDirectoryContext(db, scopedKitchen, ['online', 'collection', 'delivery'].includes(text(input.service)))
     : null
   const items = documents
     .map((document) => {
@@ -216,6 +217,7 @@ export async function readMenuDirectoryPage(
           ).length > 0)
       )
     for (const menu of eligible) {
+      if (input.offering && !menu.offerings?.some(offering => offering.id === text(input.offering))) continue
       if (!search) { items.push(menu); continue }
       const dishes = await readMatchingMenuDishes(getRuntimeFirestore(), menu, search)
       const metadata = [menu.name, menu.description, menu.source?.kitchen_name, menu.kitchen?.name].filter(Boolean).join(' ')

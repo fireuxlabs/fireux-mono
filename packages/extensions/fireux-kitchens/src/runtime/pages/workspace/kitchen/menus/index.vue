@@ -29,12 +29,18 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-menus',
     label: 'Menus',
-    group: 'Menus & Recipes',
-    groupDisplay: 'nested',
-    groupIcon: 'i-lucide-utensils',
+    groupIndex: true,
+    group: '',
+    children: [
+      {
+        label: 'Promotions',
+        to: '/workspace/kitchen/promotions',
+        icon: 'i-lucide-tags',
+      },
+    ],
     icon: 'i-lucide-book-open',
     position: 'top',
-    order: 30,
+    order: 11,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

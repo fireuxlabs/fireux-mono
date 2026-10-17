@@ -11,9 +11,10 @@ definePageMeta({
   requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-payments',
     label: 'Payments',
-    group: 'Identity',
+    group: 'Settings',
     groupDisplay: 'nested',
     icon: 'i-lucide-credit-card',
     position: 'top',

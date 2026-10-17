@@ -5,8 +5,8 @@
         Offering hours
       </h2>
       <UButton
-        to="/workspace/kitchen/orders/channels"
-        label="Manage offerings"
+        to="/workspace/kitchen/services"
+        label="Manage services"
         color="neutral"
         variant="link"
         trailing-icon="i-lucide-arrow-up-right"
@@ -33,7 +33,7 @@
             </div>
             <UButton
               :to="
-                '/workspace/kitchen/orders/channels/' +
+                '/workspace/kitchen/services/' +
                 encodeURIComponent(offering.id)
               "
               :aria-label="'Edit ' + offering.name + ' serving hours'"

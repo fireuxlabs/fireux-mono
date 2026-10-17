@@ -150,7 +150,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/runtime`.
 | --- | --- | --- |
 | Kitchen Payments | `kitchen/components/Workspace/Identity/Payments/Index.vue`, `Methods.vue` | Reuses `useKitchenFulfilment`; payment applicability controls own their focused command intent. Identity placement does not move Kitchen storage. |
 | Kitchen Delivery | `kitchen/components/Workspace/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue` | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection. |
-| Orders configuration | `kitchen/components/Workspace/Orders/Channels.vue` | Separates origin channels from service choices, reusing Offering readers/setup and the named Delivery composition. No new configuration store. |
+| Services setup | `kitchen/components/Workspace/Offerings/Index.vue` | Reuses Offering readers/setup and the named Delivery composition outside the Orders capability. No new configuration store. |
 | Ordering library | `kitchen/components/Library/Orders.vue`, `Orders/Preview.vue`, `Orders/Success.vue` | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority. |
 | Customer ordering | `menu/components/Order/Index.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks. |
 | Order board | `kitchen/components/Workspace/Orders/Board.vue` | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |

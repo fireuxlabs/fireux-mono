@@ -174,6 +174,17 @@ test('a dish match on a delivery-only menu cannot leak into Collection search',a
   const result=await load([{scope:{kind:'root'},items:[delivery],nextCursor:null}],[])({service:'collection',search:'pizza'})
   assert.deepEqual(result.items,[])
 })
+test('offering browse filters before pagination and ignores menus from other offerings',async()=>{
+  const breakfast=menu('Breakfast')
+  breakfast.offerings=[{id:'breakfast'}]
+  const lunch=menu('Lunch')
+  lunch.offerings=[{id:'lunch'}]
+  const result=await load([
+    {scope:{kind:'directory'},items:[lunch],nextCursor:'next'},
+    {scope:{kind:'directory'},items:[breakfast],nextCursor:null},
+  ],[])({offering:'breakfast',limit:1})
+  assert.deepEqual(result.items.map(row=>row.name),['Breakfast'])
+})
 test('unknown service does not silently fall back to Browse', async () => {
   const calls = []
   await assert.rejects(load([], calls)({ service: 'unknown' }), /Unknown/)

@@ -13,9 +13,10 @@ definePageMeta({
   requiresAuth: false,
   requiresSelection: false,
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-promotions',
     label: 'Promotions',
-    group: 'Menus & Recipes',
+    group: 'Menus',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-utensils',
     icon: 'i-lucide-badge-percent',

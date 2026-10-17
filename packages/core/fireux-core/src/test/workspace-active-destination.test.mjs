@@ -79,7 +79,7 @@ test('path boundaries prevent similarly named capabilities matching each other',
 })
 
 // Exercise the actual shared sidebar projection for both supported group shapes.
-function sidebar(items, route) {
+function sidebar(items, route, mode = 'expanded') {
   const layout = readFileSync(
     new URL('../runtime/layouts/workspace.vue', import.meta.url),
     'utf8'
@@ -98,8 +98,9 @@ function sidebar(items, route) {
       'workspaceActiveDestination',
       'open',
       'groupVisit',
+      'sidebarMode',
     ]
-  )(computed, ref(items), route, active, open, groupVisit)
+  )(computed, ref(items), route, active, open, groupVisit, ref(mode))
   return { ...result, open, groupVisit }
 }
 
@@ -179,4 +180,14 @@ test('route-group index omits its duplicate child and indexless groups retain tr
   assert.equal(identity.defaultOpen, true)
   assert.equal(settings.type, 'trigger')
   assert.equal(settings.to, undefined)
+})
+
+test('Expand all opens both explicit-child and metadata groups without changing active selection',()=>{
+  const state=sidebar([
+    {key:'orders',label:'Orders',to:'/orders',groupIndex:true,children:[{label:'Board',to:'/orders/board'}]},
+    {key:'menus',label:'Menus',to:'/menus',group:'Menus',groupDisplay:'nested',groupIndex:true},
+    {key:'services',label:'Services',to:'/services',group:'Menus',groupDisplay:'nested'},
+  ],current('/services'),'all')
+  assert.ok(state.topNavItems.value.every(item=>item.defaultOpen))
+  assert.equal(state.activeDestination.value,'/services')
 })

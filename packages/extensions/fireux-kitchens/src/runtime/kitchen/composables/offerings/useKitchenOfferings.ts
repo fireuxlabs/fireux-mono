@@ -147,7 +147,7 @@ export function useKitchenOfferings(
       ok: true
       kitchen_id: string
       offering: KitchenOffering
-    }>('/api/workspace/kitchen/offerings/' + action, {
+    }>('/api/workspace/kitchen/services/' + action, {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + token },
       body: { ...payload, kitchenId },

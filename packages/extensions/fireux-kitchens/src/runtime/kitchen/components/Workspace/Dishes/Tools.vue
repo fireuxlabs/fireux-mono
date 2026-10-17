@@ -1,5 +1,7 @@
 <template>
-  <WorkspaceKitchenToolsToolbar :capability="catalogue.plural" />
+  <WorkspaceKitchenToolsToolbar
+    :capability="catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'"
+  />
 </template>
 
 <script setup lang="ts">
