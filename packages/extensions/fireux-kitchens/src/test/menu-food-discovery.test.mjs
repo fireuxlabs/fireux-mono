@@ -36,7 +36,11 @@ test('Menu discovery retains each menu, filters services and preserves destinati
       offering_options: [{ type: 'collection', paused: true }],
     },
   ]
-  rows[0].offerings.push({ id: 'picnic', collection_timing: 'next_day' })
+  rows[0].offerings.push({
+    id: 'picnic',
+    separate: true,
+    collection_timing: 'next_day',
+  })
   rows[0].offering_options.push({
     kitchen_offering_id: 'picnic',
     type: 'collection',

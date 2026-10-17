@@ -21,7 +21,7 @@ export function menuServiceOfferings(
     (offering) =>
       (offeringId
         ? offering.id === offeringId
-        : offering.collection_timing !== 'next_day') &&
+        : !offering.separate) &&
       ids.has(offering.id) &&
       !offering.paused &&
       Boolean(offering.hours?.windows.length)

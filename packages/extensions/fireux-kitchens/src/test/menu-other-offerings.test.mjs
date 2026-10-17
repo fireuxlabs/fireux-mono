@@ -70,9 +70,27 @@ test('next-day Picnic remains a quiet named entrance even when it reuses a main 
   const main = offering('main', 'Collection', ['food'], ['collection'])
   const picnic = {
     ...offering('picnic', 'Picnic', ['food'], ['collection']),
+    separate: true,
     collection_timing: 'next_day',
   }
   assert.deepEqual(await read(db, 'venue', [main, picnic]), [
     { id: 'picnic', name: 'Picnic', service: 'collection' },
   ])
+})
+
+test('Picnic retains its named discovery link across timing edits without changing other offerings', async () => {
+  const main = offering('main', 'Collection', ['food'], ['collection'])
+  const delivery = offering('delivery', 'Delivery', ['food'], ['delivery'])
+  const picnic = {
+    ...offering('picnic', 'Picnic', ['food'], ['collection']),
+    separate: true,
+  }
+  const before = structuredClone([main, delivery])
+  for (const timing of ['next_day', 'same_day', 'next_day']) {
+    picnic.collection_timing = timing
+    assert.deepEqual(await read(db, 'venue', [main, delivery, picnic]), [
+      { id: 'picnic', name: 'Picnic', service: 'collection' },
+    ])
+    assert.deepEqual([main, delivery], before)
+  }
 })

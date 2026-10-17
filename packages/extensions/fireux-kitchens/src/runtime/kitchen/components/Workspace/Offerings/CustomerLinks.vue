@@ -21,8 +21,8 @@
       Enable this offering when you are ready to check its customer links.
     </p>
     <UButton
-      v-else-if="offering.collection_timing === 'next_day' && entries.length"
-      :to="`${origin}/kitchens/${encodeURIComponent(kitchenSlug)}/menu.collection?offering=${encodeURIComponent(offering.id)}`"
+      v-else-if="separateCustomerUrl"
+      :to="separateCustomerUrl"
       :label="'View ' + offering.name"
       target="_blank"
       color="neutral"
@@ -122,4 +122,9 @@ const entries = computed(() => {
     }))
     .filter((entry) => entry.links.length)
 })
+const separateCustomerUrl = computed(() =>
+  props.offering.separate && entries.value.length
+    ? `${origin}/kitchens/${encodeURIComponent(props.kitchenSlug)}/menu.collection?offering=${encodeURIComponent(props.offering.id)}`
+    : undefined
+)
 </script>

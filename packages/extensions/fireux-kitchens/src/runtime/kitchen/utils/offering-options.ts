@@ -62,9 +62,7 @@ export function offeringsForOption(
 ) {
   return offerings.filter(
     (offering) =>
-      !(
-        option.key === 'collection' && offering.collection_timing === 'next_day'
-      ) &&
+      !offering.separate &&
       offering.interactions.some((interaction) =>
         (option.types as readonly string[]).includes(interaction.type)
       )

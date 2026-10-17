@@ -116,12 +116,12 @@
     </template>
     <UAlert v-else title="Choose a Kitchen to configure services" />
     <section
-      v-if="advanceOfferings.length"
+      v-if="separateOfferings.length"
       class="divide-y divide-default"
       aria-label="Named offerings"
     >
       <NuxtLink
-        v-for="offering in advanceOfferings"
+        v-for="offering in separateOfferings"
         :key="offering.id"
         :to="`/workspace/kitchen/services/${offering.id}`"
         class="flex items-center justify-between gap-3 py-4"
@@ -129,7 +129,12 @@
         <span
           ><span class="font-medium">{{ offering.name }}</span
           ><span class="ml-2 text-sm text-muted"
-            >Next-day collection · {{ offering.enabled ? 'On' : 'Off' }}</span
+            >{{
+              offering.collection_timing === 'next_day'
+                ? 'Next-day collection'
+                : 'Same-day collection'
+            }}
+            · {{ offering.enabled ? 'On' : 'Off' }}</span
           ></span
         >
         <UIcon name="i-lucide-chevron-right" />
@@ -249,10 +254,8 @@ const entries = computed(() =>
   }))
 )
 const createOpen = ref(false)
-const advanceOfferings = computed(() =>
-  offerings.value.filter(
-    (offering) => offering.collection_timing === 'next_day'
-  )
+const separateOfferings = computed(() =>
+  offerings.value.filter((offering) => offering.separate)
 )
 function openCreated(id: string) {
   createOpen.value = false

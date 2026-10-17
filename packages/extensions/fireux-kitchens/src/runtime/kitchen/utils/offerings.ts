@@ -27,10 +27,12 @@ export function readKitchenOffering(
           'menu_ids',
           'hours',
           'collection_timing',
+          'separate',
           'interactions',
         ].includes(key)
     ) ||
     (source.id !== undefined && source.id !== id) ||
+    (source.separate !== undefined && typeof source.separate !== 'boolean') ||
     (source.collection_timing !== undefined &&
       !['same_day', 'next_day'].includes(String(source.collection_timing))) ||
     typeof source.name !== 'string' ||

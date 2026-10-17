@@ -765,6 +765,7 @@ test('separate Picnic configuration creates one new record and preserves Collect
   )
   assert.equal(result.offering.id, 'created-1')
   assert.equal(result.offering.collection_timing, 'next_day')
+  assert.equal(result.offering.separate, true)
   assert.equal(result.offering.enabled, false)
   assert.equal(h.writes.length, 1)
   assert.equal(h.writes[0][0], 'create')
@@ -801,4 +802,89 @@ test('next-day collection rejects immediate pickup without writing any record', 
     /immediate collection/
   )
   assert.deepEqual(h.writes, [])
+})
+
+test('timing and configuration edits preserve separate identity and never write main services', async () => {
+  const main = saved({
+    enabled: true,
+    interactions: [{ type: 'collection', enabled: true }],
+  })
+  const delivery = saved({
+    id: 'delivery',
+    interactions: [{ type: 'delivery', enabled: true }],
+  })
+  const picnic = saved({
+    id: 'picnic',
+    name: 'Picnic',
+    separate: true,
+    collection_timing: 'next_day',
+  })
+  const h = harness({ offerings: [main, delivery, picnic] })
+  const before = structuredClone([...h.records])
+  for (const timing of ['same_day', 'next_day', 'same_day']) {
+    const result = await h.updateKitchenOffering(
+      {},
+      {
+        kitchenId: 'k',
+        offeringId: 'picnic',
+        changes: { collection_timing: timing },
+      }
+    )
+    assert.equal(result.offering.separate, true)
+    assert.equal(result.offering.collection_timing, timing)
+  }
+  const configured = await h.configureKitchenOffering(
+    {},
+    {
+      ...configure(),
+      offeringId: 'picnic',
+      enabled: false,
+      collection_timing: 'same_day',
+    }
+  )
+  assert.equal(configured.offering.separate, true)
+  assert.equal(configured.offering.collection_timing, 'same_day')
+  for (const [path, data] of before)
+    if (!path.endsWith('/picnic'))
+      assert.deepEqual(h.records.get(path), data, path)
+  assert.ok(
+    h.writes.every(([, path]) => path === 'kitchens/k/offerings/picnic')
+  )
+})
+
+test('ordinary edits cannot remove the separate identity', async () => {
+  const h = harness({ offerings: [saved({ separate: true })] })
+  await assert.rejects(() =>
+    h.updateKitchenOffering(
+      {},
+      { kitchenId: 'k', offeringId: 'saved', changes: { separate: false } }
+    )
+  )
+  assert.deepEqual(h.writes, [])
+})
+
+test('separate same-day creation is marked and does not prevent normal Collection setup', async () => {
+  const picnic = saved({
+    id: 'picnic',
+    name: 'Picnic',
+    separate: true,
+    collection_timing: 'same_day',
+  })
+  const h = harness({ offerings: [picnic] })
+  const main = await h.configureKitchenOffering({}, configure())
+  assert.equal(main.offering.separate, undefined)
+  const before = structuredClone([...h.records])
+  const separate = await h.configureKitchenOffering(
+    {},
+    {
+      ...configure(),
+      name: 'Another picnic',
+      createSeparate: true,
+      collection_timing: 'same_day',
+    }
+  )
+  assert.equal(separate.offering.separate, true)
+  assert.equal(separate.offering.collection_timing, 'same_day')
+  for (const [path, data] of before)
+    assert.deepEqual(h.records.get(path), data, path)
 })

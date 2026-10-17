@@ -11,6 +11,8 @@ export type KitchenOffering = {
   name: string
   enabled: boolean
   menu_ids: string[]
+  /** Named entrance, independent of collection timing. */
+  separate?: boolean
   collection_timing?: 'same_day' | 'next_day'
   hours?: WeekdayTimeWindowsConfig
   interactions: KitchenOfferingInteraction[]

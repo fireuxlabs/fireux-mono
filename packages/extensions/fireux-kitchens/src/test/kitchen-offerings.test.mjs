@@ -549,3 +549,35 @@ test('renaming preserves all valid saved interaction settings and rejects malfor
     assert.equal(bad.writes.length, 0)
   }
 })
+
+test('separate identity survives saved and public projection independently of timing', () => {
+  const { readKitchenPublicOfferings } = load(
+    '../runtime/kitchen/utils/public-offerings.ts',
+    'readKitchenPublicOfferings',
+    { normalizeKitchenOfferings }
+  )
+  for (const timing of ['next_day', 'same_day']) {
+    const picnic = {
+      ...active,
+      id: 'picnic',
+      name: 'Picnic',
+      separate: true,
+      collection_timing: timing,
+    }
+    const data = offeringContract.kitchenOfferingData(picnic)
+    assert.equal(
+      offeringContract.readKitchenOffering('picnic', data).separate,
+      true
+    )
+    const [guest] = readKitchenPublicOfferings([picnic], 'food')
+    assert.equal(guest.separate, true)
+    assert.equal(guest.collection_timing, timing)
+    assert.equal(
+      offeringContract.readKitchenOffering('picnic', {
+        ...data,
+        separate: 'true',
+      }),
+      null
+    )
+  }
+})

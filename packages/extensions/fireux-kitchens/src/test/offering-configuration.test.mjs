@@ -499,3 +499,20 @@ test('legacy table channels preserve availability; switching on an off offering 
     )
   }
 })
+
+test('separate offerings never join main service setup when collection timing changes', () => {
+  const picnic = {
+    id: 'picnic',
+    separate: true,
+    enabled: true,
+    interactions: [
+      { type: 'collection', enabled: true },
+      { type: 'delivery', enabled: true },
+    ],
+  }
+  for (const timing of ['next_day', 'same_day', 'next_day']) {
+    picnic.collection_timing = timing
+    for (const option of options.kitchenOfferingOptions)
+      assert.deepEqual(options.offeringsForOption([picnic], option), [])
+  }
+})

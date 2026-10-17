@@ -16,7 +16,7 @@ export async function readOtherMenuOfferings(
     active
       .filter(
         (offering) =>
-          offering.collection_timing !== 'next_day' &&
+          !offering.separate &&
           offering.interactions.some(
             (interaction) =>
               interaction.enabled &&
@@ -28,15 +28,12 @@ export async function readOtherMenuOfferings(
   )
   const candidates = active.filter(
     (offering) =>
-      offering.collection_timing === 'next_day' ||
-      offering.menu_ids.some((id) => !covered.has(id))
+      offering.separate || offering.menu_ids.some((id) => !covered.has(id))
   )
   const ids = [
     ...new Set(
       candidates.flatMap((offering) =>
-        offering.menu_ids.filter(
-          (id) => offering.collection_timing === 'next_day' || !covered.has(id)
-        )
+        offering.menu_ids.filter((id) => offering.separate || !covered.has(id))
       )
     ),
   ]
@@ -69,9 +66,7 @@ export async function readOtherMenuOfferings(
       {
         id: offering.id,
         name: offering.name,
-        ...(offering.collection_timing === 'next_day'
-          ? { service: 'collection' as const }
-          : {}),
+        ...(offering.separate ? { service: 'collection' as const } : {}),
       },
     ]
   })

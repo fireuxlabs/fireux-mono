@@ -2140,7 +2140,7 @@ sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
 
 
-## Separate advance-collection offerings
+## Separate collection offerings
 
 Services exposes Add offering for named collection experiences such as Picnic.
 Creation reuses the existing configure command with explicit `createSeparate`;
@@ -2150,13 +2150,16 @@ with a button to copy the venue opening hours as an editable snapshot. Creation
 starts off; existing publication and Menu readiness checks still apply before
 availability is enabled. No Dish prices, Promotions or Order records are written.
 
+`KitchenOffering.separate` marks a named offering independently of its timing.
+Add offering sets it at creation; ordinary configuration and timing edits preserve
+it. Services retains a named row and exact customer link for either timing.
 `KitchenOffering.collection_timing` distinguishes `same_day` and `next_day`.
 Next-day means the next local calendar collection day, rather than a rolling
 24-hour delay. The record remains a Collection offering, not a new service type.
-The normal Collection projection excludes advance offerings; an explicit
+The main Collection and Delivery projections exclude separate offerings; an explicit
 `menu.collection?offering=<id>` entrance selects that offering alone. Public
 portal discovery keeps its name as a quiet link, including when it reuses a Menu
-also used by main Collection. Named service views show next-day information and
+also used by main Collection. Named service views show next-day information when applicable and
 weekly collection hours; normal Collection and Delivery schedules stay unchanged.
 The Menu service projection remains browse-only; submitted Orders, payment and
 fulfilment execution are outside this change. See `offering-command-internals`,

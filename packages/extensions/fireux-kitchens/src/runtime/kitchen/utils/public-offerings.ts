@@ -19,6 +19,7 @@ export function readKitchenPublicOfferings(
       return {
         id: offering.id,
         name: offering.name,
+        ...(offering.separate ? { separate: true } : {}),
         ...(offering.collection_timing
           ? { collection_timing: offering.collection_timing }
           : {}),

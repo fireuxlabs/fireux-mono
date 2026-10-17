@@ -343,3 +343,78 @@ test('separate Offering creation saves only its own configuration and emits the 
   assert.deepEqual(events, [['created', 'picnic']])
   scope.stop()
 })
+
+test('Picnic keeps its Services row across same-day and next-day edits', () => {
+  const scope = vue.effectScope()
+  const offerings = vue.ref([
+    { id: 'main', name: 'Collection' },
+    {
+      id: 'picnic',
+      name: 'Picnic',
+      separate: true,
+      collection_timing: 'next_day',
+    },
+    { id: 'delivery', name: 'Delivery' },
+  ])
+  const state = scope.run(() =>
+    load(
+      base + 'Workspace/Offerings/Index.vue',
+      'separateOfferings',
+      {
+        ...vue,
+        useKitchenOfferings: () => ({ offerings, ownerScope: vue.ref(0) }),
+        kitchenOfferingOptions: [],
+      },
+      true
+    )
+  )
+  for (const timing of ['next_day', 'same_day', 'next_day']) {
+    offerings.value[1].collection_timing = timing
+    assert.deepEqual(
+      state.separateOfferings.value.map((row) => row.id),
+      ['picnic']
+    )
+  }
+  scope.stop()
+})
+
+test('Picnic customer URL stays on its exact offering across timing changes', () => {
+  const props = vue.reactive({
+    offering: {
+      id: 'picnic',
+      name: 'Picnic',
+      enabled: true,
+      separate: true,
+      menu_ids: ['food'],
+      collection_timing: 'next_day',
+    },
+    menus: [{ id: 'food', name: 'Food', status: 'published' }],
+    menusOutcome: 'ready',
+    kitchenSlug: 'baeren-ringgenberg',
+  })
+  const state = load(
+    base + 'Workspace/Offerings/CustomerLinks.vue',
+    'separateCustomerUrl',
+    {
+      ...vue,
+      defineProps: () => props,
+      useRequestURL: () => ({ origin: 'http://workspace.localhost:3001' }),
+      useFireUXConfig: () => ({ isTenant: false }),
+      menuWebsiteOrigin: () => 'http://localhost:3001',
+      directoryMenuRouteScope: (slug) => ({ slug }),
+      menuOfferingSummaries: () => [
+        { interactions: [{ customerUrl: '/food' }] },
+      ],
+    },
+    true
+  )
+  for (const timing of ['next_day', 'same_day', 'next_day']) {
+    props.offering.collection_timing = timing
+    assert.equal(
+      state.separateCustomerUrl.value,
+      'http://localhost:3001/kitchens/baeren-ringgenberg/menu.collection?offering=picnic'
+    )
+  }
+  props.menus = []
+  assert.equal(state.separateCustomerUrl.value, undefined)
+})

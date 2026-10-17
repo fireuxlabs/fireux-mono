@@ -86,7 +86,7 @@ const menus = computed(() =>
           !menu.offerings?.some(
             (offering) =>
               offering.id === option.kitchen_offering_id &&
-              offering.collection_timing === 'next_day'
+              offering.separate
           )
       )
   )
@@ -98,7 +98,7 @@ const servingTimes = (menu: MenuDirectoryEntry) =>
   (menu.offerings || []).filter(
     (offering) =>
       !offering.paused &&
-      offering.collection_timing !== 'next_day' &&
+      !offering.separate &&
       menu.offering_options?.some(
         (option) =>
           option.kitchen_offering_id === offering.id &&
@@ -132,7 +132,7 @@ const groups = computed(() => {
                 !menu.offerings?.some(
                   (offering) =>
                     offering.id === option.kitchen_offering_id &&
-                    offering.collection_timing === 'next_day'
+                    offering.separate
                 )
             )
           )
@@ -151,7 +151,7 @@ const groups = computed(() => {
                 (menu.offerings || []).filter(
                   (offering) =>
                     !offering.paused &&
-                    offering.collection_timing !== 'next_day' &&
+                    !offering.separate &&
                     menu.offering_options?.some(
                       (option) =>
                         option.kitchen_offering_id === offering.id &&

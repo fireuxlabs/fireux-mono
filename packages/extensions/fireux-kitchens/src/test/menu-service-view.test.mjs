@@ -658,6 +658,7 @@ test('Picnic is isolated from main Collection and requires its exact offering en
     id: 'picnic',
     name: 'Picnic',
     paused: false,
+    separate: true,
     collection_timing: 'next_day',
     hours: { windows: [{}] },
   }
@@ -681,3 +682,34 @@ test('Picnic is isolated from main Collection and requires its exact offering en
   )
   assert.deepEqual(menuServiceOfferings(row, 'collection', 'unknown'), [])
 })
+
+for (const timing of ['same_day', 'next_day']) {
+  test(`separate Picnic stays outside main services with ${timing} timing`, () => {
+    const row = menu()
+    row.offerings.push({
+      id: 'picnic',
+      name: 'Picnic',
+      separate: true,
+      collection_timing: timing,
+      hours: { windows: [{}] },
+    })
+    row.offering_options.push(
+      ...['collection', 'delivery'].map((type) => ({
+        type,
+        kitchen_offering_id: 'picnic',
+      }))
+    )
+    assert.deepEqual(
+      menuServiceOfferings(row, 'collection').map((x) => x.id),
+      ['collection']
+    )
+    assert.deepEqual(
+      menuServiceOfferings(row, 'delivery').map((x) => x.id),
+      ['delivery']
+    )
+    assert.deepEqual(
+      menuServiceOfferings(row, 'collection', 'picnic').map((x) => x.id),
+      ['picnic']
+    )
+  })
+}

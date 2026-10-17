@@ -123,10 +123,12 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
     if (
       config.isNew &&
       !config.createSeparate &&
-      offerings.some((offering) =>
-        offering.interactions.some((row) =>
-          (config.option.types as readonly string[]).includes(row.type)
-        )
+      offerings.some(
+        (offering) =>
+          !offering.separate &&
+          offering.interactions.some((row) =>
+            (config.option.types as readonly string[]).includes(row.type)
+          )
       )
     ) {
       throw createError({
@@ -160,6 +162,7 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
     const offering = {
       id,
       name: config.changes.name!,
+      ...(config.createSeparate || current?.separate ? { separate: true } : {}),
       menu_ids: config.changes.menu_ids!,
       hours: config.changes.hours!,
       ...(config.changes.collection_timing || current?.collection_timing
