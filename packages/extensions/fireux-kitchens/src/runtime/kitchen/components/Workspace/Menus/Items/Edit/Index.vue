@@ -1,16 +1,19 @@
 <template>
-  <div class="space-y-4">
+  <div class="menu-items-editor space-y-4">
     <MoleculesCopyError v-if="editor.moveError" :message="editor.moveError" />
-    <UButton
-      :to="`/workspace/kitchen/menus/${encodeURIComponent(editor.menuSlug)}`"
-      @click="editor.rememberView(editor.menuSlug, 'content', $event)"
-      color="neutral"
-      variant="ghost"
-      icon="i-lucide-arrow-left"
-      size="sm"
-    >
-      Back to sections
-    </UButton>
+    <div class="flex items-center justify-between gap-3">
+      <UButton
+        :to="`/workspace/kitchen/menus/${encodeURIComponent(editor.menuSlug)}`"
+        @click="editor.rememberView(editor.menuSlug, 'content', $event)"
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-arrow-left"
+        size="sm"
+      >
+        Back to sections
+      </UButton>
+      <WorkspaceKitchenMenusItemsAdd v-if="editor.section" />
+    </div>
 
     <MoleculesCopyError
       v-if="editor.sectionsError"
@@ -27,11 +30,19 @@
 
     <UCard v-else>
       <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <CollectionRow as="div" :style="{ paddingBlock: 0 }">
           <div>
-            <h2 class="text-base font-semibold text-highlighted">
-              {{ editor.section.label }}
-            </h2>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-semibold text-highlighted">
+                {{ editor.section.label }}
+              </h2>
+              <span
+                v-if="!editor.itemsPending && !editor.itemsError"
+                class="text-center text-xs text-muted"
+                :aria-label="`${editor.itemRows.length} items`"
+                >{{ editor.itemRows.length }}</span
+              >
+            </div>
             <UBadge
               v-if="editor.section.status === 'archived'"
               color="neutral"
@@ -42,22 +53,19 @@
               {{ editor.section.date }}
             </p>
           </div>
-          <div class="flex items-center gap-2">
+          <template #value>
             <span
               v-if="editor.currencyCode"
-              class="text-xs text-muted"
+              class="text-right text-xs text-muted"
               :aria-label="`Prices in ${editor.currencyCode}`"
               >{{ editor.currencyCode }}</span
             >
-            <WorkspaceKitchenMenusItemsAdd />
-            <UBadge
-              v-if="!editor.itemsPending && !editor.itemsError"
-              color="neutral"
-              variant="soft"
-              >{{ editor.itemRows.length }}</UBadge
-            >
-          </div>
-        </div>
+            <span v-else aria-hidden="true" />
+          </template>
+          <template #actions
+            ><span class="size-8" aria-hidden="true"
+          /></template>
+        </CollectionRow>
       </template>
 
       <MoleculesCopyError
@@ -86,3 +94,10 @@ import { reactive } from 'vue'
 import { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
 const editor = reactive(useMenuSectionItemsEditor())
 </script>
+
+<style scoped>
+.menu-items-editor {
+  --collection-row-value-width: 5.5rem;
+  --collection-row-actions-width: 2rem;
+}
+</style>

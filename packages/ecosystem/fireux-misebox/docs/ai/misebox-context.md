@@ -2089,7 +2089,7 @@ are `kitchen/menu-metadata.test.mjs` and `kitchen/menu-tool-completion.test.mjs`
 Section editing keeps the item list primary and opens one Add items modal with
 catalogue, new-Dish and meal-deal choices. It reuses the parent section context;
 secondary item actions stay in a labelled vertical three-dot menu. Rows use
-dividers and an explicit × for removal; add-back uses the Dish catalogue.
+dividers and a labelled removal action in the vertical menu; add-back uses the Dish catalogue.
 No catalogue prices or Order records are changed by this organisation. The Menu family map owns the source
 entrypoints and composition evidence.
 

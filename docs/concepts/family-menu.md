@@ -372,8 +372,8 @@ Menu section detail composes one item list and one Add items entrance. The add
 modal selects catalogue food/drinks, new Dish names or meal deals, mounting only
 the selected workflow against the parent's existing scoped section state.
 Item rows use simple dividers, show name and Dish-owned price, and expose a
-labelled × for confirmed placement removal. Vertical three dots open secondary
-editing actions. Adding a removed Dish back uses the catalogue in Add items;
+labelled Remove from section action in the vertical three-dot menu, with
+confirmation. The same menu contains secondary editing actions. Adding a removed Dish back uses the catalogue in Add items;
 there is no availability toggle in this editor. Daily specials retain their own date
 flow and do not expose meal-deal entry. Source checks live in
 `menu-editor-composition.test.mjs` and `kitchen/menu-tool-completion.test.mjs`.
@@ -445,3 +445,16 @@ use the same reference independently. No Dish, Promotion or Order data is writte
 Verify repeat requests, optimistic transaction conflicts, archived matches and
 scope separation in `menu-item-idempotency.test.mjs`; this simulated conflict
 coverage is not a claim of a live concurrent Firestore test.
+
+Section item editing aligns a single currency label with the amount column and
+the item count beside the section name; the action-menu column stays unlabelled.
+Add items lives in the navigation toolbar above the divider list. Header and rows
+share their column sizing so the layout remains aligned on narrow screens.
+
+Item removal is a labelled Remove from section action inside the vertical menu,
+reusing the existing confirmation and preserving catalogue Dishes.
+
+Menu items, their column header and editable section rows reuse Core
+`CollectionRow` for the plain content/value/actions layout. Their actions,
+permissions and commands remain Menu-owned; the shared primitive adds no reads.
+See the plain collection-row contract in `docs/concepts/components.md`.

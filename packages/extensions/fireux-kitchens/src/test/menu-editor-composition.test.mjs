@@ -1,7 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { compile, createSSRApp, h, reactive } from 'vue'
+import { compile, computed, createSSRApp, h, reactive } from 'vue'
+import { compileFunction } from 'node:vm'
+import { stripTypeScriptTypes } from 'node:module'
 import { renderToString } from 'vue/server-renderer'
 
 const base = new URL(
@@ -49,6 +51,21 @@ async function render(relative, props) {
       },
     })
   }
+  const rowSource = readFileSync(
+    new URL(
+      '../../../../core/fireux-core/src/runtime/components/Collection/Row.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const rowTemplate = rowSource.slice(
+    rowSource.indexOf('<template>') + 10,
+    rowSource.lastIndexOf('</template>')
+  )
+  app.component('CollectionRow', {
+    props: { as: { default: 'article' } },
+    render: compile(rowTemplate),
+  })
   const html = await renderToString(app)
   assert.deepEqual(warnings, [])
   return { html, seen }
@@ -106,7 +123,7 @@ test('section row preserves scoped save promises, disabled state and record navi
     '/workspace/kitchen/menus/food%20menu/section%20one'
   )
 })
-test('Menu item row shows prices, a vertical actions menu and explicit placement removal', async () => {
+test('Menu item row shows prices and confirmed removal inside its vertical actions menu', async () => {
   const calls = []
   const row = {
     id: 'item',
@@ -125,21 +142,38 @@ test('Menu item row shows prices, a vertical actions menu and explicit placement
     canWrite: true,
     formatPrice: () => '12.00',
     removing: '',
+    canMove: () => true,
+    move: () => {},
     removeFromMenu: (...args) => calls.push(args),
   }
+  const script = readFileSync(new URL('Items/Edit/Row.vue', base), 'utf8')
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const actions = compileFunction(
+    `${stripTypeScriptTypes(script)};return actions.value`,
+    ['computed', 'defineProps']
+  )(computed, () => ({ row, editor }))
   const { seen, html } = await render('Items/Edit/Row.vue', {
     row,
     editor,
-    actions: [{ label: 'Edit dish', to: '/dish' }],
+    actions,
   })
   assert.match(html, /Soup/)
   assert.match(html, /12\.00/)
   assert.doesNotMatch(html, /CHF/)
-  assert.equal(seen.UDropdownMenu[0].items[0].label, 'Edit dish')
+  assert.ok(
+    seen.UDropdownMenu[0].items
+      .flat()
+      .some((action) => action.label === 'Edit dish')
+  )
   assert.equal(seen.UButton[0]['aria-label'], 'Actions for Soup')
   assert.equal(seen.UButton[0].icon, 'i-lucide-ellipsis-vertical')
-  assert.equal(seen.UButton[1]['aria-label'], 'Remove Soup from this Menu')
-  seen.UButton[1].onClick()
+  assert.equal(seen.UButton.length, 1)
+  seen.UDropdownMenu[0].items
+    .flat()
+    .find((action) => action.label === 'Remove from section')
+    .onSelect()
   assert.deepEqual(calls, [[row]])
   assert.equal(seen.USwitch, undefined)
   assert.doesNotMatch(html, /rounded-lg|On menu/)

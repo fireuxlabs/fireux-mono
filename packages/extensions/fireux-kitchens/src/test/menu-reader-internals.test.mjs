@@ -117,6 +117,21 @@ async function render(path, state) {
     props: ['title'],
     setup: (props) => () => h('p', props.title),
   })
+  const rowSource = readFileSync(
+    new URL(
+      '../../../../core/fireux-core/src/runtime/components/Collection/Row.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const rowTemplate = rowSource.slice(
+    rowSource.indexOf('<template>') + 10,
+    rowSource.lastIndexOf('</template>')
+  )
+  app.component('CollectionRow', {
+    props: { as: { default: 'article' } },
+    render: compile(rowTemplate),
+  })
   const html = await renderToString(app)
   assert.deepEqual(warnings, [])
   return html
@@ -191,7 +206,7 @@ for (const state of ['pending', 'error'])
       })
     )
     assert.ok(!html.includes('No entries have been added'), html)
-    assert.ok(!html.includes('data-count'), html)
+    assert.ok(!/aria-label="\d+ items"/.test(html), html)
     assert.ok(
       state === 'error' ? html.includes('Items failed') : /loading/i.test(html),
       html
@@ -219,7 +234,7 @@ for (const state of ['pending', 'error'])
 test('Menu items expose a real zero only for a settled empty section', async () => {
   const html = await render(itemsPath, itemView())
   assert.ok(html.includes('No entries have been added'), html)
-  assert.ok(html.includes('data-count="true"'), html)
+  assert.ok(html.includes('aria-label="0 items"'), html)
   assert.ok(html.includes('>0</span>'), html)
 })
 function collectionFixture() {

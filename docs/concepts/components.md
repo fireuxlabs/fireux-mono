@@ -801,5 +801,24 @@ across surfaces so users learn that the dots open a menu. Give each trigger a
 specific accessible label, such as “Actions for Soup”. Keep the primary action
 visible; do not hide every action in overflow. Dense editable item lists use
 simple dividing lines rather than a separate bordered card for every row.
-The Kitchen Menu section editor is the current example. A labelled × removes a
-placement there, with confirmation; it does not delete the underlying Dish.
+The Kitchen Menu section editor is the current example. Its labelled Remove
+from section action sits inside the vertical menu and retains confirmation; it
+does not delete the underlying Dish.
+
+## Plain collection rows
+
+Core `components/Collection/Row.vue` is the small divider-list layout primitive:
+content in the default slot, an optional trailing `value`, and optional `actions`.
+It owns alignment and wrapping only, with article/div/li semantics selected by
+`as`. A list owns its dividing lines and may align value/action widths through
+`--collection-row-value-width` and `--collection-row-actions-width`. It owns no
+record schema, links, menus, permissions or mutations.
+
+Kitchen Menu item rows use value for their price presentation and actions for
+an accessible vertical menu. Editable Menu section rows use no value slot and
+compose editable labels, navigation and section actions. The item-list header
+uses the same row layout to align its currency label. These real consumers keep
+their domain coordinators and controls. `CollectionCell` remains the existing
+card-style presentation; Row does not add variants to that card contract.
+Verify the Core collection-row rendering test and Kitchen Menu composition/
+reader tests, plus the consuming App's desktop and narrow layouts.

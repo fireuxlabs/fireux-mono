@@ -1,5 +1,5 @@
 <template>
-  <article class="flex flex-wrap items-center justify-between gap-3 py-3">
+  <CollectionRow>
     <div class="min-w-0 flex-1">
       <MoleculesFormsEditableSimpleField
         class="menu-section-name-field"
@@ -25,7 +25,7 @@
         :section-id="section.id"
       />
     </div>
-    <div class="flex shrink-0 items-center gap-1">
+    <template #actions>
       <UButton
         size="sm"
         variant="ghost"
@@ -41,8 +41,8 @@
           :disabled="Boolean(editor.moving || editor.changingStatus)"
         />
       </UDropdownMenu>
-    </div>
-  </article>
+    </template>
+  </CollectionRow>
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'
