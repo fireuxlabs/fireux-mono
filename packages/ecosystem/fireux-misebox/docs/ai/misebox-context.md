@@ -2112,3 +2112,10 @@ See the Menu family map for current scope tests and publication-origin checks.
 Renaming a Menu changes only its display name. Its creation-time slug remains
 stable for public and QR links; duplicate display names do not create a slug
 collision. See the Menu family map and trusted metadata/name command tests.
+
+Regular Menu publication uses shared structural readiness across its trusted
+validator and live Workspace warnings. Empty Menus and unavailable placements
+cannot publish; diagnostics identify section and Dish/deal. An already published
+Menu that loses its displayable content warns without auto-unpublishing. Document
+and Daily publication retain their existing paths. See the Menu family map’s
+Publication readiness section for owners and regression checks.

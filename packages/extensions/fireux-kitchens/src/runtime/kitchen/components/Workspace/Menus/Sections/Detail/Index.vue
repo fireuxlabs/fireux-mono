@@ -20,6 +20,11 @@
     />
     <template v-else>
       <UAlert v-if="!canWrite" color="neutral" title="Read-only Menu" />
+      <WorkspaceKitchenMenusPublicationReadiness
+        v-if="menu.schedule !== 'daily' && menu.status !== 'archived'"
+        :key="`${menuState.storageKitchenId.value}/${menu.id}/${sectionState.sectionId.value}`"
+        :section-context="sectionState"
+      />
       <WorkspaceKitchenMenusItemsEdit />
     </template>
   </section>
@@ -30,5 +35,5 @@ import { provideKitchenWorkspaceMenuSection } from '../../../../../composables/w
 import { provideKitchenMenuRecordContext } from '../../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 const menuState = provideKitchenMenuRecordContext()
 const { menu, outcome, error, pending, canWrite, selectedKitchen } = menuState
-provideKitchenWorkspaceMenuSection(menuState)
+const sectionState = provideKitchenWorkspaceMenuSection(menuState)
 </script>

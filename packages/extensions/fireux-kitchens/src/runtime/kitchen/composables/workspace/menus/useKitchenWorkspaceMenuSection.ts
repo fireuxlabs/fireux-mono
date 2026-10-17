@@ -173,6 +173,7 @@ function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
     itemsOutcome: itemState.outcome,
     itemsCollectionPath,
     promotions,
+    dishSource: dishState,
     dishes: dishState.dishes,
     dishesById,
     debug: computed(() => ({

@@ -38,6 +38,15 @@
         color="neutral"
         class="mb-4"
       />
+      <WorkspaceKitchenMenusPublicationReadiness
+        v-if="
+          menu.schedule !== 'daily' &&
+          menu.format !== 'document' &&
+          !menu.doc?.url &&
+          menu.status !== 'archived'
+        "
+        :key="`${recordScope}/${menu.id}/readiness`"
+      />
       <WorkspaceKitchenMenusDetailSettings v-if="view === 'details'" />
       <section v-else-if="view === 'content'" class="workspace-surface">
         <WorkspaceKitchenMenusDetailDocument

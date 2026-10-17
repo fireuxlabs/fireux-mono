@@ -1,8 +1,8 @@
-import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import {
-  normalizeKitchenPromotion,
-  promotionDishIds,
-} from '../../../kitchen/utils/promotions/pricing'
+  menuPublicationReadiness,
+  type ReadinessSection,
+} from '../../utils/publication-readiness'
+import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
@@ -72,6 +72,64 @@ export async function assertKitchenMenuCanPublish(
       statusCode: 400,
       statusMessage: 'Menu needs at least one section',
     })
+  if (!input.date) {
+    const content: ReadinessSection[] = []
+    const dishes = new Map<string, DocumentData>()
+    const promotions = new Map<string, DocumentData>()
+    const readDish = async (id: string) => {
+      if (!id || dishes.has(id)) return
+      const dish = await tx.read(serverKitchenDishesTarget(input.kitchenId), id)
+      if (dish.exists) dishes.set(id, dish.data || {})
+    }
+    for (const section of sections) {
+      const items = await activeRecords(
+        tx,
+        serverKitchenMenuItemsTarget(input.kitchenId, input.menuId, section.id)
+      )
+      content.push({
+        id: section.id,
+        label: text(section.data.label),
+        items: items.map((item) => ({ ...item.data, id: item.id })),
+      })
+      for (const item of items) {
+        await readDish(text(item.data.dish_id))
+        const id = text(item.data.promotion_id)
+        if (!id || promotions.has(id)) continue
+        const stored = await tx.read(
+          kitchenPromotionsTarget(input.kitchenId),
+          id
+        )
+        if (!stored.exists) continue
+        promotions.set(id, stored.data || {})
+        for (const group of Array.isArray(stored.data?.groups)
+          ? stored.data!.groups
+          : [])
+          for (const choice of Array.isArray(group?.dishes) ? group.dishes : [])
+            await readDish(text(choice?.dishId))
+      }
+    }
+    const readiness = menuPublicationReadiness(
+      content,
+      dishes,
+      promotions,
+      input.currencyCode
+    )
+    if (readiness.issues.length) {
+      const issue = readiness.issues[0]!
+      throw createError({
+        statusCode: 400,
+        statusMessage: `${issue.section}: ${issue.name} — ${issue.reason}`,
+        data: { readiness },
+      })
+    }
+    if (!readiness.availableCount)
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Menu needs at least one item',
+        data: { readiness },
+      })
+    return
+  }
   let itemCount = 0
   for (const section of sections) {
     if (input.date && !text(section.data.label))
@@ -90,57 +148,11 @@ export async function assertKitchenMenuCanPublish(
       })
     itemCount += items.length
     for (const item of items) {
-      const promotionId = text(item.data.promotion_id)
-      if (promotionId) {
-        if (item.data.dish_id || input.date)
-          throw createError({
-            statusCode: 400,
-            statusMessage: 'Choose one Dish or meal deal in a regular Menu.',
-          })
-        const stored = await tx.read(
-          kitchenPromotionsTarget(input.kitchenId),
-          promotionId
-        )
-        if (!stored.exists || !Array.isArray(stored.data?.groups))
-          throw createError({
-            statusCode: 400,
-            statusMessage: 'Menu meal deal is missing.',
-          })
-        const { name, status, currency, days, price, groups } = stored.data!
-        let promotion
-        try {
-          promotion = normalizeKitchenPromotion({
-            name,
-            status,
-            currency,
-            days,
-            price,
-            groups,
-          })
-        } catch {
-          throw createError({
-            statusCode: 400,
-            statusMessage: 'Menu meal deal is incomplete.',
-          })
-        }
-        if (input.currencyCode && promotion.currency !== input.currencyCode)
-          throw createError({
-            statusCode: 400,
-            statusMessage: 'Meal-deal currency must match the Kitchen.',
-          })
-        for (const id of promotionDishIds(promotion)) {
-          const dish = await tx.read(
-            serverKitchenDishesTarget(input.kitchenId),
-            id
-          )
-          if (!dish.exists || dish.data?.status === 'archived')
-            throw createError({
-              statusCode: 400,
-              statusMessage: 'Meal-deal Dish is missing.',
-            })
-        }
-        continue
-      }
+      if (item.data.promotion_id)
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Choose one Dish or meal deal in a regular Menu.',
+        })
       const dishId = text(item.data.dish_id)
       if (!dishId)
         throw createError({

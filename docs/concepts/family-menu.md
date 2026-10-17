@@ -416,3 +416,21 @@ Menu rename changes the display name only. The creation-time slug stays stable,
 so existing public and QR destinations continue to resolve. Display names need
 not be unique; slug uniqueness remains a creation responsibility. Verify
 `kitchen/menu-metadata.test.mjs`.
+
+## Publication readiness
+
+`menu/utils/publication-readiness.ts` evaluates active placements against current
+Dish and meal-deal definitions. The trusted regular publication validator uses
+that report to reject empty content and unavailable entries, with section/name
+reasons. It reads only Menu content, Dishes and Promotions and writes no terms.
+Document and per-date Daily validation remain separate.
+`Workspace/Menus/Publication/Readiness.vue` owns the live content warning and its
+focused section diagnostic children. The record reuses its section list; section
+editing passes its existing catalogue, promotion and current-item readers rather
+than acquiring duplicates. Other active sections use the existing scoped item
+reader. Loading/failure never imply an empty Menu; a genuinely empty published
+Menu warns without automatically changing publication. Scheduled meal-deal
+weekdays do not make structurally valid future content incomplete.
+Verify `menu-publication.test.mjs` and `menu-publication-readiness.test.mjs`,
+including archived Dishes, paused deals, grouped diagnostics, disappearing last
+items and explicit read-state outcomes. Live checks remain read-only.

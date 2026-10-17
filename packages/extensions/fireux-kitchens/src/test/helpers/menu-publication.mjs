@@ -253,6 +253,7 @@ export function harness({ document = false, status = 'draft' } = {}) {
   )
   dependencies.kitchenPromotionsTarget = kitchen => target(`kitchens/${kitchen}/promotions`)
   Object.assign(dependencies, load('../runtime/kitchen/utils/promotions/pricing.ts', '{normalizeKitchenPromotion,promotionDishIds}', dependencies))
+  dependencies.menuPublicationReadiness = load('../runtime/menu/utils/publication-readiness.ts', 'menuPublicationReadiness', dependencies)
   dependencies.assertKitchenMenuCanPublish = load(
     '../runtime/menu/server/publication/validation.ts',
     'assertKitchenMenuCanPublish',

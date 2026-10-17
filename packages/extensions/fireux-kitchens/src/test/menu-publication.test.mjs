@@ -58,12 +58,12 @@ for (const [name, change, message] of [
   [
     'dish id',
     (h) => h.records.set(`${menuPath}/sections/s/items/i`, {}),
-    'Every menu item needs a dish',
+    's: Unavailable entry — Dish is missing.',
   ],
   [
     'dish',
     (h) => h.records.delete('kitchens/k/dishes/dish'),
-    'Menu item references missing dish: dish',
+    's: dish — Dish is missing.',
   ],
 ])
   test(`missing ${name} rejects publication without writes`, async () => {
@@ -139,7 +139,7 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
 test('transaction retry validates changed content before committing publication', async () => {
   const h = harness()
   h.state.retry = (records) => records.delete('kitchens/k/dishes/dish')
-  await assert.rejects(h.publish(), /missing dish/)
+  await assert.rejects(h.publish(), /Dish is missing/)
   assert.equal(h.records.get(menuPath).status, 'draft')
   assert.equal(h.records.has(rootPath), false)
 })
@@ -270,4 +270,57 @@ test('archived Menu cannot be republished before explicit restoration', async ()
   const h = harness({ status: 'archived' })
   await assert.rejects(h.publish(), /Restore this Menu/)
   assert.equal(h.records.get(menuPath).status, 'archived')
+})
+
+test('ordinary Menu with only archived Dishes cannot publish or change prices', async () => {
+  const h = harness()
+  h.records.get(`${menuPath}/sections/s`).label = 'Pizzas'
+  Object.assign(h.records.get('kitchens/k/dishes/dish'), {
+    name: 'Margherita',
+    status: 'archived',
+  })
+  const before = structuredClone(h.records)
+  await assert.rejects(h.publish(), (error) => {
+    assert.equal(error.data.readiness.availableCount, 0)
+    assert.deepEqual(
+      error.data.readiness.issues.map((issue) => [
+        issue.section,
+        issue.name,
+        issue.reason,
+      ]),
+      [['Pizzas', 'Margherita', 'Dish is archived.']]
+    )
+    return true
+  })
+  assert.deepEqual(h.records, before)
+})
+
+test('paused meal deal does not make an otherwise empty Menu publishable', async () => {
+  const h = harness()
+  h.records.set(`${menuPath}/sections/s/items/i`, {
+    status: 'active',
+    promotion_id: 'meal',
+  })
+  h.records.set('kitchens/k/promotions/meal', { ...meal(), status: 'paused' })
+  const before = structuredClone(h.records)
+  await assert.rejects(h.publish(), /Meal deal is paused/)
+  assert.deepEqual(h.records, before)
+})
+
+test('publication reports unavailable entries in every section', async () => {
+  const h = harness()
+  h.records.get('kitchens/k/dishes/dish').status = 'archived'
+  h.records.set(`${menuPath}/sections/second`, {
+    status: 'active',
+    label: 'Drinks',
+  })
+  h.records.set(`${menuPath}/sections/second/items/missing`, {
+    dish_id: 'missing',
+  })
+  await assert.rejects(h.publish(), (error) => {
+    assert.equal(error.data.readiness.issues.length, 2)
+    assert.equal(error.data.readiness.issues[1].section, 'Drinks')
+    return true
+  })
+  assert.equal(h.records.get(menuPath).status, 'draft')
 })
