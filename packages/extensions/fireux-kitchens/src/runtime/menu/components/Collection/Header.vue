@@ -1,11 +1,9 @@
 <template>
   <UPageHeader
-    title="Menus"
-    description="Explore menus from local Kitchens and independent publishers."
+    title="Find your next meal"
     :ui="{
       root: 'border-0 pt-2 pb-2 sm:pt-4 sm:pb-4',
       title: 'directory-title',
-      description: 'text-base sm:text-lg mt-3 max-w-xl leading-relaxed',
     }"
   >
     <template #links><slot /></template>

@@ -1,6 +1,6 @@
 <template>
   <section class="workspace-surface">
-    <p class="text-muted">Channels are where orders start. Services describe how guests receive them.</p>
+    <p class="text-muted">Choose how customers can get food, then set the eligible menus and serving times.</p>
     <UButton
       to="/workspace/kitchen/settings/integrations"
       label="Set up ordering"
@@ -19,27 +19,13 @@
       state="error"
     />
     <template v-else-if="selectedKitchen">
-      <section v-for="group in groups" :key="group.title" class="space-y-4">
+      <section class="space-y-4">
         <div>
-          <h2 class="text-xl font-semibold">{{ group.title }}</h2>
-          <p class="text-sm text-muted">{{ group.description }}</p>
+          <h2 class="text-xl font-semibold">Services</h2>
+          <p class="text-sm text-muted">Table service uses staff; QR table ordering and Kiosk let customers order themselves. Pre-order is for advance meal requests.</p>
         </div>
         <div class="grid items-start gap-4 lg:grid-cols-2">
-          <UCard v-if="group.title === 'Channels'">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-semibold">Website</h3>
-              <UBadge
-                :color="websiteChannel ? 'success' : 'neutral'"
-                variant="subtle"
-                >{{ websiteChannel ? 'Available' : 'Unavailable' }}</UBadge
-              >
-            </div>
-            <p class="mt-3 text-sm text-muted">
-              Customers order through collection, delivery or table QR.
-              Configure those services below.
-            </p>
-          </UCard>
-          <UCard v-for="entry in group.entries" :key="entry.option.key">
+          <UCard v-for="entry in entries" :key="entry.option.key">
             <div class="flex items-start justify-between gap-4">
               <div class="flex items-center gap-3">
                 <UIcon
@@ -49,13 +35,7 @@
                   aria-hidden="true"
                 />
                 <h2 class="text-lg font-semibold">
-                  {{
-                    entry.option.key === 'table_service'
-                      ? 'POS'
-                      : entry.option.key === 'qr_tables'
-                        ? 'Table ordering'
-                        : entry.option.label
-                  }}
+                  {{ entry.option.label }}
                 </h2>
               </div>
               <USwitch
@@ -122,13 +102,13 @@
         </div>
       </section>
     </template>
-    <UAlert v-else title="Choose a Kitchen to configure channels" />
+    <UAlert v-else title="Choose a Kitchen to configure services" />
     <UModal
       v-model:open="setupOpen"
       :title="selectedOption?.label || 'Offering'"
       :description="
         selectedOption?.types.some((type) => type === 'dine_in')
-          ? 'Configure this offering below. Table-count changes are saved separately and shared by all dine-in offerings.'
+          ? 'Configure this offering below. Table-count changes are saved separately and shared by Table service and QR table ordering.'
           : 'Choose menus, serving hours and ordering settings. Changes apply together when you save.'
       "
       :ui="{ content: 'sm:max-w-4xl' }"
@@ -152,7 +132,7 @@
           /></UFormField>
           <MoleculesDisclosurePanel
             v-if="selectedOption.types.some((type) => type === 'dine_in')"
-            title="Dine-in tables"
+            title="Tables"
             description="Configure the table numbers used by staff and QR ordering."
             :default-open="false"
           >
@@ -183,9 +163,6 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRuntimeConfig } from '#imports'
-const websiteChannel =
-  useRuntimeConfig().public.ordering?.channels?.includes('website') || false
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'
 import {
   kitchenOfferingOptions,
@@ -217,24 +194,6 @@ const entries = computed(() =>
     ),
   }))
 )
-const groups = computed(() => [
-  {
-    title: 'Channels',
-    description:
-      'POS is used by staff; Kiosk is used on a venue device. Website customers use the services below.',
-    entries: entries.value.filter((entry) =>
-      ['table_service', 'counter'].includes(entry.option.key)
-    ),
-  },
-  {
-    title: 'Services',
-    description:
-      'Collection, delivery and table QR ordering, with linked menus and serving hours. Pre-order configures advance requests.',
-    entries: entries.value.filter(
-      (entry) => !['table_service', 'counter'].includes(entry.option.key)
-    ),
-  },
-])
 const setupOpen = ref(false)
 const selectedOption = ref<KitchenOfferingOption>()
 const selectedOfferingId = ref('')

@@ -5,7 +5,7 @@
       color="neutral"
       icon="i-lucide-link"
       title="Shared table settings"
-      description="Table service and QR Tables share menus, hours and order settings. Each has its own availability switch."
+      description="Table service and QR table ordering share menus, hours and order settings. Each has its own availability switch."
     />
     <UAlert
       v-if="error"

@@ -57,7 +57,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   table: {
     context: 'table',
     surface: 'dine_in',
-    label: 'Table service',
+    label: 'QR table ordering',
     icon: 'i-lucide-utensils',
     visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',
@@ -84,7 +84,7 @@ const profiles: Record<MenuRouteContext, MenuContextProfile> = {
   dine_in: {
     context: 'dine_in',
     surface: 'dine_in',
-    label: 'Table service',
+    label: 'QR table ordering',
     icon: 'i-lucide-utensils',
     visibleOrderTypes: ['dine_in'],
     defaultOrderType: 'dine_in',

@@ -150,7 +150,7 @@ const groups: PaymentGroup[] = [
   },
   {
     id: 'dine_in',
-    label: 'Dine-in',
+    label: 'Table service',
     description: 'Payment methods offered for table-service orders.',
     orderTypes: ['dine_in'],
     options: [

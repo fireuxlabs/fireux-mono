@@ -85,7 +85,7 @@ const doorways = computed(() => {
       return [{
         context: profile.context,
         icon: profile.icon,
-        label: service.type === 'dine_in' ? 'Table ordering' : profile.label,
+        label: service.type === 'dine_in' ? 'QR table ordering' : profile.label,
         to: preserveSproochliLanguage(menuRoutePath({
           scope: props.routeScope,
           menuId: props.menuId,

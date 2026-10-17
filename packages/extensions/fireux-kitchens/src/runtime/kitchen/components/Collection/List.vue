@@ -68,6 +68,10 @@
           >
             {{ cell.description }}
           </p>
+          <ul v-if="cell.services.length" class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted" :aria-label="`Services at ${cell.title}`">
+            <li v-for="service in cell.services" :key="service">{{ service }}</li>
+          </ul>
+          <p v-else class="mt-4 text-sm text-muted">Service details not published.</p>
         </template>
       </UPageCard>
     </li>
@@ -89,11 +93,12 @@ import type { KitchenCard } from '../../models/kitchen-interface.model'
 const props = defineProps<{ cards: KitchenCard.Card[] }>()
 const cells = computed<
   Array<
-    CollectionCellData & { logo: string; logoText: string; backdrop?: string }
+    CollectionCellData & { logo: string; logoText: string; backdrop?: string; services: string[] }
   >
 >(() =>
   props.cards.map((card) => ({
     title: card.name,
+    services: card.serviceLabels || [],
     description: card.tagline,
     image: card.discoveryImageUrl,
     logo: card.logoImageUrl,
@@ -109,7 +114,7 @@ const cells = computed<
     meta: card.shortAddress,
     badges: [...card.badges, ...card.categoryLabels],
     actionLabel: 'View menus',
-    to: card.to ? `${card.to.replace(/\/$/, '')}/menus` : '',
+    to: card.to ? `${card.to.replace(/\/$/, '')}/menu` : '',
   }))
 )
 </script>

@@ -3,8 +3,8 @@ import type { KitchenOrderType } from '../models/offering-interaction-types.mode
 export const kitchenOrderTypeLabel = (type: KitchenOrderType) => {
   const labels: Record<KitchenOrderType, string> = {
     dine_in: 'Table service',
-    eat_in: 'Eat here',
-    takeaway: 'Take away',
+    eat_in: 'Eat in',
+    takeaway: 'Takeaway',
     collection: 'Collection',
     delivery: 'Delivery',
     pre_order: 'Pre-order',

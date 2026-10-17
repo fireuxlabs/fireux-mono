@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="kitchen-offerings"
-    ><template #header><LayoutsWorkspaceNavbar title="Channels & services" /></template
+    ><template #header><LayoutsWorkspaceNavbar title="Service setup" /></template
     ><template #body><WorkspaceKitchenOrdersChannels /></template
   ></UDashboardPanel>
 </template>
@@ -12,7 +12,7 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-channels',
-    label: 'Channels & services',
+    label: 'Service setup',
     hidden: true,
     icon: 'i-lucide-shopping-bag',
     position: 'top',

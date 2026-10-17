@@ -34,7 +34,7 @@ export const kitchenOfferingOptions = [
   },
   {
     key: 'qr_tables',
-    label: 'QR Tables',
+    label: 'QR table ordering',
     icon: 'i-lucide-qr-code',
     description: 'Guests scan a table code and place their own orders.',
     types: ['dine_in'],

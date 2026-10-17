@@ -3,92 +3,122 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
       <UInput
         v-model="query"
-        placeholder="Search menus or Kitchens"
+        placeholder="Search menus"
         aria-label="Search menus"
         icon="i-lucide-search"
         size="xl"
         class="directory-search"
-        :ui="{ base: 'rounded-xl py-3 bg-elevated/40' }"
       />
-      <span
-        class="text-xs font-medium tracking-wide text-muted"
-        aria-live="polite"
-        >{{ visibleCount }} {{ visibleCount === 1 ? 'menu' : 'menus' }}</span
-      >
+      <span class="text-sm text-muted" aria-live="polite">
+        {{ groups.length }} {{ groups.length === 1 ? 'result' : 'results' }}
+      </span>
     </div>
-    <UAlert
-      v-if="menus.length && query && !visibleCount"
-      title="No menus found"
-      description="Try another menu or Kitchen name."
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-search"
-    />
-    <UAlert
-      v-if="kitchenOutcome === 'error'"
-      title="Kitchens could not be loaded"
-      description="Please try again to browse Kitchen menus."
-      color="neutral"
-      variant="soft"
-    />
-    <MenuCollectionList :kitchens="visibleKitchens" />
+    <nav class="flex flex-wrap gap-2" aria-label="Choose how to eat">
+      <UButton
+        v-for="choice in choices"
+        :key="choice.label"
+        :color="service === choice.value ? 'primary' : 'neutral'"
+        :variant="service === choice.value ? 'solid' : 'soft'"
+        :aria-pressed="service === choice.value"
+        @click="service = choice.value"
+      >{{ choice.label }}</UButton>
+    </nav>
+    <div v-if="visibleItems.length" class="menu-discovery-grid">
+      <article v-for="group in groups" :key="group.id" class="menu-discovery-entry">
+        <p v-if="group.venue" class="text-sm text-muted">{{ group.venue }}</p>
+        <NuxtLink :to="group.to" class="group flex items-start justify-between gap-4">
+          <h2 class="text-2xl font-semibold tracking-tight group-hover:text-primary">{{ group.menus.map(menu => menu.name).join(' · ') }}</h2>
+          <UIcon name="i-lucide-arrow-up-right" class="mt-1 size-5 shrink-0" aria-hidden="true" />
+        </NuxtLink>
+        <p v-for="description in group.descriptions" :key="description" class="text-sm leading-relaxed text-muted">{{ description }}</p>
+        <KitchenDetailOfferingTimes :offerings="group.offerings" compact />
+        <div class="flex flex-wrap gap-2">
+          <UButton v-for="action in group.actions" :key="action.to" :to="action.to" color="primary" variant="soft">
+            {{ action.label }}
+          </UButton>
+        </div>
+        <NuxtLink :to="group.browseTo" class="self-start text-sm text-muted hover:text-primary">
+          Other menus at {{ group.venue || 'this venue' }}
+        </NuxtLink>
+      </article>
+    </div>
+    <UAlert v-else title="No matching menus" description="Try another search or service." color="neutral" variant="soft" />
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
-import { useKitchenCollection } from '../../../kitchen/composables/useKitchenCollection'
-const props = defineProps<{
-  menus: MenuDirectoryEntry[]
-}>()
-const { collection: kitchens, outcome: kitchenOutcome } = useKitchenCollection()
-const kitchenById = computed(
-  () => new Map(kitchens.value.map((kitchen) => [kitchen.id, kitchen]))
-)
-const kitchenBySlug = computed(
-  () =>
-    new Map(kitchens.value.map((kitchen) => [kitchen.identity.slug, kitchen]))
-)
-const hasKitchen = (menu: MenuDirectoryEntry) =>
-  Boolean(menu.source?.kitchen_id || menu.source?.kitchen_slug)
-const kitchenForMenu = (menu: MenuDirectoryEntry) =>
-  kitchenById.value.get(menu.source?.kitchen_id || '') ||
-  kitchenBySlug.value.get(menu.source?.kitchen_slug || '')
-const menus = computed(() =>
-  props.menus.filter(
-    (menu) => !hasKitchen(menu) || Boolean(kitchenForMenu(menu))
+import { directoryMenuRouteScope, rootMenuRouteScope, menuRoutePath, menuRouteIndexPath } from '../../utils/menu-route'
+
+const props = defineProps<{ menus: MenuDirectoryEntry[] }>()
+const service = ref<'' | 'collection' | 'delivery'>('')
+const choices = [
+  { label: 'Collection & delivery', value: '' as const },
+  { label: 'Collection', value: 'collection' as const },
+  { label: 'Delivery', value: 'delivery' as const },
+]
+const menus = computed(() => props.menus.filter(menu =>
+  menu.source?.kitchen_slug && menu.offering_options?.some(option =>
+    ['collection', 'delivery'].includes(option.type) &&
+    (!service.value || option.type === service.value) && !option.paused
   )
-)
-const makeCard = (menu: MenuDirectoryEntry) => ({
-  title: menu.name,
-  subtitle: [
-    kitchenForMenu(menu)?.place.name,
-    menu.source?.kitchen_name,
-    menu.kitchen?.name,
-    menu.description,
-  ]
-    .filter(Boolean)
-    .join(' '),
-})
-const { query, visibleItems, visibleCount } = useCollectionSearch({
+))
+const { query, visibleItems } = useCollectionSearch({
   items: menus,
-  makeCard,
+  makeCard: (menu: MenuDirectoryEntry) => ({
+    title: menu.name,
+    description: menu.description,
+    venue: menu.source?.kitchen_name || menu.kitchen?.name,
+  }),
   initialVariant: 'cell',
 })
-const visibleKitchens = computed(() => {
-  const ids = new Set(
-    visibleItems.value.map((menu) => kitchenForMenu(menu)?.id).filter(Boolean)
+const servingTimes = (menu: MenuDirectoryEntry) => (menu.offerings || []).filter(offering =>
+  !offering.paused && menu.offering_options?.some(option =>
+    option.kitchen_offering_id === offering.id && !option.paused &&
+    ['collection', 'delivery'].includes(option.type) &&
+    (!service.value || option.type === service.value)
   )
-  return kitchens.value.filter((kitchen) => ids.has(kitchen.id))
+)
+const destination = (menu: MenuDirectoryEntry) => {
+  const scope = menu.source?.kitchen_slug
+    ? directoryMenuRouteScope(menu.source.kitchen_slug)
+    : rootMenuRouteScope()
+  return service.value && scope.kind === 'directory'
+    ? menuRouteIndexPath(scope, service.value)
+    : menuRoutePath({ scope, menuId: menu.slug || menu.source?.menu_slug || menu.id })
+}
+
+const groups = computed(() => {
+  const grouped = new Map<string, MenuDirectoryEntry[]>()
+  for (const menu of visibleItems.value) {
+    const key = menu.source?.kitchen_id || menu.source?.kitchen_slug || menu.id
+    const entries = grouped.get(key) || []
+    entries.push(menu)
+    grouped.set(key, entries)
+  }
+  return [...grouped].map(([id, entries]) => {
+    const first = entries[0]!
+    const slug = first.source?.kitchen_slug
+    return {
+      id,
+      menus: entries,
+      venue: first.source?.kitchen_name || first.kitchen?.name,
+      descriptions: [...new Set(entries.map(menu => menu.description).filter(Boolean))],
+      offerings: [...new Map(entries.flatMap(servingTimes).map(offering => [offering.id, offering])).values()],
+      actions: choices.filter(choice => choice.value && (!service.value || choice.value === service.value) && entries.some(menu => menu.offering_options?.some(option => option.type === choice.value && !option.paused))).map(choice => ({ label: choice.label, to: menuRouteIndexPath(directoryMenuRouteScope(slug!), choice.value || undefined) })),
+      browseTo: menuRouteIndexPath(directoryMenuRouteScope(slug!)),
+      to: slug
+        ? menuRouteIndexPath(directoryMenuRouteScope(slug), service.value || (entries.some(menu => menu.offering_options?.some(option => option.type === 'collection' && !option.paused)) ? 'collection' : 'delivery'))
+        : destination(first),
+    }
+  })
 })
 </script>
-
 <style scoped>
-.menu-collection {
-  gap: calc(var(--spacing) * 6);
-}
-.directory-search {
-  width: min(100%, 32rem);
-}
+.menu-collection { gap: 1.5rem; }
+.directory-search { width: min(100%, 32rem); }
+.menu-discovery-grid { display: grid; gap: 1.5rem 2.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.menu-discovery-entry { display: flex; flex-direction: column; gap: .85rem; border-top: 1px solid var(--ui-border); padding-block: 1.5rem; min-width: 0; }
+@media (max-width: 640px) { .menu-discovery-grid { grid-template-columns: minmax(0, 1fr); gap: 0; } }
 </style>

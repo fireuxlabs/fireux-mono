@@ -357,3 +357,9 @@ For literature work:
 - visually check interactive copy when the selected child changes it;
 - update this map only when the derivation method or ownership boundary
   changes.
+
+## Customer food discovery copy
+
+Customer Menu copy must help people choose food, understand availability or take
+the next step. Omit filler subtitles and internal platform terminology such as
+“independent publishers”. Venue identity supports the food choice.

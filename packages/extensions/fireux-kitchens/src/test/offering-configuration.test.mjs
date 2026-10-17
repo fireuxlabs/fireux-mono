@@ -388,7 +388,7 @@ test('six offering cards expose separate staff and guest table channels', () => 
       'Delivery',
       'Pre-order',
       'Table service',
-      'QR Tables',
+      'QR table ordering',
       'Kiosk',
     ]
   )

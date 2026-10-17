@@ -5,9 +5,29 @@
       :venue="presentation"
       :venue-path="venuePath"
       :title="serviceLabel"
+      :currency-code="currencyCode"
     />
+    <div
+      v-if="
+        presentation && (service === 'collection' || service === 'delivery')
+      "
+      class="flex flex-wrap items-center justify-between gap-3"
+    >
+      <KitchenDetailMenuServices
+        :kitchen-slug="kitchenSlug"
+        :active="service"
+      />
+      <UButton
+        to="/kitchens/"
+        label="Explore other menus"
+        color="neutral"
+        variant="link"
+        trailing-icon="i-lucide-arrow-right"
+        size="sm"
+      />
+    </div>
     <KitchenDetailState
-      v-else
+      v-if="!presentation"
       :outcome="outcome"
       :has-kitchen="Boolean(kitchen)"
       @refresh="refresh()"
@@ -146,31 +166,16 @@
               : `No food or drinks are available for ${service}.`
         }}
       </p>
-      <div
-        v-if="service !== 'room_service' && service !== 'table'"
-        class="border-t border-default pt-4"
-      >
-        <UButton
-          :to="browsePath"
-          label="All menus"
-          color="neutral"
-          variant="link"
-          trailing-icon="i-lucide-arrow-right"
-        />
-      </div>
     </template>
   </section>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { setResponseStatus, useHead, useSeoMeta } from '#imports'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useKitchenDetail } from '../../composables/useKitchenDetail'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
-import {
-  directoryMenuRouteScope,
-  menuRouteIndexPath,
-} from '../../../menu/utils/menu-route'
 import type { MenuService } from '../../../menu/utils/service-menu'
 import {
   serviceSections,
@@ -195,7 +200,6 @@ const serviceLabel = computed(() =>
         ? 'Delivery'
         : 'Collection'
 )
-const scope = computed(() => directoryMenuRouteScope(slug.value))
 const endpoint = computed(
   () =>
     `/api/menus/service/items?service=${service.value}&kitchenSlug=${encodeURIComponent(slug.value)}`
@@ -210,10 +214,14 @@ const sections = computed(() =>
   serviceSections(menus.data.value?.sources || [], pricingNow.value)
 )
 const { styleVars } = useMenuThemeSurface()
-const { kitchen, presentation, outcome, refresh, statusCode, ready } =
+const { kitchen, place, presentation, outcome, refresh, statusCode, ready } =
   useKitchenDetail(slug)
+const currencyCode = computed(() =>
+  service.value === 'collection' || service.value === 'delivery'
+    ? readPlaceCurrencyCode(place.value)
+    : ''
+)
 const venuePath = computed(() => `/kitchens/${encodeURIComponent(slug.value)}`)
-const browsePath = computed(() => menuRouteIndexPath(scope.value))
 await Promise.all([ready, menus])
 if (import.meta.server && statusCode.value) setResponseStatus(statusCode.value)
 useHead({

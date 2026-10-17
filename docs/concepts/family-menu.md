@@ -271,7 +271,7 @@ registration, with real consumers updated together. `RouteSurface` is Menu-speci
 URL dispatch, not a required section or component for every Entity. Collection,
 Detail, Cards and Create keep the shared Entity vocabulary.
 
-`Collection/Results.vue` enriches caller-passed rows with Kitchen identity.
+`Collection/Results.vue` collates eligible Collection/Delivery Menu rows into one result per Kitchen, with menu names leading, secondary venue identity and only matching service times. Other menus sit behind a quiet venue browse link. It adds no Kitchen reader. Service choices open the venue service presentation; browse choices open the individual Menu.
 `Collection/Index.vue` consumes a scoped controller, paging, outcomes and
 presentation choices. Their differing inputs/lifetimes remain explicit; both
 reuse collection search. The retired `Preview/ItemOptions.vue` and
@@ -458,3 +458,41 @@ Menu items, their column header and editable section rows reuse Core
 `CollectionRow` for the plain content/value/actions layout. Their actions,
 permissions and commands remain Menu-owned; the shared primitive adds no reads.
 See the plain collection-row contract in `docs/concepts/components.md`.
+
+Kitchen discovery cards link directly to each venue’s singular `/menu` entrance;
+the individual published Menu destinations remain plural `/menus/<slug>`.
+Collection and Delivery pass the already loaded Place currency to the shared
+venue Menu header, where it appears once as “Prices in …”. No amount formatting
+or stored commercial terms change. `menu-public-entrance.test.mjs` renders the
+actual card destinations and shared header and checks reactive Place currency.
+
+## Food-first venue entrance
+
+`pages/kitchens/[slug]/menu.vue` is the default browse entrance: existing venue
+identity, prominent eligible Collection/Delivery actions, then published menu
+rows with their existing serving-time presentation. `Detail/MenuServices.vue`
+owns the shared eligibility reads and navigation. Direct `.collection` and
+`.delivery` links preserve intent, display the active service and allow switching
+to the other eligible service. They have no All menus return control. A quiet
+Explore other menus link opens `/kitchens/`, including above long service lists.
+Table and room entrances retain their separate context and do not mount this
+public service selector. No referrer inference, storage copy, checkout or price
+policy is introduced. Verify `menu-food-landing.test.mjs`, the public entrance
+checks, and live desktop/mobile journeys including empty eligibility and the
+cross-venue exit.
+
+Kitchen directory cards list a public label-only service summary from enabled
+Kitchen offerings with attached menus. Staff table service and QR table ordering
+are distinct; both Workspace and directory use `tableChannelEnabled`, including
+its established default when channel configuration is absent. The existing
+Kitchen directory read owns this projection, not a reader per card. Empty settings
+show “Service details not published.” Labels do not claim current opening hours
+or kiosk availability. Verify `kitchen-service-summary.test.mjs`.
+
+Menu and service terms are defined in [the service glossary](menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.
+
+The Workspace service overview presents the existing Collection, Delivery,
+Pre-order, Table service, QR table ordering and Kiosk options directly. It does
+not rename Table service as POS or split this mixed set into misleading Channels
+and Services groups. Existing Offering setup dialogs retain command authority,
+shared schedule semantics and independent table-channel switches.

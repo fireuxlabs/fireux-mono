@@ -42,7 +42,14 @@
         </slot>
 
         <UPageBody>
-          <div v-if="menus.length" class="grid gap-5 md:grid-cols-2">
+          <div
+            v-if="menus.length"
+            :class="
+              browseOnly
+                ? 'divide-y divide-default'
+                : 'grid gap-5 md:grid-cols-2'
+            "
+          >
             <template v-if="browseOnly">
               <NuxtLink
                 v-for="menu in menus"
@@ -53,9 +60,16 @@
                     menuId: menu.slug || menu.id,
                   })
                 "
-                class="rounded-xl border border-default p-5 hover:bg-elevated focus-visible:outline-primary"
+                class="venue-menu-entry group block transition-colors hover:text-primary focus-visible:outline-primary"
               >
-                <h2 class="text-lg font-semibold">{{ menu.name }}</h2>
+                <div class="flex items-center justify-between gap-4">
+                  <h3 class="text-lg font-semibold">{{ menu.name }}</h3>
+                  <UIcon
+                    name="i-lucide-arrow-up-right"
+                    class="size-5 shrink-0 text-muted group-hover:text-primary"
+                    aria-hidden="true"
+                  />
+                </div>
                 <p v-if="menu.description" class="mt-1 text-sm text-muted">
                   {{ menu.description }}
                 </p>
@@ -161,3 +175,9 @@ useSeoMeta({
   robots: () => (error.value ? 'noindex, nofollow' : undefined),
 })
 </script>
+
+<style scoped>
+.venue-menu-entry {
+  padding-block: 1.25rem;
+}
+</style>

@@ -6,7 +6,7 @@
     <div class="flex flex-wrap items-end gap-3">
       <UFormField
         label="Number of tables"
-        description="Shared by Table service, QR Tables and POS. Tables are numbered from 1."
+        description="Shared by Table service, QR table ordering and POS. Tables are numbered from 1."
         :error="validationMessage || undefined"
         class="flex-1 min-w-56"
       >

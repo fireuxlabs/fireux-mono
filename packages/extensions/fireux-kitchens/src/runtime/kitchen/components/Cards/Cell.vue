@@ -179,7 +179,7 @@ const fulfilmentLabel = (mode: string) =>
   ({
     delivery: 'Delivery',
     collection: 'Collection',
-    dine_in: 'Dine in',
+    dine_in: 'Table service',
     takeaway: 'Takeaway',
   })[mode] || mode
 

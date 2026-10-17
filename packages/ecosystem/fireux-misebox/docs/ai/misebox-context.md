@@ -195,8 +195,9 @@ membership. Offer preferences do not grant Store authority. There is no automati
 welcome prompt, completion command, or profile-reset endpoint.
 
 Public browsing uses the existing App navigation configuration in
-`app/app.config.ts`. `/kitchens` and Kitchen groups on `/menus` share
-`KitchenCollectionList`; records without a Kitchen remain separately displayed.
+`app/app.config.ts`. `/kitchens` presents venues; `/menus` presents each published
+Menu directly, with secondary venue names and Collection/Delivery filters.
+Menu discovery reuses its directory response without an additional Kitchen read.
 The public Kitchen reader uses published records for every role and does not
 inject hidden Kitchens for administrators. Kitchen/Place presentation and
 Firebase-hosted media retain their domain owners.
@@ -1919,7 +1920,7 @@ completion checks.
 
 The public Kitchen entrance is `/kitchens/<slug>/menu`, labelled Menu. Its route
 lists only published Menus using the existing scoped directory reader, with simple
-browse links and All menus as the default. Collection and Delivery choices appear only when
+browse links as the default food landing. Collection and Delivery actions appear only when
 the existing service-filtered reader finds an eligible published public Menu. The old collection route has no alias
 or redirect. Individual Menu and QR destinations retain `/kitchens/<slug>/menus/<menu>`
 and its `/qr` page, independently of the collection entrance, preserving existing
@@ -1968,12 +1969,16 @@ prices. Items
 Meal deals deduplicate by Kitchen/Promotion identity and follow their applicable
 serving weekday. Other items without catalogue identity retain their scoped placement identity. Shared serving
 times appear once per section; differing schedules remain beside their items.
-Document Menus remain accessible through All menus, rather than inventing items
+Document Menus remain accessible through the default food landing, rather than inventing items
 from files. Daily specials remains separate. The surface has no cart or ordering
 actions; service configuration and order execution are unchanged. Configured
 service schedules are shown, not a promise of order/timeslot acceptance.
-The public Menu entrance keeps All menus as the default and shows Collection
-and Delivery only when its service-filtered reader finds an eligible published public Menu.
+The public Menu entrance defaults to browsing food and drinks, with prominent Collection
+and Delivery actions only when its service-filtered reader finds an eligible published public Menu.
+Their dedicated URLs retain incoming intent. Public service views switch directly
+between Collection and Delivery without an All menus return action; a quiet
+Explore other menus link opens `/kitchens/`. The shared `Detail/MenuServices.vue`
+owns the two existing service-eligibility reads, independently of item projection.
 Eligibility uses the existing explicit collection/delivery options and schedules, with table mapped to
 `dine_in` options already filtered by the existing table QR channel policy;
 Delivery does not infer address coverage or enable checkout. All four views reuse
@@ -2124,3 +2129,9 @@ Repeated Menu item Add returns the existing section-scoped Dish/meal-deal
 placement. Archived matches restore in place; concurrent additions serialize
 through the existing section transaction. Definitions, prices and other sections
 remain independent. The Menu family map links the command and regression checks.
+
+Public `/menus` is the Collection/Delivery portal, collating eligible menus per
+venue with matching schedules and a quiet link to other menus. Full venue service
+discovery belongs to Place and `/kitchens`, not this food portal.
+
+Menu and service terms are defined in [the service glossary](../../../../../docs/concepts/menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.

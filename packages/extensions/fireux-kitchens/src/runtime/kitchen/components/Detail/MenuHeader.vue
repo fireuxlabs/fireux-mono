@@ -21,9 +21,14 @@
       </div>
     </div>
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-3xl font-semibold tracking-tight">
-        {{ title || 'Menu' }}
-      </h1>
+      <div class="space-y-1">
+        <h1 class="text-3xl font-semibold tracking-tight">
+          {{ title || 'Menu' }}
+        </h1>
+        <p v-if="currencyCode" class="text-sm text-muted">
+          Prices in {{ currencyCode }}
+        </p>
+      </div>
       <UButton
         :to="venuePath"
         label="Venue information"
@@ -40,6 +45,7 @@ import type { KitchenDetailPresentation } from '../../models/kitchen-detail.resp
 const props = defineProps<{
   venue: KitchenDetailPresentation
   title?: string
+  currencyCode?: string
   venuePath: string
 }>()
 const logoFailed = ref(false)

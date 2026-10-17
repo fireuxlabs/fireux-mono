@@ -146,6 +146,7 @@ export function useKitchenInterface() {
       subtitle: shortAddress,
 
       name,
+      serviceLabels: kitchen.service_labels || [],
       badges,
 
       shortName,

@@ -6,36 +6,22 @@
           <KitchenDetailMenuHeader
             :venue="presentation"
             :venue-path="venuePath"
+            title="Food & drinks"
           />
-          <nav
-            v-if="hasCollection || hasDelivery"
-            aria-label="Menu service"
-            class="mt-5 flex flex-wrap gap-2"
-          >
+          <KitchenDetailMenuServices :kitchen-slug="kitchenSlug" class="mt-6" />
+          <div class="mt-10 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-xl font-semibold tracking-tight">
+              Explore the menus
+            </h2>
             <UButton
-              label="All menus"
-              :to="menuRouteIndexPath(menuIndex.routeScope.value)"
+              to="/kitchens/"
+              label="Explore other menus"
+              trailing-icon="i-lucide-arrow-right"
+              variant="link"
               color="neutral"
-              variant="solid"
-              aria-current="page"
+              size="sm"
             />
-            <UButton
-              v-if="hasCollection"
-              label="Collection"
-              :to="menuRouteIndexPath(menuIndex.routeScope.value, 'collection')"
-              color="neutral"
-              variant="outline"
-              icon="i-lucide-shopping-bag"
-            />
-            <UButton
-              v-if="hasDelivery"
-              label="Delivery"
-              :to="menuRouteIndexPath(menuIndex.routeScope.value, 'delivery')"
-              color="neutral"
-              variant="outline"
-              icon="i-lucide-truck"
-            />
-          </nav>
+          </div>
         </template>
       </MenuCollectionScoped>
     </template>
@@ -52,10 +38,7 @@
 import { computed } from 'vue'
 import { setResponseStatus, useHead, useSeoMeta } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import {
-  directoryMenuRouteScope,
-  menuRouteIndexPath,
-} from '../../../menu/utils/menu-route'
+import { directoryMenuRouteScope } from '../../../menu/utils/menu-route'
 import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
 import { useMenuDirectory } from '../../../menu/composables/useMenuDirectory'
 
@@ -71,30 +54,9 @@ const venuePath = computed(
 const menuIndex = useMenuDirectory({
   routeScope: computed(() => directoryMenuRouteScope(kitchenSlug.value)),
 })
-const collectionIndex = useMenuDirectory({
-  routeScope: menuIndex.routeScope,
-  service: 'collection',
-  pageSize: 1,
-})
-const deliveryIndex = useMenuDirectory({
-  routeScope: menuIndex.routeScope,
-  service: 'delivery',
-  pageSize: 1,
-})
-const hasCollection = computed(
-  () => !collectionIndex.error.value && collectionIndex.count.value > 0
-)
-const hasDelivery = computed(
-  () => !deliveryIndex.error.value && deliveryIndex.count.value > 0
-)
 const { kitchen, presentation, outcome, refresh, statusCode, ready } =
   useKitchenDetail(kitchenSlug)
-await Promise.all([
-  menuIndex.ready,
-  collectionIndex.ready,
-  deliveryIndex.ready,
-  ready,
-])
+await Promise.all([menuIndex.ready, ready])
 if (import.meta.server && (statusCode.value || menuIndex.statusCode.value)) {
   setResponseStatus(statusCode.value || menuIndex.statusCode.value || 500)
 }

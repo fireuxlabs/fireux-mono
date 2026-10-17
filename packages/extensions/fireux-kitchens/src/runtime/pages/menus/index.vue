@@ -1,9 +1,7 @@
 <template>
   <UPage>
     <UPageBody class="space-y-6">
-      <MenuCollectionHeader>
-        <MenuCollectionActions />
-      </MenuCollectionHeader>
+      <MenuCollectionHeader />
       <MenuCollectionResults :menus="menus" />
       <CollectionPagination
         :has-more="hasMore"

@@ -1,3 +1,5 @@
+import { readKitchenOfferings } from '../offerings/read'
+import { kitchenServiceSummary } from '../../utils/service-summary'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -21,7 +23,7 @@ export type ReadKitchensInput = {
 /** Server-resolved Kitchens. Every Kitchen includes its canonical same-ID Place. */
 export async function readKitchens(
   input: ReadKitchensInput = {}
-): Promise<Array<Kitchen & { place: Place }>> {
+): Promise<Array<Kitchen & { place: Place; service_labels?: string[] }>> {
   const requestedPlaceId = text(input.placeId)
   if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
     throw createError({
@@ -59,7 +61,7 @@ export async function readKitchens(
     }
   )
 
-  return documents
+  const kitchens = documents
     .map((document) => resolveKitchen(document, related, scope))
     .filter((kitchen): kitchen is Kitchen & { place: Place } =>
       Boolean(kitchen)
@@ -67,4 +69,8 @@ export async function readKitchens(
     .filter(
       (kitchen) => input.includeHidden === true || kitchen.identity.visibility
     )
+  return Promise.all(kitchens.map(async kitchen => ({
+    ...kitchen,
+    service_labels: kitchenServiceSummary(await readKitchenOfferings(db, kitchen.id)),
+  })))
 }
