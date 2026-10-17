@@ -106,6 +106,16 @@ function harness() {
     runGuardedServerTransaction: async (_, run) => {
       before()
       return run({
+        query: async (t, options) =>
+          [...records]
+            .filter(
+              ([path, data]) =>
+                path.startsWith(t + '/') &&
+                !path.slice(t.length + 1).includes('/') &&
+                data[options.field] === options.value
+            )
+            .slice(0, options.limit)
+            .map(([path, data]) => ({ id: path.split('/').at(-1), data })),
         readAll: async (t, limit) =>
           [...records]
             .filter(
@@ -420,7 +430,7 @@ test('Menu entry removal enforces current authority, parent scope and Daily enti
 test('manual creation appends after stored gaps and serializes through the parent without price writes', async () => {
   const h = harness()
   h.records.set('kitchens/k/menus/m/sections/s/items/old', {
-    dish_id: 'd',
+    dish_id: 'another-dish',
     sort_order: 20,
     status: 'archived',
   })

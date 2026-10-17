@@ -434,3 +434,14 @@ weekdays do not make structurally valid future content incomplete.
 Verify `menu-publication.test.mjs` and `menu-publication-readiness.test.mjs`,
 including archived Dishes, paused deals, grouped diagnostics, disappearing last
 items and explicit read-state outcomes. Live checks remain read-only.
+
+Menu item Add is idempotent for the same Dish or meal-deal reference within one
+section. `menu/server/items/write.ts` checks that reference in its existing
+transaction after authority and reference validation. Active matches return their
+saved ID without writes; archived matches restore in place, retaining position
+and provenance. New additions still update the read parent section, so competing
+transactions retry and converge on one placement. Other sections and Menus may
+use the same reference independently. No Dish, Promotion or Order data is written.
+Verify repeat requests, optimistic transaction conflicts, archived matches and
+scope separation in `menu-item-idempotency.test.mjs`; this simulated conflict
+coverage is not a claim of a live concurrent Firestore test.

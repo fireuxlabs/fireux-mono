@@ -54,70 +54,109 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
     : ''
   const actor = await readKitchenMutationActor(event),
     id = randomUUID()
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
-    const [menu, section, dish] = await Promise.all([
-      tx.read(serverKitchenMenusTarget(kitchenId), menuId),
-      tx.read(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId),
-      dishId
-        ? tx.read(serverKitchenDishesTarget(kitchenId), dishId)
-        : tx.read(kitchenPromotionsTarget(kitchenId), promotionId),
-    ])
-    if (!menu.exists || !section.exists || !dish.exists)
-      throw createError({
-        statusCode: 404,
-        statusMessage:
-          'Select an existing Menu section and Dish from this Kitchen.',
-      })
-    if (
-      menu.data?.schedule === 'daily' &&
-      !['premium', 'business'].includes(access.subscription)
-    )
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Daily specials require Plus.',
-      })
-    if (promotionId) {
-      const { name, status, currency, days, price, groups } = dish.data || {}
-      if (!Array.isArray(groups) || menu.data?.schedule === 'daily')
+  const placementId = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (tx) => {
+      const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
+      const [menu, section, dish] = await Promise.all([
+        tx.read(serverKitchenMenusTarget(kitchenId), menuId),
+        tx.read(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId),
+        dishId
+          ? tx.read(serverKitchenDishesTarget(kitchenId), dishId)
+          : tx.read(kitchenPromotionsTarget(kitchenId), promotionId),
+      ])
+      if (!menu.exists || !section.exists || !dish.exists)
         throw createError({
-          statusCode: 400,
-          statusMessage: 'Choose a meal deal for a regular Menu.',
+          statusCode: 404,
+          statusMessage:
+            'Select an existing Menu section and Dish from this Kitchen.',
         })
-      try {
-        normalizeKitchenPromotion({
-          name,
-          status,
-          currency,
-          days,
-          price,
-          groups,
-        })
-      } catch {
+      if (
+        menu.data?.schedule === 'daily' &&
+        !['premium', 'business'].includes(access.subscription)
+      )
         throw createError({
-          statusCode: 400,
-          statusMessage: 'This meal deal is incomplete.',
+          statusCode: 403,
+          statusMessage: 'Daily specials require Plus.',
         })
+      if (promotionId) {
+        const { name, status, currency, days, price, groups } = dish.data || {}
+        if (!Array.isArray(groups) || menu.data?.schedule === 'daily')
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Choose a meal deal for a regular Menu.',
+          })
+        try {
+          normalizeKitchenPromotion({
+            name,
+            status,
+            currency,
+            days,
+            price,
+            groups,
+          })
+        } catch {
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'This meal deal is incomplete.',
+          })
+        }
       }
+      const target = serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)
+      const matches = await tx.query(target, {
+        field: dishId ? 'dish_id' : 'promotion_id',
+        op: '==',
+        value: dishId || promotionId,
+        limit: 401,
+      })
+      if (matches.length > 400)
+        throw createError({
+          statusCode: 409,
+          statusMessage:
+            'This section needs duplicate cleanup before adding this entry.',
+        })
+      const existing = matches.sort(
+        (a, b) =>
+          Number(a.data.status === 'archived') -
+            Number(b.data.status === 'archived') || a.id.localeCompare(b.id)
+      )[0]
+      if (existing) {
+        if (existing.data.status === 'archived') {
+          const stamp = serverAuditStamp({
+            by: actor.uid,
+            appId: actor.runtimeAppId,
+          })
+          tx.update(target, existing.id, { status: 'active', updated: stamp })
+          tx.update(
+            serverKitchenMenuSectionsTarget(kitchenId, menuId),
+            sectionId,
+            { updated: stamp }
+          )
+        }
+        return existing.id
+      }
+      const sort_order = await nextMenuDisplayOrder(tx, target)
+      const stamp = serverAuditStamp({
+        by: actor.uid,
+        appId: actor.runtimeAppId,
+      })
+      tx.create(target, id, {
+        kitchen_id: kitchenId,
+        menu_id: menuId,
+        section_id: sectionId,
+        ...(dishId ? { dish_id: dishId } : { promotion_id: promotionId }),
+        sort_order,
+        status: 'active',
+        created: stamp,
+        updated: stamp,
+      })
+      tx.update(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId, {
+        updated: stamp,
+      })
+      return id
     }
-    const target = serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)
-    const sort_order = await nextMenuDisplayOrder(tx, target)
-    const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
-    tx.create(target, id, {
-      kitchen_id: kitchenId,
-      menu_id: menuId,
-      section_id: sectionId,
-      ...(dishId ? { dish_id: dishId } : { promotion_id: promotionId }),
-      sort_order,
-      status: 'active',
-      created: stamp,
-      updated: stamp,
-    })
-    tx.update(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId, {
-      updated: stamp,
-    })
-  })
-  return { id, kitchenId, menuId }
+  )
+  return { id: placementId, kitchenId, menuId }
 }
 
 export async function updateKitchenMenuItem(

@@ -2119,3 +2119,8 @@ cannot publish; diagnostics identify section and Dish/deal. An already published
 Menu that loses its displayable content warns without auto-unpublishing. Document
 and Daily publication retain their existing paths. See the Menu family map’s
 Publication readiness section for owners and regression checks.
+
+Repeated Menu item Add returns the existing section-scoped Dish/meal-deal
+placement. Archived matches restore in place; concurrent additions serialize
+through the existing section transaction. Definitions, prices and other sections
+remain independent. The Menu family map links the command and regression checks.
