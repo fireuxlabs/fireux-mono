@@ -3,7 +3,7 @@ import type {
   KitchenDeliveryZone,
 } from '../../../models/fulfilment.model.ts'
 import type { RadioGroupItem } from '@nuxt/ui'
-import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { useDeliveryZoneAutosave } from './useDeliveryZoneAutosave'
 import { computed, ref, watch } from 'vue'
 import { useKitchenFulfilmentUpdate } from '../../fulfilment/useKitchenFulfilmentUpdate'
 import {
@@ -39,21 +39,33 @@ export function useKitchenDeliveryEditor(props: {
     { label: 'Polygon', value: 'polygon' },
   ] satisfies RadioGroupItem[]
 
-  const { updateKitchenFulfilment } = useKitchenFulfilmentUpdate()
+  const { updateKitchenFulfilment, captureIntent } =
+    useKitchenFulfilmentUpdate()
 
   const { place, currencyCode } = useKitchenWorkspacePlace()
-
-  const toast = useToastify()
 
   const zones = ref<EditableZone[]>([])
 
   const activeZoneIndex = ref(0)
 
-  const saving = ref(false)
-
-  const saveState = ref('')
-
   const syncingSavedZones = ref(false)
+
+  const {
+    saving,
+    error: saveError,
+    status: saveState,
+  } = useDeliveryZoneAutosave({
+    zones,
+    syncing: syncingSavedZones,
+    kitchenId: () => props.kitchenId,
+    canWrite: () => props.canWrite,
+    captureIntent,
+    update: (delivery_zones) =>
+      updateKitchenFulfilment({
+        kitchenId: props.kitchenId,
+        changes: { delivery_zones },
+      }),
+  })
 
   const fulfilment = computed(() => props.fulfilment)
 
@@ -107,6 +119,7 @@ export function useKitchenDeliveryEditor(props: {
   watch(
     deliveryZones,
     (nextDeliveryZones: KitchenDeliveryZone[]) => {
+      if (saving.value) return
       syncingSavedZones.value = true
       zones.value = nextDeliveryZones.map(editableZone)
       activeZoneIndex.value = 0
@@ -116,16 +129,6 @@ export function useKitchenDeliveryEditor(props: {
       })
     },
     { immediate: true }
-  )
-
-  watch(
-    zones,
-    () => {
-      if (!syncingSavedZones.value && !saving.value) {
-        saveState.value = 'Unsaved changes'
-      }
-    },
-    { deep: true }
   )
 
   watch(
@@ -184,66 +187,7 @@ export function useKitchenDeliveryEditor(props: {
     if (!Number.isInteger(targetIndex) || targetIndex < 0) return
     if (targetIndex >= zones.value.length) return
 
-    saving.value = true
-    saveState.value = 'Removing...'
     zones.value.splice(targetIndex, 1)
-    try {
-      await persistDeliveryZones('Delivery zone removed')
-    } catch (error) {
-      saveState.value = 'Remove failed'
-      toast.add({
-        title: 'Could not remove delivery zone',
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
-        color: 'error',
-        icon: 'i-lucide-alert-triangle',
-      })
-      throw error
-    } finally {
-      saving.value = false
-    }
-  }
-
-  async function save() {
-    if (!props.canWrite) return
-
-    saving.value = true
-    saveState.value = 'Saving...'
-    try {
-      await persistDeliveryZones('Delivery zones updated')
-    } catch (error) {
-      saveState.value = 'Save failed'
-      toast.add({
-        title: 'Could not update delivery zones',
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
-        color: 'error',
-        icon: 'i-lucide-alert-triangle',
-      })
-      throw error
-    } finally {
-      saving.value = false
-    }
-  }
-
-  async function persistDeliveryZones(successTitle: string) {
-    const kitchenId = text(props.kitchenId)
-    if (!kitchenId) throw new Error('No kitchen selected.')
-
-    const nextDeliveryZones: KitchenDeliveryZone[] = []
-    for (const [index, zone] of zones.value.entries()) {
-      const nextZone = normalizedZone(zone, index)
-      if (nextZone) nextDeliveryZones.push(nextZone)
-    }
-    await updateKitchenFulfilment({
-      kitchenId,
-      changes: { delivery_zones: nextDeliveryZones },
-    })
-    saveState.value = 'Saved'
-    toast.add({
-      title: successTitle,
-      icon: 'i-lucide-check-circle',
-    })
   }
 
   return {
@@ -253,11 +197,11 @@ export function useKitchenDeliveryEditor(props: {
     updateKitchenFulfilment,
     place,
     currencyCode,
-    toast,
     zones,
     activeZoneIndex,
     saving,
     saveState,
+    saveError,
     syncingSavedZones,
     fulfilment,
     deliveryZones,
@@ -285,7 +229,5 @@ export function useKitchenDeliveryEditor(props: {
     setActiveZoneIndex,
     addPolygonPoint,
     removeZone,
-    save,
-    persistDeliveryZones,
   }
 }

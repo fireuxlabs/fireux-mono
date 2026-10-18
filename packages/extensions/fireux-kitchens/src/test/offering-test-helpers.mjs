@@ -55,6 +55,18 @@ const policy = loadOfferingSource(
     ],
   }
 )
+export const serviceHoursPolicy = loadOfferingSource(
+  'kitchen/utils/service-hours',
+  'resolveServiceHours,hoursWithinParent',
+  { weekdayTimeDays: core.weekdayTimeCore.days }
+)
+export const testKitchenHours = () => ({
+  source: 'custom',
+  timezone: 'Europe/Zurich',
+  windows: [
+    { days: [...core.weekdayTimeCore.days], open: '00:00', close: '00:00' },
+  ],
+})
 export const interactionValidation = loadOfferingSource(
   'kitchen/utils/interaction-validation',
   'requireKitchenInteractionChanges',
@@ -99,6 +111,8 @@ export const offeringReads = loadOfferingSource(
   'readKitchenOfferings,readKitchenOfferingsInTransaction',
   {
     ...offeringContract,
+    ...serviceHoursPolicy,
+    resolveKitchenOperationHours: testKitchenHours,
     ...target,
     requireFirestoreDocumentId: (value) => {
       if (!isFirestoreDocumentId(value)) throw new Error('Invalid id')
@@ -129,7 +143,10 @@ export function offeringHarness(records = []) {
     write: (target, id, data) => {
       if (target.collectionPath.split('/').at(-1) !== 'offerings')
         throw new Error('Unexpected write target')
-      children.set(id, { ...children.get(id), ...structuredClone(data) })
+      const next = { ...children.get(id), ...structuredClone(data) }
+      for (const [key, value] of Object.entries(next))
+        if (value?.deleted === true) delete next[key]
+      children.set(id, next)
     },
   }
 }

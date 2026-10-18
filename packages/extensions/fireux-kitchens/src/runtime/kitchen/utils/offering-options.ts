@@ -40,6 +40,13 @@ export const kitchenOfferingOptions = [
     types: ['dine_in'],
   },
   {
+    key: 'room_service',
+    label: 'Room service',
+    icon: 'i-lucide-concierge-bell',
+    description: 'Guests use a dedicated link for their room.',
+    types: ['room_service'],
+  },
+  {
     key: 'counter',
     label: 'Kiosk',
     icon: 'i-lucide-tablet',
@@ -60,9 +67,14 @@ export function offeringsForOption(
   offerings: KitchenOffering[],
   option: KitchenOfferingOption
 ) {
+  const channel = tableServiceChannel(option.key)
   return offerings.filter((offering) =>
-    offering.interactions.some((interaction) =>
-      (option.types as readonly string[]).includes(interaction.type)
+    offering.interactions.some(
+      (interaction) =>
+        (option.types as readonly string[]).includes(interaction.type) &&
+        (!channel ||
+          (interaction.type !== 'browse' &&
+            tableChannelEnabled(interaction, channel)))
     )
   )
 }
@@ -72,14 +84,15 @@ export function offeringOptionEnabled(
 ) {
   return (
     offering.enabled &&
-    offering.interactions.some(
-      (interaction) =>
-        (option.types as readonly string[]).includes(interaction.type) &&
-        interaction.enabled &&
-        (interaction.type === 'browse' ||
-          !tableServiceChannel(option.key) ||
-          tableChannelEnabled(interaction, tableServiceChannel(option.key)!))
-    )
+    (option.key === 'counter' ||
+      offering.interactions.some(
+        (interaction) =>
+          (option.types as readonly string[]).includes(interaction.type) &&
+          interaction.enabled &&
+          (interaction.type === 'browse' ||
+            !tableServiceChannel(option.key) ||
+            tableChannelEnabled(interaction, tableServiceChannel(option.key)!))
+      ))
   )
 }
 

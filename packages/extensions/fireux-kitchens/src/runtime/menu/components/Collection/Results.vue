@@ -54,6 +54,7 @@ import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
+  menuRoutePath,
 } from '../../utils/menu-route'
 
 const props = defineProps<{
@@ -85,8 +86,7 @@ const menus = computed(() =>
           !option.paused &&
           !menu.offerings?.some(
             (offering) =>
-              offering.id === option.kitchen_offering_id &&
-              offering.separate
+              offering.id === option.kitchen_offering_id && offering.separate
           )
       )
   )
@@ -196,7 +196,11 @@ const groups = computed(() => {
               offering.id,
               {
                 ...offering,
-                to: `${menuRouteIndexPath(scope)}${offering.service === 'collection' ? '.collection' : ''}?offering=${encodeURIComponent(offering.id)}`,
+                to: menuRoutePath({
+                  scope,
+                  menuId: offering.menu_slug,
+                  context: 'generic',
+                }),
               },
             ])
         ).values(),

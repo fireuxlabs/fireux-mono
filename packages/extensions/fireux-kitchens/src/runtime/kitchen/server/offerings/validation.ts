@@ -34,8 +34,14 @@ export function readOfferingUpdate(input: unknown) {
     'enabled',
     'menu_ids',
     'hours',
+    'hours_source',
     'collection_timing',
   ])
+  if (
+    'hours_source' in changes &&
+    !['kitchen', 'custom'].includes(String(changes.hours_source))
+  )
+    fail('Choose Kitchen hours or custom hours.')
   if (
     'collection_timing' in changes &&
     !['same_day', 'next_day'].includes(String(changes.collection_timing))
@@ -92,7 +98,10 @@ export function readOfferingUpdate(input: unknown) {
   }
 }
 
-export function requireConfiguredOffering(offering: KitchenOffering) {
+export function requireConfiguredOffering(
+  offering: KitchenOffering,
+  allowIncompleteSetup = false
+) {
   if (
     offering.collection_timing &&
     !offering.interactions.some((row) => row.type === 'collection')
@@ -105,7 +114,7 @@ export function requireConfiguredOffering(offering: KitchenOffering) {
     )
   )
     fail('Turn off immediate collection before choosing next-day collection.')
-  if (!offering.enabled) return
+  if (!offering.enabled || allowIncompleteSetup) return
   if (!offering.menu_ids.length)
     fail('Select at least one Menu before enabling this offering.')
   if (

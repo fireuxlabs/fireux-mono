@@ -1,59 +1,46 @@
 <template>
-  <section class="space-y-4">
-    <h3 class="font-semibold">{{ kitchenOrderTypeLabel(type) }} settings</h3>
-    <UCheckbox
-      v-if="allowToggle"
-      :model-value="config.enabled"
-      :label="'Allow ' + kitchenOrderTypeLabel(type).toLowerCase()"
+  <section class="space-y-2">
+    <h3 v-if="modeMenus" class="font-medium">{{ label }}</h3>
+    <WorkspaceKitchenOfferingsSetupMenus
+      v-if="modeMenus"
+      :menu-ids="config.menu_ids || []"
+      :menus="menus"
+      :outcome="menusOutcome"
       :disabled="disabled"
-      @update:model-value="emit('update', { enabled: $event === true })"
+      @update="updateMenus"
     />
     <WorkspaceKitchenOfferingsTiming
+      v-if="config.type === 'pre_order'"
       :config="config"
-      :allow-asap="type !== 'pre_order'"
       :disabled="disabled"
-      :interaction-label="kitchenOrderTypeLabel(type)"
-      :time-label="type === 'pre_order' ? 'Dining' : 'Serving'"
-      customer-message-placeholder="Optional customer message"
-      :update-function="update"
-    />
-    <div class="grid items-start gap-4 md:grid-cols-2">
-      <WorkspaceKitchenOfferingsCustomerDetails
-        :config="config"
-        :disabled="disabled"
-        handoff-label="Instructions"
-        handoff-placeholder="Optional instructions"
-        :update-function="update"
-      />
-      <WorkspaceKitchenOfferingsPayment
-        :config="config"
-        :kitchen-id="kitchenId"
-      />
-    </div>
-    <WorkspaceKitchenOfferingsAvailability
-      :config="{ ...config, enabled: !allowToggle || config.enabled }"
-      :disabled="disabled"
-      :interaction-label="kitchenOrderTypeLabel(type)"
       :update-function="update"
     />
   </section>
 </template>
 <script setup lang="ts">
-import type { KitchenOrderType } from '../../../../models/offering-interaction-types.model'
+import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import type { Menu } from '../../../../../menu/models/menu.model'
 import type { KitchenOrderTypeConfig } from '../../../../models/ordering.model'
 import type { KitchenOfferingInteractionChanges } from '../../../../models/offering.model'
-import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
-defineProps<{
-  type: KitchenOrderType
+const props = defineProps<{
+  label: string
   config: KitchenOrderTypeConfig & { enabled: boolean }
-  allowToggle: boolean
-  kitchenId: string
+  modeMenus: boolean
+  menus: Menu[]
+  menusOutcome: ReadOutcome
   disabled: boolean
+  updateFunction: (changes: KitchenOfferingInteractionChanges) => Promise<void>
 }>()
-const emit = defineEmits<{
-  update: [changes: KitchenOfferingInteractionChanges]
-}>()
+function updateMenus(values: unknown[]) {
+  return update({
+    menu_ids: values.filter((id): id is string => typeof id === 'string'),
+  })
+}
 async function update(changes: KitchenOfferingInteractionChanges) {
-  emit('update', changes)
+  try {
+    await props.updateFunction(changes)
+  } catch {
+    /* The setup owner displays the failure. */
+  }
 }
 </script>

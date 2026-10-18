@@ -20,12 +20,27 @@ export async function updateKitchenOfferingInteraction(
   input: unknown
 ) {
   const { kitchenId, offeringId, type, changes } = readInteractionChanges(input)
+  if (changes.table_channels !== undefined)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'A table setup cannot change to another service.',
+    })
+  if (changes.menu_ids !== undefined)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Use Services configuration to select Kiosk menus.',
+    })
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     await requireKitchenMutationAuthority(tx, actor, kitchenId)
     const offerings = await readKitchenOfferingsInTransaction(tx, kitchenId)
     const current = offerings.find((row) => row.id === offeringId)
     if (!current) throw missing()
+    if (!current.interactions.some((row) => row.type === type))
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'This setup belongs to a different service.',
+      })
     const interaction = patchKitchenOfferingInteraction(
       type,
       current.interactions.find((row) => row.type === type),

@@ -133,6 +133,19 @@ export const readKitchenOrderTypeConfig = (
 
   return {
     type,
+    ...((type === 'eat_in' || type === 'takeaway') &&
+    Array.isArray(row.menu_ids)
+      ? {
+          menu_ids: [
+            ...new Set(
+              row.menu_ids.filter(
+                (id): id is string =>
+                  typeof id === 'string' && !!id && !id.includes('/')
+              )
+            ),
+          ],
+        }
+      : {}),
     ...(type === 'dine_in' && row.table_channels !== undefined
       ? {
           table_channels: {

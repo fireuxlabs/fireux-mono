@@ -35,6 +35,7 @@ test('Services presents only the fixed Misebox options, including those not enab
       'pre_order',
       'table_service',
       'qr_tables',
+      'room_service',
       'counter',
     ]
   )
@@ -115,7 +116,7 @@ test('published Services state is available to the shared Copy page JSON action'
   await page.copy()
   const payload = JSON.parse(copied)
   assert.equal(payload.page.path, '/workspace/kitchen/services')
-  assert.equal(payload.state.services.length, 6)
+  assert.equal(payload.state.services.length, 7)
   assert.equal(payload.state.services[0].status, 'Enabled')
   assert.deepEqual(payload.state.derived.enabledServices, ['collection'])
 })

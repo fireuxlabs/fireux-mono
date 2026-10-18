@@ -29,6 +29,9 @@ export type KitchenOrderNotificationPolicy = {
 }
 export type KitchenOrderTypeConfig = {
   type: KitchenOrderType
+  /** Kiosk mode menu selection. */
+  menu_ids?: string[]
+  /** Fixed entry identity; availability belongs to the service enabled switch. */
   table_channels?: { staff_pos: boolean; table_qr: boolean }
   notice_hours?: number
   message?: string

@@ -65,7 +65,10 @@ export default defineLiveReadHandler(
       dataByPath,
       readScope,
       sproochli,
-      await readKitchenOfferings(db, kitchen.id)
+      await readKitchenOfferings(db, kitchen.id, {
+        kitchen: data,
+        place: dataByPath.get('places/' + kitchen.id) || {},
+      })
     )
     if (!detail) {
       throw createError({

@@ -525,3 +525,48 @@ test('separate identity survives saved and public projection independently of ti
     )
   }
 })
+
+test('Collection enabled before setup grants no customer service eligibility', () => {
+  for (const value of [
+    { ...active, menu_ids: [] },
+    { ...active, hours: undefined },
+  ]) {
+    assert.deepEqual(kitchenMenuOrdering([value], 'food').order_types, [])
+  }
+})
+
+test('Kiosk menu eligibility follows the selected Eat in or Takeaway mode', () => {
+  const kiosk = {
+    id: 'kiosk',
+    name: 'Kiosk',
+    enabled: true,
+    menu_ids: ['food', 'drinks', 'takeaway-drinks'],
+    hours,
+    interactions: [
+      { type: 'eat_in', enabled: true, menu_ids: ['food', 'drinks'] },
+      {
+        type: 'takeaway',
+        enabled: true,
+        menu_ids: ['food', 'takeaway-drinks'],
+      },
+    ],
+  }
+  assert.deepEqual(
+    kitchenMenuOrdering([kiosk], 'food').order_types.map((row) => row.type),
+    ['eat_in', 'takeaway']
+  )
+  assert.deepEqual(
+    kitchenMenuOrdering([kiosk], 'drinks').order_types.map((row) => row.type),
+    ['eat_in']
+  )
+  assert.deepEqual(
+    kitchenMenuOrdering([kiosk], 'takeaway-drinks').order_types.map(
+      (row) => row.type
+    ),
+    ['takeaway']
+  )
+  assert.deepEqual(
+    kitchenMenuOrdering([{ ...kiosk, enabled: false }], 'food').order_types,
+    []
+  )
+})

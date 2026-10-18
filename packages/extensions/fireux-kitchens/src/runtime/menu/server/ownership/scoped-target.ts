@@ -4,9 +4,7 @@ import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment'
-import {
-  readMenuKitchenPlaceData,
-} from './kitchen-scope'
+import { readMenuKitchenPlaceData } from './kitchen-scope'
 import type { ScopedMenuTarget, ScopedTargetKind } from './target-types'
 export const scopedTarget = async (
   kind: ScopedTargetKind,
@@ -53,7 +51,8 @@ export const scopedTarget = async (
 
   const offerings = await readKitchenOfferings(
     getRuntimeFirestore(),
-    input.kitchenId
+    input.kitchenId,
+    { kitchen: input.rootKitchenData, place: placeData }
   )
   return {
     orderingSource: {

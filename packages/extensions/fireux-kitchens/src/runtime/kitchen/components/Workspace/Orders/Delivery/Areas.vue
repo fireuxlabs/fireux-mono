@@ -7,6 +7,7 @@
   >
     <UCard class="mt-4">
       <div class="space-y-4">
+        <MoleculesCopyError v-if="saveError" :message="saveError" />
         <UPageCard
           v-if="!zones.length"
           title="Add your first delivery area"
@@ -22,7 +23,7 @@
           :zones="mapZones"
           :currency-code="currencyCode"
           :center="deliveryCenter"
-          :can-edit="canWrite"
+          :can-edit="canWrite && !saving"
           :editable-mode="activeBoundaryMode"
           :editable-zone-index="activeZoneIndex"
           @polygon-point="addPolygonPoint"
@@ -43,7 +44,7 @@
             <div class="delivery-zone-panel__name">
               <UInput
                 v-model="zone.label"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
                 :placeholder="zonePlaceholder(index)"
               />
             </div>
@@ -55,7 +56,7 @@
                 size="sm"
                 icon="i-lucide-trash-2"
                 aria-label="Remove zone"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
                 @click="removeZone(index)"
               />
             </div>
@@ -68,7 +69,7 @@
                 type="number"
                 min="0"
                 step="0.5"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
               />
             </UFormField>
 
@@ -80,7 +81,7 @@
                 type="number"
                 min="0"
                 step="0.5"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
               />
             </UFormField>
 
@@ -88,7 +89,7 @@
               <URadioGroup
                 v-model="zone.boundary_type"
                 :items="boundaryTypeOptions"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
               />
             </UFormField>
 
@@ -102,7 +103,7 @@
                 type="number"
                 min="0"
                 step="100"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
                 placeholder="1500"
               />
             </UFormField>
@@ -114,7 +115,7 @@
             >
               <UInput
                 v-model="zone.postal_codes"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
                 placeholder="3852, 3800"
               />
             </UFormField>
@@ -127,7 +128,7 @@
               <UTextarea
                 v-model="zone.polygon"
                 :rows="2"
-                :disabled="!canWrite"
+                :disabled="saving || !canWrite"
                 placeholder="46.765, 7.975"
               />
             </UFormField>
@@ -139,7 +140,7 @@
             color="neutral"
             variant="soft"
             icon="i-lucide-plus"
-            :disabled="!canWrite || zones.length >= maxZones"
+            :disabled="saving || !canWrite || zones.length >= maxZones"
             @click="addZone"
           >
             {{ zones.length >= maxZones ? '4 zones max' : 'Add zone' }}
@@ -149,16 +150,6 @@
             <span v-if="saveState" class="text-xs text-dimmed">
               {{ saveState }}
             </span>
-
-            <UButton
-              color="primary"
-              icon="i-lucide-save"
-              :loading="saving"
-              :disabled="!canWrite || saving"
-              @click="save"
-            >
-              Save delivery zones
-            </UButton>
           </div>
         </div>
       </div>
@@ -183,6 +174,7 @@ const {
   activeZoneIndex,
   saving,
   saveState,
+  saveError,
   deliveryCenter,
   zonePlaceholder,
   zoneCardStyle,
@@ -193,7 +185,6 @@ const {
   setActiveZoneIndex,
   addPolygonPoint,
   removeZone,
-  save,
 } = useKitchenDeliveryEditor(props)
 </script>
 

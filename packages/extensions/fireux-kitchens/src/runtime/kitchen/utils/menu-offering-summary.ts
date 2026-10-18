@@ -54,6 +54,9 @@ export function menuOfferingSummaries(input: {
           customerUrl:
             offering.enabled &&
             state === 'Enabled' &&
+            (!['eat_in', 'takeaway'].includes(interaction.type) ||
+              (interaction.type !== 'browse' &&
+                interaction.menu_ids?.includes(input.menu.id))) &&
             (interaction.type !== 'dine_in' ||
               tableChannelEnabled(interaction, 'table_qr')) &&
             input.menu.status === 'published' &&

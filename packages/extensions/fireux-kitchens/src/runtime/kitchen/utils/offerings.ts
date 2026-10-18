@@ -26,11 +26,14 @@ export function readKitchenOffering(
           'enabled',
           'menu_ids',
           'hours',
+          'hours_source',
           'collection_timing',
           'separate',
           'interactions',
         ].includes(key)
     ) ||
+    (source.hours_source !== undefined &&
+      !['kitchen', 'custom'].includes(String(source.hours_source))) ||
     (source.id !== undefined && source.id !== id) ||
     (source.separate !== undefined && typeof source.separate !== 'boolean') ||
     (source.collection_timing !== undefined &&

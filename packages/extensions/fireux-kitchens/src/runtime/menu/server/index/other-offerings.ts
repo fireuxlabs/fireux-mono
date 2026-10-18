@@ -6,7 +6,7 @@ export async function readOtherMenuOfferings(
   db: ReturnType<typeof getRuntimeFirestore>,
   kitchenId: string,
   offerings: KitchenOffering[]
-): Promise<Array<{ id: string; name: string; service?: 'collection' }>> {
+): Promise<Array<{ id: string; name: string; menu_slug: string }>> {
   const active = offerings.filter(
     (offering) =>
       offering.enabled &&
@@ -14,30 +14,24 @@ export async function readOtherMenuOfferings(
   )
   const covered = new Set(
     active
-      .filter(
-        (offering) =>
-          !offering.separate &&
-          offering.interactions.some(
-            (interaction) =>
-              interaction.enabled &&
-              (interaction.type === 'collection' ||
-                interaction.type === 'delivery')
-          )
+      .filter((offering) =>
+        offering.interactions.some(
+          (interaction) =>
+            interaction.enabled &&
+            (interaction.type === 'collection' ||
+              interaction.type === 'delivery')
+        )
       )
       .flatMap((offering) => offering.menu_ids)
   )
-  const candidates = active.filter(
-    (offering) =>
-      offering.separate || offering.menu_ids.some((id) => !covered.has(id))
-  )
   const ids = [
     ...new Set(
-      candidates.flatMap((offering) =>
-        offering.menu_ids.filter((id) => offering.separate || !covered.has(id))
-      )
+      active
+        .flatMap((offering) => offering.menu_ids)
+        .filter((id) => !covered.has(id))
     ),
   ]
-  const publicIds = new Set<string>()
+  const result: Array<{ id: string; name: string; menu_slug: string }> = []
   for (let offset = 0; offset < ids.length; offset += 100) {
     const menus = await db.getAll(
       ...ids
@@ -50,24 +44,13 @@ export async function readOtherMenuOfferings(
         menu.exists &&
         data?.status === 'published' &&
         data.schedule !== 'daily' &&
-        (data.audience === undefined || data.audience === 'public')
-      )
-        publicIds.add(menu.id)
+        (data.audience === undefined || data.audience === 'public') &&
+        typeof data.slug === 'string' &&
+        typeof data.name === 'string'
+      ) {
+        result.push({ id: menu.id, name: data.name, menu_slug: data.slug })
+      }
     }
   }
-  const seen = new Set<string>()
-  return candidates.flatMap((offering) => {
-    const menus = offering.menu_ids.filter((id) => publicIds.has(id)).sort()
-    if (!menus.length) return []
-    const key = `${offering.name.trim().toLowerCase()}:${menus.join(',')}`
-    if (seen.has(key)) return []
-    seen.add(key)
-    return [
-      {
-        id: offering.id,
-        name: offering.name,
-        ...(offering.separate ? { service: 'collection' as const } : {}),
-      },
-    ]
-  })
+  return result
 }

@@ -1,3 +1,4 @@
+import type { KitchenOffering } from '../../../kitchen/models/offering.model'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { normalizeKitchenOfferings } from '../../../kitchen/utils/offering-policy'
 import type { Firestore } from 'firebase-admin/firestore'
@@ -16,6 +17,7 @@ import {
 } from '../offerings/projection.ts'
 
 type MenuChoiceInput = {
+  offerings?: KitchenOffering[]
   appId: string
   kitchenId: string
   kitchenSlug: string
@@ -128,7 +130,8 @@ export async function readKitchenMenuChoices(
     return []
   }
 
-  const offerings = await readKitchenOfferings(db, input.kitchenId)
+  const offerings =
+    input.offerings || (await readKitchenOfferings(db, input.kitchenId))
   const snap = await db.collection(`kitchens/${input.kitchenId}/menus`).get()
   const rows = snap.docs
     .map((doc) => ({

@@ -19,6 +19,11 @@ export function kitchenMenuOrdering(
     .flatMap((offering) =>
       offering.interactions.flatMap((interaction) => {
         if (interaction.type === 'browse' || !interaction.enabled) return []
+        if (
+          (interaction.type === 'eat_in' || interaction.type === 'takeaway') &&
+          !interaction.menu_ids?.includes(menuId)
+        )
+          return []
         const { enabled, ...policy } = interaction
         return [
           {
@@ -36,17 +41,26 @@ export function kitchenMenuOrdering(
 }
 
 /** Services supported by the public Website flow, explicitly granted by Kitchen offerings. */
-export function publicMenuOrderTypes(ordering: MenuOrderingConfig): MenuOrderTypeConfig[] {
-  return ordering.order_types.filter(config =>
-    ['collection', 'delivery', 'dine_in'].includes(config.type) &&
-    !config.availability?.paused &&
-    tableChannelEnabled(config, 'table_qr')
+export function publicMenuOrderTypes(
+  ordering: MenuOrderingConfig
+): MenuOrderTypeConfig[] {
+  return ordering.order_types.filter(
+    (config) =>
+      ['collection', 'delivery', 'dine_in'].includes(config.type) &&
+      !config.availability?.paused &&
+      tableChannelEnabled(config, 'table_qr')
   )
 }
 
 /** One currently open schedule is enough; unknown hours never grant ordering. */
-export function publicMenuServiceOpen(ordering: MenuOrderingConfig, type: string, now = new Date()): boolean {
-  return publicMenuOrderTypes(ordering).some(config =>
-    config.type === type && readWeekdayTimeOpenState(config.offering_hours?.operation_hours, now).open
+export function publicMenuServiceOpen(
+  ordering: MenuOrderingConfig,
+  type: string,
+  now = new Date()
+): boolean {
+  return publicMenuOrderTypes(ordering).some(
+    (config) =>
+      config.type === type &&
+      readWeekdayTimeOpenState(config.offering_hours?.operation_hours, now).open
   )
 }

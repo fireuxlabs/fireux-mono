@@ -7,7 +7,7 @@ import { readMenuKitchenPlaceData } from '../ownership/kitchen-scope'
 import type { TenantMenuScope } from '../ownership/target-types'
 
 export type MenuDirectoryContext = {
-  otherOfferings?: Array<{ id: string; name: string; service?: 'collection' }>
+  otherOfferings?: Array<{ id: string; name: string; menu_slug: string }>
   kitchenOfferings?: unknown
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
@@ -32,7 +32,10 @@ export async function readScopedMenuDirectoryContext(
         ...(identity.imageShade ? { image_shade: identity.imageShade } : {}),
       }
     : undefined
-  const kitchenOfferings = await readKitchenOfferings(_db, scope.kitchenId)
+  const kitchenOfferings = await readKitchenOfferings(_db, scope.kitchenId, {
+    kitchen: scope.rootKitchenData,
+    place: placeData,
+  })
   return {
     kitchenOfferings,
     ...(includeOtherOfferings

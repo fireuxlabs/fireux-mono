@@ -52,6 +52,9 @@ export function serviceOverviewSnapshot(input: {
         options: row.interactions.map((interaction) => ({
           type: interaction.type,
           enabled: interaction.enabled,
+          ...(interaction.type === 'eat_in' || interaction.type === 'takeaway'
+            ? { menuIds: [...(interaction.menu_ids || [])] }
+            : {}),
           paused:
             interaction.type !== 'browse' &&
             Boolean(interaction.availability?.paused),

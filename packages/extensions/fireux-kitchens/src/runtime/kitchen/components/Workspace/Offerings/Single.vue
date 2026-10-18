@@ -37,12 +37,6 @@
       :save="configure"
       :capture-intent="captureIntent"
     />
-    <WorkspaceKitchenOfferingsCustomerLinks
-      :offering="offering"
-      :menus="menus"
-      :menus-outcome="menusOutcome"
-      :kitchen-slug="selectedKitchen.identity.slug"
-    />
   </section>
   <UAlert
     v-else

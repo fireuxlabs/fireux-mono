@@ -26,6 +26,7 @@ export function requireKitchenInteractionChanges(
   const changes = { ...object(value) }
   allowed(changes, [
     'enabled',
+    'menu_ids',
     'notice_hours',
     'message',
     'asap_enabled',
@@ -37,6 +38,23 @@ export function requireKitchenInteractionChanges(
     'notifications',
     'table_channels',
   ])
+  if ('menu_ids' in changes) {
+    if (type !== 'eat_in' && type !== 'takeaway')
+      fail('Menu selection applies only to a Kiosk mode.')
+    if (
+      !Array.isArray(changes.menu_ids) ||
+      changes.menu_ids.length > 100 ||
+      changes.menu_ids.some(
+        (id) =>
+          typeof id !== 'string' ||
+          !id.trim() ||
+          id !== id.trim() ||
+          id.includes('/')
+      )
+    )
+      fail('Invalid Menu selection.')
+    changes.menu_ids = [...new Set(changes.menu_ids as string[])]
+  }
   if ('table_channels' in changes) {
     if (type !== 'dine_in') fail('Table channels apply only to table service.')
     const channels = { ...object(changes.table_channels) }

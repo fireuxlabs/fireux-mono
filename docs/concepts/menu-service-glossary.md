@@ -88,3 +88,9 @@ its own menus and collection hours. It appears through its named entrance;
 creating it does not edit the main Collection or Delivery setup. Its separate
 identity, Services row and customer link remain when its collection timing changes. “From tomorrow”
 uses the venue’s local calendar, rather than meaning 24 hours from now.
+
+Services use one setup pattern: switch Off or On; On reveals inline configuration.
+Changes persist automatically through the existing service commands. Off retains
+configuration. Enabled and ready for customers are distinct: public availability
+still requires eligible published menus and serving hours. Room service has its
+own setup and contextual entrance; it is not part of the public service selector.

@@ -1,3 +1,7 @@
+import {
+  serviceHoursPolicy,
+  testKitchenHours,
+} from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -199,6 +203,8 @@ function harness({ wait, retry, offerings = [saved()] } = {}) {
   const path = (target) =>
     typeof target === 'string' ? target : target.collectionPath
   const dependencies = {
+    ...serviceHoursPolicy,
+    resolveKitchenOperationHours: testKitchenHours,
     ...errors,
     ...validation,
     ...interactionInput,
@@ -697,43 +703,17 @@ test('complete paged children participate in configuration conflicts and malform
   assert.equal(malformed.writes.length, 0)
 })
 
-test('separate Picnic configuration creates one new record and preserves Collection and Delivery byte for byte', async () => {
-  const main = saved({
-    enabled: true,
-    interactions: [{ type: 'collection', enabled: true }],
-  })
-  const delivery = saved({
-    id: 'delivery',
-    name: 'Delivery',
-    enabled: true,
-    interactions: [{ type: 'delivery', enabled: true }],
-  })
-  const h = harness({ offerings: [main, delivery] })
-  const before = structuredClone([...h.records])
-  const result = await h.configureKitchenOffering(
-    {},
-    {
-      ...configure(),
-      name: 'Picnic',
-      createSeparate: true,
-      collection_timing: 'next_day',
-      enabled: false,
-      interactions: [
-        { type: 'collection', changes: { ...changes(), asap_enabled: false } },
-      ],
-    }
+test('another configuration cannot be created for an existing service', async () => {
+  const h = harness()
+  await assert.rejects(
+    h.configureKitchenOffering({}, configure()),
+    /already has saved settings/
   )
-  assert.equal(result.offering.id, 'created-1')
-  assert.equal(result.offering.collection_timing, 'next_day')
-  assert.equal(result.offering.separate, true)
-  assert.equal(result.offering.enabled, false)
-  assert.equal(h.writes.length, 1)
-  assert.equal(h.writes[0][0], 'create')
-  for (const [path, data] of before)
-    assert.deepEqual(h.records.get(path), data, path)
-  assert.ok(
-    h.writes.every(([, path]) => path === 'kitchens/k/offerings/created-1')
+  await assert.rejects(
+    h.configureKitchenOffering({}, { ...configure(), createSeparate: true }),
+    /Unsupported/
   )
+  assert.deepEqual(h.writes, [])
 })
 
 test('separate creation cannot target an existing offering and invalid timing fails before authority or writes', async () => {
@@ -752,12 +732,12 @@ test('separate creation cannot target an existing offering and invalid timing fa
 })
 
 test('next-day collection rejects immediate pickup without writing any record', async () => {
-  const h = harness()
+  const h = harness({ offerings: [] })
   await assert.rejects(
     () =>
       h.configureKitchenOffering(
         {},
-        { ...configure(), createSeparate: true, collection_timing: 'next_day' }
+        { ...configure(), collection_timing: 'next_day' }
       ),
     /immediate collection/
   )
@@ -823,32 +803,6 @@ test('ordinary edits cannot remove the separate identity', async () => {
   assert.deepEqual(h.writes, [])
 })
 
-test('separate same-day creation is marked and does not prevent normal Collection setup', async () => {
-  const picnic = saved({
-    id: 'picnic',
-    name: 'Picnic',
-    separate: true,
-    collection_timing: 'same_day',
-  })
-  const h = harness({ offerings: [picnic] })
-  const main = await h.configureKitchenOffering({}, configure())
-  assert.equal(main.offering.separate, undefined)
-  const before = structuredClone([...h.records])
-  const separate = await h.configureKitchenOffering(
-    {},
-    {
-      ...configure(),
-      name: 'Another picnic',
-      createSeparate: true,
-      collection_timing: 'same_day',
-    }
-  )
-  assert.equal(separate.offering.separate, true)
-  assert.equal(separate.offering.collection_timing, 'same_day')
-  for (const [path, data] of before)
-    assert.deepEqual(h.records.get(path), data, path)
-})
-
 test('every service save rejects Daily specials, documents and archived menu selections without writing', async () => {
   for (const data of [
     { status: 'published', format: 'interactive', schedule: 'daily' },
@@ -907,7 +861,7 @@ test('every service save rejects Daily specials, documents and archived menu sel
   }
 })
 
-test('service drafts save while off but cannot be enabled through either editor command', async () => {
+test('Collection setup can select drafts while the general enable command keeps its readiness gate', async () => {
   const h = harness()
   h.records.set('kitchens/k/menus/food', {
     status: 'draft',
@@ -922,24 +876,18 @@ test('service drafts save while off but cannot be enabled through either editor 
     { kitchenId: 'k', offeringId: 'saved', changes: { menu_ids: ['food'] } }
   )
   const count = h.writes.length
-  for (const action of ['configure', 'enable'])
-    await assert.rejects(
-      () =>
-        action === 'configure'
-          ? h.configureKitchenOffering(
-              {},
-              { ...configure(), offeringId: 'saved' }
-            )
-          : h.updateKitchenOffering(
-              {},
-              {
-                kitchenId: 'k',
-                offeringId: 'saved',
-                changes: { enabled: true },
-              }
-            ),
-      /Publish at least one/
-    )
+  await assert.rejects(
+    () =>
+      h.updateKitchenOffering(
+        {},
+        {
+          kitchenId: 'k',
+          offeringId: 'saved',
+          changes: { enabled: true },
+        }
+      ),
+    /Publish at least one/
+  )
   assert.equal(h.writes.length, count)
   await h.updateKitchenOffering(
     {},
@@ -979,4 +927,21 @@ test('Collection configuration preserves the latest hidden policy on transaction
     assert.deepEqual(collection[key], value)
   assert.equal(h.writes.length, 1)
   assert.equal(result.offering.id, current.id)
+})
+
+test('policy updates cannot add another service or change a table entry identity', async () => {
+  for (const input of [
+    { ...interaction(), type: 'delivery', changes: { notice_hours: 1 } },
+    {
+      ...interaction(),
+      type: 'dine_in',
+      changes: { table_channels: { staff_pos: false, table_qr: true } },
+    },
+  ]) {
+    const h = harness()
+    await assert.rejects(h.updateKitchenOfferingInteraction({}, input), {
+      statusCode: 400,
+    })
+    assert.deepEqual(h.writes, [])
+  }
 })

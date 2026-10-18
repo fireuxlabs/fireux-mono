@@ -83,6 +83,7 @@ async function readKitchenMenu(
           kitchenSlug: target.kitchenSlug,
           currentMenuId: target.sourceMenuId,
           routeKind: target.kind,
+          offerings: target.orderingSource?.offerings,
         }),
   ])
 

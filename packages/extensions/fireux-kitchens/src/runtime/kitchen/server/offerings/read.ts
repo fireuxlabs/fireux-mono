@@ -1,3 +1,5 @@
+import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
+import { resolveServiceHours } from '../../utils/service-hours'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -6,13 +8,20 @@ import { serverKitchenOfferingsTarget } from './target'
 
 export async function readKitchenOfferings(
   db: ReturnType<typeof getRuntimeFirestore>,
-  kitchenId: string
+  kitchenId: string,
+  parents?: { kitchen: Record<string, unknown>; place: Record<string, unknown> }
 ) {
   const id = requireFirestoreDocumentId(kitchenId, 'Kitchen id')
   const snapshot = await db.collection(`kitchens/${id}/offerings`).get()
-  return readKitchenOfferingRecords(
+  const offerings = readKitchenOfferingRecords(
     snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
   )
+  return parents
+    ? resolveServiceHours(
+        offerings,
+        resolveKitchenOperationHours(parents.kitchen, parents.place)
+      )
+    : offerings
 }
 
 export async function readKitchenOfferingsInTransaction(

@@ -568,9 +568,8 @@ workspace host. This does not grant access or share authentication across origin
   lead to the canonical Menu destination, whose perspectives use local state.
   Creation stays with the collection; editing and publication stay with the record.
   Contextual AI follows the collection in `Workspace/Menus/Index.vue`.
-- Kitchen owns the shared numbered-table count at `tables.count`. Offerings
-  exposes its form above the six interaction choices through `Workspace/Tables/Write`;
-  the trusted Kitchen update command validates 0–500. Seating, tabs and billing
+- Kitchen owns the shared numbered-table count at `tables.count`. Its trusted
+  Kitchen update command validates 0–500. Seating, tabs and billing
   remain separate Front-of-House responsibilities.
 - App-support and legacy Kitchen-root operational maps are migration preimages,
   not authority.
@@ -1190,38 +1189,18 @@ only that projection's Kitchen service classification. Menu public routing and
 browse/document presentation retain their existing owners. Draft import planning
 and protected Menu/item writes are independent of order submission.
 
-Workspace `Offerings` exposes saved offerings, including disabled drafts, and a
-New offering action using the existing trusted create command. Creation starts
-off and opens the named offering editor; it does not repurpose an existing
-offering or enable ordering. The option cards expose Collection, Delivery,
-Pre-order, Table service, QR Tables and Kiosk over existing named
-`kitchens/{kitchenId}/offerings/{offeringId}` records.
-Table service and QR Tables share a `dine_in` interaction and its menus/hours;
-its explicit `table_channels.staff_pos` and `table_channels.table_qr` switches
-are independent. Existing interactions without this field retain both established
-channels; new configurations enable only the selected channel. The configuration
-command merges the selected switch against current stored state. Menu projections
-and order submission respect the channel switches, with staff authorization still
-required for staff orders. This does not complete the separate Staff POS surface.
-Website ordering/testing and the Delivery & payment doorway belong in Integrations,
-not the Offerings card grid. Allowed-website reads use the exact settled
-account/App/membership/access/Kitchen lifetime and suppress obsolete read
-continuations. Its editor keeps a same-owner dirty draft through live updates
-and clears on owner changes; save forwards local intent before credentials
-finish. Unconfigured choices are off. Opening a
-switch edits a local draft; the trusted `offerings/configure` command validates
-and commits menus, explicit hours and interaction settings in one transaction.
-Existing identities and unrelated interactions are preserved. Shared menu/hour
-changes are identified in the editor, and activating other saved interactions
-through an off offering requires explicit acknowledgement. Advanced named-offering
-editors remain available by their existing routes. The Offerings page has no
-advanced-offerings disclosure; shared table count is an always-visible form
-above its offering cards. Interaction settings
-compose timing, customer-details,
-availability and notification controls. The offering master switch and interaction
-switches remain separate from temporary interaction pause. Pre-order notice is edited in hours,
-while other offerings retain minutes. The Payment summary reads Kitchen fulfilment
-and links to its existing editor; optional WhatsApp controls appear last.
+Workspace Services composes the seven provided service types over independent
+`kitchens/{kitchenId}/offerings/{offeringId}` records. On reveals inline menus
+and hours; changes persist automatically through the existing trusted configure
+command. Table service and QR table ordering have separate record identities,
+menus, schedules and activation. Their fixed, explicit channel flags identify the
+record's service even while Off; no absent-channel fallback grants both. Existing
+public QR record identities remain stable when shared data is split. The command
+rejects targeting a different service's record. Kitchen-wide table numbering is a
+separate shared venue setting, not a shared service schedule. See the current
+Services composition and tests described under Services configuration.
+Website ordering/testing and the Delivery & payment doorway belong in Integrations.
+
 `Fulfilment` uses the existing
 `kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones
 and payment methods. Its delivery editor lives under Kitchen composables and
@@ -2139,43 +2118,30 @@ sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
 
 
-## Separate collection offerings
+## Services configuration
 
-Services presents the six Misebox-provided options from `offering-options.ts`.
-Operators enable and configure these options; the overview does not create new
-service types. Each group shows Enabled, Not enabled or Paused, with an explicit
-Enable & set up action when unconfigured and record-specific configuration actions
-for saved setups. Existing named records keep their menus, hours and independent
+Services presents seven Misebox-provided options from `offering-options.ts`: Collection,
+Delivery, Pre-order, Table service, QR table ordering, Room service and Kiosk.
+Operators switch each saved setup on or off; enabled setups expose inline
+configuration. Saved records keep their menus, hours and service-specific
 customer entrances. There is no generic Add service entrance.
 
-`KitchenOffering.separate` marks a named offering independently of its timing.
-The existing configure command sets it for explicit separate creation; ordinary
-configuration and timing edits preserve it. The Workspace overview groups every matching service under Collection or
-Delivery, including separate, off and paused records. Each row owns its name,
-menus, schedule, status and exact Configure target; there is no group-wide toggle
-or detached list of separate services. Customer links remain independent for
-either timing.
-`KitchenOffering.collection_timing` distinguishes `same_day` and `next_day`.
-Next-day means the next local calendar collection day, rather than a rolling
-24-hour delay. The record remains a Collection offering, not a new service type.
-The public main Collection and Delivery projections exclude separate offerings; an explicit
-`menu.collection?offering=<id>` entrance selects that offering alone. Public
-portal discovery keeps its name as a quiet link, including when it reuses a Menu
-also used by main Collection. Named service views show next-day information when applicable and
-weekly collection hours; normal Collection and Delivery schedules stay unchanged.
-The Menu service projection remains browse-only; submitted Orders, payment and
-fulfilment execution are outside this change. See `offering-command-internals`,
-`offering-tool-internals`, `menu-service-view`, `menu-other-offerings` and
-`menu-pricing` tests in fireux-kitchens.
+Each provided service has one saved configuration. Menus are selected inside it;
+Breakfast and Lunch are menu choices rather than separate service records. The
+configure command prevents a second setup of the same type and table entry channel.
+Table service and QR table ordering remain separate. Discovery of other food
+uses eligible published Menu names and direct Menu links, rather than service
+record names or duplicated Breakfast/Lunch configurations. Existing named-entry
+fields still read by other projections are outside the current creation surface.
 
 Operator-facing setup uses Service throughout creation, editing and availability.
 Offering and interaction/channel remain internal implementation terms, not
 alternative operator labels for the service record.
 
 Services menu selection and readiness share `kitchen/utils/service-menus.ts` across
-Configure, the service editor and trusted save validation. Only regular
-interactive, non-archived menus supply service items; drafts can be selected while
-the service is off, and enabling requires at least one published eligible menu.
+the inline setup, the service editor and trusted command validation. Only regular
+interactive, non-archived menus supply service items; draft menus can be selected,
+but public eligibility requires a selected published eligible menu and serving hours.
 Unavailable existing selections remain labelled so operators can remove them.
 Daily specials and document menus keep their own entrances. No catalogue prices
 or Order records are changed by these checks.
@@ -2187,20 +2153,66 @@ types, configuration IDs, menus, hours, availability, readiness and read outcome
 It excludes notification recipients, credentials, payment details and Order data.
 
 Services configuration is inline. `Workspace/Offerings/Index.vue` acquires the
-service/menu sources once, composes `Service.vue` cards, and publishes safe page
-context. Each card owns only its local editor selection; each `Setup.vue` owns
-its configuration draft, discard and scoped Save lifecycle. Collection editors
-are always mounted: their single enabled draft controls both the On/Off switch
-and configuration visibility, including initial arrival. There is no page-wide
-selected editor, configuration modal, external availability draft or auto-open
-watcher. `Setup/Interaction.vue` composes the existing advanced controls for the other
-service types. Owner-scope keys dispose editors on account/Kitchen/access changes.
-The existing configure command remains the mutation owner; no independent
-Kitchen-level activation model is introduced.
+service/menu sources once, composes divider-separated `Service.vue` sections,
+and publishes safe page context. Sections compose `Setup.vue`; `useServiceSetup` owns automatic saves,
+scoped completion, rollback, coalesced hours input and timer disposal. Focused
+`Setup/Menus.vue`, `Setup/Hours.vue` and `Setup/Interaction.vue` controls compose
+menu selection, hours and interaction policy. On/Off and menu selection persist
+immediately; valid structured hours edits persist after a short pause. Other field controls
+persist on change. There is no Configure or Save/Discard lifecycle. Owner-scope
+keys dispose editors on account, Kitchen and access changes.
 
-Collection setup currently exposes only menu selection and collection hours.
-Scheduling, customer-detail and payment controls are omitted from this surface;
-Collection saves send only the enabled interaction flag, rather than a copied
-hidden policy. The configure command preserves the latest stored scheduling,
-customer and payment-related settings in its transaction. This is a presentation simplification, not a change to fulfilment or
-Order execution.
+All seven services may be switched on before configuration is complete. Off hides
+configuration and retains its values. The existing protected configure command
+accepts sparse changes, merges untouched fields from the latest transaction
+record, and preserves scheduling/customer/payment policy. Missing menus or hours
+do not grant public service eligibility. Table service and QR table ordering use separate records. Each record owns its
+menus, hours and On/Off state. Its one selected `table_channels` flag identifies
+which service it belongs to and stays selected while the service is Off. The
+configure command rejects a record belonging to a different service; there is no
+shared-settings path or implicit table-channel fallback. Kiosk has one master switch and always supports both Eat in and Takeaway;
+there are no mode activation switches. Each mode owns its `menu_ids`; the service's root `menu_ids` is the
+command-maintained union for menu references and discovery. Serving hours remain
+shared. Menu policy projections filter each mode by its own selected menus.
+
+The overview and single-service route expose only On/Off, menus and serving hours
+for Collection, Delivery, Table service, QR table ordering and Room service.
+Pre-order retains advance notice; Kiosk retains mode-specific menus for both Eat in and Takeaway. Table-count, delivery-area, customer-link and QR/room
+link editors are not composed into Services. Existing stored settings, public
+entrances and owning commands are unchanged by this presentation boundary.
+Daily specials and document menus remain separate.
+
+Service setup starts with the smallest composed working flow: activation, menu
+selection and serving hours. Expose further policy only for a demonstrated
+operator need after that pipeline works. The Timing control supplies Pre-order advance notice only; it does not expose
+food preparation time, scheduling horizons or slot intervals.
+Sparse commands preserve stored scheduling policy when these controls are absent.
+
+The basic Services controls are menus and serving hours, with advance notice for
+Pre-order. Food preparation time belongs to food/production rather than a
+Collection or Delivery setting. Pause, customer messages,
+contact requirements and advanced scheduling are not exposed here. Existing
+stored policy remains preserved by sparse updates. Kiosk menu selection does not
+change normal Dish prices or Orders.
+
+`Setup/Hours.vue` owns the local range draft and composes `Hours/Range.vue` with
+seven visible Nuxt UI day-toggle buttons and native time inputs. Selected days
+remain visible without opening a dropdown; each button exposes its full weekday
+label and pressed state. It emits the existing structured
+weekday/time configuration only when all ranges are complete; hydration never
+writes. Multiple ranges preserve split and overnight service. `useServiceSetup`
+coalesces and scopes these updates through the protected configure command,
+without a free-text formatting/parsing step. Source-owned checks are
+`service-hours-editor.test.mjs` and `service-setup.test.mjs`.
+
+Service hours follow the Place → Kitchen → Service hierarchy. `Setup/ServiceHours.vue`
+asks “Same as Kitchen service hours?”; Yes hides the range editor, while No reveals
+it. `hours_source` defaults to `kitchen`; selecting `custom` can persist before
+ranges exist. Returning to Kitchen hours deletes the custom override instead of
+copying parent ranges. `useServiceSetup` owns these automatic saves. The configure
+command checks custom ranges against current Kitchen hours using its transactional
+Kitchen/Place authority reads. `service-hours.ts` owns inheritance and weekly range
+containment, including breaks and overnight ranges. Public Menu readers pass their
+already-read Kitchen/Place context to the Offering reader for effective hours; the
+Workspace collection retains the stored override and choice. Order execution is
+outside this configuration/UI slice.

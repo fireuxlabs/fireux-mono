@@ -28,6 +28,13 @@ const db = {
         id,
         exists: true,
         data: () => ({
+          name:
+            id === 'breakfast'
+              ? 'Breakfast buffet'
+              : id === 'lunch'
+                ? 'Lunch'
+                : id,
+          slug: id,
           status: 'published',
           audience: id === 'private' ? 'private_link' : 'public',
           schedule: id === 'daily' ? 'daily' : 'regular',
@@ -47,11 +54,13 @@ test('other offerings come from setup and omit menus covered by either collectio
     offering('daily', 'Daily specials', ['daily']),
   ])
   assert.deepEqual(result, [
-    { id: 'breakfast', name: 'Breakfast buffet' },
-    { id: 'lunch', name: 'Lunch' },
+    { id: 'breakfast', name: 'Breakfast buffet', menu_slug: 'breakfast' },
+    { id: 'lunch', name: 'Lunch', menu_slug: 'lunch' },
   ])
   assert.ok(
-    result.every((row) => Object.keys(row).sort().join(',') === 'id,name')
+    result.every(
+      (row) => Object.keys(row).sort().join(',') === 'id,menu_slug,name'
+    )
   )
 })
 test('an offering with no active interactions is not public discovery', async () => {
@@ -66,31 +75,24 @@ test('an offering with no active interactions is not public discovery', async ()
   )
 })
 
-test('next-day Picnic remains a quiet named entrance even when it reuses a main Menu', async () => {
-  const main = offering('main', 'Collection', ['food'], ['collection'])
-  const picnic = {
-    ...offering('picnic', 'Picnic', ['food'], ['collection']),
-    separate: true,
-    collection_timing: 'next_day',
-  }
-  assert.deepEqual(await read(db, 'venue', [main, picnic]), [
-    { id: 'picnic', name: 'Picnic', service: 'collection' },
+test('one service can expose several other menus by menu name, without duplicate links', async () => {
+  const rows = [
+    offering('collection', 'Collection', ['food'], ['collection']),
+    offering(
+      'staff',
+      'Table service',
+      ['food', 'breakfast', 'lunch'],
+      ['dine_in']
+    ),
+    offering(
+      'qr',
+      'QR table ordering',
+      ['food', 'breakfast', 'lunch'],
+      ['dine_in']
+    ),
+  ]
+  assert.deepEqual(await read(db, 'venue', rows), [
+    { id: 'breakfast', name: 'Breakfast buffet', menu_slug: 'breakfast' },
+    { id: 'lunch', name: 'Lunch', menu_slug: 'lunch' },
   ])
-})
-
-test('Picnic retains its named discovery link across timing edits without changing other offerings', async () => {
-  const main = offering('main', 'Collection', ['food'], ['collection'])
-  const delivery = offering('delivery', 'Delivery', ['food'], ['delivery'])
-  const picnic = {
-    ...offering('picnic', 'Picnic', ['food'], ['collection']),
-    separate: true,
-  }
-  const before = structuredClone([main, delivery])
-  for (const timing of ['next_day', 'same_day', 'next_day']) {
-    picnic.collection_timing = timing
-    assert.deepEqual(await read(db, 'venue', [main, delivery, picnic]), [
-      { id: 'picnic', name: 'Picnic', service: 'collection' },
-    ])
-    assert.deepEqual([main, delivery], before)
-  }
 })

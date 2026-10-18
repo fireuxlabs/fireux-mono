@@ -44,8 +44,8 @@ export function serviceMenuOptions(
       description: !isServiceMenu(menu)
         ? 'Unavailable for this service · remove from selection'
         : menu.status === 'published'
-          ? 'Published'
-          : 'Draft · publish before enabling',
+          ? undefined
+          : 'Draft · not available to customers',
     }))
   for (const id of selectedIds) {
     if (!menus.some((menu) => menu.id === id))

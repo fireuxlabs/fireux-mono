@@ -32,7 +32,7 @@ test('service setup uses the glossary labels for eating in and takeaway', () => 
 
 test('directory and Workspace agree when table channel settings are absent or explicit', () => {
   const make = table_channels => [{enabled:true,menu_ids:['food'],interactions:[{type:'dine_in',enabled:true,...(table_channels ? {table_channels} : {})}]}]
-  assert.deepEqual(kitchenServiceSummary(make()),['Table service','QR table ordering'])
+  assert.deepEqual(kitchenServiceSummary(make()),[])
   assert.deepEqual(kitchenServiceSummary(make({staff_pos:false,table_qr:true})),['QR table ordering'])
   assert.deepEqual(kitchenServiceSummary(make({staff_pos:true,table_qr:false})),['Table service'])
   assert.deepEqual(kitchenServiceSummary(make({staff_pos:false,table_qr:false})),[])

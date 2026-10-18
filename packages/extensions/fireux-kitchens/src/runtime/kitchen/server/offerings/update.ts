@@ -26,6 +26,17 @@ export async function updateKitchenOffering(event: H3Event, input: unknown) {
     const offerings = await readKitchenOfferingsInTransaction(tx, kitchenId)
     const current = offerings.find((row) => row.id === offeringId)
     if (!current) throw missing()
+    if (
+      changes.menu_ids !== undefined &&
+      current.interactions.some(
+        (row) => row.type === 'eat_in' || row.type === 'takeaway'
+      )
+    )
+      throw createError({
+        statusCode: 400,
+        statusMessage:
+          'Choose menus separately for Eat in and Takeaway in Services.',
+      })
     const { hours, ...fields } = changes
     const offering = { ...current, ...fields }
     if (hours === null) delete offering.hours

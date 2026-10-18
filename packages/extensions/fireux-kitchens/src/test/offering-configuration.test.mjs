@@ -1,4 +1,8 @@
 import {
+  serviceHoursPolicy,
+  testKitchenHours,
+} from './offering-test-helpers.mjs'
+import {
   serviceMenuPolicy,
   offeringContract,
   offeringReads,
@@ -94,6 +98,7 @@ function harness({
   services = [],
   menu = { status: 'published', format: 'interactive' },
   authorized = true,
+  parentHours = testKitchenHours(),
 } = {}) {
   const writes = [],
     reads = []
@@ -107,6 +112,9 @@ function harness({
     'readOfferingConfiguration, configureKitchenOffering',
     {
       ...errors,
+      ...serviceHoursPolicy,
+      resolveKitchenOperationHours: () => parentHours,
+      FieldValue: { delete: () => ({ deleted: true }) },
       ...base,
       ...interactions,
       ...patch,
@@ -221,11 +229,9 @@ test('explicit pickup draft uses official hours while leaving an existing test o
   assert.deepEqual(result.offering.menu_ids, ['food'])
   assert.deepEqual(h.reads, [{ target: 'venue/menus', id: 'food' }])
 })
-test('invalid setup, unpublished-only menus, missing menus and denied authority never write', async () => {
+test('invalid hours, ineligible menus, missing menus and denied authority never write', async () => {
   for (const [settings, body] of [
-    [{}, input({ menu_ids: [] })],
     [{}, input({ hours: { ...hours, windows: [] } })],
-    [{ menu: { status: 'draft', format: 'interactive' } }, input()],
     [
       {
         menu: {
@@ -264,77 +270,21 @@ test('configuration rejects wrong, duplicate and unsupported interaction setting
     assert.equal(h.writes.length, 0)
   }
 })
-test('editing one mode preserves other interactions, exact record identity and unrelated offerings', async () => {
+test('a service cannot configure another service record', async () => {
   const delivery = {
-    type: 'delivery',
-    enabled: true,
-    notice_hours: 1,
-    availability: { paused: true },
-  }
-  const offering = {
-    id: 'shared',
-    name: 'Dinner',
+    id: 'delivery',
+    name: 'Delivery',
     enabled: true,
     menu_ids: ['food'],
     hours,
-    interactions: [
-      delivery,
-      {
-        type: 'collection',
-        enabled: true,
-        notifications: { whatsapp: { enabled: false } },
-      },
-    ],
+    interactions: [{ type: 'delivery', enabled: true }],
   }
-  const unrelated = { ...offering, id: 'other', name: 'Lunch' }
-  const h = harness({ services: [offering, unrelated] })
-  const { offering: saved } = await h.configureKitchenOffering(
-    {},
-    input({ offeringId: 'shared', name: 'Dinner', enabled: false })
-  )
-  assert.equal(saved.id, 'shared')
-  assert.equal(saved.enabled, true)
-  assert.deepEqual(
-    saved.interactions.find((row) => row.type === 'delivery'),
-    delivery
-  )
-  assert.equal(
-    saved.interactions.find((row) => row.type === 'collection').enabled,
-    false
-  )
-  assert.deepEqual(
-    h.children.get(unrelated.id),
-    offeringContract.kitchenOfferingData(unrelated)
-  )
-  assert.notEqual(h.writes[0].id, unrelated.id)
-})
-test('activating shared saved modes requires explicit acknowledgement', async () => {
-  const offering = {
-    id: 'shared',
-    name: 'Dinner',
-    enabled: false,
-    menu_ids: ['food'],
-    hours,
-    interactions: [
-      { type: 'delivery', enabled: true },
-      { type: 'collection', enabled: false },
-    ],
-  }
-  const h = harness({ services: [offering] })
+  const h = harness({ services: [delivery] })
   await assert.rejects(
-    h.configureKitchenOffering({}, input({ offeringId: 'shared' })),
-    /also enables/
+    h.configureKitchenOffering({}, input({ offeringId: delivery.id })),
+    /different service/
   )
-  assert.equal(h.writes.length, 0)
-  const { offering: saved } = await h.configureKitchenOffering(
-    {},
-    input({ offeringId: 'shared', activateShared: true })
-  )
-  assert.equal(saved.enabled, true)
-  assert.equal(
-    saved.interactions.find((row) => row.type === 'delivery').enabled,
-    true
-  )
+  assert.deepEqual(h.writes, [])
 })
 test('fixed options reflect existing states without changing records', () => {
   const offering = {
@@ -381,7 +331,7 @@ test('retries or concurrent first setup cannot create duplicate option records',
   assert.equal(h.writes.length, 0)
 })
 
-test('six offering cards expose separate staff and guest table channels', () => {
+test('provided service cards expose separate staff and guest table channels', () => {
   assert.deepEqual(
     options.kitchenOfferingOptions.map((row) => row.label),
     [
@@ -390,6 +340,7 @@ test('six offering cards expose separate staff and guest table channels', () => 
       'Pre-order',
       'Table service',
       'QR table ordering',
+      'Room service',
       'Kiosk',
     ]
   )
@@ -411,94 +362,120 @@ test('six offering cards expose separate staff and guest table channels', () => 
   }
   assert.equal(options.offeringOptionEnabled(offering, staff), true)
   assert.equal(options.offeringOptionEnabled(offering, qr), false)
-  assert.deepEqual(options.offeringsForOption([offering], qr), [offering])
+  assert.deepEqual(options.offeringsForOption([offering], qr), [])
+  assert.deepEqual(options.offeringsForOption([offering], staff), [offering])
 })
 
-test('table channel configuration reuses menus and hours and preserves the sibling switch', async () => {
-  const tableInput = (changes = {}) =>
-    input({
-      option: 'table_service',
-      name: 'Tables',
-      interactions: [{ type: 'dine_in', changes: { enabled: true } }],
-      ...changes,
-    })
-  const first = await harness().configureKitchenOffering({}, tableInput())
-  let offering = first.offering
-  assert.deepEqual(
-    offering.interactions.find((row) => row.type === 'dine_in').table_channels,
-    { staff_pos: true, table_qr: false }
-  )
-  const second = await harness({
-    services: [offering],
-  }).configureKitchenOffering(
-    {},
-    tableInput({ offeringId: offering.id, option: 'qr_tables' })
-  )
-  offering = second.offering
-  assert.deepEqual(
-    offering.interactions.find((row) => row.type === 'dine_in').table_channels,
-    { staff_pos: true, table_qr: true }
-  )
-  assert.deepEqual(offering.menu_ids, ['food'])
-  assert.deepEqual(offering.hours, hours)
-  const third = await harness({
-    services: [offering],
-  }).configureKitchenOffering(
-    {},
-    tableInput({ offeringId: offering.id, enabled: false })
-  )
-  const dineIn = third.offering.interactions.find(
-    (row) => row.type === 'dine_in'
-  )
-  assert.equal(dineIn.enabled, true)
-  assert.deepEqual(dineIn.table_channels, { staff_pos: false, table_qr: true })
-  const fourth = await harness({
-    services: [third.offering],
-  }).configureKitchenOffering(
-    {},
-    tableInput({ offeringId: offering.id, option: 'qr_tables', enabled: false })
-  )
-  assert.equal(
-    fourth.offering.interactions.find((row) => row.type === 'dine_in').enabled,
-    false
-  )
-  await assert.rejects(
-    harness({ services: [offering] }).configureKitchenOffering(
-      {},
-      tableInput({ option: 'qr_tables' })
-    ),
-    /already has saved settings/
-  )
-})
-
-test('legacy table channels preserve availability; switching on an off offering does not enable its sibling', () => {
-  const legacy = { type: 'dine_in', enabled: true }
-  assert.deepEqual(
-    tableChannels.configureTableChannel(legacy, 'table_qr', false),
-    { enabled: true, table_channels: { staff_pos: true, table_qr: false } }
-  )
-  assert.deepEqual(
-    tableChannels.configureTableChannel(
-      { ...legacy, enabled: false },
-      'staff_pos',
-      true
-    ),
-    { enabled: true, table_channels: { staff_pos: true, table_qr: false } }
-  )
-  for (const channels of [
-    { staff_pos: true },
-    { staff_pos: true, table_qr: 'yes' },
-    { staff_pos: true, table_qr: false, unknown: true },
-  ]) {
-    assert.throws(() =>
-      interactions.readInteractionChanges({
-        kitchenId: 'venue',
-        offeringId: 'tables',
+test('Table service and QR table ordering have independent menus, hours and activation', async () => {
+  const staff = {
+    id: 'staff',
+    name: 'Dinner',
+    enabled: true,
+    menu_ids: ['food'],
+    hours,
+    interactions: [
+      {
         type: 'dine_in',
-        changes: { table_channels: channels },
-      })
-    )
+        enabled: true,
+        table_channels: { staff_pos: true, table_qr: false },
+      },
+    ],
   }
+  const qr = {
+    ...staff,
+    id: 'qr',
+    interactions: [
+      {
+        type: 'dine_in',
+        enabled: true,
+        table_channels: { staff_pos: false, table_qr: true },
+      },
+    ],
+  }
+  const h = harness({ services: [staff, qr] })
+  const untouched = structuredClone(h.children.get('qr'))
+  const body = {
+    kitchenId: 'venue',
+    offeringId: 'staff',
+    option: 'table_service',
+    enabled: true,
+    interactions: [{ type: 'dine_in', changes: {} }],
+  }
+  const changedHours = {
+    ...hours,
+    windows: [{ days: ['sunday'], open: '10:00', close: '12:00' }],
+  }
+  await h.configureKitchenOffering(
+    {},
+    { ...body, menu_ids: ['drinks'], hours: changedHours }
+  )
+  const off = await h.configureKitchenOffering({}, { ...body, enabled: false })
+  assert.equal(off.offering.enabled, false)
+  assert.deepEqual(off.offering.menu_ids, ['drinks'])
+  assert.deepEqual(off.offering.hours, changedHours)
+  const option = options.kitchenOfferingOptions.find(
+    (row) => row.key === 'table_service'
+  )
+  assert.deepEqual(options.offeringsForOption([off.offering, qr], option), [
+    off.offering,
+  ])
+  assert.deepEqual(h.children.get('qr'), untouched)
+  await assert.rejects(
+    h.configureKitchenOffering({}, { ...body, offeringId: 'qr' }),
+    /different service/
+  )
+  const qrOption = options.kitchenOfferingOptions.find(
+    (row) => row.key === 'qr_tables'
+  )
+  assert.deepEqual(options.offeringsForOption([off.offering, qr], qrOption), [
+    qr,
+  ])
+})
+
+test('turning a table setup off preserves its service identity', () => {
+  assert.deepEqual(tableChannels.configureTableChannel('table_qr', false), {
+    enabled: false,
+    table_channels: { staff_pos: false, table_qr: true },
+  })
+  assert.deepEqual(tableChannels.configureTableChannel('staff_pos', true), {
+    enabled: true,
+    table_channels: { staff_pos: true, table_qr: false },
+  })
+})
+
+test('first QR setup is independent of an existing staff table setup', async () => {
+  const staff = {
+    id: 'staff',
+    name: 'Tables',
+    enabled: true,
+    menu_ids: ['food'],
+    hours,
+    interactions: [
+      {
+        type: 'dine_in',
+        enabled: true,
+        table_channels: { staff_pos: true, table_qr: false },
+      },
+    ],
+  }
+  const h = harness({ services: [staff] })
+  const created = await h.configureKitchenOffering(
+    {},
+    input({
+      option: 'qr_tables',
+      interactions: [{ type: 'dine_in', changes: {} }],
+    })
+  )
+  assert.notEqual(created.offering.id, staff.id)
+  assert.deepEqual(
+    created.offering.interactions.find((row) => row.type === 'dine_in')
+      .table_channels,
+    { staff_pos: false, table_qr: true }
+  )
+  assert.deepEqual(
+    h.children.get('staff'),
+    offeringContract.kitchenOfferingData(staff)
+  )
 })
 
 test('overview groups separate services by interaction regardless of collection timing', () => {
@@ -539,4 +516,345 @@ test('each overview row distinguishes On, Off and Paused without hiding disabled
   service.enabled = true
   service.interactions[0].availability.paused = false
   assert.equal(options.offeringOptionStatus(service, option), 'On')
+})
+
+test('Collection can be enabled first, then configured incrementally without replacing untouched fields', async () => {
+  const h = harness()
+  const on = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      option: 'collection',
+      enabled: true,
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  assert.equal(on.offering.enabled, true)
+  assert.deepEqual(on.offering.menu_ids, [])
+  assert.equal(on.offering.hours, undefined)
+  const selected = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      offeringId: on.offering.id,
+      option: 'collection',
+      enabled: true,
+      menu_ids: ['food'],
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  const timed = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      offeringId: on.offering.id,
+      option: 'collection',
+      enabled: true,
+      hours,
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  assert.deepEqual(selected.offering.menu_ids, ['food'])
+  assert.deepEqual(timed.offering.menu_ids, ['food'])
+  assert.deepEqual(timed.offering.hours, hours)
+  const off = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      offeringId: on.offering.id,
+      option: 'collection',
+      enabled: false,
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  assert.equal(
+    off.offering.interactions.find((row) => row.type === 'collection').enabled,
+    false
+  )
+  assert.deepEqual(off.offering.menu_ids, ['food'])
+  assert.deepEqual(off.offering.hours, hours)
+})
+
+test('Collection can select a draft menu while customer publication remains separate', async () => {
+  const h = harness({ menu: { status: 'draft', format: 'interactive' } })
+  const result = await h.configureKitchenOffering({}, input())
+  assert.equal(result.offering.enabled, true)
+  assert.deepEqual(result.offering.menu_ids, ['food'])
+})
+
+test('Collection can be turned off even when a previously selected menu has disappeared', async () => {
+  const h = harness({
+    menu: null,
+    services: [
+      {
+        id: 'pickup',
+        name: 'Collection',
+        enabled: true,
+        menu_ids: ['missing'],
+        hours,
+        interactions: [{ type: 'collection', enabled: true }],
+      },
+    ],
+  })
+  const result = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      offeringId: 'pickup',
+      option: 'collection',
+      enabled: false,
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  assert.equal(result.offering.interactions[0].enabled, false)
+  assert.deepEqual(h.reads, [])
+})
+
+test('clearing Collection hours removes the stored field and retains its menus', async () => {
+  const h = harness({
+    services: [
+      {
+        id: 'pickup',
+        name: 'Collection',
+        enabled: true,
+        menu_ids: ['food'],
+        hours,
+        interactions: [{ type: 'collection', enabled: true }],
+      },
+    ],
+  })
+  const result = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      offeringId: 'pickup',
+      option: 'collection',
+      enabled: true,
+      hours: null,
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  assert.equal(result.offering.hours, undefined)
+  assert.deepEqual(result.offering.menu_ids, ['food'])
+  assert.deepEqual(h.writes[0].data.hours, { deleted: true })
+})
+
+test('each provided service supports On before configuration and sparse automatic updates', async () => {
+  for (const option of options.kitchenOfferingOptions) {
+    const h = harness()
+    const body = {
+      kitchenId: 'venue',
+      option: option.key,
+      enabled: true,
+      interactions: option.types.map((type) => ({ type, changes: {} })),
+    }
+    const first = await h.configureKitchenOffering({}, body)
+    assert.equal(first.offering.enabled, true, option.key)
+    assert.deepEqual(first.offering.menu_ids, [])
+    assert.equal(first.offering.hours, undefined)
+    const selected = await h.configureKitchenOffering(
+      {},
+      {
+        ...body,
+        offeringId: first.offering.id,
+        ...(option.key === 'counter'
+          ? {
+              interactions: body.interactions.map((row) => ({
+                ...row,
+                changes: { menu_ids: ['food'] },
+              })),
+            }
+          : { menu_ids: ['food'] }),
+      }
+    )
+    const timed = await h.configureKitchenOffering(
+      {},
+      { ...body, offeringId: first.offering.id, hours }
+    )
+    assert.deepEqual(timed.offering.menu_ids, selected.offering.menu_ids)
+    const off = await h.configureKitchenOffering(
+      {},
+      { ...body, offeringId: first.offering.id, enabled: false }
+    )
+    assert.equal(off.offering.enabled, false, option.key)
+    assert.deepEqual(off.offering.menu_ids, ['food'])
+    assert.deepEqual(off.offering.hours, hours)
+  }
+})
+
+test('Kiosk always supports both modes and retains their menus while off', async () => {
+  const h = harness({
+    services: [
+      {
+        id: 'kiosk',
+        name: 'Kiosk',
+        enabled: true,
+        menu_ids: ['food'],
+        hours,
+        interactions: [
+          { type: 'eat_in', enabled: true, menu_ids: ['food'] },
+          { type: 'takeaway', enabled: false, menu_ids: [] },
+        ],
+      },
+    ],
+  })
+  const body = {
+    kitchenId: 'venue',
+    offeringId: 'kiosk',
+    option: 'counter',
+    enabled: false,
+    interactions: [
+      { type: 'eat_in', changes: {} },
+      { type: 'takeaway', changes: {} },
+    ],
+  }
+  const off = await h.configureKitchenOffering({}, body)
+  assert.equal(off.offering.enabled, false)
+  assert.equal(
+    off.offering.interactions.find((row) => row.type === 'eat_in').enabled,
+    true
+  )
+  const on = await h.configureKitchenOffering({}, { ...body, enabled: true })
+  assert.equal(
+    on.offering.interactions.find((row) => row.type === 'eat_in').enabled,
+    true
+  )
+  assert.equal(
+    on.offering.interactions.find((row) => row.type === 'takeaway').enabled,
+    true
+  )
+  const switched = await h.configureKitchenOffering(
+    {},
+    {
+      ...body,
+      enabled: true,
+      interactions: [
+        { type: 'eat_in', changes: {} },
+        { type: 'takeaway', changes: { enabled: false } },
+      ],
+    }
+  )
+  assert.equal(
+    switched.offering.interactions.find((row) => row.type === 'eat_in').enabled,
+    true
+  )
+  assert.equal(
+    switched.offering.interactions.find((row) => row.type === 'takeaway')
+      .enabled,
+    true
+  )
+})
+
+test('Kiosk keeps independent mode menus, validates selections and retains them while off', async () => {
+  const h = harness()
+  const body = {
+    kitchenId: 'venue',
+    option: 'counter',
+    enabled: true,
+    hours,
+    interactions: [
+      { type: 'eat_in', changes: { enabled: true, menu_ids: ['food'] } },
+      { type: 'takeaway', changes: { enabled: true, menu_ids: ['drinks'] } },
+    ],
+  }
+  const first = await h.configureKitchenOffering({}, body)
+  assert.deepEqual(first.offering.menu_ids, ['food', 'drinks'])
+  assert.deepEqual(
+    first.offering.interactions.find((row) => row.type === 'eat_in').menu_ids,
+    ['food']
+  )
+  assert.deepEqual(
+    first.offering.interactions.find((row) => row.type === 'takeaway').menu_ids,
+    ['drinks']
+  )
+  const changed = await h.configureKitchenOffering(
+    {},
+    {
+      ...body,
+      offeringId: first.offering.id,
+      interactions: [
+        { type: 'eat_in', changes: {} },
+        { type: 'takeaway', changes: { menu_ids: [] } },
+      ],
+    }
+  )
+  assert.deepEqual(changed.offering.menu_ids, ['food'])
+  assert.deepEqual(
+    changed.offering.interactions.find((row) => row.type === 'eat_in').menu_ids,
+    ['food']
+  )
+  const off = await h.configureKitchenOffering(
+    {},
+    {
+      ...body,
+      offeringId: first.offering.id,
+      enabled: false,
+      interactions: [
+        { type: 'eat_in', changes: {} },
+        { type: 'takeaway', changes: {} },
+      ],
+    }
+  )
+  assert.deepEqual(off.offering.menu_ids, ['food'])
+  await assert.rejects(
+    h.configureKitchenOffering({}, { ...body, menu_ids: ['food'] }),
+    /separately/
+  )
+  await assert.rejects(
+    harness({ menu: null }).configureKitchenOffering(
+      {},
+      {
+        ...body,
+        interactions: [
+          { type: 'eat_in', changes: { menu_ids: ['missing'] } },
+          { type: 'takeaway', changes: {} },
+        ],
+      }
+    ),
+    /no longer exists/
+  )
+})
+
+test('service hours can inherit, switch to custom and return to inheritance', async () => {
+  const h = harness()
+  const body = {
+    kitchenId: 'venue',
+    option: 'collection',
+    enabled: true,
+    interactions: [{ type: 'collection', changes: {} }],
+  }
+  const first = await h.configureKitchenOffering({}, body)
+  assert.equal(first.offering.hours_source, 'kitchen')
+  assert.equal(first.offering.hours, undefined)
+  const custom = await h.configureKitchenOffering(
+    {},
+    { ...body, offeringId: first.offering.id, hours_source: 'custom', hours }
+  )
+  assert.equal(custom.offering.hours_source, 'custom')
+  assert.deepEqual(custom.offering.hours, hours)
+  const inherited = await h.configureKitchenOffering(
+    {},
+    {
+      ...body,
+      offeringId: first.offering.id,
+      hours_source: 'kitchen',
+      hours: null,
+    }
+  )
+  assert.equal(inherited.offering.hours_source, 'kitchen')
+  assert.equal(inherited.offering.hours, undefined)
+  assert.equal(h.children.get(first.offering.id).hours, undefined)
+})
+
+test('custom service hours cannot extend beyond the Kitchen schedule', async () => {
+  const parentHours = {
+    ...hours,
+    windows: [{ days: ['monday'], open: '12:00', close: '18:00' }],
+  }
+  const h = harness({ parentHours })
+  await assert.rejects(
+    h.configureKitchenOffering({}, input()),
+    /within Kitchen service hours/
+  )
+  assert.deepEqual(h.writes, [])
 })

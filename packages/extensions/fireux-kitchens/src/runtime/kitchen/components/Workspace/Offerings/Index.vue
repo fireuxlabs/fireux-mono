@@ -10,7 +10,10 @@
       entity="Kitchen services"
       state="error"
     />
-    <div v-else-if="selectedKitchen" class="space-y-4">
+    <div v-else-if="selectedKitchen">
+      <div class="flex justify-end">
+        <UButton to="/workspace/kitchen/menus" label="Manage menus" color="neutral" variant="link" size="sm" />
+      </div>
       <WorkspaceKitchenOfferingsService
         v-for="entry in entries"
         :key="ownerScope + ':' + entry.option.key"
@@ -65,6 +68,7 @@ const entries = computed(() =>
     offerings: offeringsForOption(offerings.value, option),
   }))
 )
+
 const page = useWorkspacePageState('kitchen')
 const snapshot = computed(() =>
   serviceOverviewSnapshot({

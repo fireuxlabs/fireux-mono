@@ -1,4 +1,8 @@
+import type { KitchenOffering } from '../../models/offering.model'
+import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
+import { hoursWithinParent } from '../../utils/service-hours'
 import { randomUUID } from 'node:crypto'
+import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -14,6 +18,7 @@ import { kitchenOfferingOptions } from '../../utils/offering-options'
 import {
   tableServiceChannel,
   configureTableChannel,
+  tableChannelEnabled,
 } from '../../utils/table-service'
 import {
   readOfferingUpdate,
@@ -37,10 +42,9 @@ export function readOfferingConfiguration(input: unknown) {
           'name',
           'menu_ids',
           'hours',
+          'hours_source',
           'enabled',
           'interactions',
-          'activateShared',
-          'createSeparate',
           'collection_timing',
         ].includes(key)
     )
@@ -51,23 +55,21 @@ export function readOfferingConfiguration(input: unknown) {
   )
   if (!option || typeof body.enabled !== 'boolean')
     return fail('Choose a offering and its availability.')
-  if ('activateShared' in body && typeof body.activateShared !== 'boolean')
-    fail('Review the shared offering settings before saving.')
+  if (option.key === 'counter' && body.menu_ids !== undefined)
+    fail('Choose menus separately for Eat in and Takeaway.')
   const isNew = body.offeringId === undefined
-  if (
-    'createSeparate' in body &&
-    (typeof body.createSeparate !== 'boolean' || !isNew)
-  )
-    fail('Create a separate offering without an existing offering id.')
   if (body.collection_timing !== undefined && option.key !== 'collection')
     fail('Collection timing requires Collection.')
   const base = readOfferingUpdate({
     kitchenId: body.kitchenId,
     offeringId: isNew ? 'new-offering' : body.offeringId,
     changes: {
-      name: body.name,
-      menu_ids: body.menu_ids,
-      hours: body.hours,
+      ...(body.name !== undefined ? { name: body.name } : {}),
+      ...(body.menu_ids !== undefined ? { menu_ids: body.menu_ids } : {}),
+      ...(body.hours !== undefined ? { hours: body.hours } : {}),
+      ...(body.hours_source !== undefined
+        ? { hours_source: body.hours_source }
+        : {}),
       ...(body.collection_timing !== undefined
         ? { collection_timing: body.collection_timing }
         : {}),
@@ -95,41 +97,43 @@ export function readOfferingConfiguration(input: unknown) {
   })
   if (new Set(interactions.map((row) => row.type)).size !== option.types.length)
     fail('Configure each ordering option once.')
-  if (body.enabled && !interactions.some((row) => row.changes.enabled))
-    fail('Choose at least one ordering option.')
-  if (!base.changes.menu_ids?.length || !base.changes.hours?.windows.length)
-    fail('Choose menus and serving hours before saving.')
   return {
     ...base,
     isNew,
-    createSeparate: body.createSeparate === true,
     option,
     enabled: body.enabled,
     interactions,
-    activateShared: body.activateShared === true,
   }
 }
 
-/** Commit menus, explicit hours and interaction settings together before making them available. */
+/** Apply sparse setup changes; public eligibility remains dependent on menus and hours. */
 export async function configureKitchenOffering(event: H3Event, input: unknown) {
   const config = readOfferingConfiguration(input)
   const actor = await readKitchenMutationActor(event)
   const id = config.isNew ? randomUUID() : config.offeringId
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    await requireKitchenMutationAuthority(tx, actor, config.kitchenId)
+    const authority = await requireKitchenMutationAuthority(
+      tx,
+      actor,
+      config.kitchenId
+    )
     const offerings = await readKitchenOfferingsInTransaction(
       tx,
       config.kitchenId
     )
     if (
       config.isNew &&
-      !config.createSeparate &&
-      offerings.some(
-        (offering) =>
-          !offering.separate &&
-          offering.interactions.some((row) =>
-            (config.option.types as readonly string[]).includes(row.type)
-          )
+      offerings.some((offering) =>
+        offering.interactions.some(
+          (row) =>
+            (config.option.types as readonly string[]).includes(row.type) &&
+            (!tableServiceChannel(config.option.key) ||
+              (row.type !== 'browse' &&
+                tableChannelEnabled(
+                  row,
+                  tableServiceChannel(config.option.key)!
+                )))
+        )
       )
     ) {
       throw createError({
@@ -144,37 +148,57 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
         statusCode: 404,
         statusMessage: 'Offering not found.',
       })
-    const others = current?.interactions.filter(
-      (row) => !(config.option.types as readonly string[]).includes(row.type)
-    ) || [{ type: 'browse' as const, enabled: true }]
+    const requestedChannel = tableServiceChannel(config.option.key)
     if (
-      config.enabled &&
       current &&
-      !current.enabled &&
-      others.some((row) => row.type !== 'browse' && row.enabled) &&
-      !config.activateShared
-    ) {
+      (current.interactions.some(
+        (row) =>
+          row.type !== 'browse' &&
+          !(config.option.types as readonly string[]).includes(row.type)
+      ) ||
+        (requestedChannel &&
+          !current.interactions.some(
+            (row) =>
+              row.type !== 'browse' &&
+              tableChannelEnabled(row, requestedChannel)
+          )))
+    )
       throw createError({
-        statusCode: 409,
-        statusMessage:
-          'This offering also enables another ordering option. Review the shared settings before saving.',
+        statusCode: 400,
+        statusMessage: 'This setup belongs to a different service.',
       })
-    }
-    const offering = {
+    const browse = current?.interactions.filter(
+      (row) => row.type === 'browse'
+    ) || [{ type: 'browse' as const, enabled: true }]
+    const offering: KitchenOffering = {
       id,
-      name: config.changes.name!,
-      ...(config.createSeparate || current?.separate ? { separate: true } : {}),
-      menu_ids: config.changes.menu_ids!,
-      hours: config.changes.hours!,
+      name: config.changes.name || current?.name || config.option.label,
+      ...(current?.separate ? { separate: true } : {}),
+      menu_ids: config.changes.menu_ids ?? current?.menu_ids ?? [],
+      ...((
+        config.changes.hours === undefined
+          ? current?.hours
+          : config.changes.hours
+      )
+        ? {
+            hours: (config.changes.hours === undefined
+              ? current?.hours
+              : config.changes.hours)!,
+          }
+        : {}),
       ...(config.changes.collection_timing || current?.collection_timing
         ? {
             collection_timing:
               config.changes.collection_timing || current?.collection_timing,
           }
         : {}),
-      enabled: current?.enabled || config.enabled,
+      hours_source:
+        config.changes.hours_source ||
+        (config.changes.hours ? 'custom' : current?.hours_source) ||
+        'kitchen',
+      enabled: config.enabled,
       interactions: [
-        ...others,
+        ...browse,
         ...config.interactions.map((row) => {
           const previous = current?.interactions.find(
             (item) => item.type === row.type
@@ -182,26 +206,44 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
           const channel = tableServiceChannel(config.option.key)
           return patchKitchenOfferingInteraction(row.type, previous, {
             ...row.changes,
-            enabled: config.enabled && row.changes.enabled === true,
-            ...(channel
-              ? configureTableChannel(
-                  previous && previous.type !== 'browse'
-                    ? {
-                        ...previous,
-                        enabled: Boolean(current?.enabled && previous.enabled),
-                      }
-                    : undefined,
-                  channel,
-                  config.enabled
-                )
-              : {}),
+            enabled:
+              config.option.key === 'counter'
+                ? true
+                : config.enabled && (row.changes.enabled ?? true),
+            ...(channel ? configureTableChannel(channel, config.enabled) : {}),
           })
         }),
       ],
     }
-    requireConfiguredOffering(offering)
+    if (config.option.key === 'counter') {
+      offering.menu_ids = [
+        ...new Set(
+          offering.interactions.flatMap((row) =>
+            row.type === 'eat_in' || row.type === 'takeaway'
+              ? row.menu_ids || []
+              : []
+          )
+        ),
+      ]
+    }
+    if (offering.menu_ids.length > 100)
+      fail('Select up to 100 menus per service.')
+    if (offering.hours_source === 'kitchen') delete offering.hours
+    if (
+      config.changes.hours &&
+      offering.hours_source === 'custom' &&
+      !hoursWithinParent(
+        config.changes.hours,
+        resolveKitchenOperationHours(authority.rootData, authority.placeData)
+      )
+    )
+      fail('Serving hours must be within Kitchen service hours.')
+    requireConfiguredOffering(offering, true)
     const selectedMenus = []
-    for (const menuId of offering.menu_ids) {
+    const validateMenus =
+      config.changes.menu_ids !== undefined ||
+      config.interactions.some((row) => row.changes.menu_ids !== undefined)
+    for (const menuId of validateMenus ? offering.menu_ids : []) {
       const menu = await tx.read(
         serverKitchenMenusTarget(config.kitchenId),
         menuId
@@ -213,15 +255,15 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
         })
       selectedMenus.push(menu.data || {})
     }
-    requireServiceMenus(
-      selectedMenus,
-      offering.enabled &&
-        offering.interactions.some(
-          (row) => row.type !== 'browse' && row.enabled
-        )
-    )
+    if (selectedMenus.length) requireServiceMenus(selectedMenus, false)
     const target = serverKitchenOfferingsTarget(config.kitchenId)
-    if (current) tx.update(target, id, kitchenOfferingData(offering))
+    if (current)
+      tx.update(target, id, {
+        ...kitchenOfferingData(offering),
+        ...(config.changes.hours === null || offering.hours_source === 'kitchen'
+          ? { hours: FieldValue.delete() }
+          : {}),
+      })
     else tx.create(target, id, kitchenOfferingData(offering))
     return { ok: true, kitchen_id: config.kitchenId, offering }
   })
