@@ -152,11 +152,6 @@ test('Prep create captures seed inputs, invalidates pre-dispatch continuations a
       assert.equal(seeds[0].translate, false)
     }
 })
-const prep = load(
-  '../../runtime/kitchen/utils/recipe-preparation.ts',
-  { isFirestoreDocumentId },
-  '({normalizeRecipePreparation,validateRecipePreparation})'
-)
 const specification = load(
   '../../runtime/kitchen/utils/dish-specification.ts',
   { isFirestoreDocumentId },
@@ -166,52 +161,33 @@ test('Recipe Prep button saves only Prep and snapshots quantity for its local un
   for (const changed of [false, true]) {
     const h = scope(),
       pending = deferred(),
-      calls = [],
-      recipe = ref({ id: 'recipe', name: 'Recipe' })
+      calls = []
     const props = {
       get kitchenId() {
         return h.selectedId.value
       },
-      get recipe() {
-        return recipe.value
-      },
-      canWrite: true,
-      databaseId: 'db',
-      rootCollection: 'kitchens',
+      disabled: false,
+      recipeIntent: 'recipe-draft',
+      ingredientOptions: [],
     }
     const api = load(
-      '../../runtime/kitchen/components/Workspace/Recipes/Form.vue',
+      '../../runtime/kitchen/components/Workspace/PrepItems/Create.vue',
       {
         ref,
         computed,
-        ...prep,
         useRecipeScope: h.useRecipeScope,
         defineProps: () => props,
-        defineEmits: () => () => {},
-        useKitchenIngredients: () => ({
-          ingredients: ref([]),
-          pending: ref(false),
-          error: ref(null),
-        }),
-        useKitchenPrepItems: () => ({ prepItems: ref([]), error: ref(null) }),
+        defineEmits: () => (event) => {
+          if (event === 'created') throw Error('Stale Prep must not attach')
+        },
         useKitchenPrepItemCreate: () => ({
           createPrepItem: (...args) => {
             calls.push(args)
             return pending.promise
           },
         }),
-        useRecipeCreate: () => ({
-          createRecipe: () => {
-            throw Error('Recipe save must remain separate')
-          },
-        }),
-        useRecipeUpdate: () => ({
-          updateRecipe: () => {
-            throw Error('Recipe save must remain separate')
-          },
-        }),
       },
-      '({createPrep,newPrepName,newPrepQuantity,newPrepUnit,preparation,message,creatingPrep})',
+      '({createPrep,newPrepName,newPrepQuantity,newPrepUnit,message,creatingPrep})',
       true
     )
     api.newPrepName.value = 'Sauce'
@@ -227,7 +203,6 @@ test('Recipe Prep button saves only Prep and snapshots quantity for its local un
     await result
     assert.equal(calls[0][0].yield.quantity, 2)
     assert.equal(calls[0][2].translate, false)
-    assert.equal(api.preparation.value.prep_items.length, 0)
     if (!changed) assert.equal(api.newPrepQuantity.value, 99)
     assert.equal(api.creatingPrep.value, false)
     assert.equal(api.message.value, '')

@@ -25,15 +25,6 @@ const name = (value: unknown) => {
   return value.trim()
 }
 
-export function readOfferingCreate(input: unknown) {
-  const body = object(input)
-  allowed(body, ['kitchenId', 'name'])
-  return {
-    kitchenId: requireFirestoreDocumentId(body.kitchenId, 'Kitchen id'),
-    name: name(body.name),
-  }
-}
-
 export function readOfferingUpdate(input: unknown) {
   const body = object(input)
   allowed(body, ['kitchenId', 'offeringId', 'changes'])

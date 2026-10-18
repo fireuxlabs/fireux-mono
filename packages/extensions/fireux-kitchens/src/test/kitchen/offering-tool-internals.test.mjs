@@ -9,6 +9,8 @@ import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import * as vue from 'vue'
+import { renderToString } from 'vue/server-renderer'
+import { parse } from 'vue/compiler-sfc'
 
 function load(path, names, deps, component = false) {
   let source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -49,7 +51,7 @@ const deferred = () => {
   })
   return { promise, resolve }
 }
-function setup() {
+function setup(interaction = {}, enabled = true) {
   const scope = vue.effectScope(),
     credentials = deferred(),
     response = deferred(),
@@ -59,16 +61,15 @@ function setup() {
   const props = vue.reactive({
     kitchenId: 'kitchen',
     offeringId: 'pickup',
-    active: true,
     disabled: false,
     option: { key: 'collection', label: 'Collection', types: ['collection'] },
     offering: {
       id: 'pickup',
       name: 'Pickup',
-      enabled: true,
+      enabled,
       menu_ids: ['food'],
       hours: { timezone: 'Europe/Zurich' },
-      interactions: [{ type: 'collection', enabled: true }],
+      interactions: [{ type: 'collection', enabled: true, ...interaction }],
     },
     menus: [
       { id: 'food', name: 'Food', status: 'published', format: 'interactive' },
@@ -90,13 +91,13 @@ function setup() {
   const state = scope.run(() =>
     load(
       base + 'Workspace/Offerings/Setup.vue',
-      'submit,menuIds,hoursText,enabled,drafts,busy,error,menuOptions,hasOrderMenu,canSave',
+      'submit,resetDraft,menuIds,hoursText,enabled,savedEnabled,drafts,busy,error,menuOptions,hasOrderMenu,canSave',
       {
         ...vue,
         useCommandScope,
         defineProps: () => props,
         defineEmits: () => (event) => events.push(event),
-        offeringOptionEnabled: () => true,
+        offeringOptionEnabled: offeringOverviewPolicy.offeringOptionEnabled,
         formatWeekdayTimeText: () => 'Tuesday 12:00 - 20:00',
         parseWeekdayTimeText: (text, timezone) => ({
           timezone,
@@ -125,8 +126,7 @@ for (const change of ['cancel', 'draft', 'owner', 'offering', 'dispose']) {
     const h = setup(),
       saving = h.state.submit()
     if (change === 'cancel') {
-      h.props.active = false
-      h.props.active = true
+      h.state.resetDraft()
     }
     if (change === 'draft') {
       h.state.hoursText.value = 'Tuesday 13:00 - 20:00'
@@ -166,11 +166,103 @@ test('Offering setup keeps an authored draft during same-owner live refresh and 
   await Promise.resolve()
   assert.equal(h.calls.length, 1)
   assert.equal(h.calls[0].hours.windows[0].open, '13:00')
-  h.props.active = false
+  h.scope.stop()
   const committed = { ok: true, offering: { id: 'pickup' } }
   h.response.resolve(committed)
   assert.equal(await saving, committed)
   assert.deepEqual(h.events, [])
+  h.scope.stop()
+})
+test('inline availability changes preserve the rest of the unsaved configuration', () => {
+  const h = setup()
+  h.state.hoursText.value = 'Tuesday 13:00 - 20:00'
+  h.state.enabled.value = false
+  assert.equal(h.state.enabled.value, false)
+  h.state.enabled.value = true
+  assert.equal(h.state.enabled.value, true)
+  assert.equal(h.state.hoursText.value, 'Tuesday 13:00 - 20:00')
+  assert.deepEqual(h.state.menuIds.value, ['food'])
+  h.scope.stop()
+  assert.deepEqual(h.calls, [])
+  assert.equal(h.props.offering.enabled, true)
+  h.scope.stop()
+})
+test('the Collection switch and configuration visibility use the same editor draft', async () => {
+  const h = setup({}, false)
+  const source = readFileSync(
+    new URL(base + 'Workspace/Offerings/Setup.vue', import.meta.url),
+    'utf8'
+  )
+  const template = parse(source).descriptor.template.content.replaceAll(
+    'drafts[type]!',
+    'drafts[type]'
+  )
+  const render = async () => {
+    const app = vue.createSSRApp({
+      setup: () => ({
+        ...vue.toRefs(h.props),
+        ...h.state,
+        effectiveTimezone: 'Europe/Zurich',
+        sharedLabels: [],
+        activatesShared: false,
+      }),
+      render: vue.compile(template),
+    })
+    for (const name of [
+      'UFormField',
+      'UButton',
+      'UAlert',
+      'UCheckboxGroup',
+      'UTextarea',
+      'MoleculesStateCard',
+    ]) {
+      app.component(name, {
+        props: ['label'],
+        setup:
+          (props, { slots }) =>
+          () =>
+            vue.h('section', props.label, slots.default?.()),
+      })
+    }
+    app.component('USwitch', {
+      props: ['modelValue'],
+      setup: (props) => () =>
+        vue.h('button', { role: 'switch', 'aria-checked': props.modelValue }),
+    })
+    return renderToString(app)
+  }
+  assert.match(await render(), /aria-checked="false"/)
+  assert.match(await render(), /style="display:none;"/)
+  h.state.enabled.value = true
+  assert.match(await render(), /aria-checked="true"/)
+  assert.doesNotMatch(await render(), /style="display:none;"/)
+  assert.deepEqual(h.calls, [])
+  h.scope.stop()
+})
+
+test('simplified Collection setup preserves saved settings that are not displayed', async () => {
+  const stored = {
+    availability: { paused: false },
+    asap_enabled: true,
+    notice_hours: 0.75,
+    fulfilment: { handoff_instructions: 'Collect at reception' },
+    customer: { required_fields: ['name'] },
+  }
+  const h = setup(stored)
+  h.state.hoursText.value = 'Tuesday 13:00 - 20:00'
+  const saving = h.state.submit()
+  h.credentials.resolve('token')
+  h.response.resolve({ ok: true })
+  await saving
+  assert.equal(h.calls.length, 1)
+  assert.deepEqual(h.calls[0].interactions, [
+    { type: 'collection', changes: { enabled: true } },
+  ])
+  assert.deepEqual(h.props.offering.interactions[0], {
+    type: 'collection',
+    enabled: true,
+    ...stored,
+  })
   h.scope.stop()
 })
 test('current Offering setup emits completion once and clears its own busy state', async () => {
@@ -183,62 +275,22 @@ test('current Offering setup emits completion once and clears its own busy state
   assert.equal(h.state.busy.value, false)
   h.scope.stop()
 })
-for (const path of ['Workspace/Offerings/Index.vue']) {
-  test(`${path} retains its modal during child refresh and closes it on sticky owner changes`, () => {
-    const scope = vue.effectScope(),
-      ownerScope = vue.ref(0),
-      canWrite = vue.ref(true),
-      offerings = vue.ref([])
-    const state = scope.run(() =>
-      load(
-        base + path,
-        'openSetup,setupOpen,selectedOption',
-        {
-          ...vue,
-          defineProps: () => ({ kitchenId: 'kitchen' }),
-          useKitchenOfferings: () => ({
-            kitchenId: vue.ref('kitchen'),
-            selectedKitchen: vue.ref({ id: 'kitchen' }),
-            outcome: vue.ref('ready'),
-            offerings,
-            ownerScope,
-            captureIntent: () => () => true,
-            canWrite,
-            menus: vue.ref([]),
-            menusOutcome: vue.ref('ready'),
-            timezone: vue.ref('Europe/Zurich'),
-            name: vue.ref('Kitchen'),
-            configure() {},
-            create() {},
-          }),
-          useWorkspace: () => ({ select() {} }),
-          useWorkspaceEntryCta: () => ({
-            workspaceEntryPath: vue.ref('/workspace/kitchen'),
-          }),
-          navigateTo() {},
-          kitchenOfferingOptions: [],
-          offeringsForOption: () => [],
-          offeringOptionEnabled: () => false,
-          offeringSetupSummary: () => ({}),
-          formatWeekdayTimeText: () => '',
-        },
-        true
-      )
-    )
-    state.openSetup({ key: 'collection' })
-    canWrite.value = false
-    offerings.value = []
-    canWrite.value = true
-    assert.equal(state.setupOpen.value, true)
-    ownerScope.value++
-    assert.equal(state.setupOpen.value, false)
-    assert.equal(state.selectedOption.value, undefined)
-    const source = readFileSync(new URL(base + path, import.meta.url), 'utf8')
-    assert.match(source, /:active="setupOpen"/)
-    assert.match(source, /:capture-intent="captureIntent"/)
-    scope.stop()
-  })
-}
+test('Collection drafts are independent and discard restores saved configuration', () => {
+  const first = setup()
+  const second = setup()
+  first.state.enabled.value = false
+  first.state.menuIds.value = []
+  first.state.hoursText.value = 'Tuesday 13:00 - 20:00'
+  assert.equal(second.state.enabled.value, true)
+  assert.deepEqual(second.state.menuIds.value, ['food'])
+  first.state.resetDraft()
+  assert.equal(first.state.enabled.value, true)
+  assert.deepEqual(first.state.menuIds.value, ['food'])
+  assert.equal(first.state.hoursText.value, 'Tuesday 12:00 - 20:00')
+  assert.deepEqual(first.calls, [])
+  first.scope.stop()
+  second.scope.stop()
+})
 
 test('an existing Offering draft never becomes a create after a masked refresh or deletion', async () => {
   const h = setup()
@@ -257,7 +309,7 @@ test('an existing Offering draft never becomes a create after a masked refresh o
   h.scope.stop()
 })
 
-test('Collection and Delivery overview include all matching services and configure the exact record', () => {
+test('Collection and Delivery overview include all matching services and publish page context', () => {
   const published = []
   const scope = vue.effectScope()
   const offerings = vue.ref([
@@ -299,7 +351,7 @@ test('Collection and Delivery overview include all matching services and configu
   const state = scope.run(() =>
     load(
       base + 'Workspace/Offerings/Index.vue',
-      'entries,openSetup,selectedOffering,selectedOfferingId,setupOpen,menuNames',
+      'entries',
       {
         ...vue,
         useWorkspacePageState: () => ({
@@ -344,18 +396,6 @@ test('Collection and Delivery overview include all matching services and configu
       ['off', 'delivery']
     )
   }
-  for (const [option, id] of [
-    [collection.option, 'concept'],
-    [collection.option, 'off'],
-    [delivery.option, 'off'],
-    [delivery.option, 'delivery'],
-  ]) {
-    state.openSetup(option, undefined, id)
-    assert.equal(state.selectedOfferingId.value, id)
-    assert.equal(state.selectedOffering.value.id, id)
-    assert.equal(state.setupOpen.value, true)
-  }
-  assert.equal(state.menuNames(offerings.value[1]), 'Packed lunches')
   assert.equal(JSON.stringify(offerings.value), before)
   assert.equal(published.at(-1).selected.kitchenId, 'k')
   assert.equal(published.at(-1).services.length, 6)
@@ -443,45 +483,65 @@ test('Configure and service editor use the same menu choices and readiness', () 
   configured.state.enabled.value = false
   assert.equal(configured.state.canSave.value, true)
   configured.scope.stop()
-  for (const component of ['Menus']) {
-    const scope = vue.effectScope()
-    const props = vue.reactive({
-      kitchenId: 'k',
-      active: true,
-      disabled: false,
-      menus,
-      menusOutcome: 'ready',
-      outcome: 'ready',
-      timezone: 'Europe/Zurich',
-      venueHours: null,
-      offering: { menu_ids: ['draft'] },
-    })
-    const state = scope.run(() =>
-      load(
-        base + `Workspace/Offerings/${component}.vue`,
-        component === 'Create'
-          ? 'menuOptions,menuIds,menuReadiness'
-          : 'options,menuReadiness',
-        {
-          ...vue,
-          useCommandScope,
-          defineProps: () => props,
-          defineEmits: () => () => {},
-          formatWeekdayTimeText: () => '',
-        },
-        true
-      )
+  const source = readFileSync(
+    new URL(base + 'Workspace/Offerings/Single.vue', import.meta.url),
+    'utf8'
+  )
+  assert.match(source, /WorkspaceKitchenOfferingsService/)
+  assert.doesNotMatch(source, /updateOffering|saveInteraction|interactionType/)
+})
+
+test('the direct service page resolves the same service editors for its exact record', () => {
+  const scope = vue.effectScope()
+  const selectedId = vue.ref('main')
+  const records = vue.ref([
+    { id: 'main', interactions: [{ type: 'collection', enabled: true }] },
+    { id: 'other', interactions: [{ type: 'delivery', enabled: true }] },
+  ])
+  const state = scope.run(() =>
+    load(
+      base + 'Workspace/Offerings/Single.vue',
+      'offering,options',
+      {
+        ...vue,
+        useRouteParam: () => selectedId,
+        useKitchenOfferings: () => ({ offerings: records }),
+      },
+      true
     )
-    assert.deepEqual(
-      (state.menuOptions || state.options).value.map((row) => row.value),
-      ['food', 'draft']
-    )
-    if (component === 'Create') state.menuIds.value = ['draft']
-    assert.deepEqual(state.menuReadiness.value, {
-      validSelection: true,
-      hasPublishedMenu: false,
-      canEnable: false,
-    })
-    scope.stop()
-  }
+  )
+  assert.equal(state.offering.value.id, 'main')
+  assert.deepEqual(
+    state.options.value.map((row) => row.key),
+    ['collection']
+  )
+  selectedId.value = 'other'
+  assert.equal(state.offering.value.id, 'other')
+  assert.deepEqual(
+    state.options.value.map((row) => row.key),
+    ['delivery']
+  )
+  selectedId.value = 'missing'
+  assert.equal(state.offering.value, undefined)
+  assert.deepEqual(state.options.value, [])
+  scope.stop()
+})
+
+test('the client configure URL has one matching native Services endpoint', () => {
+  const adapter = readFileSync(
+    new URL(
+      '../../runtime/kitchen/composables/offerings/useKitchenOfferings.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  assert.match(adapter, /\/api\/workspace\/kitchen\/services\//)
+  const endpoint = readFileSync(
+    new URL(
+      '../../runtime/server/api/workspace/kitchen/services/configure.post.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  assert.match(endpoint, /configureKitchenOffering/)
 })

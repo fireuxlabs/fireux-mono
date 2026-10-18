@@ -120,7 +120,7 @@ export function useKitchenOfferings(
   ])
 
   async function command(
-    action: 'create' | 'update' | 'interaction' | 'configure',
+    action: 'update' | 'interaction' | 'configure',
     body: Record<string, unknown>,
     isSurfaceCurrent: () => boolean = () => true
   ) {
@@ -215,8 +215,6 @@ export function useKitchenOfferings(
       configuration: Record<string, unknown>,
       isSurfaceCurrent?: () => boolean
     ) => command('configure', configuration, isSurfaceCurrent),
-    create: (name: string, isSurfaceCurrent?: () => boolean) =>
-      command('create', { name }, isSurfaceCurrent),
     update: (
       offeringId: string,
       changes: KitchenOfferingChanges,

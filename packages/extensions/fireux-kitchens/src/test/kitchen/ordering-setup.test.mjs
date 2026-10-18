@@ -640,20 +640,10 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
   for (const path of [
     'components/Workspace/Offerings/Index.vue',
     'components/Workspace/Offerings/Setup.vue',
-    'components/Workspace/Offerings/Interaction.vue',
+    'components/Workspace/Offerings/Setup/Interaction.vue',
   ])
     assert.match(
       readFileSync(new URL(base + path, import.meta.url), 'utf8'),
       /:kitchen-id="kitchenId"/
     )
-  assert.match(
-    readFileSync(
-      new URL(
-        base + 'components/Workspace/Offerings/Setup.vue',
-        import.meta.url
-      ),
-      'utf8'
-    ),
-    /:open-workspace="openWorkspace"/
-  )
 })

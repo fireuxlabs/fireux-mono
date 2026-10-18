@@ -53,7 +53,7 @@ const hoursValidation = load(
 )
 const validation = load(
   'kitchen/server/offerings/validation',
-  'readOfferingCreate, readOfferingUpdate, requireConfiguredOffering, requireServiceMenus, fail',
+  'readOfferingUpdate, requireConfiguredOffering, requireServiceMenus, fail',
   { ...errors, ...hoursValidation, ...timeCore, ...serviceMenuPolicy }
 )
 const interactionInput = load(
@@ -282,11 +282,6 @@ function harness({ wait, retry, offerings = [saved()] } = {}) {
   }
   return {
     ...load(
-      'kitchen/server/offerings/create',
-      'createKitchenOffering',
-      dependencies
-    ),
-    ...load(
       'kitchen/server/offerings/update',
       'updateKitchenOffering',
       dependencies
@@ -500,41 +495,6 @@ test('known weekday case and surrounding whitespace still normalize and deduplic
   }
 })
 
-test('create retains original Kitchen/name and one generated identity across credentials and transaction retry', async () => {
-  const wait = deferred()
-  const input = { kitchenId: 'k', name: '  Dinner  ' }
-  const h = harness({
-    wait,
-    retry: () => {
-      input.name = 'Retry mutation'
-    },
-  })
-  const pending = h.createKitchenOffering({}, input)
-  input.kitchenId = 'other'
-  input.name = 'Credential mutation'
-  wait.resolve()
-  const result = await pending
-  assert.deepEqual(result, {
-    ok: true,
-    kitchen_id: 'k',
-    offering: {
-      id: 'created-1',
-      name: 'Dinner',
-      enabled: false,
-      menu_ids: [],
-      interactions: [{ type: 'browse', enabled: true }],
-    },
-  })
-  assert.equal(h.ids, 1)
-  assert.deepEqual(
-    h.attempts.map(([write]) => write[1]),
-    ['kitchens/k/offerings/created-1', 'kitchens/k/offerings/created-1']
-  )
-  assert.equal(h.writes.length, 1)
-  assert.equal('id' in h.writes[0][2], false)
-  assert.equal(h.reads.filter((key) => key === 'places/k').length, 2)
-})
-
 test('update retains copied Menu selection and hours through credentials and retries', async () => {
   const wait = deferred()
   const input = {
@@ -653,7 +613,6 @@ test('current membership, association and linked Place remain transaction prereq
     (records) => records.delete('places/k'),
   ]) {
     for (const [action, input] of [
-      ['createKitchenOffering', { kitchenId: 'k', name: 'Dinner' }],
       [
         'updateKitchenOffering',
         { kitchenId: 'k', offeringId: 'saved', changes: { name: 'Dinner' } },
@@ -986,4 +945,38 @@ test('service drafts save while off but cannot be enabled through either editor 
     {},
     { kitchenId: 'k', offeringId: 'saved', changes: { enabled: false } }
   )
+})
+
+test('Collection configuration preserves the latest hidden policy on transaction retry', async () => {
+  const current = saved()
+  const hidden = {
+    notice_hours: 2,
+    message: 'Updated elsewhere',
+    customer: { required_fields: ['phone'] },
+  }
+  const h = harness({
+    offerings: [current],
+    retry: (records) => {
+      const record = records.get('kitchens/k/offerings/saved')
+      const collection = record.interactions.find(
+        (row) => row.type === 'collection'
+      )
+      Object.assign(collection, hidden)
+    },
+  })
+  const result = await h.configureKitchenOffering(
+    {},
+    {
+      ...configure(),
+      offeringId: 'saved',
+      interactions: [{ type: 'collection', changes: { enabled: true } }],
+    }
+  )
+  const collection = result.offering.interactions.find(
+    (row) => row.type === 'collection'
+  )
+  for (const [key, value] of Object.entries(hidden))
+    assert.deepEqual(collection[key], value)
+  assert.equal(h.writes.length, 1)
+  assert.equal(result.offering.id, current.id)
 })

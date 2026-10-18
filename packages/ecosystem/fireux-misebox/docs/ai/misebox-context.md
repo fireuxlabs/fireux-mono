@@ -1242,26 +1242,18 @@ Workspace selection. Payment summaries consume that same explicit Kitchen throug
 `useKitchenFulfilment`; the existing Workspace reader remains the default for
 Workspace-only consumers. Payment-edit actions in standalone setup use its
 explicit authorized handoff rather than another saved Workspace selection.
-The same `Offerings/Setup.vue` form and configure command
-edit saved collection, delivery and pre-order configuration; cancellation keeps
-unsaved drafts local. Credential waits snapshot input and reject obsolete
-account, Kitchen, App, membership, access and disposal epochs. The controller
-owner scope excludes child Menu/Offering refresh and busy state. Actual forms
-forward their draft/cancellation predicate to the command before dispatch;
-committed results remain truthful after a surface changes. The setup editor
-retains its selected Offering target independently of masked live records, so a
-deleted Offering cannot become a new configuration. Same-owner live refresh
-preserves local drafts, and owner changes close them. Creation keeps a direct
-editor recovery action if saving succeeds but navigation fails.
-
-`offeringSetupSummary` remains bounded configuration guidance; offering enabled
-state is shown separately, and operational proof remains Unverified because no
-persisted proof source is consumed. No new progress flags or copied setup records
-exist. Payment, installation and Incoming use their existing Workspace editors:
-only an explicit authorized handoff selects the Kitchen and navigates. Menu and
-offering configuration alone never produces an all-set delivery claim. Failed or
-pending reads are not empty results. Verify the shared entrances, local selection,
-scoped save and cancellation in `src/test/kitchen/ordering-setup.test.mjs`.
+The Services overview and exact-record route both compose `Offerings/Service.vue`
+and `Offerings/Setup.vue`; there is no second immediate-save configuration editor.
+The Setup draft owns availability, menu selection, hours and one scoped configure
+command. Discard invalidates pending intent even when it restores the same values.
+Credential waits reject obsolete account, Kitchen, App, membership, access,
+draft and disposal epochs. Same-owner refresh preserves authored drafts; owner
+changes dispose editors. Exact existing record identity is retained independently
+of masked live reads, preventing an update from turning into creation.
+Service readiness consumes `kitchen/utils/service-menus.ts` directly; the retired
+setup-progress summary and empty-service creator have no runtime replacements.
+The native configure endpoint is `/api/workspace/kitchen/services/configure`,
+matching the client adapter. Storage remains Kitchen-owned `offerings`.
 
 The public selector is `?offering=<id>`; Menu payloads and directories use `offerings`, `offering_options`, `selectedOfferingId` and `offering_hours`. Protected Offering commands accept `offeringId` and return `offering`; WhatsApp tests return `kitchen_offering_id`. Kiosk and customer Order/receipt/recovery references use the same `kitchen_offering_id`/`kitchen_offering_name` fields. Existing stored Orders, kiosk records and browser recovery made with retired reference names require an audited conversion or explicit reset before reuse. Source renaming alone does not perform that conversion, and no runtime alias infers an Offering from an order-numbering period.
 
@@ -1617,13 +1609,20 @@ supplier has sliced them. Output names describe the food without a redundant
 `kitchen/utils/recipe-preparation.ts` owns stored-data normalization and strict
 authored-input validation. Omitted draft fields retain their supported defaults;
 explicit null, mistyped collections/quantities/text, unknown nested fields and
-invalid document references are rejected before normalization. Workspace Recipes
-Form and Preparation
-compose the existing Kitchen Prep Item create command and live collection reader;
-notes are secondary to quantities and the cooking method. New prep definitions
-can be created while editing a recipe and persist independently if that recipe
-edit is cancelled. Daily prep scheduling and batch execution remain separate,
-unconnected surfaces.
+invalid document references are rejected before normalization. Workspace Recipe
+editing enters through `Recipes/Form/Index.vue`, preserving its existing Nuxt
+component name. The parent acquires Ingredient/Prep collections once and owns
+one Recipe draft and Save lifecycle. Identity, Ingredients, PrepItems and
+Instructions sections edit that draft through models without additional reads
+or commands. `Workspace/PrepItems/Create.vue` owns the separate Prep draft,
+creation command and errors. Its busy event prevents overlapping Recipe Save;
+only a current successful creation emits the reference to the unsaved Recipe.
+The existing Recipe/Prep scope guards and parent intent capture suppress obsolete
+attachment and feedback. Target changes remount that nested creator; live
+same-record refresh does not reset authored drafts. Names and methods remain
+on the saved Prep record. Cancelling Recipe editing does not delete a created
+Prep definition. Recipe Preparation remains the saved-recipe read surface;
+daily prep scheduling and batch execution are separate, unconnected surfaces.
 
 Recipe create/update/delete are direct action owners under `kitchen/server/recipes`.
 Validated inputs, source language and translated-language deltas are detached before
@@ -2186,3 +2185,22 @@ Core's `useWorkspacePageState` for the header Copy page JSON action. The existin
 development-only DiagnosticsDebugPanel consumes the same safe projection: service
 types, configuration IDs, menus, hours, availability, readiness and read outcomes.
 It excludes notification recipients, credentials, payment details and Order data.
+
+Services configuration is inline. `Workspace/Offerings/Index.vue` acquires the
+service/menu sources once, composes `Service.vue` cards, and publishes safe page
+context. Each card owns only its local editor selection; each `Setup.vue` owns
+its configuration draft, discard and scoped Save lifecycle. Collection editors
+are always mounted: their single enabled draft controls both the On/Off switch
+and configuration visibility, including initial arrival. There is no page-wide
+selected editor, configuration modal, external availability draft or auto-open
+watcher. `Setup/Interaction.vue` composes the existing advanced controls for the other
+service types. Owner-scope keys dispose editors on account/Kitchen/access changes.
+The existing configure command remains the mutation owner; no independent
+Kitchen-level activation model is introduced.
+
+Collection setup currently exposes only menu selection and collection hours.
+Scheduling, customer-detail and payment controls are omitted from this surface;
+Collection saves send only the enabled interaction flag, rather than a copied
+hidden policy. The configure command preserves the latest stored scheduling,
+customer and payment-related settings in its transaction. This is a presentation simplification, not a change to fulfilment or
+Order execution.

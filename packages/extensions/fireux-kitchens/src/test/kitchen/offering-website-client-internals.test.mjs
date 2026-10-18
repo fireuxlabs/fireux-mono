@@ -455,7 +455,6 @@ test('controller owner scopes stay current through child live refresh but invali
 
 test('all Offering commands snapshot input and cancel delayed credentials for every actor/member/access/owner lifetime change', async () => {
   const actions = [
-    ['create', (f, guard) => f.api.create('Original', guard)],
     ['configure', (f, guard) => f.api.configure({ menu_ids: ['food'] }, guard)],
     [
       'update',
@@ -509,7 +508,6 @@ test('all Offering commands snapshot input and cancel delayed credentials for ev
 test('Offering final surface guards stop changed drafts before dispatch while committed responses remain truthful', async () => {
   for (const method of [
     (f, guard) => f.api.configure({}, guard),
-    (f, guard) => f.api.create('Name', guard),
     (f, guard) => f.api.update('service', { name: 'Name' }, guard),
     (f, guard) =>
       f.api.updateInteraction(
@@ -554,7 +552,7 @@ test('Offering completion requires a real exact document ID and exact update tar
   for (const id of ['', ' bad ', 1, '../other', '__reserved__']) {
     const f = fixture('offering')
     f.reply(async () => ({ ok: true, kitchen_id: 'local', offering: { id } }))
-    await assert.rejects(f.api.create('Name'), /response did not match/)
+    await assert.rejects(f.api.configure({}), /response did not match/)
     f.stop()
   }
   for (const method of [

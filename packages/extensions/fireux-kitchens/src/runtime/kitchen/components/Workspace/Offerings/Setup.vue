@@ -1,12 +1,20 @@
 <template>
   <div class="space-y-6">
-    <UAlert
-      v-if="option.key === 'table_service' || option.key === 'qr_tables'"
-      color="neutral"
-      icon="i-lucide-link"
-      title="Shared table settings"
-      description="Table service and QR table ordering share menus, hours and order settings. Each has its own availability switch."
-    />
+    <div class="flex items-center justify-between gap-3">
+      <h3 v-if="showName" class="font-medium">
+        {{ offering?.name || option.label }}
+      </h3>
+      <USwitch
+        v-model="enabled"
+        :label="enabled ? 'On' : 'Off'"
+        :aria-label="
+          (showName ? offering?.name + ' ' : '') +
+          option.label +
+          ' availability'
+        "
+        :disabled="disabled || busy"
+      />
+    </div>
     <UAlert
       v-if="error"
       color="error"
@@ -14,178 +22,145 @@
       :description="error"
       ><template #actions><MoleculesCopyError :message="error" /></template
     ></UAlert>
-    <UAlert
-      v-if="sharedLabels.length"
-      color="neutral"
-      icon="i-lucide-link"
-      title="Shared menus and hours"
-      :description="
-        'This service also contains ' +
-        sharedLabels.join(', ') +
-        '. Menu and hour changes apply to those options too.'
-      "
-    />
-    <MoleculesStateCard
-      v-if="menusOutcome === 'idle' || menusOutcome === 'pending'"
-      entity="Menus"
-      loading
-    />
-    <MoleculesStateCard
-      v-else-if="menusOutcome === 'error'"
-      entity="Menus"
-      state="error"
-    />
-    <div v-else class="grid items-start gap-6 md:grid-cols-2">
-      <UFormField
-        label="Eligible menus"
-        description="Customers choose from these menus."
-        required
-      >
-        <UCheckboxGroup
-          v-if="menuOptions.length"
-          v-model="menuIds"
-          :items="menuOptions"
-          :disabled="disabled || busy"
-          class="mt-3"
-        />
-        <p v-else class="my-3 text-sm text-muted">
-          Create a menu to get started.
-        </p>
-        <p class="mt-2 text-sm text-muted">
-          Regular interactive menus only. Daily specials and documents are
-          managed separately.
-        </p>
-        <UButton
-          :to="openWorkspace ? undefined : '/workspace/kitchen/menus'"
-          @click="openWorkspace?.('/workspace/kitchen/menus')"
-          label="Manage menus"
-          color="neutral"
-          variant="link"
-          class="mt-3"
-        />
-      </UFormField>
-      <UFormField
-        label="Serving hours"
-        :description="
-          effectiveTimezone
-            ? 'Local time · ' + effectiveTimezone
-            : 'Set the venue timezone in Identity first.'
-        "
-        required
-      >
-        <UTextarea
-          v-model="hoursText"
-          :rows="7"
-          placeholder="Tuesday - Sunday 12:00 - 22:00"
-          :disabled="disabled || busy || !effectiveTimezone"
-          class="w-full"
-        />
-        <p class="mt-2 text-xs text-muted">
-          Use a separate line for each time range.
-        </p>
-      </UFormField>
-    </div>
-    <p
-      v-if="enabled && menuIds.length && !hasOrderMenu"
-      class="text-sm text-warning"
-    >
-      Publish at least one selected menu with items and prices before enabling
-      this service.
-    </p>
-    <UFormField label="Availability">
-      <USwitch
-        v-model="enabled"
-        :label="'Enable ' + option.label.toLowerCase() + ' when saved'"
-        :disabled="disabled || busy"
+    <div v-show="enabled" class="space-y-6">
+      <UAlert
+        v-if="option.key === 'table_service' || option.key === 'qr_tables'"
+        color="neutral"
+        icon="i-lucide-link"
+        title="Shared table settings"
+        description="Table service and QR table ordering share menus, hours and order settings. Each has its own availability switch."
       />
-      <p v-if="!targetOfferingId" class="mt-2 text-sm text-muted">
-        Nothing is available to customers until you save the configuration.
-      </p>
-    </UFormField>
-    <UCheckbox
-      v-if="activatesShared"
-      v-model="activateShared"
-      :label="
-        'Also enable the saved ' +
-        activatingLabels.join(', ') +
-        ' settings in this service'
-      "
-      :disabled="busy || disabled"
-    />
-    <template v-for="type in option.types" :key="type">
-      <section class="space-y-4">
-        <h3 class="font-semibold">
-          {{ kitchenOrderTypeLabel(type) }} settings
-        </h3>
-        <UCheckbox
-          v-if="option.types.length > 1"
-          :model-value="drafts[type]?.enabled"
-          :label="'Allow ' + kitchenOrderTypeLabel(type).toLowerCase()"
-          :disabled="disabled || busy"
-          @update:model-value="
-            (value) => updateDraft(type, { enabled: value === true })
-          "
-        />
-        <WorkspaceKitchenOfferingsTiming
-          :config="drafts[type]!"
-          :allow-asap="type !== 'pre_order'"
-          :disabled="disabled || busy"
-          :interaction-label="kitchenOrderTypeLabel(type)"
-          :time-label="type === 'pre_order' ? 'Dining' : 'Serving'"
-          customer-message-placeholder="Optional customer message"
-          :update-function="(changes) => updateDraft(type, changes)"
-        />
-        <div class="grid items-start gap-4 md:grid-cols-2">
-          <WorkspaceKitchenOfferingsCustomerDetails
-            :config="drafts[type]!"
+      <UAlert
+        v-if="sharedLabels.length"
+        color="neutral"
+        icon="i-lucide-link"
+        title="Shared menus and hours"
+        :description="
+          'This service also contains ' +
+          sharedLabels.join(', ') +
+          '. Menu and hour changes apply to those options too.'
+        "
+      />
+      <MoleculesStateCard
+        v-if="menusOutcome === 'idle' || menusOutcome === 'pending'"
+        entity="Menus"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="menusOutcome === 'error'"
+        entity="Menus"
+        state="error"
+      />
+      <div v-else class="grid items-start gap-6 md:grid-cols-2">
+        <UFormField
+          :label="option.key === 'collection' ? 'Menus' : 'Eligible menus'"
+          required
+        >
+          <UCheckboxGroup
+            v-if="menuOptions.length"
+            v-model="menuIds"
+            :items="menuOptions"
             :disabled="disabled || busy"
-            handoff-label="Instructions"
-            handoff-placeholder="Optional instructions"
-            :update-function="(changes) => updateDraft(type, changes)"
+            class="mt-3"
           />
-          <WorkspaceKitchenOfferingsPayment
-            :config="drafts[type]!"
-            :kitchen-id="kitchenId"
-            :open-workspace="openWorkspace"
+          <p v-else class="my-3 text-sm text-muted">
+            Create a menu to get started.
+          </p>
+          <p class="mt-2 text-sm text-muted">
+            Regular interactive menus only. Daily specials and documents are
+            managed separately.
+          </p>
+          <UButton
+            to="/workspace/kitchen/menus"
+            label="Manage menus"
+            color="neutral"
+            variant="link"
+            class="mt-3"
           />
-        </div>
-        <WorkspaceKitchenOfferingsAvailability
-          :config="{
-            ...drafts[type]!,
-            enabled:
-              enabled && (option.types.length === 1 || drafts[type]!.enabled),
-          }"
+        </UFormField>
+        <UFormField
+          :label="
+            option.key === 'collection' ? 'Collection hours' : 'Serving hours'
+          "
+          :description="
+            effectiveTimezone
+              ? 'Local time · ' + effectiveTimezone
+              : 'Set the venue timezone in Identity first.'
+          "
+          required
+        >
+          <UTextarea
+            v-model="hoursText"
+            :rows="7"
+            placeholder="Tuesday - Sunday 12:00 - 22:00"
+            :disabled="disabled || busy || !effectiveTimezone"
+            class="w-full"
+          />
+          <p class="mt-2 text-xs text-muted">
+            Use a separate line for each time range.
+          </p>
+        </UFormField>
+      </div>
+      <p
+        v-if="enabled && menuIds.length && !hasOrderMenu"
+        class="text-sm text-warning"
+      >
+        Publish at least one selected menu with items and prices before enabling
+        this service.
+      </p>
+      <UCheckbox
+        v-if="activatesShared"
+        v-model="activateShared"
+        :label="
+          'Also enable the saved ' +
+          activatingLabels.join(', ') +
+          ' settings in this service'
+        "
+        :disabled="busy || disabled"
+      />
+      <template v-if="option.key !== 'collection'">
+        <WorkspaceKitchenOfferingsSetupInteraction
+          v-for="type in option.types"
+          :key="type"
+          :type="type"
+          :config="drafts[type]!"
+          :allow-toggle="option.types.length > 1"
+          :kitchen-id="kitchenId"
           :disabled="disabled || busy"
-          :interaction-label="kitchenOrderTypeLabel(type)"
-          :update-function="(changes) => updateDraft(type, changes)"
+          @update="updateDraft(type, $event)"
         />
-      </section>
-    </template>
-    <p class="text-sm text-muted">
-      Payment methods are managed in
-      <UButton
-        :to="openWorkspace ? undefined : '/workspace/kitchen/identity/payments'"
-        variant="link"
-        @click="openWorkspace?.('/workspace/kitchen/identity/payments')"
-        >Kitchen Identity</UButton
-      >.
-    </p>
+      </template>
+    </div>
     <div
+      v-if="enabled || savedEnabled"
       class="sticky bottom-0 -mx-6 border-t border-default bg-default px-6 py-4 flex flex-wrap items-center justify-between gap-3"
     >
       <p class="text-xs text-muted">
-        Settings above are a draft until saved here.
+        {{
+          enabled
+            ? 'Settings above are a draft until saved here.'
+            : 'Save to turn this service off.'
+        }}
       </p>
-      <UButton
-        @click="
-          async () => {
-            await submit()
-          }
-        "
-        :label="enabled ? 'Save and enable' : 'Save with service off'"
-        :loading="busy"
-        :disabled="disabled || !canSave"
-      />
+      <div class="flex items-center gap-2">
+        <UButton
+          label="Discard changes"
+          color="neutral"
+          variant="ghost"
+          :disabled="busy || disabled"
+          @click="resetDraft"
+        />
+        <UButton
+          @click="
+            async () => {
+              await submit()
+            }
+          "
+          :label="enabled ? 'Save and enable' : 'Save with service off'"
+          :loading="busy"
+          :disabled="disabled || !canSave"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -223,11 +198,9 @@ const props = defineProps<{
   menus: Menu[]
   menusOutcome: ReadOutcome
   timezone: string
-  requestedEnabled?: boolean
+  showName?: boolean
   disabled?: boolean
-  active?: boolean
   captureIntent?: () => () => boolean
-  openWorkspace?: (path: string) => unknown
   save: (
     input: Record<string, unknown>,
     isSurfaceCurrent?: () => boolean
@@ -240,35 +213,49 @@ const targetOfferingId = computed(() => props.offeringId || initialOfferingId)
 const menuIds = ref([...(props.offering?.menu_ids || [])])
 const hoursText = ref(formatWeekdayTimeText(props.offering?.hours))
 const enabled = ref(
-  props.requestedEnabled ??
-    (props.offering
-      ? offeringOptionEnabled(props.offering, props.option)
-      : true)
+  props.offering ? offeringOptionEnabled(props.offering, props.option) : false
 )
+const savedEnabled = ref(enabled.value)
+const draftEpoch = ref(0)
 const activateShared = ref(false)
 const busy = ref(false),
   error = ref('')
-const drafts = ref<
-  Partial<
+function interactionDrafts() {
+  return Object.fromEntries(
+    props.option.types
+      .filter((type) => type !== 'collection')
+      .map((type) => {
+        const stored = props.offering?.interactions.find(
+          (row) => row.type === type
+        )
+        return [
+          type,
+          JSON.parse(
+            JSON.stringify(
+              stored || {
+                ...newKitchenOfferingInteraction(type),
+                enabled: true,
+              }
+            )
+          ),
+        ]
+      })
+  ) as Partial<
     Record<KitchenOrderType, KitchenOrderTypeConfig & { enabled: boolean }>
   >
->(
-  Object.fromEntries(
-    props.option.types.map((type) => {
-      const stored = props.offering?.interactions.find(
-        (row) => row.type === type
-      )
-      return [
-        type,
-        JSON.parse(
-          JSON.stringify(
-            stored || { ...newKitchenOfferingInteraction(type), enabled: true }
-          )
-        ),
-      ]
-    })
-  )
-)
+}
+const drafts = ref(interactionDrafts())
+function resetDraft() {
+  draftEpoch.value++
+  enabled.value = props.offering
+    ? offeringOptionEnabled(props.offering, props.option)
+    : false
+  savedEnabled.value = enabled.value
+  menuIds.value = [...(props.offering?.menu_ids || [])]
+  hoursText.value = formatWeekdayTimeText(props.offering?.hours)
+  drafts.value = interactionDrafts()
+  activateShared.value = false
+}
 const effectiveTimezone = computed(
   () => props.offering?.hours?.timezone || props.timezone
 )
@@ -322,7 +309,7 @@ async function updateDraft(
   ) as KitchenOrderTypeConfig & { enabled: boolean }
 }
 const surfaceSources = [
-  () => props.active !== false,
+  draftEpoch,
   () => props.kitchenId,
   () => props.option.key,
   targetOfferingId,
@@ -344,8 +331,7 @@ watch(
   { flush: 'sync' }
 )
 async function submit() {
-  if (busy.value || props.active === false || props.disabled || !canSave.value)
-    return
+  if (busy.value || props.disabled || !canSave.value) return
   const local = captureSurface()
   const owner = props.captureIntent?.() || (() => true)
   const isCurrent = () => local() && owner()
@@ -372,6 +358,7 @@ async function submit() {
         enabled: enabled.value,
         activateShared: activateShared.value,
         interactions: props.option.types.map((type) => {
+          if (type === 'collection') return { type, changes: { enabled: true } }
           const { type: _, ...changes } = drafts.value[type]!
           return {
             type,
@@ -384,7 +371,10 @@ async function submit() {
       },
       isCurrent
     )
-    if (isCurrent()) emit('saved')
+    if (isCurrent()) {
+      savedEnabled.value = enabled.value
+      emit('saved')
+    }
     return result
   } catch (cause) {
     if (!isCurrent()) return

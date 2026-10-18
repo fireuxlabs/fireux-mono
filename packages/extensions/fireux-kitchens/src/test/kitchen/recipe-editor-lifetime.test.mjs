@@ -318,51 +318,69 @@ function mountForm(h, recipe = null) {
     }),
     saved = []
   const ingredientRead = {
-    ingredients: vue.ref([]), pending: vue.ref(false), error: vue.ref(null),
+    ingredients: vue.ref([]),
+    pending: vue.ref(false),
+    error: vue.ref(null),
   }
+  const readCounts = { ingredients: 0, prepItems: 0 }
   const deps = {
     ...h.deps,
-    useKitchenIngredients: () => ingredientRead,
-    useKitchenPrepItems: () => ({
-      prepItems: vue.ref([]),
-      error: vue.ref(null),
-    }),
+    useKitchenIngredients: () => {
+      readCounts.ingredients++
+      return ingredientRead
+    },
+    useKitchenPrepItems: () => {
+      readCounts.prepItems++
+      return { prepItems: vue.ref([]), error: vue.ref(null) }
+    },
   }
-  const content = readFileSync(
-    new URL(
-      '../../runtime/kitchen/components/Workspace/Recipes/Form.vue',
-      import.meta.url
-    ),
-    'utf8'
-  ).replace(
-    '</script>',
-    '\ndefineExpose({save,createPrep,name,description,preparation,method,saving,creatingPrep,message,newPrepName,newPrepIngredient,newPrepQuantity,newPrepUnit,newPrepMethod})\n</script>'
-  )
-  const { descriptor } = parse(content),
-    script = compileScript(descriptor, {
-      id: 'recipe-form',
-      inlineTemplate: true,
-    }),
-    exports = {}
-  compileFunction(
-    ts.transpileModule(script.content, {
-      compilerOptions: {
-        module: ts.ModuleKind.CommonJS,
-        target: ts.ScriptTarget.ES2022,
-      },
-    }).outputText,
-    ['require', 'exports']
-  )((id) => {
-    if (id === 'vue') return vue
-    if (
-      id === '#imports' ||
-      /useRecipeScope|useRecipeCreate|useRecipeUpdate|useKitchenPrepItemCreate|useKitchenIngredients|useKitchenPrepItems|recipe-preparation/.test(
-        id
+  const compileComponent = (file) => {
+    const exposed = file.pathname.endsWith('PrepItems/Create.vue')
+      ? 'createPrep,newPrepName,newPrepIngredient,newPrepQuantity,newPrepUnit,newPrepMethod,creatingPrep,message'
+      : file.pathname.endsWith('Form/Index.vue')
+        ? 'save,name,description,preparation,method,saving,creatingPrep,message'
+        : ''
+    let content = readFileSync(file, 'utf8')
+    if (exposed)
+      content = content.replace(
+        '</script>',
+        `\ndefineExpose({${exposed}})\n</script>`
       )
+    const { descriptor } = parse(content)
+    const script = compileScript(descriptor, {
+      id: file.pathname,
+      inlineTemplate: true,
+    })
+    const exports = {}
+    compileFunction(
+      ts.transpileModule(script.content, {
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS,
+          target: ts.ScriptTarget.ES2022,
+        },
+      }).outputText,
+      ['require', 'exports']
+    )((id) => {
+      if (id === 'vue') return vue
+      if (id.endsWith('.vue'))
+        return { default: compileComponent(new URL(id, file)) }
+      if (
+        id === '#imports' ||
+        /useRecipeScope|useRecipeCreate|useRecipeUpdate|useKitchenPrepItemCreate|useKitchenIngredients|useKitchenPrepItems|recipe-preparation/.test(
+          id
+        )
+      )
+        return deps
+      throw new Error(id)
+    }, exports)
+    return exports.default
+  }
+  const Form = compileComponent(
+    new URL(
+      '../../runtime/kitchen/components/Workspace/Recipes/Form/Index.vue',
+      import.meta.url
     )
-      return deps
-    throw new Error(id)
-  }, exports)
+  )
   const renderer = vue.createRenderer({
     createElement: (type) => ({ type, children: [], props: {} }),
     createText: (text) => ({ text }),
@@ -396,8 +414,23 @@ function mountForm(h, recipe = null) {
   })
   const app = renderer.createApp({
     setup: () => () =>
-      vue.h(exports.default, { ...props, onSaved: (id) => saved.push(id) }),
+      vue.h(Form, { ...props, onSaved: (id) => saved.push(id) }),
   })
+  for (const section of ['Identity', 'Ingredients', 'PrepItems', 'Instructions'])
+    app.component(
+      `WorkspaceKitchenRecipesForm${section}`,
+      compileComponent(new URL(
+        `../../runtime/kitchen/components/Workspace/Recipes/Form/${section}.vue`,
+        import.meta.url
+      ))
+    )
+  app.component(
+    'WorkspaceKitchenPrepItemsCreate',
+    compileComponent(new URL(
+      '../../runtime/kitchen/components/Workspace/PrepItems/Create.vue',
+      import.meta.url
+    ))
+  )
   const warnings = []
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of ['UFormField', 'MoleculesStateCard'])
@@ -420,7 +453,18 @@ function mountForm(h, recipe = null) {
     })
   const root = { children: [] }
   app.mount(root)
-  const api = app._instance.subTree.component.exposed
+  const parentApi = app._instance.subTree.component.exposed
+  let prepApi
+  const findPrep = (vnode) => {
+    if (vnode?.component) {
+      if (vnode.component.exposed?.createPrep) prepApi = vnode.component.exposed
+      findPrep(vnode.component.subTree)
+    }
+    if (Array.isArray(vnode?.children)) vnode.children.forEach(findPrep)
+  }
+  findPrep(app._instance.subTree)
+  assert.ok(prepApi, 'the real Prep creator is composed inside the Recipe form')
+  const api = { ...prepApi, ...parentApi }
   const nodes = (type) => {
     const found = []
     const walk = (node) => {
@@ -432,10 +476,12 @@ function mountForm(h, recipe = null) {
   }
   return {
     api,
+    prepApi,
     props,
     saved,
     nodes,
     ingredientRead,
+    readCounts,
     unmount: () => {
       app.unmount()
       assert.deepEqual(warnings, [])
@@ -678,9 +724,16 @@ test('Recipe and Prep commands reject unsettled membership before starting prepa
 })
 
 test('native Recipe editor distinguishes failed and pending ingredient reads from a truly empty Kitchen', async () => {
-  const h = context(), f = mountForm(h)
-  const text = (node) => [node.text || '', ...(node.children || []).map(text)].join('')
-  const hasEmptyHelp = () => f.nodes('p').some(node => text(node).includes('Add ingredients to this kitchen first.'))
+  const h = context(),
+    f = mountForm(h)
+  const text = (node) =>
+    [node.text || '', ...(node.children || []).map(text)].join('')
+  const hasEmptyHelp = () =>
+    f
+      .nodes('p')
+      .some((node) =>
+        text(node).includes('Add ingredients to this kitchen first.')
+      )
   assert.equal(hasEmptyHelp(), true)
   f.ingredientRead.error.value = new Error('Ingredient read failed')
   await vue.nextTick()
@@ -692,5 +745,52 @@ test('native Recipe editor distinguishes failed and pending ingredient reads fro
   f.ingredientRead.pending.value = false
   await vue.nextTick()
   assert.equal(hasEmptyHelp(), true)
-  f.unmount(); h.scope.stop()
+  f.unmount()
+  h.scope.stop()
+})
+
+test('composed Recipe sections write through to the single parent draft', async () => {
+  const h = context(),
+    f = mountForm(h, existing())
+  const name = f
+    .nodes('input')
+    .find((node) => node.props['aria-label'] === 'Recipe name')
+  name.props['onUpdate:modelValue']('Changed through section')
+  const quantity = f
+    .nodes('input')
+    .find((node) => node.props['aria-label'] === 'Yield quantity')
+  quantity.props['onUpdate:modelValue']('3')
+  const method = f
+    .nodes('textarea')
+    .find((node) => node.props['aria-label'] === 'Method')
+  method.props['onUpdate:modelValue']('Mix\nBake')
+  assert.equal(f.api.name.value, 'Changed through section')
+  assert.equal(f.api.preparation.value.yield.quantity, '3')
+  assert.equal(f.api.method.value, 'Mix\nBake')
+  assert.deepEqual(f.readCounts, { ingredients: 1, prepItems: 1 })
+  assert.equal(h.calls.length, 0)
+  f.unmount()
+  h.scope.stop()
+})
+
+test('Prep creation failure belongs to the Prep editor and preserves the Recipe draft', async () => {
+  const h = context(),
+    f = mountForm(h, existing())
+  f.api.name.value = 'Unsaved recipe'
+  await vue.nextTick()
+  f.api.newPrepName.value = 'Sauce'
+  const flight = f.api.createPrep()
+  h.auth.resolve(h.user)
+  h.token.resolve('token')
+  await drain()
+  h.response.reject(new Error('Prep creation failed'))
+  await flight
+  assert.equal(f.prepApi.message.value, 'Prep creation failed')
+  assert.equal(f.api.message.value, '')
+  assert.equal(f.api.name.value, 'Unsaved recipe')
+  assert.deepEqual(f.api.preparation.value.prep_items, [])
+  assert.equal(f.api.creatingPrep.value, false)
+  assert.deepEqual(f.saved, [])
+  f.unmount()
+  h.scope.stop()
 })
