@@ -2142,21 +2142,24 @@ projection; active-route resolution and command authority remain unchanged.
 
 ## Separate collection offerings
 
-Services exposes Add offering for named collection experiences such as Picnic.
-Creation reuses the existing configure command with explicit `createSeparate`;
-it creates one new Kitchen offering and never replaces an existing Collection or
-Delivery record. The form selects Menu IDs and independent collection hours,
-with a button to copy the venue opening hours as an editable snapshot. Creation
-starts off; existing publication and Menu readiness checks still apply before
-availability is enabled. No Dish prices, Promotions or Order records are written.
+Services presents the six Misebox-provided options from `offering-options.ts`.
+Operators enable and configure these options; the overview does not create new
+service types. Each group shows Enabled, Not enabled or Paused, with an explicit
+Enable & set up action when unconfigured and record-specific configuration actions
+for saved setups. Existing named records keep their menus, hours and independent
+customer entrances. There is no generic Add service entrance.
 
 `KitchenOffering.separate` marks a named offering independently of its timing.
-Add offering sets it at creation; ordinary configuration and timing edits preserve
-it. Services retains a named row and exact customer link for either timing.
+The existing configure command sets it for explicit separate creation; ordinary
+configuration and timing edits preserve it. The Workspace overview groups every matching service under Collection or
+Delivery, including separate, off and paused records. Each row owns its name,
+menus, schedule, status and exact Configure target; there is no group-wide toggle
+or detached list of separate services. Customer links remain independent for
+either timing.
 `KitchenOffering.collection_timing` distinguishes `same_day` and `next_day`.
 Next-day means the next local calendar collection day, rather than a rolling
 24-hour delay. The record remains a Collection offering, not a new service type.
-The main Collection and Delivery projections exclude separate offerings; an explicit
+The public main Collection and Delivery projections exclude separate offerings; an explicit
 `menu.collection?offering=<id>` entrance selects that offering alone. Public
 portal discovery keeps its name as a quiet link, including when it reuses a Menu
 also used by main Collection. Named service views show next-day information when applicable and
@@ -2165,3 +2168,21 @@ The Menu service projection remains browse-only; submitted Orders, payment and
 fulfilment execution are outside this change. See `offering-command-internals`,
 `offering-tool-internals`, `menu-service-view`, `menu-other-offerings` and
 `menu-pricing` tests in fireux-kitchens.
+
+Operator-facing setup uses Service throughout creation, editing and availability.
+Offering and interaction/channel remain internal implementation terms, not
+alternative operator labels for the service record.
+
+Services menu selection and readiness share `kitchen/utils/service-menus.ts` across
+Configure, the service editor and trusted save validation. Only regular
+interactive, non-archived menus supply service items; drafts can be selected while
+the service is off, and enabling requires at least one published eligible menu.
+Unavailable existing selections remain labelled so operators can remove them.
+Daily specials and document menus keep their own entrances. No catalogue prices
+or Order records are changed by these checks.
+
+The Services composition publishes `kitchen/utils/service-overview.ts` through
+Core's `useWorkspacePageState` for the header Copy page JSON action. The existing
+development-only DiagnosticsDebugPanel consumes the same safe projection: service
+types, configuration IDs, menus, hours, availability, readiness and read outcomes.
+It excludes notification recipients, credentials, payment details and Order data.

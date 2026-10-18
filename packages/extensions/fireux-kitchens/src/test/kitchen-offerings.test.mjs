@@ -1,4 +1,5 @@
 import {
+  serviceMenuPolicy,
   offeringContract,
   offeringReads,
   offeringTargets,
@@ -84,8 +85,8 @@ const ids = {
 }
 const validation = load(
   '../runtime/kitchen/server/offerings/validation.ts',
-  'readOfferingCreate, readOfferingUpdate, requireConfiguredOffering',
-  { ...ids, requireOperatingHours, ...core }
+  'readOfferingCreate, readOfferingUpdate, requireConfiguredOffering, requireServiceMenus',
+  { ...ids, requireOperatingHours, ...core, ...serviceMenuPolicy }
 )
 const { readInteractionChanges } = load(
   '../runtime/kitchen/server/offerings/interaction-validation.ts',
@@ -273,7 +274,10 @@ function commands({
     create: write,
     read: async (target, id) => {
       reads.push([target, id])
-      return { exists: !missingMenu && id === 'food' }
+      return {
+        exists: !missingMenu && id === 'food',
+        data: { status: 'published', format: 'interactive' },
+      }
     },
     update: write,
   }

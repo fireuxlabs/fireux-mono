@@ -1,30 +1,16 @@
 <template>
   <section class="workspace-surface">
     <p class="text-muted">
-      Choose how customers can get food, then set the eligible menus and serving
-      times.
+      Enable the services you offer, then choose their menus and serving times.
     </p>
-    <UButton
-      label="Add offering"
-      icon="i-lucide-plus"
-      :disabled="!canWrite"
-      @click="createOpen = true"
-    />
-    <UButton
-      to="/workspace/kitchen/settings/integrations"
-      label="Set up ordering"
-      icon="i-lucide-list-checks"
-      color="neutral"
-      variant="outline"
-    />
     <MoleculesStateCard
       v-if="outcome === 'pending' || outcome === 'idle'"
-      entity="Kitchen offerings"
+      entity="Kitchen services"
       loading
     />
     <MoleculesStateCard
       v-else-if="outcome === 'error'"
-      entity="Kitchen offerings"
+      entity="Kitchen services"
       state="error"
     />
     <template v-else-if="selectedKitchen">
@@ -50,62 +36,49 @@
                   {{ entry.option.label }}
                 </h2>
               </div>
-              <USwitch
-                v-if="entry.offerings.length < 2 || !entry.enabled"
-                :model-value="entry.enabled"
-                :aria-label="entry.option.label + ' availability'"
-                :disabled="!canWrite"
-                @update:model-value="(value) => openSetup(entry.option, value)"
-              />
               <UBadge
-                v-else
-                :color="entry.enabled ? 'success' : 'neutral'"
+                :color="entry.status === 'Enabled' ? 'success' : 'neutral'"
                 variant="subtle"
-                >{{ entry.enabled ? 'On' : 'Off' }}</UBadge
+                >{{ entry.status }}</UBadge
               >
             </div>
             <p class="mt-3 text-sm text-muted">
               {{ entry.option.description }}
             </p>
-            <template v-if="entry.enabled">
-              <p
-                v-if="entry.offerings.length > 1"
-                class="mt-4 text-sm font-medium"
-              >
-                {{
-                  entry.offerings.filter((row) =>
-                    offeringOptionEnabled(row, entry.option)
-                  ).length
-                }}
-                serving schedules
-              </p>
-              <div
-                v-for="offering in entry.offerings.filter((row) =>
-                  offeringOptionEnabled(row, entry.option)
-                )"
+            <div
+              v-if="entry.offerings.length"
+              class="mt-3 divide-y divide-default"
+            >
+              <WorkspaceKitchenOfferingsRow
+                v-for="offering in entry.offerings"
                 :key="offering.id"
-                class="mt-3 border-t border-default pt-3 text-sm"
-              >
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-muted">{{ menuNames(offering) }}</span>
-                </div>
-                <p class="mt-1 whitespace-pre-line text-muted">
-                  {{
-                    formatWeekdayTimeText(offering.hours) ||
-                    'Serving hours needed'
-                  }}
-                </p>
-              </div>
-              <UButton
-                label="Configure"
-                color="neutral"
-                variant="soft"
-                trailing-icon="i-lucide-arrow-right"
-                class="mt-5"
+                :offering="offering"
+                :option="entry.option"
+                :menus-label="menuNames(offering)"
                 :disabled="!canWrite"
-                @click="openSetup(entry.option)"
+                @configure="
+                  openSetup(
+                    entry.option,
+                    offeringOptionEnabled(offering, entry.option)
+                      ? undefined
+                      : true,
+                    offering.id
+                  )
+                "
               />
-            </template>
+            </div>
+            <UButton
+              v-else
+              label="Enable & set up"
+              :aria-label="
+                'Enable and set up ' + entry.option.label.toLowerCase()
+              "
+              color="neutral"
+              variant="soft"
+              class="mt-4"
+              :disabled="!canWrite"
+              @click="openSetup(entry.option)"
+            />
             <WorkspaceKitchenOrdersDelivery
               v-if="entry.option.key === 'delivery'"
               class="mt-5"
@@ -115,78 +88,18 @@
       </section>
     </template>
     <UAlert v-else title="Choose a Kitchen to configure services" />
-    <section
-      v-if="separateOfferings.length"
-      class="divide-y divide-default"
-      aria-label="Named offerings"
-    >
-      <NuxtLink
-        v-for="offering in separateOfferings"
-        :key="offering.id"
-        :to="`/workspace/kitchen/services/${offering.id}`"
-        class="flex items-center justify-between gap-3 py-4"
-      >
-        <span
-          ><span class="font-medium">{{ offering.name }}</span
-          ><span class="ml-2 text-sm text-muted"
-            >{{
-              offering.collection_timing === 'next_day'
-                ? 'Next-day collection'
-                : 'Same-day collection'
-            }}
-            · {{ offering.enabled ? 'On' : 'Off' }}</span
-          ></span
-        >
-        <UIcon name="i-lucide-chevron-right" />
-      </NuxtLink>
-    </section>
-    <UModal
-      v-model:open="createOpen"
-      title="Add offering"
-      description="Create a separate collection offering with its own menus and hours."
-    >
-      <template #body
-        ><WorkspaceKitchenOfferingsCreate
-          v-if="createOpen"
-          :kitchen-id="kitchenId"
-          :active="createOpen"
-          :disabled="!canWrite"
-          :menus="menus"
-          :menus-outcome="menusOutcome"
-          :timezone="timezone"
-          :venue-hours="venueHours"
-          :capture-intent="captureIntent"
-          :save="configure"
-          @created="openCreated"
-      /></template>
-    </UModal>
     <UModal
       v-model:open="setupOpen"
-      :title="selectedOption?.label || 'Offering'"
+      :title="selectedOffering?.name || selectedOption?.label || 'Service'"
       :description="
         selectedOption?.types.some((type) => type === 'dine_in')
-          ? 'Configure this offering below. Table-count changes are saved separately and shared by Table service and QR table ordering.'
+          ? 'Configure this service below. Table-count changes are saved separately and shared by Table service and QR table ordering.'
           : 'Choose menus, serving hours and ordering settings. Changes apply together when you save.'
       "
       :ui="{ content: 'sm:max-w-4xl' }"
     >
       <template #body>
         <template v-if="selectedOption">
-          <UFormField
-            v-if="optionOfferings.length > 1"
-            label="Serving schedule"
-            class="mb-5"
-            ><USelect
-              v-model="selectedOfferingId"
-              @update:model-value="requestedEnabled = undefined"
-              :items="
-                optionOfferings.map((offering) => ({
-                  value: offering.id,
-                  label: offering.name,
-                }))
-              "
-              class="w-full"
-          /></UFormField>
           <MoleculesDisclosurePanel
             v-if="selectedOption.types.some((type) => type === 'dine_in')"
             title="Tables"
@@ -216,11 +129,22 @@
         </template>
       </template>
     </UModal>
+    <DiagnosticsDebugPanel
+      title="Kitchen Services"
+      scope="workspace"
+      object-origin="passed"
+      :objects="{ services: snapshot.services }"
+      :derived="snapshot.derived"
+      include-route
+      launcher
+    />
   </section>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { navigateTo } from '#imports'
+import { computed, ref, watch, watchEffect, onScopeDispose } from 'vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { serviceOverviewSnapshot } from '../../../utils/service-overview'
+import { serviceOptionStatus } from '../../../utils/offering-options'
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'
 import {
   kitchenOfferingOptions,
@@ -228,7 +152,6 @@ import {
   offeringOptionEnabled,
   type KitchenOfferingOption,
 } from '../../../utils/offering-options'
-import { formatWeekdayTimeText } from '../../../../utils/weekday-time'
 import type { KitchenOffering } from '../../../models/offering.model'
 const {
   selectedKitchen,
@@ -241,26 +164,34 @@ const {
   menus,
   menusOutcome,
   timezone,
-  venueHours,
   configure,
 } = useKitchenOfferings()
 const entries = computed(() =>
-  kitchenOfferingOptions.map((option) => ({
-    option,
-    offerings: offeringsForOption(offerings.value, option),
-    enabled: offeringsForOption(offerings.value, option).some((offering) =>
-      offeringOptionEnabled(offering, option)
-    ),
-  }))
+  kitchenOfferingOptions.map((option) => {
+    const matching = offeringsForOption(offerings.value, option)
+    return {
+      option,
+      offerings: matching,
+      enabled: matching.some((row) => offeringOptionEnabled(row, option)),
+      status: serviceOptionStatus(matching, option),
+    }
+  })
 )
-const createOpen = ref(false)
-const separateOfferings = computed(() =>
-  offerings.value.filter((offering) => offering.separate)
+const page = useWorkspacePageState('kitchen')
+const snapshot = computed(() =>
+  serviceOverviewSnapshot({
+    kitchenId: kitchenId.value,
+    outcome: outcome.value,
+    menusOutcome: menusOutcome.value,
+    canWrite: canWrite.value,
+    offerings: offerings.value,
+    menus: menus.value,
+  })
 )
-function openCreated(id: string) {
-  createOpen.value = false
-  void navigateTo(`/workspace/kitchen/services/${encodeURIComponent(id)}`)
-}
+watchEffect(() => page.publish(snapshot.value))
+onScopeDispose(() =>
+  page.publish({ derived: { outcome: 'idle' }, services: [] })
+)
 const setupOpen = ref(false)
 const selectedOption = ref<KitchenOfferingOption>()
 const selectedOfferingId = ref('')
@@ -275,10 +206,16 @@ const selectedOffering = computed(() =>
     (offering) => offering.id === selectedOfferingId.value
   )
 )
-function openSetup(option: KitchenOfferingOption, enabled?: boolean) {
+function openSetup(
+  option: KitchenOfferingOption,
+  enabled?: boolean,
+  offeringId?: string
+) {
   selectedOption.value = option
   const matching = offeringsForOption(offerings.value, option)
+  if (offeringId && !matching.some((row) => row.id === offeringId)) return
   selectedOfferingId.value =
+    offeringId ||
     matching.find((offering) => offeringOptionEnabled(offering, option))?.id ||
     matching[0]?.id ||
     ''
@@ -288,7 +225,6 @@ function openSetup(option: KitchenOfferingOption, enabled?: boolean) {
 watch(
   ownerScope,
   () => {
-    createOpen.value = false
     setupOpen.value = false
     selectedOfferingId.value = ''
     selectedOption.value = undefined

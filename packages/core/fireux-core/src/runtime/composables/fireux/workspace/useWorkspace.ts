@@ -15,6 +15,8 @@ export function useWorkspace(workspace: string) {
   const cookie = useCookie<string>(key, {
     default: () => '',
     sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365,
   })
   const activeId = useState<string>(key, () => normalizeString(cookie.value))
   const select = (id: string) => {

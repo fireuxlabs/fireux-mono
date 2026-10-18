@@ -142,7 +142,7 @@ export function useKitchenOfferings(
     }
     const token = await actor?.getIdToken()
     assertCurrent()
-    if (!token) throw new Error('Sign in to configure offerings.')
+    if (!token) throw new Error('Sign in to configure services.')
     const result = await $fetch<{
       ok: true
       kitchen_id: string
@@ -163,7 +163,7 @@ export function useKitchenOfferings(
       (payload.offeringId !== undefined && id !== payload.offeringId)
     )
       throw new Error(
-        'Offering response did not match the requested Kitchen and Offering.'
+        'The service response did not match the selected Kitchen and service.'
       )
     return result
   }

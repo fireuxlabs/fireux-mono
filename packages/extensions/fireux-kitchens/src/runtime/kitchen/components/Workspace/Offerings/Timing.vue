@@ -6,10 +6,10 @@
       <h2>Scheduling</h2>
       <p v-if="isPreOrder" class="timing-explanation">
         Guests can send requests outside serving hours. Advance notice and the
-        offering’s serving hours determine the available dining times.
+        service’s serving hours determine the available dining times.
       </p>
       <p v-else class="timing-explanation">
-        Preparation time and scheduling use this offering’s serving hours.
+        Preparation time and scheduling use this service’s serving hours.
       </p>
     </template>
 

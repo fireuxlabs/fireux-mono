@@ -1,3 +1,4 @@
+import { isServiceMenu } from '../../utils/service-menus'
 import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type {
@@ -123,4 +124,17 @@ export function requireConfiguredOffering(offering: KitchenOffering) {
     !offering.hours?.windows.length
   )
     fail('Set offering hours before enabling ordering.')
+}
+
+/** Validate the same menu contract used by every Services selector. */
+export function requireServiceMenus(
+  menus: Array<Parameters<typeof isServiceMenu>[0]>,
+  enabled: boolean
+) {
+  if (!menus.length || menus.some((menu) => !isServiceMenu(menu)))
+    fail(
+      'Choose regular interactive menus. Daily specials, documents and archived menus cannot supply this service.'
+    )
+  if (enabled && !menus.some((menu) => menu.status === 'published'))
+    fail('Publish at least one selected menu before enabling the service.')
 }

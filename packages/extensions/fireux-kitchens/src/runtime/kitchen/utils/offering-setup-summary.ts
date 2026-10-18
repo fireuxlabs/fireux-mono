@@ -1,3 +1,4 @@
+import { isServiceMenu, serviceMenuReadiness } from './service-menus'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import type { Menu } from '../../menu/models/menu.model'
 import type { KitchenOffering } from '../models/offering.model'
@@ -14,7 +15,11 @@ export function offeringSetupSummary(
     ? menus.filter((menu) => offering.menu_ids.includes(menu.id))
     : []
   const orderMenus = selectedMenus.filter(
-    (menu) => menu.status === 'published' && !menu.doc?.url?.trim()
+    (menu) => isServiceMenu(menu) && menu.status === 'published'
+  )
+  const readiness = serviceMenuReadiness(
+    offering.menu_ids,
+    menusReady ? menus : []
   )
   const ordering = offering.interactions.filter(
     (interaction) =>
@@ -31,7 +36,7 @@ export function offeringSetupSummary(
         menusOutcome === 'error'
           ? 'Menu check unavailable'
           : 'Published menu for ordering',
-      done: menusReady && orderMenus.length > 0,
+      done: menusReady && readiness.canEnable,
       pending: menusPending,
       href: '#offering-menus',
     },
@@ -68,7 +73,8 @@ export function offeringSetupSummary(
     paused,
     // Only represent what the offering command itself requires; this is not a checkout gate.
     canEnable:
-      offering.menu_ids.length > 0 &&
+      menusReady &&
+      readiness.canEnable &&
       (!offering.interactions.some(
         (interaction) => interaction.type !== 'browse' && interaction.enabled
       ) ||

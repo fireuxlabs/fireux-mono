@@ -18,8 +18,8 @@ map, not a new storage model. Current source and tests establish behaviour.
 | Dish | Food or drink with normal prices, variants, options and extras. |
 | Menu | Organises dishes and meal deals into sections, or presents an uploaded document. |
 | Promotion | Dish offer or meal deal supplying promotional prices. |
-| Offering | Configured group of eligible menus, serving times and permitted interactions. Operator setup term. |
-| Serving times | When an offering is available, in the venue's local time. |
+| Service | A Misebox-provided way to serve customers, enabled and configured by the operator. |
+| Serving times | When a service is available, in the venue's local time. |
 | Browse | Explore menus without selecting how to receive food. |
 | Surface | Screen presenting existing food and service choices; not a second stored Menu. |
 
@@ -77,13 +77,13 @@ or available at every venue. Refresh this map when service vocabulary changes.
 Workspace entry: `/workspace/kitchen/services`, separate from Orders.
 The Services overview and individual setup reuse the existing records and commands.
 
-Services names the Workspace setup surface. Offering remains the backing Kitchen
-record connecting menus, serving times and interactions; it is not a second
-customer label for Collection or Delivery. Recipes and Ingredients belong to
-Prep & Production; Menus and Services belong to customer-facing menu setup.
+Services names the Workspace setup surface. `Offering` remains an internal record
+name. Operators use Service consistently; “offering” and “channel” are not
+alternative names for that setup. Recipes and Ingredients belong to Prep &
+Production; Menus and Services belong to customer-facing menu setup.
 
 
-A named offering such as **Picnic** can use Collection with next-day timing and
+A named setup such as **Picnic** can use the Collection service with next-day timing and
 its own menus and collection hours. It appears through its named entrance;
 creating it does not edit the main Collection or Delivery setup. Its separate
 identity, Services row and customer link remain when its collection timing changes. “From tomorrow”

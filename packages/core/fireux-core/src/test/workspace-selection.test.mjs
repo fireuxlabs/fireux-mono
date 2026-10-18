@@ -32,6 +32,7 @@ function load(relativePath, name, dependencies) {
 function createWorkspace() {
   const cookies = new Map()
   const states = new Map()
+  const cookieOptions = new Map()
   let appId = 'proving-app'
   const getRef = (map, key, init) => {
     if (!map.has(key)) map.set(key, ref(init()))
@@ -42,7 +43,10 @@ function createWorkspace() {
     'useWorkspace',
     {
       computed,
-      useCookie: (key, options) => getRef(cookies, key, options.default),
+      useCookie: (key, options) => {
+        cookieOptions.set(key, options)
+        return getRef(cookies, key, options.default)
+      },
       useState: (key, init) => getRef(states, key, init),
       useFireUXConfig: () => ({ appId }),
       normalizeString: (value) => String(value ?? '').trim(),
@@ -51,6 +55,7 @@ function createWorkspace() {
   return {
     useWorkspace,
     cookies,
+    cookieOptions,
     states,
     changeApp: (value) => {
       appId = value
@@ -446,4 +451,25 @@ test('compact and open string forms keep failed drafts and submit the same trimm
   assert.equal(form.value.value, '')
   assert.deepEqual(events, ['saved'])
   owner.stop()
+})
+
+test('last selected Kitchen uses a persistent root-path cookie and survives a fresh runtime', () => {
+  const harness = createWorkspace()
+  const workspace = harness.useWorkspace('kitchen')
+  workspace.select('baeren')
+  const options = harness.cookieOptions.get(
+    'fireux-workspace-proving-app-kitchen'
+  )
+  assert.equal(options.path, '/')
+  assert.equal(options.maxAge, 60 * 60 * 24 * 365)
+  harness.states.clear()
+  const restored = harness.useWorkspace('kitchen')
+  for (const outcome of ['idle', 'pending', 'error', 'missing']) {
+    restored.reconcile(['la-tap'], outcome)
+    assert.equal(restored.selectedId.value, 'baeren')
+  }
+  restored.reconcile(['la-tap', 'baeren'], 'ready')
+  assert.equal(restored.selectedId.value, 'baeren')
+  restored.reconcile(['la-tap'], 'ready')
+  assert.equal(restored.selectedId.value, 'la-tap')
 })

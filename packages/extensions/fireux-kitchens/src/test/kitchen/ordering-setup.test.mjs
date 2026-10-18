@@ -1,3 +1,4 @@
+import { serviceMenuPolicy } from '../offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -22,8 +23,8 @@ function load(path, deps, names, sfc = false) {
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)}; return {${names}}`,
-    Object.keys(deps)
-  )(...Object.values(deps))
+    Object.keys({ ...serviceMenuPolicy, ...deps })
+  )(...Object.values({ ...serviceMenuPolicy, ...deps }))
 }
 const deferred = () => {
   let resolve
@@ -270,7 +271,14 @@ test('existing Offering form cancellation writes nothing and an unmounted save c
               hours: { timezone: 'Europe/Zurich' },
               interactions: [{ type: 'collection', enabled: true }],
             },
-            menus: [{ id: 'm', name: 'Food', status: 'published' }],
+            menus: [
+              {
+                id: 'm',
+                name: 'Food',
+                status: 'published',
+                format: 'interactive',
+              },
+            ],
             menusOutcome: 'ready',
             timezone: 'Europe/Zurich',
             save: (input) => {
@@ -353,6 +361,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
         toValue,
         useKitchenAccess: () => ({
           ids,
+          outcome: ref('ready'),
           pending: ref(false),
           error: ref(null),
         }),

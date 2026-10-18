@@ -1,4 +1,5 @@
 import {
+  serviceMenuPolicy,
   offeringContract,
   offeringReads,
   offeringTargets,
@@ -39,8 +40,8 @@ const hoursValidation = load(
 )
 const base = load(
   'kitchen/server/offerings/validation',
-  'readOfferingUpdate, requireConfiguredOffering, fail',
-  { ...errors, ...hoursValidation, ...core }
+  'readOfferingUpdate, requireConfiguredOffering, requireServiceMenus, fail',
+  { ...errors, ...hoursValidation, ...core, ...serviceMenuPolicy }
 )
 const interactions = load(
   'kitchen/server/offerings/interaction-validation',
@@ -69,7 +70,7 @@ const tableChannels = load(
 )
 const options = load(
   'kitchen/utils/offering-options',
-  'kitchenOfferingOptions, offeringsForOption, offeringOptionEnabled',
+  'kitchenOfferingOptions, offeringsForOption, offeringOptionEnabled, offeringOptionStatus',
   tableChannels
 )
 const hours = {
@@ -91,7 +92,7 @@ const input = (changes = {}) => ({
 })
 function harness({
   services = [],
-  menu = { status: 'published' },
+  menu = { status: 'published', format: 'interactive' },
   authorized = true,
 } = {}) {
   const writes = [],
@@ -224,7 +225,7 @@ test('invalid setup, unpublished-only menus, missing menus and denied authority 
   for (const [settings, body] of [
     [{}, input({ menu_ids: [] })],
     [{}, input({ hours: { ...hours, windows: [] } })],
-    [{ menu: { status: 'draft' } }, input()],
+    [{ menu: { status: 'draft', format: 'interactive' } }, input()],
     [
       {
         menu: {
@@ -500,7 +501,7 @@ test('legacy table channels preserve availability; switching on an off offering 
   }
 })
 
-test('separate offerings never join main service setup when collection timing changes', () => {
+test('overview groups separate services by interaction regardless of collection timing', () => {
   const picnic = {
     id: 'picnic',
     separate: true,
@@ -513,6 +514,29 @@ test('separate offerings never join main service setup when collection timing ch
   for (const timing of ['next_day', 'same_day', 'next_day']) {
     picnic.collection_timing = timing
     for (const option of options.kitchenOfferingOptions)
-      assert.deepEqual(options.offeringsForOption([picnic], option), [])
+      assert.deepEqual(
+        options.offeringsForOption([picnic], option),
+        ['collection', 'delivery'].includes(option.key) ? [picnic] : []
+      )
   }
+})
+
+test('each overview row distinguishes On, Off and Paused without hiding disabled records', () => {
+  const option = options.kitchenOfferingOptions[0]
+  const service = {
+    id: 'concept',
+    enabled: true,
+    separate: true,
+    interactions: [
+      { type: 'collection', enabled: true, availability: { paused: true } },
+    ],
+  }
+  assert.equal(options.offeringOptionStatus(service, option), 'Paused')
+  assert.equal(options.offeringsForOption([service], option).length, 1)
+  service.enabled = false
+  assert.equal(options.offeringOptionStatus(service, option), 'Off')
+  assert.equal(options.offeringsForOption([service], option).length, 1)
+  service.enabled = true
+  service.interactions[0].availability.paused = false
+  assert.equal(options.offeringOptionStatus(service, option), 'On')
 })

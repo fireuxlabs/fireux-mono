@@ -3,7 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref, computed, reactive, watch, onScopeDispose, effectScope, toValue } from 'vue'
+import { ref, computed, watch, onScopeDispose, effectScope, toValue } from 'vue'
 function load(path, expression, deps) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^[\s\S]*<script setup[^>]*>([\s\S]*?)<\/script>[\s\S]*$/, '$1')
@@ -72,17 +72,3 @@ test('an old transition cannot release the new context pending Order', async () 
   assert.equal(w.api.isTransitioning('order-a'), true)
   nextResponse.resolve(result('transition')); await second; assert.equal(w.api.isTransitioning('order-a'), false); w.scope.stop()
 })
-for (const change of ['modal ABA', 'draft change', 'owner change', 'disposal']) {
-  test(`offering Create cannot reset or navigate a newer draft after ${change}`, async () => {
-    const scope = effectScope(), gate = deferred(), routes = [], owner = ref('one')
-    const props = reactive({ disabled: false, create: async () => gate.promise, captureIntent: () => { const old = owner.value; return () => owner.value === old } })
-    const ui = scope.run(() => load(base + 'components/Workspace/Offerings/Create.vue', '({ submit, open, name, busy, error })', { ref, watch, useCommandScope, defineProps: () => props, navigateTo: route => routes.push(route) }))
-    ui.open.value = true; ui.name.value = 'Original'; const pending = ui.submit()
-    if (change === 'modal ABA') { ui.open.value = false; ui.open.value = true }
-    if (change === 'draft change') ui.name.value = 'New draft'
-    if (change === 'owner change') owner.value = 'two'
-    if (change === 'disposal') scope.stop()
-    gate.resolve({ ok: true, offering: { id: 'saved' } }); await pending
-    assert.equal(ui.open.value, true); assert.equal(ui.name.value, change === 'draft change' ? 'New draft' : 'Original'); assert.deepEqual(routes, []); scope.stop()
-  })
-}

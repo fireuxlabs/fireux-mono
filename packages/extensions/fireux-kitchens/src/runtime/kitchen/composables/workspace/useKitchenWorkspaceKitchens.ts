@@ -26,7 +26,7 @@ export function useKitchenWorkspaceKitchens(
     () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
   const kitchenIds = computed(() =>
-    enabled.value
+    enabled.value && access.outcome.value === 'ready'
       ? access.ids.value.map((id) => String(id || '').trim()).filter(Boolean)
       : []
   )
@@ -49,7 +49,7 @@ export function useKitchenWorkspaceKitchens(
       new Map((placeSource.docs.value ?? []).map((place) => [place.id, place]))
   )
   const kitchens = computed<KitchenSurface[]>(() =>
-    (pending.value || error.value
+    (access.outcome.value !== 'ready' || pending.value || error.value
       ? []
       : (kitchenSource.docs.value ?? [])
     ).flatMap((kitchen) => {
@@ -66,8 +66,11 @@ export function useKitchenWorkspaceKitchens(
   const pending = computed(
     () =>
       access.pending.value ||
-      kitchenSource.outcome.value === 'pending' ||
-      (placeIds.value.length > 0 && placeSource.outcome.value === 'pending')
+      access.outcome.value === 'pending' ||
+      (kitchenIds.value.length > 0 &&
+        ['idle', 'pending'].includes(kitchenSource.outcome.value)) ||
+      (placeIds.value.length > 0 &&
+        ['idle', 'pending'].includes(placeSource.outcome.value))
   )
   const error = computed(
     () =>
@@ -83,6 +86,8 @@ export function useKitchenWorkspaceKitchens(
       if (!enabled.value) return 'idle'
       if (error.value) return 'error'
       if (pending.value) return 'pending'
+      if (access.outcome.value !== 'ready' && access.outcome.value !== 'empty')
+        return access.outcome.value
       return kitchens.value.length
         ? 'ready'
         : kitchenIds.value.length

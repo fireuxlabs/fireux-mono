@@ -150,7 +150,9 @@ renamed alias is not proof.
   relationship alone permits no active Entity. Project, Kitchen, Supplier, Portfolio and Property consume this
   rule and the persistent selected-Entity navigation control. Their private
   current-Entity projections read only an exact settled membership-granted ID;
-  a saved selection alone does not authorize a root read. Blank demonstrates
+  a saved selection alone does not authorize a root read. Selection persists for
+  one year in an App/family cookie on the current host; it remembers the last
+  selection, not an account-wide primary Entity. Blank demonstrates
   the selection rule without adding another domain navigation owner. Source-owned
   tests protect selection and page-state disposal; live browser verification is separate. See `docs/concepts/family-workspace-entity.md`.
 - Optional cross-ecosystem account connections retain each owning Auth UID and

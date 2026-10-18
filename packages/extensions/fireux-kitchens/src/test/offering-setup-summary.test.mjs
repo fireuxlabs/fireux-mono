@@ -1,3 +1,4 @@
+import { serviceMenuPolicy } from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -5,15 +6,25 @@ import test from 'node:test'
 import { compileFunction } from 'node:vm'
 
 const source = readFileSync(
-  new URL('../runtime/kitchen/utils/offering-setup-summary.ts', import.meta.url),
+  new URL(
+    '../runtime/kitchen/utils/offering-setup-summary.ts',
+    import.meta.url
+  ),
   'utf8'
 )
-  .replace(/^import type .*\n/gm, '')
+  .replace(/^import.*\n/gm, '')
   .replace(/^export /gm, '')
 const { offeringSetupSummary } = compileFunction(
-  `${stripTypeScriptTypes(source)}; return { offeringSetupSummary }`
-)()
-const menu = { id: 'food-id', slug: 'food', name: 'Food', status: 'published' }
+  `${stripTypeScriptTypes(source)}; return { offeringSetupSummary }`,
+  Object.keys(serviceMenuPolicy)
+)(...Object.values(serviceMenuPolicy))
+const menu = {
+  id: 'food-id',
+  slug: 'food',
+  name: 'Food',
+  status: 'published',
+  format: 'interactive',
+}
 const service = {
   id: 'all-day',
   name: 'All day',

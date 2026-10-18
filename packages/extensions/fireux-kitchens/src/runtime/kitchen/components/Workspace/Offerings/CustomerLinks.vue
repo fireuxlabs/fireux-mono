@@ -18,7 +18,7 @@
       state="error"
     />
     <p v-else-if="!offering.enabled" class="text-sm text-muted">
-      Enable this offering when you are ready to check its customer links.
+      Enable this service when you are ready to check its customer links.
     </p>
     <UButton
       v-else-if="separateCustomerUrl"

@@ -5,6 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import {
   loadOfferingSource as load,
+  serviceMenuPolicy,
   offeringContract,
   offeringReads,
   offeringTargets,
@@ -52,8 +53,8 @@ const hoursValidation = load(
 )
 const validation = load(
   'kitchen/server/offerings/validation',
-  'readOfferingCreate, readOfferingUpdate, requireConfiguredOffering, fail',
-  { ...errors, ...hoursValidation, ...timeCore }
+  'readOfferingCreate, readOfferingUpdate, requireConfiguredOffering, requireServiceMenus, fail',
+  { ...errors, ...hoursValidation, ...timeCore, ...serviceMenuPolicy }
 )
 const interactionInput = load(
   'kitchen/server/offerings/interaction-validation',
@@ -184,7 +185,7 @@ function harness({ wait, retry, offerings = [saved()] } = {}) {
       'kitchen_access/u',
       { apps: { app: { ids: ['k'], membership_created_at: at } } },
     ],
-    ['kitchens/k/menus/food', { status: 'published' }],
+    ['kitchens/k/menus/food', { status: 'published', format: 'interactive' }],
     ...offerings.map((row) => [
       'kitchens/k/offerings/' + row.id,
       offeringContract.kitchenOfferingData(structuredClone(row)),
@@ -887,4 +888,102 @@ test('separate same-day creation is marked and does not prevent normal Collectio
   assert.equal(separate.offering.collection_timing, 'same_day')
   for (const [path, data] of before)
     assert.deepEqual(h.records.get(path), data, path)
+})
+
+test('every service save rejects Daily specials, documents and archived menu selections without writing', async () => {
+  for (const data of [
+    { status: 'published', format: 'interactive', schedule: 'daily' },
+    { status: 'published', format: 'document' },
+    { status: 'archived', format: 'interactive' },
+  ]) {
+    for (const action of [
+      'configure-off',
+      'configure-on',
+      'edit',
+      'enable',
+      'interaction',
+    ]) {
+      const h = harness({
+        offerings: [saved({ enabled: action === 'interaction' })],
+      })
+      h.records.set('kitchens/k/menus/food', data)
+      const before = structuredClone([...h.records])
+      await assert.rejects(
+        () =>
+          action.startsWith('configure')
+            ? h.configureKitchenOffering(
+                {},
+                {
+                  ...configure(),
+                  offeringId: 'saved',
+                  enabled: action === 'configure-on',
+                }
+              )
+            : action === 'interaction'
+              ? h.updateKitchenOfferingInteraction(
+                  {},
+                  {
+                    kitchenId: 'k',
+                    offeringId: 'saved',
+                    type: 'collection',
+                    changes: { enabled: true },
+                  }
+                )
+              : h.updateKitchenOffering(
+                  {},
+                  {
+                    kitchenId: 'k',
+                    offeringId: 'saved',
+                    changes:
+                      action === 'enable'
+                        ? { enabled: true }
+                        : { menu_ids: ['food'] },
+                  }
+                ),
+        /regular interactive menus/
+      )
+      assert.deepEqual(h.writes, [], action)
+      assert.deepEqual([...h.records], before, action)
+    }
+  }
+})
+
+test('service drafts save while off but cannot be enabled through either editor command', async () => {
+  const h = harness()
+  h.records.set('kitchens/k/menus/food', {
+    status: 'draft',
+    format: 'interactive',
+  })
+  await h.configureKitchenOffering(
+    {},
+    { ...configure(), offeringId: 'saved', enabled: false }
+  )
+  await h.updateKitchenOffering(
+    {},
+    { kitchenId: 'k', offeringId: 'saved', changes: { menu_ids: ['food'] } }
+  )
+  const count = h.writes.length
+  for (const action of ['configure', 'enable'])
+    await assert.rejects(
+      () =>
+        action === 'configure'
+          ? h.configureKitchenOffering(
+              {},
+              { ...configure(), offeringId: 'saved' }
+            )
+          : h.updateKitchenOffering(
+              {},
+              {
+                kitchenId: 'k',
+                offeringId: 'saved',
+                changes: { enabled: true },
+              }
+            ),
+      /Publish at least one/
+    )
+  assert.equal(h.writes.length, count)
+  await h.updateKitchenOffering(
+    {},
+    { kitchenId: 'k', offeringId: 'saved', changes: { enabled: false } }
+  )
 })

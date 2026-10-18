@@ -23,11 +23,11 @@
         Add serving hours above before enabling {{ label.toLowerCase() }}.
       </p>
       <p v-if="!offering.enabled" class="mt-3 text-sm text-muted">
-        {{ offering.name }} is off. These settings take effect when the offering
+        {{ offering.name }} is off. These settings take effect when the service
         is enabled.
       </p>
       <p v-if="config.type === 'browse'" class="mt-3 text-sm text-muted">
-        Guests can view the published Menus linked to this offering. Public Menu
+        Guests can view the published Menus linked to this service. Public Menu
         pages remain available independently.
       </p>
       <p v-if="diagnostic" class="mt-3 text-sm text-muted">
@@ -50,7 +50,7 @@
         "
         :disabled="disabled"
         :interaction-label="label"
-        :time-label="config.type === 'pre_order' ? 'Dining' : 'Offering'"
+        :time-label="config.type === 'pre_order' ? 'Dining' : 'Collection'"
         customer-message-placeholder="Optional customer message"
         :update-function="update"
         :capture-intent="captureIntent"

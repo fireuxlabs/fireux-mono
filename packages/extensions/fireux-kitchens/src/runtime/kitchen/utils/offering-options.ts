@@ -60,12 +60,10 @@ export function offeringsForOption(
   offerings: KitchenOffering[],
   option: KitchenOfferingOption
 ) {
-  return offerings.filter(
-    (offering) =>
-      !offering.separate &&
-      offering.interactions.some((interaction) =>
-        (option.types as readonly string[]).includes(interaction.type)
-      )
+  return offerings.filter((offering) =>
+    offering.interactions.some((interaction) =>
+      (option.types as readonly string[]).includes(interaction.type)
+    )
   )
 }
 export function offeringOptionEnabled(
@@ -83,4 +81,33 @@ export function offeringOptionEnabled(
           tableChannelEnabled(interaction, tableServiceChannel(option.key)!))
     )
   )
+}
+
+/** Status of this service within one overview group; never a group-wide switch. */
+export function offeringOptionStatus(
+  offering: KitchenOffering,
+  option: KitchenOfferingOption
+) {
+  if (!offeringOptionEnabled(offering, option)) return 'Off'
+  const active = offering.interactions.filter(
+    (row) =>
+      (option.types as readonly string[]).includes(row.type) && row.enabled
+  )
+  return active.length &&
+    active.every((row) => row.type !== 'browse' && row.availability?.paused)
+    ? 'Paused'
+    : 'On'
+}
+
+/** Misebox supplies the fixed service types; saved records configure each one. */
+export function serviceOptionStatus(
+  offerings: KitchenOffering[],
+  option: KitchenOfferingOption
+) {
+  const statuses = offerings.map((row) => offeringOptionStatus(row, option))
+  return statuses.includes('On')
+    ? 'Enabled'
+    : statuses.includes('Paused')
+      ? 'Paused'
+      : 'Not enabled'
 }

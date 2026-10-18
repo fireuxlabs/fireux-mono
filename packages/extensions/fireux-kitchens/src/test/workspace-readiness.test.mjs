@@ -214,6 +214,7 @@ test('Team read exposes management availability only after authority succeeds an
 test('Kitchen collection surfaces a failure while another prerequisite is loading', () => {
   const access = {
     ids: ref(['k']),
+    outcome: ref('pending'),
     pending: ref(true),
     error: ref(new Error('Access failed')),
   }
@@ -234,4 +235,98 @@ test('Kitchen collection surfaces a failure while another prerequisite is loadin
   assert.deepEqual(state.kitchens.value, [])
   access.error.value = null
   assert.equal(state.outcome.value, 'pending')
+})
+
+test('Kitchen selection survives unresolved access and child reads before a settled fallback', async () => {
+  const access = {
+    ids: ref([]),
+    outcome: ref('idle'),
+    pending: ref(false),
+    error: ref(null),
+  }
+  const kitchens = { docs: ref([]), outcome: ref('idle'), error: ref(null) }
+  const places = { docs: ref([]), outcome: ref('idle'), error: ref(null) }
+  const cookie = ref('baeren')
+  const states = new Map()
+  const useWorkspace = load(
+    '../../../../core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts',
+    'useWorkspace',
+    {
+      computed,
+      useCookie: () => cookie,
+      useState: (key, init) => {
+        if (!states.has(key)) states.set(key, ref(init()))
+        return states.get(key)
+      },
+      useFireUXConfig: () => ({ appId: 'misebox' }),
+      normalizeString: (value) => String(value || '').trim(),
+    }
+  )
+  const useKitchens = load(
+    '../runtime/kitchen/composables/workspace/useKitchenWorkspaceKitchens.ts',
+    'useKitchenWorkspaceKitchens',
+    {
+      computed,
+      toValue,
+      useKitchenAccess: () => access,
+      useFirestoreRead: () => ({
+        firestoreLoadDocsByIds: ({ collectionPath }) =>
+          collectionPath === 'kitchens' ? kitchens : places,
+      }),
+      useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+    }
+  )
+  const scope = effectScope()
+  const workspace = useWorkspace('kitchen')
+  const source = useKitchens()
+  scope.run(() =>
+    watchEffect(() =>
+      workspace.reconcile(
+        source.kitchens.value.map((row) => row.id),
+        source.outcome.value
+      )
+    )
+  )
+  assert.equal(source.outcome.value, 'idle')
+  assert.equal(workspace.selectedId.value, 'baeren')
+  access.outcome.value = 'pending'
+  await nextTick()
+  assert.equal(workspace.selectedId.value, 'baeren')
+  access.ids.value = ['la-tap', 'baeren']
+  access.outcome.value = 'ready'
+  kitchens.docs.value = [{ id: 'la-tap' }]
+  await nextTick()
+  assert.equal(source.outcome.value, 'pending')
+  assert.equal(workspace.selectedId.value, 'baeren')
+  kitchens.outcome.value = 'pending'
+  await nextTick()
+  assert.equal(workspace.selectedId.value, 'baeren')
+  kitchens.docs.value = [{ id: 'la-tap' }, { id: 'baeren' }]
+  kitchens.outcome.value = 'ready'
+  await nextTick()
+  assert.equal(
+    source.outcome.value,
+    'pending',
+    'Place hydration must settle too'
+  )
+  assert.equal(workspace.selectedId.value, 'baeren')
+  places.outcome.value = 'ready'
+  await nextTick()
+  assert.equal(source.outcome.value, 'ready')
+  assert.equal(workspace.selectedId.value, 'baeren')
+  assert.equal(cookie.value, 'baeren')
+  states.clear()
+  assert.equal(useWorkspace('kitchen').selectedId.value, 'baeren')
+  access.outcome.value = 'idle'
+  await nextTick()
+  assert.equal(workspace.selectedId.value, 'baeren')
+  access.outcome.value = 'ready'
+  kitchens.docs.value = [{ id: 'la-tap' }]
+  await nextTick()
+  assert.equal(
+    workspace.selectedId.value,
+    'la-tap',
+    'Only a settled source may replace an unavailable Kitchen'
+  )
+  scope.stop()
 })

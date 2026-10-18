@@ -1,12 +1,12 @@
 <template>
   <MoleculesStateCard
     v-if="outcome === 'pending' || outcome === 'idle'"
-    entity="Kitchen offerings"
+    entity="Kitchen services"
     loading
   />
   <MoleculesStateCard
     v-else-if="outcome === 'error'"
-    entity="Kitchen offerings"
+    entity="Kitchen services"
     state="error"
   />
   <section
@@ -31,7 +31,7 @@
     </div>
     <UAlert
       v-if="error"
-      title="Could not update offering"
+      title="Could not update service"
       :description="error"
       color="error"
       ><template #actions><MoleculesCopyError :message="error" /></template
@@ -75,13 +75,13 @@
         </a>
       </div>
       <p v-if="setup.configured" class="mt-3 text-sm text-muted">
-        Menu and offering settings are configured. Review payment methods and
+        Menu and service settings are configured. Review payment methods and
         delivery zones before sharing customer links.
       </p>
     </UCard>
     <UCard :key="offering.id">
       <MoleculesFormsEditableSimpleField
-        label="Offering name"
+        label="Service name"
         :value="offering.name"
         :disabled="!canWrite || busy"
         :update="updateName"
@@ -100,13 +100,7 @@
         ]"
         :disabled="!canWrite || busy"
         :capture-intent="captureOfferingIntent"
-        :update="
-          (value, current) =>
-            updateOffering(
-              { collection_timing: value as 'same_day' | 'next_day' },
-              current
-            )
-        "
+        :update="updateCollectionTiming"
       />
     </UCard>
     <div class="grid items-start gap-4 lg:grid-cols-2">
@@ -172,7 +166,7 @@
           On-site & other options
         </summary>
         <nav
-          aria-label="Other offering options"
+          aria-label="Other service options"
           class="mt-4 flex flex-wrap gap-2"
         >
           <UButton
@@ -203,11 +197,11 @@
     </section>
     <UCard>
       <template #header
-        ><h2 class="font-semibold">Offering availability</h2></template
+        ><h2 class="font-semibold">Service availability</h2></template
       >
       <MoleculesFormsEditableCheckbox
-        label="Offer this offering to guests"
-        checkbox-label="Enable this offering"
+        label="Make this service available to guests"
+        checkbox-label="Enable this service"
         true-label="Enabled"
         false-label="Off"
         :value="offering.enabled"
@@ -216,15 +210,15 @@
         :capture-intent="captureOfferingIntent"
       />
       <p v-if="!offering.enabled" class="mt-3 text-sm text-muted">
-        This offering is off. Configure the menus and ordering options above,
+        This service is off. Configure the menus and ordering options above,
         then enable it when you are ready.
       </p>
       <p
         v-if="!setup.canEnable && !offering.enabled"
         class="mt-2 text-sm text-muted"
       >
-        Choose at least one menu and add serving hours for any enabled ordering
-        option.
+        Select regular interactive menus, publish at least one, and add serving
+        hours for any enabled ordering option.
       </p>
     </UCard>
     <WorkspaceKitchenOfferingsCustomerLinks
@@ -236,7 +230,7 @@
   </section>
   <UAlert
     v-else
-    title="Offering not found"
+    title="Service not found"
     :actions="[{ label: 'Services', to: '/workspace/kitchen/services' }]"
   />
 </template>
@@ -372,7 +366,7 @@ async function run(
   isSurfaceCurrent: () => boolean = () => true
 ) {
   if (busy.value || !canWrite.value || !offering.value || !isSurfaceCurrent())
-    throw new Error('This offering cannot be edited right now.')
+    throw new Error('This service cannot be edited right now.')
   const local = captureSurface()
   const owner = captureIntent()
   const isCurrent = () => local() && owner() && isSurfaceCurrent()
@@ -395,6 +389,11 @@ const updateOffering = (
   const id = offeringId.value
   return run((isCurrent) => update(id, changes, isCurrent), isSurfaceCurrent)
 }
+const updateCollectionTiming = (value: string, current?: () => boolean) =>
+  updateOffering(
+    { collection_timing: value as 'same_day' | 'next_day' },
+    current
+  )
 const updateName = (name: string, isSurfaceCurrent?: () => boolean) =>
   updateOffering({ name }, isSurfaceCurrent)
 const updateEnabled = (enabled: boolean, isSurfaceCurrent?: () => boolean) =>

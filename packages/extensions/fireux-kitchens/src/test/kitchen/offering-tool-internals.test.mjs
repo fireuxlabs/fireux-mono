@@ -1,3 +1,8 @@
+import {
+  serviceMenuPolicy,
+  offeringOverviewPolicy,
+  serviceOverviewProjection,
+} from '../offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -14,8 +19,22 @@ function load(path, names, deps, component = false) {
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)};return {${names}}`,
-    Object.keys(deps)
-  )(...Object.values(deps))
+    Object.keys({
+      ...serviceMenuPolicy,
+      ...offeringOverviewPolicy,
+      ...serviceOverviewProjection,
+      useWorkspacePageState: () => ({ publish() {} }),
+      ...deps,
+    })
+  )(
+    ...Object.values({
+      ...serviceMenuPolicy,
+      ...offeringOverviewPolicy,
+      ...serviceOverviewProjection,
+      useWorkspacePageState: () => ({ publish() {} }),
+      ...deps,
+    })
+  )
 }
 const base = '../../runtime/kitchen/components/'
 const { useCommandScope } = load(
@@ -51,7 +70,9 @@ function setup() {
       hours: { timezone: 'Europe/Zurich' },
       interactions: [{ type: 'collection', enabled: true }],
     },
-    menus: [{ id: 'food', name: 'Food', status: 'published' }],
+    menus: [
+      { id: 'food', name: 'Food', status: 'published', format: 'interactive' },
+    ],
     menusOutcome: 'ready',
     timezone: 'Europe/Zurich',
     captureIntent: () => {
@@ -69,7 +90,7 @@ function setup() {
   const state = scope.run(() =>
     load(
       base + 'Workspace/Offerings/Setup.vue',
-      'submit,menuIds,hoursText,enabled,drafts,busy,error',
+      'submit,menuIds,hoursText,enabled,drafts,busy,error,menuOptions,hasOrderMenu,canSave',
       {
         ...vue,
         useCommandScope,
@@ -162,60 +183,6 @@ test('current Offering setup emits completion once and clears its own busy state
   assert.equal(h.state.busy.value, false)
   h.scope.stop()
 })
-test('separate Offering creation forwards local intent and cannot complete after cancellation', async () => {
-  const scope = vue.effectScope(),
-    credentials = deferred(),
-    calls = [],
-    events = []
-  const props = vue.reactive({
-    kitchenId: 'k',
-    active: true,
-    disabled: false,
-    menus: [],
-    menusOutcome: 'ready',
-    timezone: 'Europe/Zurich',
-    venueHours: null,
-    captureIntent: () => () => true,
-    save: async (input, current) => {
-      await credentials.promise
-      if (!current()) throw new Error('Form closed.')
-      calls.push(input)
-      return { offering: { id: 'new' } }
-    },
-  })
-  const state = scope.run(() =>
-    load(
-      base + 'Workspace/Offerings/Create.vue',
-      'submit,name,menuIds,hoursText',
-      {
-        ...vue,
-        useCommandScope,
-        defineProps: () => props,
-        defineEmits:
-          () =>
-          (...args) =>
-            events.push(args),
-        formatWeekdayTimeText: () => '',
-        parseWeekdayTimeText: () => ({
-          timezone: 'Europe/Zurich',
-          windows: [{ days: ['tuesday'], open: '07:00', close: '20:00' }],
-        }),
-      },
-      true
-    )
-  )
-  state.name.value = 'Picnic'
-  state.menuIds.value = ['picnic']
-  state.hoursText.value = 'Tuesday 07:00 - 20:00'
-  const pending = state.submit()
-  props.active = false
-  props.active = true
-  credentials.resolve()
-  await pending
-  assert.deepEqual(calls, [])
-  assert.deepEqual(events, [])
-  scope.stop()
-})
 for (const path of ['Workspace/Offerings/Index.vue']) {
   test(`${path} retains its modal during child refresh and closes it on sticky owner changes`, () => {
     const scope = vue.effectScope(),
@@ -290,92 +257,110 @@ test('an existing Offering draft never becomes a create after a masked refresh o
   h.scope.stop()
 })
 
-test('separate Offering creation saves only its own configuration and emits the committed id once', async () => {
-  const scope = vue.effectScope(),
-    calls = [],
-    events = []
-  const props = vue.reactive({
-    kitchenId: 'k',
-    active: true,
-    disabled: false,
-    menus: [],
-    menusOutcome: 'ready',
-    timezone: 'Europe/Zurich',
-    venueHours: null,
-    captureIntent: () => () => true,
-    save: async (input) => {
-      calls.push(input)
-      return { offering: { id: 'picnic' } }
+test('Collection and Delivery overview include all matching services and configure the exact record', () => {
+  const published = []
+  const scope = vue.effectScope()
+  const offerings = vue.ref([
+    {
+      id: 'main',
+      name: 'Main',
+      enabled: true,
+      menu_ids: ['food'],
+      interactions: [{ type: 'collection', enabled: true }],
     },
-  })
+    {
+      id: 'concept',
+      name: 'Weekend bags',
+      separate: true,
+      enabled: true,
+      menu_ids: ['bags'],
+      collection_timing: 'next_day',
+      interactions: [{ type: 'collection', enabled: true }],
+    },
+    {
+      id: 'off',
+      name: 'Office lunch',
+      separate: true,
+      enabled: false,
+      menu_ids: ['lunch'],
+      interactions: [
+        { type: 'collection', enabled: true },
+        { type: 'delivery', enabled: true },
+      ],
+    },
+    {
+      id: 'delivery',
+      name: 'Main delivery',
+      enabled: true,
+      menu_ids: ['food'],
+      interactions: [{ type: 'delivery', enabled: true }],
+    },
+  ])
   const state = scope.run(() =>
     load(
-      base + 'Workspace/Offerings/Create.vue',
-      'submit,name,menuIds,hoursText',
+      base + 'Workspace/Offerings/Index.vue',
+      'entries,openSetup,selectedOffering,selectedOfferingId,setupOpen,menuNames',
       {
         ...vue,
-        useCommandScope,
-        defineProps: () => props,
-        defineEmits: () => (event, id) => {
-          events.push([event, id])
-          props.active = false
-        },
-        formatWeekdayTimeText: () => '',
-        parseWeekdayTimeText: () => ({
-          timezone: 'Europe/Zurich',
-          windows: [{ days: ['tuesday'], open: '07:00', close: '20:00' }],
+        useWorkspacePageState: () => ({
+          publish: (value) => published.push(value),
+        }),
+        useKitchenOfferings: () => ({
+          offerings,
+          ownerScope: vue.ref(0),
+          kitchenId: vue.ref('k'),
+          outcome: vue.ref('ready'),
+          canWrite: vue.ref(true),
+          menus: vue.ref([
+            { id: 'food', name: 'Food' },
+            { id: 'bags', name: 'Packed lunches' },
+            { id: 'lunch', name: 'Lunch' },
+          ]),
+          menusOutcome: vue.ref('ready'),
         }),
       },
       true
     )
   )
-  state.name.value = 'Picnic'
-  state.menuIds.value = ['picnic-menu']
-  state.hoursText.value = 'Tuesday 07:00 - 20:00'
-  await state.submit()
-  await state.submit()
-  assert.equal(calls.length, 1)
-  assert.equal(calls[0].createSeparate, true)
-  assert.equal(calls[0].collection_timing, 'next_day')
-  assert.equal(calls[0].enabled, false)
-  assert.deepEqual(calls[0].menu_ids, ['picnic-menu'])
-  assert.ok(!('offeringId' in calls[0]))
-  assert.deepEqual(events, [['created', 'picnic']])
-  scope.stop()
-})
-
-test('Picnic keeps its Services row across same-day and next-day edits', () => {
-  const scope = vue.effectScope()
-  const offerings = vue.ref([
-    { id: 'main', name: 'Collection' },
-    {
-      id: 'picnic',
-      name: 'Picnic',
-      separate: true,
-      collection_timing: 'next_day',
-    },
-    { id: 'delivery', name: 'Delivery' },
-  ])
-  const state = scope.run(() =>
-    load(
-      base + 'Workspace/Offerings/Index.vue',
-      'separateOfferings',
-      {
-        ...vue,
-        useKitchenOfferings: () => ({ offerings, ownerScope: vue.ref(0) }),
-        kitchenOfferingOptions: [],
-      },
-      true
-    )
+  const collection = state.entries.value.find(
+    (row) => row.option.key === 'collection'
   )
+  const delivery = state.entries.value.find(
+    (row) => row.option.key === 'delivery'
+  )
+  const before = JSON.stringify(offerings.value)
   for (const timing of ['next_day', 'same_day', 'next_day']) {
     offerings.value[1].collection_timing = timing
     assert.deepEqual(
-      state.separateOfferings.value.map((row) => row.id),
-      ['picnic']
+      state.entries.value
+        .find((row) => row.option.key === 'collection')
+        .offerings.map((row) => row.id),
+      ['main', 'concept', 'off']
+    )
+    assert.deepEqual(
+      state.entries.value
+        .find((row) => row.option.key === 'delivery')
+        .offerings.map((row) => row.id),
+      ['off', 'delivery']
     )
   }
+  for (const [option, id] of [
+    [collection.option, 'concept'],
+    [collection.option, 'off'],
+    [delivery.option, 'off'],
+    [delivery.option, 'delivery'],
+  ]) {
+    state.openSetup(option, undefined, id)
+    assert.equal(state.selectedOfferingId.value, id)
+    assert.equal(state.selectedOffering.value.id, id)
+    assert.equal(state.setupOpen.value, true)
+  }
+  assert.equal(state.menuNames(offerings.value[1]), 'Packed lunches')
+  assert.equal(JSON.stringify(offerings.value), before)
+  assert.equal(published.at(-1).selected.kitchenId, 'k')
+  assert.equal(published.at(-1).services.length, 6)
   scope.stop()
+  assert.equal(published.at(-1).derived.outcome, 'idle')
 })
 
 test('Picnic customer URL stays on its exact offering across timing changes', () => {
@@ -388,7 +373,9 @@ test('Picnic customer URL stays on its exact offering across timing changes', ()
       menu_ids: ['food'],
       collection_timing: 'next_day',
     },
-    menus: [{ id: 'food', name: 'Food', status: 'published' }],
+    menus: [
+      { id: 'food', name: 'Food', status: 'published', format: 'interactive' },
+    ],
     menusOutcome: 'ready',
     kitchenSlug: 'baeren-ringgenberg',
   })
@@ -417,4 +404,84 @@ test('Picnic customer URL stays on its exact offering across timing changes', ()
   }
   props.menus = []
   assert.equal(state.separateCustomerUrl.value, undefined)
+})
+
+test('Configure and service editor use the same menu choices and readiness', () => {
+  const menus = [
+    { id: 'food', name: 'Food', status: 'published', format: 'interactive' },
+    { id: 'draft', name: 'Draft', status: 'draft', format: 'interactive' },
+    {
+      id: 'daily',
+      name: 'Daily specials',
+      status: 'published',
+      format: 'interactive',
+      schedule: 'daily',
+    },
+    {
+      id: 'document',
+      name: 'Document',
+      status: 'published',
+      format: 'document',
+    },
+    {
+      id: 'archived',
+      name: 'Archived',
+      status: 'archived',
+      format: 'interactive',
+    },
+  ]
+  const configured = setup()
+  configured.props.menus = menus
+  assert.deepEqual(
+    configured.state.menuOptions.value.map((row) => row.value),
+    ['food', 'draft']
+  )
+  configured.state.menuIds.value = ['daily']
+  assert.equal(configured.state.canSave.value, false)
+  configured.state.menuIds.value = ['draft']
+  assert.equal(configured.state.hasOrderMenu.value, false)
+  configured.state.enabled.value = false
+  assert.equal(configured.state.canSave.value, true)
+  configured.scope.stop()
+  for (const component of ['Menus']) {
+    const scope = vue.effectScope()
+    const props = vue.reactive({
+      kitchenId: 'k',
+      active: true,
+      disabled: false,
+      menus,
+      menusOutcome: 'ready',
+      outcome: 'ready',
+      timezone: 'Europe/Zurich',
+      venueHours: null,
+      offering: { menu_ids: ['draft'] },
+    })
+    const state = scope.run(() =>
+      load(
+        base + `Workspace/Offerings/${component}.vue`,
+        component === 'Create'
+          ? 'menuOptions,menuIds,menuReadiness'
+          : 'options,menuReadiness',
+        {
+          ...vue,
+          useCommandScope,
+          defineProps: () => props,
+          defineEmits: () => () => {},
+          formatWeekdayTimeText: () => '',
+        },
+        true
+      )
+    )
+    assert.deepEqual(
+      (state.menuOptions || state.options).value.map((row) => row.value),
+      ['food', 'draft']
+    )
+    if (component === 'Create') state.menuIds.value = ['draft']
+    assert.deepEqual(state.menuReadiness.value, {
+      validSelection: true,
+      hasPublishedMenu: false,
+      canEnable: false,
+    })
+    scope.stop()
+  }
 })

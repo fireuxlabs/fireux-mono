@@ -18,6 +18,7 @@ import {
 import {
   readOfferingUpdate,
   requireConfiguredOffering,
+  requireServiceMenus,
   fail,
 } from './validation'
 import { readInteractionChanges } from './interaction-validation'
@@ -199,7 +200,7 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
       ],
     }
     requireConfiguredOffering(offering)
-    let orderableMenus = 0
+    const selectedMenus = []
     for (const menuId of offering.menu_ids) {
       const menu = await tx.read(
         serverKitchenMenusTarget(config.kitchenId),
@@ -210,21 +211,15 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
           statusCode: 400,
           statusMessage: 'A selected Menu no longer exists.',
         })
-      const data = menu.data
-      const doc = data?.doc as { url?: string } | undefined
-      if (
-        data?.status === 'published' &&
-        data?.schedule !== 'daily' &&
-        !doc?.url?.trim()
-      )
-        orderableMenus++
+      selectedMenus.push(menu.data || {})
     }
-    if (config.enabled && !orderableMenus)
-      throw createError({
-        statusCode: 400,
-        statusMessage:
-          'Publish at least one menu with items and prices before enabling ordering.',
-      })
+    requireServiceMenus(
+      selectedMenus,
+      offering.enabled &&
+        offering.interactions.some(
+          (row) => row.type !== 'browse' && row.enabled
+        )
+    )
     const target = serverKitchenOfferingsTarget(config.kitchenId)
     if (current) tx.update(target, id, kitchenOfferingData(offering))
     else tx.create(target, id, kitchenOfferingData(offering))

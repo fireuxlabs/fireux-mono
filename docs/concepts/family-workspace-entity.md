@@ -48,6 +48,15 @@ second selected-identity projection. The shared EntitySwitcher accepts an explic
 `to` destination. Kitchen supplies its App-aware Kitchen entry path; the
 existing default remains `/` for other consumers.
 
+The selected Entity is restored from an App/family-scoped cookie on the current
+host, with a one-year lifetime. A browser reload or server restart preserves a
+valid selection. Reconciliation may replace it only after the available list is
+settled; a restored ID never grants read or write authority. Kitchen's collection
+propagates unresolved access and idle Kitchen/Place reads instead of reporting an
+empty list during startup. Checks: Core `workspace-selection.test.mjs` and Kitchen
+`workspace-readiness.test.mjs`. This is last-selection memory, not an account
+primary-Entity preference.
+
 ## Workspace arrival language
 
 The Workspace surface exists as soon as a user arrives at `/`. This applies

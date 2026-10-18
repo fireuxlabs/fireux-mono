@@ -9,7 +9,7 @@ import { kitchenOfferingData } from '../../utils/offerings'
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { readKitchenOfferingsInTransaction } from './read'
 import { patchKitchenOfferingInteraction } from '../../utils/offering-interaction'
-import { requireConfiguredOffering } from './validation'
+import { requireConfiguredOffering, requireServiceMenus } from './validation'
 import { readInteractionChanges } from './interaction-validation'
 
 const missing = () =>
@@ -40,6 +40,7 @@ export async function updateKitchenOfferingInteraction(
     }
     requireConfiguredOffering(offering)
     if (offering.enabled && interaction.enabled) {
+      const selectedMenus = []
       for (const id of offering.menu_ids) {
         const menu = await tx.read(serverKitchenMenusTarget(kitchenId), id)
         if (!menu.exists)
@@ -47,7 +48,9 @@ export async function updateKitchenOfferingInteraction(
             statusCode: 400,
             statusMessage: 'A selected Menu no longer exists.',
           })
+        selectedMenus.push(menu.data || {})
       }
+      requireServiceMenus(selectedMenus, true)
     }
     tx.update(
       serverKitchenOfferingsTarget(kitchenId),

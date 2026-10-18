@@ -153,7 +153,7 @@ function offeringFixture() {
     source.captureIntent = useCommandScope([source.ownerScope])
     return load(
       workspace + 'Offerings/Single.vue',
-      '({updateOffering,updateName,updateEnabled,saveInteraction,captureOfferingIntent,interactionType,offering,setup,busy,error,primaryOptions,otherOptions,interactionState,interaction,...source})',
+      '({updateOffering,updateCollectionTiming,updateName,updateEnabled,saveInteraction,captureOfferingIntent,interactionType,offering,setup,busy,error,primaryOptions,otherOptions,interactionState,interaction,...source})',
       {
         computed,
         ref,

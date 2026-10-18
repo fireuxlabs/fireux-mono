@@ -20,7 +20,7 @@
       icon="i-lucide-link"
       title="Shared menus and hours"
       :description="
-        'This offering also contains ' +
+        'This service also contains ' +
         sharedLabels.join(', ') +
         '. Menu and hour changes apply to those options too.'
       "
@@ -50,6 +50,10 @@
         />
         <p v-else class="my-3 text-sm text-muted">
           Create a menu to get started.
+        </p>
+        <p class="mt-2 text-sm text-muted">
+          Regular interactive menus only. Daily specials and documents are
+          managed separately.
         </p>
         <UButton
           :to="openWorkspace ? undefined : '/workspace/kitchen/menus'"
@@ -86,7 +90,7 @@
       class="text-sm text-warning"
     >
       Publish at least one selected menu with items and prices before enabling
-      this offering.
+      this service.
     </p>
     <UFormField label="Availability">
       <USwitch
@@ -104,7 +108,7 @@
       :label="
         'Also enable the saved ' +
         activatingLabels.join(', ') +
-        ' settings in this offering'
+        ' settings in this service'
       "
       :disabled="busy || disabled"
     />
@@ -178,7 +182,7 @@
             await submit()
           }
         "
-        :label="enabled ? 'Save and enable' : 'Save with offering off'"
+        :label="enabled ? 'Save and enable' : 'Save with service off'"
         :loading="busy"
         :disabled="disabled || !canSave"
       />
@@ -186,6 +190,10 @@
   </div>
 </template>
 <script setup lang="ts">
+import {
+  serviceMenuOptions,
+  serviceMenuReadiness,
+} from '../../../utils/service-menus'
 import { computed, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
@@ -265,16 +273,10 @@ const effectiveTimezone = computed(
   () => props.offering?.hours?.timezone || props.timezone
 )
 const menuOptions = computed(() =>
-  props.menus.map((menu) => ({
-    value: menu.id,
-    label: menu.name,
-    description:
-      menu.status !== 'published'
-        ? 'Not published'
-        : menu.doc?.url?.trim()
-          ? 'Document · view only'
-          : 'Published',
-  }))
+  serviceMenuOptions(props.menus, menuIds.value)
+)
+const menuReadiness = computed(() =>
+  serviceMenuReadiness(menuIds.value, props.menus)
 )
 const shared = computed(
   () =>
@@ -299,19 +301,12 @@ const activatesShared = computed(
     !props.offering.enabled &&
     activatingLabels.value.length > 0
 )
-const hasOrderMenu = computed(() =>
-  props.menus.some(
-    (menu) =>
-      menuIds.value.includes(menu.id) &&
-      menu.status === 'published' &&
-      !menu.doc?.url?.trim()
-  )
-)
+const hasOrderMenu = computed(() => menuReadiness.value.canEnable)
 const canSave = computed(
   () =>
     ['ready', 'empty'].includes(props.menusOutcome) &&
     (!enabled.value || hasOrderMenu.value) &&
-    menuIds.value.length > 0 &&
+    menuReadiness.value.validSelection &&
     Boolean(hoursText.value.trim()) &&
     Boolean(effectiveTimezone.value) &&
     (!activatesShared.value || activateShared.value)

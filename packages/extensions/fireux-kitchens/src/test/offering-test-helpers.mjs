@@ -19,6 +19,10 @@ export function loadOfferingSource(
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+export const serviceMenuPolicy = loadOfferingSource(
+  'kitchen/utils/service-menus',
+  'isServiceMenu,serviceMenuReadiness,serviceMenuOptions'
+)
 const core = loadOfferingSource('utils/weekday-time-core', 'weekdayTimeCore')
 const time = loadOfferingSource(
   'utils/weekday-time-config',
@@ -129,3 +133,18 @@ export function offeringHarness(records = []) {
     },
   }
 }
+
+export const offeringOverviewPolicy = loadOfferingSource(
+  'kitchen/utils/offering-options',
+  'kitchenOfferingOptions,offeringsForOption,offeringOptionEnabled,offeringOptionStatus,serviceOptionStatus',
+  loadOfferingSource(
+    'kitchen/utils/table-service',
+    'tableServiceChannel,tableChannelEnabled'
+  )
+)
+
+export const serviceOverviewProjection = loadOfferingSource(
+  'kitchen/utils/service-overview',
+  'serviceOverviewSnapshot',
+  { ...serviceMenuPolicy, ...offeringOverviewPolicy }
+)
