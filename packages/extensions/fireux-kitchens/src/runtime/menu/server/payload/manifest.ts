@@ -1,3 +1,4 @@
+import { constrainMenuOfferings } from '../../utils/menu-hours'
 import { readMenuPromotions } from '../../../kitchen/server/promotions/read'
 import { createError } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -57,7 +58,15 @@ export async function buildMenuManifestPayload(
       sections,
     },
     behaviour: menuOfferingProfile(
-      scope.daily ? { ...scope, kitchen_offerings: [], choices: [] } : scope
+      scope.daily
+        ? { ...scope, kitchen_offerings: [], choices: [] }
+        : {
+            ...scope,
+            kitchen_offerings: constrainMenuOfferings(
+              scope.kitchen_offerings,
+              menuData.serving_hours
+            ),
+          }
     ),
     presentation: {
       ...menuPayloadPresentation(menuData, scope, Boolean(source.kitchen_id)),

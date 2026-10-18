@@ -1,7 +1,7 @@
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 
 /** Validate a deliberately configured schedule without borrowing another owner's hours. */
-export function requireOperatingHours(value: unknown) {
+export function requireOperatingHours(value: unknown, allowEmpty = false) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('Hours require a timezone and valid ranges.')
   const input = value as Record<string, unknown>
@@ -14,7 +14,7 @@ export function requireOperatingHours(value: unknown) {
   }
   if (
     !Array.isArray(input.windows) ||
-    !input.windows.length ||
+    (!allowEmpty && !input.windows.length) ||
     input.windows.length > 100
   )
     throw new Error('Hours require valid time ranges.')

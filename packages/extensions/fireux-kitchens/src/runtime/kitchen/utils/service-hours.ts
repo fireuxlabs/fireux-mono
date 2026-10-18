@@ -1,5 +1,9 @@
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
 import type { KitchenOffering } from '../models/offering.model'
+import {
+  intersectWeekdayHours,
+  weekdayHoursWithin,
+} from '../../utils/weekday-time-constraints'
 import { weekdayTimeDays } from '../../utils/weekday-time'
 
 /** Resolve inheritance for presentation; never copy the parent into stored service settings. */
@@ -9,7 +13,12 @@ export function resolveServiceHours(
 ): KitchenOffering[] {
   return offerings.map((offering) => ({
     ...offering,
-    hours: offering.hours_source === 'custom' ? offering.hours : kitchenHours,
+    hours:
+      offering.hours_source === 'custom'
+        ? offering.hours
+          ? intersectWeekdayHours(offering.hours, kitchenHours)
+          : undefined
+        : kitchenHours,
   }))
 }
 
@@ -18,41 +27,13 @@ export function hoursWithinParent(
   hours: WeekdayTimeWindowsConfig,
   parent: WeekdayTimeWindowsConfig
 ): boolean {
-  if (!parent.windows.length || hours.timezone !== parent.timezone) return false
-  const week = 7 * 24 * 60
-  const minutes = (value: string) => {
-    const [h, m] = value.split(':').map(Number)
-    return h! * 60 + m!
-  }
-  const intervals = (config: WeekdayTimeWindowsConfig) =>
-    config.windows.flatMap((window) =>
-      window.days.flatMap((day) => {
-        const start = weekdayTimeDays.indexOf(day) * 1440 + minutes(window.open)
-        let length = minutes(window.close) - minutes(window.open)
-        if (length <= 0) length += 1440
-        const end = start + length
-        return end > week
-          ? [
-              [start, week],
-              [0, end - week],
-            ]
-          : [[start, end]]
-      })
-    )
-  const allowed = intervals(parent).sort((a, b) => a[0]! - b[0]!)
-  return intervals(hours).every(([start, end]) => {
-    let covered = start!
-    for (const [from, until] of allowed) {
-      if (from! > covered) break
-      if (until! > covered) covered = until!
-      if (covered >= end!) return true
-    }
-    return false
-  })
+  return weekdayHoursWithin(hours, parent)
 }
 
 /** Compact display of equivalent ranges without implying service on omitted days. */
-export function serviceHoursSummary(hours?: WeekdayTimeWindowsConfig | null): string[] {
+export function serviceHoursSummary(
+  hours?: WeekdayTimeWindowsConfig | null
+): string[] {
   const groups = new Map<string, Set<string>>()
   for (const window of hours?.windows || []) {
     const time = `${window.open}–${window.close}`
@@ -63,11 +44,16 @@ export function serviceHoursSummary(hours?: WeekdayTimeWindowsConfig | null): st
   return [...groups].map(([time, days]) => {
     const ordered = weekdayTimeDays.filter((day) => days.has(day))
     const indexes = ordered.map((day) => weekdayTimeDays.indexOf(day))
-    const consecutive = indexes.every((day, index) => !index || day === indexes[index - 1]! + 1)
-    const short = ordered.map((day) => day.slice(0, 3).replace(/^./, (letter) => letter.toUpperCase()))
-    const label = consecutive && short.length > 2
-      ? `${short[0]}–${short.at(-1)}`
-      : short.join(', ')
+    const consecutive = indexes.every(
+      (day, index) => !index || day === indexes[index - 1]! + 1
+    )
+    const short = ordered.map((day) =>
+      day.slice(0, 3).replace(/^./, (letter) => letter.toUpperCase())
+    )
+    const label =
+      consecutive && short.length > 2
+        ? `${short[0]}–${short.at(-1)}`
+        : short.join(', ')
     return `${label}  ${time}`
   })
 }

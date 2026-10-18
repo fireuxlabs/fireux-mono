@@ -8,6 +8,8 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
+import { hoursWithinParent } from '../../utils/service-hours'
+import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
 import { requireOperatingHours } from '../../utils/operating-hours'
 
 function request(input: unknown) {
@@ -62,6 +64,17 @@ export async function updateKitchenOperationHours(
       actor,
       requested.kitchenId
     )
+    if (
+      requested.hours &&
+      !hoursWithinParent(
+        requested.hours,
+        resolveKitchenOperationHours({}, authority.placeData)
+      )
+    )
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Kitchen hours must fit within venue opening hours.',
+      })
     tx.update(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
       'orders.operation_hours': requested.hours ?? FieldValue.delete(),
       updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),

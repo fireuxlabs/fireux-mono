@@ -66,6 +66,12 @@
           @click="menus.refresh()"
         />
       </div>
+      <MenuSelection
+        v-else-if="sections.length && service === 'collection'"
+        :key="kitchenSlug + ':' + offeringId"
+        :sections="sections"
+        :currency-code="currencyCode"
+      />
       <div v-else-if="sections.length" class="space-y-8" :style="styleVars">
         <nav
           :aria-label="`${serviceLabel} sections`"

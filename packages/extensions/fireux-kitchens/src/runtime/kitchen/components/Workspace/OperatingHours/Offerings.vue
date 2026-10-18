@@ -2,7 +2,7 @@
   <section class="space-y-4" aria-labelledby="serving-hours-title">
     <header class="flex flex-wrap items-center justify-between gap-3">
       <h2 id="serving-hours-title" class="text-lg font-semibold">
-        Offering hours
+        Service hours
       </h2>
       <UButton
         to="/workspace/kitchen/services"
@@ -13,7 +13,7 @@
       />
     </header>
     <p v-if="!offerings.length" class="text-sm text-muted">
-      No offerings yet. Add an offering and set when guests can receive it.
+      Enable and configure your services in Services.
     </p>
     <div v-else class="grid gap-4 md:grid-cols-2">
       <UCard
@@ -33,8 +33,7 @@
             </div>
             <UButton
               :to="
-                '/workspace/kitchen/services/' +
-                encodeURIComponent(offering.id)
+                '/workspace/kitchen/services/' + encodeURIComponent(offering.id)
               "
               :aria-label="'Edit ' + offering.name + ' serving hours'"
               label="Edit"
@@ -59,20 +58,13 @@
         <p v-else-if="menusOutcome === 'error'" class="mt-3 text-sm text-muted">
           Linked Menus could not be loaded.
         </p>
-        <div v-else class="mt-3 flex flex-wrap gap-2">
-          <UButton
-            v-for="menu in linkedMenus(offering)"
-            :key="menu.id"
-            :to="'/workspace/kitchen/menus/' + encodeURIComponent(menu.slug)"
-            :label="menu.name"
-            color="neutral"
-            variant="link"
-            size="sm"
-          />
-          <span v-if="!offering.menu_ids.length" class="text-sm text-muted"
-            >No linked Menus</span
-          >
-        </div>
+        <WorkspaceKitchenOfferingsSetupMenuWindows
+          v-else-if="offering.menu_ids.length"
+          class="mt-3"
+          :menus="linkedMenus(offering)"
+          :service-hours="offering.hours"
+        />
+        <p v-else class="mt-3 text-sm text-muted">No linked Menus</p>
       </UCard>
     </div>
   </section>

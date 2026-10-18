@@ -55,10 +55,16 @@ const policy = loadOfferingSource(
     ],
   }
 )
+export const weekdayHoursConstraints = loadOfferingSource(
+  'utils/weekday-time-constraints',
+  'weekdayHoursWithin,intersectWeekdayHours',
+  { weekdayTimeDays: core.weekdayTimeCore.days }
+)
+export const operatingHoursPolicy = hours
 export const serviceHoursPolicy = loadOfferingSource(
   'kitchen/utils/service-hours',
   'resolveServiceHours,hoursWithinParent,serviceHoursSummary',
-  { weekdayTimeDays: core.weekdayTimeCore.days }
+  { weekdayTimeDays: core.weekdayTimeCore.days, ...weekdayHoursConstraints }
 )
 export const testKitchenHours = () => ({
   source: 'custom',

@@ -17,6 +17,7 @@ import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-s
 import { useKitchenMenuRead } from '../../../../menu/composables/useKitchenMenuRead'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../menu/composables/firestore/mutations/useMenuSectionMutations'
+import { resolveKitchenOperationHours } from '../../../utils/kitchen-readers'
 import { useMenuUpdate } from '../../../../menu/composables/firestore/mutations/useMenuUpdate'
 import { useMenuPublication } from '../../../../menu/composables/publication/useMenuPublication'
 import {
@@ -233,6 +234,9 @@ function createKitchenMenuRecordContext() {
     kitchenId,
     storageKitchenId,
     selectedKitchen,
+    kitchenHours: computed(() =>
+      resolveKitchenOperationHours(kitchen.kitchen.value, kitchen.place.value)
+    ),
     timezone: computed(() => String(kitchen.place.value?.timezone || '')),
     rootCollection,
     databaseId,

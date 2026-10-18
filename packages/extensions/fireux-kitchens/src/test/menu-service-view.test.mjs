@@ -713,3 +713,17 @@ for (const timing of ['same_day', 'next_day']) {
     )
   })
 }
+
+test('service selections retain the original menu, section and item identity across the combined view', () => {
+  const result = serviceSections([
+    sourceMenu('food', 'Pizza', ['margherita']),
+    sourceMenu('takeaway-drinks', 'Drinks', ['cola']),
+  ])
+  assert.deepEqual(result.map((section) => section.items[0].source), [
+    { kitchenId: 'kitchen', menuId: 'food', sectionId: 'section' },
+    { kitchenId: 'kitchen', menuId: 'takeaway-drinks', sectionId: 'section' },
+  ])
+  assert.deepEqual(result.map((section) => section.items[0].item.id), [
+    'food-margherita', 'takeaway-drinks-cola',
+  ])
+})

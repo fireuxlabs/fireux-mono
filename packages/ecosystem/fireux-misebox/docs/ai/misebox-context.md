@@ -437,17 +437,13 @@ without loading an editor in read-only service previews. Place's BusinessHours e
 command; Kitchen's OperatingHours/Kitchen supplies the Kitchen operation-hours
 command. Inherited Kitchen hours stay compact; separate hours begin from the
 effective venue schedule and persist only when the operator saves an edit.
-The Operating hours page also composes `Workspace/OperatingHours/Menus.vue`,
-using the live Menu collection's published subset. Each named Menu panel lists
-only services explicitly containing its stable ID, with Enabled/Paused/Off state,
-effective hours and their source. Shared service membership is labelled, and
-weekly times remain visible directly even for Off or Paused services. The state
-badge describes service availability independently of its configured schedule.
-Shared service
-settings links edit the existing service owner. Custom service schedules are not
-intersected with venue or Kitchen hours. Empty service membership and Menu read
-failures remain distinct; no Menu-hours field or publication-derived service
-membership is introduced. Pre-order schedules describe dining times, not request
+The Operating hours page also composes `Workspace/OperatingHours/Offerings.vue`.
+Its Service panels show effective inherited/constrained hours and selected Menu
+availability through the same focused preview used in the Services editor.
+The parent retains the stored records for diagnostics and resolves effective
+Service hours from the already-acquired Kitchen and Place. Empty membership and
+Menu read failures remain distinct; publication does not create service membership.
+Pre-order schedules describe dining times, not request
 intake; diagnostic customer funnels remain labelled unfinished.
 The Operating hours composition places venue and Kitchen panels side by side
 when space permits and published Menu panels in an independent-height grid.
@@ -1142,18 +1138,21 @@ any future application. See `src/test/kitchen-offering-storage.test.mjs`,
 not stored conversion or authenticated browser/provider operation.
 
 `kitchen/models/offering.model.ts` owns the current `KitchenOffering` record contract. Each has a stable
-ID, operator-chosen name, enabled state, eligible `menu_ids`, an explicit serving
-schedule and a list of interactions. Breakfast is an Offering;
-browse, pre-order, collection or delivery are interactions that offering may allow.
-Multiple offerings can enable the same interaction without sharing identity or hours.
+ID, name, enabled state, eligible `menu_ids`, an inherited or custom serving
+schedule and a list of interactions. The operator surface presents the provided
+Services; Menu selection within a service keeps concepts such as Breakfast and
+Lunch separate from service identity. Kiosk retains its two Menu sets.
 `kitchen/models/ordering.model.ts` owns the ordering interaction policies: notice,
 contact, pause, notifications and fulfilment instructions/deposit.
 
-Place owns venue opening information. Kitchen owns its operating schedule,
-which may follow Place hours. A named offering owns when its food can be received;
-its hours do not inherit or intersect with Place, Kitchen or Menu hours at runtime.
-Pre-order requests can arrive outside future serving hours. Menu owns catalogue content and publication. Daily Menus can date their
-content selections; serving hours and ordering authority remain Offering-owned.
+Place owns venue opening hours. Kitchen service hours inherit Place or narrow
+its window. Each service inherits Kitchen hours or narrows them. Regular
+interactive Menus may further narrow availability through `serving_hours`; absent
+or null means throughout the linked services. Effective public availability is
+the intersection, without rewriting stored children when a parent changes.
+Pre-order request intake is separate from future serving hours. Menu owns
+catalogue content and publication; Daily Menus retain their separate dated selections.
+Order execution and submission remain outside this Workspace/public-display slice.
 Ordinary published Menu browsing remains available independently of offerings.
 An enabled offering can also provide a named browse doorway. Ordering requires an
 enabled offering and interaction, published Menu membership and configured hours;
@@ -1925,6 +1924,21 @@ Verify discovery, publication, public-slug and audience metadata tests.
 
 ## Customer Menu service surfaces
 
+Collection composes Menu-owned `components/Selection/Index.vue` over the existing
+service sources. Catalogue, item selection and basket review are focused children;
+`useServiceBasket` owns component-local selections, while `service-basket.ts`
+validates option/extra/meal choices and calculates display totals in integer minor
+units. The serving-time notice is composed once above Collection sections. The
+projection retains each chosen offer's Kitchen/Menu/Section identity, and basket
+lines retain service IDs and item identity. Changed or missing catalogue selections
+are flagged without silently repricing existing basket lines. This basket is
+component-scoped and resets on a different Kitchen/service entrance or page reload.
+It has no checkout, order submission, recovery storage or remote writes. Existing
+per-Menu order submission remains separate and unchanged. Delivery, table and room
+presentation do not yet consume this selection slice. Regression evidence lives
+in `menu-service-basket.test.mjs` and `menu-service-view.test.mjs`.
+
+
 `/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
 public service surfaces, not named Menus.
 `Detail/ServiceMenu.vue` consumes the existing live reader through
@@ -2215,7 +2229,7 @@ coalesces and scopes these updates through the protected configure command,
 without a free-text formatting/parsing step. Source-owned checks are
 `service-hours-editor.test.mjs` and `service-setup.test.mjs`.
 
-Service hours follow the Place → Kitchen → Service hierarchy. `Setup/ServiceHours.vue`
+Service hours follow the Place → Kitchen → Service → Menu hierarchy. `Setup/ServiceHours.vue`
 asks “Same as Kitchen service hours?”; Yes hides the range editor, while No reveals
 it. `hours_source` defaults to `kitchen`; selecting `custom` can persist before
 ranges exist. Returning to Kitchen hours deletes the custom override instead of
@@ -2226,3 +2240,17 @@ containment, including breaks and overnight ranges. Public Menu readers pass the
 already-read Kitchen/Place context to the Offering reader for effective hours; the
 Workspace collection retains the stored override and choice. Order execution is
 outside this configuration/UI slice.
+
+Kitchen and Service custom-hour writes reject ranges outside their current parent;
+Menu writes reject ranges outside effective Kitchen hours. A Menu reused by
+several services is intersected with each service separately, so a shorter service
+does not alter the Menu's own schedule. Parent narrowing constrains effective
+availability immediately and Workspace editors show saved schedule conflicts.
+`utils/weekday-time-constraints.ts` owns containment and intersection, including
+breaks, overnight and week boundaries. `menu/utils/menu-hours.ts` applies Menu
+windows to public index and payload projections. Menu Settings composes the
+focused `Detail/Hours.vue` automatic editor; the Service hours editor previews
+each selected Menu's effective availability and links to its existing record.
+No extra acquisition or new mutation owner is introduced. Verify with
+`menu-hours.test.mjs`, `kitchen-operation-hours.test.mjs`,
+`menu-workspace-commands.test.mjs` and the Service hours tests.

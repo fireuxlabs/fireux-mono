@@ -15,6 +15,7 @@ export type MenuServiceSource = {
   offerings: KitchenPublicOffering[]
 }
 export type MenuServiceOffer = {
+  source: { kitchenId: string; menuId: string; sectionId: string }
   item: MenuManifestItem
   presentation: MenuManifest['presentation']
   offerings: KitchenPublicOffering[]
@@ -119,6 +120,11 @@ export function serviceSections(
             day
           )
           candidates.get(identity)!.push({
+            source: {
+              kitchenId: manifest.source.kitchenId,
+              menuId: manifest.source.menuId,
+              sectionId: section.id,
+            },
             item: priced.item,
             presentation: manifest.presentation,
             offerings: [offering],
@@ -158,6 +164,7 @@ export function serviceSections(
                   existing.offerings.push(offering)
             } else
               offers.push({
+                source: candidate.source,
                 item: candidate.item,
                 presentation: candidate.presentation,
                 offerings: [...candidate.offerings],

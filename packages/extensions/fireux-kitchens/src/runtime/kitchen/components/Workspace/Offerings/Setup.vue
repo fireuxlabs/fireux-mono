@@ -13,7 +13,8 @@
         <span
           v-if="enabled && !readiness.canEnable"
           class="text-xs text-warning"
-        >Needs menus</span>
+          >Needs menus</span
+        >
         <span v-if="busy" class="text-xs text-muted" role="status">
           Updating…
         </span>
@@ -47,7 +48,9 @@
             :disabled="disabled || busy"
             :menus="menus"
             :menus-outcome="menusOutcome"
-            :update-function="(changes) => updateInteraction(config.type, changes)"
+            :update-function="
+              (changes) => updateInteraction(config.type, changes)
+            "
           />
         </div>
         <WorkspaceKitchenOfferingsSetupServiceHours
@@ -65,7 +68,14 @@
           :disabled="disabled || busy"
           @update="setHours"
           @inherit="setSameAsKitchen"
-        />
+        >
+          <template #menus="{ hours: effectiveHours }">
+            <WorkspaceKitchenOfferingsSetupMenuWindows
+              :menus="menus.filter((menu) => menuIds.includes(menu.id))"
+              :service-hours="effectiveHours"
+            />
+          </template>
+        </WorkspaceKitchenOfferingsSetupServiceHours>
       </div>
       <p
         v-if="!sameAsKitchen && !hours?.windows.length"

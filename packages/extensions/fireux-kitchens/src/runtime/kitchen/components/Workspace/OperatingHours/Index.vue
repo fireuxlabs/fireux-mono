@@ -54,14 +54,14 @@
         "
         :title="
           offeringsOutcome === 'pending'
-            ? 'Loading offering schedules'
-            : 'Offering schedules unavailable'
+            ? 'Loading service schedules'
+            : 'Service schedules unavailable'
         "
       />
       <WorkspaceKitchenOperatingHoursOfferings
         v-else
         :key="`menus:${kitchenId}`"
-        :offerings="offerings"
+        :offerings="effectiveOfferings"
         :menus="menus"
         :menus-outcome="menuOutcome"
       />
@@ -74,7 +74,7 @@
     />
     <MoleculesStateCard
       v-else
-      entity="Kitchen operating hours"
+      entity="Kitchen service hours"
       kind="document"
       :loading="placeOutcome === 'pending' || placeOutcome === 'idle'"
       :state="placeOutcome === 'error' ? 'error' : 'missing'"
@@ -82,7 +82,7 @@
     <DiagnosticsDebugPanel
       v-bind="debug"
       title="Operating hours debug"
-      context="Venue opening → Kitchen working hours → named offering hours"
+      context="Place → Kitchen → Service → Menu availability"
       class="mt-6 w-full min-w-0"
     />
   </ClientOnly>
@@ -95,6 +95,7 @@ import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenOfferingCollection } from '../../../composables/useKitchenOfferingCollection'
 import { resolveKitchenOperationHours } from '../../../utils/kitchen-readers'
+import { resolveServiceHours } from '../../../utils/service-hours'
 import {
   identityHoursDebug,
   identityKitchenDebug,
@@ -135,6 +136,9 @@ const kitchenHours = computed(() =>
 )
 const { offerings, outcome: offeringsOutcome } = useKitchenOfferingCollection(
   computed(() => (kitchenOutcome.value === 'ready' ? kitchenId.value : ''))
+)
+const effectiveOfferings = computed(() =>
+  resolveServiceHours(offerings.value, kitchenHours.value)
 )
 const debug = computed(() =>
   defineDevDebugPayload({

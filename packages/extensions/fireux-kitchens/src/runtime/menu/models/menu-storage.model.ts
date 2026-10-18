@@ -39,5 +39,8 @@ export const MenuDefaults: Menu = {
 
 export type MenuRecordCreateInput = Omit<Menu, 'created' | 'updated'>
 export type MenuUpdateInput = Partial<
-  Pick<Menu, 'name' | 'description' | 'sort_order' | 'doc' | 'audience'>
+  Pick<
+    Menu,
+    'name' | 'description' | 'sort_order' | 'doc' | 'audience' | 'serving_hours'
+  >
 >

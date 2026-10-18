@@ -1,3 +1,8 @@
+import {
+  operatingHoursPolicy,
+  serviceHoursPolicy,
+  testKitchenHours,
+} from './offering-test-helpers.mjs'
 import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -37,10 +42,11 @@ const targets = {
     `${id}/menus/${menu}/sections/${section}/items`,
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
 }
-const metadata = load('../runtime/menu/utils/menu-metadata.ts', {}, [
-  'normalizeMenuMetadataPatch',
-  'normalizeMenuDocument',
-])
+const metadata = load(
+  '../runtime/menu/utils/menu-metadata.ts',
+  operatingHoursPolicy,
+  ['normalizeMenuMetadataPatch', 'normalizeMenuDocument']
+)
 const creationInput = load(
   '../runtime/menu/utils/menu-create-input.ts',
   metadata,
@@ -76,6 +82,7 @@ const { kitchenMenuCapacity } = load(
   ['kitchenMenuCapacity']
 )
 function harness({
+  parentHours = testKitchenHours(),
   subscription = 'free',
   count = 0,
   associated = true,
@@ -153,6 +160,8 @@ function harness({
     ['buildMenuPayload']
   )
   const dependencies = {
+    ...serviceHoursPolicy,
+    resolveKitchenOperationHours: () => parentHours,
     ...targets,
     readPlaceCurrencyCode: (place) => place.default_currency_code || '',
     ...capacity,
@@ -544,5 +553,54 @@ test('Menu metadata no longer accepts promotion pricing', () => {
   assert.throws(
     () => metadata.normalizeMenuMetadataPatch({ pricing: null }),
     /Unsupported Menu field/
+  )
+})
+
+test('Menu availability is scoped to Kitchen hours and excludes Daily specials', async () => {
+  const parentHours = {
+    source: 'custom',
+    timezone: 'Europe/Zurich',
+    windows: [{ days: ['tuesday'], open: '08:00', close: '22:00' }],
+  }
+  const own = {
+    ...parentHours,
+    windows: [{ days: ['tuesday'], open: '11:30', close: '13:30' }],
+  }
+  const h = harness({ parentHours })
+  await h.updateKitchenMenu(
+    {},
+    { kitchenId: 'pizza', menuId: 'food', changes: { serving_hours: own } }
+  )
+  assert.deepEqual(h.menu.serving_hours, own)
+  const before = h.calls.length
+  await assert.rejects(
+    h.updateKitchenMenu(
+      {},
+      {
+        kitchenId: 'pizza',
+        menuId: 'food',
+        changes: {
+          serving_hours: {
+            ...own,
+            windows: [{ days: ['tuesday'], open: '07:00', close: '13:30' }],
+          },
+        },
+      }
+    ),
+    /within Kitchen/
+  )
+  assert.equal(h.calls.length, before)
+  await h.updateKitchenMenu(
+    {},
+    { kitchenId: 'pizza', menuId: 'food', changes: { serving_hours: null } }
+  )
+  assert.equal(h.menu.serving_hours, null)
+  const daily = harness({ schedule: 'daily' })
+  await assert.rejects(
+    daily.updateKitchenMenu(
+      {},
+      { kitchenId: 'pizza', menuId: 'food', changes: { serving_hours: own } }
+    ),
+    /regular interactive/
   )
 })

@@ -9,6 +9,8 @@ import {
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeMenuMetadataPatch } from '../../utils/menu-metadata'
 import type { MenuUpdateInput } from '../../models/menu-storage.model'
+import { resolveKitchenOperationHours } from '../../../kitchen/utils/kitchen-readers'
+import { hoursWithinParent } from '../../../kitchen/utils/service-hours'
 import { menuNameAndSlug } from '../name'
 
 export async function updateKitchenMenu(event: H3Event, input: unknown) {
@@ -66,6 +68,28 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
         statusMessage:
           'Daily Menus use dated selections, not a document attachment.',
       })
+    if (changes.serving_hours !== undefined) {
+      if (
+        menu.data?.schedule === 'daily' ||
+        menu.data?.format === 'document' ||
+        menu.data?.doc?.url
+      )
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Serving windows apply to regular interactive Menus.',
+        })
+      if (
+        changes.serving_hours &&
+        !hoursWithinParent(
+          changes.serving_hours,
+          resolveKitchenOperationHours(access.rootData, access.placeData)
+        )
+      )
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Menu hours must fit within Kitchen service hours.',
+        })
+    }
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     const next: Record<string, unknown> = {
       ...menu.data,

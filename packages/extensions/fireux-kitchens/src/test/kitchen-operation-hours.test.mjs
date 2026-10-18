@@ -1,3 +1,7 @@
+import {
+  weekdayHoursConstraints,
+  serviceHoursPolicy,
+} from './offering-test-helpers.mjs'
 import { commandScopeDeps } from './command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -44,6 +48,7 @@ const { resolveKitchenOperationHours } = load(
   {
     readWeekdayTimeWindowsConfig: config.weekdayTimeConfig.readWindowsConfig,
     readPlaceBusinessHours: (place) => place?.business_hours,
+    ...weekdayHoursConstraints,
   }
 )
 const custom = helpers.parseWeekdayTimeText(
@@ -79,11 +84,16 @@ function command({ denied = false } = {}) {
         return id
       },
       requireOperatingHours,
+      resolveKitchenOperationHours,
+      ...serviceHoursPolicy,
       readKitchenMutationActor: async () => ({ uid: 'operator' }),
       requireKitchenMutationAuthority: async () => {
         trace.push('authorize')
         if (denied) throw new Error('Access denied')
-        return { ownerAppId: 'misebox-app' }
+        return {
+          ownerAppId: 'misebox-app',
+          placeData: { business_hours: venue },
+        }
       },
       runGuardedServerTransaction: async (_, callback) => callback(tx),
       FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
@@ -207,4 +217,34 @@ test('Kitchen weekly editor saves only explicit custom hours and restores inheri
   } finally {
     scope.stop()
   }
+})
+
+test('Kitchen hours cannot extend outside Place hours', async () => {
+  const api = command()
+  await assert.rejects(
+    api.updateKitchenOperationHours(
+      {},
+      {
+        kitchenId: 'kitchen',
+        hours: helpers.parseWeekdayTimeText(
+          'Tuesday 11:00 - 22:00',
+          'Europe/Zurich'
+        ),
+      }
+    ),
+    /within venue/
+  )
+  assert.equal(api.writes.length, 0)
+  const narrowed = resolveKitchenOperationHours(
+    {
+      orders: {
+        operation_hours: helpers.parseWeekdayTimeText(
+          'Tuesday 11:00 - 22:00',
+          'Europe/Zurich'
+        ),
+      },
+    },
+    { business_hours: venue }
+  )
+  assert.equal(narrowed.windows[0].open, '12:00')
 })

@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
+import { intersectWeekdayHours } from '../../utils/weekday-time-constraints'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
@@ -74,7 +75,9 @@ export const resolveKitchenOperationHours = (
     kitchenHours.source === 'custom' &&
     kitchenHours.windows.length
   ) {
-    return kitchenHours
+    return placeHours
+      ? intersectWeekdayHours(kitchenHours, { ...placeHours, source: 'place' })
+      : { ...kitchenHours, windows: [] }
   }
 
   if (placeHours) {

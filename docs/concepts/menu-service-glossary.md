@@ -49,6 +49,14 @@ not a fulfilment method. Do not infer a kiosk or counter service from Eat in alo
 
 ## Timing
 
+Serving windows nest: **Place → Kitchen → Service → Menu**. Kitchen hours
+follow Place opening hours or fit within them. Each service follows Kitchen
+hours or uses a narrower window. A regular interactive Menu is available
+throughout its linked services unless its own times narrow that availability.
+A reused Menu keeps its own schedule; each service limits it separately.
+Changes to a parent window constrain effective availability without rewriting
+the saved child schedules. Workspace editors flag conflicting saved times.
+
 | Term | Meaning |
 | --- | --- |
 | As soon as possible | Next available preparation or fulfilment time. |

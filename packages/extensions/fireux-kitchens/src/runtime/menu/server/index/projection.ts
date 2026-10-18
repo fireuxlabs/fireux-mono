@@ -1,3 +1,4 @@
+import { constrainMenuOfferings } from '../../utils/menu-hours'
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
@@ -39,9 +40,13 @@ export function projectMenuDirectoryEntry(
     kitchen_slug: scopedKitchen.kitchenSlug,
     ...(context.kitchenName ? { kitchen_name: context.kitchenName } : {}),
   }
+  const menuOfferings = constrainMenuOfferings(
+    context.kitchenOfferings,
+    data.serving_hours
+  )
   const ordering =
     data.schedule !== 'daily'
-      ? readKitchenMenuOrdering(context.kitchenOfferings, id)
+      ? readKitchenMenuOrdering(menuOfferings, id)
       : null
   const sortOrder = Number(data.sort_order)
   const contexts = guestDiscoverableMenuContexts(ordering)
@@ -62,11 +67,14 @@ export function projectMenuDirectoryEntry(
     id,
     slug: readRecordString(data, 'slug'),
     kind,
-    ...(context.otherOfferings?.length ? {other_offerings: context.otherOfferings} : {}),    ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
+    ...(context.otherOfferings?.length
+      ? { other_offerings: context.otherOfferings }
+      : {}),
+    ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',
-    offerings: readKitchenPublicOfferings(context.kitchenOfferings, id),
+    offerings: readKitchenPublicOfferings(menuOfferings, id),
     ...(Number.isFinite(sortOrder) ? { sort_order: sortOrder } : {}),
     ...(contexts.length ? { contexts } : {}),
     ...(kind !== 'doc' && ordering?.order_types.length

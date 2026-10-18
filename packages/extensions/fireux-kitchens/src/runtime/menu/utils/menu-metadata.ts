@@ -1,10 +1,9 @@
+import { requireOperatingHours } from '../../kitchen/utils/operating-hours'
 import type { MenuDocument } from '../models/menu.model'
 import type { MenuUpdateInput } from '../models/menu-storage.model'
 
 /** Editable catalogue metadata. Publication and relationships have other owners. */
-export function normalizeMenuMetadataPatch(
-  input: unknown
-): MenuUpdateInput {
+export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new Error('Invalid Menu changes.')
   const value = input as Record<string, unknown>
@@ -18,6 +17,7 @@ export function normalizeMenuMetadataPatch(
           'sort_order',
           'doc',
           'audience',
+          'serving_hours',
         ].includes(key)
     )
   )
@@ -56,6 +56,21 @@ export function normalizeMenuMetadataPatch(
     result.audience = value.audience as 'public' | 'private_link'
   }
   if ('doc' in value) result.doc = normalizeMenuDocument(value.doc)
+  if ('serving_hours' in value) {
+    if (value.serving_hours === null) result.serving_hours = null
+    else {
+      const raw = value.serving_hours as Record<string, unknown>
+      if (
+        !raw ||
+        raw.source !== 'custom' ||
+        Object.keys(raw).some(
+          (key) => !['source', 'timezone', 'windows'].includes(key)
+        )
+      )
+        throw new Error('Choose valid Menu serving hours.')
+      result.serving_hours = requireOperatingHours(raw, true)
+    }
+  }
   return result
 }
 

@@ -4,17 +4,22 @@
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 class="text-lg font-semibold text-highlighted">
-            Kitchen operating hours
+            Kitchen service hours
           </h2>
           <p class="mt-1 text-sm text-muted">
-            When the Kitchen works and prepares food. Guest serving hours are
-            set on each service.
+            The window for all customer services, within venue opening hours.
           </p>
         </div>
         <UIcon name="i-lucide-chef-hat" class="size-6 text-muted" />
       </div>
     </template>
     <div class="space-y-5">
+      <UAlert
+        v-if="hoursConflict"
+        color="warning"
+        title="Kitchen hours need adjusting"
+        description="Saved Kitchen hours extend outside venue opening hours. Effective service hours are limited to the venue window."
+      />
       <div
         v-if="usesVenueHours && !customRequested"
         class="flex flex-wrap items-center justify-between gap-4"
@@ -42,7 +47,7 @@
           <p class="text-sm text-muted">
             {{
               customRequested && usesVenueHours
-                ? 'Start with venue hours and adjust the days that differ. Nothing changes until you save.'
+                ? 'Choose Kitchen hours within venue opening hours.'
                 : 'Your Kitchen uses its own weekly schedule.'
             }}
           </p>
@@ -111,7 +116,11 @@ import type {
 } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useKitchenOperationHours } from '../../../composables/workspace/ordering/useKitchenOperationHours'
-import { resolveKitchenOperationHours } from '../../../utils/kitchen-readers'
+import { hoursWithinParent } from '../../../utils/service-hours'
+import {
+  resolveKitchenOperationHours,
+  readKitchenOperationHours,
+} from '../../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: Kitchen
@@ -125,14 +134,31 @@ const error = ref('')
 const effectiveHours = computed(() =>
   resolveKitchenOperationHours(props.kitchen, props.place)
 )
+const hoursConflict = computed(() => {
+  const own = readKitchenOperationHours(props.kitchen)
+  return (
+    own.source === 'custom' &&
+    own.windows.length > 0 &&
+    !hoursWithinParent(own, resolveKitchenOperationHours({}, props.place))
+  )
+})
 const usesVenueHours = computed(() => effectiveHours.value.source === 'place')
-const captureSurface = useCommandScope([() => props.kitchen.id, () => props.canWrite, customRequested])
-const captureHours = () => { const local = captureSurface(); const owner = captureIntent(); return () => local() && owner() }
+const captureSurface = useCommandScope([
+  () => props.kitchen.id,
+  () => props.canWrite,
+  customRequested,
+])
+const captureHours = () => {
+  const local = captureSurface()
+  const owner = captureIntent()
+  return () => local() && owner()
+}
 watch(
   [() => props.kitchen.id, () => props.canWrite],
   () => {
     customRequested.value = false
-    error.value = ''; saving.value = false
+    error.value = ''
+    saving.value = false
   },
   { flush: 'sync' }
 )
@@ -157,7 +183,10 @@ async function useVenueHours() {
   error.value = ''
   try {
     await saveHours(props.kitchen.id, null)
-    if (isCurrent()) { saving.value = false; customRequested.value = false }
+    if (isCurrent()) {
+      saving.value = false
+      customRequested.value = false
+    }
   } catch (cause) {
     if (!isCurrent()) return
     error.value = cause instanceof Error ? cause.message : 'Please try again.'

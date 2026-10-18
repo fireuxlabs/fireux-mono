@@ -4,6 +4,7 @@ import {
   load,
   normalizeKitchenOfferings,
   kioskService,
+  publicMenuOrderTypes,
 } from './kitchen/offering-test-helpers.mjs'
 
 const { readKitchenPublicOfferings } = load(
@@ -60,6 +61,7 @@ test('Menu payload exposes only that Menu and the explicitly requested service s
     {
       readKitchenPublicOfferings,
       readKitchenMenuOrdering: () => ({ enabled: false, order_types: [] }),
+      publicMenuOrderTypes,
       isMenuOrderingEnabled: () => false,
       normalizeMenuRouteContext: (value) => value || 'generic',
       menuContextProfile: (context) => ({
@@ -90,7 +92,10 @@ test('Menu payload exposes only that Menu and the explicitly requested service s
     }).offerings.map((row) => row.id),
     ['dinner']
   )
-  assert.deepEqual(menuOfferingProfile({ kitchen_offerings: value }).offerings, [])
+  assert.deepEqual(
+    menuOfferingProfile({ kitchen_offerings: value }).offerings,
+    []
+  )
 })
 test('notification and ordering policy never enter the public timing summary', () => {
   const services = [

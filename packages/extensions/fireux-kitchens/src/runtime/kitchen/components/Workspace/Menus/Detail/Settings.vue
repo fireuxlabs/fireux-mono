@@ -5,6 +5,7 @@
       <WorkspaceKitchenMenusDetailSummary />
     </div>
     <WorkspaceKitchenMenusDetailAudience />
+    <WorkspaceKitchenMenusDetailHours />
     <WorkspaceKitchenMenusDetailOfferings />
     <UButton
       to="/workspace/kitchen/promotions"

@@ -1,3 +1,5 @@
+import { hoursWithinParent } from '../../utils/service-hours'
+import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -22,7 +24,11 @@ export async function updateKitchenOffering(event: H3Event, input: unknown) {
   const { kitchenId, offeringId, changes } = readOfferingUpdate(input)
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    await requireKitchenMutationAuthority(tx, actor, kitchenId)
+    const authority = await requireKitchenMutationAuthority(
+      tx,
+      actor,
+      kitchenId
+    )
     const offerings = await readKitchenOfferingsInTransaction(tx, kitchenId)
     const current = offerings.find((row) => row.id === offeringId)
     if (!current) throw missing()
@@ -41,6 +47,17 @@ export async function updateKitchenOffering(event: H3Event, input: unknown) {
     const offering = { ...current, ...fields }
     if (hours === null) delete offering.hours
     else if (hours !== undefined) offering.hours = hours
+    if (
+      hours &&
+      !hoursWithinParent(
+        hours,
+        resolveKitchenOperationHours(authority.rootData, authority.placeData)
+      )
+    )
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Serving hours must be within Kitchen service hours.',
+      })
     requireConfiguredOffering(offering)
     const selectedMenus = []
     for (const id of changes.menu_ids ||

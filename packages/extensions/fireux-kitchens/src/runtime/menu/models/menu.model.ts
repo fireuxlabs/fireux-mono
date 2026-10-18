@@ -1,3 +1,4 @@
+import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
@@ -16,6 +17,8 @@ export type Menu = FireuxStamped & {
   description?: string
   status: MenuStatus
   sort_order: number
+  /** No override means available throughout each linked service. */
+  serving_hours?: WeekdayTimeWindowsConfig | null
   schedule?: 'regular' | 'daily'
   /** Dates explicitly released for public browsing; content remains section-owned. */
   published_dates?: string[]

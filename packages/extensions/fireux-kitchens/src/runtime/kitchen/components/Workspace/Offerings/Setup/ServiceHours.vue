@@ -1,7 +1,9 @@
 <template>
   <section class="space-y-3">
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-xs font-medium uppercase tracking-wide text-muted">Hours</h3>
+      <h3 class="text-xs font-medium uppercase tracking-wide text-muted">
+        Hours
+      </h3>
       <UButton
         :label="editing ? 'Done' : 'Edit hours'"
         :aria-expanded="editing"
@@ -13,11 +15,21 @@
       />
     </div>
     <div v-if="!editing" class="space-y-1">
-      <p class="text-xs text-muted">{{ sameAsKitchen ? 'Kitchen hours' : 'Custom hours' }}</p>
+      <p class="text-xs text-muted">
+        {{ sameAsKitchen ? 'Kitchen hours' : 'Custom hours' }}
+      </p>
       <p v-for="line in summary" :key="line" class="text-sm">{{ line }}</p>
-      <p v-if="!summary.length" class="text-sm text-warning">No serving hours set</p>
+      <p v-if="!summary.length" class="text-sm text-warning">
+        No serving hours set
+      </p>
     </div>
-    <template v-else>
+    <UAlert
+      v-if="conflict"
+      color="warning"
+      title="Service hours need adjusting"
+      description="These saved times extend beyond Kitchen service hours. Customers can only use the overlapping times."
+    />
+    <template v-if="editing">
       <UFormField label="Same as Kitchen service hours?">
         <URadioGroup
           :model-value="sameAsKitchen ? 'yes' : 'no'"
@@ -30,6 +42,12 @@
           @update:model-value="emit('inherit', $event === 'yes')"
         />
       </UFormField>
+      <div class="text-sm text-muted">
+        <p class="font-medium">Within Kitchen service hours</p>
+        <p v-for="line in serviceHoursSummary(kitchenHours)" :key="line">
+          {{ line }}
+        </p>
+      </div>
       <WorkspaceKitchenOfferingsSetupHours
         v-if="!sameAsKitchen"
         :value="value"
@@ -38,13 +56,18 @@
         :disabled="disabled"
         @update="emit('update', $event)"
       />
+      <slot name="menus" :hours="effectiveHours" />
     </template>
   </section>
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { intersectWeekdayHours } from '../../../../../utils/weekday-time-constraints'
 import type { WeekdayTimeWindowsConfig } from '../../../../../models/shared/weekday-time.model'
-import { serviceHoursSummary } from '../../../../utils/service-hours'
+import {
+  hoursWithinParent,
+  serviceHoursSummary,
+} from '../../../../utils/service-hours'
 const props = defineProps<{
   sameAsKitchen: boolean
   value?: WeekdayTimeWindowsConfig | null
@@ -54,10 +77,22 @@ const props = defineProps<{
   disabled?: boolean
 }>()
 const editing = ref(false)
-const summary = computed(() => {
-  const hours = props.sameAsKitchen ? props.kitchenHours : props.value
-  return serviceHoursSummary(hours)
-})
+const conflict = computed(() =>
+  Boolean(
+    !props.sameAsKitchen &&
+      props.value?.windows.length &&
+      props.kitchenHours &&
+      !hoursWithinParent(props.value, props.kitchenHours)
+  )
+)
+const effectiveHours = computed(() =>
+  props.sameAsKitchen
+    ? props.kitchenHours
+    : props.value && props.kitchenHours
+      ? intersectWeekdayHours(props.value, props.kitchenHours)
+      : props.value
+)
+const summary = computed(() => serviceHoursSummary(effectiveHours.value))
 const emit = defineEmits<{
   inherit: [value: boolean]
   update: [value: WeekdayTimeWindowsConfig | null]
