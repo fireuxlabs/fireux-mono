@@ -117,7 +117,7 @@ export const miseboxReference: IgnitionAssembly = {
       uses: ['kitchen'],
       sourcePaths: [
         source +
-          'kitchen/components/Workspace/Orders/Index.vue',
+          'kitchen/components/Workspace/Orders/Board.vue',
       ],
     },
     {
@@ -127,7 +127,7 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['fulfil'],
       uses: ['orders'],
       sourcePaths: [
-        source + 'kitchen/composables/orders/useKitchenOrderTransition.ts',
+        source + 'kitchen/server/orders/exchange-request.ts',
       ],
     },
     {
@@ -136,7 +136,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['fulfil'],
       uses: ['orders', 'order-actions', 'workspace'],
-      sourcePaths: [source + 'kitchen/components/Workspace/Orders/Index.vue'],
+      sourcePaths: [source + 'kitchen/components/Workspace/Orders/Board.vue'],
     },
   ],
   evidence: collectionOrderingBrief.requirements.map((requirement) => ({

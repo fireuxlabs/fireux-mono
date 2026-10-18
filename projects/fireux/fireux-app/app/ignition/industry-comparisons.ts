@@ -233,7 +233,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
           'Misebox Stations do not allocate timed capacity. BuenoHost atomically reserves one Property per night; grooming adds simultaneous resources, duration, staff skills and expiring holds.',
         reuse: 'partial-source',
         references: [
-          kitchens + 'menu/server/ordering/schedule.ts',
+          kitchens + 'kitchen/utils/operating-hours.ts',
           kitchens + 'kitchen/models/station.model.ts',
           reservations + 'property/server/reservations/command.ts',
         ],
@@ -267,7 +267,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
         reuse: 'partial-source',
         references: [
           kitchens + 'kitchen/utils/ordering.ts',
-          kitchens + 'menu/server/ordering/commit-guard.ts',
+          kitchens + 'kitchen/server/orders/submission.ts',
         ],
         acceptance:
           'The server produces a reproducible quote and duration; a later adjustment is recorded and presented explicitly rather than silently changing the agreed price.',
@@ -276,12 +276,12 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
         id: 'sms',
         kind: 'new-behaviour',
         title: 'Appointment reminders and pickup notifications',
-        baseline: 'Kitchen order notifications and WhatsApp integration',
+        baseline: 'Kitchen WhatsApp notification policy configuration',
         candidate: 'Appointment lifecycle notifications through SMS',
         reason:
-          'Existing notification work informs the boundary, but an SMS adapter, recipient policy and appointment triggers still need implementation.',
+          'Existing notification policy configuration informs the boundary; it does not prove delivery. An SMS adapter, recipient policy and appointment triggers still need implementation.',
         reuse: 'partial-source',
-        references: [kitchens + 'kitchen/server/ordering/whatsapp.ts'],
+        references: [kitchens + 'kitchen/utils/ordering-whatsapp.ts'],
         acceptance:
           'Notifications reach the authorised recipient once for the intended appointment event, with retry/failure state visible.',
       },

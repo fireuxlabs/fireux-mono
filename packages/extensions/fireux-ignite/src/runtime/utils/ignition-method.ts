@@ -27,13 +27,13 @@ export const ignitionMethod = [
     id: 'build',
     title: 'Implement a bounded journey',
     instruction:
-      'Reuse supported lower owners. Add domain implementation where needed. Record consequential decisions and their evidence rather than storing chat history.',
+      'Compose in FireUX style from the first implementation: map named user responsibilities to a readable parent, a clear state/lifecycle owner and focused controls. Reuse supported Core and domain primitives and commands without duplicating reads or authority. Keep cohesive controls local; avoid forwarding wrappers and premature abstractions. Record consequential decisions and their evidence rather than storing chat history.',
   },
   {
     id: 'verify',
     title: 'Prove the result',
     instruction:
-      'Verify code, authority, scope changes, failures and the complete user journey independently. A source path or passing typecheck does not prove a usable product.',
+      'Review the complete route, composition, controls, state/lifecycle owner and commands; remove obsolete paths and confirm registration and consumers. Verify code, authority, scope changes, failures and the complete user journey independently. A shorter file, source path or passing typecheck does not prove sound composition or a usable product.',
   },
   {
     id: 'reconcile',
