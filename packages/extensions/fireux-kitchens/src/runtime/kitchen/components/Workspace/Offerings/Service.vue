@@ -8,6 +8,7 @@
       :menus="menus"
       :menus-outcome="menusOutcome"
       :timezone="timezone"
+      :kitchen-hours="kitchenHours"
       :disabled="disabled"
       :save="save"
       :capture-intent="captureIntent"
@@ -24,6 +25,7 @@
   </section>
 </template>
 <script setup lang="ts">
+import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import type { Menu } from '../../../../menu/models/menu.model'
 import type { KitchenOffering } from '../../../models/offering.model'
@@ -35,6 +37,7 @@ defineProps<{
   menus: Menu[]
   menusOutcome: ReadOutcome
   timezone: string
+  kitchenHours?: WeekdayTimeWindowsConfig
   disabled: boolean
   captureIntent?: () => () => boolean
   save: (

@@ -10,16 +10,15 @@
       entity="Menus"
       state="error"
     />
-    <UCheckboxGroup
+    <MoleculesMultiSelect
       v-else-if="options.length"
+      label="Menus"
       :model-value="menuIds"
       :items="options"
       :disabled="disabled"
-      class="mt-2"
-      :ui="{ fieldset: 'flex flex-row flex-wrap gap-x-5 gap-y-3' }"
       @update:model-value="emit('update', $event)"
     />
-    <p v-else class="my-2 text-sm text-muted">Create a menu to get started.</p>
+    <p v-else class="text-sm text-muted">Create a menu to get started.</p>
   </UFormField>
 </template>
 <script setup lang="ts">

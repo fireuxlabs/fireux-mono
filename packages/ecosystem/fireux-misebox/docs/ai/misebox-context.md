@@ -2152,6 +2152,16 @@ development-only DiagnosticsDebugPanel consumes the same safe projection: servic
 types, configuration IDs, menus, hours, availability, readiness and read outcomes.
 It excludes notification recipients, credentials, payment details and Order data.
 
+Services opens with compact selected-Menu chips and effective hours summaries.
+Menus composes Core `MoleculesMultiSelect` for all choices as toggle badges; selected badges are highlighted and
+multiple selections are allowed. There is no dropdown or separate edit step.
+ServiceHours and Timing own their local editor disclosures; opening or closing
+an editor never writes settings. Edits retain automatic saving.
+Effective Kitchen hours reuse the acquired Kitchen and Place through
+`resolveKitchenOperationHours`; the summary does not add another reader or copy
+inherited times into service records. `serviceHoursSummary` groups equal ranges
+without implying service on unselected days.
+
 Services configuration is inline. `Workspace/Offerings/Index.vue` acquires the
 service/menu sources once, composes divider-separated `Service.vue` sections,
 and publishes safe page context. Sections compose `Setup.vue`; `useServiceSetup` owns automatic saves,
@@ -2196,7 +2206,7 @@ stored policy remains preserved by sparse updates. Kiosk menu selection does not
 change normal Dish prices or Orders.
 
 `Setup/Hours.vue` owns the local range draft and composes `Hours/Range.vue` with
-seven visible Nuxt UI day-toggle buttons and native time inputs. Selected days
+Core `MoleculesMultiSelect` day pills and softly rounded native time inputs. Selected days
 remain visible without opening a dropdown; each button exposes its full weekday
 label and pressed state. It emits the existing structured
 weekday/time configuration only when all ranges are complete; hydration never

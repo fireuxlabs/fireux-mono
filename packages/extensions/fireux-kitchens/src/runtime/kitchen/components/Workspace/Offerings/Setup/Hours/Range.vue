@@ -15,24 +15,19 @@
         @click="emit('remove')"
       />
     </div>
-    <div class="grid grid-cols-7 gap-1" role="group" aria-label="Serving days">
-      <UButton
-        v-for="day in weekdayTimeDayOptions"
-        :key="day.value"
-        :label="day.label.slice(0, 3)"
-        :aria-label="day.label"
-        :aria-pressed="value.days.includes(day.value)"
-        :color="value.days.includes(day.value) ? 'primary' : 'neutral'"
-        :variant="value.days.includes(day.value) ? 'solid' : 'soft'"
-        :disabled="disabled"
-        class="min-h-10 min-w-0 justify-center px-0 text-xs"
-        @click="toggleDay(day.value)"
-      />
-    </div>
+    <MoleculesMultiSelect
+      label="Serving days"
+      :items="days"
+      :model-value="value.days"
+      :disabled="disabled"
+      @update:model-value="setDays"
+    />
     <div class="grid grid-cols-2 gap-3">
       <UFormField label="From">
         <UInput
           type="time"
+          variant="soft"
+          :ui="{ base: 'rounded-full px-4 py-2 ring-1 ring-inset ring-default' }"
           :model-value="value.open"
           class="w-full"
           :disabled="disabled"
@@ -42,6 +37,8 @@
       <UFormField label="Until">
         <UInput
           type="time"
+          variant="soft"
+          :ui="{ base: 'rounded-full px-4 py-2 ring-1 ring-inset ring-default' }"
           :model-value="value.close"
           class="w-full"
           :disabled="disabled"
@@ -64,7 +61,6 @@
 <script setup lang="ts">
 import type {
   WeekdayTimeWindow,
-  WeekdayTimeDay,
 } from '../../../../../../models/shared/weekday-time.model'
 import {
   weekdayTimeDayOptions,
@@ -76,13 +72,16 @@ const props = defineProps<{
   disabled?: boolean
 }>()
 const emit = defineEmits<{ update: [value: WeekdayTimeWindow]; remove: [] }>()
-function toggleDay(day: WeekdayTimeDay) {
-  const selected = new Set(props.value.days)
-  if (selected.has(day)) selected.delete(day)
-  else selected.add(day)
+const days = weekdayTimeDayOptions.map((day) => ({
+  label: day.label.slice(0, 3),
+  value: day.value,
+  description: day.label,
+}))
+function setDays(values: string[]) {
+  const selected = new Set(values)
   emit('update', {
     ...props.value,
-    days: weekdayTimeDays.filter((value) => selected.has(value)),
+    days: weekdayTimeDays.filter((day) => selected.has(day)),
   })
 }
 function setTime(key: 'open' | 'close', value: string | number) {

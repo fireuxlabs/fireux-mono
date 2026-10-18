@@ -33,6 +33,7 @@
       :menus="menus"
       :menus-outcome="menusOutcome"
       :timezone="timezone"
+      :kitchen-hours="kitchenHours"
       :disabled="!canWrite"
       :save="configure"
       :capture-intent="captureIntent"
@@ -63,6 +64,7 @@ const {
   menus,
   menusOutcome,
   timezone,
+  kitchenHours,
   configure,
 } = useKitchenOfferings()
 const offeringId = useRouteParam('offering')

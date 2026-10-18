@@ -190,6 +190,12 @@ local; this rule does not require one component per field, forwarding wrappers,
 empty controllers or premature universal abstractions. Use readable formatting;
 compressed templates or scripts must not obscure ownership and data flow.
 
+For short multiple-selection lists that should expose every choice, prefer Core's
+`MoleculesMultiSelect`: visible toggle badges with highlighted selected values.
+Domains supply choices and retain eligibility and persistence. See
+`docs/concepts/components.md#multiple-selection` for its current consumer and
+adoption boundary; searchable lists and single selection remain separate.
+
 ### Mandatory composition checks
 
 These are start and finish gates for every implementation or structural change,

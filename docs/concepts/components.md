@@ -108,6 +108,24 @@ routing or domain policy. Kitchen’s Ordering library is its current consumer. 
 with a product-neutral API; a second materially different consumer is required
 before claiming proved cross-domain reuse.
 
+## Multiple selection
+
+Core `components/molecules/MultiSelect.vue` (`MoleculesMultiSelect`) is the
+preferred control for short multiple-choice lists whose options should all remain
+visible. It composes Nuxt UI badges as native pill buttons with a local selection style,
+separate from ordinary badges and action buttons. Selected choices use a soft
+primary tint and checkmark; repeated clicks deselect, and multiple choices remain
+selected.
+It accepts a required accessible group label, string-valued labelled items,
+optional descriptions and item/global disabled state, and an array `v-model`.
+Native buttons retain Tab and Space/Enter interaction and expose `aria-pressed`.
+The molecule owns no reads, persistence, filtering, or domain eligibility.
+
+Kitchen Services menu selection is the first production consumer. This is an
+accepted product-neutral baseline, not evidence of completed cross-domain
+adoption. Long/searchable lists and single-value selection remain separate
+responsibilities; do not replace those controls mechanically.
+
 ## Core shared component families
 
 `fireux-core/src/runtime/components` is a finite shared boundary, not the

@@ -16,6 +16,7 @@ import { useKitchenWorkspaceIdentity } from '../workspace/identity/useKitchenWor
 import { useKitchenWorkspacePlace } from '../workspace/identity/useKitchenWorkspacePlace'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenOfferingCollection } from '../useKitchenOfferingCollection'
+import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
 import type {
   KitchenOffering,
   KitchenOfferingChanges,
@@ -195,6 +196,9 @@ export function useKitchenOfferings(
       storageKitchenId.value ? place.value?.timezone || '' : ''
     ),
     placeOutcome,
+    kitchenHours: computed(() =>
+      resolveKitchenOperationHours(identity.selectedKitchen.value || {}, place.value || {})
+    ),
     venueHours: computed(() =>
       storageKitchenId.value && place.value
         ? {

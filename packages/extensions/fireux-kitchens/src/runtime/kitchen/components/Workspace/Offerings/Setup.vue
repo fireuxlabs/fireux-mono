@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-3">
-    <div class="flex items-start justify-between gap-4">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
       <slot name="heading" />
-      <div class="flex shrink-0 items-center gap-2 pt-0.5">
+      <div class="flex shrink-0 items-center gap-2">
         <USwitch
           :model-value="enabled"
           :label="enabled ? 'On' : 'Off'"
@@ -37,8 +37,22 @@
           :disabled="disabled || busy"
           @update="setMenus"
         />
+        <div v-if="option.key === 'counter'" class="space-y-4">
+          <WorkspaceKitchenOfferingsSetupInteraction
+            v-for="config in interactions"
+            :key="config.type"
+            :label="kitchenOrderTypeLabel(config.type)"
+            :config="config"
+            :mode-menus="true"
+            :disabled="disabled || busy"
+            :menus="menus"
+            :menus-outcome="menusOutcome"
+            :update-function="(changes) => updateInteraction(config.type, changes)"
+          />
+        </div>
         <WorkspaceKitchenOfferingsSetupServiceHours
           :same-as-kitchen="sameAsKitchen"
+          :kitchen-hours="kitchenHours"
           :value="hours"
           :timezone="timezone"
           :label="
@@ -59,20 +73,13 @@
       >
         Add serving hours or use Kitchen service hours.
       </p>
-      <div
-        v-if="['pre_order', 'counter'].includes(option.key)"
-        :class="option.key === 'counter' ? 'grid gap-4 sm:grid-cols-2' : ''"
-      >
+      <div v-if="option.key === 'pre_order'">
         <WorkspaceKitchenOfferingsSetupInteraction
           v-for="config in interactions"
           :key="config.type"
-          :label="
-            option.key === 'counter'
-              ? kitchenOrderTypeLabel(config.type)
-              : option.label
-          "
+          :label="option.label"
           :config="config"
-          :mode-menus="option.key === 'counter'"
+          :mode-menus="false"
           :disabled="disabled || busy"
           :menus="menus"
           :menus-outcome="menusOutcome"
@@ -86,6 +93,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import type { Menu } from '../../../../menu/models/menu.model'
 import type { KitchenOffering } from '../../../models/offering.model'
@@ -100,6 +108,7 @@ const props = defineProps<{
   menus: Menu[]
   menusOutcome: ReadOutcome
   timezone: string
+  kitchenHours?: WeekdayTimeWindowsConfig
   disabled?: boolean
   captureIntent?: () => () => boolean
   save: (
@@ -129,9 +138,7 @@ const readiness = computed(() =>
 
 <style scoped>
 .service-config {
-  padding: 0.875rem 1rem;
-  background: var(--ui-bg-elevated);
-  border-radius: 0.5rem;
+  padding-block: 0.25rem;
 }
 .service-fields {
   display: grid;
@@ -140,7 +147,7 @@ const readiness = computed(() =>
 }
 @media (min-width: 768px) {
   .service-fields {
-    grid-template-columns: minmax(0, 1fr) 17rem;
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.8fr);
   }
 }
 </style>

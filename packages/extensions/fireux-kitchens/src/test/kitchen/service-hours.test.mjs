@@ -79,3 +79,21 @@ test('custom hours cannot bridge a parent service break', () => {
     false
   )
 })
+
+test('hours summaries group matching times without including unselected days', () => {
+  const input = {
+    ...hours(['tuesday'], '16:00', '22:45'),
+    windows: [
+      { days: ['tuesday', 'wednesday'], open: '16:00', close: '22:45' },
+      { days: ['thursday', 'friday', 'saturday'], open: '16:00', close: '22:45' },
+      { days: ['monday', 'friday'], open: '08:00', close: '10:00' },
+    ],
+  }
+  const before = structuredClone(input)
+  assert.deepEqual(serviceHoursPolicy.serviceHoursSummary(input), [
+    'Tue–Sat  16:00–22:45',
+    'Mon, Fri  08:00–10:00',
+  ])
+  assert.deepEqual(input, before)
+  assert.deepEqual(serviceHoursPolicy.serviceHoursSummary(null), [])
+})

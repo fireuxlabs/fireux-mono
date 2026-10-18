@@ -11,9 +11,6 @@
       state="error"
     />
     <div v-else-if="selectedKitchen">
-      <div class="flex justify-end">
-        <UButton to="/workspace/kitchen/menus" label="Manage menus" color="neutral" variant="link" size="sm" />
-      </div>
       <WorkspaceKitchenOfferingsService
         v-for="entry in entries"
         :key="ownerScope + ':' + entry.option.key"
@@ -23,6 +20,7 @@
         :menus="menus"
         :menus-outcome="menusOutcome"
         :timezone="timezone"
+        :kitchen-hours="kitchenHours"
         :disabled="!canWrite"
         :save="configure"
         :capture-intent="captureIntent"
@@ -60,6 +58,7 @@ const {
   menus,
   menusOutcome,
   timezone,
+  kitchenHours,
   configure,
 } = useKitchenOfferings()
 const entries = computed(() =>

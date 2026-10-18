@@ -57,7 +57,7 @@ const policy = loadOfferingSource(
 )
 export const serviceHoursPolicy = loadOfferingSource(
   'kitchen/utils/service-hours',
-  'resolveServiceHours,hoursWithinParent',
+  'resolveServiceHours,hoursWithinParent,serviceHoursSummary',
   { weekdayTimeDays: core.weekdayTimeCore.days }
 )
 export const testKitchenHours = () => ({
