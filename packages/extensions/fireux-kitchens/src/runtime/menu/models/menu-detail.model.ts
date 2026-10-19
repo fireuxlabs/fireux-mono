@@ -9,9 +9,7 @@ import type {
 import type { MenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
 import type { KitchenImageShade } from '../../kitchen/models/kitchen-configuration.model.ts'
 import type { DishItemKind } from '../../kitchen/utils/dish.ts'
-import type {
-  MenuOfferingProfile,
-} from './menu-ordering.model'
+import type { MenuOfferingProfile } from './menu-ordering.model'
 
 export type MenuManifestPriceOption = {
   id: string
@@ -28,6 +26,7 @@ export type MenuManifestAddOn = {
 }
 
 export type MenuManifestItem = {
+  bottleDeposit?: number
   mealDeal?: {
     promotionId: string
     days: string[]

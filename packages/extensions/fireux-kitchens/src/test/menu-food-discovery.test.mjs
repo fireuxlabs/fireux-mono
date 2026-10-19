@@ -3,7 +3,6 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
-import { computed, ref, watch } from 'vue'
 const source = readFileSync(
   new URL('../runtime/menu/components/Collection/Results.vue', import.meta.url),
   'utf8'
@@ -45,21 +44,13 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     kitchen_offering_id: 'picnic',
     type: 'collection',
   })
-  const script = source
-    .split('<script setup lang="ts">')[1]
-    .split('</script>')[0]
+  const script = readFileSync(
+    new URL('../runtime/menu/utils/food-venue-groups.ts', import.meta.url),
+    'utf8'
+  )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
   const deps = {
-    computed,
-    ref,
-    watch,
-    defineEmits: () => () => {},
-    defineProps: () => ({ menus: rows }),
-    useCollectionSearch: ({ items }) => ({
-      query: ref(''),
-      visibleItems: items,
-      visibleCount: computed(() => items.value.length),
-    }),
     directoryMenuRouteScope: (kitchenSlug) => ({
       kind: 'directory',
       kitchenSlug,
@@ -70,41 +61,51 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     menuRoutePath: ({ scope, menuId }) =>
       `/kitchens/${scope.kitchenSlug}/menus/${menuId}`,
   }
-  const api = compileFunction(
-    `${stripTypeScriptTypes(script)}; return {service,visibleItems,servingTimes,groups}`,
+  const group = compileFunction(
+    `${stripTypeScriptTypes(script)}; return foodVenueGroups`,
     Object.keys(deps)
   )(...Object.values(deps))
-  assert.equal(api.visibleItems.value.length, 1)
-  assert.equal(api.groups.value.length, 1)
-  assert.equal(api.groups.value[0].menus.length, 1)
-  assert.equal(api.groups.value[0].actions.length, 2)
-  assert.deepEqual(api.groups.value[0].actions[0].offerings, [{ id: 'pickup' }])
-  assert.deepEqual(api.groups.value[0].actions[1].offerings, [
-    { id: 'courier' },
+  const before = structuredClone(rows)
+  const groups = group(rows)
+  assert.equal(groups.length, 1)
+  assert.equal(groups[0].title, 'Pizza')
+  assert.equal(groups[0].actions.length, 2)
+  assert.deepEqual(groups[0].actions[0].offerings, [{ id: 'pickup' }])
+  assert.deepEqual(groups[0].actions[1].offerings, [{ id: 'courier' }])
+  assert.equal(groups[0].actions[0].to, '/kitchens/baren/menu.collection')
+  assert.equal(group(rows, 'collection')[0].actions.length, 1)
+  assert.deepEqual(group(rows, 'collection')[0].actions[0].offerings, [
+    { id: 'pickup' },
   ])
-  assert.equal(api.groups.value[0].to, '/kitchens/baren/menu.collection')
-  assert.equal(api.groups.value[0].offerings.length, 2)
-  api.service.value = 'collection'
-  assert.deepEqual(
-    api.visibleItems.value.map((row) => row.id),
-    ['food']
-  )
   assert.equal(
-    api.groups.value[0].actions[0].to,
-    '/kitchens/baren/menu.collection'
-  )
-  assert.deepEqual(api.servingTimes(rows[0]), [{ id: 'pickup' }])
-  api.service.value = 'delivery'
-  assert.equal(
-    api.groups.value[0].actions[0].to,
+    group(rows, 'delivery')[0].actions[0].to,
     '/kitchens/baren/menu.delivery'
   )
-  assert.deepEqual(api.servingTimes(rows[0]), [{ id: 'courier' }])
+  assert.deepEqual(group(rows, 'delivery')[0].actions[0].offerings, [
+    { id: 'courier' },
+  ])
+  assert.deepEqual(rows, before)
   rows[0].matching_dishes = [
     { id: 'pizza', name: 'Pizza Margherita' },
     { id: 'pizza', name: 'Pizza Margherita' },
   ]
-  api.service.value = 'collection'
-  assert.equal(api.groups.value[0].matchingDishes.length, 1)
+  const drinks = {
+    ...structuredClone(rows[0]),
+    id: 'drinks',
+    name: 'Drinks',
+    matching_dishes: [],
+  }
+  assert.equal(
+    group([...rows, drinks], 'collection')[0].matchingDishes.length,
+    1
+  )
+  assert.equal(group([...rows, drinks])[0].title, 'Pizza & Drinks')
+  assert.deepEqual(group([{ ...rows[0], source: {} }]), [])
+  assert.equal(
+    group(rows, 'collection')[0].actions[0].offerings.some(
+      (row) => row.id === 'picnic'
+    ),
+    false
+  )
   assert.doesNotMatch(source, /useKitchenCollection|MenuCollectionList/)
 })

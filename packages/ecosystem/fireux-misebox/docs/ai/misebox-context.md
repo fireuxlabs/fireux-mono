@@ -1938,14 +1938,38 @@ per-Menu order submission remains separate and unchanged. Delivery, table and ro
 presentation do not yet consume this selection slice. Regression evidence lives
 in `menu-service-basket.test.mjs` and `menu-service-view.test.mjs`.
 
+Dish may configure an optional `bottle_deposit` amount through the existing
+protected Dish command. Zero/absence means no deposit. Pricing composes the
+focused `Workspace/Dishes/Deposit.vue` field without another record reader;
+normal price, variants and extras are independent. Pricing retains the one
+existing Dish context and save coordinator, composing focused `Pricing/Options.vue`
+and `Pricing/Extras.vue` draft controls. Those controls add no readers or writers.
+Public manifests project
+`bottleDeposit` explicitly; descriptions never determine runtime charges.
+Collection item selection composes `Selection/Bottle.vue` for an explicit new
+bottle or matching-bottle exchange choice. New bottles add the configured amount
+per drink; exchanges add zero. Basket lines retain the choice, show the drink
+subtotal and separate deposit, and distinguish otherwise identical selections.
+Deposit changes invalidate existing local selections. This is display/selection
+behaviour only; existing Order submission and pricing remain outside the slice.
+Verify `dish-bottle-deposit.test.mjs` and `menu-service-basket.test.mjs`.
+
 
 `/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
 public service surfaces, not named Menus.
+The food portal Results component owns search/service controls only;
+`menu/utils/food-venue-groups.ts` derives venue cards, service actions and quiet
+other-Menu links from the supplied directory records. Its shared result type is
+consumed directly by `Cards/FoodVenue.vue`; unused card projections are omitted.
 `Detail/ServiceMenu.vue` consumes the existing live reader through
 `/api/menus/service/items`. It returns the eligible public source manifests, and
 the existing venue clock refreshes their price presentation without refetching
 for time alone. The endpoint scans all eligible public published Menu
 pages, reuses their public detail payloads and combines interactive items.
+`Detail/ServiceMenu.vue` retains route context, read outcomes and the single
+service-item acquisition. It composes the Collection selector or Menu-owned
+`Service/Catalogue.vue` for read-only Delivery/Table/Room presentation. The
+catalogue receives resolved sections and performs no acquisition or commands.
 `service-sections.ts` merges section labels and deduplicates catalogue Dish
 identity across placements while retaining distinct commercial offers. A current
 service takes precedence over a future window; otherwise the next serving window
@@ -1957,8 +1981,9 @@ Meal deals deduplicate by Kitchen/Promotion identity and follow their applicable
 serving weekday. Other items without catalogue identity retain their scoped placement identity. Shared serving
 times appear once per section; differing schedules remain beside their items.
 Document Menus remain accessible through the default food landing, rather than inventing items
-from files. Daily specials remains separate. The surface has no cart or ordering
-actions; service configuration and order execution are unchanged. Configured
+from files. Daily specials remains separate. Collection composes the local selection
+and basket slice described above; other service presentations and Order execution
+remain unchanged. Configured
 service schedules are shown, not a promise of order/timeslot acceptance.
 The public Menu entrance defaults to browsing food and drinks, with prominent Collection
 and Delivery actions only when its service-filtered reader finds an eligible published public Menu.

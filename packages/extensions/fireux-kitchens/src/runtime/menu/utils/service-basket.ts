@@ -1,6 +1,7 @@
 import type { MenuServiceOffer } from './service-sections'
 
 export type ServiceItemChoices = {
+  bottle?: 'deposit' | 'exchange'
   optionId: string
   extraIds: string[]
   groups: Record<string, string[]>
@@ -15,6 +16,7 @@ export type ServiceBasketLine = {
   currency: string
   choices: ServiceItemChoices
   details: string[]
+  depositUnitMinor: number
   unitMinor: number
   signature: string
 }
@@ -41,6 +43,19 @@ export function serviceBasketLine(
       throw new Error('This item has no valid price.')
     return minor
   }
+  const deposit =
+    item.bottleDeposit === undefined ? 0 : money(item.bottleDeposit)
+  if (
+    deposit
+      ? !['deposit', 'exchange'].includes(choices.bottle || '')
+      : choices.bottle !== undefined
+  )
+    throw new Error(
+      deposit
+        ? 'Choose a new bottle or a bottle exchange.'
+        : 'This item does not have a bottle deposit.'
+    )
+  const depositUnitMinor = choices.bottle === 'deposit' ? deposit : 0
   const option = item.priceOptions.find((row) => row.id === choices.optionId)
   if (item.priceOptions.length ? !option : Boolean(choices.optionId))
     throw new Error('Choose an available option.')
@@ -75,6 +90,7 @@ export function serviceBasketLine(
     )
   )
     throw new Error('A meal choice has changed.')
+  unitMinor += depositUnitMinor
   const selection = { ...choices, extraIds, groups }
   const signature = serviceItemSignature(offer)
   return {
@@ -82,6 +98,7 @@ export function serviceBasketLine(
       offer.source,
       item.id,
       choices.optionId,
+      choices.bottle,
       extraIds,
       groups,
       unitMinor,
@@ -94,6 +111,7 @@ export function serviceBasketLine(
     choices: selection,
     details,
     unitMinor,
+    depositUnitMinor,
     signature,
   }
 }

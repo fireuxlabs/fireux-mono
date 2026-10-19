@@ -21,8 +21,26 @@
           </p>
         </div>
         <span class="shrink-0 font-medium">{{
-          money((line.unitMinor * line.choices.quantity) / 100)
+          money(
+            ((line.unitMinor - line.depositUnitMinor) * line.choices.quantity) /
+              100
+          )
         }}</span>
+      </div>
+      <div
+        v-if="line.choices.bottle"
+        class="flex justify-between gap-4 text-sm text-muted"
+      >
+        <span>{{
+          line.choices.bottle === 'exchange'
+            ? 'Bottle exchange · no deposit'
+            : `Bottle deposit · ${line.choices.quantity} bottle${line.choices.quantity === 1 ? '' : 's'}`
+        }}</span>
+        <span v-if="line.depositUnitMinor"
+          >+{{
+            money((line.depositUnitMinor * line.choices.quantity) / 100)
+          }}</span
+        >
       </div>
       <div class="flex items-center gap-3">
         <UButton

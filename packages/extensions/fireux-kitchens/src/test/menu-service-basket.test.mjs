@@ -154,3 +154,67 @@ test('quantity bounds, incompatible currencies and separate basket instances are
   mixed.add(item, choices())
   assert.throws(() => mixed.add(other, choices()), /currencies/)
 })
+
+test('bottle deposit requires a deliberate choice and keeps normal drink prices unchanged', () => {
+  const drink = offer('drinks', { name: 'Cola', price: 4, bottleDeposit: 10 })
+  const before = structuredClone(drink)
+  assert.throws(
+    () => policy.serviceBasketLine(drink, choices()),
+    /new bottle or a bottle exchange/
+  )
+  assert.throws(
+    () => policy.serviceBasketLine(drink, choices({ bottle: 'other' })),
+    /new bottle/
+  )
+  const deposit = policy.serviceBasketLine(
+    drink,
+    choices({ bottle: 'deposit', quantity: 2 })
+  )
+  const exchange = policy.serviceBasketLine(
+    drink,
+    choices({ bottle: 'exchange' })
+  )
+  assert.equal(deposit.depositUnitMinor, 1000)
+  assert.equal(deposit.unitMinor, 1400)
+  assert.equal(exchange.depositUnitMinor, 0)
+  assert.equal(exchange.unitMinor, 400)
+  assert.notEqual(deposit.key, exchange.key)
+  assert.deepEqual(drink, before)
+  assert.throws(
+    () => policy.serviceBasketLine(offer(), choices({ bottle: 'deposit' })),
+    /does not have/
+  )
+})
+
+test('new bottles and exchanges stay separate and deposits follow quantity and removal', () => {
+  const drink = offer('drinks', { name: 'Cola', price: 4, bottleDeposit: 10 })
+  const basket = useServiceBasket([drink])
+  basket.add(drink, choices({ bottle: 'deposit', quantity: 2 }))
+  basket.add(drink, choices({ bottle: 'exchange' }))
+  assert.equal(basket.totalMinor.value, 3200)
+  assert.equal(basket.lines.value.length, 2)
+  basket.add(drink, choices({ bottle: 'exchange' }))
+  assert.equal(basket.lines.value.length, 2)
+  assert.equal(basket.totalMinor.value, 3600)
+  basket.adjust(basket.lines.value[0].key, -1)
+  assert.equal(basket.totalMinor.value, 2200)
+  basket.remove(basket.lines.value[0].key)
+  assert.equal(basket.totalMinor.value, 800)
+})
+
+test('deposit changes invalidate existing selections and malformed charges cannot enter the basket', () => {
+  const sources = ref([offer('drinks', { price: 4, bottleDeposit: 10 })])
+  const basket = useServiceBasket(sources)
+  basket.add(sources.value[0], choices({ bottle: 'exchange' }))
+  sources.value = [offer('drinks', { price: 4, bottleDeposit: 12 })]
+  assert.equal(basket.staleKeys.value.length, 1)
+  for (const bottleDeposit of [-1, NaN, Infinity, Number.MAX_VALUE])
+    assert.throws(
+      () =>
+        policy.serviceBasketLine(
+          offer('drinks', { bottleDeposit }),
+          choices({ bottle: 'deposit' })
+        ),
+      /valid price/
+    )
+})

@@ -36,6 +36,9 @@
                 )
               }}
             </p>
+            <p v-if="row.item.bottleDeposit" class="mt-1 text-xs text-muted">
+              Bottle deposit +{{ money(row.item.bottleDeposit) }} or exchange
+            </p>
             <p v-if="row.item.promotionLabel" class="mt-1 text-xs text-muted">
               {{ row.item.promotionLabel }}
             </p>

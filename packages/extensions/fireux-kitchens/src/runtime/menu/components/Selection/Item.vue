@@ -3,6 +3,12 @@
     <p v-if="offer.item.description" class="text-sm text-muted">
       {{ offer.item.description }}
     </p>
+    <MenuSelectionBottle
+      v-if="offer.item.bottleDeposit"
+      v-model="choices.bottle"
+      :deposit="offer.item.bottleDeposit"
+      :money="money"
+    />
     <UFormField
       v-if="offer.item.priceOptions.length"
       label="Choose an option"

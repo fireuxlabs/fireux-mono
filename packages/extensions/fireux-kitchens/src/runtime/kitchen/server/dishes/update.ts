@@ -30,6 +30,7 @@ export async function updateDish(event: H3Event, input: unknown) {
     'price',
     'price_options',
     'add_ons',
+    'bottle_deposit',
   ])
   if (!Object.keys(changes).length)
     throw createError({
@@ -53,8 +54,16 @@ export async function updateDish(event: H3Event, input: unknown) {
     patch.spec = validateDishInput(() =>
       validateDishSpecification(changes.spec)
     )
-  const pricing = Object.fromEntries(['price','price_options','add_ons'].filter(key => key in changes).map(key => [key,changes[key]]))
-  if (Object.keys(pricing).length) Object.assign(patch,validateDishInput(() => normalizeDishPricingPatch(pricing)))
+  const pricing = Object.fromEntries(
+    ['price', 'price_options', 'add_ons', 'bottle_deposit']
+      .filter((key) => key in changes)
+      .map((key) => [key, changes[key]])
+  )
+  if (Object.keys(pricing).length)
+    Object.assign(
+      patch,
+      validateDishInput(() => normalizeDishPricingPatch(pricing))
+    )
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(

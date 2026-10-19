@@ -79,6 +79,7 @@ export type DishUpdateInput = Partial<
     | 'price'
     | 'price_options'
     | 'add_ons'
+    | 'bottle_deposit'
   >
 >
 

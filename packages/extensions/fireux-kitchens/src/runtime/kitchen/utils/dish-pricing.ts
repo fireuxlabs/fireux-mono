@@ -1,15 +1,58 @@
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import type { DishPriceOption, DishAddOnOption, DishPricing } from '../models/dish.model'
+import type {
+  DishPriceOption,
+  DishAddOnOption,
+  DishPricing,
+} from '../models/dish.model'
 const text = (value: unknown) => String(value ?? '').trim()
-const number = (value: unknown) => Number.isFinite(Number(value)) ? Number(value) : 0
-const record = (value: unknown): Record<string, unknown> => value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {}
+const number = (value: unknown) =>
+  Number.isFinite(Number(value)) ? Number(value) : 0
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
 export function normalizeDishPriceOptions(value: unknown): DishPriceOption[] {
   if (!Array.isArray(value)) return []
-  return value.map((raw) => { const data = record(raw); const label = text(data.label); const match = label.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-ZäöüÄÖÜ]+)?/); const quantity = number(data.quantity) || (match ? number(match[1]?.replace(',', '.')) : 0); const unit = text(data.unit) || text(match?.[2]); return { label: label || [quantity || '', unit].filter(Boolean).join(' '), quantity, unit, price: number(data.price) } }).filter(option => option.label && option.price > 0)
+  return value
+    .map((raw) => {
+      const data = record(raw)
+      const label = text(data.label)
+      const match = label.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-ZäöüÄÖÜ]+)?/)
+      const quantity =
+        number(data.quantity) ||
+        (match ? number(match[1]?.replace(',', '.')) : 0)
+      const unit = text(data.unit) || text(match?.[2])
+      return {
+        label: label || [quantity || '', unit].filter(Boolean).join(' '),
+        quantity,
+        unit,
+        price: number(data.price),
+      }
+    })
+    .filter((option) => option.label && option.price > 0)
 }
 export function normalizeDishAddOns(value: unknown): DishAddOnOption[] {
   if (!Array.isArray(value)) return []
-  return value.map((raw, index) => { const data = record(raw); const label = text(data.label); const rawPrice = data.price === null || data.price === undefined || text(data.price) === '' ? -1 : number(data.price); return { id: text(data.id) || label.toLowerCase().replace(/[^a-z0-9]+/g, '-') || `add-on-${index + 1}`, label, price: rawPrice } }).filter(option => option.id && option.label && option.price >= 0)
+  return value
+    .map((raw, index) => {
+      const data = record(raw)
+      const label = text(data.label)
+      const rawPrice =
+        data.price === null ||
+        data.price === undefined ||
+        text(data.price) === ''
+          ? -1
+          : number(data.price)
+      return {
+        id:
+          text(data.id) ||
+          label.toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+          `add-on-${index + 1}`,
+        label,
+        price: rawPrice,
+      }
+    })
+    .filter((option) => option.id && option.label && option.price >= 0)
 }
 
 const validOption = (
@@ -35,6 +78,7 @@ export function normalizeDishPricingPatch(
     'price',
     'price_options',
     'add_ons',
+    'bottle_deposit',
   ])
   if (
     !patch ||
@@ -52,6 +96,14 @@ export function normalizeDishPricingPatch(
       patch.price < 0)
   )
     throw new Error('Price must be a non-negative number.')
+  if (
+    'bottle_deposit' in patch &&
+    (typeof patch.bottle_deposit !== 'number' ||
+      !Number.isFinite(patch.bottle_deposit) ||
+      patch.bottle_deposit < 0 ||
+      !Number.isSafeInteger(Math.round(patch.bottle_deposit * 100)))
+  )
+    throw new Error('Bottle deposit must be a valid non-negative amount.')
   const normalized = { ...patch }
 
   if (Object.hasOwn(patch, 'price_options')) {
@@ -121,7 +173,17 @@ export function normalizeDishPricingPatch(
 }
 
 export function readDishPricing(data: Record<string, unknown>): DishPricing {
-  if (!Object.hasOwn(data, 'price')) throw new Error('Set the Dish normal price before using it on a published Menu.')
-  const patch = normalizeDishPricingPatch({price:data.price,price_options:data.price_options ?? [],add_ons:data.add_ons ?? []} as DishPricing)
+  if (!Object.hasOwn(data, 'price'))
+    throw new Error(
+      'Set the Dish normal price before using it on a published Menu.'
+    )
+  const patch = normalizeDishPricingPatch({
+    price: data.price,
+    price_options: data.price_options ?? [],
+    add_ons: data.add_ons ?? [],
+    ...(data.bottle_deposit !== undefined
+      ? { bottle_deposit: data.bottle_deposit }
+      : {}),
+  } as DishPricing)
   return patch as DishPricing
 }

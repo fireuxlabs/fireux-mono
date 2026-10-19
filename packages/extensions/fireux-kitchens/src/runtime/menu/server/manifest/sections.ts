@@ -153,6 +153,9 @@ export async function readKitchenMenuSections(
                 return {
                   id: text(item.id),
                   name: promotion.name,
+                  description: '',
+                  item_kind: 'food',
+                  image_url: '',
                   price: promotion.price,
                   mealDeal: {
                     promotionId,
@@ -177,6 +180,9 @@ export async function readKitchenMenuSections(
                 description: readRecordString(dish || {}, 'description'),
                 image_url: readRecordString(dish || {}, 'image'),
                 price: pricing.price,
+                ...(pricing.bottle_deposit
+                  ? { bottleDeposit: pricing.bottle_deposit }
+                  : {}),
                 priceOptions: normalizeDishPriceOptions(pricing.price_options),
                 addOns: normalizeDishAddOns(pricing.add_ons),
               }

@@ -26,8 +26,12 @@
       >
     </nav>
     <template v-if="!hideResults">
-      <div v-if="visibleItems.length" class="menu-discovery-grid">
-        <FoodVenueCard v-for="group in groups" :key="group.id" :venue="group" />
+      <div v-if="groups.length" class="menu-discovery-grid">
+        <MenuCardsFoodVenue
+          v-for="group in groups"
+          :key="group.id"
+          :venue="group"
+        />
       </div>
       <UAlert
         v-else
@@ -49,13 +53,12 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import FoodVenueCard from '../Cards/FoodVenue.vue'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
 import {
-  directoryMenuRouteScope,
-  menuRouteIndexPath,
-  menuRoutePath,
-} from '../../utils/menu-route'
+  foodVenueGroups,
+  foodPortalServices,
+  type FoodPortalService,
+} from '../../utils/food-venue-groups'
 
 const props = defineProps<{
   menus: MenuDirectoryEntry[]
@@ -65,151 +68,18 @@ const emit = defineEmits<{
   (event: 'service-change', service: 'online' | 'collection' | 'delivery'): void
   (event: 'search-change', query: string): void
 }>()
-const service = ref<'' | 'collection' | 'delivery'>('')
-function selectService(value: '' | 'collection' | 'delivery') {
+const service = ref<FoodPortalService>('')
+function selectService(value: FoodPortalService) {
   service.value = value
   emit('service-change', value || 'online')
 }
 const choices = [
   { label: 'Collection & delivery', value: '' as const },
-  { label: 'Collection', value: 'collection' as const },
-  { label: 'Delivery', value: 'delivery' as const },
+  ...foodPortalServices,
 ]
-const menus = computed(() =>
-  props.menus.filter(
-    (menu) =>
-      menu.source?.kitchen_slug &&
-      menu.offering_options?.some(
-        (option) =>
-          ['collection', 'delivery'].includes(option.type) &&
-          (!service.value || option.type === service.value) &&
-          !option.paused &&
-          !menu.offerings?.some(
-            (offering) =>
-              offering.id === option.kitchen_offering_id && offering.separate
-          )
-      )
-  )
-)
 const query = ref('')
 watch(query, (value) => emit('search-change', value))
-const visibleItems = menus
-const servingTimes = (menu: MenuDirectoryEntry) =>
-  (menu.offerings || []).filter(
-    (offering) =>
-      !offering.paused &&
-      !offering.separate &&
-      menu.offering_options?.some(
-        (option) =>
-          option.kitchen_offering_id === offering.id &&
-          !option.paused &&
-          ['collection', 'delivery'].includes(option.type) &&
-          (!service.value || option.type === service.value)
-      )
-  )
-
-const groups = computed(() => {
-  const grouped = new Map<string, MenuDirectoryEntry[]>()
-  for (const menu of visibleItems.value) {
-    const key = menu.source?.kitchen_id || menu.source?.kitchen_slug || menu.id
-    const entries = grouped.get(key) || []
-    entries.push(menu)
-    grouped.set(key, entries)
-  }
-  return [...grouped].map(([id, entries]) => {
-    const first = entries[0]!
-    const scope = directoryMenuRouteScope(first.source!.kitchen_slug!)
-    const actions = choices
-      .filter(
-        (choice) =>
-          choice.value &&
-          (!service.value || choice.value === service.value) &&
-          entries.some((menu) =>
-            menu.offering_options?.some(
-              (option) =>
-                option.type === choice.value &&
-                !option.paused &&
-                !menu.offerings?.some(
-                  (offering) =>
-                    offering.id === option.kitchen_offering_id &&
-                    offering.separate
-                )
-            )
-          )
-      )
-      .map((choice) => ({
-        label: choice.label,
-        icon:
-          choice.value === 'collection'
-            ? 'i-lucide-shopping-bag'
-            : 'i-lucide-truck',
-        to: menuRouteIndexPath(scope, choice.value || undefined),
-        offerings: [
-          ...new Map(
-            entries
-              .flatMap((menu) =>
-                (menu.offerings || []).filter(
-                  (offering) =>
-                    !offering.paused &&
-                    !offering.separate &&
-                    menu.offering_options?.some(
-                      (option) =>
-                        option.kitchen_offering_id === offering.id &&
-                        option.type === choice.value &&
-                        !option.paused
-                    )
-                )
-              )
-              .map((offering) => [offering.id, offering])
-          ).values(),
-        ],
-      }))
-    return {
-      id,
-      menus: entries,
-      matchingDishes: [
-        ...new Map(
-          entries
-            .flatMap((menu) => menu.matching_dishes || [])
-            .map((dish) => [dish.id, dish])
-        ).values(),
-      ],
-      name: first.source?.kitchen_name || first.kitchen?.name || '',
-      logo: first.kitchen?.logo_image_url,
-      title: entries.map((menu) => menu.name).join(' & '),
-      descriptions: [
-        ...new Set(entries.map((menu) => menu.description).filter(Boolean)),
-      ],
-      offerings: [
-        ...new Map(
-          entries
-            .flatMap(servingTimes)
-            .map((offering) => [offering.id, offering])
-        ).values(),
-      ],
-      actions,
-      otherOfferings: [
-        ...new Map(
-          entries
-            .flatMap((menu) => menu.other_offerings || [])
-            .map((offering) => [
-              offering.id,
-              {
-                ...offering,
-                to: menuRoutePath({
-                  scope,
-                  menuId: offering.menu_slug,
-                  context: 'generic',
-                }),
-              },
-            ])
-        ).values(),
-      ],
-      browseTo: menuRouteIndexPath(scope),
-      to: actions[0]?.to || menuRouteIndexPath(scope),
-    }
-  })
-})
+const groups = computed(() => foodVenueGroups(props.menus, service.value))
 </script>
 <style scoped>
 .menu-collection {

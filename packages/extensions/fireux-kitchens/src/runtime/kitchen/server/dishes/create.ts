@@ -22,6 +22,7 @@ export async function createDish(event: H3Event, input: unknown) {
     'price',
     'price_options',
     'add_ons',
+    'bottle_deposit',
   ])
   const name = dishText(draft.name, true)
   const id = requireFirestoreDocumentId(normalizeSlug(name), 'Dish id')
@@ -44,6 +45,9 @@ export async function createDish(event: H3Event, input: unknown) {
     price: draft.price ?? 0,
     price_options: draft.price_options ?? [],
     add_ons: draft.add_ons ?? [],
+    ...(draft.bottle_deposit !== undefined
+      ? { bottle_deposit: draft.bottle_deposit }
+      : {}),
   })
   const actor = await readKitchenMutationActor(event)
 

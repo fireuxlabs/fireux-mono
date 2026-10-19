@@ -46,6 +46,8 @@ export type DishPriceOption = {
 }
 export type DishAddOnOption = { id: string; label: string; price: number }
 export type DishPricing = {
+  /** Refundable bottle charge; exchange waives it on takeaway selections. */
+  bottle_deposit?: number
   price: number
   price_options: DishPriceOption[]
   add_ons: DishAddOnOption[]
