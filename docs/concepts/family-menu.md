@@ -391,9 +391,24 @@ are read, never repriced or written by checkout.
 
 `useCollectionCheckout` reuses scoped Order exchange for submission and responses,
 freezes an unresolved attempt for idempotent retry and checks for an existing
-receipt before permitting edits after a rejection. The current Collection flow
+receipt before permitting edits after a rejection. `useCollectionRecovery` saves
+the basket, customer fields and immutable attempt in tab session storage, scoped
+by App, Kitchen, Collection entrance and customer. Refresh restores selections
+without silently repricing them, then checks the existing response for a saved
+attempt; restoration never submits. Current catalogue readiness and stale-item
+checks still gate new attempts. Reset removes the saved session. Malformed local
+data is discarded, and unavailable browser storage is reported without breaking
+the local basket. The current Collection flow
 orders during serving hours; next-day slots and payment processing are separate.
-Verify `collection-checkout.test.mjs`, `menu-service-basket.test.mjs`, existing
+Collection composes a customer-focused `Selection/Confirmation.vue` over the
+existing response. It shows saved quantities, canonical choice notes, line totals
+and total, distinct execution status and Kitchen estimates. Collection details
+come from the already-acquired public venue projection; missing details are
+omitted, and no counter location or payment status is assumed. Failed response
+refreshes retain the receipt and expose the existing read-only refresh action.
+The staff Ticket and other Menu order presentations keep their existing owners.
+Verify `collection-confirmation.test.mjs`, `collection-checkout.test.mjs`,
+`menu-service-basket.test.mjs`, existing
 Order submission/flow and ticket checks. These fixture tests are not evidence of
 live submission or physical fulfilment.
 

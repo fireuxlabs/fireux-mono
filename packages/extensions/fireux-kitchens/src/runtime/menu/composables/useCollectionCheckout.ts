@@ -1,4 +1,4 @@
-import { computed, ref, watch, onMounted, onScopeDispose, type Ref } from 'vue'
+import { computed, ref, onMounted, onScopeDispose, type Ref } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
@@ -13,6 +13,8 @@ import { serviceItemSignature } from '../utils/service-basket'
 import type { MenuServiceOffer } from '../utils/service-sections'
 import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
 import type { useServiceBasket } from './useServiceBasket'
+import { useCollectionRecovery } from './useCollectionRecovery'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
 /** One checkout over the Collection owner's basket; existing transport owns auth and scoped requests. */
 export function useCollectionCheckout(input: {
@@ -20,6 +22,7 @@ export function useCollectionCheckout(input: {
   offers: Ref<MenuServiceOffer[]>
   ready: Ref<boolean>
   kitchenSlug: Ref<string>
+  entryId?: Ref<string>
 }) {
   const { basket, offers, ready } = input
   const kitchenId = computed(
@@ -135,18 +138,40 @@ export function useCollectionCheckout(input: {
   }
   function reset() {
     if (transport.pending.value) return
+    clearSession()
+  }
+  function clearSession() {
     attempt.value = null
     submission.value = null
     name.value = ''
     phone.value = ''
     basket.clear()
   }
-  watch(transport.version, () => {
-    attempt.value = null
-    submission.value = null
-    name.value = ''
-    phone.value = ''
+  const config = useFireUXConfig()
+  const recovery = useCollectionRecovery({
+    key: computed(() =>
+      currentUser.value?.uid
+        ? `collection:${JSON.stringify([config.appId, input.kitchenSlug.value, input.entryId?.value || '', currentUser.value.uid])}`
+        : ''
+    ),
+    lines: basket.lines,
+    name,
+    phone,
+    attempt,
+    clear: clearSession,
+    resume: () => {
+      void resume()
+    },
   })
+  async function resume() {
+    const sent = attempt.value
+    if (!sent) return
+    const result = await transport.request('/api/ordering/response', {
+      orderId: (sent.order as { id: string }).id,
+    })
+    if (attempt.value === sent && result && !Array.isArray(result))
+      submission.value = result
+  }
   let timer: ReturnType<typeof setInterval> | undefined
   onMounted(() => {
     timer = setInterval(() => {
@@ -173,14 +198,16 @@ export function useCollectionCheckout(input: {
   )
   const responseMessage = computed(() =>
     submission.value?.state === 'ready'
-      ? 'Please go to the counter to collect your order.'
+      ? 'Your order is ready to collect.'
       : submission.value?.state === 'received'
-        ? 'The kitchen is reviewing your order. Please wait for confirmation.'
+        ? 'Waiting for the kitchen to accept your order.'
         : submission.value?.state === 'declined'
           ? 'The kitchen could not accept your order.'
           : submission.value?.state === 'completed'
             ? 'Thank you. Your order has been completed.'
-            : 'The kitchen has your order. Updates will appear here.'
+            : submission.value?.state === 'preparing'
+              ? 'The kitchen is preparing your order.'
+              : 'The kitchen has accepted your order. We’ll update you when it’s ready.'
   )
   return {
     name,
@@ -192,6 +219,8 @@ export function useCollectionCheckout(input: {
     error: transport.error,
     submit,
     reset,
+    refresh,
+    recoveryError: recovery.error,
     responseTitle,
     responseMessage,
   }

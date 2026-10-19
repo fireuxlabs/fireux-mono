@@ -322,10 +322,37 @@ const offer = {
   offerings: [{ id: 'collection', hours: testKitchenHours() }],
   item: { id: 'pizza', name: 'Pizza', price: 13, priceOptions: [], addOns: [] },
 }
-function checkoutHarness() {
+function checkoutHarness(options = {}) {
   const scope = effectScope(),
     requests = [],
-    responses = []
+    responses = [...(options.responses || [])],
+    mounts = [],
+    storage = options.storage || new Map(),
+    currentUser = options.currentUser || ref({ uid: 'customer' }),
+    kitchenSlug = options.kitchenSlug || ref('venue'),
+    entryId = options.entryId || ref('')
+  const onMounted = (callback) => mounts.push(callback)
+  const sessionReader = loadOfferingSource(
+    'menu/utils/collection-recovery',
+    'readCollectionSession',
+    helpers
+  )
+  const recoveryReader = loadOfferingSource(
+    'menu/composables/useCollectionRecovery',
+    'useCollectionRecovery',
+    {
+      computed,
+      ref,
+      watch,
+      onMounted,
+      ...sessionReader,
+      sessionStorage: {
+        getItem: (key) => storage.get(key) || null,
+        setItem: (key, value) => storage.set(key, value),
+        removeItem: (key) => storage.delete(key),
+      },
+    }
+  )
   const offers = ref([offer]),
     ready = ref(true),
     failureStatus = ref(0),
@@ -338,12 +365,16 @@ function checkoutHarness() {
       computed,
       ref,
       watch,
-      onMounted() {},
+      onMounted,
+      setInterval: () => 0,
+      clearInterval() {},
+      ...recoveryReader,
+      useFireUXConfig: () => ({ appId: 'app' }),
       onScopeDispose() {},
       ...helpers,
       ...orderPolicy,
       ...checkoutBasket,
-      useAuth: () => ({ currentUser: ref({ uid: 'customer' }) }),
+      useAuth: () => ({ currentUser }),
       useRuntimeConfig: () => ({
         public: { ordering: { channels: ['website'] } },
       }),
@@ -369,15 +400,20 @@ function checkoutHarness() {
   )
   scope.run(() => {
     basket = basketReader.useServiceBasket(offers, ready)
-    basket.add(offer, { optionId: '', extraIds: [], groups: {}, quantity: 1 })
+    if (options.seed !== false)
+      basket.add(offer, { optionId: '', extraIds: [], groups: {}, quantity: 1 })
     checkout = useCollectionCheckout({
       basket,
       offers,
       ready,
-      kitchenSlug: ref('venue'),
+      kitchenSlug,
+      entryId,
     })
-    checkout.name.value = 'Sam'
-    checkout.phone.value = '123'
+    for (const mount of mounts) mount()
+    if (options.seed !== false) {
+      checkout.name.value = 'Sam'
+      checkout.phone.value = '123'
+    }
   })
   return {
     scope,
@@ -389,6 +425,10 @@ function checkoutHarness() {
     responses,
     failureStatus,
     version,
+    currentUser,
+    kitchenSlug,
+    entryId,
+    storage,
   }
 }
 
@@ -434,7 +474,7 @@ test('checkout blocks stale/unverified baskets and unlocks editing after a defin
     state.failureStatus.value = 0
     await state.checkout.submit()
     assert.notEqual(state.requests[2].payload.order.id, firstId)
-    state.version.value++
+    state.currentUser.value = { uid: 'other' }
     await Promise.resolve()
     assert.equal(state.checkout.locked.value, false)
     assert.equal(state.checkout.name.value, '')
@@ -668,3 +708,314 @@ function loadSubmitEndpoint(dependencies) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+
+test('refresh restores the exact basket choices and customer fields without placing an order', () => {
+  const state = checkoutHarness()
+  const drink = {
+    ...offer,
+    source: { ...offer.source, menuId: 'drinks', sectionId: 'soft' },
+    item: {
+      id: 'cola',
+      name: 'Cola',
+      price: 4,
+      bottleDeposit: 10,
+      priceOptions: [],
+      addOns: [],
+    },
+  }
+  state.offers.value.push(drink)
+  state.basket.add(drink, {
+    optionId: '',
+    extraIds: [],
+    groups: {},
+    bottle: 'exchange',
+    quantity: 2,
+  })
+  const before = JSON.parse(JSON.stringify(state.basket.lines.value))
+  state.scope.stop()
+  const restored = checkoutHarness({ storage: state.storage, seed: false })
+  try {
+    assert.deepEqual(
+      JSON.parse(JSON.stringify(restored.basket.lines.value)),
+      before
+    )
+    assert.equal(restored.basket.totalMinor.value, 2100)
+    assert.equal(restored.checkout.name.value, 'Sam')
+    assert.equal(restored.checkout.phone.value, '123')
+    assert.equal(restored.requests.length, 0)
+    assert.equal(
+      restored.basket.staleKeys.value.length,
+      1,
+      'unavailable restored drink is flagged'
+    )
+    assert.match(
+      restored.checkout.issues.value.join(' '),
+      /changed or unavailable/
+    )
+    restored.offers.value.push(drink)
+    assert.equal(restored.basket.staleKeys.value.length, 0)
+    restored.offers.value[0] = { ...offer, item: { ...offer.item, price: 14 } }
+    assert.equal(restored.basket.staleKeys.value.length, 1)
+    assert.equal(
+      restored.basket.totalMinor.value,
+      2100,
+      'refresh never silently reprices selections'
+    )
+    restored.ready.value = false
+    assert.match(restored.checkout.issues.value.join(' '), /reload/)
+  } finally {
+    restored.scope.stop()
+  }
+})
+
+test('an uncertain submission survives refresh and retries the identical payload even if the catalogue changes', async () => {
+  const state = checkoutHarness()
+  await state.checkout.submit()
+  const sent = state.requests[0].payload
+  state.scope.stop()
+  const restored = checkoutHarness({ storage: state.storage, seed: false })
+  try {
+    await Promise.resolve()
+    assert.deepEqual(restored.requests, [
+      { path: '/api/ordering/response', payload: { orderId: sent.order.id } },
+    ])
+    assert.equal(restored.checkout.locked.value, true)
+    restored.offers.value = []
+    restored.ready.value = false
+    restored.responses.push({ order: { id: sent.order.id }, state: 'received' })
+    await restored.checkout.submit()
+    assert.deepEqual(restored.requests[1], {
+      path: '/api/ordering/menu-submit',
+      payload: sent,
+    })
+    assert.equal(restored.checkout.submission.value.order.id, sent.order.id)
+  } finally {
+    restored.scope.stop()
+  }
+})
+
+test('a confirmed order resumes its response after refresh and reset clears the saved session', async () => {
+  const state = checkoutHarness()
+  await state.checkout.submit()
+  const sent = state.requests[0].payload
+  state.responses.push({ order: { id: sent.order.id }, state: 'accepted' })
+  await state.checkout.submit()
+  state.scope.stop()
+  const restored = checkoutHarness({
+    storage: state.storage,
+    seed: false,
+    responses: [{ order: { id: sent.order.id }, state: 'ready' }],
+  })
+  try {
+    await Promise.resolve()
+    await Promise.resolve()
+    assert.equal(restored.checkout.submission.value.state, 'ready')
+    assert.equal(restored.requests.length, 1)
+    assert.equal(restored.requests[0].path, '/api/ordering/response')
+    restored.checkout.reset()
+    assert.equal(restored.storage.size, 0)
+    assert.equal(restored.basket.count.value, 0)
+    assert.equal(restored.checkout.locked.value, false)
+  } finally {
+    restored.scope.stop()
+  }
+})
+
+test('session recovery waits for identity and separates customer, Kitchen and Collection entrance', async () => {
+  const state = checkoutHarness()
+  state.scope.stop()
+  const user = ref(null)
+  const restored = checkoutHarness({
+    storage: state.storage,
+    seed: false,
+    currentUser: user,
+  })
+  try {
+    assert.equal(restored.basket.count.value, 0)
+    user.value = { uid: 'customer' }
+    assert.equal(restored.basket.count.value, 1)
+    user.value = { uid: 'other' }
+    assert.equal(restored.basket.count.value, 0)
+    assert.equal(restored.checkout.name.value, '')
+    user.value = { uid: 'customer' }
+    assert.equal(restored.basket.count.value, 1)
+    restored.entryId.value = 'separate-service'
+    assert.equal(restored.basket.count.value, 0)
+    restored.entryId.value = ''
+    assert.equal(restored.basket.count.value, 1)
+    restored.kitchenSlug.value = 'other-venue'
+    assert.equal(restored.basket.count.value, 0)
+    assert.equal(restored.requests.length, 0)
+  } finally {
+    restored.scope.stop()
+  }
+})
+
+test('malformed recovery data is ignored and blocked browser storage does not break the basket', () => {
+  const state = checkoutHarness()
+  const key = [...state.storage.keys()][0]
+  state.scope.stop()
+  for (const raw of [
+    '{invalid',
+    JSON.stringify({ lines: [{}], name: '', phone: '', attempt: null }),
+  ]) {
+    const restored = checkoutHarness({
+      storage: new Map([[key, raw]]),
+      seed: false,
+    })
+    assert.equal(restored.basket.count.value, 0)
+    assert.equal(restored.checkout.locked.value, false)
+    restored.scope.stop()
+  }
+  const blocked = checkoutHarness({
+    storage: {
+      get() {
+        throw Error('Storage blocked')
+      },
+      set() {
+        throw Error('Storage blocked')
+      },
+      delete() {
+        throw Error('Storage blocked')
+      },
+    },
+  })
+  try {
+    assert.equal(blocked.basket.count.value, 1)
+    assert.match(
+      blocked.checkout.recoveryError.value,
+      /recovery is unavailable/
+    )
+  } finally {
+    blocked.scope.stop()
+  }
+})
+
+test('recovery preserves variants, extras, meal supplements and both bottle choices exactly', async () => {
+  const state = checkoutHarness()
+  state.basket.clear()
+  const pizza = {
+    ...offer,
+    item: {
+      ...offer.item,
+      priceOptions: [{ id: 'large', label: 'Large', price: 15 }],
+      addOns: [{ id: 'cheese', label: 'Cheese', price: 1.5 }],
+    },
+  }
+  const drink = {
+    ...offer,
+    source: { ...offer.source, menuId: 'drinks' },
+    item: {
+      ...offer.item,
+      id: 'cola',
+      name: 'Cola',
+      price: 4,
+      bottleDeposit: 10,
+    },
+  }
+  const deal = {
+    ...offer,
+    item: {
+      ...offer.item,
+      id: 'deal',
+      name: 'Meal',
+      price: 15,
+      mealDeal: {
+        promotionId: 'meal',
+        groups: [
+          {
+            id: 'main',
+            name: 'Main',
+            choose: 1,
+            dishes: [{ dishId: 'pizza', name: 'Pizza', supplement: 2 }],
+          },
+        ],
+      },
+    },
+  }
+  state.offers.value = [pizza, drink, deal]
+  const choices = { optionId: '', extraIds: [], groups: {}, quantity: 1 }
+  state.basket.add(pizza, {
+    ...choices,
+    optionId: 'large',
+    extraIds: ['cheese'],
+    quantity: 2,
+  })
+  state.basket.add(drink, { ...choices, bottle: 'deposit' })
+  state.basket.add(drink, { ...choices, bottle: 'exchange' })
+  state.basket.add(deal, { ...choices, groups: { main: ['pizza'] } })
+  await state.checkout.submit()
+  const sent = state.requests[0].payload
+  state.scope.stop()
+  const restored = checkoutHarness({ storage: state.storage, seed: false })
+  try {
+    await Promise.resolve()
+    assert.equal(restored.basket.totalMinor.value, 6800)
+    assert.deepEqual(
+      helpers.collectionSelections(restored.basket.lines.value),
+      sent.selections
+    )
+    await restored.checkout.submit()
+    assert.deepEqual(restored.requests[1].payload, sent)
+  } finally {
+    restored.scope.stop()
+  }
+})
+
+test('a recovered receipt arriving after a customer switch cannot populate the new session', async () => {
+  const state = checkoutHarness()
+  await state.checkout.submit()
+  const sent = state.requests[0].payload
+  state.scope.stop()
+  let resolve
+  const response = new Promise((done) => {
+    resolve = done
+  })
+  const restored = checkoutHarness({
+    storage: state.storage,
+    seed: false,
+    responses: [response],
+  })
+  try {
+    restored.currentUser.value = { uid: 'another' }
+    resolve({ order: { id: sent.order.id }, state: 'accepted' })
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+    assert.equal(restored.checkout.submission.value, null)
+    assert.equal(restored.basket.count.value, 0)
+    assert.equal(restored.checkout.name.value, '')
+  } finally {
+    restored.scope.stop()
+  }
+})
+
+test('Collection status copy distinguishes acceptance, preparation and readiness, and refresh only reads the saved order', async () => {
+  const state = checkoutHarness()
+  try {
+    const messages = {
+      received: 'Waiting for the kitchen to accept your order.',
+      accepted:
+        'The kitchen has accepted your order. We’ll update you when it’s ready.',
+      preparing: 'The kitchen is preparing your order.',
+      ready: 'Your order is ready to collect.',
+      completed: 'Thank you. Your order has been completed.',
+      declined: 'The kitchen could not accept your order.',
+    }
+    for (const [status, message] of Object.entries(messages)) {
+      state.checkout.submission.value = {
+        order: { id: 'receipt' },
+        state: status,
+      }
+      assert.equal(state.checkout.responseMessage.value, message)
+    }
+    state.responses.push({ order: { id: 'receipt' }, state: 'ready' })
+    await state.checkout.refresh()
+    assert.equal(state.checkout.submission.value.state, 'ready')
+    assert.deepEqual(state.requests, [
+      { path: '/api/ordering/response', payload: { orderId: 'receipt' } },
+    ])
+  } finally {
+    state.scope.stop()
+  }
+})

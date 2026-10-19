@@ -1960,7 +1960,11 @@ Successful recovery rechecks existing lines against current offers. The
 through refresh, error, recovery, changed/missing items and owner changes. This basket is
 component-scoped and resets on a different Kitchen/service entrance or page reload.
 Collection composes `Selection/Checkout.vue` with the existing customer Details
-and Order Response presentations. `useCollectionCheckout` owns customer input,
+and a focused customer `Selection/Confirmation.vue` receipt. The receipt uses
+the saved response for quantities, choices, line amounts, total, status and
+Kitchen estimates, and receives collection details from the existing public venue
+projection. It adds no reads or order writes. Update failures keep the saved
+receipt visible and expose the existing response refresh. `useCollectionCheckout` owns customer input,
 one immutable submission attempt and response polling through `useOrderExchange`.
 The existing `/api/ordering/menu-submit` adapter and Kitchen submission command
 accept selections across the same Kitchen's menus. Each selection retains the
@@ -1968,10 +1972,16 @@ canonical Menu/section/item IDs, choices, service IDs and expected unit amount;
 the anchor Menu route uses its stable public slug. Ambiguous failures retain the
 same reference and payload. A definite rejection checks the existing receipt
 before unlocking edits, preventing a missed success from producing another order.
-There is no new submission store, basket recovery storage or payment integration.
+Collection recovery uses tab session storage through `useCollectionRecovery`,
+scoped to App, Kitchen, Collection entrance and customer. It preserves basket
+choices, customer fields and the exact pending submission payload/reference.
+Refresh checks for a receipt without automatically submitting; unresolved retries
+reuse that payload. Restored basket entries retain current catalogue checks,
+and reset clears the saved session. Storage failure is visible. There is no new
+server submission store or payment integration.
 Delivery, table and room presentation do not yet consume this selection slice. Regression evidence lives
 in `menu-service-basket.test.mjs`, `menu-service-view.test.mjs` and
-`collection-checkout.test.mjs`.
+`collection-checkout.test.mjs` and `collection-confirmation.test.mjs`.
 
 Dish may configure an optional `bottle_deposit` amount through the existing
 protected Dish command. Zero/absence means no deposit. Pricing composes the

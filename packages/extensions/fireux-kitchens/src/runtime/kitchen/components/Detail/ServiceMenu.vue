@@ -90,6 +90,8 @@
       :key="kitchenSlug + ':' + offeringId"
       :sections="sections"
       :kitchen-slug="kitchenSlug"
+      :entry-id="offeringId"
+      :venue="presentation"
       :currency-code="currencyCode"
       :catalogue-ready="
         Boolean(presentation) && !menus.pending.value && !menus.error.value

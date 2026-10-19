@@ -32,7 +32,11 @@
     </template>
     <div v-if="basket.count.value" class="collection-basket-bar">
       <UButton
-        :label="`View basket · ${basket.count.value} · ${money(basket.totalMinor.value / 100)}`"
+        :label="
+          checkout.submission
+            ? `View order #${checkout.submission.order.number}`
+            : `View basket · ${basket.count.value} · ${money(basket.totalMinor.value / 100)}`
+        "
         icon="i-lucide-shopping-bag"
         size="lg"
         block
@@ -58,8 +62,14 @@
     </UModal>
     <UModal
       v-model:open="basketOpen"
-      title="Your Collection basket"
-      description="Review your food and drinks."
+      :title="
+        checkout.submission ? 'Your Collection order' : 'Your Collection basket'
+      "
+      :description="
+        checkout.submission
+          ? 'Order confirmation and collection details.'
+          : 'Review your food and drinks.'
+      "
     >
       <template #body>
         <MenuSelectionBasket
@@ -77,6 +87,7 @@
         <MenuSelectionCheckout
           v-if="basket.count.value || checkout.submission"
           :flow="checkout"
+          :venue="venue"
           class="mt-6"
         />
       </template>
@@ -84,7 +95,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, reactive, toRef } from 'vue'
+import { computed, ref, reactive, toRef, watch } from 'vue'
 import { useCollectionCheckout } from '../../composables/useCollectionCheckout'
 import type {
   MenuServiceOffer,
@@ -95,10 +106,13 @@ import {
   type ServiceItemChoices,
 } from '../../utils/service-basket'
 import { useServiceBasket } from '../../composables/useServiceBasket'
+import type { KitchenDetailPresentation } from '../../../kitchen/models/kitchen-detail.response'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 const props = defineProps<{
   sections: MenuServiceSection[]
+  venue?: KitchenDetailPresentation | null
   kitchenSlug: string
+  entryId?: string
   currencyCode: string
   catalogueReady: boolean
 }>()
@@ -121,11 +135,18 @@ const checkout = reactive(
     offers,
     ready: toRef(props, 'catalogueReady'),
     kitchenSlug: toRef(props, 'kitchenSlug'),
+    entryId: toRef(() => props.entryId || ''),
   })
 )
 const selected = ref<MenuServiceOffer | null>(null)
 const itemOpen = ref(false)
 const basketOpen = ref(false)
+watch(
+  () => checkout.locked,
+  (locked) => {
+    if (locked) basketOpen.value = true
+  }
+)
 const error = ref('')
 const money = (value: number) =>
   value === 0
