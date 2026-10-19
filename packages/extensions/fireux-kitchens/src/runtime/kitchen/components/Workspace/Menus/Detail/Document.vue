@@ -18,9 +18,7 @@
       v-if="canWrite"
       document
       :upload-id="menuId"
-      lock-slug
       replace-existing
-      :title="menu.doc?.url ? 'Replace document' : 'Upload Menu document'"
       description="Choose one PDF or image. Guests will see this document when the Menu is published."
       :cta-label="menu.doc?.url ? 'Replace document' : 'Upload document'"
     />

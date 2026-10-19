@@ -291,7 +291,12 @@ Kitchen-owned command, customer-scoped reads, entrypoints and limits
 are mapped in `docs/concepts/order-processing-kitchen-fulfilment.md`. No payment,
 dispatch or physical handoff service is claimed. Published structured Menu
 selection now reaches this command through the Menu-owned selector and trusted
-canonical item/option/price resolver. Pricing is snapshotted separately from
+canonical multi-Menu item/option/extra/meal-choice/deposit resolver. The resolver
+reads current Kitchen/Place/service/Menu windows and commercial terms inside the
+existing transaction. Standalone promotions apply on the venue-local serving day;
+meal deals retain set prices and supplements. Order lines carry canonical choice
+notes for customer and operator tickets, and stored Menu selections retain the
+structured references. Pricing is snapshotted separately from
 Order facts; delivery-zone charges and payment are not yet connected.
 The previous execution stack, checkout/webhooks, kiosk sessions, tracking and
 legacy model are deleted. The new draft collection neither reads nor migrates
@@ -304,7 +309,7 @@ Website ordering entrance follows the App channel declaration, published structu
 Menu contract and enabled Kitchen offerings linked to that Menu. Supported services
 require configured hours and enabled, unpaused interactions; table ordering also
 requires table QR. Buttons, direct entrances and transactional submission share
-this configuration boundary. Current opening-time and slot evaluation remain deferred. Immutable historical Sales own their
+this configuration boundary. Current opening hours are enforced; advance slot selection remains deferred. Immutable historical Sales own their
 pricing snapshot through `kitchen/models/sale.model.ts` and
 `kitchen/server/finance/sale-pricing.ts`, independently of an Order model.
 The small Order uses UBL vocabulary but is not a conformant UBL exchange document.
@@ -316,16 +321,14 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 | Sidebar group      | Route prefix      | Pages                                                              |
 | ------------------ | ----------------- | ------------------------------------------------------------------ |
 | Orders             | `/orders`         | index, board (local views and filters) |
-| Prep & Production  | `/prep`           | index, plan, stations, batches                                     |
-| Food & drinks | `/food/dishes` | combined catalogue; kind-specific creation and detail editors |
-| Menus | `/menus` | collection, editor, publication, QR; Promotions child |
-| Services | `/services` | customer service eligibility and schedules |
+| Prep & Production  | `/prep`           | index, plan, Recipes and Ingredients (`/food/*`), stations, batches |
+| Food & drink | `/food` | overview linking to Items (`/food/dishes`), Menus (`/menus`), Promotions (`/promotions`) and Services (`/services`) |
 | Stock & Purchasing | `/stock`          | index, inventory, purchasing, receiving, suppliers, waste          |
 | Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                        |
 | Team               | `/team`           | index, people; Responsibilities remains a section anchor in people |
 | Reports            | `/reports`        | index, finance, performance, costs, waste-report                   |
-| Settings | `/settings`, `/identity` | listing, venue profile, hours, appearance, payments, integrations, access |
-| Developer          | `/developer`      | index, test; dev, training and preview remain hidden               |
+| Identity & brand | `/identity` | Kitchen listing; venue profile, operating hours and appearance children |
+| Settings | `/settings` | payments, integrations, access |
 
 Home is the single primary arrival entrance. Its settled selected-Kitchen view
 contains the App header, Kitchen AI and the selected Kitchen card. Operators
@@ -334,9 +337,25 @@ existing visible Kitchen selector in the top toolbar, above AI, using the existi
 selection command. The toolbar omits its full-width divider; the selector wraps
 its choices within the available width. Home has no capability shortcuts,
 status badge or Kitchen collection panel; empty/access/error states retain their
-existing owners. Overview and the Menu setup tool
-directory are contextual routes, hidden from the sidebar. Food & drinks, Menus
-and Services have direct sidebar entrances; Promotions is a child of Menus.
+existing owners. Home uses the existing Kitchen pill above the sidebar user menu,
+which also offers Kitchen switching. It is not repeated in the primary navigation;
+Overview remains a separate primary entrance.
+Overview presents one entrance per visible Kitchen area, using route-owned names,
+descriptions and destinations; it does not flatten child pages or show placeholder
+summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
+Purchasing, Food Safety, Team, Reports and Settings use the same
+`Workspace/Navigation/Group.vue` composition with explicit route-owned children.
+Their indexes are mini overviews; the child pages remain the working surfaces.
+Food & drink has its own navigation-only index at `/workspace/kitchen/food`,
+composing the existing Group component. Items, Menus, Promotions and Services
+are sibling children at their existing working routes; Menus is not the group
+index and Promotions is not nested beneath it. Route order puts Identity & brand
+and Team before the Kitchen working groups, with Settings last. Identity & brand is also a top-level entrance,
+with the Kitchen listing and its venue/brand editors; it is not nested in Settings.
+Settings retains Payments, Integrations and Access. Overview adds no collection readers or mutations.
+Verify these distinctions with `workspace-navigation.test.mjs`.
+Overview is a direct sidebar entrance for the selected Kitchen;
+the Menu setup tool directory remains a contextual route hidden from the sidebar.
 The combined catalogue reads the existing live Dish collection once, filters
 All/Food/Drinks locally, and opens each kind's existing create/detail editor.
 Kind-specific detail contexts retain their filtering and authority. Catalogue
@@ -373,12 +392,12 @@ description, translated names/descriptions and validated preparation; identity,
 Kitchen ownership and unknown patch fields are rejected before the write primitive.
 Its optional architecture disclosure is dynamically imported only in development
 and contains source annotations, not operational payloads.
-Settings owns explicit navigation children for Kitchen listing, Venue profile,
-Operating hours, Appearance, Payments, Integrations and Access. Existing editor
-routes and domain commands remain unchanged; Identity has no separate sidebar
-group. Settings renders the same route-owned children as the sidebar. Menus,
+Identity & brand owns the Kitchen listing and the Venue profile, Operating hours
+and Appearance links. Settings owns Payments, Integrations and Access. Food & drink,
 Orders, Prep & Production, Food Safety and Team retain index-link navigation.
-Stock & Purchasing, Reports and Developer retain their existing group indexes.
+Existing editor routes and domain commands remain unchanged.
+Stock & Purchasing and Reports retain their existing group indexes. Developer
+routes remain hidden from Workspace navigation and Overview.
 Their existing
 working screens remain children at `/orders/board`, `/prep/plan`,
 `/food-safety/checks` and `/team/people`. Indexes do not initialize those working
@@ -1926,17 +1945,33 @@ Verify discovery, publication, public-slug and audience metadata tests.
 
 Collection composes Menu-owned `components/Selection/Index.vue` over the existing
 service sources. Catalogue, item selection and basket review are focused children;
-`useServiceBasket` owns component-local selections, while `service-basket.ts`
+The Selection owner stays mounted through catalogue loading, errors and empty
+results, keyed by Kitchen slug and service entrance. `useServiceBasket` owns
+component-local selections, while `service-basket.ts`
 validates option/extra/meal choices and calculates display totals in integer minor
 units. The serving-time notice is composed once above Collection sections. The
 projection retains each chosen offer's Kitchen/Menu/Section identity, and basket
 lines retain service IDs and item identity. Changed or missing catalogue selections
-are flagged without silently repricing existing basket lines. This basket is
+are flagged without silently repricing existing basket lines. During loading or
+failure, the basket stays accessible but availability is explicitly unverified;
+Add and quantity increases are blocked, while reduction and removal remain available.
+Successful recovery rechecks existing lines against current offers. The
+`menu-service-basket.test.mjs` lifecycle regression renders the ServiceMenu template
+through refresh, error, recovery, changed/missing items and owner changes. This basket is
 component-scoped and resets on a different Kitchen/service entrance or page reload.
-It has no checkout, order submission, recovery storage or remote writes. Existing
-per-Menu order submission remains separate and unchanged. Delivery, table and room
-presentation do not yet consume this selection slice. Regression evidence lives
-in `menu-service-basket.test.mjs` and `menu-service-view.test.mjs`.
+Collection composes `Selection/Checkout.vue` with the existing customer Details
+and Order Response presentations. `useCollectionCheckout` owns customer input,
+one immutable submission attempt and response polling through `useOrderExchange`.
+The existing `/api/ordering/menu-submit` adapter and Kitchen submission command
+accept selections across the same Kitchen's menus. Each selection retains the
+canonical Menu/section/item IDs, choices, service IDs and expected unit amount;
+the anchor Menu route uses its stable public slug. Ambiguous failures retain the
+same reference and payload. A definite rejection checks the existing receipt
+before unlocking edits, preventing a missed success from producing another order.
+There is no new submission store, basket recovery storage or payment integration.
+Delivery, table and room presentation do not yet consume this selection slice. Regression evidence lives
+in `menu-service-basket.test.mjs`, `menu-service-view.test.mjs` and
+`collection-checkout.test.mjs`.
 
 Dish may configure an optional `bottle_deposit` amount through the existing
 protected Dish command. Zero/absence means no deposit. Pricing composes the
@@ -2094,6 +2129,39 @@ Order records are not part of this operation. Source and checks are mapped in
 
 ## Menu archive and focused editing
 
+Kitchen Workspace Create Menu offers three focused methods: PDF or photos,
+Menu URL, and Start blank. The parent switches between the native upload,
+URL import and manual creation controls. Upload and URL sources receive internal
+random identities and open the same FireUX AI review flow; only Start blank asks
+for a Menu name immediately. `useMenuSourceUpload` calls the existing Kitchen
+upload endpoint directly. There is no format choice or creation queue.
+Existing document records retain their viewing, editing and publication paths;
+Daily specials and archived records stay separate. The existing children retain
+scoped commands and completion guards; the parent only coordinates the visible
+workflow. Go QR and provider-tool transport are not used for Menu ingestion.
+The saved source route composes the existing processing/review controls with
+its acquired source context. No additional record provider or reader is created.
+AI processing still requires its existing explicit confirmation; successful
+import confirmation links to the created Menu.
+New uploads receive a hidden random source identity, never `main-menu` or an
+operator-entered public slug. Imported Dish identities are deterministic within
+that source's Menu and separate across imports; names never imply catalogue
+reuse. Existing dishes are chosen deliberately through the section catalogue
+picker. The import price guard remains for already-created import identities.
+The review keeps Menu items and confirmation visible, with processing and
+technical reports behind disclosures. Items without detected image candidates
+need no separate media decision. See `menu-draft-plan.test.mjs` and
+`menu-import-media-gate.test.mjs`. Existing-record uploads retain their explicit
+target. Extraction preserves a visibly printed title as a suggestion (blank
+when absent); the operator confirms the new Menu name in review. The import
+commit requires that name, validates its path, and generates the slug only when
+creating the Menu. Imports into existing Menus retain their name and stable slug.
+See `menu-source-upload.test.mjs`, `menu-import-name.test.mjs` and the
+upload/completion checks; these do not
+prove a live AI conversion or authorize a new import/price write.
+Verify collection search/grouping and the single creation path with
+`menu-format-list.test.mjs` alongside document-upload and publication checks.
+
 Regular Menus use Archive as the normal removal action. Settings list linked
 services from the existing offering reader. Archive preserves content and links;
 restore returns to draft, never directly to published. The collection hides
@@ -2148,14 +2216,23 @@ discovery belongs to Place and `/kitchens`, not this food portal.
 
 Menu and service terms are defined in [the service glossary](../../../../../docs/concepts/menu-service-glossary.md). Keep fulfilment, ordering channel and timing distinct; vocabulary alignment does not change stored interaction types.
 
-Kitchen navigation exposes Food & drinks, Menus (with Promotions) and Services
-directly, separate from Prep & Production (Prep plan, Recipes, Ingredients, Stations, Batches).
+Kitchen navigation groups Items, Menus, Promotions and Services beneath the
+Food & drink overview, separate from Prep & Production (Prep plan, Recipes, Ingredients, Stations, Batches).
 Services is the visible setup name at `/workspace/kitchen/services`; existing
 Offering records and commands remain its backing configuration. Named food
 experiences such as Picnic are not new service types. Core's shared Workspace
 sidebar cycles compact, expanded and expand-all using its existing navigation
 projection; active-route resolution and command authority remain unchanged.
 
+
+## Kitchen Workspace selection
+
+Kitchen Workspace remembers the last selected Kitchen through Core's existing
+App/family cookie. An authorised explicit link takes priority, followed by a valid
+remembered selection, then the first available Kitchen once access and target
+reads have settled. There is no separate Primary Kitchen preference, Home control
+or account mutation. Selection grants no access. Verify Core selection tests and
+Kitchen's `workspace-readiness.test.mjs`.
 
 ## Services configuration
 

@@ -58,7 +58,7 @@ definePageMeta({
     key: 'workspace-kitchen-waste-report',
     label: 'Waste report',
     group: 'Reports',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-recycle',
     position: 'top',

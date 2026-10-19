@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
@@ -13,12 +14,14 @@ const source = readFileSync(
 const planKitchenMenuDraft = compileFunction(
   `${stripTypeScriptTypes(source)}; return planKitchenMenuDraft`,
   [
+    'createHash',
     'normalizeSlug',
     'normalizeDishAddOns',
     'normalizeDishPriceOptions',
     'appendKitchenMenuCacheUnits',
   ]
 )(
+  createHash,
   (value) => String(value).trim().toLowerCase().replace(/\s+/g, '-'),
   (value) => value,
   (value) => value,
@@ -139,4 +142,19 @@ test('content replacement removes stale children and preserves create/update dec
       JSON.stringify(expected)
     )
   assert.equal(calls.filter((call) => call[0] === 'delete').length, 3)
+})
+
+test('separate imports never infer Dish identity from a shared name, while retries keep their identities', () => {
+  const plan = (menuId) =>
+    planKitchenMenuDraft({ kitchenId: 'k', menuId, sections: [section] }, stamp)
+      .plannedSections[0].items
+  const first = plan('first-upload')
+  const second = plan('second-upload')
+  assert.notEqual(first[0].dishId, 'soup')
+  assert.notEqual(first[0].dishId, second[0].dishId)
+  assert.deepEqual(
+    first.map((row) => row.dishId),
+    plan('first-upload').map((row) => row.dishId)
+  )
+  assert.notEqual(first[0].dishId, first[1].dishId)
 })

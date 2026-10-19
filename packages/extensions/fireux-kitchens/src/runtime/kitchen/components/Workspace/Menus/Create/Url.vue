@@ -1,27 +1,6 @@
 <template>
-  <UCard variant="subtle">
-    <template #header>
-      <div class="space-y-1">
-        <h3 class="text-sm font-semibold text-highlighted">Create from URL</h3>
-        <p class="text-sm text-dimmed">
-          Paste an existing ordering or menu page, then process it from the
-          queue.
-        </p>
-      </div>
-    </template>
-
-    <form
-      class="grid gap-3 md:grid-cols-[minmax(0,16rem)_1fr_auto]"
-      @submit.prevent="save"
-    >
-      <UFormField label="Menu name">
-        <UInput
-          v-model="menuName"
-          placeholder="main, delivery, drinks"
-          :disabled="pending || !canWrite"
-        />
-      </UFormField>
-
+  <div class="space-y-3">
+    <form class="grid gap-3 md:grid-cols-[1fr_auto]" @submit.prevent="save">
       <UFormField label="Menu URL">
         <UInput
           v-model="sourceUrl"
@@ -38,48 +17,39 @@
           :loading="pending"
           :disabled="!canSave"
         >
-          Save menu URL
+          Continue
         </UButton>
       </div>
     </form>
 
-    <p v-if="message" class="mt-3 text-sm text-dimmed">
-      {{ message }}
+    <p v-if="!currencyCode" class="text-sm text-warning">
+      Set the Place currency before importing a menu.
     </p>
-    <p v-if="!currencyCode" class="mt-3 text-sm text-warning">
-      Select a kitchen currency code before creating menus.
-    </p>
-    <MoleculesCopyError v-if="error" class="mt-3" :message="error" />
-  </UCard>
+    <MoleculesCopyError v-if="error" :message="error" />
+  </div>
 </template>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from '#imports'
+import { navigateTo, useRoute } from '#imports'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 
 const { activeKitchenAppId, canWrite, currencyCode, kitchenId } =
   useKitchenMenusContextSource()
 const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-const menuName = ref('')
 const sourceUrl = ref('')
 const pending = ref(false)
-const message = ref('')
 const error = ref('')
 
-const uploadId = computed(() => normalizeSlug(menuName.value))
 const canSave = computed(() =>
   Boolean(
     canWrite.value &&
       activeKitchenAppId.value &&
       kitchenId.value &&
       currencyCode.value &&
-      uploadId.value &&
       sourceUrl.value &&
       currentUser.value &&
       !pending.value
@@ -88,17 +58,9 @@ const canSave = computed(() =>
 
 const route = useRoute()
 const captureScope = useMenuEditorScope(
-  [
-    activeKitchenAppId,
-    kitchenId,
-    canWrite,
-    menuName,
-    sourceUrl,
-    () => route.fullPath,
-  ],
+  [activeKitchenAppId, kitchenId, canWrite, sourceUrl, () => route.fullPath],
   () => {
     pending.value = false
-    message.value = ''
     error.value = ''
   }
 )
@@ -110,11 +72,10 @@ async function save() {
   const body = {
     appId: activeKitchenAppId.value,
     kitchenId: kitchenId.value,
-    uploadId: uploadId.value,
+    uploadId: `source-${crypto.randomUUID()}`,
     sourceUrl: sourceUrl.value,
   }
   pending.value = true
-  message.value = ''
   error.value = ''
 
   try {
@@ -132,7 +93,9 @@ async function save() {
     })
 
     if (!isCurrent()) return
-    message.value = `Saved ${body.uploadId}. Process it from the queue below.`
+    await navigateTo(
+      `/workspace/kitchen/menus/uploads/${encodeURIComponent(body.uploadId)}`
+    )
   } catch (caught) {
     if (!isCurrent()) return
     error.value =

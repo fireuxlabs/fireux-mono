@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProjectCollection } from 'fireux-fireux/runtime/project/composables/useProjectCollection'
+import { useProjectCollection } from '../../../project/composables/useProjectCollection'
 
 const projectId = useRouteParam('projectId')
 const source = useProjectCollection({

@@ -66,7 +66,7 @@ async function render(path, state) {
     'WorkspaceKitchenMenusItemsAdd',
     'WorkspaceKitchenMenusSectionsCreate',
     'WorkspaceKitchenMenusSectionsCollectionRow',
-    'WorkspaceKitchenMenusUploadsDetailSummary',
+    'WorkspaceKitchenMenusProcess',
     'WorkspaceKitchenMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',

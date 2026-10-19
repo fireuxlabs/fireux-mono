@@ -1,5 +1,7 @@
 <template>
-  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-developer"></WorkspaceKitchenNavigationGroup>
+  <WorkspaceKitchenNavigationGroup
+    nav-key="workspace-kitchen-developer"
+  ></WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
 definePageMeta({
@@ -10,20 +12,26 @@ definePageMeta({
   requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-developer',
     label: 'Developer',
     description:
       'Open Kitchen development tools. Test records are separate from operational Kitchen data.',
-    group: 'Developer',
-    groupDisplay: 'nested',
+    group: '',
     groupIndex: true,
-    groupIcon: 'i-lucide-code-2',
     icon: 'i-lucide-code-2',
     position: 'top',
     order: 99,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [
+      {
+        label: 'Test',
+        to: '/workspace/kitchen/developer/test',
+        icon: 'i-lucide-flask-conical',
+      },
+    ],
   },
 })
 </script>

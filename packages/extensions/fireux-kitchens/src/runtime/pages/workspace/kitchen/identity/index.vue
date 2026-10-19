@@ -28,26 +28,42 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroIn
 import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
 const identity = useKitchenIdentity()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-const navTitle = 'Kitchen listing'
+const navTitle = 'Identity & brand'
 
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    hidden: true,
     key: 'workspace-kitchen-identity',
-    label: 'Kitchen listing',
-    group: 'Settings',
-    groupDisplay: 'nested',
+    label: 'Identity & brand',
+    group: '',
+    description: 'Manage your Kitchen listing, venue profile and brand.',
     groupIndex: true,
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-id-card',
     position: 'top',
-    order: 80,
+    order: 1,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [
+      {
+        label: 'Venue profile',
+        to: '/workspace/kitchen/identity/profile',
+        icon: 'i-lucide-map-pin',
+      },
+      {
+        label: 'Operating hours',
+        to: '/workspace/kitchen/identity/operating-hours',
+        icon: 'i-lucide-clock',
+      },
+      {
+        label: 'Appearance',
+        to: '/workspace/kitchen/identity/appearance',
+        icon: 'i-lucide-palette',
+      },
+    ],
   },
   requiresAuth: true,
   requiresSelection: true,

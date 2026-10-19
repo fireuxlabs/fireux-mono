@@ -16,19 +16,18 @@
       description="This draft would remove existing variants or add-ons. Reprocess or repair the draft before replacing the menu."
     />
 
-    <MoleculesDisclosurePanel title="Confirm dishes" :default-open="true">
-      <div class="mt-3">
-        <WorkspaceKitchenMenusProcessReviewApply
-          :source="source"
-          :result="result"
-          :app-id="appId"
-          :kitchen-id="kitchenId"
-          :menu-id="menuId"
-          :auth-token="authToken"
-          :blocked="blocked || hasDestructiveOptionLoss"
-        />
-      </div>
-    </MoleculesDisclosurePanel>
+    <div class="border-t border-default pt-4">
+      <WorkspaceKitchenMenusProcessReviewApply
+        :existing-menu-name="existingMenuName"
+        :source="source"
+        :result="result"
+        :app-id="appId"
+        :kitchen-id="kitchenId"
+        :menu-id="menuId"
+        :auth-token="authToken"
+        :blocked="blocked || hasDestructiveOptionLoss"
+      />
+    </div>
   </div>
 </template>
 
@@ -36,6 +35,7 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
+  existingMenuName?: string
   source?: unknown | null
   result?: Record<string, unknown> | null
   appId: string

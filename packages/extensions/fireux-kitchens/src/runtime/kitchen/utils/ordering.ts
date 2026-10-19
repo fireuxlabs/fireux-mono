@@ -72,11 +72,13 @@ export function addOrderLine(order: Order, line: OrderLine): Order {
     throw new Error('Order line quantity must be a positive finite number.')
   if (!unitCode || unitCode.length > 32)
     throw new Error('Order line unit code must be 1 to 32 characters.')
+  if (line.notes !== undefined && (!Array.isArray(line.notes) || line.notes.length > 1100 || line.notes.some((note) => typeof note !== 'string' || !note.trim() || note.length > 500)))
+    throw new Error('Order item notes are invalid.')
   return {
     ...order,
     lines: [
       ...order.lines,
-      { id, item: { ...(itemId !== undefined ? { id: itemId.trim() } : {}), name }, quantity: line.quantity, unit_code: unitCode },
+      { id, ...(line.notes?.length ? { notes: line.notes.map((note) => note.trim()) } : {}), item: { ...(itemId !== undefined ? { id: itemId.trim() } : {}), name }, quantity: line.quantity, unit_code: unitCode },
     ],
   }
 }
@@ -141,7 +143,7 @@ export function readOrder(value: unknown): Order {
     const item = line.item as Record<string, unknown> | undefined
     if (
       Object.keys(line).some(
-        (key) => !['id', 'item', 'quantity', 'unit_code'].includes(key)
+        (key) => !['id', 'item', 'quantity', 'unit_code', 'notes'].includes(key)
       ) ||
       typeof line.id !== 'string' ||
       line.id.length > 128 ||

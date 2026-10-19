@@ -7,7 +7,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import type { ProjectPublishedIdentity } from 'fireux-fireux/runtime/project/models/published-identity'
+import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 
 type AppContext = {
   sourcePath: string

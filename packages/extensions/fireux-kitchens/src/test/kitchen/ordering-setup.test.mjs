@@ -242,72 +242,6 @@ test('proved server success remains truthful after the setup scope changes', asy
   assert.equal((await save).offering.id, 'saved')
   h.scope.stop()
 })
-test('existing Offering form cancellation writes nothing and an unmounted save cannot emit completion', async () => {
-  for (const submitFirst of [false, true]) {
-    const response = deferred(),
-      scope = effectScope(),
-      events = [],
-      calls = []
-    const state = scope.run(() =>
-      load(
-        base + 'components/Workspace/Offerings/Setup.vue',
-        {
-          computed,
-          ref,
-          watch,
-          useCommandScope,
-          defineProps: () => ({
-            kitchenId: 'local',
-            option: {
-              key: 'collection',
-              label: 'Collection',
-              types: ['collection'],
-            },
-            offering: {
-              id: 's',
-              name: 'Pickup',
-              enabled: true,
-              menu_ids: ['m'],
-              hours: { timezone: 'Europe/Zurich' },
-              interactions: [{ type: 'collection', enabled: true }],
-            },
-            menus: [
-              {
-                id: 'm',
-                name: 'Food',
-                status: 'published',
-                format: 'interactive',
-              },
-            ],
-            menusOutcome: 'ready',
-            timezone: 'Europe/Zurich',
-            save: (input) => {
-              calls.push(input)
-              return response.promise
-            },
-          }),
-          defineEmits: () => (event) => events.push(event),
-          offeringOptionEnabled: () => true,
-          formatWeekdayTimeText: () => 'Tuesday 12:00 - 20:00',
-          parseWeekdayTimeText: () => ({
-            timezone: 'Europe/Zurich',
-            windows: [{}],
-          }),
-          kitchenOrderTypeLabel: (type) => type,
-        },
-        'submit',
-        true
-      )
-    )
-    const save = submitFirst ? state.submit() : undefined
-    scope.stop()
-    response.resolve({ ok: true })
-    await save
-    assert.equal(calls.length, submitFirst ? 1 : 0)
-    assert.deepEqual(events, [])
-  }
-})
-
 test('actual onboarding and collection path never reconcile local setup; the actual Workspace index still does', async () => {
   for (const initial of ['', 'previous']) {
     const scope = effectScope(),
@@ -326,7 +260,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
           computed({
             get: () => value.value,
             set: (next) => {
-              cookieWrites.push(next)
+              if (next !== value.value) cookieWrites.push(next)
               value.value = next
             },
           })
@@ -341,6 +275,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
         computed,
         useState,
         useCookie,
+        watch,
         useFireUXConfig,
         normalizeString: (x) => String(x || '').trim(),
       },
@@ -573,77 +508,4 @@ test('Fulfilment reads follow the explicit setup Kitchen while the Workspace rem
   useKitchenFulfilment()
   assert.equal(paths[1].path.value, 'kitchens/workspace/fulfilment')
   assert.equal(identityRequests[1], undefined)
-})
-
-test('Payment summary uses setup Kitchen currency and its edit action performs the supplied handoff', () => {
-  const props = reactive({
-    kitchenId: 'setup',
-    config: {
-      type: 'collection',
-      fulfilment: { deposit: { type: 'fixed', amount: 10 } },
-    },
-  })
-  const state = load(
-    base + 'components/Workspace/Offerings/Payment.vue',
-    {
-      computed,
-      defineProps: () => props,
-      useKitchenFulfilment: (explicit) => ({
-        selectedKitchen: computed(() => ({
-          id: toValue(explicit),
-          currency_code: toValue(explicit) === 'setup' ? 'GBP' : 'CHF',
-        })),
-        fulfilment: computed(() => ({
-          payment_methods: [
-            {
-              method: toValue(explicit) === 'setup' ? 'cash' : 'online_card',
-              order_types: ['collection'],
-            },
-          ],
-        })),
-        pending: ref(false),
-        error: ref(null),
-        outcome: ref('ready'),
-      }),
-      kitchenPaymentMethodsForOrderType: (config, type) =>
-        config.payment_methods
-          .filter((m) => m.order_types.includes(type))
-          .map((m) => m.method),
-    },
-    'methodsLabel,depositLabel',
-    true
-  )
-  assert.equal(state.methodsLabel.value, 'Cash')
-  assert.match(state.depositLabel.value, /GBP|£/)
-  props.kitchenId = 'other'
-  assert.equal(state.methodsLabel.value, 'Online card')
-  assert.match(state.depositLabel.value, /CHF/)
-  const source = readFileSync(
-    new URL(
-      base + 'components/Workspace/Offerings/Payment.vue',
-      import.meta.url
-    ),
-    'utf8'
-  )
-  const expression = source.match(/@click="([^"]+)"/)[1]
-  const events = []
-  let selectedWorkspace = 'other'
-  compileFunction(expression, ['openWorkspace'])((path) => {
-    selectedWorkspace = 'setup'
-    events.push(path)
-  })
-  assert.equal(selectedWorkspace, 'setup')
-  assert.deepEqual(events, ['/workspace/kitchen/identity/payments'])
-  assert.match(source, /:to="openWorkspace \? undefined/)
-  assert.match(source, /outcome === 'pending'/)
-  assert.match(source, /!selectedKitchen/)
-  for (const path of [
-    'components/Workspace/Offerings/Index.vue',
-    'components/Workspace/Offerings/Setup.vue',
-    'components/Workspace/Offerings/Setup/Interaction.vue',
-  ])
-    assert.match(
-      readFileSync(new URL(base + path, import.meta.url), 'utf8'),
-      /:kitchen-id="kitchenId"/
-    )
 })

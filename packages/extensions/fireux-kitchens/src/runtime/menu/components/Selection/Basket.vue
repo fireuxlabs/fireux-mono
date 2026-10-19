@@ -1,5 +1,13 @@
 <template>
   <div class="space-y-5">
+    <p
+      v-if="lines.length && !catalogueReady"
+      role="status"
+      class="text-sm text-muted"
+    >
+      Your basket is kept. Availability will be checked when food and drinks
+      reload.
+    </p>
     <p v-if="!lines.length" class="text-muted">Your basket is empty.</p>
     <article
       v-for="line in lines"
@@ -48,6 +56,7 @@
           :aria-label="`Decrease ${line.name}`"
           color="neutral"
           variant="soft"
+          :disabled="disabled"
           @click="emit('adjust', line.key, -1)"
         />
         <span :aria-label="`${line.name} quantity`">{{
@@ -59,7 +68,10 @@
           color="neutral"
           variant="soft"
           :disabled="
-            line.choices.quantity >= 99 || staleKeys.includes(line.key)
+            disabled ||
+            !catalogueReady ||
+            line.choices.quantity >= 99 ||
+            staleKeys.includes(line.key)
           "
           @click="emit('adjust', line.key, 1)"
         />
@@ -68,6 +80,7 @@
           color="neutral"
           variant="ghost"
           class="ml-auto"
+          :disabled="disabled"
           @click="emit('remove', line.key)"
         />
       </div>
@@ -90,6 +103,8 @@
 <script setup lang="ts">
 import type { ServiceBasketLine } from '../../utils/service-basket'
 defineProps<{
+  disabled?: boolean
+  catalogueReady: boolean
   lines: ServiceBasketLine[]
   staleKeys: string[]
   totalMinor: number

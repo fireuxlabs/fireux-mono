@@ -351,13 +351,17 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
     const owner = effectScope()
     owner.run(() => {
       const upload = load(
-        'kitchen/composables/workspace/menus/useKitchenWorkspaceMenuUploadPayload.ts',
-        'useKitchenWorkspaceMenuUploadPayload',
+        'kitchen/composables/workspace/menus/useMenuSourceUpload.ts',
+        'useMenuSourceUpload',
         {
           computed,
           ref,
           unref,
+          toValue,
           watch,
+          useRoute: () => ({ fullPath: '/source' }),
+          useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
+          useMenuEditorScope: () => () => () => true,
           useAuth: () => ({ currentUser: ref(null) }),
           useUserSession: () => ({ appUser: ref(null) }),
           normalizeSlug: (value) => value,
@@ -367,9 +371,9 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
             return { ...state, menu: ref(null) }
           },
         }
-      ).useKitchenWorkspaceMenuUploadPayload({ uploadId: 'source-only' })
-      assert.equal(upload.payload.value.slug.initialValue, 'source-only')
-      assert.equal(upload.payload.value.consumer.kitchen.id, 'kitchen-a')
+      ).useMenuSourceUpload({ uploadId: 'source-only' })
+      assert.equal(typeof upload.uploadFiles, 'function')
+      assert.equal(upload.currencyCode.value, state.currencyCode.value)
       assert.equal(collectionCalls, useRecord ? 0 : 1)
     })
     owner.stop()

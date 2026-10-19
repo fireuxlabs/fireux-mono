@@ -8,7 +8,7 @@
             class="mb-4"
             :ui="{ list: 'flex-wrap' }"
             :items="[
-              { label: 'Settings', to: '/workspace/kitchen/settings' },
+              { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
               { label: 'Appearance' },
             ]"
           /><WorkspaceKitchenAppearance />
@@ -30,7 +30,7 @@ definePageMeta({
     key: 'workspace-kitchen-appearance',
     label: 'Appearance',
     description: 'Menu colours and a preview of your public menu',
-    group: 'Settings',
+    group: 'Identity & brand',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-palette',

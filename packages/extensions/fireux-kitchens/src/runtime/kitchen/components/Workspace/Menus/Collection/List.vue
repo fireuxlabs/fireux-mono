@@ -32,11 +32,7 @@
             :key="menu.id"
             :to="menuWorkspaceDestination(menu)"
             :title="menuTitle(menu)"
-            :icon="
-              menu.schedule === 'daily' && menu.status !== 'archived'
-                ? 'i-lucide-calendar-days'
-                : 'i-lucide-book-open'
-            "
+            :icon="group.icon"
             :description="menu.description"
           >
             <UBadge
@@ -99,17 +95,20 @@ const filteredMenus = computed(() =>
 const groups = computed(() =>
   [
     {
-      label: 'Regular Menus',
+      label: 'Menus',
+      icon: 'i-lucide-book-open',
       menus: filteredMenus.value.filter(
         (menu) => menu.schedule !== 'daily' && menu.status !== 'archived'
       ),
     },
     {
       label: 'Archived',
+      icon: 'i-lucide-archive',
       menus: filteredMenus.value.filter((menu) => menu.status === 'archived'),
     },
     {
       label: 'Daily specials',
+      icon: 'i-lucide-calendar-days',
       menus: filteredMenus.value.filter(
         (menu) => menu.schedule === 'daily' && menu.status !== 'archived'
       ),

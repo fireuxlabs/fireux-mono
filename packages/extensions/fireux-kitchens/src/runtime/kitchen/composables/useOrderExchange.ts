@@ -12,8 +12,9 @@ export function useOrderExchange(kitchenId: Ref<string>, ownerScope?: Ref<string
   const captureIntent = useCommandScope(sources)
   const pending = ref(false)
   const error = ref('')
+  const failureStatus = ref(0)
   const version = ref(0)
-  watch(sources, () => { pending.value = false; error.value = ''; version.value++ }, { flush: 'sync' })
+  watch(sources, () => { pending.value = false; error.value = ''; failureStatus.value = 0; version.value++ }, { flush: 'sync' })
   async function request(path: string, payload: Record<string, unknown>, method: 'GET' | 'POST' = 'POST') {
     if (!kitchenId.value || !currentUser.value || pending.value) return null
     const isCurrent = captureIntent()
@@ -21,6 +22,7 @@ export function useOrderExchange(kitchenId: Ref<string>, ownerScope?: Ref<string
     const body: Record<string, unknown> = structuredClone({ ...payload, kitchenId: kitchenId.value })
     pending.value = true
     error.value = ''
+    failureStatus.value = 0
     try {
       let credentialTimer: ReturnType<typeof setTimeout> | undefined
       const token = await Promise.race([
@@ -39,9 +41,10 @@ export function useOrderExchange(kitchenId: Ref<string>, ownerScope?: Ref<string
       }
       return isCurrent() ? result : null
     } catch (caught: any) {
+      if (isCurrent()) failureStatus.value = Number(caught?.statusCode || caught?.status || caught?.data?.statusCode) || 0
       if (isCurrent()) error.value = caught?.data?.statusMessage || caught?.message || 'The order could not be updated.'
       return null
     } finally { if (isCurrent()) pending.value = false }
   }
-  return { request, pending, error, version }
+  return { request, pending, error, version, failureStatus }
 }

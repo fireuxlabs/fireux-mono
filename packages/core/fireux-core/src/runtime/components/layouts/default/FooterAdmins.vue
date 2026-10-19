@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useLiveFetch } from '../../../composables/fireux/firestore/useLiveFetch'
 import { computed } from 'vue'
 import type { UserCard } from '../../../user/composables/useUserView'
 

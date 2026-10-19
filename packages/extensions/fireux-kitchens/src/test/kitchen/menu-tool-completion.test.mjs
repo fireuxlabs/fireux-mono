@@ -6,6 +6,7 @@ import { compileFunction } from 'node:vm'
 import {
   computed,
   ref,
+  toRef,
   reactive,
   unref,
   watch,
@@ -145,7 +146,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
           'kitchen/components/Workspace/Menus/Create/Form.vue',
           '({save,name,description,busy,error})',
           {
-            defineProps: () => ({ format: 'interactive' }),
+            defineModel: () => ref(''),
             useMenuRecordNavigation: () => ({
               openView: (...args) => h.effects.push(args),
             }),
@@ -193,9 +194,10 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       const h = context(),
         api = h.run(
           'kitchen/components/Workspace/Menus/Create/Url.vue',
-          '({save,menuName,sourceUrl,pending,message,error})',
+          '({save,sourceUrl,pending,error})',
           {
-            normalizeSlug: (value) => value.trim().toLowerCase(),
+            crypto: { randomUUID: () => 'test-source' },
+            navigateTo: (path) => h.effects.push(path),
             useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
             useKitchenMenusContextSource: () => ({
               activeKitchenAppId: h.activeKitchenAppId,
@@ -205,7 +207,6 @@ test('URL source captures its body and blocks stale credentials and obsolete com
             }),
           }
         )
-      api.menuName.value = 'Before'
       api.sourceUrl.value = 'https://example.com/before'
       const pending = api.save()
       if (stage === 'response') {
@@ -227,61 +228,18 @@ test('URL source captures its body and blocks stale credentials and obsolete com
         assert.deepEqual(h.calls[0].options.body, {
           appId: 'app',
           kitchenId: 'kitchen',
-          uploadId: 'before',
+          uploadId: 'source-test-source',
           sourceUrl: 'https://example.com/before',
         })
-      assert.equal(
-        api.message.value,
+      assert.deepEqual(
+        h.effects,
         changed === 'stable'
-          ? 'Saved before. Process it from the queue below.'
-          : ''
+          ? ['/workspace/kitchen/menus/uploads/source-test-source']
+          : []
       )
       assert.equal(api.pending.value, changed !== 'stable')
       h.lifetime.stop()
     }
-})
-test('upload token binding clears immediately, ignores obsolete resolution/rejection and stops on disposal', async () => {
-  const h = context(),
-    second = deferred(),
-    third = deferred()
-  const api = h.run(
-    'kitchen/composables/workspace/menus/useKitchenWorkspaceMenuUploadPayload.ts',
-    'useKitchenWorkspaceMenuUploadPayload()',
-    {
-      normalizeSlug: (value) => String(value).trim().toLowerCase(),
-      window: { location: { origin: 'https://example.com' } },
-      useOptionalKitchenMenuRecordContext: () => null,
-      useKitchenMenusContextSource: () => ({
-        selectedKitchen: ref({ slug: 'kitchen' }),
-        kitchenId: h.kitchenId,
-        activeKitchenAppId: h.activeKitchenAppId,
-        canWrite: h.canWrite,
-        currencyCode: ref('CHF'),
-      }),
-    }
-  )
-  assert.equal(api.authToken.value, '')
-  assert.equal(api.canUseTool.value, false)
-  h.currentUser.value = { uid: 'second', getIdToken: () => second.promise }
-  second.resolve('second-token')
-  await drain()
-  assert.equal(api.authToken.value, 'second-token')
-  assert.equal(api.canUseTool.value, true)
-  h.token.resolve('first-token')
-  await drain()
-  assert.equal(api.authToken.value, 'second-token')
-  h.currentUser.value = { uid: 'third', getIdToken: () => third.promise }
-  assert.equal(api.authToken.value, '')
-  assert.equal(api.canUseTool.value, false)
-  third.reject(Error('Token failed'))
-  await drain()
-  assert.equal(api.authToken.value, '')
-  const last = deferred()
-  h.currentUser.value = { uid: 'last', getIdToken: () => last.promise }
-  h.lifetime.stop()
-  last.resolve('disposed-token')
-  await drain()
-  assert.equal(api.authToken.value, '')
 })
 test('Menu removal returns to the collection after live data removes the record', async () => {
   const h = context()

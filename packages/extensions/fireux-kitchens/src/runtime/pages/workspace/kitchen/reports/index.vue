@@ -1,5 +1,7 @@
 <template>
-  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-reports"></WorkspaceKitchenNavigationGroup>
+  <WorkspaceKitchenNavigationGroup
+    nav-key="workspace-kitchen-reports"
+  ></WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
 definePageMeta({
@@ -15,16 +17,36 @@ definePageMeta({
     label: 'Reports',
     description:
       'Review sales, food costs, service and waste using each report’s available records.',
-    group: 'Reports',
-    groupDisplay: 'nested',
+    group: '',
     groupIndex: true,
-    groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-chart-no-axes-combined',
     position: 'top',
     order: 70,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [
+      {
+        label: 'Sales',
+        to: '/workspace/kitchen/reports/finance',
+        icon: 'i-lucide-chart-column',
+      },
+      {
+        label: 'Service',
+        to: '/workspace/kitchen/reports/performance',
+        icon: 'i-lucide-gauge',
+      },
+      {
+        label: 'Food costs',
+        to: '/workspace/kitchen/reports/costs',
+        icon: 'i-lucide-calculator',
+      },
+      {
+        label: 'Waste report',
+        to: '/workspace/kitchen/reports/waste-report',
+        icon: 'i-lucide-recycle',
+      },
+    ],
   },
 })
 </script>

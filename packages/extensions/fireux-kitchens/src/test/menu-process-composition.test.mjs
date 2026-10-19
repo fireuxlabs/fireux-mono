@@ -51,6 +51,13 @@ test('Process composition forwards model selection, draft comparison and review 
   for (const name of ['Run', 'Report', 'Comparison'])
     app.component('WorkspaceKitchenMenusProcess' + name, {
       props: ['process'],
+      computed: {
+        attentionFlags() {
+          return this.process.flags.filter((flag) =>
+            ['warning', 'error'].includes(flag.level)
+          )
+        },
+      },
       render: compile(template(name)),
     })
   app.component('MoleculesDisclosurePanel', {
@@ -66,6 +73,8 @@ test('Process composition forwards model selection, draft comparison and review 
     'DiagnosticsDebugPanel',
     'UPageCard',
     'UBadge',
+    'MoleculesCopyError',
+    'UAlert',
   ])
     app.component(name, {
       inheritAttrs: false,

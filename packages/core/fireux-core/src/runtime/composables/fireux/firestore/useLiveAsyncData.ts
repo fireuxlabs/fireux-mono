@@ -1,6 +1,6 @@
 import { sharedLiveResponse } from './sharedLiveResponse'
 import { useAsyncData, useRuntimeConfig, createError } from 'nuxt/app'
-import type { AsyncDataOptions } from 'nuxt/app'
+import type { AsyncData, AsyncDataOptions, NuxtError } from 'nuxt/app'
 import type { RuntimeApp } from '../../../../config/app/runtime'
 import {
   getCurrentInstance,
@@ -18,6 +18,17 @@ export type LiveFetch = <T>(
   options?: Record<string, any>
 ) => Promise<T>
 
+export type LiveRefresh = (
+  options?: Parameters<AsyncData<unknown, NuxtError>['refresh']>[0]
+) => Promise<void>
+export type LiveAsyncData<T> = Omit<
+  AsyncData<
+    ReturnType<typeof useAsyncData<T>>['data']['value'] | undefined,
+    NuxtError | undefined
+  >,
+  'refresh' | 'execute'
+> & { refresh: LiveRefresh; execute: LiveRefresh }
+
 /** Keep a server projection live while retaining Nuxt's initial SSR and read states. */
 export function useLiveAsyncData<T>(
   key: MaybeRefOrGetter<string>,
@@ -25,7 +36,7 @@ export function useLiveAsyncData<T>(
   options: Omit<AsyncDataOptions<T>, 'default'> & {
     default?: () => T | Ref<T>
   } = {}
-) {
+): LiveAsyncData<T> {
   const liveEndpoint = (useRuntimeConfig().public.fireux as Partial<Pick<RuntimeApp, 'liveReadEndpoint'>>)
     ?.liveReadEndpoint
   // Nuxt retains the first handler for a key. Its live connections belong to

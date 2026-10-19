@@ -170,3 +170,12 @@ test('post-info validates and detaches customer, address and requested time', ()
  for (const requested_at of ['tomorrow', '2026-02-30T12:30:00.000Z', '2026-10-20']) assert.throws(() => readOrder({ ...base, requested_at }))
  assert.throws(() => readOrder({ ...base, delivery_address: '' }))
 })
+
+
+test('item choice notes survive order parsing and quantity edits with bounded plain text', () => {
+  const order = readOrder({ id: 'choice-test', number: '', channel: 'website', lines: [{ id: 'line', item: { name: 'Pizza' }, quantity: 1, unit_code: 'C62', notes: [' Cheese ', 'Bottle exchange · no deposit'] }] })
+  assert.deepEqual(order.lines[0].notes, ['Cheese', 'Bottle exchange · no deposit'])
+  assert.deepEqual(updateOrderLineQuantity(order, 'line', 2).lines[0].notes, order.lines[0].notes)
+  for (const notes of ['text', [null], [''], ['x'.repeat(501)], Array(1101).fill('choice')])
+    assert.throws(() => readOrder({ ...order, lines: [{ ...order.lines[0], notes }] }), /notes/)
+})

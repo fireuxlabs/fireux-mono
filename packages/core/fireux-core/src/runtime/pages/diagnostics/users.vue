@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useLiveFetch } from '../../composables/fireux/firestore/useLiveFetch'
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: inspect the bounded public User projection.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: keep projected User model inspection biography-aware.
 import { definePageMeta } from '#imports'

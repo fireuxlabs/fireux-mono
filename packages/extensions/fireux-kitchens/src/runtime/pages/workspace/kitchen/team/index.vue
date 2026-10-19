@@ -16,7 +16,7 @@ definePageMeta({
       'Manage the people in your Kitchen and their responsibilities. Team roles do not grant Workspace access.',
     icon: 'i-lucide-users',
     position: 'top',
-    order: 60,
+    order: 2,
     prominent: false,
     desktop: true,
     mobile: true,

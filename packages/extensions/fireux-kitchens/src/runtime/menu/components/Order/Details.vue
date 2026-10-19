@@ -16,5 +16,5 @@
 defineProps<{ context: 'collection' | 'delivery' | 'table' }>()
 const name = defineModel<string>('name', { required: true })
 const phone = defineModel<string>('phone', { required: true })
-const address = defineModel<string>('address', { required: true })
+const address = defineModel<string>('address', { default: '' })
 </script>

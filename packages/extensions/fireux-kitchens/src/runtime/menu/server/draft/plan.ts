@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import {
   normalizeDishPriceOptions,
   normalizeDishAddOns,
@@ -55,11 +56,16 @@ export function planKitchenMenuDraft(
     })
 
     const items = section.items.map((item, itemIndex) => {
-      const dishId = uniqueSlug(
+      const dishKey = uniqueSlug(
         dishIds,
         `dish-${sectionIndex + 1}-${itemIndex + 1}`,
         item.name
       )
+      // A source creates its own Dishes; a matching catalogue name is not identity.
+      const dishId = createHash('sha256')
+        .update(JSON.stringify([input.menuId, dishKey]))
+        .digest('hex')
+        .slice(0, 32)
       const itemId = `${dishId}-${itemIndex + 1}`
       const itemKey = `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
       const addOns = normalizeDishAddOns(item.add_ons)

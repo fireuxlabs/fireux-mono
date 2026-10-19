@@ -21,9 +21,9 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen',
     label: 'Home',
-    group: 'Workspace',
+    group: '',
     description: 'Kitchen Workspace',
-    icon: 'i-lucide-chef-hat',
+    icon: 'i-lucide-house',
     position: 'bottom',
     order: 900,
     prominent: true,

@@ -58,7 +58,7 @@ definePageMeta({
     key: 'workspace-kitchen-performance',
     label: 'Service',
     group: 'Reports',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-gauge',
     position: 'top',

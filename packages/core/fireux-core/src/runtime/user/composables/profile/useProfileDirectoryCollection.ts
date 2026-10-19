@@ -1,4 +1,4 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
 import type { CollectionResponse } from '../../../models/utils/directory.ts'

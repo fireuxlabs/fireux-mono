@@ -14,11 +14,8 @@
         />
       </div>
     </MoleculesDisclosurePanel>
-    <MoleculesDisclosurePanel title="Menu draft" :default-open="true">
-      <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
-        <p class="text-sm text-dimmed">
-          The raw read has been cleaned into reviewable menu sections.
-        </p>
+    <MoleculesDisclosurePanel title="Menu items" :default-open="true">
+      <div class="mt-3 space-y-3">
         <WorkspaceKitchenMenusProcessSections
           :sections="process.draftSections"
           empty-label="No draft sections returned."

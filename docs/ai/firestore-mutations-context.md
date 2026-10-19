@@ -179,8 +179,10 @@ closed. Team and other capability capacities remain separate policies.
 Kitchen directory contribution is a separate named command: it publishes a
 location-backed or name-only listing with creator attribution and no Team or
 workspace access grant. FireUX Project creation remains a fixed trusted Server
-command. Workspace selection is App/family-local state in `useWorkspace`;
-unused account-primary fields and change workflows are retired.
+command. Workspace selection is App/family-local state in `useWorkspace`.
+Kitchen has no separate Primary preference command or account field. The last
+selected Kitchen is remembered through the existing Workspace selection cookie;
+selection does not mutate access grants.
 
 The former AppUser Entity arrays and primary fields are migration sources only,
 never a runtime fallback. Data migration is separate from the code cutover:

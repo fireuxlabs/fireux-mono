@@ -1,11 +1,11 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useLiveAsyncData } from './useLiveAsyncData'
+import { useLiveAsyncData, type LiveAsyncData } from './useLiveAsyncData'
 
 /** Live counterpart for a mutable, same-origin server GET projection. */
 export function useLiveFetch<T>(
   request: MaybeRefOrGetter<string>,
   options: Record<string, any> = {}
-) {
+): LiveAsyncData<T> {
   const {
     key,
     server,

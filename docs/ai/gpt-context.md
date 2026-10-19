@@ -152,7 +152,8 @@ renamed alias is not proof.
   current-Entity projections read only an exact settled membership-granted ID;
   a saved selection alone does not authorize a root read. Selection persists for
   one year in an App/family cookie on the current host; it remembers the last
-  selection, not an account-wide primary Entity. Blank demonstrates
+  selection. There is no separate Primary Kitchen preference or account setting.
+  A valid last selection is retained; fallback waits for settled access. Blank demonstrates
   the selection rule without adding another domain navigation owner. Source-owned
   tests protect selection and page-state disposal; live browser verification is separate. See `docs/concepts/family-workspace-entity.md`.
 - Optional cross-ecosystem account connections retain each owning Auth UID and

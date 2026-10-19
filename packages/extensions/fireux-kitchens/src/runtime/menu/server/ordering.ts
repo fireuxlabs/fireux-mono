@@ -1,59 +1,221 @@
-import { readDishPricing } from '../../kitchen/utils/dish-pricing'
-import { readKitchenOfferingsInTransaction } from '../../kitchen/server/offerings/read'
-import { kitchenMenuOrdering, publicMenuOrderTypes, publicMenuServiceOpen } from '../utils/menu-ordering'
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, serverKitchenDishesTarget, FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import {
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+  FIRESTORE_MUTATION_TARGETS,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
+import { readKitchenOfferingsInTransaction } from '../../kitchen/server/offerings/read'
+import { resolveKitchenOperationHours } from '../../kitchen/utils/kitchen-readers'
+import { resolveServiceHours } from '../../kitchen/utils/service-hours'
+import { promotionDay } from '../../kitchen/utils/promotions/pricing'
+import {
+  kitchenMenuOrdering,
+  publicMenuOrderTypes,
+  publicMenuServiceOpen,
+} from '../utils/menu-ordering'
+import { constrainMenuOfferings } from '../utils/menu-hours'
+import { serviceBasketLine } from '../utils/service-basket'
+import { orderItemReader } from './ordering/items'
+import { readMenuOrderSelections } from './ordering/selections'
 import type { OrderLine, Order } from '../../kitchen/models/order.model'
-import type { MenuOrderSelection, MenuOrderPricing } from '../models/menu-order-selection.model'
-const fail = (message: string): never => { throw createError({statusCode:409,statusMessage:message}) }
-export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
- if (!Array.isArray(value) || !value.length || value.length > 50) return fail('Choose between 1 and 50 menu items.')
- const seen = new Set<string>()
- return value.map(raw => {
-  if (!raw || typeof raw !== 'object' || Object.keys(raw).some(key=>!['sectionId','itemId','optionId','quantity'].includes(key))) return fail('Menu selection is invalid.')
-  const sectionId=requireFirestoreDocumentId(raw.sectionId,'Section id'),itemId=requireFirestoreDocumentId(raw.itemId,'Item id')
-  const optionId=raw.optionId === undefined ? undefined : requireFirestoreDocumentId(raw.optionId,'Option id')
-  if (!Number.isInteger(raw.quantity) || raw.quantity<1 || raw.quantity>99) return fail('Choose a whole quantity from 1 to 99.')
-  const key=JSON.stringify([sectionId,itemId,optionId]);if(seen.has(key))return fail('Combine repeated menu items.');seen.add(key)
-  return {sectionId,itemId,...(optionId?{optionId}:{}),quantity:raw.quantity}
- })
+import type {
+  MenuOrderSelection,
+  MenuOrderPricing,
+} from '../models/menu-order-selection.model'
+export { readMenuOrderSelections }
+
+const fail = (message: string): never => {
+  throw createError({ statusCode: 409, statusMessage: message })
 }
-export async function resolveMenuOrderLines(tx: GuardedServerTransaction, input: {kitchenId:string;menuId:string;selections:MenuOrderSelection[];fulfilment:Order['fulfilment'];expectedTotal:number}, now = new Date()) {
- const menu=await tx.read(serverKitchenMenusTarget(input.kitchenId),input.menuId)
- const place=await tx.read(FIRESTORE_MUTATION_TARGETS.places,input.kitchenId)
- if(!menu.exists || menu.data?.status!=='published' || menu.data?.doc?.url || menu.data?.schedule === 'daily') return fail('This menu is no longer available for ordering.')
- const offerings = await readKitchenOfferingsInTransaction(tx, input.kitchenId)
- const orderType = input.fulfilment === 'on_site' ? 'dine_in' : input.fulfilment
- if (!publicMenuOrderTypes(kitchenMenuOrdering(offerings, input.menuId)).some(config => config.type === orderType)) return fail('This menu does not currently offer this service.')
- if (!publicMenuServiceOpen(kitchenMenuOrdering(offerings, input.menuId), String(orderType), now)) return fail('This service is closed. Please order during its serving hours.')
- const currency=readPlaceCurrencyCode(place.data || {})
- if(!currency) return fail('Menu currency is unavailable.')
- const lines:OrderLine[]=[],pricing:MenuOrderPricing={currency,total:0,lines:[]}
- for(const [index,selection] of input.selections.entries()) {
-  const section=await tx.read(serverKitchenMenuSectionsTarget(input.kitchenId,input.menuId),selection.sectionId)
-  const item=await tx.read(serverKitchenMenuItemsTarget(input.kitchenId,input.menuId,selection.sectionId),selection.itemId)
-  if(!section.exists || section.data?.status==='archived' || !item.exists || item.data?.status==='archived') return fail('A selected menu item is no longer available.')
-  const data=item.data!,dishId=requireFirestoreDocumentId(data.dish_id,'Dish id')
-  const dish=await tx.read(serverKitchenDishesTarget(input.kitchenId),dishId)
-  if(!dish.exists || typeof dish.data?.name!=='string' || !dish.data.name.trim() || dish.data.status==='archived') return fail('A selected dish is unavailable.')
-  const terms = readDishPricing(dish.data)
-  let price:unknown=terms.price,label=''
-  const options = terms.price_options.map((option,index)=>({id:option.label?.toLowerCase().replace(/[^a-z0-9]+/g,'-') || `option-${index+1}`,label:option.label,price:option.price}))
-  if(options.length) {
-   const option=options.find(option=>option.id===selection.optionId)
-   if(!option)return fail('Choose an available size for each item.')
-   price=option.price;label=option.label
-  } else if(selection.optionId) return fail('An item option has changed. Review your order.')
-  if(typeof price!=='number'||!Number.isFinite(price)||price<0)return fail('A selected item has no valid price.')
-  const unitPrice=Math.round(price*100),total=unitPrice*selection.quantity,lineId=`line-${index+1}`
-  if(!Number.isSafeInteger(total))return fail('Order total is invalid.')
-  lines.push({id:lineId,item:{id:selection.itemId,name:dish.data.name.trim()+(label?` — ${label}`:'')},quantity:selection.quantity,unit_code:'C62'})
-  pricing.lines.push({line_id:lineId,unit_price:unitPrice/100,total:total/100});pricing.total+=total
- }
- pricing.total/=100
- if(Math.round(pricing.total*100)!==Math.round(input.expectedTotal*100))return fail('Menu prices changed. Refresh the menu and review your order.')
- return {lines,pricing}
+
+/** One transaction resolves every Menu source; customer-supplied amounts never set prices. */
+export async function resolveMenuOrderLines(
+  tx: GuardedServerTransaction,
+  input: {
+    kitchenId: string
+    menuId: string
+    selections: MenuOrderSelection[]
+    fulfilment: Order['fulfilment']
+    expectedTotal: number
+  },
+  now = new Date()
+) {
+  const place = await tx.read(
+    FIRESTORE_MUTATION_TARGETS.places,
+    input.kitchenId
+  )
+  const kitchen = await tx.read(
+    FIRESTORE_MUTATION_TARGETS.kitchens,
+    input.kitchenId
+  )
+  const currency = readPlaceCurrencyCode(place.data || {})
+  if (!currency) return fail('Menu currency is unavailable.')
+  const hours = resolveKitchenOperationHours(
+    kitchen.data || {},
+    place.data || {}
+  )
+  const offerings = resolveServiceHours(
+    await readKitchenOfferingsInTransaction(tx, input.kitchenId),
+    hours
+  )
+  const readItem = orderItemReader(
+    tx,
+    input.kitchenId,
+    currency,
+    hours.timezone
+  )
+  const menus = new Map<string, Record<string, unknown>>()
+  const lines: OrderLine[] = []
+  const pricing: MenuOrderPricing = { currency, total: 0, lines: [] }
+  for (const [index, selection] of input.selections.entries()) {
+    const menuId = selection.menuId || input.menuId
+    if (!menus.has(menuId)) {
+      const menu = await tx.read(
+        serverKitchenMenusTarget(input.kitchenId),
+        menuId
+      )
+      if (
+        !menu.exists ||
+        menu.data?.status !== 'published' ||
+        (menu.data.doc as { url?: string } | undefined)?.url ||
+        menu.data.schedule === 'daily' ||
+        ['private_link', 'protected_group'].includes(String(menu.data.audience))
+      )
+        return fail('This menu is no longer available for ordering.')
+      menus.set(menuId, menu.data)
+    }
+    const scoped = constrainMenuOfferings(
+      offerings,
+      menus.get(menuId)!.serving_hours
+    )
+      .filter(
+        (row) =>
+          !selection.offeringIds || selection.offeringIds.includes(row.id)
+      )
+      .filter((row) => row.collection_timing !== 'next_day')
+    const ordering = kitchenMenuOrdering(scoped, menuId)
+    const orderType =
+      input.fulfilment === 'on_site' ? 'dine_in' : input.fulfilment
+    if (
+      !publicMenuOrderTypes(ordering).some(
+        (config) => config.type === orderType
+      )
+    )
+      return fail('This menu does not currently offer this service.')
+    if (!publicMenuServiceOpen(ordering, String(orderType), now))
+      return fail(
+        'This service is closed. Please order during its serving hours.'
+      )
+    const section = await tx.read(
+      serverKitchenMenuSectionsTarget(input.kitchenId, menuId),
+      selection.sectionId
+    )
+    const entry = await tx.read(
+      serverKitchenMenuItemsTarget(
+        input.kitchenId,
+        menuId,
+        selection.sectionId
+      ),
+      selection.itemId
+    )
+    if (
+      !section.exists ||
+      section.data?.status === 'archived' ||
+      !entry.exists ||
+      entry.data?.status === 'archived'
+    )
+      return fail('A selected menu item is no longer available.')
+    try {
+      const item = await readItem(
+        entry.data!,
+        selection.itemId,
+        promotionDay(hours.timezone, now)
+      )
+      if (!['collection', 'delivery'].includes(String(input.fulfilment)))
+        delete item.bottleDeposit
+      const resolved = serviceBasketLine(
+        {
+          source: {
+            kitchenId: input.kitchenId,
+            menuId,
+            sectionId: selection.sectionId,
+          },
+          item,
+          presentation: { currencyCode: currency } as Parameters<
+            typeof serviceBasketLine
+          >[0]['presentation'],
+          offerings: [],
+          label: '',
+        },
+        {
+          quantity: selection.quantity,
+          optionId: selection.optionId || '',
+          extraIds: selection.extraIds || [],
+          groups: selection.groups || {},
+          ...(selection.bottle ? { bottle: selection.bottle } : {}),
+        }
+      )
+      if (
+        selection.expectedUnitMinor !== undefined &&
+        selection.expectedUnitMinor !== resolved.unitMinor
+      )
+        return fail(
+          'Menu prices changed. Refresh the menu and review your order.'
+        )
+      const option = item.priceOptions.find(
+        (row) => row.id === selection.optionId
+      )
+      const notes = item.mealDeal
+        ? item.mealDeal.groups.flatMap((group) =>
+            (selection.groups?.[group.id] || []).map((id) => {
+              const choice = group.dishes.find((row) => row.dishId === id)!
+              return `${group.name}: ${choice.name}${choice.supplement ? ` (+${currency} ${choice.supplement.toFixed(2)})` : ''}`
+            })
+          )
+        : item.addOns
+            .filter((extra) => selection.extraIds?.includes(extra.id))
+            .map(
+              (extra) =>
+                `${extra.label}${extra.price ? ` (+${currency} ${extra.price.toFixed(2)})` : ''}`
+            )
+      if (selection.bottle)
+        notes.push(
+          selection.bottle === 'exchange'
+            ? 'Bottle exchange · no deposit'
+            : `Bottle deposit · ${currency} ${(resolved.depositUnitMinor / 100).toFixed(2)} per bottle`
+        )
+      const id = `line-${index + 1}`
+      lines.push({
+        id,
+        item: {
+          id: selection.itemId,
+          name: item.name + (option ? ` — ${option.label}` : ''),
+        },
+        ...(notes.length ? { notes } : {}),
+        quantity: selection.quantity,
+        unit_code: 'C62',
+      })
+      const total = resolved.unitMinor * selection.quantity
+      if (!Number.isSafeInteger(total)) return fail('Order total is invalid.')
+      pricing.lines.push({
+        line_id: id,
+        unit_price: resolved.unitMinor / 100,
+        total: total / 100,
+      })
+      pricing.total += total
+    } catch (error) {
+      return fail(
+        error instanceof Error ? error.message : 'Review your item choices.'
+      )
+    }
+  }
+  if (!Number.isSafeInteger(pricing.total))
+    return fail('Order total is invalid.')
+  pricing.total /= 100
+  if (Math.round(pricing.total * 100) !== Math.round(input.expectedTotal * 100))
+    return fail('Menu prices changed. Refresh the menu and review your order.')
+  return { lines, pricing }
 }

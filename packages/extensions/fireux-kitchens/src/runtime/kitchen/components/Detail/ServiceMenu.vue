@@ -66,19 +66,16 @@
           @click="menus.refresh()"
         />
       </div>
-      <MenuSelection
-        v-else-if="sections.length && service === 'collection'"
-        :key="kitchenSlug + ':' + offeringId"
-        :sections="sections"
-        :currency-code="currencyCode"
-      />
       <MenuServiceCatalogue
-        v-else-if="sections.length"
+        v-else-if="sections.length && service !== 'collection'"
         :sections="sections"
         :service-label="serviceLabel"
         :style="styleVars"
       />
-      <p v-else class="rounded-xl border border-default p-5 text-muted">
+      <p
+        v-else-if="service !== 'collection'"
+        class="rounded-xl border border-default p-5 text-muted"
+      >
         {{
           service === 'table'
             ? 'No food or drinks are available at your table.'
@@ -88,6 +85,16 @@
         }}
       </p>
     </template>
+    <MenuSelection
+      v-if="service === 'collection'"
+      :key="kitchenSlug + ':' + offeringId"
+      :sections="sections"
+      :kitchen-slug="kitchenSlug"
+      :currency-code="currencyCode"
+      :catalogue-ready="
+        Boolean(presentation) && !menus.pending.value && !menus.error.value
+      "
+    />
   </section>
 </template>
 <script setup lang="ts">

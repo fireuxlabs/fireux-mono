@@ -1,4 +1,4 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
 import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
 import type { CollectionResponse } from '../../../models/utils/directory'

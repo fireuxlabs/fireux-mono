@@ -330,11 +330,7 @@ export function kitchenMenuUploadResponse(
   return {
     ok: true,
     id: request.uploadId,
-    slug: request.uploadId,
-    path: '',
-    qr_path: '',
     url: primaryFile?.fileUrl ?? '',
-    qr_url: '',
     file_name: primaryFile?.fileName ?? '',
     file_type: primaryFile?.contentType ?? '',
     files: savedFiles.map((file) => ({

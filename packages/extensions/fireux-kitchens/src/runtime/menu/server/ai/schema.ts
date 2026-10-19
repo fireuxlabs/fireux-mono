@@ -19,6 +19,11 @@ const LOCALIZED_TEXT_SCHEMA = {
 export const MENU_EXTRACTION_JSON_SCHEMA = {
   type: 'object',
   properties: {
+    name: {
+      type: 'string',
+      description:
+        'Menu title visible in the source, or empty if no title is present.',
+    },
     sections: {
       type: 'array',
       items: {
@@ -103,7 +108,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
       items: { type: 'string' },
     },
   },
-  required: ['sections', 'notes'],
+  required: ['name', 'sections', 'notes'],
 } as const
 
 export const MENU_NORMALIZATION_JSON_SCHEMA = {

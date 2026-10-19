@@ -36,9 +36,9 @@
 import { watchEffect } from 'vue'
 import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import WorkspaceProjectIdentity from 'fireux-fireux/runtime/project/components/Workspace/Identity/Index.vue'
+import WorkspaceProjectIdentity from '../../../project/components/Workspace/Identity/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import { useProjectIdentity } from 'fireux-fireux/runtime/project/composables/useProjectIdentity'
+import { useProjectIdentity } from '../../../project/composables/useProjectIdentity'
 const appContext = useProjectAppContext()
 const identity = useProjectIdentity({
   publication: appContext.publication,

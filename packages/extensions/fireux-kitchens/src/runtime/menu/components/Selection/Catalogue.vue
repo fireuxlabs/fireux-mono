@@ -12,6 +12,7 @@
           v-for="row in section.items"
           :key="row.key"
           type="button"
+          :disabled="disabled"
           class="flex w-full items-start gap-4 border-b border-default py-4 text-left transition-colors hover:bg-elevated/40 focus-visible:outline-2 focus-visible:outline-primary"
           :aria-label="`Choose ${row.item.name}`"
           @click="emit('select', row)"
@@ -59,6 +60,7 @@ import type {
   MenuServiceOffer,
 } from '../../utils/service-sections'
 defineProps<{
+  disabled?: boolean
   sections: MenuServiceSection[]
   money: (value: number) => string
 }>()

@@ -66,7 +66,12 @@ export default defineNuxtModule({
     })
 
     // Authored package TypeScript must also compile when installed in node_modules.
-    const nitro = (nuxt.options.nitro ||= {})
+    const serverOptions = nuxt.options as typeof nuxt.options & {
+      nitro?: {
+        esbuild?: { options?: { target?: string; exclude?: RegExp } }
+      }
+    }
+    const nitro = (serverOptions.nitro ||= {})
     nitro.esbuild ||= {}
     nitro.esbuild.options ||= {}
     nitro.esbuild.options.target ||= 'es2022'

@@ -43,7 +43,10 @@ export default defineEventHandler(async (event) => {
   if (cached && cached.expires > Date.now()) return cached.result
 
   const runtime = useRuntimeConfig(event)
-  const apiKey = String(runtime.sharer?.youtubeApiKey || '').trim()
+  const sharer = runtime.sharer as Record<string, unknown> | undefined
+  const apiKey = typeof sharer?.youtubeApiKey === 'string'
+    ? sharer.youtubeApiKey.trim()
+    : ''
   if (!apiKey) return { channel: null }
 
   const response = await $fetch<YouTubeResponse>(

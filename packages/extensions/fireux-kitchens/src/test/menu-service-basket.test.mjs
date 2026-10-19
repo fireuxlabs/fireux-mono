@@ -3,7 +3,15 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, toValue } from 'vue'
+import {
+  compile,
+  computed,
+  createRenderer,
+  h,
+  nextTick,
+  ref,
+  toValue,
+} from 'vue'
 
 function load(path, names, context = {}) {
   const source = readFileSync(
@@ -217,4 +225,216 @@ test('deposit changes invalidate existing selections and malformed charges canno
         ),
       /valid price/
     )
+})
+
+test('absent and disabled deposits leave ordinary options and extras unchanged', () => {
+  for (const deposit of [{}, { bottleDeposit: 0 }]) {
+    const item = offer('drinks', {
+      price: 4,
+      priceOptions: [{ id: 'large', label: 'Large', price: 5 }],
+      addOns: [{ id: 'extra', label: 'Extra', price: 0.5 }],
+      ...deposit,
+    })
+    const before = structuredClone(item)
+    const line = policy.serviceBasketLine(
+      item,
+      choices({ optionId: 'large', extraIds: ['extra'], quantity: 2 })
+    )
+    assert.equal(line.unitMinor, 550)
+    assert.equal(line.depositUnitMinor, 0)
+    assert.equal(line.choices.bottle, undefined)
+    assert.deepEqual(item, before)
+  }
+})
+
+test('deposit choices stay local to their drink in a mixed basket', () => {
+  const food = offer('food', { price: 11, promotionLabel: 'Sunday pizzas' })
+  const drink = offer('drinks', { price: 4, bottleDeposit: 10 })
+  const basket = useServiceBasket([food, drink])
+  const before = structuredClone([food, drink])
+  basket.add(food, choices())
+  basket.add(drink, choices({ bottle: 'deposit' }))
+  assert.equal(basket.totalMinor.value, 2500)
+  assert.equal(basket.lines.value[0].unitMinor, 1100)
+  assert.equal(basket.lines.value[0].depositUnitMinor, 0)
+  basket.remove(basket.lines.value[1].key)
+  assert.equal(basket.totalMinor.value, 1100)
+  assert.deepEqual([food, drink], before)
+})
+
+test('Collection keeps the same basket through refresh, error, empty recovery and changed items', async () => {
+  const template = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/Detail/ServiceMenu.vue',
+      import.meta.url
+    ),
+    'utf8'
+  ).match(/<template>([\s\S]*?)<\/template>\n<script/)[1]
+  const original = offer()
+  const pending = ref(false)
+  const error = ref(null)
+  const presentation = ref({ display_name: 'Venue' })
+  const offeringId = ref('')
+  const kitchenSlug = ref('venue')
+  const sections = ref([{ items: [{ ...original, alternatives: [] }] }])
+  let basket,
+    mounts = 0,
+    disposals = 0
+  const Selection = {
+    props: ['sections', 'catalogueReady', 'currencyCode'],
+    setup(props) {
+      mounts++
+      basket = useServiceBasket(
+        computed(() => props.sections.flatMap((section) => section.items)),
+        () => props.catalogueReady
+      )
+      return () => h('div', String(basket.count.value))
+    },
+    unmounted() {
+      disposals++
+    },
+  }
+  const node = () => ({ children: [], parent: null })
+  const renderer = createRenderer({
+    createElement: node,
+    createText: node,
+    createComment: node,
+    insert(child, parent, anchor = null) {
+      if (child.parent) {
+        const siblings = child.parent.children
+        siblings.splice(siblings.indexOf(child), 1)
+      }
+      child.parent = parent
+      const index = anchor ? parent.children.indexOf(anchor) : -1
+      parent.children.splice(
+        index < 0 ? parent.children.length : index,
+        0,
+        child
+      )
+    },
+    remove(child) {
+      const siblings = child.parent?.children
+      if (siblings) siblings.splice(siblings.indexOf(child), 1)
+      child.parent = null
+    },
+    setElementText() {},
+    setText() {},
+    setComment() {},
+    patchProp() {},
+    parentNode: (child) => child.parent,
+    nextSibling(child) {
+      const siblings = child.parent?.children || []
+      return siblings[siblings.indexOf(child) + 1] || null
+    },
+  })
+  const app = renderer.createApp({
+    setup: () => ({
+      presentation,
+      service: 'collection',
+      kitchenSlug,
+      offeringId,
+      venuePath: '/kitchens/venue',
+      serviceLabel: 'Collection',
+      currencyCode: 'CHF',
+      roomNumber: '',
+      tableNumber: '',
+      selectedOffering: null,
+      kitchen: {},
+      outcome: 'ready',
+      sections,
+      menus: { pending, error, refresh() {} },
+      refresh() {},
+      styleVars: {},
+    }),
+    render: compile(template),
+  })
+  const Stub = { setup: () => () => h('div') }
+  for (const tag of new Set(
+    [...template.matchAll(/<([A-Z]\w*)/g)].map((match) => match[1])
+  ))
+    app.component(tag, tag === 'MenuSelection' ? Selection : Stub)
+  app.mount(node())
+  try {
+    basket.add(original, choices({ quantity: 2 }))
+    const owner = basket
+    pending.value = true
+    await nextTick()
+    assert.equal(basket, owner)
+    assert.equal(basket.count.value, 2)
+    assert.equal(basket.totalMinor.value, 2600)
+    assert.deepEqual(basket.staleKeys.value, [])
+    assert.throws(() => basket.add(original, choices()), /reloading/)
+    basket.adjust(basket.lines.value[0].key, 1)
+    assert.equal(basket.count.value, 2)
+
+    pending.value = false
+    error.value = new Error('Catalogue unavailable')
+    sections.value = []
+    presentation.value = null
+    await nextTick()
+    assert.equal(basket, owner)
+    assert.equal(basket.count.value, 2)
+    assert.deepEqual(
+      basket.staleKeys.value,
+      [],
+      'failure does not claim that every item was removed'
+    )
+    basket.adjust(basket.lines.value[0].key, -1)
+    assert.equal(basket.count.value, 1)
+
+    presentation.value = { display_name: 'Venue' }
+    error.value = null
+    sections.value = [{ items: [{ ...original, alternatives: [] }] }]
+    await nextTick()
+    assert.equal(basket, owner)
+    assert.deepEqual(basket.staleKeys.value, [])
+
+    sections.value = [
+      { items: [{ ...offer('food', { price: 14 }), alternatives: [] }] },
+    ]
+    await nextTick()
+    assert.deepEqual(basket.staleKeys.value, [basket.lines.value[0].key])
+    assert.equal(
+      basket.totalMinor.value,
+      1300,
+      'existing choices are never silently repriced'
+    )
+    basket.adjust(basket.lines.value[0].key, 1)
+    assert.equal(basket.count.value, 1)
+
+    sections.value = []
+    await nextTick()
+    assert.equal(basket, owner)
+    assert.equal(
+      basket.staleKeys.value.length,
+      1,
+      'settled empty catalogue marks the item unavailable'
+    )
+    assert.equal(mounts, 1)
+    assert.equal(disposals, 0)
+    basket.remove(basket.lines.value[0].key)
+    assert.equal(basket.count.value, 0)
+    assert.equal(original.item.price, 13)
+
+    sections.value = [{ items: [{ ...original, alternatives: [] }] }]
+    await nextTick()
+    basket.add(original, choices())
+    offeringId.value = 'separate-collection'
+    await nextTick()
+    assert.notEqual(basket, owner)
+    assert.equal(
+      basket.count.value,
+      0,
+      'another service entrance has a separate basket'
+    )
+    assert.equal(mounts, 2)
+    assert.equal(disposals, 1)
+    kitchenSlug.value = 'another-venue'
+    await nextTick()
+    assert.equal(basket.count.value, 0)
+    assert.equal(mounts, 3)
+  } finally {
+    app.unmount()
+  }
+  assert.equal(disposals, 3)
 })

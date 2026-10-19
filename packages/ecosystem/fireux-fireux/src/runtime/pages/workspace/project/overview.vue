@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
 import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
-import { useProjectWorkspace } from 'fireux-fireux/runtime/project/composables/workspace/useProjectWorkspace'
+import { useProjectWorkspace } from '../../../project/composables/workspace/useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import WorkspaceProjectOverviewAppContext from '../../../components/Workspace/Project/Overview/AppContext.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'

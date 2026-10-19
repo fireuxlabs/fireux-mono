@@ -18,7 +18,7 @@
         <article
           v-for="item in section.items"
           :key="`${section.label}-${item.name}`"
-          class="rounded-lg border border-default p-3"
+          class="border-b border-default py-3"
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0 space-y-1">

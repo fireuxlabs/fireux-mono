@@ -8,7 +8,8 @@
         <section class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
           <UBreadcrumb
             :items="[
-              { label: 'Kitchen', to: workspaceEntryPath },
+              { label: 'Home', to: workspaceEntryPath },
+              { label: 'Overview', to: '/workspace/kitchen/overview' },
               { label: index?.label || 'Kitchen' },
             ]"
             :ui="{ list: 'flex-wrap' }"
@@ -51,16 +52,5 @@ const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const index = computed(() =>
   navigation.items.value.find((item) => item.key === props.navKey)
 )
-const children = computed(() =>
-  index.value?.children?.length
-    ? index.value.children
-    : navigation.items.value
-        .filter(
-          (item) =>
-            item.group === index.value?.group &&
-            !item.groupIndex &&
-            item.groupDisplay === 'nested'
-        )
-        .sort((a, b) => a.order - b.order)
-)
+const children = computed(() => index.value?.children || [])
 </script>

@@ -15,7 +15,7 @@ export type MenuServiceSource = {
   offerings: KitchenPublicOffering[]
 }
 export type MenuServiceOffer = {
-  source: { kitchenId: string; menuId: string; sectionId: string }
+  source: { kitchenId: string; menuId: string; menuSlug?: string; sectionId: string }
   item: MenuManifestItem
   presentation: MenuManifest['presentation']
   offerings: KitchenPublicOffering[]
@@ -124,6 +124,7 @@ export function serviceSections(
             source: {
               kitchenId: manifest.source.kitchenId,
               menuId: manifest.source.menuId,
+              ...(manifest.source.menuSlug ? { menuSlug: manifest.source.menuSlug } : {}),
               sectionId: section.id,
             },
             item: priced.item,

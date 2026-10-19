@@ -29,8 +29,8 @@ const pageState = useWorkspacePageState('kitchen')
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 const intro = {
   title: 'Kitchen Overview',
-  purpose: 'Review the selected workspace and its setup needs.',
-  data: 'Only the selected workspace identity and available setup state.',
+  purpose: 'Open a working area for the selected Kitchen.',
+  data: 'Selected Kitchen identity and available navigation groups.',
   boundaries:
     'Setup links open their owning capability. This page does not change records.',
   ai: 'No AI actions are connected to this surface.',
@@ -41,7 +41,6 @@ definePageMeta({
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    hidden: true,
     key: 'workspace-kitchen-overview',
     label: 'Overview',
     group: '',

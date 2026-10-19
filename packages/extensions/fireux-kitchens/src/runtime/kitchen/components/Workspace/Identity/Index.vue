@@ -7,11 +7,22 @@
           label: identity.selectedKitchen.value?.name || 'Kitchen',
           to: workspaceEntryPath,
         },
-        { label: 'Settings', to: '/workspace/kitchen/settings' },
-        { label: 'Kitchen listing' },
+        { label: 'Overview', to: '/workspace/kitchen/overview' },
+        { label: 'Identity & brand' },
       ]"
     />
     <p class="text-sm text-muted">Manage your Kitchen’s directory listing.</p>
+    <nav aria-label="Identity and brand pages" class="flex flex-wrap gap-2">
+      <UButton
+        v-for="item in pages"
+        :key="item.to"
+        :to="item.to"
+        :label="item.label"
+        :icon="item.icon"
+        color="neutral"
+        variant="soft"
+      />
+    </nav>
     <WorkspaceKitchenIdentityListing :identity="identity" />
     <USkeleton
       v-if="
@@ -43,6 +54,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import {
@@ -52,6 +64,13 @@ import {
 import type { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
+const navigation = useNav(['workspace'])
+const pages = computed(
+  () =>
+    navigation.items.value.find(
+      (item) => item.key === 'workspace-kitchen-identity'
+    )?.children || []
+)
 const debug = computed(() =>
   defineDevDebugPayload({
     objectOrigin: 'passed',

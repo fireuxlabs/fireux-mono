@@ -27,7 +27,7 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
     },
   ],
   input: {
-    required: ['appId', 'kitchenId', 'menuId', 'uploadId', 'confirmDishes'],
+    required: ['appId', 'kitchenId', 'menuId', 'uploadId', 'name', 'confirmDishes'],
     extensible: false,
   },
   result: { kind: 'KitchenMenuImportCommit' },

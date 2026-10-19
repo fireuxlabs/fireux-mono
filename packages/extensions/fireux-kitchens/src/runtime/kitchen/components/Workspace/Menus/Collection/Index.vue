@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenCollectionHeader title="Menus" :kitchen-name="kitchenName">
+  <WorkspaceKitchenCollectionHeader title="Menus">
     <template #actions>
       <UButton
         v-if="
@@ -36,20 +36,11 @@
   <WorkspaceKitchenMenusCollectionDialog />
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 const {
   derived,
   error,
   actions,
   menuCreateBlockedMessage,
-  availableKitchens,
-  kitchenId,
 } = useKitchenMenusContext()
-const kitchenName = computed(() => {
-  const name = availableKitchens.value.find(
-    (kitchen) => kitchen.id === kitchenId.value
-  )?.display_name
-  return name || 'Kitchen'
-})
 </script>

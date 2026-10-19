@@ -10,7 +10,7 @@
             class="mb-4"
             :ui="{ list: 'flex-wrap' }"
             :items="[
-              { label: 'Settings', to: '/workspace/kitchen/settings' },
+              { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
               { label: 'Operating hours' },
             ]"
           /><WorkspaceKitchenOperatingHours />
@@ -33,7 +33,7 @@ definePageMeta({
     label: 'Operating hours',
     description:
       'Venue opening hours, Kitchen working hours and offering schedules',
-    group: 'Settings',
+    group: 'Identity & brand',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-clock',

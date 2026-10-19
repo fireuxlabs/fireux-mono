@@ -1,24 +1,28 @@
 <template>
-  <UCard v-if="show">
-    <template #header>
-      <div class="space-y-1">
-        <h3 class="text-sm font-semibold text-highlighted">
-          Create dishes from menu draft
-        </h3>
-        <p class="text-sm text-dimmed">
-          Review the draft above, then confirm to create or replace the menu
-          dishes, sections, and menu items.
-        </p>
-      </div>
-    </template>
-
+  <section v-if="show" class="space-y-4">
+    <UFormField
+      v-if="!existingMenuName"
+      label="Menu name"
+      required
+      class="mb-4"
+    >
+      <UInput
+        v-model="reviewedName"
+        :maxlength="160"
+        class="w-full"
+        :disabled="pending || blocked"
+      />
+    </UFormField>
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="space-y-1">
         <p class="text-sm text-highlighted">
           {{ draftSections.length }} section(s), {{ itemsCount }} dish item(s)
         </p>
         <p class="text-sm text-dimmed">
-          Existing published menus keep their published status after confirm.
+          Creates separate dishes. Existing catalogue prices stay unchanged.
+        </p>
+        <p v-if="existingMenuName" class="text-sm text-warning">
+          Replaces this Menu's content and keeps its publication status.
         </p>
       </div>
 
@@ -28,24 +32,29 @@
         :disabled="!canConfirm"
         @click="confirmDraft"
       >
-        Confirm and create dishes
+        {{ existingMenuName ? 'Replace Menu content' : 'Create draft Menu' }}
       </UButton>
     </div>
 
     <p v-if="message" class="mt-3 text-sm text-success">
       {{ message }}
     </p>
-    <p v-if="error" class="mt-3 text-sm text-error">
-      {{ error }}
-    </p>
-  </UCard>
+    <UButton
+      v-if="confirmedSlug"
+      :to="`/workspace/kitchen/menus/${encodeURIComponent(confirmedSlug)}`"
+      label="Open Menu"
+      class="mt-3"
+    />
+    <MoleculesCopyError v-if="error" :message="error" />
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 
 const props = defineProps<{
+  existingMenuName?: string
   source?: unknown | null
   result?: Record<string, unknown> | null
   appId: string
@@ -69,9 +78,25 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 const records = (value: unknown) =>
   Array.isArray(value) ? value.map(record) : []
+const confirmedSlug = computed(() =>
+  text(record(confirmResult.value?.write).slug)
+)
 const sourceDraft = computed(() => record(record(props.source).ai_draft))
 const uploadId = computed(
   () => text(record(props.source).id) || text(props.menuId)
+)
+const reviewedName = ref('')
+const suggestedName = computed(
+  () =>
+    text(sourceDraft.value.name) || text(record(props.result?.extracted).name)
+)
+watch(
+  [uploadId, suggestedName],
+  ([id, suggestion], previous) => {
+    if (id !== previous?.[0] || !reviewedName.value)
+      reviewedName.value = suggestion
+  },
+  { immediate: true }
 )
 const resultDraft = computed(() => {
   const normalized = records(record(props.result?.normalized).sections)
@@ -98,6 +123,9 @@ const show = computed(() =>
 const canConfirm = computed(() =>
   Boolean(
     itemsCount.value &&
+      (props.existingMenuName ||
+        (reviewedName.value.trim() &&
+          reviewedName.value.trim().length <= 160)) &&
       text(props.appId) &&
       text(props.kitchenId) &&
       text(props.menuId) &&
@@ -140,6 +168,7 @@ async function confirmDraft() {
         kitchenId: props.kitchenId,
         menuId: props.menuId,
         uploadId: uploadId.value,
+        name: props.existingMenuName || reviewedName.value.trim(),
         confirmDishes: true,
       }),
     })

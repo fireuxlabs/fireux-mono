@@ -1,6 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
+import { makeMenuOrdering } from '../helpers/menu-checkout.mjs'
 import { load, normalizeKitchenOfferings, kioskService } from './offering-test-helpers.mjs'
 const tablePolicy = load('../../runtime/kitchen/utils/table-service.ts', 'tableChannelEnabled')
 const timeCore = load('../../runtime/utils/weekday-time-core.ts', 'weekdayTimeCore')
@@ -8,7 +10,7 @@ const timeConfig = load('../../runtime/utils/weekday-time-config.ts', 'weekdayTi
 const timeFormat = load('../../runtime/utils/weekday-time-format.ts', 'weekdayTimeFormat', {...timeCore,...timeConfig})
 const timeState = load('../../runtime/utils/weekday-time-state.ts', 'weekdayTimeState', {...timeCore,...timeConfig,...timeFormat})
 const menuServices = load('../../runtime/menu/utils/menu-ordering.ts', 'kitchenMenuOrdering,publicMenuOrderTypes,publicMenuServiceOpen', {normalizeKitchenOfferings,...tablePolicy,readWeekdayTimeOpenState:timeState.weekdayTimeState.open})
-const publicOffering = {...kioskService, hours:{...kioskService.hours,windows:[{days:timeCore.weekdayTimeCore.days,open:'00:00',close:'00:00'}]}, interactions: ['collection','delivery','dine_in'].map(type=>({type,enabled:true}))}
+const publicOffering = {...kioskService,hours_source:'custom', hours:{...kioskService.hours,windows:[{days:timeCore.weekdayTimeCore.days,open:'00:00',close:'00:00'}]}, interactions: ['collection','delivery','dine_in'].map(type=>({type,enabled:true,...(type==='dine_in'?{table_channels:{staff_pos:false,table_qr:true}}:{})}))}
 const model = load('../../runtime/kitchen/models/order.model.ts','OrderChannels')
 const ordering = load('../../runtime/kitchen/utils/ordering.ts','readOrder,requireOrderChannel',model)
 const submissionModel = load('../../runtime/kitchen/models/order-submission.model.ts','OrderSubmissionStates')
@@ -90,16 +92,15 @@ test('submission has no test mode or test metadata',async()=>{
  assert.equal('test' in result.submission,false)
  assert.equal([...s.records.values()].some(record=>'test' in record),false)
 })
-const menuOrdering=load('../../runtime/menu/server/ordering.ts','readMenuOrderSelections,resolveMenuOrderLines',{
- ...menuServices,readKitchenOfferingsInTransaction:async tx => tx.offerings ?? [publicOffering],
+const menuOrdering=makeMenuOrdering({
+ ...menuServices,...dishPricingHelpers,readKitchenOfferingsInTransaction:async tx => tx.offerings ?? [publicOffering],
  createError:v=>Object.assign(new Error(v.statusMessage),v),requireFirestoreDocumentId:v=>{if(typeof v!=='string'||!v||v.includes('/'))throw new Error('Invalid ID');return v},
- serverKitchenMenusTarget:()=>({path:'menus'}),serverKitchenMenuSectionsTarget:()=>({path:'sections'}),serverKitchenMenuItemsTarget:()=>({path:'items'}),serverKitchenDishesTarget:()=>({path:'dishes'}),serverKitchenSellablesTarget:()=>({path:'sellables'}),FIRESTORE_MUTATION_TARGETS:{places:{path:'places'}},readPlaceCurrencyCode:v=>v.currency,
- projectSellable:()=>({price:12,priceOptions:[],sellable_currency:'CHF',sellable_fulfilment:{default:['collection']},sellable_variants:[{id:'default'}]}),sellableFulfilment:v=>v,
+ kitchenPromotionsTarget:()=>({path:'promotions'}),serverKitchenMenusTarget:()=>({path:'menus'}),serverKitchenMenuSectionsTarget:()=>({path:'sections'}),serverKitchenMenuItemsTarget:()=>({path:'items'}),serverKitchenDishesTarget:()=>({path:'dishes'}),FIRESTORE_MUTATION_TARGETS:{places:{path:'places'},kitchens:{path:'kitchens'}},readPlaceCurrencyCode:v=>v.currency,
 })
 const menuCart=[{sectionId:'pizzas',itemId:'margherita',quantity:2}]
 function menuTx(overrides={}) {
- const records={menus:{status:'published'},places:{currency:'CHF'},sections:{status:'active'},items:{dish_id:'dish',price:14},dishes:{name:'Real menu pizza'},...overrides}
- return {read:async target=>({exists:!!records[target.path],data:records[target.path]})}
+ const records={menus:{status:'published'},places:{currency:'CHF'},sections:{status:'active'},items:{dish_id:'dish'},dishes:{name:'Real menu pizza',price:14},...overrides}
+ return {read:async target=>({exists:!!records[target.path],data:records[target.path]}),readAll:async()=>[]}
 }
 test('real menu submission resolves canonical dish and price inside its transaction',async()=>{
  const result=await menuOrdering.resolveMenuOrderLines(menuTx(),{kitchenId:'kitchen',menuId:'food',selections:menuCart,fulfilment:'collection',expectedTotal:28})
@@ -108,16 +109,16 @@ test('real menu submission resolves canonical dish and price inside its transact
 })
 test('changed prices, archived items and unpublished menus cannot submit',async()=>{
  const input={kitchenId:'kitchen',menuId:'food',selections:menuCart,fulfilment:'delivery',expectedTotal:28}
- await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({items:{dish_id:'dish',price:15}}),input),/prices changed/)
+ await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({dishes:{name:'Real menu pizza',price:15}}),input),/prices changed/)
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({items:{status:'archived'}}),input),/no longer available/)
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({menus:{status:'draft'}}),input),/no longer available/)
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({menus:{status:'published',schedule:'daily'}}),input),/no longer available/)
- await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({items:{dish_id:'dish',sellable_id:'sellable'},sellables:{}}),input),/unavailable for this service/)
+ await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({dishes:null}),input),/dish is unavailable/)
 })
 test('menu size choices are explicit and quantities are bounded',async()=>{
  const input={kitchenId:'kitchen',menuId:'food',selections:menuCart,fulfilment:'collection',expectedTotal:32}
- const tx=menuTx({items:{dish_id:'dish',price_options:[{label:'Large',price:16}]}})
- await assert.rejects(menuOrdering.resolveMenuOrderLines(tx,input),/Choose an available size/)
+ const tx=menuTx({dishes:{name:'Real menu pizza',price:14,price_options:[{label:'Large',price:16}]}})
+ await assert.rejects(menuOrdering.resolveMenuOrderLines(tx,input),/Choose an available option/)
  const result=await menuOrdering.resolveMenuOrderLines(tx,{...input,selections:[{...menuCart[0],optionId:'large'}]})
  assert.equal(result.lines[0].item.name,'Real menu pizza — Large')
  assert.throws(()=>menuOrdering.readMenuOrderSelections([{...menuCart[0],quantity:0}]))

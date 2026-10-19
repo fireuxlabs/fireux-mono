@@ -6,22 +6,22 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
 import { publicMenuServiceOpen } from '../utils/menu-ordering'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
-import type { MenuRouteScope } from '../utils/menu-route'
 import type {
   MenuManifestItem,
   MenuManifestPriceOption,
 } from '../models/menu-detail.model'
 import type { Order } from '../../kitchen/models/order.model'
 import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
-import type { MenuOrderSelection } from '../models/menu-order-selection.model'
 import type { MenuOrderInput, CartLine } from '../models/menu-order-flow.model'
 export function useMenuOrderFlow(props: MenuOrderInput) {
   const menu = useMenu(
     computed(() => props.menuId),
     { routeScope: computed(() => props.routeScope), menuContext: computed(() => props.context) }
   )
-  const websiteOrdering =
-    useRuntimeConfig().public.ordering?.channels?.includes('website')
+  const ordering = useRuntimeConfig().public.ordering as
+    | { channels?: string[] }
+    | undefined
+  const websiteOrdering = ordering?.channels?.includes('website')
   const manifest = menu.manifest
   const serviceAvailable = computed(() =>
     Boolean(

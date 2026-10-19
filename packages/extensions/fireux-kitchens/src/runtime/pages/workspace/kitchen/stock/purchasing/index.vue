@@ -52,7 +52,7 @@ definePageMeta({
     key: 'workspace-kitchen-purchasing',
     label: 'Purchase orders',
     group: 'Stock & Purchasing',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-shopping-cart',
     position: 'top',

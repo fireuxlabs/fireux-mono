@@ -40,7 +40,7 @@ definePageMeta({
     key: 'workspace-kitchen-identity-profile',
     label: 'Venue profile',
     description: 'Name, branding, photos, contact details and location',
-    group: 'Settings',
+    group: 'Identity & brand',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-id-card',

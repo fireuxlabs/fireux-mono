@@ -56,7 +56,7 @@ definePageMeta({
     key: 'workspace-kitchen-costs',
     label: 'Food costs',
     group: 'Reports',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-calculator',
     position: 'top',

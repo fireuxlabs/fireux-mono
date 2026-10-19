@@ -1,26 +1,35 @@
 <template>
   <div class="space-y-6 pb-24">
-    <KitchenDetailOfferingTimes
-      :offerings="offerings"
-      compact
-      :show-names="false"
-    />
-    <nav class="flex flex-wrap gap-2" aria-label="Collection sections">
-      <UButton
-        v-for="(section, index) in sections"
-        :key="section.key"
-        :to="`#service-section-${index}`"
-        :label="section.label"
-        color="neutral"
-        variant="soft"
-        size="sm"
+    <template v-if="catalogueReady">
+      <KitchenDetailOfferingTimes
+        :offerings="offerings"
+        compact
+        :show-names="false"
       />
-    </nav>
-    <MenuSelectionCatalogue
-      :sections="sections"
-      :money="money"
-      @select="select"
-    />
+      <nav class="flex flex-wrap gap-2" aria-label="Collection sections">
+        <UButton
+          v-for="(section, index) in sections"
+          :key="section.key"
+          :to="`#service-section-${index}`"
+          :label="section.label"
+          color="neutral"
+          variant="soft"
+          size="sm"
+        />
+      </nav>
+      <MenuSelectionCatalogue
+        :disabled="checkout.locked"
+        :sections="sections"
+        :money="money"
+        @select="select"
+      />
+      <p
+        v-if="!sections.length"
+        class="rounded-xl border border-default p-5 text-muted"
+      >
+        No food or drinks are available for collection.
+      </p>
+    </template>
     <div v-if="basket.count.value" class="collection-basket-bar">
       <UButton
         :label="`View basket · ${basket.count.value} · ${money(basket.totalMinor.value / 100)}`"
@@ -31,7 +40,8 @@
       />
     </div>
     <UModal
-      v-model:open="itemOpen"
+      :open="itemOpen && catalogueReady"
+      @update:open="itemOpen = $event"
       :title="selected?.item.name || 'Choose an item'"
       description="Choose your options and extras."
     >
@@ -53,6 +63,9 @@
     >
       <template #body>
         <MenuSelectionBasket
+          v-if="!checkout.submission"
+          :disabled="checkout.locked"
+          :catalogue-ready="catalogueReady"
           :lines="basket.lines.value"
           :stale-keys="basket.staleKeys.value"
           :total-minor="basket.totalMinor.value"
@@ -61,12 +74,18 @@
           @remove="basket.remove"
           @close="basketOpen = false"
         />
+        <MenuSelectionCheckout
+          v-if="basket.count.value || checkout.submission"
+          :flow="checkout"
+          class="mt-6"
+        />
       </template>
     </UModal>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, reactive, toRef } from 'vue'
+import { useCollectionCheckout } from '../../composables/useCollectionCheckout'
 import type {
   MenuServiceOffer,
   MenuServiceSection,
@@ -79,7 +98,9 @@ import { useServiceBasket } from '../../composables/useServiceBasket'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 const props = defineProps<{
   sections: MenuServiceSection[]
+  kitchenSlug: string
   currencyCode: string
+  catalogueReady: boolean
 }>()
 const offers = computed(() =>
   props.sections.flatMap((section) =>
@@ -93,7 +114,15 @@ const offerings = computed(() => [
       .map((offering) => [offering.id, offering])
   ).values(),
 ])
-const basket = useServiceBasket(offers)
+const basket = useServiceBasket(offers, () => props.catalogueReady)
+const checkout = reactive(
+  useCollectionCheckout({
+    basket,
+    offers,
+    ready: toRef(props, 'catalogueReady'),
+    kitchenSlug: toRef(props, 'kitchenSlug'),
+  })
+)
 const selected = ref<MenuServiceOffer | null>(null)
 const itemOpen = ref(false)
 const basketOpen = ref(false)
@@ -102,16 +131,18 @@ const money = (value: number) =>
   value === 0
     ? '0'
     : formatCurrencyAmount(value, {
-        currencyCode: props.currencyCode,
+        currencyCode:
+          props.currencyCode || basket.lines.value[0]?.currency || '',
         showCurrency: false,
       })
 function select(offer: MenuServiceOffer) {
+  if (checkout.locked) return
   selected.value = offer
   error.value = ''
   itemOpen.value = true
 }
 function add(choices: ServiceItemChoices) {
-  if (!selected.value) return
+  if (!selected.value || checkout.locked) return
   try {
     basket.add(selected.value, choices)
     itemOpen.value = false

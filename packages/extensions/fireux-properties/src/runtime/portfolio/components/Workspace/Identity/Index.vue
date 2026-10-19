@@ -8,10 +8,7 @@
           icon="i-lucide-pencil"
           color="neutral"
           variant="ghost"
-          @click="
-            editorSection = 'profile'
-            open = true
-          "
+          @click="openEditor('profile')"
         />
       </template>
       <template #context-actions
@@ -21,10 +18,7 @@
           icon="i-lucide-pencil"
           color="neutral"
           variant="ghost"
-          @click="
-            editorSection = 'context'
-            open = true
-          "
+          @click="openEditor('context')"
       /></template>
     </WorkspacePortfolioIdentityRead>
     <USlideover
@@ -52,6 +46,10 @@ const identity = usePortfolioIdentity()
 const { currentUser } = useAuth()
 const open = ref(false)
 const editorSection = ref<'profile' | 'context'>('profile')
+function openEditor(section: 'profile' | 'context') {
+  editorSection.value = section
+  open.value = true
+}
 watch(
   [() => currentUser.value?.uid, identity.portfolioId, identity.canWrite],
   () => {

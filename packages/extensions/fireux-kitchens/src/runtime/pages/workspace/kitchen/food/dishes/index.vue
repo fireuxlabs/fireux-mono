@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-dishes">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Food &amp; drinks">
+      <LayoutsWorkspaceNavbar title="Items">
         <template #right>
           <WorkspaceKitchenAICapabilityInfo capability="dishes" />
         </template>
@@ -25,9 +25,11 @@ definePageMeta({
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-dishes',
-    label: 'Food & drinks',
-    group: '',
+    label: 'Items',
+    group: 'Food & drink',
+    description: 'Manage the food and drinks used in your menus.',
     icon: 'i-lucide-utensils',
     position: 'top',
     order: 10,

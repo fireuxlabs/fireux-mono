@@ -1,4 +1,4 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
 import { setResponseHeaders } from 'h3'
 import { readEcosystems } from '../../../ecosystem/server/identity/read.ts'
 

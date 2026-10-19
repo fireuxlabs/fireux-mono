@@ -1,4 +1,3 @@
-import { deanosKitchenDemoOrderNumber } from '../operations/Orders/history'
 import type {
   KitchenDemoScenarioAssembly,
   KitchenDemoScenarioInput,
@@ -9,7 +8,7 @@ export function validateKitchenDemoOperations(
   input: KitchenDemoScenarioInput,
   assembly: KitchenDemoScenarioAssembly
 ): string[] {
-  const { menus, services, dishes, menuIds, stationIds } =
+  const { stationIds } =
     createKitchenDemoValidationContext(input, assembly)
 
   const hasInvalidStation =

@@ -67,6 +67,9 @@
             @click="editingLineId = ''"
           />
         </form>
+        <ul v-if="line.notes?.length" class="space-y-1 text-sm text-muted" aria-label="Item choices">
+          <li v-for="(note, index) in line.notes" :key="index">{{ note }}</li>
+        </ul>
       </li>
     </ul>
     <div v-else class="py-6 text-center">

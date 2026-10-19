@@ -1,5 +1,7 @@
 <template>
-  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-stock"></WorkspaceKitchenNavigationGroup>
+  <WorkspaceKitchenNavigationGroup
+    nav-key="workspace-kitchen-stock"
+  ></WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
 definePageMeta({
@@ -15,16 +17,41 @@ definePageMeta({
     label: 'Stock & Purchasing',
     description:
       'Manage stock, purchase orders, deliveries, suppliers and waste.',
-    group: 'Stock & Purchasing',
-    groupDisplay: 'nested',
+    group: '',
     groupIndex: true,
-    groupIcon: 'i-lucide-package',
     icon: 'i-lucide-package',
     position: 'top',
     order: 40,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [
+      {
+        label: 'Stock',
+        to: '/workspace/kitchen/stock/inventory',
+        icon: 'i-lucide-boxes',
+      },
+      {
+        label: 'Purchase orders',
+        to: '/workspace/kitchen/stock/purchasing',
+        icon: 'i-lucide-shopping-cart',
+      },
+      {
+        label: 'Deliveries',
+        to: '/workspace/kitchen/stock/receiving',
+        icon: 'i-lucide-package-check',
+      },
+      {
+        label: 'Suppliers',
+        to: '/workspace/kitchen/stock/suppliers',
+        icon: 'i-lucide-truck',
+      },
+      {
+        label: 'Waste',
+        to: '/workspace/kitchen/stock/waste',
+        icon: 'i-lucide-trash-2',
+      },
+    ],
   },
 })
 </script>

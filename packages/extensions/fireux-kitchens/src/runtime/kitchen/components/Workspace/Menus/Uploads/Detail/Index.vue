@@ -16,14 +16,16 @@
     />
 
     <template v-else-if="source">
-      <WorkspaceKitchenMenusUploadsDetailSummary
-        :source="source"
-        :file-count="sourceFiles.length"
+      <WorkspaceKitchenMenusProcess
+        :key="`${kitchenId}/${uploadId}`"
+        :context="processContext"
       />
-      <WorkspaceKitchenMenusUploadsDetailFile
-        :source="source"
-        :files="sourceFiles"
-      />
+      <MoleculesDisclosurePanel title="Original document" :default-open="false">
+        <WorkspaceKitchenMenusUploadsDetailFile
+          :source="source"
+          :files="sourceFiles"
+        />
+      </MoleculesDisclosurePanel>
     </template>
 
     <DiagnosticsDebugPanel
@@ -48,6 +50,9 @@ const {
   menuSources,
   menuSourcesPending,
   menuSourcesError,
+  kitchenId,
+  activeKitchenAppId,
+  canWrite,
   debug: menusDebug,
 } = useKitchenMenusContextSource()
 
@@ -57,6 +62,14 @@ const source = computed(
   () =>
     menuSources.value.find((item) => text(item.id) === uploadId.value) ?? null
 )
+const processContext = {
+  menu: computed(() => null),
+  source,
+  menuId: uploadId,
+  kitchenId,
+  activeKitchenAppId,
+  canWrite,
+}
 const sourceFiles = computed(() =>
   Array.isArray(source.value?.files) && source.value.files.length
     ? source.value.files
@@ -82,7 +95,7 @@ const breadcrumbItems = computed(() => [
     to: '/workspace/kitchen/menus',
   },
   {
-    label: source.value?.id || 'Source detail',
+    label: source.value?.file_name || 'Menu import',
     icon: 'i-lucide-file-search',
   },
 ])

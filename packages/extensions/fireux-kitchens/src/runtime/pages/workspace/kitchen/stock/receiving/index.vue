@@ -50,7 +50,7 @@ definePageMeta({
     key: 'workspace-kitchen-receiving',
     label: 'Deliveries',
     group: 'Stock & Purchasing',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-package-check',
     position: 'top',

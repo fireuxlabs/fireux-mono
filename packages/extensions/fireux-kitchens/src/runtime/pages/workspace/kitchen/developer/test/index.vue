@@ -43,7 +43,7 @@ definePageMeta({
     key: 'workspace-kitchen-test',
     label: 'Test',
     group: 'Developer',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-code-2',
     description: 'Kitchen Test',
     icon: 'i-lucide-flask-conical',

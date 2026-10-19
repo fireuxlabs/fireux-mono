@@ -318,10 +318,10 @@ export async function processKitchenMenuAiReview(
         ...(extraction.ok ? {} : {
           reason: extraction.reason || 'AI extraction failed.',
         }),
-        checkpoint: FieldValue.delete(),
         updated: stamp,
       },
       ai_draft: {
+        name: readString(extractionData?.name),
         status: extractedStatus,
         source: normalizedSections.length ? 'normalized' : 'extracted',
         sections: draftSections,
@@ -363,6 +363,7 @@ export async function processKitchenMenuAiReview(
     },
     current,
     extracted: {
+      name: readString(extractionData?.name),
       status: extractedStatus,
       provider: extraction.provider,
       model: extraction.model,

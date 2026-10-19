@@ -33,9 +33,7 @@
         <section v-if="menu" class="space-y-3">
           <WorkspaceKitchenMenusCreateUpload
             :upload-id="menuId"
-            :lock-slug="true"
             :replace-existing="true"
-            title="Upload source document"
             description="Attach the original files before comparing processed output with this Menu."
             cta-label="Upload source"
           />

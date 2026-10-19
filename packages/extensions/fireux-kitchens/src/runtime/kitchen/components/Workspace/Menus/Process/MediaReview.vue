@@ -1,8 +1,8 @@
 <template>
   <MoleculesDisclosurePanel
-    v-if="items.length"
+    v-if="items.some((item) => item.candidateUrl)"
     title="Dish media review"
-    :default-open="true"
+    :default-open="false"
   >
     <div class="mt-3 space-y-4">
       <p class="text-sm text-dimmed">
@@ -10,7 +10,10 @@
         queued only where selected.
       </p>
       <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <UCard v-for="item in items" :key="item.key">
+        <UCard
+          v-for="item in items.filter((entry) => entry.candidateUrl)"
+          :key="item.key"
+        >
           <img
             v-if="item.candidateUrl"
             :src="item.candidateUrl"

@@ -41,7 +41,7 @@ definePageMeta({
     key: 'workspace-kitchen-suppliers',
     label: 'Suppliers',
     group: 'Stock & Purchasing',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-truck',
     position: 'top',

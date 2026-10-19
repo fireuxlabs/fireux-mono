@@ -22,6 +22,7 @@ export type Order = {
 }
 
 export type OrderLine = {
+  notes?: string[]
   id: string
   item: { id?: string; name: string }
   quantity: number

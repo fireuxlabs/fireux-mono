@@ -98,20 +98,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, toRef, watch } from 'vue'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 
 const props = defineProps<{
+  source: unknown
+  menuId: string
+  kitchenId: string
+  appId: string
+  canWrite: boolean
   canProcess?: boolean
   pendingMode?: 'standard' | 'strong' | ''
 }>()
 const emit = defineEmits<{
   select: ['standard' | 'strong']
 }>()
-const { source, menuId, kitchenId, activeKitchenAppId, canWrite } =
-  useKitchenMenuRecordContext()
+const source = toRef(props, 'source')
+const menuId = toRef(props, 'menuId')
+const kitchenId = toRef(props, 'kitchenId')
+const activeKitchenAppId = toRef(props, 'appId')
+const canWrite = toRef(props, 'canWrite')
 const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const estimate = ref<Record<string, unknown> | null>(null)

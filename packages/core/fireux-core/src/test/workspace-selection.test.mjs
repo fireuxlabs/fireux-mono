@@ -43,6 +43,7 @@ function createWorkspace() {
     'useWorkspace',
     {
       computed,
+      watch,
       useCookie: (key, options) => {
         cookieOptions.set(key, options)
         return getRef(cookies, key, options.default)
@@ -472,4 +473,57 @@ test('last selected Kitchen uses a persistent root-path cookie and survives a fr
   assert.equal(restored.selectedId.value, 'baeren')
   restored.reconcile(['la-tap'], 'ready')
   assert.equal(restored.selectedId.value, 'la-tap')
+})
+
+test('component-local cookie refs all retain the last shared selection on disposal and restart', () => {
+  let stored = 'first'
+  const states = new Map(),
+    cookies = []
+  const use = load(
+    '../runtime/composables/fireux/workspace/useWorkspace.ts',
+    'useWorkspace',
+    {
+      computed,
+      watch,
+      normalizeString: (value) => String(value || '').trim(),
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useCookie: () => {
+        const value = ref(stored)
+        cookies.push(value)
+        return value
+      },
+      useState: (key, init) => {
+        if (!states.has(key)) states.set(key, ref(init()))
+        return states.get(key)
+      },
+    }
+  )
+  const scope = effectScope()
+  const [home, header] = scope.run(() => [use('kitchen'), use('kitchen')])
+  home.select('baeren')
+  assert.equal(header.selectedId.value, 'baeren')
+  for (const cookie of cookies) stored = cookie.value // Nuxt's disposal flush
+  assert.equal(stored, 'baeren')
+  scope.stop()
+  states.clear()
+  assert.equal(use('kitchen').selectedId.value, 'baeren')
+})
+
+test('last selection survives reconciliation; first available is used only after access settles', () => {
+  const harness = createWorkspace(),
+    workspace = harness.useWorkspace('kitchen')
+  for (const outcome of ['idle', 'pending', 'error', 'missing']) {
+    workspace.reconcile(['first', 'baeren'], outcome)
+    assert.equal(workspace.selectedId.value, '')
+  }
+  workspace.reconcile(['first', 'baeren'], 'ready')
+  assert.equal(workspace.selectedId.value, 'first')
+  workspace.select('baeren')
+  workspace.reconcile(['first', 'baeren'], 'ready')
+  assert.equal(workspace.selectedId.value, 'baeren')
+  workspace.select('revoked')
+  workspace.reconcile(['first'], 'pending')
+  assert.equal(workspace.selectedId.value, 'revoked')
+  workspace.reconcile(['first'], 'ready')
+  assert.equal(workspace.selectedId.value, 'first')
 })

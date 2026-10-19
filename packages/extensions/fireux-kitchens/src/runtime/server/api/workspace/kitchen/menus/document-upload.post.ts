@@ -44,8 +44,5 @@ export default defineEventHandler(async (event) => {
     url: file.fileUrl,
     file_name: file.fileName,
     file_type: file.contentType,
-    path: '',
-    qr_path: '',
-    qr_url: '',
   }
 })

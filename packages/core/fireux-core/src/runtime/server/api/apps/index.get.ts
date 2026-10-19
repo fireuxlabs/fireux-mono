@@ -1,4 +1,4 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
 import { getQuery, setResponseHeaders } from 'h3'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import {

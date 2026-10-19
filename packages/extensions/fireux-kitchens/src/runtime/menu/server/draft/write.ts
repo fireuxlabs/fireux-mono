@@ -26,12 +26,6 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-const titleFromId = (value: string) =>
-  value
-    .split(/[-_\s]+/g)
-    .map((part) => (part ? `${part[0]?.toUpperCase()}${part.slice(1)}` : ''))
-    .filter(Boolean)
-    .join(' ')
 export async function writeKitchenMenuDraft(input: {
   appId: string
   kitchenId: string
@@ -40,6 +34,7 @@ export async function writeKitchenMenuDraft(input: {
   uid: string
   actor: Awaited<ReturnType<typeof readKitchenMutationActor>>
   sections: DraftSections
+  name?: string
 }) {
   const db = getRuntimeFirestore()
   const menuRef = db.doc(
@@ -79,8 +74,12 @@ export async function writeKitchenMenuDraft(input: {
       const existing = record(menu.data || {})
       const status = text(existing.status) || 'draft'
       const description = text(existing.description)
-      let name =
-        text(existing.name) || titleFromId(input.menuId) || input.menuId
+      let name = text(existing.name) || text(input.name)
+      if (!name || name.length > 160)
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Confirm a Menu name of 1–160 characters.',
+        })
       const slug = menu.exists ? text(existing.slug) : normalizeSlug(name)
       if (!slug)
         throw createError({
@@ -152,6 +151,7 @@ export async function writeKitchenMenuDraft(input: {
     }
   )
   return {
+    slug: text(write.menuData.slug),
     menu_written: true,
     action: write.existed ? 'replaced-draft' : 'created-draft',
     status: write.status,

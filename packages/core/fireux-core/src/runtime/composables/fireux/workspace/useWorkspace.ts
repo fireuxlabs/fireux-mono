@@ -1,5 +1,5 @@
 import { useCookie, useState } from '#imports'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { normalizeString } from '../../../utils/string'
 import type { WorkspaceOutcome } from './workspace-outcome'
@@ -19,6 +19,16 @@ export function useWorkspace(workspace: string) {
     maxAge: 60 * 60 * 24 * 365,
   })
   const activeId = useState<string>(key, () => normalizeString(cookie.value))
+  // useCookie returns a component-scoped ref. Keep every mounted copy current,
+  // including copies that flush their cookie when their component is disposed.
+  if (cookie.value !== activeId.value) cookie.value = activeId.value
+  watch(
+    activeId,
+    (id) => {
+      cookie.value = id
+    },
+    { flush: 'sync' }
+  )
   const select = (id: string) => {
     const value = normalizeString(id)
     activeId.value = value

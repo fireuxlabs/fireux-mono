@@ -12,9 +12,14 @@ import {
 } from '../../../utils/menu-process-view'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 
-export function useMenuSourceProcess() {
+export type MenuSourceProcessContext = Pick<
+  ReturnType<typeof useKitchenMenuRecordContext>,
+  'menu' | 'source' | 'menuId' | 'kitchenId' | 'activeKitchenAppId' | 'canWrite'
+>
+
+export function useMenuSourceProcess(context?: MenuSourceProcessContext) {
   const { menu, source, menuId, kitchenId, activeKitchenAppId, canWrite } =
-    useKitchenMenuRecordContext()
+    context ?? useKitchenMenuRecordContext()
   const { currentUser } = useAuth()
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const authToken = ref('')

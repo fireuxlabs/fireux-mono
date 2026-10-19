@@ -2,7 +2,6 @@
   <div class="grid min-w-0 gap-6">
     <WorkspaceKitchenCollectionHeader
       title="Ingredients"
-      :kitchen-name="kitchenName"
     >
       <template #actions>
         <UButton
@@ -214,7 +213,6 @@ import { INGREDIENT_CATEGORY_OPTIONS } from '../../../../../ingredient/models/in
 const {
   ingredients,
   kitchenId,
-  kitchenName,
   pending,
   loadError,
   canWrite,

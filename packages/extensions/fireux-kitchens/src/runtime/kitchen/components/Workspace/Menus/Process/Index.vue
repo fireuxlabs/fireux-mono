@@ -2,15 +2,18 @@
   <section v-if="process.menu || process.source" class="space-y-4">
     <header class="space-y-1">
       <h3 class="text-sm font-semibold text-highlighted">
-        Convert menu with AI
+        {{ process.hasDraft ? 'Review menu' : 'Import menu' }}
       </h3>
-      <p class="text-sm text-dimmed">{{ process.processDescription }}</p>
+      <p v-if="!process.hasDraft" class="text-sm text-dimmed">
+        {{ process.processDescription }}
+      </p>
     </header>
     <WorkspaceKitchenMenusProcessRun :process="process" />
     <div v-if="process.hasDraft" class="space-y-4">
       <WorkspaceKitchenMenusProcessReport :process="process" />
       <WorkspaceKitchenMenusProcessComparison :process="process" />
       <WorkspaceKitchenMenusProcessReview
+        :existing-menu-name="process.menu?.name"
         :source="process.source"
         :result="process.result"
         :app-id="process.activeKitchenAppId"
@@ -36,6 +39,10 @@
 </template>
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { useMenuSourceProcess } from '../../../../composables/workspace/menus/useMenuSourceProcess'
-const process = reactive(useMenuSourceProcess())
+import {
+  useMenuSourceProcess,
+  type MenuSourceProcessContext,
+} from '../../../../composables/workspace/menus/useMenuSourceProcess'
+const props = defineProps<{ context?: MenuSourceProcessContext }>()
+const process = reactive(useMenuSourceProcess(props.context))
 </script>

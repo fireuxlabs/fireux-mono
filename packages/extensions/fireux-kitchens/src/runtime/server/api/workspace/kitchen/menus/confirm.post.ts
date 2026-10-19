@@ -11,6 +11,7 @@ import {
   serverKitchenMenuUploadsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { writeKitchenMenuDraft } from '../../../../../menu/server/draft/write'
+import { menuNameAndSlug } from '../../../../../menu/server/name'
 import { compareKitchenMenuDraftToCurrent } from '../../../../../menu/server/draft/comparison'
 import { readKitchenMenuCurrentShape } from '../../../../../menu/server/draft/current'
 import {
@@ -33,7 +34,7 @@ import { fetchPublicRasterImage } from 'fireux-core/runtime/server/utils/http/pu
 import { normalizeAndSaveDishImage } from '../../../../../kitchen/server/dishes/image'
 
 type ConfirmMenuBody = Partial<
-  Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>
+  Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'name', string>
 > & {
   confirmDishes?: boolean
 }
@@ -100,7 +101,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const missingMediaDecisions = sections.flatMap((section, sectionIndex) =>
     section.items.flatMap((item, itemIndex) =>
-      mediaReview[menuMediaReviewKey(sectionIndex, itemIndex)]
+      !item.image_url || mediaReview[menuMediaReviewKey(sectionIndex, itemIndex)]
         ? []
         : [item.name]
     )
@@ -146,6 +147,10 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const kitchenPath = kitchenMenuUploadKitchenPath(appId, kitchenId)
   const current = await readKitchenMenuCurrentShape(kitchenPath, menuId)
+  const confirmedName =
+    current.menu.status === 'missing'
+      ? menuNameAndSlug(event, body?.name).name
+      : undefined
   const comparison = compareKitchenMenuDraftToCurrent(current, sections)
   const optionLoss = comparison.flags.filter((flag) =>
     destructiveOptionFlagCodes.has(flag.code)
@@ -166,6 +171,7 @@ export default defineEventHandler(async (event: H3Event) => {
     menuId,
     uid,
     sections,
+    name: confirmedName,
   })
   const {
     sproochliCacheUnits,

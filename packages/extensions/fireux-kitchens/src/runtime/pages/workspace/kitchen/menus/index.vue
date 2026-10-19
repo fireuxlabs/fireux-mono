@@ -27,17 +27,11 @@ definePageMeta({
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
+    hidden: true,
     key: 'workspace-kitchen-menus',
     label: 'Menus',
-    groupIndex: true,
-    group: '',
-    children: [
-      {
-        label: 'Promotions',
-        to: '/workspace/kitchen/promotions',
-        icon: 'i-lucide-tags',
-      },
-    ],
+    group: 'Food & drink',
+    description: 'Organise dishes into menus, then publish and share them.',
     icon: 'i-lucide-book-open',
     position: 'top',
     order: 11,

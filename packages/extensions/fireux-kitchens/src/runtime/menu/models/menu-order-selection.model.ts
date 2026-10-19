@@ -1,4 +1,10 @@
 export type MenuOrderSelection = {
+  menuId?: string
+  extraIds?: string[]
+  groups?: Record<string, string[]>
+  bottle?: 'deposit' | 'exchange'
+  offeringIds?: string[]
+  expectedUnitMinor?: number
   sectionId: string
   itemId: string
   optionId?: string

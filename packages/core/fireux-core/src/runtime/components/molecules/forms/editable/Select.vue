@@ -34,10 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../../user/composables/session/useUserSession'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { computed, ref, watch } from 'vue'
 
 type SelectOption = string | { label: string; value: string }

@@ -37,7 +37,7 @@ definePageMeta({
     key: 'workspace-kitchen-waste',
     label: 'Waste',
     group: 'Stock & Purchasing',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-trash-2',
     position: 'top',

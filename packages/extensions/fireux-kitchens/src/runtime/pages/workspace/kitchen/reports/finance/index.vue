@@ -12,7 +12,7 @@ definePageMeta({
     key: 'workspace-kitchen-finance',
     label: 'Sales',
     group: 'Reports',
-    groupDisplay: 'nested',
+    hidden: true,
     groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-chart-column',
     position: 'top',

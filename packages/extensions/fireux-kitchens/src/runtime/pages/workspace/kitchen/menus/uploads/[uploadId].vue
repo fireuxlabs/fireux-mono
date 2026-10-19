@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-menu-source-detail">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Menu Source" />
+        <LayoutsWorkspaceNavbar title="Review menu import" />
       </template>
 
       <template #body>
@@ -24,7 +24,7 @@ definePageMeta({
   requiresSelection: true,
   nav: {
     key: 'workspace-kitchen-menu-source-detail',
-    label: 'Menu Source',
+    label: 'Review menu import',
     icon: 'i-lucide-file-search',
     position: 'top',
     hidden: true,

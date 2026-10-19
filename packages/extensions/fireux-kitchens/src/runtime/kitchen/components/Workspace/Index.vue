@@ -41,13 +41,12 @@
     "
     @create="openCreate"
   />
-  <section v-else class="grid gap-4" aria-label="Selected Kitchen">
-    <WorkspaceKitchenHomeSingle
-      ref="single"
-      :selected="selected"
-      :can-update="workspace.outcome.value === 'ready'"
-    />
-  </section>
+  <WorkspaceKitchenHomeSingle
+    v-else
+    ref="single"
+    :selected="selected"
+    :can-update="workspace.outcome.value === 'ready'"
+  />
   <WorkspaceKitchenHomeCreate
     v-if="creation.canCreate.value"
     v-model:open="createOpen"

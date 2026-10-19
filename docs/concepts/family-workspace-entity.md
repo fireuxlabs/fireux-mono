@@ -55,7 +55,12 @@ settled; a restored ID never grants read or write authority. Kitchen's collectio
 propagates unresolved access and idle Kitchen/Place reads instead of reporting an
 empty list during startup. Checks: Core `workspace-selection.test.mjs` and Kitchen
 `workspace-readiness.test.mjs`. This is last-selection memory, not an account
-primary-Entity preference.
+primary-Entity preference. Kitchen prioritises an authorised explicit link, then a
+valid remembered selection, then the first available Kitchen after access settles.
+There is no separate Primary Kitchen control, preference field or command.
+Core synchronises every component-local cookie ref with shared selection so
+navigation/disposal cannot flush an older selection. Verify Core's
+`workspace-selection.test.mjs` and Kitchen's `workspace-readiness.test.mjs`.
 
 ## Workspace arrival language
 
@@ -1040,12 +1045,19 @@ has its own release and backup requirements.
 The six Workspace Overviews retain named `useKitchenOverview`,
 `useProjectOverview`, `useSupplierOverview`, `usePropertyOverview`,
 `usePortfolioOverview` and `useBlankOverview` controllers, consumed by their
-own Overview Index components. They share Core `useOverview` for the selected
-Entity projection and outcome, not a generic page or industry-content registry.
+own Overview Index components. Kitchen consumes its existing Workspace selection
+and linked Place directly; the other five reuse Core `useOverview` for their
+selected Entity projection and outcome. There is no generic page or
+industry-content registry.
 
-Main content is domain-owned and may differ: Kitchen composes linked Place and
-setup information; Project composes published App identity and ecosystem-owned
-App context; collection-oriented Overviews retain their own scope summaries.
+Main content is domain-owned and may differ: Kitchen presents selected identity
+and a route-owned map of working areas. Home remains its Kitchen-selection and
+working landing page; Overview links to group indexes, whose mini overviews link
+to child working pages. The Kitchen group composition and collection breadcrumbs
+reuse the same explicit navigation children rather than flattening children into
+Overview or maintaining a second registry. See `workspace-navigation.test.mjs`.
+Project composes published App identity and ecosystem-owned App context;
+collection-oriented Overviews retain their own scope summaries.
 Existing `WorkspaceOverview`, `WorkspaceOverviewFocus` and
 `WorkspaceOverviewMultiple` remain presentation building blocks. The
 Current domain controllers establish the shared relationship without requiring
@@ -1062,12 +1074,16 @@ venue fields and commands. Project retains its name and the connected App's
 published description/image boundary. Their named Identity components
 compose domain readers, editors and navigation; routes supply page framing.
 
-Kitchen Settings groups Kitchen listing, Venue profile, Operating hours, Appearance,
-Payments, Integrations and Access using explicit route-owned children. Identity
-has no separate sidebar group. The focused listing page composes URL, status and
-directory visibility controls; Settings owns the sibling links. Home is the single
-primary arrival entrance; Overview and Menu setup remain contextual routes.
-Food & drinks, Menus and Services are direct capability entrances. Venue profile
+Kitchen places Identity & brand and Team before its domain groups, with Settings
+last. Identity & brand owns the Kitchen listing plus Venue profile, Operating hours
+and Appearance links. Settings holds Payments, Integrations and Access. Food & drink
+has a distinct group index linking to Items, Menus, Promotions and Services; those
+working pages retain their existing routes and domain commands. Group indexes
+introduce their children rather than act as the first working child. The existing
+Kitchen pill provides Home access and selection above the sidebar user menu.
+Overview remains a primary entrance to the groups. The Menu setup tool directory
+stays contextual. The focused listing page composes URL, status and directory
+visibility controls. Venue profile
 owns the current-value venue sections. Focused side panels
 compose the Place-owned inline editors also used by the public Place edit route. The Kitchen Workspace
 passes its explicit mutation authority. Currency remains Place-owned; Kitchen

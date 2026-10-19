@@ -1,4 +1,4 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { defineLiveReadHandler } from '../../../utils/http/defineLiveReadHandler'
 import { setResponseHeaders, type H3Event } from 'h3'
 import { UserNotificationStorage } from '../../../../user/models/user-notification.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'

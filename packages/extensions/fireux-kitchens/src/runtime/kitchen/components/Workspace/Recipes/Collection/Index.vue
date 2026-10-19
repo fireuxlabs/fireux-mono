@@ -2,7 +2,6 @@
   <section class="recipe-catalogue">
     <WorkspaceKitchenCollectionHeader
       title="Recipes"
-      :kitchen-name="focus?.name"
     >
       <template #actions>
         <UButton
@@ -152,7 +151,6 @@ const {
   pending,
   error,
   debug,
-  focus,
   kitchenId,
   storageKitchenId,
   outcome,

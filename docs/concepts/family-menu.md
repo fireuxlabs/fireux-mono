@@ -145,9 +145,29 @@ changing route grammar. The former `scripts/` guard suite is removed.
 Menu formats are `interactive` and `document`. Creating either requires a
 Kitchen; generic URL-to-QR remains a separate Go QR tool, not a Menu record.
 
+Create Menu exposes PDF or photos, Menu URL, and Start blank as separate methods.
+URL imports open source review without requiring a Menu name first.
+File ingestion uses a native file picker and the Kitchen-owned `useMenuSourceUpload`
+coordinator. It stores the source through the existing upload endpoint, then opens
+its source route for the existing FireUX AI process/review controls. Passed source
+context reuses that route's acquired data; Go QR is not part of this workflow.
+New source ids are internal; the reviewed Menu name supplies the public slug at
+confirmed creation. See `menu-source-upload.test.mjs` and `menu-import-name.test.mjs`.
+
 AI extraction produces reviewable candidate content. It does not become
 Menu, Dish media, or published Menu truth until the owning Kitchen flow
 validates and commits it.
+Review completion replaces its saved process map without a nested delete marker;
+`menu-ai-review-save.test.mjs` validates that update with the real Firestore SDK
+without committing it. Import planning gives each Menu source its own deterministic
+Dish identities; matching names never reuse catalogue Dishes. Retrying the same
+source preserves its identities. Existing-Dish reuse belongs to the section's
+catalogue picker. Import confirmation still blocks changed prices on a previously
+created import Dish. See `menu-draft-plan.test.mjs`.
+The review presents Menu items and one confirmation area. Processing and technical
+reports stay in closed disclosures after extraction. Media decisions are required
+only for detected image candidates; no-image items need no separate approval.
+See `menu-process-composition.test.mjs` and `menu-import-media-gate.test.mjs`.
 
 ## Presentation inheritance
 
@@ -343,7 +363,8 @@ Daily specials do not accept meal-deal placements. Section editing exposes both
 entry kinds, and public Menu cards display read-only deal choices/supplements.
 Venue-local weekdays and service serving windows control deal visibility.
 See `menu-meal-deals.test.mjs`, Menu publication/content-command checks and
-`menu-pricing.test.mjs`; this does not implement customer selection or Order pricing.
+`menu-pricing.test.mjs` for catalogue presentation. Collection selection and
+transactional Order pricing have separate owners and checks below.
 
 ## Catalogue and Order dependency direction
 
@@ -353,6 +374,28 @@ does not load Kitchen delivery zones or payment methods. The dedicated fulfilmen
 endpoint and Order adapters retain their own policy reads. Order selection, cart
 lines and submission belong to those consumers, not the read-only item model.
 `menu-public-slug.test.mjs` verifies catalogue resolution without a fulfilment read.
+
+## Collection checkout
+
+Collection's Menu-owned Selection composition retains one local basket across
+catalogue refreshes and errors and composes a focused checkout. The existing
+Menu-submit adapter delegates to the Kitchen submission command; no second Order
+store or submission authority is introduced. `menu/server/ordering.ts` coordinates
+canonical reads across Menu sources. Its focused `ordering/selections.ts` parser
+and `ordering/items.ts` transaction reader reuse Dish pricing, Promotion policy
+and `serviceBasketLine` choice calculations. Kitchen, service and Menu hours all
+constrain ordering. Options, extras, meal groups/supplements and bottle choices
+remain in structured saved selections; canonical Order line notes carry the
+choices to the customer response and Kitchen ticket. Normal catalogue records
+are read, never repriced or written by checkout.
+
+`useCollectionCheckout` reuses scoped Order exchange for submission and responses,
+freezes an unresolved attempt for idempotent retry and checks for an existing
+receipt before permitting edits after a rejection. The current Collection flow
+orders during serving hours; next-day slots and payment processing are separate.
+Verify `collection-checkout.test.mjs`, `menu-service-basket.test.mjs`, existing
+Order submission/flow and ticket checks. These fixture tests are not evidence of
+live submission or physical fulfilment.
 
 ## Safe Dish removal
 

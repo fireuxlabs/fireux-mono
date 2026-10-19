@@ -1,8 +1,7 @@
 <template>
   <section :aria-label="catalogue.title" class="dish-catalogue">
     <WorkspaceKitchenCollectionHeader
-      title="Food &amp; drinks"
-      :kitchen-name="focus.name"
+      title="Items"
     >
       <template #actions>
         <UButton
@@ -259,7 +258,6 @@ const {
   outcome,
   readOnly,
   debug,
-  focus,
   kitchenId,
   catalogue,
 } = useKitchenDishesContext()

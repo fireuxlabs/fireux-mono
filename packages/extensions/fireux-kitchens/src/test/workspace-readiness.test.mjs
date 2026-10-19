@@ -10,6 +10,7 @@ import {
   toValue,
   ref,
   watchEffect,
+  watch,
   effectScope,
   nextTick,
 } from 'vue'
@@ -254,6 +255,7 @@ test('Kitchen selection survives unresolved access and child reads before a sett
     {
       computed,
       useCookie: () => cookie,
+      watch,
       useState: (key, init) => {
         if (!states.has(key)) states.set(key, ref(init()))
         return states.get(key)

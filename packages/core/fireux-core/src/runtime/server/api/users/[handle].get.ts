@@ -1,4 +1,4 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
 import { createError, setResponseHeaders, type H3Event } from 'h3'
 import type { DetailResponse } from '../../../models/utils/directory'
 import type { User } from '../../../user/models/user.model.ts'
