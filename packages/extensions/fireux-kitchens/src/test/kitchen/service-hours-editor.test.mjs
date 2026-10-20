@@ -208,3 +208,25 @@ test('a saved-hours acknowledgement preserves an unfinished additional range', a
   assert.equal(h.emitted.length, 1)
   h.scope.stop()
 })
+
+test('an incomplete range survives read refreshes without writing or losing entered fields', async () => {
+  const h = harness()
+  h.add()
+  h.update(1, { days: ['friday'], open: '18:00', close: '' })
+  h.props.disabled = true
+  h.props.value = {
+    ...hours,
+    windows: [{ days: ['monday'], open: '10:00', close: '14:00' }],
+  }
+  await vue.nextTick()
+  assert.equal(h.ranges.value.length, 2)
+  assert.equal(h.ranges.value[1].value.open, '18:00')
+  assert.equal(h.ranges.value[1].value.close, '')
+  assert.equal(h.incomplete.value, true)
+  assert.deepEqual(h.emitted, [])
+  h.props.disabled = false
+  h.update(1, { days: ['friday'], open: '18:00', close: '22:00' })
+  assert.equal(h.emitted.length, 1)
+  assert.equal(h.emitted[0].windows[1].open, '18:00')
+  h.scope.stop()
+})

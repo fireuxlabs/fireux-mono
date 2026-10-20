@@ -7,48 +7,70 @@ import { renderToString } from 'vue/server-renderer'
 import { offeringOverviewPolicy } from './offering-test-helpers.mjs'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/components/Workspace/Offerings/Setup.vue',
+    '../runtime/kitchen/components/Workspace/Offerings/Service.vue',
     import.meta.url
   ),
   'utf8'
 )
 const template = parse(source).descriptor.template.content
 async function render(option, enabled) {
+  const editor = vue.reactive({
+    enabled,
+    busy: false,
+    error: '',
+    menuIds: ['food'],
+    sameAsKitchen: false,
+    hours: { windows: [{ days: ['tuesday'], open: '12:00', close: '20:00' }] },
+    timezone: 'Europe/Zurich',
+    interactions: option.types.map((type) => ({
+      type,
+      enabled: true,
+      menu_ids: ['food'],
+    })),
+    setEnabled() {},
+    setMenus() {},
+    setHours() {},
+    setSameAsKitchen() {},
+    updateInteraction() {},
+  })
+  const setupState = {
+    option,
+    editor,
+    disabled: false,
+    menus: [],
+    kitchenHours: undefined,
+    workspace: { source: { menusOutcome: vue.ref('ready') } },
+    kitchenOrderTypeLabel: (type) =>
+      type === 'eat_in' ? 'Eat in' : 'Takeaway',
+  }
   const app = vue.createSSRApp({
     setup: () => ({
       option,
-      kitchenOrderTypeLabel: (type) =>
-        type === 'eat_in' ? 'Eat in' : 'Takeaway',
-      kitchenSlug: 'venue',
-      enabled,
-      sameAsKitchen: false,
-      setSameAsKitchen() {},
-      showName: false,
-      offering: undefined,
+      editor,
       disabled: false,
-      busy: false,
-      error: '',
-      menuIds: ['food'],
-      menus: [],
-      menusOutcome: 'ready',
-      timezone: 'Europe/Zurich',
-      hours: {
-        windows: [{ days: ['tuesday'], open: '12:00', close: '20:00' }],
-      },
       readiness: { canEnable: true },
-      interactions: option.types.map((type) => ({
-        type,
-        enabled: true,
-        menu_ids: ['food'],
-      })),
-      setEnabled() {},
-      setMenus() {},
-      setHours() {},
-      updateInteraction() {},
-      captureIntent: undefined,
+      section: null,
     }),
     render: vue.compile(template),
   })
+  for (const [name, file] of [
+    ['WorkspaceKitchenOfferingsSetup', 'Setup.vue'],
+    ['WorkspaceKitchenOfferingsSetupKiosk', 'Setup/Kiosk.vue'],
+    ['WorkspaceKitchenOfferingsSetupPreOrder', 'Setup/PreOrder.vue'],
+  ]) {
+    const child = parse(
+      readFileSync(
+        new URL(
+          `../runtime/kitchen/components/Workspace/Offerings/${file}`,
+          import.meta.url
+        ),
+        'utf8'
+      )
+    ).descriptor.template.content
+    app.component(name, { setup: () => setupState, render: vue.compile(child) })
+  }
+  app.component('UIcon', { render: () => null })
+  app.component('MoleculesCopyError', { render: () => null })
   app.component('USwitch', {
     props: ['modelValue'],
     setup: (props) => () =>

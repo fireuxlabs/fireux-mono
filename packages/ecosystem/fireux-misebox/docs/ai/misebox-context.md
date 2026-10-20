@@ -2412,15 +2412,30 @@ Effective Kitchen hours reuse the acquired Kitchen and Place through
 inherited times into service records. `serviceHoursSummary` groups equal ranges
 without implying service on unselected days.
 
-Services configuration is inline. `Workspace/Offerings/Index.vue` acquires the
-service/menu sources once, composes divider-separated `Service.vue` sections,
-and publishes safe page context. Sections compose `Setup.vue`; `useServiceSetup` owns automatic saves,
-scoped completion, rollback, coalesced hours input and timer disposal. Focused
-`Setup/Menus.vue`, `Setup/Hours.vue` and `Setup/Interaction.vue` controls compose
-menu selection, hours and interaction policy. On/Off and menu selection persist
-immediately; valid structured hours edits persist after a short pause. Other field controls
-persist on change. There is no Configure or Save/Discard lifecycle. Owner-scope
-keys dispose editors on account, Kitchen and access changes.
+Services configuration is inline. `Workspace/Offerings/Index.vue` provides one
+`useKitchenServicesContext`, then composes Status, Title and a Service per fixed
+option. The shared context acquires the existing service/menu sources once and
+publishes the safe page JSON. It retains the last settled configuration only for
+presentation through read loading/errors; command availability always uses current
+source authority. Account, Kitchen, membership/role changes or settled access loss
+dispose the retained presentation and local editors.
+
+Each Service provides its own `useKitchenServiceEditor`, which owns
+`useServiceSetup`; Setup consumes that local editor and composes Menus,
+ServiceHours, and named Kiosk or PreOrder additions. The focused controls retain
+menu selection, hours ranges and interaction policy. There is no repeated
+Workspace-state prop chain. Service headings, On/Off and save feedback belong to
+the service section; local commands keep existing scoped automatic saving.
+
+Unfinished hours remain local through refresh/error. Incomplete ranges never
+write; queued valid hours wait for current write readiness before resuming.
+The local range editor does not hydrate over an incomplete range. Timers and
+obsolete command completion are scoped/disposed with the service; current
+responses retain their saved record identity until the live read catches up.
+The service interaction projection is explicitly ordering-only, separate from
+Browse. There is no Configure or Save/Discard lifecycle. Verify
+`services-workspace.test.mjs`, `kitchen/service-setup.test.mjs`,
+`kitchen/service-hours-editor.test.mjs` and inline/navigation/overview checks.
 
 All seven services may be switched on before configuration is complete. Off hides
 configuration and retains its values. The existing protected configure command

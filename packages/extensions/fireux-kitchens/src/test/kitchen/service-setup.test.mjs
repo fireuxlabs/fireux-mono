@@ -267,3 +267,19 @@ test('Yes and No save inheritance immediately without copying parent ranges', as
   assert.equal('menu_ids' in h.calls[1], false)
   h.scope.stop()
 })
+
+test('unfinished autosave hours stay local through refresh and resume only after write readiness returns', async () => {
+  const h = harness()
+  h.state.setHours(hoursAt('18:00'))
+  h.props.disabled = true
+  await h.flush()
+  assert.equal(h.calls.length, 0)
+  h.props.offering = { ...h.props.offering, hours: hoursAt('12:00') }
+  await vue.nextTick()
+  assert.equal(h.state.hours.value.windows[0].open, '18:00')
+  h.props.disabled = false
+  await h.flush()
+  assert.equal(h.calls.length, 1)
+  assert.equal(h.calls[0].hours.windows[0].open, '18:00')
+  h.scope.stop()
+})

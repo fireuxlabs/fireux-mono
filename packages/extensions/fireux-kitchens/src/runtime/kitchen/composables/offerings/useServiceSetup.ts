@@ -31,6 +31,8 @@ export function useServiceSetup(props: ServiceSetup) {
   const menuIds = ref<string[]>([])
   const sameAsKitchen = ref(true)
   const hours = ref<WeekdayTimeWindowsConfig | null>(null)
+  const hoursDirty = ref(false)
+  let commitRevision = 0
   const busy = ref(false)
   const error = ref('')
   const timezone = computed(
@@ -52,7 +54,7 @@ export function useServiceSetup(props: ServiceSetup) {
     )
     menuIds.value = [...(offering?.menu_ids || [])]
     sameAsKitchen.value = offering?.hours_source !== 'custom'
-    hours.value = offering?.hours || null
+    if (!hoursDirty.value) hours.value = offering?.hours || null
   }
   hydrate()
   watch(
@@ -77,6 +79,7 @@ export function useServiceSetup(props: ServiceSetup) {
     const local = capture()
     const owner = props.captureIntent?.() || (() => true)
     const current = () => local() && owner() && intentCurrent()
+    const revision = ++commitRevision
     busy.value = true
     error.value = ''
     try {
@@ -103,7 +106,13 @@ export function useServiceSetup(props: ServiceSetup) {
           cause instanceof Error ? cause.message : 'Please try again.'
       return false
     } finally {
-      if (current()) busy.value = false
+      if (revision === commitRevision) {
+        busy.value = false
+        if (!current() && props.offering) {
+          record.value = props.offering
+          hydrate()
+        }
+      }
     }
   }
   async function setEnabled(value: boolean) {
@@ -132,6 +141,7 @@ export function useServiceSetup(props: ServiceSetup) {
     return value === null ? null : requireOperatingHours(value)
   }
   function setHours(value: WeekdayTimeWindowsConfig | null) {
+    hoursDirty.value = true
     hours.value = value
     clearTimeout(timer)
     const local = capture()
@@ -144,7 +154,10 @@ export function useServiceSetup(props: ServiceSetup) {
         return
       }
       try {
-        await commit({ hours: readHours(value), hours_source: 'custom' })
+        if (await commit({ hours: readHours(value), hours_source: 'custom' })) {
+          hoursDirty.value = false
+          hours.value = record.value?.hours || null
+        }
       } catch (cause) {
         error.value =
           cause instanceof Error ? cause.message : 'Enter valid serving hours.'
@@ -163,19 +176,34 @@ export function useServiceSetup(props: ServiceSetup) {
       }))
     )
       sameAsKitchen.value = previous
-    else hours.value = null
+    else {
+      hoursDirty.value = false
+      hours.value = null
+    }
   }
-  const interactions = computed(() =>
-    props.option.types.map((type) => {
+  watch(
+    () => props.disabled,
+    (disabled) => {
+      if (disabled) {
+        clearTimeout(timer)
+        timer = undefined
+        commitRevision++
+        busy.value = false
+      } else if (hoursDirty.value) {
+        setHours(hours.value)
+      }
+    },
+    { flush: 'sync' }
+  )
+  const interactions = computed(() => {
+    const types: readonly KitchenOrderType[] = props.option.types
+    return types.map((type) => {
       const saved = record.value?.interactions.find((row) => row.type === type)
       return saved && saved.type !== 'browse'
         ? saved
-        : {
-            ...newKitchenOfferingInteraction(type),
-            enabled: true,
-          }
+        : { ...newKitchenOfferingInteraction(type), enabled: true }
     })
-  )
+  })
   async function updateInteraction(
     type: KitchenOrderType,
     changes: KitchenOfferingInteractionChanges,

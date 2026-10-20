@@ -172,6 +172,22 @@ export function useKitchenOfferings(
   return {
     ...identity,
     ownerScope,
+    editorAccessDenied: computed(
+      () =>
+        !access.pending.value &&
+        !access.error.value &&
+        ['ready', 'empty'].includes(access.outcome.value) &&
+        !access.ids.value.includes(identity.kitchenId.value)
+    ),
+    editorOwnerKey: computed(() =>
+      JSON.stringify([
+        config.appId,
+        currentUser.value?.uid,
+        identity.kitchenId.value,
+        appUser.value?.created?.at,
+        appUser.value?.role,
+      ])
+    ),
     storageKitchenId,
     outcome,
     canWrite,
@@ -197,7 +213,10 @@ export function useKitchenOfferings(
     ),
     placeOutcome,
     kitchenHours: computed(() =>
-      resolveKitchenOperationHours(identity.selectedKitchen.value || {}, place.value || {})
+      resolveKitchenOperationHours(
+        identity.selectedKitchen.value || {},
+        place.value || {}
+      )
     ),
     venueHours: computed(() =>
       storageKitchenId.value && place.value

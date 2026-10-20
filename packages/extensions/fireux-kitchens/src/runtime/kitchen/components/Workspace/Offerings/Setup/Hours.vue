@@ -53,11 +53,12 @@ const props = defineProps<{
 const emit = defineEmits<{ update: [value: WeekdayTimeWindowsConfig | null] }>()
 let nextKey = 0
 let lastSent = ''
+const dirty = ref(false)
 const ranges = ref<Array<{ key: number; value: WeekdayTimeWindow }>>([])
 watch(
   () => props.value,
   (value) => {
-    if (JSON.stringify(value) === lastSent) return
+    if (dirty.value || JSON.stringify(value) === lastSent) return
     lastSent = JSON.stringify(value ?? null)
     ranges.value = (value?.windows || []).map((value) => ({
       key: nextKey++,
@@ -85,21 +86,28 @@ function publish() {
   if (props.disabled || !props.timezone || configuration.value === undefined)
     return
   const signature = JSON.stringify(configuration.value)
-  if (signature === lastSent) return
+  if (signature === lastSent) {
+    dirty.value = false
+    return
+  }
   lastSent = signature
+  dirty.value = false
   emit('update', configuration.value)
 }
 function add() {
+  dirty.value = true
   ranges.value.push({
     key: nextKey++,
     value: { days: [], open: '', close: '' },
   })
 }
 function update(index: number, value: WeekdayTimeWindow) {
+  dirty.value = true
   ranges.value[index]!.value = value
   publish()
 }
 function remove(index: number) {
+  dirty.value = true
   ranges.value.splice(index, 1)
   publish()
 }

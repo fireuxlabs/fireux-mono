@@ -83,8 +83,8 @@ test('Collection and Delivery overview include all matching services and publish
   ])
   const state = scope.run(() =>
     load(
-      base + 'Workspace/Offerings/Index.vue',
-      'entries',
+      '../../runtime/kitchen/composables/offerings/useKitchenServicesContext.ts',
+      'createKitchenServicesContext',
       {
         ...vue,
         useWorkspacePageState: () => ({
@@ -92,7 +92,11 @@ test('Collection and Delivery overview include all matching services and publish
         }),
         useKitchenOfferings: () => ({
           offerings,
-          ownerScope: vue.ref(0),
+          editorOwnerKey: vue.ref('actor/k'),
+          editorAccessDenied: vue.ref(false),
+          selectedKitchen: vue.ref({ id: 'k' }),
+          timezone: vue.ref('Europe/Zurich'),
+          kitchenHours: vue.ref(null),
           kitchenId: vue.ref('k'),
           outcome: vue.ref('ready'),
           canWrite: vue.ref(true),
@@ -103,27 +107,29 @@ test('Collection and Delivery overview include all matching services and publish
           ]),
           menusOutcome: vue.ref('ready'),
         }),
-      },
-      true
-    )
+      }
+    ).createKitchenServicesContext()
   )
-  const collection = state.entries.value.find(
-    (row) => row.option.key === 'collection'
-  )
-  const delivery = state.entries.value.find(
-    (row) => row.option.key === 'delivery'
+  const entries = vue.computed(() =>
+    state.options.map((option) => ({
+      option,
+      offerings: offeringOverviewPolicy.offeringsForOption(
+        state.retained.value?.offerings || [],
+        option
+      ),
+    }))
   )
   const before = JSON.stringify(offerings.value)
   for (const timing of ['next_day', 'same_day', 'next_day']) {
     offerings.value[1].collection_timing = timing
     assert.deepEqual(
-      state.entries.value
+      entries.value
         .find((row) => row.option.key === 'collection')
         .offerings.map((row) => row.id),
       ['main', 'concept', 'off']
     )
     assert.deepEqual(
-      state.entries.value
+      entries.value
         .find((row) => row.option.key === 'delivery')
         .offerings.map((row) => row.id),
       ['off', 'delivery']
