@@ -29,6 +29,16 @@ export function useWorkspace(workspace: string) {
     },
     { flush: 'sync' }
   )
+  // Nuxt refreshes this ref when the cookie changes in another tab. Adopt that
+  // selection before an older tab can write its stale in-memory value back.
+  watch(
+    cookie,
+    (id) => {
+      const value = normalizeString(id)
+      if (value !== activeId.value) activeId.value = value
+    },
+    { flush: 'sync' }
+  )
   const select = (id: string) => {
     const value = normalizeString(id)
     activeId.value = value

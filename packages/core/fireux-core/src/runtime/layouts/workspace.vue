@@ -59,24 +59,13 @@
       <template #footer="{ collapsed }">
         <div class="flex flex-col gap-3">
           <div class="space-y-2">
-            <div v-if="familyRootNav.length" class="space-y-2">
+            <div class="space-y-2">
               <ClientOnly>
-                <template
-                  v-for="item in familyRootNav"
-                  :key="item.key || item.to"
-                >
-                  <component
-                    :is="item.component"
-                    v-if="item.component"
-                    :collapsed="collapsed ?? false"
-                  />
-                  <WorkspaceEntitySwitcher
-                    v-else
-                    :item="item"
-                    :collapsed="collapsed ?? false"
-                    :workspace-label="workspaceLabel"
-                  />
-                </template>
+                <component
+                  v-if="workspaceNavigation"
+                  :is="workspaceNavigation"
+                  :collapsed="collapsed ?? false"
+                />
                 <template #fallback>
                   <div
                     class="flex h-8 items-center gap-2 px-2"
@@ -161,7 +150,6 @@ import { useNuxtApp, useRoute } from '#imports'
 import { computed, ref } from 'vue'
 import { workspaceSidebarNext, type WorkspaceSidebarMode } from '../composables/navigation/workspace-sidebar-mode'
 import type { NavigationMenuItem } from '@nuxt/ui'
-import WorkspaceEntitySwitcher from '../components/Workspace/EntitySwitcher.vue'
 import {
   workspaceFamilyFromRouteContext,
   toWorkspaceFamilyLabel,
@@ -318,18 +306,11 @@ const middleNav = computed(() =>
     (item) => workspaceNav.resolveItemPosition(item) === 'middle'
   )
 )
-const familyRootNav = computed(() =>
-  workspaceNav.desktop.value
-    .filter((item) => workspaceNav.resolveItemPosition(item) === 'bottom')
-    .map((item) => ({
-      ...item,
-      component: nuxtApp.vueApp.component(
-        `Workspace${toWorkspaceFamilyLabel(workspaceFamilyFromRouteContext(item.to) || workspace.value)}Navigation`
-      ),
-      description: item.description || `${workspaceLabel.value} Workspace`,
-      image: '',
-      choices: [],
-    }))
+// Entity selection belongs to the active Workspace, independently of nav placement.
+const workspaceNavigation = computed(() =>
+  workspace.value
+    ? nuxtApp.vueApp.component(`Workspace${toWorkspaceFamilyLabel(workspace.value)}Navigation`)
+    : undefined
 )
 
 const workspaceLabel = computed(

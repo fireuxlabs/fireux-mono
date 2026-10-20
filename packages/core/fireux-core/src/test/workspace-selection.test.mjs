@@ -527,3 +527,49 @@ test('last selection survives reconciliation; first available is used only after
   workspace.reconcile(['first'], 'ready')
   assert.equal(workspace.selectedId.value, 'first')
 })
+
+
+test('a Kitchen selected in another tab replaces stale state and survives later component disposal', () => {
+  const states = new Map(), cookies = []
+  let stored = 'la-tap'
+  const use = load(
+    '../runtime/composables/fireux/workspace/useWorkspace.ts', 'useWorkspace',
+    {
+      computed, watch,
+      normalizeString: value => String(value || '').trim(),
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useCookie: () => {
+        const value = ref(stored)
+        cookies.push(value)
+        return value
+      },
+      useState: (key, init) => {
+        if (!states.has(key)) states.set(key, ref(init()))
+        return states.get(key)
+      },
+    }
+  )
+  const scope = effectScope()
+  const [home, header] = scope.run(() => [use('kitchen'), use('kitchen')])
+  assert.equal(home.selectedId.value, 'la-tap')
+  // Nuxt's cookie transport delivers a newer selection made in another tab.
+  stored = 'baeren'
+  cookies[0].value = stored
+  assert.equal(home.selectedId.value, 'baeren')
+  assert.equal(header.selectedId.value, 'baeren')
+  home.reconcile(['la-tap', 'baeren'], 'ready')
+  for (const cookie of cookies) stored = cookie.value
+  assert.equal(stored, 'baeren')
+  scope.stop()
+  states.clear()
+  assert.equal(use('kitchen').selectedId.value, 'baeren')
+})
+
+
+test('Workspace footer composes the active family switcher independently of bottom navigation entries', () => {
+  const source = readFileSync(new URL('../runtime/layouts/workspace.vue', import.meta.url), 'utf8')
+  assert.match(source, /:is="workspaceNavigation"/)
+  assert.match(source, /Workspace\$\{toWorkspaceFamilyLabel\(workspace.value\)\}Navigation/)
+  assert.ok(!source.includes('familyRootNav'))
+  assert.ok(source.indexOf(':is="workspaceNavigation"') < source.indexOf('<LayoutsSharedSideBarFooter'))
+})
