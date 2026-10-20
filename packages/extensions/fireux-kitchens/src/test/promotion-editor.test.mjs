@@ -20,14 +20,12 @@ const helpers = compileFunction(
 const source = stripImports(
   readFileSync(
     new URL(
-      '../runtime/kitchen/components/Workspace/Promotions/Editor.vue',
+      '../runtime/kitchen/composables/promotions/usePromotionEditor.ts',
       import.meta.url
     ),
     'utf8'
   )
-    .split('<script setup lang="ts">')[1]
-    .split('</script>')[0]
-)
+).replace(/^export /gm, '')
 const bundle = () => ({
   id: 'meal',
   name: 'Lunch deal',
@@ -73,16 +71,28 @@ function editor(promotion, options = {}) {
     ref,
     computed,
     ...helpers,
-    defineProps: () => ({ state, promotion }),
-    defineEmits: () => (event) => events.push(event),
+    useKitchenPromotionsContext: () => ({
+      state,
+      editor: ref({ key: promotion?.id || 'new', promotion }),
+      canSave: computed(
+        () =>
+          state.canWrite.value &&
+          !state.dishes.pending.value &&
+          !state.dishes.error.value
+      ),
+      editorPending: state.dishes.pending,
+      editorMissing: ref(false),
+      readError: state.dishes.error,
+      closeEditor: () => events.push('close'),
+    }),
   }
   const api = compileFunction(
-    stripTypeScriptTypes(source) +
-      '; return { form, name, rows, setPrice, groups, days, active, busy, error, save }',
+    stripTypeScriptTypes(source) + '; return usePromotionEditor()',
     Object.keys(dependencies)
   )(...Object.values(dependencies))
   return {
     ...api,
+    state,
     writes,
     events,
     invalidate: () => {
@@ -177,4 +187,24 @@ test('readonly editors do not dispatch and obsolete completion does not close an
   release()
   await save
   assert.deepEqual(e.events, [])
+})
+
+test('promotion drafts survive catalogue loading and errors, and cannot save until recovery', async () => {
+  const e = editor(bundle())
+  e.name.value = 'My unsaved name'
+  e.groups.value[0].dishes[1].supplement = '4.50'
+  e.state.dishes.pending.value = true
+  assert.equal(e.disabled.value, true)
+  await e.save()
+  e.state.dishes.pending.value = false
+  e.state.dishes.error.value = new Error('Offline')
+  await e.save()
+  assert.equal(e.writes.length, 0)
+  assert.equal(e.name.value, 'My unsaved name')
+  assert.equal(e.groups.value[0].dishes[1].supplement, '4.50')
+  e.state.dishes.error.value = null
+  await e.save()
+  assert.equal(e.writes.length, 1)
+  assert.equal(e.writes[0][0].name, 'My unsaved name')
+  assert.equal(e.writes[0][0].groups[0].dishes[1].supplement, 4.5)
 })

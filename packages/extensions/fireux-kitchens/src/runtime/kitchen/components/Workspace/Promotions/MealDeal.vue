@@ -19,8 +19,10 @@
       class="min-w-0 space-y-4 rounded-xl border border-default p-4"
     >
       <legend class="px-1 font-medium">Choice group {{ index + 1 }}</legend>
-      <div class="flex flex-wrap items-end gap-3">
-        <UFormField label="Group name" class="min-w-0 flex-1"
+      <div
+        class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 sm:grid-cols-[minmax(0,1fr)_7rem_auto]"
+      >
+        <UFormField label="Group name" class="col-span-2 min-w-0 sm:col-span-1"
           ><UInput
             v-model="group.name"
             placeholder="For example: Pizza"
@@ -33,7 +35,7 @@
             type="number"
             min="1"
             step="1"
-            class="w-24"
+            class="w-full"
             :disabled="disabled"
         /></UFormField>
         <UButton

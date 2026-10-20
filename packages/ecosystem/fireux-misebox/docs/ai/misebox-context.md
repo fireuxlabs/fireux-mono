@@ -2191,11 +2191,24 @@ more choices than they contain. One promotion references at most 100 distinct
 Kitchen Dishes and a meal deal has at most ten groups. Dish references may recur
 across different groups. Mixed offer/bundle fields are rejected.
 
-`Workspace/Promotions/Editor.vue` owns common fields, form choice and command
-completion. Its passed-data `DishOffer.vue` owns per-Dish prices and Apply to all;
-`MealDeal.vue` owns set price, choice groups and supplements. The existing scoped
-controller remains the only collection/authority acquisition. The list displays
-meal-deal groups and included/supplemented choices. Regular interactive Menu entries reference exactly one `dish_id` or
+`Workspace/Promotions/Index.vue` composes the shared collection header and one
+Collection or Editor. Collection owns read outcomes; its Row owns one saved
+promotion summary and edit action. The strict `useKitchenPromotionsContext`
+provider acquires `useKitchenPromotions` once and owns the editing session.
+`usePromotionEditor` owns detached draft values, validation and scoped save
+completion; Editor composes the common fields, Core weekday multi-select pills,
+DishOffer and MealDeal controls. The latter own per-Dish pricing and meal-deal
+choice editing. No child acquires another collection or command owner.
+
+An open editor survives same-owner read loading and failures with its draft
+intact. Save waits for settled Kitchen, promotion and Dish sources. A confirmed
+missing promotion keeps the draft visible but blocks Save; account, Kitchen or
+membership/role changes close the session. Command intent still invalidates on
+readiness or authority changes. `promotions-workspace.test.mjs` exercises the
+mounted parent lifecycle; `promotion-editor.test.mjs` covers detached drafts,
+validation and unchanged command payloads. These checks do not write live data.
+
+Regular interactive Menu entries reference exactly one `dish_id` or
 `promotion_id` (a meal deal); placements own availability and order, never copied
 commercial terms. Section editing shares one provided section state across its
 controls and offers Add meal deal alongside Dish controls. The trusted placement

@@ -79,6 +79,15 @@ export function useKitchenPromotions() {
     canWrite,
     currency,
     scopeKey,
+    editorOwnerKey: computed(() =>
+      JSON.stringify([
+        config.appId,
+        session.uid.value,
+        identity.kitchenId.value,
+        session.appUser.value?.created?.at,
+        session.appUser.value?.role,
+      ])
+    ),
     captureIntent,
     collection,
     dishes,
