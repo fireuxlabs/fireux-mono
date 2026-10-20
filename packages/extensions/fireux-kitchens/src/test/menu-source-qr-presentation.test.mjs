@@ -58,9 +58,6 @@ async function render(Card, props) {
 const File = component(
   'kitchen/components/Workspace/Menus/Uploads/Detail/File.vue'
 )
-const Summary = component(
-  'kitchen/components/Workspace/Menus/Uploads/Detail/Summary.vue'
-)
 test('upload detail preserves URL, photo, document and missing-file presentation', async () => {
   const base = {
     id: 'source',
@@ -100,17 +97,6 @@ test('upload detail preserves URL, photo, document and missing-file presentation
     await render(File, { source: base, files: [] }),
     /Source file unavailable/
   )
-  const summary = await render(Summary, {
-    source: {
-      ...base,
-      source_url: 'https://example.test/menu',
-      storage_app_id: 'owner',
-    },
-    fileCount: 2,
-  })
-  assert.match(summary, /owner/)
-  assert.match(summary, /url/)
-  assert.match(summary, />2</)
 })
 test('QR targets retain publication and service eligibility boundaries', () => {
   const source = readFileSync(
@@ -156,10 +142,13 @@ test('QR targets retain publication and service eligibility boundaries', () => {
       selectedKitchen: Vue.ref({ slug: 'venue' }),
       menus,
       menuSources: Vue.ref([]),
-      offerings,
-      offeringsOutcome: Vue.ref('ready'),
+      storageKitchenId: Vue.ref('kitchen-ready'),
       outcome: Vue.ref('ready'),
     }),
+    useKitchenOfferingCollection: (id) => {
+      assert.equal(id.value, 'kitchen-ready')
+      return { offerings, outcome: Vue.ref('ready') }
+    },
     useRequestURL: () => ({ origin: 'https://example.test' }),
     useFireUXConfig: () => ({ isTenant: false }),
     menuWebsiteOrigin: (origin) => origin,

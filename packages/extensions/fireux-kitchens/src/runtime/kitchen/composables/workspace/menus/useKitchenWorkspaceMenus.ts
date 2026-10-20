@@ -1,5 +1,3 @@
-import { useKitchenOfferingCollection } from '../../useKitchenOfferingCollection'
-import { kitchenMenuOrdering } from '../../../../menu/utils/menu-ordering'
 import { kitchenMenuCapacity } from '../../../../menu/utils/menu-capacity'
 import {
   appSubscriptionCapacity,
@@ -9,12 +7,9 @@ import { computed, watchEffect } from 'vue'
 import { useCookie, useState } from '#imports'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { useKitchenWorkspaceIndex } from '../useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
-import { useMenuUpdate } from '../../../../menu/composables/firestore/mutations/useMenuUpdate'
-import { useMenuPublication } from '../../../../menu/composables/publication/useMenuPublication'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import {
   MenuSourceUploadStorage,
@@ -25,10 +20,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const text = (value: unknown) => String(value ?? '').trim()
-type MenuPreviewDish = {
-  name: string
-  imageUrl: string
-}
 
 const timestampSeconds = (value: unknown) => {
   if (!value || typeof value !== 'object') return 0
@@ -47,7 +38,6 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
 export function useKitchenWorkspaceMenus() {
   const session = useAppSession()
   const kitchenWorkspace = useKitchenWorkspace()
-  const kitchenIndex = useKitchenWorkspaceIndex()
   const identity = useKitchenWorkspaceIdentity()
   const fireux = useFireUXConfig()
   const storageKitchenId = computed(() =>
@@ -58,22 +48,19 @@ export function useKitchenWorkspaceMenus() {
   )
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const fetchKitchenId = storageKitchenId
   const {
     menus: fetchedMenus,
     activeMenus: fetchedActiveMenus,
     outcome: menusOutcome,
     error: menusError,
     collectionPath: fetchedCollectionPath,
-  } = useKitchenMenuCollection(fetchKitchenId, {
+  } = useKitchenMenuCollection(storageKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
   const create = useMenuCreate({
     kitchenId: kitchenWorkspace.id,
   })
-  const update = useMenuUpdate()
-  const publication = useMenuPublication()
   const sourceUploads = useKitchenChildCollection<MenuSourceUpload>(
     MenuSourceUploadStorage.collection,
     storageKitchenId,
@@ -149,9 +136,6 @@ export function useKitchenWorkspaceMenus() {
   const menuSourcesPending = computed(
     () => menuSourcesOutcome.value === 'pending'
   )
-  const menuPreviewDishes = computed<Record<string, MenuPreviewDish>>(
-    () => ({})
-  )
   const currencyCode = computed(() =>
     readPlaceCurrencyCode(identity.selectedKitchen.value)
   )
@@ -207,56 +191,8 @@ export function useKitchenWorkspaceMenus() {
     return create.createMenu(input)
   }
 
-  function assertCanWrite() {
-    if (!canWrite.value)
-      throw new Error(
-        'You do not have permission to edit this kitchen’s menus.'
-      )
-  }
-
-  async function updateMenu(...args: Parameters<typeof update.updateMenu>) {
-    assertCanWrite()
-    return update.updateMenu(...args)
-  }
-
-  async function renameMenu(...args: Parameters<typeof update.renameMenu>) {
-    assertCanWrite()
-    return update.renameMenu(...args)
-  }
-
-  async function publishMenu(
-    ...args: Parameters<typeof publication.publishMenu>
-  ) {
-    assertCanWrite()
-    return publication.publishMenu(...args)
-  }
-
-  async function archiveMenu(
-    ...args: Parameters<typeof publication.archiveMenu>
-  ) {
-    assertCanWrite()
-    return publication.archiveMenu(...args)
-  }
-
-  const offerings = useKitchenOfferingCollection(
-    computed(() =>
-      kitchenWorkspace.outcome.value === 'ready' &&
-      kitchenWorkspace.data.value?.id === storageKitchenId.value
-        ? storageKitchenId.value
-        : ''
-    )
-  )
-
   return {
-    availableKitchens: kitchenIndex.collection,
-    kitchensPending: computed(() => kitchenIndex.outcome.value === 'pending'),
     selectedKitchen: kitchenWorkspace.data,
-    offerings: offerings.offerings,
-    offeringsOutcome: offerings.outcome,
-    offeringsError: offerings.error,
-    selectedOrdering: computed(() =>
-      kitchenMenuOrdering(offerings.offerings.value, selectedMenuId.value)
-    ),
     kitchenId: kitchenWorkspace.id,
     storageKitchenId,
     activeKitchenAppId: computed(() => fireux.appId),
@@ -280,18 +216,9 @@ export function useKitchenWorkspaceMenus() {
     menuSourcesPending,
     menuSourcesOutcome,
     menuSourcesError,
-    menuPreviewDishes,
-    getMenuPreviewDish: (menuId: string) =>
-      menuPreviewDishes.value[text(menuId)] ?? null,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
-    selectKitchen: kitchenIndex.select,
     createMenu,
     menuCreateBlockedMessage,
-    updateMenu,
-    renameMenu,
-    publishMenu,
-    unpublishMenu: publication.unpublishMenu,
-    archiveMenu,
     debug: computed(() => ({
       kitchenId: kitchenWorkspace.id.value,
       activeKitchenAppId: fireux.appId,

@@ -2,23 +2,41 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
+import { stripTypeScriptTypes } from 'node:module'
 import { computed, ref } from 'vue'
 
-const source = readFileSync(
-  new URL(
-    '../runtime/kitchen/components/Workspace/Menus/Collection/List.vue',
-    import.meta.url
-  ),
-  'utf8'
-)
-const list = (records) =>
-  compileFunction(
-    source.slice(
-      source.indexOf("const query = ref('')"),
-      source.indexOf('watch(kitchenId')
-    ) + '; return { groups, query, showArchived }',
-    ['menus', 'computed', 'ref']
-  )(ref(records), computed, ref)
+function listFixture(records) {
+  const menus = ref(records)
+  const kitchenId = ref('kitchen-a')
+  const activeKitchenAppId = ref('misebox')
+  const uid = ref('operator-a')
+  const state = ref({})
+  const source = readFileSync(
+    new URL(
+      '../runtime/kitchen/composables/workspace/menus/useMenuList.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  const deps = {
+    computed,
+    useState: () => state,
+    useAppSession: () => ({ uid }),
+    useKitchenMenusContext: () => ({
+      rawMenus: menus,
+      kitchenId,
+      activeKitchenAppId,
+    }),
+  }
+  const mount = compileFunction(
+    stripTypeScriptTypes(source) + '; return useMenuList;',
+    Object.keys(deps)
+  )(...Object.values(deps))
+  return { mount, menus, kitchenId, activeKitchenAppId, uid }
+}
+const list = (records) => listFixture(records).mount()
 
 test('Menu list keeps regular menus together and Daily specials and archives separate', () => {
   const records = [
@@ -85,4 +103,52 @@ test('Workspace creation has one Menu path and keeps source import available', (
     create,
     /Menu format|Document Menu|format ===|const choices|MenusCreateQueue/
   )
+})
+
+test('Menu search and Show archived survive opening a record and remounting the list', () => {
+  const records = [
+    { id: 'food', name: 'Food', status: 'published', price: 13 },
+    { id: 'old', name: 'Old drinks', status: 'archived', price: 4 },
+  ]
+  const before = structuredClone(records)
+  const fixture = listFixture(records)
+  const first = fixture.mount()
+  first.query.value = 'drinks'
+  first.showArchived.value = true
+  const returned = fixture.mount()
+  assert.equal(returned.query.value, 'drinks')
+  assert.equal(returned.showArchived.value, true)
+  assert.deepEqual(
+    returned.filteredMenus.value.map((menu) => menu.id),
+    ['old']
+  )
+  assert.deepEqual(records, before)
+})
+
+test('Menu list choices are isolated by account, Kitchen and App, and follow live records', () => {
+  const fixture = listFixture([
+    { id: 'old', name: 'Old menu', status: 'archived' },
+  ])
+  const list = fixture.mount()
+  list.query.value = 'old'
+  list.showArchived.value = true
+  for (const owner of [
+    fixture.uid,
+    fixture.kitchenId,
+    fixture.activeKitchenAppId,
+  ]) {
+    const original = owner.value
+    owner.value = 'another'
+    assert.equal(list.query.value, '')
+    assert.equal(list.showArchived.value, false)
+    owner.value = original
+    assert.equal(list.query.value, 'old')
+    assert.equal(list.showArchived.value, true)
+  }
+  fixture.menus.value = []
+  assert.equal(list.filteredMenus.value.length, 0)
+  assert.equal(list.query.value, 'old')
+  assert.equal(list.showArchived.value, true)
+  fixture.menus.value = [{ id: 'old', name: 'Old menu', status: 'archived' }]
+  assert.equal(list.filteredMenus.value[0].id, 'old')
 })

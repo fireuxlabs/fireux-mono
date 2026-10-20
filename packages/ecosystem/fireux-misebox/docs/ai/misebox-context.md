@@ -376,6 +376,16 @@ URLs and editor return links retain kind, search, category, completeness filter,
 layout and page using `kitchen/utils/dish-catalogue-route.ts`. Both editors return
 to the combined catalogue; initial loading preserves the requested page, while
 settled shorter results clamp it. See `dish-reader-internals.test.mjs`.
+
+Menus keeps collection search and Show archived in `useMenuList`, in memory for
+the mounted App session and isolated by App, account and Kitchen. Returning from
+a Menu or source editor restores those choices; a full reload starts fresh.
+The collection controller owns collection/creation state, not record write helpers
+or QR service acquisition. `useMenuQrTargets` acquires its own scoped service
+read; record edits and publication remain with `useKitchenMenuRecordContext`.
+Verify list restoration and owner isolation with `menu-format-list.test.mjs`,
+alongside the reader, record and source/QR checks.
+
 Kitchen Ingredients Create links an existing shared catalogue record, and Delete
 removes only that Kitchen association through the direct
 `kitchen/server/ingredients/create.ts` and `delete.ts` owners.

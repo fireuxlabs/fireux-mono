@@ -56,7 +56,6 @@ const ready = computed(() =>
   Boolean(
     currentUser.value?.uid &&
       workspace.kitchenId.value &&
-      !workspace.kitchensPending.value &&
       ['ready', 'empty'].includes(workspace.derived.value.status)
   )
 )

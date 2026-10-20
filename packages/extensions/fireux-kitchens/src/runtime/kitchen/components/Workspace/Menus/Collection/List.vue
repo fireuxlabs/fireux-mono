@@ -70,59 +70,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-
+import { useMenuList } from '../../../../composables/workspace/menus/useMenuList'
 import { menuWorkspaceDestination } from '../../../../utils/menu-workspace-destination'
 import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 import type { Menu } from '../../../../../menu/models/menu-storage.model.ts'
 
-const { rawMenus: menus, pending, kitchenId } = useKitchenMenusContext()
-
-const query = ref('')
-const showArchived = ref(false)
-const archivedCount = computed(
-  () => menus.value.filter((menu) => menu.status === 'archived').length
-)
-const filteredMenus = computed(() =>
-  menus.value
-    .filter((menu) => showArchived.value || menu.status !== 'archived')
-    .filter((menu) =>
-      `${menu.internal_name || ''} ${menu.name || ''} ${menu.description || ''}`
-        .toLocaleLowerCase()
-        .includes(query.value.trim().toLocaleLowerCase())
-    )
-)
-const groups = computed(() =>
-  [
-    {
-      label: 'Menus',
-      icon: 'i-lucide-book-open',
-      menus: filteredMenus.value.filter(
-        (menu) => menu.schedule !== 'daily' && menu.status !== 'archived'
-      ),
-    },
-    {
-      label: 'Archived',
-      icon: 'i-lucide-archive',
-      menus: filteredMenus.value.filter((menu) => menu.status === 'archived'),
-    },
-    {
-      label: 'Daily specials',
-      icon: 'i-lucide-calendar-days',
-      menus: filteredMenus.value.filter(
-        (menu) => menu.schedule === 'daily' && menu.status !== 'archived'
-      ),
-    },
-  ].filter((group) => group.menus.length)
-)
-watch(kitchenId, () => {
-  query.value = ''
-  showArchived.value = false
-})
+const { rawMenus: menus, pending } = useKitchenMenusContext()
+const { query, showArchived, archivedCount, filteredMenus, groups } =
+  useMenuList()
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 const menuTitle = (menu: Menu) =>
-  text(menu.internal_name) || text(menu.name) || text(menu.id) || 'Untitled menu'
+  text(menu.internal_name) ||
+  text(menu.name) ||
+  text(menu.id) ||
+  'Untitled menu'
 const menuStatus = (menu: Menu) => text(menu.status) || 'draft'
 </script>

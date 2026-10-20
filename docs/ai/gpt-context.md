@@ -127,7 +127,7 @@ renamed alias is not proof.
   Perspectives within one record use local view state, not child routes or
   query-string tabs. Sidebar labels do not determine stable route segments.
   Adoption is bounded: Kitchen Menu record perspectives now share
-  `/workspace/kitchen/menus/<slug>`; section and source-upload records remain
+  `/workspace/kitchen/food-and-drink/menus/<slug>`; section and source-upload records remain
   separate destinations. Existing grouped capability and perspective routes
   elsewhere remain migration debt, not a claim of completed repository adoption.
   Kitchen selection, identity and management return links consume the named

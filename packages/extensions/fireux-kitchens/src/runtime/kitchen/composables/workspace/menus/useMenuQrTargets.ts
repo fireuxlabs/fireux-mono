@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useKitchenOfferingCollection } from '../../useKitchenOfferingCollection'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -23,10 +24,11 @@ export function useMenuQrTargets() {
     selectedKitchen,
     menus,
     menuSources,
-    offerings,
-    offeringsOutcome,
+    storageKitchenId,
     outcome: menusOutcome,
   } = useKitchenWorkspaceMenus()
+  const { offerings, outcome: offeringsOutcome } =
+    useKitchenOfferingCollection(storageKitchenId)
 
   const clean = (value: unknown) => String(value ?? '').trim()
   const fireux = useFireUXConfig()

@@ -322,11 +322,6 @@ function collectionFixture() {
     useCookie: (_key, opt) => ref(opt.default()),
     useState: (_key, init) => ref(init()),
     useKitchenWorkspace: () => workspace,
-    useKitchenWorkspaceIndex: () => ({
-      collection: ref([]),
-      outcome: ref('ready'),
-      select() {},
-    }),
     useKitchenWorkspaceIdentity: () => ({
       selectedKitchen: workspace.data,
       canWrite: computed(() => workspace.outcome.value === 'ready'),
@@ -341,22 +336,10 @@ function collectionFixture() {
       createOptions = options
       return { createMenu() {} }
     },
-    useMenuUpdate: () => ({ updateMenu() {}, renameMenu() {} }),
-    useMenuPublication: () => ({
-      publishMenu() {},
-      archiveMenu() {},
-      unpublishMenu() {},
-    }),
     readPlaceCurrencyCode: () => 'CHF',
     appSubscriptionCapacity: () => 4,
     hasAppSubscriptionCapacity: () => true,
     kitchenMenuCapacity: {},
-    kitchenMenuOrdering: () => ({}),
-    useKitchenOfferingCollection: () => ({
-      offerings: ref([]),
-      outcome: ref('empty'),
-      error: ref(null),
-    }),
   }
   const create = load(
     'kitchen/composables/workspace/menus/useKitchenWorkspaceMenus.ts',
