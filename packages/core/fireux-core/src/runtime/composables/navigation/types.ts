@@ -15,6 +15,8 @@ export interface NavVisibility {
 export type NavPosition = 'top' | 'middle' | 'bottom'
 
 export interface NavChild {
+  /** Stable identity for group child surfaces, independent of its destination. */
+  key?: string
   label: string
   to: string
   icon?: string

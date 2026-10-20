@@ -1,11 +1,11 @@
 <template>
-  <WorkspaceKitchenNavigationGroup
+  <WorkspaceGroupPage
+    workspace="kitchen"
     nav-key="workspace-kitchen-food-safety"
     notice="Food safety checks, records and procedures are not connected yet. This page does not certify Kitchen safety."
-  ></WorkspaceKitchenNavigationGroup>
+  ></WorkspaceGroupPage>
 </template>
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

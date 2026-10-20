@@ -3,7 +3,13 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import type { FireuxAppRole } from '../../../config/app/types'
-import type { NavItem, NavMeta, NavPosition, NavVisibility, NavigationConfig } from './types'
+import type {
+  NavItem,
+  NavMeta,
+  NavPosition,
+  NavVisibility,
+  NavigationConfig,
+} from './types'
 import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
 
 const DEFAULT_LAYOUT = 'default'
@@ -120,7 +126,14 @@ function buildNavItem(
               child.to.startsWith('/') &&
               !child.to.startsWith('//')
           )
-          .map(({ label, to, icon }) => ({ label, to, icon }))
+          .map(({ key, label, to, icon }) => ({
+            ...(typeof key === 'string' && key.trim()
+              ? { key: key.trim() }
+              : {}),
+            label,
+            to,
+            icon,
+          }))
       : undefined,
     group: typeof nav.group === 'string' ? nav.group : undefined,
     groupIndex: nav.groupIndex === true ? true : undefined,

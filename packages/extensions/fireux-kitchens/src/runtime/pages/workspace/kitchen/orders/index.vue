@@ -1,9 +1,8 @@
 <template>
-  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-orders">
-  </WorkspaceKitchenNavigationGroup>
+  <WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-orders">
+  </WorkspaceGroupPage>
 </template>
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
@@ -12,8 +11,7 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-orders',
     label: 'Orders',
-    description:
-      'View and manage customer orders.',
+    description: 'View and manage customer orders.',
     groupIndex: true,
     group: '',
     icon: 'i-lucide-receipt-text',
@@ -23,7 +21,11 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      {label:'Order board',to:'/workspace/kitchen/orders/board',icon:'i-lucide-panels-top-left'},
+      {
+        label: 'Order board',
+        to: '/workspace/kitchen/orders/board',
+        icon: 'i-lucide-panels-top-left',
+      },
     ],
   },
   requiresAuth: false,

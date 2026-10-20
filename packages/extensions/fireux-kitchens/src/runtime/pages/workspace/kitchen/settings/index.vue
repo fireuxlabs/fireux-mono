@@ -1,5 +1,8 @@
 <template>
-  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-settings" />
+  <WorkspaceGroupPage
+    workspace="kitchen"
+    nav-key="workspace-kitchen-settings"
+  />
 </template>
 <script setup lang="ts">
 definePageMeta({
@@ -13,8 +16,7 @@ definePageMeta({
     key: 'workspace-kitchen-settings',
     label: 'Settings',
     group: '',
-    description:
-      'Manage payments, integrations and Workspace access.',
+    description: 'Manage payments, integrations and Workspace access.',
     groupIndex: true,
     icon: 'i-lucide-settings-2',
     order: 90,

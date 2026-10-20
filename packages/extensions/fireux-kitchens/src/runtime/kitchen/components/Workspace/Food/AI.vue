@@ -18,16 +18,13 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
+import { useFoodAndDrinkIndexContext } from '../../../composables/workspace/food/useFoodAndDrinkIndexContext'
 import { useFoodOverviewAI } from '../../../composables/workspace/food/useFoodOverviewAI'
-const props = defineProps<{
-  kitchenId: string
-  ready: boolean
-  overview: Record<string, unknown>
-}>()
+const { kitchenId, ready, overview } = useFoodAndDrinkIndexContext()
 const { prompt, message, error, submitting, ask } = useFoodOverviewAI({
-  kitchenId: () => props.kitchenId,
-  ready: () => props.ready,
-  overview: () => props.overview,
+  kitchenId,
+  ready,
+  overview,
 })
 const suggestions = [
   { label: 'Help me finish service setup' },

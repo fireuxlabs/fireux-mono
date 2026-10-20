@@ -537,15 +537,41 @@ test('Food & drink creation and service configuration have no redundant child pa
 
 test('group child surfaces retain every entrance and compose summaries inside the standard card', () => {
   const components = new URL('../runtime/kitchen/components/Workspace/', import.meta.url)
-  const group = readFileSync(new URL('Navigation/Group.vue', components), 'utf8')
+  const group = readFileSync(new URL('../../../../core/fireux-core/src/runtime/components/Workspace/GroupPage.vue', import.meta.url), 'utf8')
   const food = readFileSync(new URL('Food/Index.vue', components), 'utf8')
   const services = readFileSync(new URL('Food/Services.vue', components), 'utf8')
   assert.match(group, /v-for="item in children"/)
-  assert.match(group, /<slot name="child" :item="item"/)
+  assert.match(group, /<slot>/)
   assert.ok(!group.includes('excludePages'))
-  assert.ok(food.indexOf('<FoodAI') < food.indexOf('<template #child'))
-  assert.match(food, /<NavigationGroup nav-key="workspace-kitchen-food"/)
-  assert.match(food, /<FoodServices/)
-  assert.ok(!services.includes('NuxtLink'))
+  assert.ok(food.indexOf('<WorkspaceKitchenFoodAI') < food.indexOf('<WorkspaceKitchenFoodItems'))
+  assert.match(food, /<WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-food"/)
+  assert.match(food, /<WorkspaceKitchenFoodServices/)
+  const keys = navigation(join(root, 'food-and-drink/index.vue')).children.map(child => child.key)
+  assert.deepEqual(keys, ['items', 'menus', 'promotions', 'services'])
+  assert.ok(!food.includes('<template #'))
+  for (const name of ['Items', 'Menus', 'Promotions', 'Services']) {
+    const child = readFileSync(new URL(`Food/${name}.vue`, components), 'utf8')
+    assert.match(child, /WorkspaceKitchenNavigationChild/)
+    assert.ok(child.includes(`child-key="${name.toLowerCase()}"`))
+  }
+  assert.ok(!food.includes('item.to'))
+  assert.ok(!food.includes("split('/'"))
+  assert.match(services, /:to="row.to"/)
   assert.ok(!services.includes('<section'))
+})
+
+test('every declared Kitchen group index composes the shared group shell', () => {
+  const groups = files(root).filter(file => file.endsWith('.vue') && navigation(file)?.groupIndex)
+  assert.equal(groups.length, 10)
+  for (const file of groups) {
+    const source = readFileSync(file, 'utf8')
+    const composition = file.endsWith('/food-and-drink/index.vue')
+      ? readFileSync(new URL('../runtime/kitchen/components/Workspace/Food/Index.vue', import.meta.url), 'utf8')
+      : source
+    assert.match(composition, /<WorkspaceGroupPage\b/, relative(root,file))
+    assert.ok(!composition.includes('<UDashboardPanel'), relative(root,file))
+  }
+  assert.equal(existsSync(join(root,'menu-setup.vue')),false)
+  const identity = readFileSync(new URL('../runtime/kitchen/components/Workspace/Identity/Index.vue', import.meta.url),'utf8')
+  assert.ok(!identity.includes('<UBreadcrumb'))
 })

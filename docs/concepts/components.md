@@ -126,6 +126,18 @@ accepted product-neutral baseline, not evidence of completed cross-domain
 adoption. Long/searchable lists and single-value selection remain separate
 responsibilities; do not replace those controls mechanically.
 
+## Workspace group pages
+
+Core `Workspace/GroupPage.vue` (`WorkspaceGroupPage`) owns group-page panel
+framing, heading, width, spacing and breadcrumbs. Callers supply the Workspace
+family and navigation key. Home uses the existing Workspace entry resolver;
+an Overview ancestor is included when that family publishes one in navigation.
+The default slot lets each domain compose its AI and child surfaces; without
+custom content, the shell lists declared navigation children. Child content,
+status, styles, readers and commands remain domain-owned. Kitchen group indexes
+are the current adopters; other Workspaces may use the same framing without
+requiring identical child layouts or inventing group pages.
+
 ## Core shared component families
 
 `fireux-core/src/runtime/components` is a finite shared boundary, not the

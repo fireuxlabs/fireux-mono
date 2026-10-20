@@ -348,7 +348,7 @@ Overview presents one entrance per visible Kitchen area, using route-owned names
 descriptions and destinations; it does not flatten child pages or show placeholder
 summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
-`Workspace/Navigation/Group.vue` composition with explicit route-owned children.
+Core `WorkspaceGroupPage` framing with explicit route-owned children.
 Their indexes are mini overviews; the child pages remain the working surfaces.
 Food & drink has its own navigation-only index at `/workspace/kitchen/food-and-drink`,
 composing the existing Group component. Items, Menus, Promotions and Services
@@ -1156,25 +1156,38 @@ Missing or cleared titles display “Food & drinks”. Public food portal cards 
 this title rather than concatenating Menu names; service configurations remain
 separate Kitchen-owned records.
 
-Kitchen group indexes reuse `Workspace/Navigation/Group.vue` for one standard
-Nuxt UI child card per navigation child. Group AI precedes the child surfaces;
-the child slot supplies domain summaries inside those cards, without a second
+All declared Kitchen group indexes, including Identity & brand, reuse Core `Workspace/GroupPage.vue` (`WorkspaceGroupPage`) for shared panel framing, headings and breadcrumbs. The shell receives its
+Workspace family and navigation key; it contains no Kitchen paths. Its default
+content lists navigation children, while domain compositions supply their own
+child surfaces. Group AI precedes the child surfaces;
+explicit navigation child keys (`items`, `menus`, `promotions`, `services`)
+identify each surface independently of its URL. Food & drink composes its named
+children directly; each child uses `Navigation/Child.vue` to own the standard
+card and its summary, without a second
 heading or entrance. Food & drink merges its Services summary into that child
 card; Items, Menus and Promotions retain the same card framing. Services flags
 missing menu selection, unavailable selections, missing publication and unknown
 effective hours directly from readiness data, independently of AI. Closed-now
-status alone is not a setup issue. Items, Menus and Promotions use the read-only
+status alone is not a setup issue. Service names and missing-data flags link to
+the matching `#service-<key>` configuration section. Sections focus and scroll
+after asynchronous loading, without changing their settings. Items, Menus and Promotions use the read-only
 `food-catalogue-summary.ts` projections in the same child surfaces. The focused
 `useFoodCatalogueSummary` reuses the authorized selected-Kitchen id, existing Menu
 collection and one existing child reader each for Dishes and Promotions; summaries
 clear behind loading/error states. Photos and descriptions are optional; zero is
 a valid price, Daily specials stay separate and no Promotions is a normal state.
 Menu content publication readiness stays in its section-aware editor, rather
-than claiming to inspect sections from Menu metadata. Other group
+than claiming to inspect sections from Menu metadata. The obsolete unlinked Menu setup route is removed. Other group
 indexes reuse this framing without inventing AI or summary data.
 
 The Food & drink overview composes `Workspace/Food/Index.vue` with one shared
 Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.
+`useFoodAndDrinkIndex` owns that shared read coordination and safe page publication;
+the parent provides it once through `useFoodAndDrinkIndexContext` and assembles
+Items, Menus, Promotions, Services and AI children without threading state props.
+Consumers require that mounted provider and never create another overview.
+Children own their presentation and
+local interaction state, while the shared overview avoids duplicate readers.
 It reuses `serviceOverviewSnapshot` for setup facts; AI receives the same page
 context rather than acquiring another catalogue. Home, Menus and Food & drink
 inherit the Kitchen-owned `kitchen/server/ai/role.ts` instruction: one KitchenAI

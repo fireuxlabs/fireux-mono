@@ -27,21 +27,25 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       {
+        key: 'items',
         label: 'Items',
         to: '/workspace/kitchen/food-and-drink/items',
         icon: 'i-lucide-carrot',
       },
       {
+        key: 'menus',
         label: 'Menus',
         to: '/workspace/kitchen/food-and-drink/menus',
         icon: 'i-lucide-book-open',
       },
       {
+        key: 'promotions',
         label: 'Promotions',
         to: '/workspace/kitchen/food-and-drink/promotions',
         icon: 'i-lucide-tags',
       },
       {
+        key: 'services',
         label: 'Services',
         to: '/workspace/kitchen/food-and-drink/services',
         icon: 'i-lucide-shopping-bag',

@@ -1,34 +1,22 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-identity">
-      <template #header>
-        <LayoutsWorkspaceNavbar :title="navTitle">
-          <template #right
-            ><WorkspaceIntroInfo :intro="identity.intro.value"
-          /></template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceFreemium
-          family="kitchen"
-          capability="identity"
-          page-label="Kitchen listing"
-          hide-description
-          placement="top"
-        />
-        <WorkspaceKitchenIdentity :identity="identity" />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-identity">
+    <template #header-right>
+      <WorkspaceIntroInfo :intro="identity.intro.value" />
+    </template>
+    <WorkspaceFreemium
+      family="kitchen"
+      capability="identity"
+      page-label="Kitchen listing"
+      hide-description
+      placement="top"
+    />
+    <WorkspaceKitchenIdentity :identity="identity" />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
 const identity = useKitchenIdentity()
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-const navTitle = 'Identity & brand'
 
 definePageMeta({
   layout: 'workspace',

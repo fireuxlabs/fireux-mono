@@ -1,5 +1,8 @@
 <template>
-  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-team"></WorkspaceKitchenNavigationGroup>
+  <WorkspaceGroupPage
+    workspace="kitchen"
+    nav-key="workspace-kitchen-team"
+  ></WorkspaceGroupPage>
 </template>
 <script setup lang="ts">
 definePageMeta({

@@ -166,14 +166,13 @@ test('the overview publishes the same current facts used by its AI and clears th
   let acquisitions = 0
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Workspace/Food/Index.vue',
+      '../runtime/kitchen/composables/workspace/food/useFoodAndDrinkIndex.ts',
       import.meta.url
     ),
     'utf8'
   )
-    .split('<script setup lang="ts">')[1]
-    .split('</script>')[0]
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace('export function', 'function')
   const deps = {
     computed,
     watchEffect,
@@ -203,7 +202,7 @@ test('the overview publishes the same current facts used by its AI and clears th
   const scope = effectScope()
   const state = scope.run(() =>
     compileFunction(
-      `${stripTypeScriptTypes(source)}; return {overview, ready}`,
+      `${stripTypeScriptTypes(source)}; return useFoodAndDrinkIndex()`,
       Object.keys(deps)
     )(...Object.values(deps))
   )

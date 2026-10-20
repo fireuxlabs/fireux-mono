@@ -1,17 +1,5 @@
 <template>
-  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
-    <UBreadcrumb
-      :ui="{ list: 'flex-wrap' }"
-      :items="[
-        {
-          label: identity.selectedKitchen.value?.name || 'Kitchen',
-          to: workspaceEntryPath,
-        },
-        { label: 'Overview', to: '/workspace/kitchen/overview' },
-        { label: 'Identity & brand' },
-      ]"
-    />
-    <p class="text-sm text-muted">Manage your Kitchen’s directory listing.</p>
+  <div class="grid min-w-0 gap-6">
     <nav aria-label="Identity and brand pages" class="flex flex-wrap gap-2">
       <UButton
         v-for="item in pages"
@@ -71,7 +59,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import {
   identityKitchenDebug,
@@ -79,7 +66,6 @@ import {
 } from '../../../utils/identity-debug'
 import type { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const navigation = useNav(['workspace'])
 const pages = computed(
   () =>

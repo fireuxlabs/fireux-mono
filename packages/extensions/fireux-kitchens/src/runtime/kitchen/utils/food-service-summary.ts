@@ -83,6 +83,7 @@ export function foodServiceSummary(
       return [
         {
           key: `${option.key}:${offering.id}`,
+          to: `/workspace/kitchen/food-and-drink/services#service-${option.key}`,
           name: offering.separate
             ? `${option.label} · ${offering.name}`
             : option.label,

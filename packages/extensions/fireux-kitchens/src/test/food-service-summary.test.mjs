@@ -54,6 +54,7 @@ test('overview lists enabled services, next opening and current serving state', 
   )
   const closed = foodServiceSummary([service], [menu], at('15:00'))[0]
   assert.equal(closed.open, false)
+  assert.equal(closed.to, '/workspace/kitchen/food-and-drink/services#service-collection')
   assert.match(closed.label, /16:00/)
   assert.equal(
     foodServiceSummary([service], [menu], at('17:00'))[0].label,

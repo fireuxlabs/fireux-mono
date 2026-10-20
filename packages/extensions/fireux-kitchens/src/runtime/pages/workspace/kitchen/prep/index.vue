@@ -1,11 +1,11 @@
 <template>
-  <WorkspaceKitchenNavigationGroup
+  <WorkspaceGroupPage
+    workspace="kitchen"
     nav-key="workspace-kitchen-prep"
     notice="Prep planning and batch records are not connected yet."
-  ></WorkspaceKitchenNavigationGroup>
+  ></WorkspaceGroupPage>
 </template>
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',
@@ -31,8 +31,16 @@ definePageMeta({
         to: '/workspace/kitchen/prep/plan',
         icon: 'i-lucide-clipboard-list',
       },
-      { label: 'Recipes', to: '/workspace/kitchen/prep/recipes', icon: 'i-lucide-book-open' },
-      { label: 'Ingredients', to: '/workspace/kitchen/prep/ingredients', icon: 'i-lucide-carrot' },
+      {
+        label: 'Recipes',
+        to: '/workspace/kitchen/prep/recipes',
+        icon: 'i-lucide-book-open',
+      },
+      {
+        label: 'Ingredients',
+        to: '/workspace/kitchen/prep/ingredients',
+        icon: 'i-lucide-carrot',
+      },
       { label: 'Stations', to: '/workspace/kitchen/stations' },
       { label: 'Batches', to: '/workspace/kitchen/prep/batches' },
     ],

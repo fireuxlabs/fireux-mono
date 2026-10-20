@@ -617,5 +617,5 @@ keeps its board. No redirects, duplicate setup owners or record migration are ad
 
 The visible Workspace capability is Services. The Menus navigation group and
 `/menu-setup` overview exclude Recipes and Ingredients, which are children of
-Prep & Production. Source Overview/Menus.vue follows the same metadata; recipe
+Prep & Production. The Food & drink index follows the same metadata; recipe
 and ingredient routes keep their domain readers and commands.
