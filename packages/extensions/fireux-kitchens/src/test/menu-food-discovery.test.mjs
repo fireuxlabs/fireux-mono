@@ -68,7 +68,7 @@ test('Menu discovery retains each menu, filters services and preserves destinati
   const before = structuredClone(rows)
   const groups = group(rows)
   assert.equal(groups.length, 1)
-  assert.equal(groups[0].title, 'Pizza')
+  assert.equal(groups[0].title, 'Food & drinks')
   assert.equal(groups[0].actions.length, 2)
   assert.deepEqual(groups[0].actions[0].offerings, [{ id: 'pickup' }])
   assert.deepEqual(groups[0].actions[1].offerings, [{ id: 'courier' }])
@@ -99,7 +99,10 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     group([...rows, drinks], 'collection')[0].matchingDishes.length,
     1
   )
-  assert.equal(group([...rows, drinks])[0].title, 'Pizza & Drinks')
+  assert.equal(group([...rows, drinks])[0].title, 'Food & drinks')
+  const titled = structuredClone(rows)
+  titled[0].kitchen = { ...titled[0].kitchen, services_title: 'Pizza, burgers & drinks' }
+  assert.equal(group(titled)[0].title, 'Pizza, burgers & drinks')
   assert.deepEqual(group([{ ...rows[0], source: {} }]), [])
   assert.equal(
     group(rows, 'collection')[0].actions[0].offerings.some(

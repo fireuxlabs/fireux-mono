@@ -140,7 +140,7 @@ changes; do not retain retired execution paths as current source pointers.
 ## Workspace configuration surfaces
 
 Orders has its index and board. Service configuration lives separately at
-`/workspace/kitchen/services`, implemented by `Workspace/Offerings/Index.vue`.
+`/workspace/kitchen/food-and-drink/services`, implemented by `Workspace/Offerings/Index.vue`.
 The existing setup and individual Offering pages reuse Kitchen records and
 commands; the old Orders/Channels entrance is removed without aliases. Delivery
 settings remain composed here and payment methods remain at

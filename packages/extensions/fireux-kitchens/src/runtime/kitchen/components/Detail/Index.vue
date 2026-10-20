@@ -4,12 +4,16 @@
       <KitchenDetailHeader :kitchen="presentation" :place="place" />
     </template>
     <template #services>
-      <UButton
-        :to="menusPath"
-        label="Menu"
-        icon="i-lucide-utensils"
-        size="lg"
-      />
+      <div class="space-y-3">
+        <KitchenDetailMenuServices :kitchen-slug="presentation.slug" />
+        <UButton
+          :to="menusPath"
+          label="Menu"
+          icon="i-lucide-utensils"
+          color="neutral"
+          variant="link"
+        />
+      </div>
     </template>
     <template #management>
       <slot name="management"

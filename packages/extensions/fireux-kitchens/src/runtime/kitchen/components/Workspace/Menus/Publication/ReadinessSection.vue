@@ -4,7 +4,7 @@
     class="border-l-2 border-warning pl-3"
   >
     <NuxtLink
-      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuSlug)}/${encodeURIComponent(section.id)}`"
+      :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menuSlug)}/${encodeURIComponent(section.id)}`"
       class="text-sm font-medium"
       >{{ section.label || 'Section' }}</NuxtLink
     >

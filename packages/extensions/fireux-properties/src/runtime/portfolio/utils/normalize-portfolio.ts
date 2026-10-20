@@ -21,7 +21,7 @@ export function normalizePortfolio(idValue: unknown, value: unknown): Portfolio 
   if (typeof idValue !== 'string' || !isFirestoreDocumentId(idValue)) return null
   const id = idValue.trim(), source = record(value), identity = record(source?.identity)
   const management = readFireuxEntityManagement(source?.management)
-  if (!source || !onlyKeys(source, ['id','management','identity','created','updated']) ||
+  if (!source || !onlyKeys(source, ['context','id','management','identity','created','updated']) ||
       (source.id !== undefined && source.id !== id) || !management || !identity ||
       !onlyKeys(identity, [...Object.keys(limits), 'status']) ||
       Object.entries(limits).some(([key, limit]) => typeof identity[key] !== 'string' ||
@@ -29,7 +29,9 @@ export function normalizePortfolio(idValue: unknown, value: unknown): Portfolio 
       !(identity.name as string).trim() || (identity.slug as string).trim() !== id ||
       !['active','archived'].includes(identity.status as string) ||
       !stamp(source.created, ['at','by','app_id']) || !stamp(source.updated, ['at','by'])) return null
+  if (source.context !== undefined && (typeof source.context !== 'string' || source.context.length > 32000)) return null
   return {
+    ...(typeof source.context === 'string' ? { context: source.context } : {}),
     id, management,
     identity: {
       name: (identity.name as string).trim(), tagline: (identity.tagline as string).trim(),

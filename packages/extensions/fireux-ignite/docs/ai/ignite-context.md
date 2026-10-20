@@ -1,6 +1,6 @@
 # FireUX Ignite context
 
-Updated: 2026-10-12
+Updated: 2026-10-20
 Ref: eddc8186c
 Role: living context
 Scope: reusable FireUX app ignition and reconciliation
@@ -62,6 +62,21 @@ The [FireUX App intake context](../../../../../projects/fireux/fireux-app/docs/a
 Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
 
 Run the package tests and typecheck, and the consuming App check when contracts change. External consumer proofs install versioned artifacts in an independent directory without monorepo aliases or workspace links. Local tarball acceptance is distinct from public publication, authenticated domain behaviour and release. Keep source-reviewed, checks-passed and journey-proved evidence separate. Generation, automated implementation, independent sibling acceptance and release are separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
+
+
+## App context at creation
+
+The brief/build/verify steps in `src/runtime/utils/ignition-method.ts` require
+preparing one operator-reviewed App context string and carrying it through the
+existing owning command. Configured Apps declare `context` in `defineFireuxConfig`;
+Core routes it through server-only `runtimeConfig.fireux.initialAppContext` and
+uses it only for first creation. FireUX ecosystem Project App creation accepts
+`context` with the form input. Reinitialization preserves subsequent operator edits.
+This package guides preparation and verification; it does not own persistence,
+run an automatic model call or create a separate context registry. Context is
+background, distinct from public description, instructions and approved settings.
+Verify Core's `app-context-creation.test.mjs` and FireUX App's
+`project-relationship-authority.test.mjs` alongside this package's method checks.
 
 ## Living maintenance
 

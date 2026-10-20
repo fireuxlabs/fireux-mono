@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'buenohost',
   id: 'ausfinn-apartments',
+  context: "AUSFinn Apartments presents apartments, houses and an alpine villa around Interlaken, Unterseen, Ringgenberg and Bönigen. Each property retains its own accommodation information.",
   name: 'AUSFinn Apartments',
   shortName: 'AUSFinn',
   role: 'tenant',

@@ -4,6 +4,7 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.mode
 export type RecipeTranslatedText = Partial<Record<string, string>>
 
 export type Recipe = FireuxStamped & {
+  context?: string
   id: string
   name: string
   slug: string

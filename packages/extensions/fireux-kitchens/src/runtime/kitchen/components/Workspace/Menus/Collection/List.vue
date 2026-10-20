@@ -87,7 +87,7 @@ const filteredMenus = computed(() =>
   menus.value
     .filter((menu) => showArchived.value || menu.status !== 'archived')
     .filter((menu) =>
-      `${menu.name || ''} ${menu.description || ''}`
+      `${menu.internal_name || ''} ${menu.name || ''} ${menu.description || ''}`
         .toLocaleLowerCase()
         .includes(query.value.trim().toLocaleLowerCase())
     )
@@ -123,6 +123,6 @@ watch(kitchenId, () => {
 const text = (value: unknown) => String(value ?? '').trim()
 
 const menuTitle = (menu: Menu) =>
-  text(menu.name) || text(menu.id) || 'Untitled menu'
+  text(menu.internal_name) || text(menu.name) || text(menu.id) || 'Untitled menu'
 const menuStatus = (menu: Menu) => text(menu.status) || 'draft'
 </script>

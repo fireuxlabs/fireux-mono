@@ -436,8 +436,8 @@ const catalogue = {
   title: 'Dishes',
   singular: 'dish',
   plural: 'dishes',
-  path: '/workspace/kitchen/food/dishes',
-  createPath: '/workspace/kitchen/food/dishes/create',
+  path: '/workspace/kitchen/food-and-drink/items',
+  createPath: '/workspace/kitchen/food-and-drink/items?create=food',
   icon: 'i-lucide-utensils',
 }
 function readView(overrides = {}) {
@@ -783,7 +783,7 @@ test('combined catalogue filters food and drinks and opens each in its correct e
 
 function catalogueView(f, query = {}) {
   const { context } = kindContext(f, 'all')
-  const route = reactive({ path: '/workspace/kitchen/food/dishes', query })
+  const route = reactive({ path: '/workspace/kitchen/food-and-drink/items', query })
   const destinations = []
   const view = f.scope.run(() =>
     load(
@@ -838,7 +838,7 @@ test('Food & drinks item round trip restores kind, search, filters, layout and p
     'http://localhost'
   )
   const returnTo = dishCatalogueReturn(Object.fromEntries(link.searchParams))
-  assert.equal(returnTo.path, '/workspace/kitchen/food/dishes')
+  assert.equal(returnTo.path, '/workspace/kitchen/food-and-drink/items')
   assert.deepEqual(returnTo.query, route.query)
   const restored = catalogueView(f, returnTo.query).view
   assert.equal(restored.kind.value, 'drink')

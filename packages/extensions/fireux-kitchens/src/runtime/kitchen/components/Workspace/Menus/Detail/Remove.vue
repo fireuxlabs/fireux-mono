@@ -166,7 +166,7 @@ async function apply() {
     else await archiveMenu(kitchenId.value, menuId.value)
     if (!isCurrent()) return
     confirm.value = ''
-    if (action === 'delete') await navigateTo('/workspace/kitchen/menus')
+    if (action === 'delete') await navigateTo('/workspace/kitchen/food-and-drink/menus')
   } catch (cause) {
     if (isCurrent())
       error.value =

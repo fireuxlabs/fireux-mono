@@ -126,7 +126,7 @@ export const kitchenCalendarSearchDemand = {
         },
         {
           label: 'Menus',
-          to: '/workspace/kitchen/menus',
+          to: '/workspace/kitchen/food-and-drink/menus',
           question: 'What is available to sell?',
         },
       ],

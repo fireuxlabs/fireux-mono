@@ -65,7 +65,7 @@ export function foodVenueGroups(
       id,
       name: first.source?.kitchen_name || first.kitchen?.name || '',
       logo: first.kitchen?.logo_image_url,
-      title: entries.map((menu) => menu.name).join(' & '),
+      title: first.kitchen?.services_title || 'Food & drinks',
       descriptions: [
         ...new Set(entries.map((menu) => menu.description).filter(Boolean)),
       ],

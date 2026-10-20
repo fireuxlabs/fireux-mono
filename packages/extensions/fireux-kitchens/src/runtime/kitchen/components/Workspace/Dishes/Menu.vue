@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center justify-between gap-3">
         <NuxtLink
-          :to="`/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`"
+          :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menu.slug)}`"
           @click="rememberView(menu.slug, 'content', $event)"
           class="font-semibold"
           >{{ menu.name }}</NuxtLink

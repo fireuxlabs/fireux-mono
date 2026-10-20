@@ -13,7 +13,7 @@ test('Ecosystem read preserves document identity over stored data and distinguis
   const read = compileFunction(`${stripTypeScriptTypes(source)}; return readEcosystem`, ['getRuntimeIdentityFirestore'])(() => ({
     collection: (path) => {
       assert.equal(path, 'ecosystems')
-      return { doc: (id) => ({ get: async () => ({ exists, id, data: () => ({ id: 'stale-id', name: 'Misebox' }) }) }) }
+      return { doc: (id) => ({ get: async () => ({ exists, id, data: () => ({ id: 'stale-id', name: 'Misebox', context: 'Internal background' }) }) }) }
     },
   }))
   assert.deepEqual(await read('misebox'), { id: 'misebox', name: 'Misebox' })

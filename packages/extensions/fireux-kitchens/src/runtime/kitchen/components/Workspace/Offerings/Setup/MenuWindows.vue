@@ -7,9 +7,9 @@
     </p>
     <div v-for="menu in menus" :key="menu.id" class="space-y-1">
       <NuxtLink
-        :to="`/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`"
+        :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menu.slug)}`"
         class="text-sm font-medium underline underline-offset-4"
-        >{{ menu.name }}</NuxtLink
+        >{{ menu.internal_name || menu.name }}</NuxtLink
       >
       <p v-if="!menu.serving_hours" class="text-xs text-muted">
         Throughout this service

@@ -19,7 +19,7 @@
       </p>
     </template>
     <UButton
-      to="/workspace/kitchen/menus"
+      to="/workspace/kitchen/food-and-drink/menus"
       label="Open menus"
       variant="outline"
       color="neutral"

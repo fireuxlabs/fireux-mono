@@ -14,6 +14,8 @@ export type Menu = FireuxStamped & {
   id: string
   slug: string
   name: string
+  /** Optional Workspace label; customers see name. */
+  internal_name?: string
   /** Internal operator background; omitted from public projections. */
   context?: string
   description?: string

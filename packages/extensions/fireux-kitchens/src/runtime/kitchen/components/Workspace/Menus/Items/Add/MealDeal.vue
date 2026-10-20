@@ -31,7 +31,7 @@
         @click="add"
         >Add meal deal</UButton
       >
-      <UButton to="/workspace/kitchen/promotions" color="neutral" variant="link"
+      <UButton to="/workspace/kitchen/food-and-drink/promotions" color="neutral" variant="link"
         >Manage promotions</UButton
       >
     </div>

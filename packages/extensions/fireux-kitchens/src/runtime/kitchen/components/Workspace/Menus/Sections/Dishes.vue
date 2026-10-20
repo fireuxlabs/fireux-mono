@@ -8,7 +8,7 @@
     <li v-for="dish in names" :key="dish.id">
       <NuxtLink
         :to="{
-          path: `/workspace/kitchen/food/dishes/${dish.id}`,
+          path: `/workspace/kitchen/food-and-drink/items/${dish.id}`,
           query: { menu: menuSlug, section: sectionId },
         }"
         class="hover:text-primary underline decoration-default underline-offset-4"

@@ -62,6 +62,13 @@
           @close="open = false"
       /></template>
     </USlideover>
+    <ContextRecord
+      v-if="identity.canWrite.value"
+      :key="identity.propertyId.value"
+      title="Property AI context"
+      endpoint="/api/workspace/property/context"
+      :scope="{ propertyId: identity.propertyId.value }"
+    />
   </section>
 </template>
 <script setup lang="ts">

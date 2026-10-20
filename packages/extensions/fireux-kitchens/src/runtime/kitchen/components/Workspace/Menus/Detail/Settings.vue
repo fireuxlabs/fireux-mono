@@ -8,7 +8,7 @@
     <WorkspaceKitchenMenusDetailHours />
     <WorkspaceKitchenMenusDetailOfferings />
     <UButton
-      to="/workspace/kitchen/promotions"
+      to="/workspace/kitchen/food-and-drink/promotions"
       label="Promotions"
       icon="i-lucide-badge-percent"
       color="neutral"

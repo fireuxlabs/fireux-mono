@@ -16,7 +16,7 @@ function harness() {
     selectedId = ref('k')
   let current = true
   const deps = {
-    useRoute: () => ({ fullPath: '/workspace/kitchen/menus/specials' }),
+    useRoute: () => ({ fullPath: '/workspace/kitchen/food-and-drink/menus/specials' }),
     useAuth: () => ({ currentUser }),
     useRequireUser: async () => user,
     useWorkspaceWriteGuard: () => ({ requireWritableData: () => {} }),

@@ -21,7 +21,7 @@
     />
     <p v-else-if="!pending && !options.length" class="text-sm text-muted">
       Add ingredients to this kitchen first.
-      <NuxtLink to="/workspace/kitchen/food/ingredients" class="text-primary"
+      <NuxtLink to="/workspace/kitchen/prep/ingredients" class="text-primary"
         >Open ingredients</NuxtLink
       >
     </p>

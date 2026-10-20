@@ -10,6 +10,8 @@ export type ProjectIdentity = {
 
 export type Project = {
   id: string
+  /** Internal operator background; excluded from public projections. */
+  context?: string
   identity: ProjectIdentity
   /** Exact anonymous create/resume authority; separate from membership access. */
   guest_owner_uid?: string

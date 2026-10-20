@@ -254,7 +254,7 @@ const cards = computed(() =>
           hasImage: Boolean(
             card.imageUrl && failedImages.value[id] !== card.imageUrl
           ),
-          to: `/workspace/kitchen/food/ingredients/${encodeURIComponent(id)}`,
+          to: `/workspace/kitchen/prep/ingredients/${encodeURIComponent(id)}`,
         },
       ]
     })

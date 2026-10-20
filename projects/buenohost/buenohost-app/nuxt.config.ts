@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'buenohost',
   id: 'buenohost',
+  context: "BuenoHost combines public accommodation discovery with Property management. Published property information and recorded reservations do not by themselves guarantee availability.",
   name: 'BuenoHost',
   shortName: 'BuenoHost',
   role: 'global',

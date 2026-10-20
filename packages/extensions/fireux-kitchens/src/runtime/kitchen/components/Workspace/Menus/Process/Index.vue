@@ -30,7 +30,7 @@
       launcher
       include-route
       title="Menu process result"
-      context="Kitchen menu process · /workspace/kitchen/menus/[menuId]"
+      context="Kitchen menu process · /workspace/kitchen/food-and-drink/menus/[menuId]"
       :objects="process.result"
       :derived="{}"
       :default-open="false"

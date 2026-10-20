@@ -270,6 +270,7 @@ const newApp = {
   id: 'new-app',
   name: 'New App',
   description: '',
+  context: 'Reviewed App purpose and audience',
   role: 'tenant',
   ecosystem_id: 'fireux',
 }
@@ -285,6 +286,7 @@ test('Explicit App creation establishes its Ecosystem and only the creator’s i
   )
   assert.equal(h.writes[0][3].ecosystem_id, 'fireux')
   assert.equal(h.writes[0][3].status, 'inactive')
+  assert.equal(h.writes[0][3].context, newApp.context)
   assert.equal(h.writes[0][3].self_join_enabled, false)
   assert.equal(h.writes[1][3].role, 'admin')
   assert.equal(h.reconciled.length, 2)

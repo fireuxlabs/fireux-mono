@@ -22,7 +22,7 @@
             <template #footer>
               <div class="flex flex-wrap gap-2">
                 <UButton
-                  to="/workspace/kitchen/menus"
+                  to="/workspace/kitchen/food-and-drink/menus"
                   icon="i-lucide-book-open"
                 >
                   Manage menus

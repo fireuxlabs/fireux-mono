@@ -173,47 +173,11 @@ test('Configure and service editor use the same menu choices and readiness', () 
     false
   )
   const source = readFileSync(
-    new URL(base + 'Workspace/Offerings/Single.vue', import.meta.url),
+    new URL(base + 'Workspace/Offerings/Index.vue', import.meta.url),
     'utf8'
   )
   assert.match(source, /WorkspaceKitchenOfferingsService/)
   assert.doesNotMatch(source, /updateOffering|saveInteraction|interactionType/)
-})
-
-test('the direct service page resolves the same service editors for its exact record', () => {
-  const scope = vue.effectScope()
-  const selectedId = vue.ref('main')
-  const records = vue.ref([
-    { id: 'main', interactions: [{ type: 'collection', enabled: true }] },
-    { id: 'other', interactions: [{ type: 'delivery', enabled: true }] },
-  ])
-  const state = scope.run(() =>
-    load(
-      base + 'Workspace/Offerings/Single.vue',
-      'offering,options',
-      {
-        ...vue,
-        useRouteParam: () => selectedId,
-        useKitchenOfferings: () => ({ offerings: records }),
-      },
-      true
-    )
-  )
-  assert.equal(state.offering.value.id, 'main')
-  assert.deepEqual(
-    state.options.value.map((row) => row.key),
-    ['collection']
-  )
-  selectedId.value = 'other'
-  assert.equal(state.offering.value.id, 'other')
-  assert.deepEqual(
-    state.options.value.map((row) => row.key),
-    ['delivery']
-  )
-  selectedId.value = 'missing'
-  assert.equal(state.offering.value, undefined)
-  assert.deepEqual(state.options.value, [])
-  scope.stop()
 })
 
 test('the client configure URL has one matching native Services endpoint', () => {

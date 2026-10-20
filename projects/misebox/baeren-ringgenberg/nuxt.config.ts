@@ -5,6 +5,7 @@ const app: FireuxAppConfig = {
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'baeren-ringgenberg',
+  context: "This App represents Hotel Bären Ringgenberg and its hotel, restaurant and bar. It brings together venue information, menus and hospitality content; operational details require owner confirmation.",
   name: 'Hotel Bären Ringgenberg',
   shortName: 'Bären Ringgenberg',
   role: 'tenant',

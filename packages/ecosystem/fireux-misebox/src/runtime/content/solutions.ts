@@ -62,7 +62,7 @@ export const miseboxSolutions = [
       'Organise sections, dishes, prices, availability, and presentation.',
       'Publish the Menu, or choose Premium when the Kitchen needs multiple Menus.',
     ],
-    cta: { label: 'Open kitchen workspace', to: '/workspace/kitchen/menus' },
+    cta: { label: 'Open kitchen workspace', to: '/workspace/kitchen/food-and-drink/menus' },
   },
   {
     slug: 'restaurant-menu-builder',
@@ -82,7 +82,7 @@ export const miseboxSolutions = [
       'Add sections, dishes, prices, and public presentation.',
       'Publish one Menu for free; choose Premium to create and manage additional Menus.',
     ],
-    cta: { label: 'Create menu', to: '/workspace/kitchen/menus' },
+    cta: { label: 'Create menu', to: '/workspace/kitchen/food-and-drink/menus' },
   },
   {
     slug: 'allergen-menu-software',
@@ -144,7 +144,7 @@ export const miseboxSolutions = [
     status: 'live',
     keywords: ['recipe management software', 'restaurant recipe management'],
     operationSlugs: ['recipes'],
-    cta: { label: 'Open recipes', to: '/workspace/kitchen/food/recipes' },
+    cta: { label: 'Open recipes', to: '/workspace/kitchen/prep/recipes' },
   },
   {
     slug: 'kitchen-team-management',

@@ -610,7 +610,7 @@ Offering identity, price or Order command is introduced. Verify
 `menu-other-offerings.test.mjs` and the offering-browse pagination regression.
 
 Kitchen service configuration is a separate visible Workspace capability at
-`/workspace/kitchen/services` (and `/services/<offering>` for an existing record).
+`/workspace/kitchen/food-and-drink/services` (and `/services/<offering>` for an existing record).
 `Workspace/Offerings/Index.vue` composes the unchanged scoped reader and setup
 controls; navigation and Menu/hour/integration links use this entrance. Orders
 keeps its board. No redirects, duplicate setup owners or record migration are added.

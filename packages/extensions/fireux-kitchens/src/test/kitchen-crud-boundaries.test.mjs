@@ -244,7 +244,7 @@ test('capability directory routes Create and requires record targets for Update/
     await directory.performAction('kitchen.recipes.create-recipe'),
     true
   )
-  assert.deepEqual(navigations, ['/workspace/kitchen/food/recipes?create=1'])
+  assert.deepEqual(navigations, ['/workspace/kitchen/prep/recipes?create=1'])
   assert.equal(active.value, null)
   assert.equal(
     await directory.performAction('kitchen.recipes.update-recipe'),

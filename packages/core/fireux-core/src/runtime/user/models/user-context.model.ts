@@ -35,6 +35,7 @@ export type UserContextUpdateInput = Pick<UserContext, 'context'>
 
 export type CurrentUserContextResponse = {
   ok: true
+  context: string
   userContext: UserContext | null
 }
 

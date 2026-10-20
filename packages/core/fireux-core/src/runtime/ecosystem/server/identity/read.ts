@@ -17,7 +17,8 @@ function canonicalEcosystem(
     return null
   if (activeOnly && text(source.status) !== 'active') return null
   if (!text(source.project_id) || !text(source.name)) return null
-  return { ...source, id } as unknown as Ecosystem
+  const { context: _context, ...publicSource } = source
+  return { ...publicSource, id } as unknown as Ecosystem
 }
 
 export async function readEcosystem(

@@ -12,6 +12,15 @@
       />
       <UButton v-if="canWrite && !canRename" to="/pricing" label="Upgrade to rename" color="neutral" variant="link" class="menu-settings-fields__upgrade" />
       <MoleculesFormsEditableSimpleField
+        label="Internal name (optional)"
+        :value="menu.internal_name || ''"
+        :maxlength="160"
+        :disabled="!canWrite"
+        disabled-message="This Menu is read-only."
+        :update="updateInternalName"
+      />
+      <p class="fx-type-caption">Only shown in Workspace.</p>
+      <MoleculesFormsEditableSimpleField
         label="Description"
         :value="menu.description"
         type="textarea"
@@ -51,6 +60,12 @@ async function rename(name: string) {
   try { await renameMenu(targetKitchen, targetId, name.trim()) }
   catch (error) { if (!isCurrent()) return; throw error }
 
+}
+async function updateInternalName(value: string) {
+  if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
+  const isCurrent = captureScope()
+  try { await updateMenu(kitchenId.value, menuId.value, { internal_name: value.trim() }) }
+  catch (error) { if (!isCurrent()) return; throw error }
 }
 async function updateDescription(value: string) {
   if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')

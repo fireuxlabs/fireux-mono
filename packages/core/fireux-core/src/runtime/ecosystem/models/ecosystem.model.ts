@@ -2,6 +2,8 @@ export type EcosystemStatus = 'active' | 'inactive' | 'archived'
 
 export type Ecosystem = {
   id: string
+  /** Internal operator background; excluded from public projections. */
+  context?: string
   project_id: string
   status: EcosystemStatus
   name: string

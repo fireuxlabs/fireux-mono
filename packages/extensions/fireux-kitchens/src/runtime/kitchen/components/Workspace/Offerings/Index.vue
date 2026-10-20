@@ -11,6 +11,12 @@
       state="error"
     />
     <div v-else-if="selectedKitchen">
+      <WorkspaceKitchenOfferingsTitle
+        :key="kitchenId"
+        :kitchen-id="kitchenId"
+        :title="selectedKitchen.services?.title || 'Food & drinks'"
+        :disabled="!canWrite"
+      />
       <WorkspaceKitchenOfferingsService
         v-for="entry in entries"
         :key="ownerScope + ':' + entry.option.key"
@@ -40,6 +46,7 @@
 </template>
 <script setup lang="ts">
 import { computed, watchEffect, onScopeDispose } from 'vue'
+import WorkspaceKitchenOfferingsTitle from './Title.vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { serviceOverviewSnapshot } from '../../../utils/service-overview'
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'

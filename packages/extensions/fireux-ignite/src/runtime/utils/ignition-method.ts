@@ -3,7 +3,7 @@ export const ignitionMethod = [
     id: 'brief',
     title: 'Describe the business outcome',
     instruction:
-      'Name actors, industry, business needs and observable acceptance criteria without referring to the reference app, its routes or implementation.',
+      'Name actors, industry, business needs and observable acceptance criteria without referring to the reference app, its routes or implementation. Prepare one operator-reviewed App context string with purpose, audience, background, accepted boundaries and unresolved decisions; keep it distinct from public description, instructions and verified evidence.',
   },
   {
     id: 'research',
@@ -27,13 +27,13 @@ export const ignitionMethod = [
     id: 'build',
     title: 'Implement a bounded journey',
     instruction:
-      'Compose in FireUX style from the first implementation: map named user responsibilities to a readable parent, a clear state/lifecycle owner and focused controls. Reuse supported Core and domain primitives and commands without duplicating reads or authority. Keep cohesive controls local; avoid forwarding wrappers and premature abstractions. Record consequential decisions and their evidence rather than storing chat history.',
+      'Compose in FireUX style from the first implementation: map named user responsibilities to a readable parent, a clear state/lifecycle owner and focused controls. Reuse supported Core and domain primitives and commands without duplicating reads or authority. Keep cohesive controls local; avoid forwarding wrappers and premature abstractions. Record consequential decisions and their evidence rather than storing chat history. Supply the reviewed context to the owning App creation command. For a configured App, declare context in defineFireuxConfig; Core passes this seed through server-only runtime configuration and persists it only on first creation. Project-owned App creation accepts context directly. Never overwrite subsequently edited context on initialization or retry.',
   },
   {
     id: 'verify',
     title: 'Prove the result',
     instruction:
-      'Review the complete route, composition, controls, state/lifecycle owner and commands; remove obsolete paths and confirm registration and consumers. Verify code, authority, scope changes, failures and the complete user journey independently. A shorter file, source path or passing typecheck does not prove sound composition or a usable product.',
+      'Review the complete route, composition, controls, state/lifecycle owner and commands; remove obsolete paths and confirm registration and consumers. Verify code, authority, scope changes, failures and the complete user journey independently. A shorter file, source path or passing typecheck does not prove sound composition or a usable product. Verify that App creation persisted the intended context, public projections omit it, and repeated initialization preserves operator edits.',
   },
   {
     id: 'reconcile',

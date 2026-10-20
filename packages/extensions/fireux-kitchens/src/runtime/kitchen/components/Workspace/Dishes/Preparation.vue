@@ -50,7 +50,7 @@
               </details>
               <UButton
                 v-if="row.item.recipe_id"
-                :to="`/workspace/kitchen/food/recipes/${row.item.recipe_id}`"
+                :to="`/workspace/kitchen/prep/recipes/${row.item.recipe_id}`"
                 label="Open recipe"
                 icon="i-lucide-book-open"
                 color="neutral"

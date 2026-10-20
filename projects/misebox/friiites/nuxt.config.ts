@@ -5,6 +5,7 @@ const app: FireuxAppConfig = {
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'friiites',
+  context: "Friiites presents a Swiss-developed fries concept centred on hand-cut, brined potatoes triple-fried in beef tallow. Brand storytelling and confirmed menu availability remain separate.",
   name: 'Friiites',
   shortName: 'Friiites',
   theme: {

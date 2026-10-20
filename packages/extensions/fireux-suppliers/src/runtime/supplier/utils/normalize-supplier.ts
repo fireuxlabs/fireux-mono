@@ -31,6 +31,7 @@ export function normalizeSupplier(
   if (
     !source ||
     !onlyKeys(source, [
+      'context',
       'id',
       'company_id',
       'management',
@@ -43,6 +44,7 @@ export function normalizeSupplier(
     (source.id !== undefined && source.id !== id)
   )
     return null
+  if (source.context !== undefined && (typeof source.context !== 'string' || source.context.length > 32000)) return null
   const management = readFireuxEntityManagement(source.management)
   const identity = record(source.identity)
   const catalogue = record(source.catalogue)
@@ -75,6 +77,7 @@ export function normalizeSupplier(
   )
     return null
   return {
+    ...(typeof source.context === 'string' ? { context: source.context } : {}),
     id,
     management,
     company_id: source.company_id.trim(),

@@ -66,6 +66,7 @@ function server(
         if (identity instanceof Error) throw identity
         return identity
       },
+      projectContext: async () => ({ context: 'Private Project background' }),
       useFireUXConfig: () => ({ appId: 'fireux-app' }),
       useFireuxAi: (_, opts) => {
         options = opts

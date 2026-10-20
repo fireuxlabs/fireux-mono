@@ -5,6 +5,7 @@ const app: FireuxAppConfig = {
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'interlaken-essen',
+  context: "Interlaken Essen is a local food-discovery App. Its experience centres on locality, food offers and introductions that help people find relevant places to eat.",
   name: 'Interlaken Essen',
   shortName: 'Interlaken Essen',
   role: 'tenant',

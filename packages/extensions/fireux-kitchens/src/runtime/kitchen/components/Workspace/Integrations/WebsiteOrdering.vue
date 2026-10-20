@@ -27,7 +27,7 @@
           automatically. You only need new code if the website address changes.
         </p>
         <UButton
-          to="/workspace/kitchen/services"
+          to="/workspace/kitchen/food-and-drink/services"
           label="Configure offerings"
           color="neutral"
           variant="link"

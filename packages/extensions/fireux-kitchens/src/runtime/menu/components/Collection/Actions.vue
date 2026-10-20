@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-wrap items-center gap-2">
     <UButton
-      to="/workspace/kitchen/menus/create"
+      to="/workspace/kitchen/food-and-drink/menus?create=1"
       color="neutral"
       variant="ghost"
       size="sm"
@@ -9,7 +9,7 @@
       >Publish a menu</UButton
     >
     <UButton
-      to="/workspace/kitchen/menus/create"
+      to="/workspace/kitchen/food-and-drink/menus?create=1"
       color="neutral"
       variant="ghost"
       size="sm"

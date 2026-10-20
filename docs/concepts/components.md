@@ -481,7 +481,7 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
   between groups updates its route tree and every consumer together; its domain
   component, command and data owners do not move merely because navigation does.
   Explicit product route contracts can differ: Kitchen Menus stays at
-  `/workspace/kitchen/menus` inside the Menus sidebar group. This
+  `/workspace/kitchen/food-and-drink/menus` inside the Menus sidebar group. This
   exception does not move the group's other capabilities out of `/food`.
 - A capability has one primary sidebar destination. Contextual shortcuts can
   link to it elsewhere; avoid duplicate primary entries.

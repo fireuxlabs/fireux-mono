@@ -6,6 +6,7 @@ export default defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-tenant',
+  context: "This App represents Michel AG Metallbau in Goldswil, covering metal and steel construction, gates, consultation, planning and installation.",
   name: 'Michel AG Metallbau',
   shortName: 'Michel AG',
   role: 'tenant',

@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   projectId: 'granite',
   ecosystemId: 'granite',
   id: 'granite-app',
+  context: "Granite supports Portfolio and Property management, with related Documents, Tasks and Compliance capabilities. Internal portfolio background remains separate from published property information.",
   name: 'Granite',
   shortName: 'Granite',
   role: 'global',

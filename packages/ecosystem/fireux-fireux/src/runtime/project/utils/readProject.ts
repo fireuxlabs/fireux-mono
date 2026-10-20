@@ -1,7 +1,7 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import type { Project, ProjectIdentity, ProjectPublicSummary } from '../models/project.model.ts'
 
-const PROJECT_FIELDS = new Set(['id', 'identity', 'guest_owner_uid', 'created', 'updated'])
+const PROJECT_FIELDS = new Set(['context', 'id', 'identity', 'guest_owner_uid', 'created', 'updated'])
 const IDENTITY_FIELDS = new Set(['status', 'name', 'description', 'image_url'])
 const PROJECT_STATUSES = new Set<ProjectIdentity['status']>(['active', 'inactive', 'archived'])
 
@@ -37,6 +37,7 @@ export function readProjectDocument(raw: unknown, id: string): Project | null {
       Object.keys(raw).some(field => !PROJECT_FIELDS.has(field)) ||
       (raw.id !== undefined && raw.id !== id) ||
       !isStamp(raw.created, true) || !isStamp(raw.updated)) return null
+  if (raw.context !== undefined && (typeof raw.context !== 'string' || raw.context.length > 32000)) return null
   const identity = readIdentity(raw.identity)
   if (!identity) return null
   const guestOwner = raw.guest_owner_uid
@@ -46,6 +47,7 @@ export function readProjectDocument(raw: unknown, id: string): Project | null {
       !isFirestoreDocumentId((raw.created as Project['created']).app_id)
   )) return null
   return {
+    ...(typeof raw.context === 'string' ? { context: raw.context } : {}),
     id, identity, created: raw.created as Project['created'], updated: raw.updated as Project['updated'],
     ...(guestOwner !== undefined ? { guest_owner_uid: guestOwner as string } : {}),
   }

@@ -6,6 +6,7 @@ export default defineFireuxConfig({
   projectId: 'slap',
   ecosystemId: 'slap',
   id: 'yellow-velo',
+  context: "Yellow Velo represents an independent bike shop in Interlaken. Its App brings together the shop’s identity, cycling-related content and product presentation.",
   name: 'Yellow Velo',
   shortName: 'Yellow Velo',
   role: 'tenant',

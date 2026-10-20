@@ -143,8 +143,8 @@ test('Misebox route registration removes both retired homes while retaining capa
   const source = readFileSync(new URL('../../nuxt.config.ts', import.meta.url), 'utf8')
   const hook = source.match(/'pages:extend'\(pages: NuxtPage\[\]\) \{([\s\S]*?)\n    \}/)?.[1]
   assert.ok(hook)
-  const pages = ['/','/workspace','/workspace/kitchen','/workspace/kitchen/menus','/workspace/kitchen/team']
+  const pages = ['/','/workspace','/workspace/kitchen','/workspace/kitchen/food-and-drink/menus','/workspace/kitchen/team']
     .map((path) => ({ path }))
   compileFunction(hook, ['pages'])(pages)
-  assert.deepEqual(pages.map((page) => page.path), ['/','/workspace/kitchen/menus','/workspace/kitchen/team'])
+  assert.deepEqual(pages.map((page) => page.path), ['/','/workspace/kitchen/food-and-drink/menus','/workspace/kitchen/team'])
 })

@@ -61,6 +61,7 @@ export type RuntimeFirebaseApp = {
 }
 
 export type RuntimePrivate = {
+  initialAppContext?: string
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }

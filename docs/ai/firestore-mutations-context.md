@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-09
+Updated: 2026-10-20
 Ref: 57d034087
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -583,6 +583,23 @@ this contract. A submitted command retains its truthful result while obsolete
 field completion cannot close a new edit, overwrite its draft, emit an update,
 or release a newer pending action. Proof lives in Core
 `src/test/editable-completion-scope.test.mjs` and the named owner tests.
+
+### App context creation and migration
+
+Core configured-App initialization receives the authored `context` seed through
+private runtime configuration and writes it only when creating the App root.
+The FireUX ecosystem Project App command accepts validated `context` alongside
+its creation fields; retries never reseed an existing root. Public App readers
+continue to project their existing allowlist without this internal field.
+
+`tools/workspace-migrations/app-context.py` is the explicit context-only migration
+owner. Its read-only plan binds App-owned configurations, Firebase bindings and
+migration source by hash, retains protected full preimages, and records missing
+or conflicting records. Apply requires that plan's confirmation hash and exact
+update times, changes only root App `context`, and verifies every other field.
+It never creates missing Apps or repairs relationships. Verify its offline test
+and Core's `app-context-creation.test.mjs`; live application remains separately
+authorized per migration. Source changes do not deploy running Apps.
 
 ## Refresh and living-context maintenance
 

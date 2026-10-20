@@ -17,7 +17,7 @@ import { useKitchenMenuRecordContext } from '../../../../composables/workspace/m
 
 const { menu, source, selectedKitchen } = useKitchenMenuRecordContext()
 const menuLabel = computed(() =>
-  String(menu.value?.name || source.value?.id || 'Menu').trim()
+  String(menu.value?.internal_name || menu.value?.name || source.value?.id || 'Menu').trim()
 )
 const breadcrumbItems = computed(() => [
   {
@@ -27,7 +27,7 @@ const breadcrumbItems = computed(() => [
   {
     label: 'Menus',
     icon: 'i-lucide-book-open',
-    to: '/workspace/kitchen/menus',
+    to: '/workspace/kitchen/food-and-drink/menus',
   },
   {
     label: menuLabel.value,

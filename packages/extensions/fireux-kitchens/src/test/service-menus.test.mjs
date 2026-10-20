@@ -78,3 +78,15 @@ test('missing saved menu references remain removable instead of becoming hidden 
   )
   assert.equal(serviceMenuReadiness(['food'], [menu]).canEnable, true)
 })
+
+test('Workspace distinguishes menus with the same public name using internal names', () => {
+  const menus = [
+    { id: 'drinks', name: 'Drinks', status: 'published', format: 'interactive' },
+    { id: 'takeaway', name: 'Drinks', internal_name: 'Takeaway drinks', status: 'published', format: 'interactive' },
+  ]
+  assert.deepEqual(serviceMenuOptions(menus).map(({ value, label }) => ({ value, label })), [
+    { value: 'drinks', label: 'Drinks' },
+    { value: 'takeaway', label: 'Takeaway drinks' },
+  ])
+  assert.equal(menus[1].name, 'Drinks')
+})

@@ -1,21 +1,12 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="workspace-card-header">
-        <div class="workspace-card-header__title">
-          Create {{ catalogue.singular }}
-        </div>
-      </div>
-    </template>
-
     <form class="space-y-4" @submit.prevent="addDish">
       <UFormField label="Image">
         <div class="flex flex-col items-start gap-2">
           <MoleculesFormsEditableImagePicker
             :src="imagePreviewUrl"
-            :alt="name.trim() || `New ${catalogue.singular}`"
+            :alt="name.trim() || `New ${singular}`"
             :initials="imageInitials"
-            :button-label="`Choose ${catalogue.singular} image`"
+            :button-label="`Choose ${singular} image`"
             :disabled="saving || !canCreateDish"
             :update="stageImage"
           />
@@ -52,7 +43,7 @@
           :loading="saving"
           :disabled="!canCreateDish || saving || !name.trim()"
         >
-          Create {{ catalogue.singular }}
+          Create {{ singular }}
         </UButton>
 
         <p v-if="message" class="text-xs text-dimmed">
@@ -60,7 +51,6 @@
         </p>
       </div>
     </form>
-  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -73,6 +63,10 @@ import { useDishCreate } from '../../../../composables/dish/useDishCreate'
 import { useDishImageUpload } from '../../../../composables/dish/useDishImageUpload'
 
 const { kitchenId, readOnly, catalogue } = useKitchenDishesContext()
+const props = defineProps<{ itemKind?: 'food' | 'drink' }>()
+const emit = defineEmits<{ created: [] }>()
+const itemKind = computed(() => props.itemKind || (catalogue.itemKind === 'drink' ? 'drink' : 'food'))
+const singular = computed(() => itemKind.value === 'drink' ? 'drink' : 'dish')
 const toast = useToastify()
 const route = useRoute()
 
@@ -109,7 +103,7 @@ const stageImage = (file: File) => {
 onBeforeUnmount(clearImageDraft)
 
 useDishEditorScope(
-  [kitchenId, () => catalogue.itemKind, () => route.fullPath],
+  [kitchenId, () => itemKind.value, () => route.fullPath],
   () => {
     name.value = ''
     description.value = ''
@@ -118,7 +112,7 @@ useDishEditorScope(
     clearImageDraft()
   }
 )
-const ownerSources = [kitchenId, () => catalogue.itemKind, () => route.fullPath]
+const ownerSources = [kitchenId, () => itemKind.value, () => route.fullPath]
 const draftSources = [...ownerSources, name, description, imageFile]
 const captureScope = useDishEditorScope(draftSources, () => {
   saving.value = false
@@ -150,7 +144,7 @@ const addDish = async () => {
       {
         name: dishName,
         description: normalizeString(description.value),
-        item_kind: catalogue.itemKind === 'drink' ? 'drink' : 'food',
+        item_kind: itemKind.value,
       },
       { kitchenId: resolvedKitchenId }
     )
@@ -192,7 +186,8 @@ const addDish = async () => {
     description.value = ''
     clearImageDraft()
     message.value = `Created ${dishName}.`
-    toast.add({ title: 'Dish created', icon: 'i-heroicons-check-circle' })
+    toast.add({ title: 'Item created', icon: 'i-heroicons-check-circle' })
+    emit('created')
   } catch (error) {
     if (!isCurrent()) return
     const errorMessage = String(

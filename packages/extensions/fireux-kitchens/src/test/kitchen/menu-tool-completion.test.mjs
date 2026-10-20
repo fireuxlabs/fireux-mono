@@ -52,7 +52,7 @@ function context() {
     currentUser = ref(user),
     appUser = ref({ created: { at: 1 }, role: 'user' })
   const config = reactive({ appId: 'app' }),
-    route = reactive({ fullPath: '/workspace/kitchen/menus/create' }),
+    route = reactive({ fullPath: '/workspace/kitchen/food-and-drink/menus?create=1' }),
     kitchenId = ref('kitchen'),
     canWrite = ref(true),
     activeKitchenAppId = computed(() => config.appId)
@@ -102,7 +102,7 @@ function context() {
     }
     if (kind === 'route') {
       route.fullPath = '/other'
-      route.fullPath = '/workspace/kitchen/menus/create'
+      route.fullPath = '/workspace/kitchen/food-and-drink/menus?create=1'
     }
     if (kind === 'dispose') lifetime.stop()
   }
@@ -234,7 +234,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       assert.deepEqual(
         h.effects,
         changed === 'stable'
-          ? ['/workspace/kitchen/menus/uploads/source-test-source']
+          ? ['/workspace/kitchen/food-and-drink/menus/uploads/source-test-source']
           : []
       )
       assert.equal(api.pending.value, changed !== 'stable')
@@ -277,7 +277,7 @@ test('Menu removal returns to the collection after live data removes the record'
   canManage.value = false
   h.response.resolve({ ok: true })
   await request
-  assert.deepEqual(h.effects, ['/workspace/kitchen/menus'])
+  assert.deepEqual(h.effects, ['/workspace/kitchen/food-and-drink/menus'])
   assert.equal(api.busy.value, false)
 })
 

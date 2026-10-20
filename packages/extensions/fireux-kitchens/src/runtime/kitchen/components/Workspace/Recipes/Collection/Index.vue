@@ -65,7 +65,7 @@
       <WorkspaceKitchenCollectionRow
         v-for="recipe in visibleRecipes"
         :key="recipe.id"
-        :to="`/workspace/kitchen/food/recipes/${encodeURIComponent(recipe.id)}`"
+        :to="`/workspace/kitchen/prep/recipes/${encodeURIComponent(recipe.id)}`"
         :title="recipe.name"
         icon="i-lucide-notebook-tabs"
         :description="recipe.description"
@@ -111,7 +111,7 @@
       ><template #footer
         ><UButton
           v-if="selectedRecipe"
-          :to="`/workspace/kitchen/food/recipes/${encodeURIComponent(selectedRecipe.id)}`"
+          :to="`/workspace/kitchen/prep/recipes/${encodeURIComponent(selectedRecipe.id)}`"
           :label="canWrite ? 'Open recipe & edit' : 'Open recipe'"
           icon="i-lucide-arrow-right"
           trailing

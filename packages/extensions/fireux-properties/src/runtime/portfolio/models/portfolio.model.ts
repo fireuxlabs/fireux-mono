@@ -96,7 +96,7 @@ export type PortfolioIdentity = Omit<
 
 export type Portfolio = Omit<
   WidenLiteral<typeof PortfolioModel>, 'management' | 'identity'
-> & { management: FireuxEntityManagement; identity: PortfolioIdentity }
+> & { context?: string; management: FireuxEntityManagement; identity: PortfolioIdentity }
 
 export type PortfolioCreateInput = {
   identity: Pick<PortfolioIdentity, 'name'> & Partial<Omit<PortfolioIdentity, 'name'>>

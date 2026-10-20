@@ -1,3 +1,4 @@
+import { contextChange } from '../../../utils/records/context'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, defineEventHandler, readBody } from 'h3'
 import {
@@ -20,7 +21,7 @@ function readContext(body: unknown): string {
     })
   }
   const input = body as Record<string, unknown>
-  if (Object.keys(input).some((key) => key !== 'context')) {
+  if (Object.keys(input).some((key) => !['context', 'previous'].includes(key))) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Only User context may be updated.',
@@ -44,7 +45,8 @@ function readContext(body: unknown): string {
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
-  const context = readContext(await readBody(event))
+  const body = await readBody(event)
+  const context = readContext(body)
   const users = FIRESTORE_MUTATION_TARGETS.users
   const contexts = serverUserContextTarget(uid)
 
@@ -61,6 +63,10 @@ export default defineEventHandler(async (event) => {
         statusCode: 409,
         statusMessage: 'Create the User before saving User context.',
       })
+    }
+    if (Object.hasOwn(body, 'previous')) {
+      const current = typeof snapshot.data?.context === 'string' ? snapshot.data.context.trim() : ''
+      contextChange(body, current)
     }
     const now = FieldValue.serverTimestamp()
     if (snapshot.exists) {

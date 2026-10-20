@@ -33,7 +33,7 @@
       launcher
       include-route
       title="Kitchen menu source debug"
-      context="Kitchen menu source · /workspace/kitchen/menus/uploads/[uploadId]"
+      context="Kitchen menu source · /workspace/kitchen/food-and-drink/menus/uploads/[uploadId]"
       :objects="debug"
       :derived="{}"
       :default-open="false"
@@ -87,12 +87,12 @@ const breadcrumbItems = computed(() => [
   {
     label: 'Menus',
     icon: 'i-lucide-book-open',
-    to: '/workspace/kitchen/menus',
+    to: '/workspace/kitchen/food-and-drink/menus',
   },
   {
     label: 'Menu sources',
     icon: 'i-lucide-file-up',
-    to: '/workspace/kitchen/menus',
+    to: '/workspace/kitchen/food-and-drink/menus',
   },
   {
     label: source.value?.file_name || 'Menu import',

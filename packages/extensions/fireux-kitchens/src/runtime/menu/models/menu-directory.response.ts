@@ -14,6 +14,7 @@ export type MenuDirectoryScope =
 
 export type MenuDirectoryKitchen = {
   name: string
+  services_title?: string
   description?: string
   logo_image_url?: string
   image_url?: string

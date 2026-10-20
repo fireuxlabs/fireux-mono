@@ -36,6 +36,8 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
+  /** Initial operator context; server-only and used only when creating the App. */
+  context?: string
   /** App-shell home route. Defaults to `/`. */
   homePath?: `/${string}`
   /** Complete semantic palette confirmed during App onboarding. */

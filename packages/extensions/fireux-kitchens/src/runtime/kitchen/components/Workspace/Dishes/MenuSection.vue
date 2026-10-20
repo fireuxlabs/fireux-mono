@@ -49,7 +49,7 @@ const matches = computed(() =>
 )
 const destination = computed(
   () =>
-    `/workspace/kitchen/menus/${encodeURIComponent(props.menu.slug)}/${encodeURIComponent(props.section.id)}`
+    `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(props.menu.slug)}/${encodeURIComponent(props.section.id)}`
 )
 watch(
   [pending, error, matches, dishId],

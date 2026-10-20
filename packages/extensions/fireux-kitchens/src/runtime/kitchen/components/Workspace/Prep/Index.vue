@@ -12,7 +12,7 @@
       </div>
     </UCard>
     <UButton
-      to="/workspace/kitchen/food/recipes"
+      to="/workspace/kitchen/prep/recipes"
       label="Open recipes"
       icon="i-lucide-notebook-tabs"
       color="neutral"

@@ -2,7 +2,7 @@ import type { Menu } from '../../menu/models/menu.model'
 
 type ServiceMenu = Pick<
   Menu,
-  'id' | 'name' | 'status' | 'format' | 'schedule' | 'doc'
+  'id' | 'name' | 'internal_name' | 'status' | 'format' | 'schedule' | 'doc'
 >
 
 /** Services supply structured items; documents and Daily specials have their own entrances. */
@@ -40,7 +40,7 @@ export function serviceMenuOptions(
     .filter((menu) => isServiceMenu(menu) || selectedIds.includes(menu.id))
     .map((menu) => ({
       value: menu.id,
-      label: menu.name,
+      label: menu.internal_name?.trim() || menu.name,
       description: !isServiceMenu(menu)
         ? 'Unavailable for this service · remove from selection'
         : menu.status === 'published'

@@ -24,6 +24,7 @@ export async function readScopedMenuDirectoryContext(
   const kitchen = identity.name
     ? {
         name: identity.name,
+        services_title: String((scope.rootKitchenData.services as { title?: string } | undefined)?.title || '').trim() || 'Food & drinks',
         ...(identity.tagline ? { description: identity.tagline } : {}),
         ...(identity.logoImageUrl
           ? { logo_image_url: identity.logoImageUrl }

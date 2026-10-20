@@ -281,7 +281,7 @@ test('successful Ingredient removal closes and navigates with settled busy state
   assert.equal(api.deleteOpen.value, false)
   assert.equal(api.deleting.value, false)
   assert.deepEqual(h.effects, [
-    ['navigate', '/workspace/kitchen/food/ingredients'],
+    ['navigate', '/workspace/kitchen/prep/ingredients'],
   ])
   api.deleteOpen.value = true
   assert.equal(api.deleting.value, false)
@@ -646,7 +646,7 @@ test('Ingredient removal hands off to the collection after its own live record d
   assert.equal(api.deleting.value, false)
   assert.equal(api.deleteOpen.value, false)
   assert.deepEqual(h.effects, [
-    ['navigate', '/workspace/kitchen/food/ingredients'],
+    ['navigate', '/workspace/kitchen/prep/ingredients'],
   ])
   h.lifetime.stop()
 })

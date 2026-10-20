@@ -5,18 +5,18 @@ import { menuWorkspaceDestination } from '../runtime/kitchen/utils/menu-workspac
 test('regular Menus enter their existing record page', () => {
   assert.equal(
     menuWorkspaceDestination({ slug: 'food' }),
-    '/workspace/kitchen/menus/food'
+    '/workspace/kitchen/food-and-drink/menus/food'
   )
 })
 test('daily Menus use the same canonical record destination', () => {
   assert.equal(
     menuWorkspaceDestination({ slug: 'american-group', schedule: 'daily' }),
-    '/workspace/kitchen/menus/american-group'
+    '/workspace/kitchen/food-and-drink/menus/american-group'
   )
 })
 test('Menu slugs remain a single encoded route segment', () => {
   assert.equal(
     menuWorkspaceDestination({ slug: 'food / drinks' }),
-    '/workspace/kitchen/menus/food%20%2F%20drinks'
+    '/workspace/kitchen/food-and-drink/menus/food%20%2F%20drinks'
   )
 })

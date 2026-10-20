@@ -2,6 +2,8 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export type App = {
   id: string
+  /** Internal operator background; excluded from public projections. */
+  context?: string
   ecosystem_id: string
   role: 'global' | 'tenant' | 'standalone'
   status: 'active' | 'inactive' | 'archived'

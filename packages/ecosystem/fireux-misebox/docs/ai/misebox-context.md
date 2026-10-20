@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-10-13
+Updated: 2026-10-20
 Ref: 411ea9ffe
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -350,13 +350,17 @@ summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
 `Workspace/Navigation/Group.vue` composition with explicit route-owned children.
 Their indexes are mini overviews; the child pages remain the working surfaces.
-Food & drink has its own navigation-only index at `/workspace/kitchen/food`,
+Food & drink has its own navigation-only index at `/workspace/kitchen/food-and-drink`,
 composing the existing Group component. Items, Menus, Promotions and Services
-are sibling children at their existing working routes; Menus is not the group
+are sibling children under that route; Menus is not the group
 index and Promotions is not nested beneath it. Route order puts Identity & brand
 and Team before the Kitchen working groups, with Settings last. Identity & brand is also a top-level entrance,
 with the Kitchen listing and its venue/brand editors; it is not nested in Settings.
 Settings retains Payments, Integrations and Access. Overview adds no collection readers or mutations.
+Item and Menu creation open dialogs from their indexes; no separate create routes
+are retained. The Items catalogue includes food and drinks with kind filters.
+Existing Item and Menu detail/import/research pages remain for their consumed
+editing workflows. Recipes and Ingredients live under Prep & Production.
 Verify these distinctions with `workspace-navigation.test.mjs`.
 Overview is a direct sidebar entrance for the selected Kitchen;
 the Menu setup tool directory remains a contextual route hidden from the sidebar.
@@ -885,12 +889,13 @@ current Core App-access source.
 
 ## KitchenAI
 
-Kitchen, linked venue and ordinary Menu documents each support one optional
+Kitchen, linked venue, ordinary Menu, Dish and Recipe documents each support one optional
 `context` string for operator background, decisions and questions. It lives on
 the owning document, not in question records or a context subcollection. Existing
 sparse documents without authored context read as empty text. Kitchen Identity &
 brand and Menu Settings compose Core's `components/Context/Editor.vue` text area;
-Kitchen's scoped controller saves changes on leaving the field. The trusted
+Core's scoped `useRecordContext` controller saves changes on leaving the field;
+Dish and Recipe detail reuse `ContextRecord` over the same Kitchen endpoint. The trusted
 `kitchen/server/context/command.ts` updates only the selected document's context
 and audit stamp after current App membership and Kitchen association checks.
 Concurrent edits compare the previously read text before updating; failed edits
@@ -900,7 +905,7 @@ remain visible. Context is omitted from public Kitchen/Place/Menu projections.
 interpreters with saved strings after selected-Kitchen authority. Menus includes
 up to 12 listed Menu contexts, prioritizing the selected Menu. Client page facts
 cannot override that context. The ecosystem agents and Menu summary endpoint
-reuse their already-read Kitchen/Menu documents and read the linked Place's
+reuse their already-read Kitchen/Menu/Dish/Recipe documents and read the linked Place's
 context through `kitchen/server/context/read.ts`. Saved text is background, not
 instructions or measured evidence. Questions and provisional assumptions remain
 unconfirmed until the owner decides. Editing context never changes hours, prices
@@ -1121,7 +1126,7 @@ The owned intent sources are Kitchen `server/index/landing-intent.ts`,
 `landing-intent.test.mjs`; the separate KitchenAI ownership limitation above
 still applies. Test remains a disposable string pipeline, not a client feature.
 
-Menu records use `/workspace/kitchen/menus/[menuSlug]` with local Items & prices
+Menu records use `/workspace/kitchen/food-and-drink/menus/[menuSlug]` with local Items & prices
 (Dates & selections for daily Menus), Publishing, Import & source and Settings perspectives.
 Section and source-upload records remain separate destinations. Shared selected
 Menu state is scoped by App/account/Kitchen and reconciled only from settled
@@ -1145,6 +1150,22 @@ draft until it is discarded. Preview presentation does not alter the Workspace t
 Kitchen-owned Menus consume that palette directly. Separate Menu layout and
 typography tools have no stored contract yet.
 
+Kitchen `services.title` is the shared customer-facing food title, edited inline
+at the top of Workspace Services through the trusted Kitchen update command.
+Missing or cleared titles display “Food & drinks”. Public food portal cards use
+this title rather than concatenating Menu names; service configurations remain
+separate Kitchen-owned records.
+
+The Food & drink overview composes `Workspace/Food/Index.vue` with one shared
+Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.
+It reuses `serviceOverviewSnapshot` for setup facts; AI receives the same page
+context rather than acquiring another catalogue. `food/answer.ts` reuses
+`context/authorized.ts` for authorized saved Kitchen/Place/Menu background and
+`useFireuxAi` for transport. Replies are brief and read-only, with no tool or
+mutation actions. Other capability agent/chat consumers remain separate; this
+page does not adopt their ecosystem endpoint dependency. Verify with
+`food-overview-ai.test.mjs`.
+
 ## Menu operator entitlements
 
 Free permits two retained Menus, with Main and Drinks as new-Kitchen starters. Plus operators may rename
@@ -1158,6 +1179,10 @@ Free. The name editor and trusted rename command enforce this gate; creation
 offers Main and Drinks for Free creation; existing Food names remain accepted without renaming stored records. Kitchen-owned Menus store an explicit
 unique sibling slug. New records use generated document IDs; workspace and public
 links use the slug while mutations and ordering references use the stable ID.
+Menu `name` is customer-facing; optional `internal_name` distinguishes versions
+in Workspace lists, headings and service selection. Blank internal names fall back
+to `name`. Public directory projections use only `name`; changing either label
+does not change the saved slug, content or service references.
 Standalone document Menus retain their own existing identity authority.
 
 ## Kitchen offerings
@@ -1210,9 +1235,8 @@ enabled offering and interaction, published Menu membership and configured hours
 paused interactions and missing offering identities fail closed on the server.
 
 The Operating hours page composes the venue editor, Kitchen operating schedule
-and named offering schedules. `Workspace/Offerings` configures each offering at
-`/workspace/kitchen/services/<offeringId>`. Its name, master switch, Menus
-and serving hours are separate from the selected interaction's settings.
+and service schedules. `Workspace/Offerings` configures services inline at
+`/workspace/kitchen/food-and-drink/services`; there is no individual Service page.
 New offerings start disabled with browse configured and no selected Menus or hours.
 Selecting an interaction in the editor performs no write and enables nothing.
 Kitchen schedule writes retain the independent `ordering/hours` command and
@@ -1502,7 +1526,7 @@ organise navigation and may have overview entrances without owning capability
 paths. Dialogs serve bounded create, quick-edit, confirm and delete actions.
 Other existing capability routes remain outside this bounded adoption.
 
-All Menu collection rows open `/workspace/kitchen/menus/<slug>`. The
+All Menu collection rows open `/workspace/kitchen/food-and-drink/menus/<slug>`. The
 `Menus/Detail` composition owns Items & prices (Dates & selections for daily),
 Publishing, Import & source and Settings as local views, reusing the existing forms and commands.
 Both Menu types open their contents first. The collection groups regular and daily
@@ -1885,9 +1909,9 @@ Kitchen working collection pages distinguish target readiness, loading, failure 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports two Menus, with Main and Drinks as new-Kitchen starters, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
 Kitchen Orders has its index and `/orders/board` under `/workspace/kitchen`.
-Services is a separate visible capability at `/workspace/kitchen/services`,
-alongside Menus in the Menus navigation group. Its existing configuration overview is
-`Workspace/Offerings/Index.vue`; individual setup uses `/services/<offering>`.
+Services is a separate visible capability at `/workspace/kitchen/food-and-drink/services`,
+alongside Items, Menus and Promotions in Food & drink. Its configuration overview
+and inline setup are composed by `Workspace/Offerings/Index.vue`.
 It reuses the existing scoped Offering reader and setup commands, including
 Delivery settings. Payment settings remain a Kitchen Identity child at
 `/workspace/kitchen/identity/payments`. The old Orders/Channels route and sidebar
@@ -2093,7 +2117,7 @@ App rendering, including mobile, duplicate items and serving times.
 
 Promotions are Kitchen-owned records at `kitchens/<id>/promotions`, separate
 from Menu metadata and Daily specials. The Workspace capability is
-`/workspace/kitchen/promotions`, composed by `Workspace/Promotions/Index.vue`
+`/workspace/kitchen/food-and-drink/promotions`, composed by `Workspace/Promotions/Index.vue`
 and its focused Editor. `useKitchenPromotions` reuses settled Kitchen authority,
 Menu/child-collection readers and scoped authenticated commands. Menu Settings
 links to this capability rather than owning another price editor.
@@ -2260,7 +2284,7 @@ Menu and service terms are defined in [the service glossary](../../../../../docs
 
 Kitchen navigation groups Items, Menus, Promotions and Services beneath the
 Food & drink overview, separate from Prep & Production (Prep plan, Recipes, Ingredients, Stations, Batches).
-Services is the visible setup name at `/workspace/kitchen/services`; existing
+Services is the visible setup name at `/workspace/kitchen/food-and-drink/services`; existing
 Offering records and commands remain its backing configuration. Named food
 experiences such as Picnic are not new service types. Core's shared Workspace
 sidebar cycles compact, expanded and expand-all using its existing navigation

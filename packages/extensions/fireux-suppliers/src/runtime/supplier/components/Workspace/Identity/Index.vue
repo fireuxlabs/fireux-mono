@@ -26,6 +26,13 @@
         />
       </template>
     </USlideover>
+    <ContextRecord
+      v-if="identity.canWrite.value"
+      :key="identity.supplierId.value"
+      title="Supplier AI context"
+      endpoint="/api/workspace/supplier/context"
+      :scope="{ supplierId: identity.supplierId.value }"
+    />
   </section>
 </template>
 <script setup lang="ts">

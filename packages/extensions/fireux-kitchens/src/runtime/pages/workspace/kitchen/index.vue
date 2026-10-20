@@ -26,7 +26,7 @@
         aria-label="Kitchen actions"
       >
         <UButton
-          to="/workspace/kitchen/menus"
+          to="/workspace/kitchen/food-and-drink/menus"
           label="Menus"
           icon="i-lucide-notebook-text"
         />
@@ -38,7 +38,7 @@
           variant="soft"
         />
         <UButton
-          to="/workspace/kitchen/services"
+          to="/workspace/kitchen/food-and-drink/services"
           label="Services"
           icon="i-lucide-layout-dashboard"
           color="neutral"

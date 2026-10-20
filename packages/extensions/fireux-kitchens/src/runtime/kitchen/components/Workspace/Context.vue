@@ -1,5 +1,6 @@
 <template>
   <ContextEditor
+    :key="state.scopeKey.value"
     :title="title"
     :value="state.context.value"
     :ready="state.ready.value"
@@ -12,7 +13,7 @@
   />
 </template>
 <script setup lang="ts">
-import { useKitchenRecordContext } from '../../composables/workspace/useKitchenRecordContext'
+import { useRecordContext } from 'fireux-core/runtime/composables/shared/useRecordContext'
 const props = defineProps<{
   kitchenId: string
   subject: 'kitchen' | 'venue' | 'menu'
@@ -20,12 +21,12 @@ const props = defineProps<{
   title: string
   canWrite: boolean
 }>()
-const state = useKitchenRecordContext(() =>
+const state = useRecordContext('/api/workspace/kitchen/context', () =>
   props.kitchenId
     ? {
         kitchenId: props.kitchenId,
         subject: props.subject,
-        ...(props.subject === 'menu' ? { menuId: props.menuId } : {}),
+        ...(props.subject === 'menu' ? { menuId: props.menuId || '' } : {}),
       }
     : null
 )

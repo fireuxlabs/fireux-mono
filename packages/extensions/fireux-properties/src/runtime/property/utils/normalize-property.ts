@@ -29,6 +29,7 @@ export function canonicalPropertyRoot(source?: unknown): Property | null {
   if (
     !root ||
     !hasOnlyKeys(root, [
+      'context',
       'id',
       'portfolio_id',
       'place_id',
@@ -46,6 +47,7 @@ export function canonicalPropertyRoot(source?: unknown): Property | null {
     typeof root.place_id !== 'string'
   )
     return null
+  if (root.context !== undefined && (typeof root.context !== 'string' || root.context.length > 32000)) return null
   const id = root.id.trim()
   const placeId = root.place_id.trim()
   const management = readFireuxEntityManagement(root.management)
@@ -115,6 +117,7 @@ export function canonicalPropertyRoot(source?: unknown): Property | null {
     }
   }
   return {
+    ...(typeof root.context === 'string' ? { context: root.context } : {}),
     id,
     portfolio_id: root.portfolio_id.trim(),
     place_id: placeId,

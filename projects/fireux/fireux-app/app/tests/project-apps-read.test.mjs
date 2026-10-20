@@ -129,6 +129,9 @@ test('App creation input requires an explicit role and rejects caller infrastruc
   }
   assert.throws(() => parse(input), /role/)
   assert.equal(parse({ ...input, role: 'tenant' }).role, 'tenant')
+  assert.equal(parse({ ...input, role: 'tenant', context: '  Reviewed background  ' }).context, 'Reviewed background')
+  for (const context of [{ notes: 'x' }, 'x'.repeat(32001)])
+    assert.throws(() => parse({ ...input, role: 'tenant', context }), /context must be text/)
   assert.equal(parse({ ...input, role: 'standalone' }).role, 'standalone')
   assert.throws(
     () => parse({ ...input, role: 'tenant', databaseId: 'other' }),

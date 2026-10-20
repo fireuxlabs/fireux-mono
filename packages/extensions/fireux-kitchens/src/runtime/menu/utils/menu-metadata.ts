@@ -13,6 +13,7 @@ export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
       (key) =>
         ![
           'name',
+          'internal_name',
           'description',
           'sort_order',
           'doc',
@@ -31,6 +32,11 @@ export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
     )
       throw new Error('Menu name must be 1–160 characters.')
     result.name = value.name.trim()
+  }
+  if ('internal_name' in value) {
+    if (typeof value.internal_name !== 'string' || value.internal_name.trim().length > 160)
+      throw new Error('Internal Menu name must be text up to 160 characters.')
+    result.internal_name = value.internal_name.trim()
   }
   if ('description' in value) {
     if (

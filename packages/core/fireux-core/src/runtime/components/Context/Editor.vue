@@ -13,7 +13,7 @@
       :aria-label="title"
       :disabled="disabled || saving"
       :rows="5"
-      :maxlength="32000"
+      :maxlength="maxlength ?? 32000"
       placeholder="Background, decisions and questions to confirm"
       autoresize
       class="w-full"
@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 const props = defineProps<{
+  maxlength?: number
   title: string
   value: string
   ready: boolean

@@ -34,7 +34,7 @@ test('canonical Identity is nested, keeps unknown origin unknown, and excludes P
     { identity, slug: 'obsolete', currency: 'CHF', name: 'shadow' },
     place
   )
-  assert.deepEqual(value, { id: 'p', identity, place })
+  assert.deepEqual(value, { id: 'p', identity, services: { title: 'Food & drinks' }, place })
   assert.equal(readKitchenVisibility({ identity, visibility: false }), true)
   assert.equal(
     normalizeKitchen(
@@ -58,6 +58,10 @@ test('Kitchen editor accepts only supported dot paths and preserves sibling Iden
       }),
     }
   )
+  assert.deepEqual(parseKitchenUpdate({ 'services.title': ' Pizza & drinks ' }), { 'services.title': 'Pizza & drinks' })
+  assert.deepEqual(parseKitchenUpdate({ 'services.title': '' }), { 'services.title': 'Food & drinks' })
+  assert.throws(() => parseKitchenUpdate({ 'services.title': 42 }))
+  assert.throws(() => parseKitchenUpdate({ 'services.title': 'a'.repeat(121) }))
   assert.deepEqual(parseKitchenUpdate({ 'identity.visibility': false }), {
     'identity.visibility': false,
   })

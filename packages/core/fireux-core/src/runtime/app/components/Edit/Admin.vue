@@ -4,6 +4,12 @@
     <AppEditSectionsAbout :app="app" />
 
     <AppEditSectionsSocial :app="app" />
+    <ContextRecord
+      :key="app.id"
+      title="App AI context"
+      endpoint="/api/internal/app/context"
+      :scope="{ appId: app.id }"
+    />
 
     <section class="space-y-4">
       <div class="flex flex-wrap items-end justify-between gap-3">

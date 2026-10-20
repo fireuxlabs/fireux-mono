@@ -59,14 +59,14 @@ const actions = computed(() => [
       ? {
           label: 'Edit dish',
           to: {
-            path: `/workspace/kitchen/food/dishes/${encodeURIComponent(props.row.dishId)}`,
+            path: `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(props.row.dishId)}`,
             query: {
               menu: props.editor.menuSlug,
               section: props.editor.sectionId,
             },
           },
         }
-      : { label: 'Edit meal deal', to: '/workspace/kitchen/promotions' },
+      : { label: 'Edit meal deal', to: '/workspace/kitchen/food-and-drink/promotions' },
   ],
   ...(props.editor.canWrite
     ? [

@@ -55,7 +55,7 @@ function context() {
     appOutcome = vue.ref('ready')
   const selectedId = vue.ref('kitchen'),
     route = vue.reactive({
-      fullPath: '/workspace/kitchen/food/recipes/recipe',
+      fullPath: '/workspace/kitchen/prep/recipes/recipe',
     })
   const access = { ids: vue.ref(['kitchen']), outcome: vue.ref('ready') },
     calls = [],
@@ -124,7 +124,7 @@ function context() {
     }
     if (kind === 'route') {
       route.fullPath = '/other'
-      route.fullPath = '/workspace/kitchen/food/recipes/recipe'
+      route.fullPath = '/workspace/kitchen/prep/recipes/recipe'
     }
     if (kind === 'dispose') scope.stop()
   }

@@ -266,7 +266,7 @@ function selection() {
       },
       useRoute: () => ({
         query: {},
-        path: '/workspace/kitchen/menus/item',
+        path: '/workspace/kitchen/food-and-drink/menus/item',
         meta: { workspace: 'kitchen' },
         matched: [],
       }),
@@ -282,7 +282,7 @@ function selection() {
       useKitchenWorkspaceKitchens: () => source,
       useAppSession: () => session,
       resolveAppUserAccess: () => ({}),
-      kitchenWorkspaceSwitchPath: () => '/workspace/kitchen/menus',
+      kitchenWorkspaceSwitchPath: () => '/workspace/kitchen/food-and-drink/menus',
       navigateTo: () => {
         const wait = navigations.length ? deferred() : navigation
         navigations.push(wait)

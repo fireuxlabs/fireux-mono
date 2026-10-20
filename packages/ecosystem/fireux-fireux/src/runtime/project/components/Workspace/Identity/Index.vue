@@ -11,6 +11,13 @@
       </template>
     </WorkspaceProjectIdentityRead>
     <WorkspaceProjectIdentityWrite ref="editor" :identity="identity" />
+    <ContextRecord
+      v-if="identity.canWrite.value"
+      :key="identity.projectId.value"
+      title="Project AI context"
+      endpoint="/api/internal/control/project-context"
+      :scope="{ projectId: identity.projectId.value }"
+    />
   </section>
 </template>
 <script setup lang="ts">

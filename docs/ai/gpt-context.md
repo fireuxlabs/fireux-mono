@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-15
+Updated: 2026-10-20
 Ref: b2a986b6b
 Role: living context
 Scope: repository-wide
@@ -417,6 +417,27 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
   separate deletion gates.
 - Public/detail projections never include protected operational records merely
   because Vue can hide them.
+- Operator-authored AI background is one optional `context?: string` on its
+  owning document, not a registry or structured question system. App, Ecosystem,
+  Project, Kitchen, Place, Supplier, Property, Portfolio, Menu, Dish and Recipe
+  models support it. User background stays in `users/{uid}/private/context`;
+  do not add personal memory to the public User root or copy profile data there.
+  Core `components/Context/Record.vue` and `composables/shared/useRecordContext.ts`
+  own the proved text-editor transport/lifetime; domain endpoints own exact scope,
+  transactional authority and compare-before-save conflicts. Existing product
+  context records retain their separate published product purpose. Ecosystem
+  editing remains unconnected; cross-ecosystem discovery grants no write authority.
+  Configured Apps declare an initial `context` in `defineFireuxConfig`; it is
+  carried in server-only `runtimeConfig.fireux.initialAppContext` and written by
+  Core initialization only when creating the root. Project App creation accepts
+  the reviewed string directly. Existing roots and operator edits are never
+  reseeded on initialization. FireUX AI and Ignite guide preparation and review;
+  the owning App commands retain persistence authority.
+  Context stays out of public projections and is background rather than instructions,
+  measured evidence or approved settings. Access indexes, tokens, counters, caches,
+  prices and immutable operational transactions gain no narrative field by default.
+  See Core's `record-context.test.mjs` and Kitchen's same-named regression test.
+
 
 Read `docs/ai/firestore-mutations-context.md`,
 `docs/concepts/firestore-entity.md`, and `docs/concepts/server-api.md`. Use the

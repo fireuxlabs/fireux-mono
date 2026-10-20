@@ -331,7 +331,7 @@ changing published offers. Product owners may then accept or round each price.
 - `packages/core/fireux-core/src/runtime/utils/platform-context.ts`
 - `packages/core/fireux-core/src/runtime/components/Workspace/Capability.vue`
 - `packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Team/Index.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/menus/index.vue`
 - `packages/core/fireux-core/src/config/app/meta-content.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`

@@ -23,15 +23,21 @@ type InitializeRuntimeAppInput = {
   config: Readonly<FireUXConfig>
   appDatabaseId: string
   identityDatabaseId: string
+  context?: string
 }
 
 function conflict(statusMessage: string): never {
   throw createError({ statusCode: 409, statusMessage })
 }
 
-function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
+function appPayload(
+  config: Readonly<FireUXConfig>,
+  uid: string,
+  context: string
+): DocumentData {
   const now = FieldValue.serverTimestamp()
   return {
+    context,
     ecosystem_id: config.ecosystemId,
     role: config.role,
     status: 'active',
@@ -82,6 +88,15 @@ export async function initializeRuntimeApp(
   input: InitializeRuntimeAppInput
 ): Promise<AppInitializationResult> {
   const { uid, config } = input
+  if (
+    input.context !== undefined &&
+    (typeof input.context !== 'string' || input.context.length > 32000)
+  )
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'App context must be text up to 32,000 characters.',
+    })
+  const context = input.context?.trim() || ''
   const sameDatabase = input.appDatabaseId === input.identityDatabaseId
 
   if (!sameDatabase) {
@@ -133,7 +148,7 @@ export async function initializeRuntimeApp(
       }
 
       if (!app.exists) {
-        mutations.create(apps, config.appId, appPayload(config, uid))
+        mutations.create(apps, config.appId, appPayload(config, uid, context))
       }
 
       if (!membership.exists) {

@@ -2,7 +2,7 @@
   <div class="mx-auto w-full max-w-xl space-y-6 workspace-surface">
     <div class="flex flex-wrap gap-2">
       <UButton
-        to="/workspace/kitchen/food/ingredients"
+        to="/workspace/kitchen/prep/ingredients"
         color="neutral"
         variant="ghost"
         icon="i-lucide-arrow-left"
@@ -162,7 +162,7 @@ async function removeIngredient() {
       ingredientId.value === selectedIngredient
     ) {
       deleteOpen.value = false
-      await navigateTo('/workspace/kitchen/food/ingredients')
+      await navigateTo('/workspace/kitchen/prep/ingredients')
     }
   } catch (error: any) {
     if (!isCurrent()) return

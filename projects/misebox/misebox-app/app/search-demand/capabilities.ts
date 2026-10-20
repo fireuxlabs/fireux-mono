@@ -208,7 +208,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['recipe-book-scaling', 'recipe-portion-costing'],
     rationale:
       'Recipe knowledge, yields, scaling and cost calculations are strongly connected, but cost claims require authoritative purchase prices and quantities.',
-    research_route: '/workspace/kitchen/food/recipes/search-demand',
+    research_route: '/workspace/kitchen/prep/recipes/search-demand',
   },
   {
     id: 'orders-service',
@@ -284,7 +284,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Menus connect dishes, prices, availability and publication. Deeper research must distinguish menu management, publishing and menu engineering rather than treating them as one generic page.',
-    research_route: '/workspace/kitchen/menus/search-demand',
+    research_route: '/workspace/kitchen/food-and-drink/menus/search-demand',
   },
   {
     id: 'ingredients',
@@ -326,7 +326,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Ingredients connect allergen knowledge, recipes, purchase prices and stock. The connected Kitchen graph requires this operator-facing capability even though searches often name its downstream jobs.',
-    research_route: '/workspace/kitchen/food/ingredients/search-demand',
+    research_route: '/workspace/kitchen/prep/ingredients/search-demand',
   },
   {
     id: 'dishes',
@@ -364,7 +364,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Dishes are the sellable Kitchen composition connecting recipes, menu placement, availability and operational evidence.',
-    research_route: '/workspace/kitchen/food/dishes/search-demand',
+    research_route: '/workspace/kitchen/food-and-drink/items/search-demand',
   },
   {
     id: 'drinks',
@@ -402,7 +402,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Drinks share menu and costing concerns while retaining their own preparation, ingredient and service conventions.',
-    research_route: '/workspace/kitchen/food/drinks/search-demand',
+    research_route: '/workspace/kitchen/food-and-drink/items/search-demand',
   },
   {
     id: 'stations',

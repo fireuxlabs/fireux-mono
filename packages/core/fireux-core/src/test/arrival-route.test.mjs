@@ -133,7 +133,7 @@ function guardHarness({
     ready = []
   const path =
     kind === 'workspace'
-      ? '/workspace/kitchen/menus'
+      ? '/workspace/kitchen/food-and-drink/menus'
       : kind === 'dev'
         ? '/diagnostics/users'
         : '/dashboard/connections'

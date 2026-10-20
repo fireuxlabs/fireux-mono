@@ -79,7 +79,9 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
         component('Dishes/Create/Index'),
         {
           ...h.deps,
-          useKitchenDishesContext: () => ({
+          defineProps: () => ({}),
+      defineEmits: () => () => {},
+      useKitchenDishesContext: () => ({
             kitchenId: h.kitchenId,
             readOnly: ref(false),
             catalogue: { itemKind: 'food' },
@@ -120,6 +122,8 @@ test('create captures original upload and reports saved Dish with failed image h
     component('Dishes/Create/Index'),
     {
       ...h.deps,
+      defineProps: () => ({}),
+      defineEmits: () => () => {},
       useKitchenDishesContext: () => ({
         kitchenId: h.kitchenId,
         readOnly: ref(false),
@@ -275,6 +279,8 @@ test('category update ignores stale rejection and releases busy state on Kitchen
     {
       ...h.deps,
       dishCategories: [{ value: 'main' }],
+      defineProps: () => ({}),
+      defineEmits: () => () => {},
       useKitchenDishesContext: () => ({
         kitchenId: h.kitchenId,
         dishes: ref([]),

@@ -178,7 +178,7 @@ function createKitchenMenuRecordContext() {
       icon: 'i-lucide-check',
     })
     await router.replace(
-      `/workspace/kitchen/menus/${encodeURIComponent(result.slug)}`
+      `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(result.slug)}`
     )
     return result
   }
@@ -188,7 +188,7 @@ function createKitchenMenuRecordContext() {
     const result = await removal.deleteMenu(...args)
     if (!isCurrent()) return result
     toast.add({ title: 'Menu deleted', icon: 'i-heroicons-check-circle' })
-    await router.replace('/workspace/kitchen/menus')
+    await router.replace('/workspace/kitchen/food-and-drink/menus')
     return result
   }
   async function publishMenu(

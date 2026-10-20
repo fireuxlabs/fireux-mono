@@ -6,6 +6,7 @@ export default defineFireuxConfig({
   projectId: 'werkbox',
   ecosystemId: 'cleanbox',
   id: 'cleanbox-app',
+  context: "Werkbox connects practical jobs, skilled professionals and organisations that keep places running. Its audience includes people seeking work, services and professional connections.",
   name: 'Werkbox',
   shortName: 'Werkbox',
   role: 'global',

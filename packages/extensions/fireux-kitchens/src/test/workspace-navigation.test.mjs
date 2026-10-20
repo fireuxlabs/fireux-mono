@@ -79,24 +79,24 @@ test('Kitchen primary navigation has unique destinations backed by actual pages'
 })
 
 test('Food & drink has its own index and four sibling working pages', () => {
-  const food = navigation(join(root, 'food/index.vue'))
+  const food = navigation(join(root, 'food-and-drink/index.vue'))
   assert.equal(food.label, 'Food & drink')
   assert.equal(food.groupIndex, true)
   assert.notEqual(food.hidden, true)
   assert.deepEqual(
     food.children.map(({ label, to }) => [label, to]),
     [
-      ['Items', '/workspace/kitchen/food/dishes'],
-      ['Menus', '/workspace/kitchen/menus'],
-      ['Promotions', '/workspace/kitchen/promotions'],
-      ['Services', '/workspace/kitchen/services'],
+      ['Items', '/workspace/kitchen/food-and-drink/items'],
+      ['Menus', '/workspace/kitchen/food-and-drink/menus'],
+      ['Promotions', '/workspace/kitchen/food-and-drink/promotions'],
+      ['Services', '/workspace/kitchen/food-and-drink/services'],
     ]
   )
   for (const file of [
-    'food/dishes/index.vue',
-    'menus/index.vue',
-    'promotions/index.vue',
-    'services/index.vue',
+    'food-and-drink/items/index.vue',
+    'food-and-drink/menus/index.vue',
+    'food-and-drink/promotions/index.vue',
+    'food-and-drink/services/index.vue',
   ]) {
     const nav = navigation(join(root, file))
     assert.equal(nav.hidden, true)
@@ -104,7 +104,7 @@ test('Food & drink has its own index and four sibling working pages', () => {
     assert.ok(!nav.children?.length)
   }
   assert.ok(
-    readFileSync(join(root, 'food/index.vue'), 'utf8').includes(
+    readFileSync(join(root, 'food-and-drink/index.vue'), 'utf8').includes(
       'WorkspaceKitchenNavigationGroup'
     )
   )
@@ -148,7 +148,6 @@ test('Identity and brand is top level, separate from technical Settings', () => 
 test('Menu record, import and research routes all live in the direct Menu subtree', () => {
   const expected = [
     'index.vue',
-    'create.vue',
     'uploads/[uploadId].vue',
     '[menuSlug]/index.vue',
     '[menuSlug]/content.vue',
@@ -160,14 +159,14 @@ test('Menu record, import and research routes all live in the direct Menu subtre
     'search-demand/tools.vue',
   ]
   for (const file of expected)
-    assert.ok(existsSync(join(root, 'menus', file)), file)
+    assert.ok(existsSync(join(root, 'food-and-drink/menus', file)), file)
   assert.equal(existsSync(join(root, 'food', 'menus')), false)
 })
 
 test('all Kitchen groups with working indexes link their labels without duplicate index children', () => {
   for (const name of [
     'orders',
-    'food',
+    'food-and-drink',
     'prep',
     'stock',
     'food-safety',
@@ -195,7 +194,7 @@ test('all Kitchen groups with working indexes link their labels without duplicat
 test('every Kitchen sidebar group has one working index and operational screens retain child destinations', () => {
   const explicit = [
     'orders',
-    'food',
+    'food-and-drink',
     'prep',
     'stock',
     'food-safety',
@@ -242,7 +241,7 @@ test('Orders retains its board and Services belongs to Food & drink', () => {
     index.children.map((item) => item.label),
     ['Order board']
   )
-  const offerings = navigation(join(root, 'services/index.vue'))
+  const offerings = navigation(join(root, 'food-and-drink/services/index.vue'))
   assert.equal(offerings.label, 'Services')
   assert.equal(offerings.key, 'workspace-kitchen-services')
   assert.equal(offerings.hidden, true)
@@ -270,10 +269,10 @@ test('Recipes and Ingredients are production children outside the Menus group', 
       prep.children.some(
         (child) =>
           child.label === label &&
-          child.to === `/workspace/kitchen/food/${path}`
+          child.to === `/workspace/kitchen/prep/${path}`
       )
     )
-    const record = navigation(join(root, `food/${path}/index.vue`))
+    const record = navigation(join(root, `prep/${path}/index.vue`))
     assert.equal(record.group, 'Prep & Production')
     assert.equal(record.hidden, true)
   }
@@ -323,11 +322,11 @@ test('Overview presents group entrances without flattening their children', () =
     },
     {
       key: 'menus',
-      to: '/workspace/kitchen/menus',
+      to: '/workspace/kitchen/food-and-drink/menus',
       desktop: true,
       position: 'top',
       order: 11,
-      children: [{ to: '/workspace/kitchen/promotions' }],
+      children: [{ to: '/workspace/kitchen/food-and-drink/promotions' }],
     },
     {
       key: 'prep',
@@ -335,7 +334,7 @@ test('Overview presents group entrances without flattening their children', () =
       desktop: true,
       position: 'top',
       order: 20,
-      children: [{ to: '/workspace/kitchen/food/recipes' }],
+      children: [{ to: '/workspace/kitchen/prep/recipes' }],
     },
     {
       key: 'calendar',
@@ -366,7 +365,7 @@ test('Overview presents group entrances without flattening their children', () =
   )
   assert.deepEqual(
     areas.map((area) => area.to),
-    ['/workspace/kitchen/menus', '/workspace/kitchen/prep']
+    ['/workspace/kitchen/food-and-drink/menus', '/workspace/kitchen/prep']
   )
   assert.deepEqual(areas[0].children, items[2].children)
 })
@@ -405,11 +404,11 @@ test('collection breadcrumbs return to their route-owned group index', () => {
       () => ({ items: { value: [{ ...prep, to: '/workspace/kitchen/prep' }] } })
     )
   assert.deepEqual(
-    project('/workspace/kitchen/food/recipes').map((item) => item.to),
+    project('/workspace/kitchen/prep/recipes').map((item) => item.to),
     ['/', '/workspace/kitchen/overview', '/workspace/kitchen/prep', undefined]
   )
   assert.deepEqual(
-    project('/workspace/kitchen/food/dishes').map((item) => item.to),
+    project('/workspace/kitchen/food-and-drink/items').map((item) => item.to),
     ['/', '/workspace/kitchen/overview', undefined]
   )
 })
@@ -501,7 +500,7 @@ test('shared Workspace navigation preserves the agreed Kitchen group order', () 
         return read()
       },
     }),
-    () => ({ path: '/workspace/kitchen/food', meta: { workspace: 'kitchen' } }),
+    () => ({ path: '/workspace/kitchen/food-and-drink', meta: { workspace: 'kitchen' } }),
     () => ({ workspaces: ['kitchen'] }),
     () => ({ items: { value: items } }),
     (value) => value,
@@ -524,4 +523,13 @@ test('shared Workspace navigation preserves the agreed Kitchen group order', () 
       'Settings',
     ]
   )
+})
+
+
+test('Food & drink creation and service configuration have no redundant child pages', () => {
+  for (const file of ['items/create.vue', 'menus/create.vue', 'services/[offering].vue'])
+    assert.equal(existsSync(join(root, 'food-and-drink', file)), false, file)
+  assert.ok(existsSync(join(root, 'food-and-drink/items/[dishId].vue')))
+  assert.ok(existsSync(join(root, 'food-and-drink/menus/[menuSlug]/index.vue')))
+  assert.equal(existsSync(join(root, 'food/drinks')), false)
 })

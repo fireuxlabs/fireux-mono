@@ -280,7 +280,7 @@
             <UButton
               v-for="id in dish.spec.recipe_ids"
               :key="id"
-              :to="`/workspace/kitchen/food/recipes/${id}`"
+              :to="`/workspace/kitchen/prep/recipes/${id}`"
               :label="recipeOptions.find((x) => x.value === id)?.label || id"
               color="neutral"
               variant="soft"

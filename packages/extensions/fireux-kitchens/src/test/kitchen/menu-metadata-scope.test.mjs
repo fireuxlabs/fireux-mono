@@ -304,8 +304,8 @@ test('Surviving Record context completes own live rename/delete but rejects exte
         change === 'own-live'
           ? [
               action === 'rename'
-                ? '/workspace/kitchen/menus/dinner'
-                : '/workspace/kitchen/menus',
+                ? '/workspace/kitchen/food-and-drink/menus/dinner'
+                : '/workspace/kitchen/food-and-drink/menus',
             ]
           : []
       )

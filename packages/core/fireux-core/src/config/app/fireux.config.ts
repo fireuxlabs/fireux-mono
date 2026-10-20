@@ -111,6 +111,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     },
 
     private: {
+      initialAppContext: app.context?.trim() || '',
       ...(resolvedSeo ? { seo: resolvedSeo } : {}),
       ...(metaContent ? { meta: metaContent } : {}),
     },

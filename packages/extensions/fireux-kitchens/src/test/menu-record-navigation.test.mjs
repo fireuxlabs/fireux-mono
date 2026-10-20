@@ -56,7 +56,7 @@ function fixture() {
     config,
     visits,
     leave: () =>
-      afterEach.forEach((fn) => fn({ path: '/workspace/kitchen/menus' })),
+      afterEach.forEach((fn) => fn({ path: '/workspace/kitchen/food-and-drink/menus' })),
     expire: () => {
       now += 60_001
     },
@@ -68,7 +68,7 @@ test('legacy and programmatic entries carry one intent to a clean canonical URL'
   await navigation.openView('food menu', 'publishing', true)
   assert.deepEqual(visits, [
     {
-      path: '/workspace/kitchen/menus/food%20menu',
+      path: '/workspace/kitchen/food-and-drink/menus/food%20menu',
       options: { replace: true },
     },
   ])

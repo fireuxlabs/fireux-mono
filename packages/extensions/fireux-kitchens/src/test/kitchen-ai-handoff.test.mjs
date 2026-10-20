@@ -81,7 +81,7 @@ test('update and delete use existing review routes; protected delete is unavaila
   try {
     await h.mount()
     await h.resolve({ action: 'update', target: 'food', message: 'Prepared.' })
-    assert.deepEqual(h.navigations, ['/workspace/kitchen/menus/food-menu'])
+    assert.deepEqual(h.navigations, ['/workspace/kitchen/food-and-drink/menus/food-menu'])
   } finally { h.stop() }
   const blocked = setup()
   try { await blocked.mount(); await blocked.resolve({ action: 'delete', target: 'food', message: 'Prepared.' }); assert.deepEqual(blocked.navigations, []) } finally { blocked.stop() }

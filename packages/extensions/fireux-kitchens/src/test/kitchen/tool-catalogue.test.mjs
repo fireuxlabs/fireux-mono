@@ -102,11 +102,11 @@ test('human action directory excludes agent-only destructive/read tools and uses
   assert.equal(team.filter((tool) => tool.surfaces.agent.callable).length, 6)
   for (const group of context.groups.slice(1))
     for (const item of group.items) {
-      assert.equal(item.to, '/workspace/kitchen/menus/create#import-menu')
+      assert.equal(item.to, '/workspace/kitchen/food-and-drink/menus?create=1')
       assert.equal(item.actionLabel, 'Open menu import')
     }
   assert.ok(
-    existsSync(new URL('pages/workspace/kitchen/menus/create.vue', runtime))
+    existsSync(new URL('pages/workspace/kitchen/food-and-drink/menus/index.vue', runtime))
   )
 })
 test('rendered catalogue labels agent-only tools without a destructive action link', async () => {

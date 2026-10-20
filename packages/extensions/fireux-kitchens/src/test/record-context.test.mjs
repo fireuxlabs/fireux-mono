@@ -21,6 +21,8 @@ const note =
   'Breakfast hours are provisional. Owner to confirm days, 06:30 vs 08:00, hotel guests, Sunday and inherited service windows.'
 function fixture() {
   const roots = new Map([
+    ['kitchens/baren/recipes/soup', { context: '', name: 'Soup' }],
+    ['kitchens/baren/dishes/plate', { context: '', price: 15 }],
     ['kitchens/baren', { context: '', prices: [13, 15] }],
     [
       'places/baren',
@@ -60,6 +62,8 @@ function fixture() {
         kitchens: target('kitchens'),
         places: target('places'),
       },
+      recipeTarget: (k) => target(`kitchens/${k}/recipes`),
+      serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
       serverKitchenMenusTarget: (k) => target(`kitchens/${k}/menus`),
       readKitchenMutationActor: async () => ({
         uid: 'actor',
@@ -80,13 +84,15 @@ function fixture() {
     },
   }
 }
-for (const subject of ['kitchen', 'venue', 'menu']) {
+for (const subject of ['kitchen', 'venue', 'menu', 'recipe', 'dish']) {
   test(`${subject}: context is a string on its document, preserves other fields and rejects stale edits`, async () => {
     const f = fixture()
     const scope = {
       kitchenId: 'baren',
       subject,
       ...(subject === 'menu' ? { menuId: 'breakfast' } : {}),
+      ...(subject === 'recipe' ? { recordId: 'soup' } : {}),
+      ...(subject === 'dish' ? { recordId: 'plate' } : {}),
     }
     assert.equal((await f.command({}, scope)).context, '')
     assert.deepEqual(
@@ -98,6 +104,8 @@ for (const subject of ['kitchen', 'venue', 'menu']) {
         ? 'places/baren'
         : subject === 'menu'
           ? 'kitchens/baren/menus/breakfast'
+          : subject === 'recipe' ? 'kitchens/baren/recipes/soup'
+          : subject === 'dish' ? 'kitchens/baren/dishes/plate'
           : 'kitchens/baren'
     assert.deepEqual(f.writes[0], {
       path,
@@ -163,8 +171,8 @@ test('empty context loads, failed text is retained, and old credentials cannot d
   const calls = []
   let fail = false
   const useContext = load(
-    '../runtime/kitchen/composables/workspace/useKitchenRecordContext.ts',
-    'useKitchenRecordContext',
+    '../../../../core/fireux-core/src/runtime/composables/shared/useRecordContext.ts',
+    'useRecordContext',
     {
       computed,
       ref,
@@ -182,7 +190,7 @@ test('empty context loads, failed text is retained, and old credentials cannot d
       },
     }
   )
-  const state = owner.run(() => useContext(selected))
+  const state = owner.run(() => useContext('/api/workspace/kitchen/context', selected))
   await settle()
   assert.equal(state.ready.value, true)
   assert.equal(state.context.value, '')

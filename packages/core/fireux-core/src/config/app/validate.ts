@@ -4,6 +4,14 @@ import { APP_PALETTE_KEYS } from '../../types/theme'
 
 export function validateFireuxAppConfig(app: FireuxAppConfig): void {
   if (
+    app.context !== undefined &&
+    (typeof app.context !== 'string' || app.context.length > 32000)
+  )
+    throw new Error(
+      '[fireux] app.context must be text up to 32,000 characters.'
+    )
+
+  if (
     app.homePath &&
     (!app.homePath.startsWith('/') || app.homePath.startsWith('//'))
   ) {

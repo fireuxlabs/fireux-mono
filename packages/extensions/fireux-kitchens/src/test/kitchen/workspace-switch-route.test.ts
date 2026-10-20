@@ -4,27 +4,27 @@ import { kitchenWorkspaceSwitchPath } from '../../runtime/kitchen/utils/workspac
 
 const routes = [
   '/workspace/kitchen',
-  '/workspace/kitchen/menus',
-  '/workspace/kitchen/services',
-  '/workspace/kitchen/food/recipes',
+  '/workspace/kitchen/food-and-drink/menus',
+  '/workspace/kitchen/food-and-drink/services',
+  '/workspace/kitchen/prep/recipes',
 ]
 
 test('Menu and nested content routes return to the shared Menus capability', () => {
   for (const path of [
-    '/workspace/kitchen/menus/:menuSlug()',
-    '/workspace/kitchen/menus/:menuSlug()/content',
-    '/workspace/kitchen/menus/:menuSlug()/:sectionId()',
-    '/workspace/kitchen/menus/uploads/:uploadId()',
-  ]) assert.equal(kitchenWorkspaceSwitchPath([path], routes), '/workspace/kitchen/menus')
+    '/workspace/kitchen/food-and-drink/menus/:menuSlug()',
+    '/workspace/kitchen/food-and-drink/menus/:menuSlug()/content',
+    '/workspace/kitchen/food-and-drink/menus/:menuSlug()/:sectionId()',
+    '/workspace/kitchen/food-and-drink/menus/uploads/:uploadId()',
+  ]) assert.equal(kitchenWorkspaceSwitchPath([path], routes), '/workspace/kitchen/food-and-drink/menus')
 })
 
 test('other Kitchen records return to their nearest registered capability', () => {
   assert.equal(kitchenWorkspaceSwitchPath([
-    '/workspace/kitchen/services/:service()',
-  ], routes), '/workspace/kitchen/services')
+    '/workspace/kitchen/food-and-drink/services/:service()',
+  ], routes), '/workspace/kitchen/food-and-drink/services')
   assert.equal(kitchenWorkspaceSwitchPath([
-    '/workspace/kitchen/food/recipes/:recipeId()',
-  ], routes), '/workspace/kitchen/food/recipes')
+    '/workspace/kitchen/prep/recipes/:recipeId()',
+  ], routes), '/workspace/kitchen/prep/recipes')
   assert.equal(kitchenWorkspaceSwitchPath([
     '/workspace/kitchen/:kitchenId()',
   ], routes), '/workspace/kitchen')

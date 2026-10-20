@@ -116,7 +116,8 @@ async function readDishes(
 
   return snapshot.docs
     .map((document) =>
-      normalizeDish({ id: document.id, ...(document.data() || {}) })
+      ({ ...normalizeDish({ id: document.id, ...(document.data() || {}) }),
+        context: readRecordString(document.data() || {}, 'context') })
     )
     .filter((dish) =>
       request.operation === 'drinks'
@@ -137,7 +138,8 @@ async function readRecipes(
     .get()
 
   return snapshot.docs.map((document) =>
-    normalizeRecipe({ id: document.id, ...(document.data() || {}) })
+    ({ ...normalizeRecipe({ id: document.id, ...(document.data() || {}) }),
+      context: readRecordString(document.data() || {}, 'context') })
   )
 }
 

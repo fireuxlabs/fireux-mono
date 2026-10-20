@@ -46,11 +46,13 @@
 import { computed } from 'vue'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-const props = defineProps<{ navKey: string; notice?: string }>()
+const props = defineProps<{ navKey: string; notice?: string; excludePages?: string[] }>()
 const navigation = useNav(['workspace'])
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const index = computed(() =>
   navigation.items.value.find((item) => item.key === props.navKey)
 )
-const children = computed(() => index.value?.children || [])
+const children = computed(() =>
+  (index.value?.children || []).filter(item => !props.excludePages?.includes(item.to))
+)
 </script>

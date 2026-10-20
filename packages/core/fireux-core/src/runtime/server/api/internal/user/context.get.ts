@@ -20,6 +20,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const response: CurrentUserContextResponse = {
     ok: true,
+    context: typeof snapshot.data()?.context === 'string' ? snapshot.data()!.context : '',
     userContext: snapshot.exists
       ? ({ id: uid, ...(snapshot.data() || {}) } as UserContext)
       : null,

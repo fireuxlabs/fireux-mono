@@ -11,5 +11,6 @@ export type KitchenUpdateInput = {
   'identity.slug'?: KitchenIdentity['slug']
   'identity.status'?: KitchenIdentity['status']
   'identity.visibility'?: KitchenIdentity['visibility']
+  'services.title'?: string
   'tables.count'?: number
 }

@@ -37,63 +37,63 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
 
   'kitchen.menus.create-menu': {
     kind: 'route',
-    to: '/workspace/kitchen/menus/create',
+    to: '/workspace/kitchen/food-and-drink/menus?create=1',
   },
   'kitchen.dishes.create-dish': {
     kind: 'route',
-    to: '/workspace/kitchen/food/dishes/create',
+    to: '/workspace/kitchen/food-and-drink/items?create=food',
   },
   'kitchen.dishes.update-dish': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/dishes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.dishes.delete-dish': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/dishes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.create-drink': {
     kind: 'route',
-    to: '/workspace/kitchen/food/drinks/create',
+    to: '/workspace/kitchen/food-and-drink/items?create=drink',
   },
   'kitchen.drinks.update-drink': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/drinks/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.delete-drink': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/drinks/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.ingredients.add-ingredient': {
     kind: 'route',
-    to: '/workspace/kitchen/food/ingredients/add',
+    to: '/workspace/kitchen/prep/ingredients/add',
   },
   'kitchen.ingredients.delete-ingredient': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/ingredients/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/prep/ingredients/${encodeURIComponent(targetId)}`,
   },
   'kitchen.recipes.create-recipe': {
     kind: 'route',
-    to: '/workspace/kitchen/food/recipes?create=1',
+    to: '/workspace/kitchen/prep/recipes?create=1',
   },
   'kitchen.recipes.update-recipe': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/recipes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/prep/recipes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.recipes.delete-recipe': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food/recipes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/prep/recipes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.menus.update-menu': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(targetId)}`,
   },
   'kitchen.stations.create-station': {
     kind: 'modal',

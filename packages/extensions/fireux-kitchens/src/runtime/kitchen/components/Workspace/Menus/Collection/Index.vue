@@ -36,6 +36,8 @@
   <WorkspaceKitchenMenusCollectionDialog />
 </template>
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute, useRouter } from '#imports'
 import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 const {
   derived,
@@ -43,4 +45,12 @@ const {
   actions,
   menuCreateBlockedMessage,
 } = useKitchenMenusContext()
+const route = useRoute()
+const router = useRouter()
+watch(() => [route.query.create, derived.value.capability.primitives.create.available], () => {
+  if (route.query.create === '1' && derived.value.capability.primitives.create.available) {
+    actions.openCreate()
+    void router.replace({ query: { ...route.query, create: undefined } })
+  }
+}, { immediate: true })
 </script>

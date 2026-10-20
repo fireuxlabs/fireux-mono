@@ -2,7 +2,7 @@
   <section class="recipe-detail workspace-surface">
     <div class="recipe-detail-heading">
       <UButton
-        to="/workspace/kitchen/food/recipes"
+        to="/workspace/kitchen/prep/recipes"
         label="Recipes"
         icon="i-lucide-arrow-left"
         color="neutral"
@@ -80,6 +80,13 @@
       object-origin="fetched"
       :objects="{ recipe }"
       :derived="debug"
+    />
+    <ContextRecord
+      v-if="recipe && canWrite"
+      :key="`${kitchenId}/${recipeId}`"
+      title="Recipe AI context"
+      endpoint="/api/workspace/kitchen/context"
+      :scope="{ kitchenId, subject: 'recipe', recordId: recipeId }"
     />
   </section>
 </template>
@@ -196,7 +203,7 @@ const deleteSelectedRecipe = async () => {
     await deleteRecipe(recipeId.value, { kitchenId: kitchenId.value })
     if (!isCurrent()) return
     toast.add({ title: 'Recipe deleted', icon: 'i-heroicons-check-circle' })
-    await navigateTo('/workspace/kitchen/food/recipes')
+    await navigateTo('/workspace/kitchen/prep/recipes')
   } catch (error) {
     if (!isCurrent()) return
     const message = String(

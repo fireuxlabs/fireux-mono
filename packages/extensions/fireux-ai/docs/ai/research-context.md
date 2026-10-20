@@ -1,6 +1,6 @@
 # Industry and Capability Research context
 
-Updated: 2026-10-05
+Updated: 2026-10-20
 Ref: a2bd21763
 Role: living context
 Scope: FireUX AI research method and its explicit consumers
@@ -82,6 +82,19 @@ Use the source-owned [research tests](../../../../../packages/core/fireux-core/s
 and [context tests](../../src/test/research-context.test.mjs), plus appropriate
 consumer typechecks and a visual check when the public presentation changes.
 Do not make live model requests merely to verify static context.
+
+
+## App context preparation
+
+The research method and base agent instruction call for one operator-reviewed
+App context string when preparing a new App: purpose, audience, background,
+accepted boundaries and unresolved decisions. Keep facts separate from proposals
+and private User memory out of App context. Pass the reviewed text to the existing
+App creation command; guidance and generated text are not proof that it was saved.
+Configured App seeds use Core's private initialization contract. Project App
+creation accepts `context` directly. The model remains optional; this method
+introduces no provider call, registry or new write authority. Saved context remains
+background rather than instructions, measured evidence or approved settings.
 
 ## Living-context maintenance
 

@@ -22,7 +22,7 @@ function harness(options = {}) {
     canWrite = ref(true),
     currencyCode = ref('CHF'),
     selection = ref([])
-  const route = reactive({ fullPath: '/workspace/kitchen/menus' }),
+  const route = reactive({ fullPath: '/workspace/kitchen/food-and-drink/menus' }),
     config = reactive({ appId: 'app' }),
     appUser = ref({ role: 'user' })
   const calls = [],
@@ -127,7 +127,7 @@ test('native source upload sends multipart to the owning Kitchen and opens revie
   assert.equal(h.calls[0][1].body.get('slug'), 'source-unique-source')
   assert.equal(h.calls[0][1].body.getAll('file')[0].name, 'menu.pdf')
   assert.deepEqual(h.destinations, [
-    '/workspace/kitchen/menus/uploads/source-unique-source',
+    '/workspace/kitchen/food-and-drink/menus/uploads/source-unique-source',
   ])
   assert.equal(h.upload.error.value, '')
   h.scope.stop()

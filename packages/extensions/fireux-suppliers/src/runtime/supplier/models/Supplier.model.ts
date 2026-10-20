@@ -112,6 +112,7 @@ export type Supplier = Omit<
   WidenLiteral<typeof SupplierDefaults>,
   'management' | 'identity' | 'catalogue' | 'delivery'
 > & {
+  context?: string
   management: FireuxEntityManagement
   identity: SupplierIdentity
   catalogue: SupplierCatalogueConfiguration

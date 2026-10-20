@@ -3,7 +3,7 @@
     <MoleculesCopyError v-if="editor.moveError" :message="editor.moveError" />
     <div class="flex items-center justify-between gap-3">
       <UButton
-        :to="`/workspace/kitchen/menus/${encodeURIComponent(editor.menuSlug)}`"
+        :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(editor.menuSlug)}`"
         @click="editor.rememberView(editor.menuSlug, 'content', $event)"
         color="neutral"
         variant="ghost"

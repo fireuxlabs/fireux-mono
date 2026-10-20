@@ -5,14 +5,16 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverKitchenMenusTarget,
+  serverKitchenDishesTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { recipeTarget } from '../recipes/record-input'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 
-/** One text field on the selected Kitchen, linked Place or Menu document. */
+/** One text field on the selected Kitchen, linked Place or authored business document. */
 export async function kitchenRecordContext(
   event: H3Event,
   input: unknown,
@@ -31,6 +33,7 @@ export async function kitchenRecordContext(
           'kitchenId',
           'subject',
           'menuId',
+          'recordId',
           ...(write ? ['context', 'previous'] : []),
         ].includes(key)
     )
@@ -42,17 +45,21 @@ export async function kitchenRecordContext(
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const subject = String(value.subject)
   if (
-    !['kitchen', 'venue', 'menu'].includes(subject) ||
-    (subject !== 'menu' && value.menuId)
+    !['kitchen', 'venue', 'menu', 'recipe', 'dish'].includes(subject) ||
+    (subject !== 'menu' && value.menuId) ||
+    (!['recipe', 'dish'].includes(subject) && value.recordId)
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Choose a Kitchen, venue or Menu.',
+      statusMessage: 'Choose a Kitchen, venue, Menu, Recipe or Dish.',
     })
   const menuId =
     subject === 'menu'
       ? requireFirestoreDocumentId(value.menuId, 'Menu id')
       : ''
+  const recordId = ['recipe', 'dish'].includes(subject)
+    ? requireFirestoreDocumentId(value.recordId, 'Record id')
+    : ''
   if (
     write &&
     (typeof value.context !== 'string' ||
@@ -75,8 +82,12 @@ export async function kitchenRecordContext(
         ? FIRESTORE_MUTATION_TARGETS.places
         : subject === 'menu'
           ? serverKitchenMenusTarget(kitchenId)
-          : FIRESTORE_MUTATION_TARGETS.kitchens
-    const id = menuId || kitchenId
+          : subject === 'recipe'
+            ? recipeTarget(kitchenId)
+            : subject === 'dish'
+              ? serverKitchenDishesTarget(kitchenId)
+              : FIRESTORE_MUTATION_TARGETS.kitchens
+    const id = recordId || menuId || kitchenId
     const owner =
       subject === 'kitchen'
         ? { exists: true, data: access.rootData }

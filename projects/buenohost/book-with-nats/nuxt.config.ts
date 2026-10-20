@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'buenohost',
   id: 'book-with-nats',
+  context: "Book with Nats presents a private Swiss alpine stay through a personal hospitality experience. Property details and booking arrangements belong to the particular stay.",
   name: 'Book with Nats',
   shortName: 'Nats',
   role: 'tenant',

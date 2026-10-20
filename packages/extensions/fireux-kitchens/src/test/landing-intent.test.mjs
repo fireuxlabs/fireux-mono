@@ -49,7 +49,7 @@ function harness(intent, { authenticated = true, dev = true } = {}) {
         },
       }
     },
-    { menus: '/workspace/kitchen/menus' },
+    { menus: '/workspace/kitchen/food-and-drink/menus' },
     async () => ({
       kitchen: 'Saved knowledge',
       venue: '',

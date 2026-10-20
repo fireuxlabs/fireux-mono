@@ -94,7 +94,7 @@ async function save() {
 
     if (!isCurrent()) return
     await navigateTo(
-      `/workspace/kitchen/menus/uploads/${encodeURIComponent(body.uploadId)}`
+      `/workspace/kitchen/food-and-drink/menus/uploads/${encodeURIComponent(body.uploadId)}`
     )
   } catch (caught) {
     if (!isCurrent()) return

@@ -120,7 +120,7 @@ test('section row preserves scoped save promises, disabled state and record navi
   assert.deepEqual(calls, [['section one', 'Mains']])
   assert.equal(
     seen.UButton[0].to,
-    '/workspace/kitchen/menus/food%20menu/section%20one'
+    '/workspace/kitchen/food-and-drink/menus/food%20menu/section%20one'
   )
 })
 test('Menu item row shows prices and confirmed removal inside its vertical actions menu', async () => {

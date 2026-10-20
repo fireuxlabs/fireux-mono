@@ -112,6 +112,12 @@
                 />
               </div>
             </UPageCard>
+            <ContextRecord
+              title="Private AI context"
+              endpoint="/api/internal/user/context"
+              :scope="{}"
+              :maxlength="8000"
+            />
           </div>
 
           <MoleculesStateCard

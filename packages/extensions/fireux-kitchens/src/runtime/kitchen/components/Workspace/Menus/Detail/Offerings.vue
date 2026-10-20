@@ -13,7 +13,7 @@
         <p class="text-sm text-muted">Kitchen offerings using this Menu.</p>
       </div>
       <UButton
-        to="/workspace/kitchen/services"
+        to="/workspace/kitchen/food-and-drink/services"
         label="Manage services"
         color="neutral"
         variant="outline"

@@ -105,6 +105,13 @@
         view === 'spec' && storageKitchenId && dishId && outcome !== 'missing'
       "
     />
+    <ContextRecord
+      v-if="dish && canWrite"
+      :key="`${kitchenId}/${dishId}`"
+      title="Dish AI context"
+      endpoint="/api/workspace/kitchen/context"
+      :scope="{ kitchenId, subject: 'dish', recordId: dishId }"
+    />
   </section>
 </template>
 <script setup lang="ts">
@@ -157,7 +164,7 @@ const catalogueReturn = computed(() => dishCatalogueReturn(route.query))
 const menuReturn = computed(() =>
   typeof route.query.menu === 'string' &&
   typeof route.query.section === 'string'
-    ? `/workspace/kitchen/menus/${encodeURIComponent(route.query.menu)}/${encodeURIComponent(route.query.section)}`
+    ? `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(route.query.menu)}/${encodeURIComponent(route.query.section)}`
     : ''
 )
 const views = [

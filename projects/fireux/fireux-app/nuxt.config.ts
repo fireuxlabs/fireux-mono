@@ -9,6 +9,7 @@ const appConfig = defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-app',
+  context: "FireUX is the main entrance for organising Projects and preparing Apps. Project management and App preparation are distinct from provisioning, deployment and release.",
   name: 'FireUX',
   shortName: 'FireUX',
   role: 'global',

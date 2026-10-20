@@ -76,7 +76,7 @@ test('named offerings sharing a Menu and interaction keep distinct identities an
     rows.map((row) => row.id),
     ['breakfast', 'dinner']
   )
-  assert.equal(rows[0].configurePath, '/workspace/kitchen/services/breakfast')
+  assert.equal(rows[0].configurePath, '/workspace/kitchen/food-and-drink/services')
   assert.equal(
     rows[0].interactions[1].customerUrl,
     'http://localhost:3001/kitchens/hotel/menus/breakfast.pre_order?offering=breakfast'

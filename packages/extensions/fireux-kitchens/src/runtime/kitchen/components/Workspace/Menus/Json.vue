@@ -5,7 +5,7 @@
       launcher
       include-route
       title="Kitchen menus debug"
-      context="Kitchen menu workspace · /workspace/kitchen/menus"
+      context="Kitchen menu workspace · /workspace/kitchen/food-and-drink/menus"
       :objects="menusDebug"
       :derived="{}"
       :default-open="false"

@@ -41,6 +41,7 @@ export function normalizeKitchen(
       status: status as Kitchen['identity']['status'],
       visibility: readKitchenVisibility(source),
     },
+    services: { title: String(record(source.services).title || '').trim() || 'Food & drinks' },
     place,
   }
 }

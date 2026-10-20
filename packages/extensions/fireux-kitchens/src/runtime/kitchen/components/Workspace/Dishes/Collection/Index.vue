@@ -19,7 +19,7 @@
           "
           :label="`Add ${catalogue.singular}`"
           icon="i-lucide-plus"
-          :to="catalogue.createPath"
+          @click="createKind = catalogue.itemKind === 'drink' ? 'drink' : 'food'"
         />
         <template
           v-if="
@@ -30,12 +30,12 @@
         >
           <UButton
             label="Add dish"
-            to="/workspace/kitchen/food/dishes/create"
+            @click="createKind = 'food'"
             icon="i-lucide-plus"
           />
           <UButton
             label="Add drink"
-            to="/workspace/kitchen/food/drinks/create"
+            @click="createKind = 'drink'"
             color="neutral"
             variant="outline"
             icon="i-lucide-plus"
@@ -166,7 +166,7 @@
           (outcome === 'ready' || outcome === 'empty')
         "
         :label="`Add ${catalogue.singular}`"
-        :to="catalogue.createPath"
+        @click="createKind = catalogue.itemKind === 'drink' ? 'drink' : 'food'"
         icon="i-lucide-plus"
       />
     </div>
@@ -202,6 +202,11 @@
       class="justify-center"
     />
 
+    <UModal :open="Boolean(createKind)" :title="createKind === 'drink' ? 'Add drink' : 'Add dish'" @update:open="closeCreate">
+      <template #body>
+        <WorkspaceKitchenDishesCreate v-if="createKind" :key="createKind" :item-kind="createKind" @created="createKind = null" />
+      </template>
+    </UModal>
     <UModal
       v-model:open="organise"
       title="Organise categories"
@@ -261,8 +266,17 @@ const {
   kitchenId,
   catalogue,
 } = useKitchenDishesContext()
+const createKind = ref<'food' | 'drink' | null>(null)
+function closeCreate(open: boolean) { if (!open) createKind.value = null }
 const route = useRoute()
 const router = useRouter()
+watch(kitchenId, () => { createKind.value = null })
+watch(() => [route.query.create, outcome.value], () => {
+  if (['ready', 'empty'].includes(outcome.value) && !readOnly.value && ['food', 'drink'].includes(String(route.query.create))) {
+    createKind.value = route.query.create as 'food' | 'drink'
+    void router.replace({ query: { ...route.query, create: undefined } })
+  }
+}, { immediate: true })
 const initial = readDishCatalogueQuery(route.query)
 const kindFilters = [
   { value: 'all', label: 'All' },

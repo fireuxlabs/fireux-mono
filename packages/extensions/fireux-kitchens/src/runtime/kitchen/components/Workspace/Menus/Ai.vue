@@ -178,7 +178,7 @@ async function ask(question = prompt.value.trim()) {
         (candidate) => candidate.id === intent.target
       )
       if (!menu?.slug) return
-      const path = `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`
+      const path = `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menu.slug)}`
       await navigateTo(
         intent.action === 'delete' ? `${path}#delete-menu` : path
       )

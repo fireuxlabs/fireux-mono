@@ -41,7 +41,7 @@
     </p>
     <UButton
       v-if="confirmedSlug"
-      :to="`/workspace/kitchen/menus/${encodeURIComponent(confirmedSlug)}`"
+      :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(confirmedSlug)}`"
       label="Open Menu"
       class="mt-3"
     />

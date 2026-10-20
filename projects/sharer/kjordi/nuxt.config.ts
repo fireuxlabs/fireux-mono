@@ -6,6 +6,7 @@ export default defineFireuxConfig({
   projectId: 'sharer-ecosystem',
   ecosystemId: 'sharer',
   id: 'kjordi',
+  context: "This is a branded personal sharing App whose public page currently uses the name “Kjordy”. The intended spelling needs confirmation before standardising its identity.",
   name: 'Kjordi',
   shortName: 'Kjordi',
   theme: {

@@ -29,7 +29,7 @@
       <UButton
         size="sm"
         variant="ghost"
-        :to="`/workspace/kitchen/menus/${encodeURIComponent(editor.menuSlug)}/${encodeURIComponent(section.id)}`"
+        :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(editor.menuSlug)}/${encodeURIComponent(section.id)}`"
         >Items</UButton
       >
       <UDropdownMenu :items="actions">

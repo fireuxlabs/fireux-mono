@@ -54,6 +54,7 @@ export type DishPricing = {
 }
 export type Dish = FireuxStamped &
   DishPricing & {
+    context?: string
     id: string
     name: string
     slug: string

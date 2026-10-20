@@ -36,6 +36,13 @@
         />
       </template>
     </USlideover>
+    <ContextRecord
+      v-if="identity.canWrite.value"
+      :key="identity.portfolioId.value"
+      title="Portfolio AI context"
+      endpoint="/api/workspace/portfolio/context"
+      :scope="{ portfolioId: identity.portfolioId.value }"
+    />
   </section>
 </template>
 <script setup lang="ts">

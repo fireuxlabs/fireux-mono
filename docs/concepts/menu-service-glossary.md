@@ -82,7 +82,7 @@ The current setup chooser does not expose every conceptual combination, includin
 a separate counter-ordering option. Do not claim every glossary entry is configured
 or available at every venue. Refresh this map when service vocabulary changes.
 
-Workspace entry: `/workspace/kitchen/services`, separate from Orders.
+Workspace entry: `/workspace/kitchen/food-and-drink/services`, separate from Orders.
 The Services overview and individual setup reuse the existing records and commands.
 
 Services names the Workspace setup surface. `Offering` remains an internal record

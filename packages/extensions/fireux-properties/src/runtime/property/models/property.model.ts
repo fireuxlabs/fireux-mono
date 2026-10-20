@@ -200,6 +200,7 @@ export type Property = Omit<
   WidenLiteral<typeof PropertyModel>,
   'management' | 'identity'
 > & {
+  context?: string
   management: FireuxEntityManagement
   identity: PropertyIdentity
   valuation?: PropertyValuation

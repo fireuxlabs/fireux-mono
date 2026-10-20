@@ -26,7 +26,7 @@
       :actions="[
         {
           label: 'Review source',
-          to: `/workspace/kitchen/menus/uploads/${encodeURIComponent(qr.draftSource.id)}`,
+          to: `/workspace/kitchen/food-and-drink/menus/uploads/${encodeURIComponent(qr.draftSource.id)}`,
           icon: 'i-lucide-check-circle-2',
         },
       ]"

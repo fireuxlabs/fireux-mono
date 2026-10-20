@@ -15,6 +15,7 @@ const allowed = new Set([
   'identity.status',
   'identity.visibility',
   'tables.count',
+  'services.title',
 ])
 
 function flatten(source: Record<string, unknown>) {
@@ -42,6 +43,12 @@ export function parseKitchenUpdate(value: unknown) {
   const out: Record<string, unknown> = {}
 
   for (const [key, raw] of Object.entries(patch)) {
+    if (key === 'services.title') {
+      if (typeof raw !== 'string' || raw.trim().length > 120)
+        fail('Service title must be text up to 120 characters.')
+      out[key] = raw.trim() || 'Food & drinks'
+      continue
+    }
     if (key === 'tables.count') {
       if (
         typeof raw !== 'number' ||

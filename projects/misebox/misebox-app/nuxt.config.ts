@@ -9,6 +9,7 @@ const app: FireuxAppConfig = {
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'misebox-app',
+  context: "Misebox connects public Kitchen and Menu discovery with a Kitchen Workspace for operators. Venue information, menu content and operational configuration have separate owners.",
   name: 'Misebox',
   shortName: 'Misebox',
   homePath: '/',

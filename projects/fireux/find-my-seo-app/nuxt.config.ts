@@ -6,6 +6,7 @@ export default defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'find-my-seo-app',
+  context: "Find My SEO helps businesses discover and compare SEO professionals for specific problems. Relevant background includes specialism, sector experience and supporting evidence.",
   name: 'Find My SEO',
   shortName: 'FindMySEO',
   databaseId: 'find-my-seo',

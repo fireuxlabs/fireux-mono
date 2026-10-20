@@ -21,5 +21,6 @@ export default defineEventHandler(async (event) => {
     config,
     appDatabaseId,
     identityDatabaseId,
+    context: runtime.fireux?.initialAppContext,
   })
 })

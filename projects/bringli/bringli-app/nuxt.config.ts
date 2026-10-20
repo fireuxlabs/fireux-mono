@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   projectId: 'bringli',
   ecosystemId: 'bringli',
   id: 'bringli-app',
+  context: "Bringli provides a Supplier Workspace for managing supplier information, catalogue records and business associations. Public business identity comes from the linked Company and Place.",
   name: 'Bringli',
   shortName: 'Bringli',
   role: 'global',

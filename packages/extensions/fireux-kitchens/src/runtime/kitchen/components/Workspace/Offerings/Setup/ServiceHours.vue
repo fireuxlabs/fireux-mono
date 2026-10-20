@@ -5,11 +5,12 @@
         Hours
       </h3>
       <UButton
-        :label="editing ? 'Done' : 'Edit hours'"
+        :icon="editing ? 'i-lucide-check' : 'i-lucide-pencil'"
+        :aria-label="editing ? 'Done editing hours' : 'Edit hours'"
         :aria-expanded="editing"
         size="xs"
         color="neutral"
-        variant="ghost"
+        variant="outline"
         :disabled="disabled"
         @click="editing = !editing"
       />

@@ -224,7 +224,7 @@ test('consent preview reveals only the browser-bound local identity and never mi
 
 test('arrival context survives prepare, preview and ownership-proof detours', async () => {
   const h = harness()
-  const destination = '/workspace/kitchen/menus/A?view=preview#details'
+  const destination = '/workspace/kitchen/food-and-drink/menus/A?view=preview#details'
   h.event.body = { action: 'prepare', returnTo: destination }
   const prepared = await h.handlers.fireuxConnectionCommand(h.event)
   const hub = new URL(prepared.destination)

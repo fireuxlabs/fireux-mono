@@ -48,7 +48,11 @@ function harness(subscription = 'premium', duplicates = []) {
     `${stripTypeScriptTypes(source)};return renameKitchenMenu`,
     Object.keys(dependencies)
   )(...Object.values(dependencies))
-  return { rename, writes }
+  const updateKitchenMenu = compileFunction(
+    `${stripTypeScriptTypes(source)};return updateKitchenMenu`,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
+  return { rename, writes, normalizeMenuMetadataPatch, updateKitchenMenu }
 }
 test('Plus rename preserves original slug and children while updating the display name', async () => {
   for (const tier of ['premium', 'business']) {
@@ -117,4 +121,16 @@ test('Workspace rename passes stable target to the surviving Record owner', asyn
   await rename('New Menu')
   assert.deepEqual(calls, [['kitchen', 'stable-id', 'New Menu']])
   assert.deepEqual(destinations, [])
+})
+
+test('internal name edits preserve the public name and stable route', async () => {
+  const { normalizeMenuMetadataPatch, updateKitchenMenu, writes } = harness()
+  assert.deepEqual(normalizeMenuMetadataPatch({ internal_name: ' Takeaway drinks ' }), { internal_name: 'Takeaway drinks' })
+  assert.deepEqual(normalizeMenuMetadataPatch({ internal_name: '  ' }), { internal_name: '' })
+  assert.throws(() => normalizeMenuMetadataPatch({ internal_name: 42 }))
+  assert.throws(() => normalizeMenuMetadataPatch({ internal_name: 'a'.repeat(161) }))
+  await updateKitchenMenu({}, { kitchenId: 'k', menuId: 'm', changes: { internal_name: 'Takeaway drinks' } })
+  assert.equal(writes[0][2].internal_name, 'Takeaway drinks')
+  assert.ok(!Object.hasOwn(writes[0][2], 'name'))
+  assert.ok(!Object.hasOwn(writes[0][2], 'slug'))
 })

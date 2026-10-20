@@ -34,7 +34,7 @@ function harness({
       : null
   )
   const selectedId = ref('k'),
-    route = ref('/workspace/kitchen/menus/lunch')
+    route = ref('/workspace/kitchen/food-and-drink/menus/lunch')
   const membership = ref({ role: 'user' })
   const scope = effectScope()
   const useMenuEditorScope = load(
@@ -158,7 +158,7 @@ for (const action of ['publishMenu', 'unpublishMenu', 'archiveMenu']) {
       }
       if (change === 'route') {
         h.route.value = '/other'
-        h.route.value = '/workspace/kitchen/menus/lunch'
+        h.route.value = '/workspace/kitchen/food-and-drink/menus/lunch'
       }
       if (change === 'dispose') h.stop()
       token.resolve('token')

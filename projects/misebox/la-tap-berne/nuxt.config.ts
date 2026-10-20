@@ -5,6 +5,7 @@ const app: FireuxAppConfig = {
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'la-tap-berne',
+  context: "La Tap Berne presents Spanish plates and venue information in Matten bei Interlaken. Its public experience includes food, atmosphere, gallery and visit information.",
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
   role: 'tenant',

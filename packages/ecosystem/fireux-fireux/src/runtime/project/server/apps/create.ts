@@ -24,7 +24,14 @@ export function projectAppInput(value: unknown) {
   if (
     Object.keys(input).some(
       (key) =>
-        !['id', 'name', 'description', 'ecosystem_id', 'role'].includes(key)
+        ![
+          'id',
+          'name',
+          'description',
+          'context',
+          'ecosystem_id',
+          'role',
+        ].includes(key)
     )
   )
     throw createError({
@@ -35,6 +42,15 @@ export function projectAppInput(value: unknown) {
   const name = String(input.name ?? '').trim()
   const description = String(input.description ?? '').trim()
   const ecosystemId = String(input.ecosystem_id ?? '').trim()
+  if (
+    input.context !== undefined &&
+    (typeof input.context !== 'string' || input.context.length > 32000)
+  )
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'App context must be text up to 32,000 characters.',
+    })
+  const context = typeof input.context === 'string' ? input.context.trim() : ''
   const role = input.role
   if (
     !/^[a-z0-9][a-z0-9-]{2,62}$/.test(id) ||
@@ -52,6 +68,7 @@ export function projectAppInput(value: unknown) {
     id,
     name,
     description,
+    context,
     ecosystemId,
     role: role as 'tenant' | 'standalone',
   }
@@ -97,6 +114,7 @@ export async function createProjectApp(
           data?.ecosystem_id === input.ecosystemId &&
           data?.name === input.name &&
           data?.description === input.description &&
+          (data?.context || '') === input.context &&
           data?.role === input.role &&
           membership.data?.role === 'admin'
         )
@@ -117,6 +135,7 @@ export async function createProjectApp(
         status: 'inactive',
         name: input.name,
         description: input.description,
+        context: input.context,
         self_join_enabled: false,
         created: stamp(uid),
         updated: stamp(uid),
