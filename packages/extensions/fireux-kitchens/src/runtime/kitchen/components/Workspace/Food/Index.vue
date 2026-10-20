@@ -1,13 +1,27 @@
 <template>
-  <div class="grid gap-5">
+  <NavigationGroup nav-key="workspace-kitchen-food">
     <FoodAI :kitchen-id="kitchenId" :ready="ready" :overview="overview" />
-    <FoodServices :rows="rows" :pending="pending" :failed="failed" />
-  </div>
+    <template #child="{ item }">
+      <FoodSummary
+        v-if="catalogueChild(item.to)"
+        :summary="catalogueChild(item.to)!"
+      />
+      <FoodServices
+        v-if="item.to === '/workspace/kitchen/food-and-drink/services'"
+        :rows="rows"
+        :pending="pending"
+        :failed="failed"
+      />
+    </template>
+  </NavigationGroup>
 </template>
 <script setup lang="ts">
 import { computed, watchEffect, onScopeDispose } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import NavigationGroup from '../Navigation/Group.vue'
 import FoodAI from './AI.vue'
+import FoodSummary from './Summary.vue'
+import { useFoodCatalogueSummary } from '../../../composables/workspace/food/useFoodCatalogueSummary'
 import FoodServices from './Services.vue'
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'
 import { useKitchenOfferingNow } from '../../../composables/useKitchenOfferingNow'
@@ -16,6 +30,7 @@ import { serviceOverviewSnapshot } from '../../../utils/service-overview'
 import { foodServiceSummary } from '../../../utils/food-service-summary'
 const {
   kitchenId,
+  storageKitchenId,
   offerings,
   menus,
   outcome,
@@ -24,6 +39,13 @@ const {
   kitchenHours,
   canWrite,
 } = useKitchenOfferings()
+const catalogue = useFoodCatalogueSummary(storageKitchenId, menus, menusOutcome)
+function catalogueChild(path: string) {
+  const key = path.split('/').at(-1)
+  return key === 'items' || key === 'menus' || key === 'promotions'
+    ? catalogue.value[key]
+    : undefined
+}
 const { now } = useKitchenOfferingNow()
 const failed = computed(() =>
   [outcome.value, menusOutcome.value, placeOutcome.value].includes('error')
@@ -64,6 +86,7 @@ const setup = computed(() =>
 )
 const overview = computed(() => ({
   subject: 'Food & drink',
+  catalogue: catalogue.value,
   availableActions: [],
   setup: ready.value ? setup.value.services : [],
   services: rows.value,

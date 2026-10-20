@@ -34,7 +34,7 @@ function harness(intent, { authenticated = true, dev = true } = {}) {
       'useFireuxAi',
       'kitchenLandingDestinations',
       'readAuthorizedOperatorContext',
-      'operatorContextInstruction',
+      'kitchenAIInstruction',
     ]
   )(
     (value) => Object.assign(new Error(value.statusMessage), value),

@@ -33,7 +33,18 @@ export function foodServiceSummary(
               ),
             ]
           : offering.menu_ids
-      const ready = serviceMenuReadiness(ids, menus).canEnable
+      const readiness = serviceMenuReadiness(ids, menus)
+      const issues: string[] = []
+      if (!ids.length) issues.push('Select menus')
+      else {
+        if (!readiness.validSelection) issues.push('Replace unavailable menus')
+        if (!readiness.hasPublishedMenu) issues.push('Publish a selected menu')
+      }
+      const hoursStatus = readOpeningHoursStatus(
+        offering.hours, offering.hours?.timezone, now
+      )
+      if (!hoursStatus.known) issues.push('Set serving hours')
+      const ready = readiness.canEnable && hoursStatus.known
       const windows = menus
         .filter(
           (menu) =>
@@ -77,7 +88,8 @@ export function foodServiceSummary(
             : option.label,
           label,
           open,
-          needsSetup: label === 'Needs setup',
+          needsSetup: issues.length > 0,
+          issues,
         },
       ]
     })

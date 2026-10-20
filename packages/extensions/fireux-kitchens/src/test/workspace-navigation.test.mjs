@@ -105,7 +105,7 @@ test('Food & drink has its own index and four sibling working pages', () => {
   }
   assert.ok(
     readFileSync(join(root, 'food-and-drink/index.vue'), 'utf8').includes(
-      'WorkspaceKitchenNavigationGroup'
+      'WorkspaceKitchenFood'
     )
   )
   assert.equal(navigation(join(root, 'overview/index.vue')).hidden, undefined)
@@ -532,4 +532,20 @@ test('Food & drink creation and service configuration have no redundant child pa
   assert.ok(existsSync(join(root, 'food-and-drink/items/[dishId].vue')))
   assert.ok(existsSync(join(root, 'food-and-drink/menus/[menuSlug]/index.vue')))
   assert.equal(existsSync(join(root, 'food/drinks')), false)
+})
+
+
+test('group child surfaces retain every entrance and compose summaries inside the standard card', () => {
+  const components = new URL('../runtime/kitchen/components/Workspace/', import.meta.url)
+  const group = readFileSync(new URL('Navigation/Group.vue', components), 'utf8')
+  const food = readFileSync(new URL('Food/Index.vue', components), 'utf8')
+  const services = readFileSync(new URL('Food/Services.vue', components), 'utf8')
+  assert.match(group, /v-for="item in children"/)
+  assert.match(group, /<slot name="child" :item="item"/)
+  assert.ok(!group.includes('excludePages'))
+  assert.ok(food.indexOf('<FoodAI') < food.indexOf('<template #child'))
+  assert.match(food, /<NavigationGroup nav-key="workspace-kitchen-food"/)
+  assert.match(food, /<FoodServices/)
+  assert.ok(!services.includes('NuxtLink'))
+  assert.ok(!services.includes('<section'))
 })

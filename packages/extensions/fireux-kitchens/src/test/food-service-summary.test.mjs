@@ -95,3 +95,20 @@ test('separate services retain their own summary and next-day collection is not 
   assert.equal(rows[1].label, 'Next-day collection')
   assert.equal(rows[1].open, false)
 })
+
+
+test('missing setup flags come from data and do not mistake closed services for incomplete ones', () => {
+  const summary = (changes, menus = [menu]) =>
+    foodServiceSummary([{ ...service, ...changes }], menus, at('15:00'))[0]
+  assert.deepEqual(summary({}).issues, [])
+  assert.deepEqual(summary({ menu_ids: [] }).issues, ['Select menus'])
+  assert.deepEqual(summary({}, []).issues, [
+    'Replace unavailable menus', 'Publish a selected menu',
+  ])
+  assert.deepEqual(summary({}, [{ ...menu, status: 'draft' }]).issues, [
+    'Publish a selected menu',
+  ])
+  assert.deepEqual(summary({ hours: undefined }).issues, ['Set serving hours'])
+  assert.equal(summary({ hours: undefined }).needsSetup, true)
+  assert.equal(summary({ hours: undefined }).open, false)
+})

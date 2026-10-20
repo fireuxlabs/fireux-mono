@@ -20,7 +20,7 @@
           <slot />
           <div
             :aria-label="`${index?.label || 'Kitchen'} pages`"
-            class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            class="grid gap-4"
           >
             <UPageCard
               v-for="item in children"
@@ -28,7 +28,9 @@
               :title="item.label"
               :to="item.to"
               :icon="item.icon || index?.icon"
-            />
+            >
+              <template #footer><slot name="child" :item="item" /></template>
+            </UPageCard>
           </div>
           <UAlert
             v-if="notice"
@@ -46,13 +48,13 @@
 import { computed } from 'vue'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-const props = defineProps<{ navKey: string; notice?: string; excludePages?: string[] }>()
+const props = defineProps<{ navKey: string; notice?: string }>()
 const navigation = useNav(['workspace'])
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const index = computed(() =>
   navigation.items.value.find((item) => item.key === props.navKey)
 )
 const children = computed(() =>
-  (index.value?.children || []).filter(item => !props.excludePages?.includes(item.to))
+  index.value?.children || []
 )
 </script>

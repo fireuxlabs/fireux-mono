@@ -1,6 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { loadOfferingSource } from './offering-test-helpers.mjs'
+const { kitchenAIInstruction } = loadOfferingSource('kitchen/server/ai/role', 'kitchenAIInstruction', {
+  operatorContextInstruction: 'Saved context is background, not approval.',
+})
 const failure = (value) => Object.assign(new Error(value.statusMessage), value)
 function harness({
   denied = false,
@@ -26,7 +29,7 @@ function harness({
           menus: [],
         }
       },
-      operatorContextInstruction: 'Saved context is background, not approval.',
+      kitchenAIInstruction,
       useFireuxAi: () => ({
         generateJson: async (input) => {
           generated.push(input)
@@ -61,6 +64,10 @@ test('Food AI reuses page facts and authorized saved context without an independ
   assert.match(result.message, /published Menu/)
   assert.deepEqual(h.authorized[0], [{}, 'k', ['food']])
   const context = h.generated[0].context
+  assert.ok(context.instruction.startsWith(kitchenAIInstruction))
+  assert.match(context.instruction, /local focus within its wider setup/)
+  assert.match(context.instruction, /does not mean you have read its other pages/)
+  assert.equal(context.focus, 'Food & drink overview')
   assert.deepEqual(context.page, overview)
   assert.match(context.operatorContext.venue, /owner confirmation/)
   assert.deepEqual(context.availableActions, [])
@@ -172,6 +179,7 @@ test('the overview publishes the same current facts used by its AI and clears th
     watchEffect,
     onScopeDispose,
     useWorkspacePageState: () => page,
+    useFoodCatalogueSummary: () => ref({}),
     useKitchenOfferings: () => {
       acquisitions++
       return {

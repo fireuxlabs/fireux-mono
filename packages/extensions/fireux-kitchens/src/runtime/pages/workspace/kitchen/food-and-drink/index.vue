@@ -1,10 +1,5 @@
 <template>
-  <WorkspaceKitchenNavigationGroup
-    nav-key="workspace-kitchen-food"
-    :exclude-pages="['/workspace/kitchen/food-and-drink/services']"
-  >
-    <WorkspaceKitchenFood />
-  </WorkspaceKitchenNavigationGroup>
+  <WorkspaceKitchenFood />
 </template>
 
 <script setup lang="ts">

@@ -1156,10 +1156,31 @@ Missing or cleared titles display “Food & drinks”. Public food portal cards 
 this title rather than concatenating Menu names; service configurations remain
 separate Kitchen-owned records.
 
+Kitchen group indexes reuse `Workspace/Navigation/Group.vue` for one standard
+Nuxt UI child card per navigation child. Group AI precedes the child surfaces;
+the child slot supplies domain summaries inside those cards, without a second
+heading or entrance. Food & drink merges its Services summary into that child
+card; Items, Menus and Promotions retain the same card framing. Services flags
+missing menu selection, unavailable selections, missing publication and unknown
+effective hours directly from readiness data, independently of AI. Closed-now
+status alone is not a setup issue. Items, Menus and Promotions use the read-only
+`food-catalogue-summary.ts` projections in the same child surfaces. The focused
+`useFoodCatalogueSummary` reuses the authorized selected-Kitchen id, existing Menu
+collection and one existing child reader each for Dishes and Promotions; summaries
+clear behind loading/error states. Photos and descriptions are optional; zero is
+a valid price, Daily specials stay separate and no Promotions is a normal state.
+Menu content publication readiness stays in its section-aware editor, rather
+than claiming to inspect sections from Menu metadata. Other group
+indexes reuse this framing without inventing AI or summary data.
+
 The Food & drink overview composes `Workspace/Food/Index.vue` with one shared
 Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.
 It reuses `serviceOverviewSnapshot` for setup facts; AI receives the same page
-context rather than acquiring another catalogue. `food/answer.ts` reuses
+context rather than acquiring another catalogue. Home, Menus and Food & drink
+inherit the Kitchen-owned `kitchen/server/ai/role.ts` instruction: one KitchenAI
+role with page-local focus, supplied evidence and explicitly available actions.
+The shared role explains the wider Workspace without claiming access to unsupplied
+records; Food & drink remains read-only. `food/answer.ts` reuses
 `context/authorized.ts` for authorized saved Kitchen/Place/Menu background and
 `useFireuxAi` for transport. Replies are brief and read-only, with no tool or
 mutation actions. Other capability agent/chat consumers remain separate; this
@@ -2015,6 +2036,12 @@ Successful recovery rechecks existing lines against current offers. The
 `menu-service-basket.test.mjs` lifecycle regression renders the ServiceMenu template
 through refresh, error, recovery, changed/missing items and owner changes. This basket is
 component-scoped and resets on a different Kitchen/service entrance or page reload.
+Collection required-field messages appear after that field loses focus or a
+submission attempt. `Selection/Checkout.vue` owns only this presentation timing;
+`useCollectionCheckout` retains validation and submission guards. Service and
+catalogue blockers stay visible and disable submission immediately. Verify with
+`collection-validation-display.test.mjs` and `collection-checkout.test.mjs`.
+
 Collection composes `Selection/Checkout.vue` with the existing customer Details
 and a focused customer `Selection/Confirmation.vue` receipt. The receipt uses
 the saved response for quantities, choices, line amounts, total, status and
