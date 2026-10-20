@@ -61,7 +61,7 @@ test('projects bounded records and normalizes a prepared string without writing'
     { id: 'a', value: 'Before' },
     { id: 'b', value: 'Other' },
   ])
-  assert.equal(h.request().model, 'gpt-5.4-mini')
+  assert.equal(h.request().model, undefined)
 })
 test('rejects targeting another record, invented ids and empty writes', async () => {
   for (const change of [

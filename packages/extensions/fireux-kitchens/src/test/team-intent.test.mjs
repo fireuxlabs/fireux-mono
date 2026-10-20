@@ -60,7 +60,7 @@ test('Team intent sends bounded context and uses the development Codex transport
   assert.equal((await h.interpret({}, context)).name, 'Alex')
   assert.deepEqual(h.request().context.records, [{ id: 'a', name: 'Before', linked: false }])
   assert.equal(h.options().developmentTransport, 'codex')
-  assert.equal(h.request().model, 'gpt-5.4-mini')
+  assert.equal(h.request().model, undefined)
 })
 test('Team intent rejects unavailable mutations and missing selection', async () => {
   const h = harness({ action: 'delete', name: '', message: '' })

@@ -15,9 +15,22 @@
       variant="soft"
       class="justify-self-start"
     />
+    <WorkspaceKitchenContext
+      v-if="menu && menu.schedule !== 'daily'"
+      :key="`${kitchenId}/${menu.id}`"
+      :kitchen-id="kitchenId"
+      :menu-id="menu.id"
+      subject="menu"
+      title="Menu context"
+      :can-write="canWrite"
+    />
     <WorkspaceKitchenMenusDetailRemove />
   </section>
 </template>
+<script setup lang="ts">
+import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
+const { kitchenId, menu, canWrite } = useKitchenMenuRecordContext()
+</script>
 <style scoped>
 .menu-settings {
   width: 100%;

@@ -49,6 +49,8 @@ export type Place = {
   id: string
   slug: string
   name: string
+  /** Internal operator background; omitted from public projections. */
+  context?: string
   short_name: string
   tagline: string
   about: string

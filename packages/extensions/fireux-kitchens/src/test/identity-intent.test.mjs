@@ -21,7 +21,7 @@ test('Identity AI preserves unchanged fields, bounds context, and prepares no mu
  assert.equal(result.fields.name,null)
  assert.equal(result.fields.tagline,'Fresh pizza')
  assert.deepEqual(h.request().context.current,current)
- assert.equal(h.request().model,'gpt-5.4-mini')
+ assert.equal(h.request().model,undefined)
  assert.equal((await h.run({},{...context,availableActions:['read']})).action,'none')
 })
 test('Identity AI rejects invalid output and accepts explicit optional clearing',async()=>{

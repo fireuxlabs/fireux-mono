@@ -1,3 +1,4 @@
+import { readKitchenOperatorContext } from 'fireux-kitchens/runtime/kitchen/server/context/read'
 import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -85,6 +86,7 @@ async function readMenuManifest(
         id: document.id,
         name: readRecordString(data, 'name') || document.id,
         status: readRecordString(data, 'status'),
+        context: readRecordString(data, 'context'),
         section_count: sections.length,
         item_count: sections.reduce(
           (total, section) => total + section.items.length,
@@ -255,6 +257,7 @@ export async function readKitchenAgentContext(
 ) {
   const [
     userContext,
+    operatorContext,
     menuManifest,
     dishes,
     recipes,
@@ -263,6 +266,11 @@ export async function readKitchenAgentContext(
     orders,
   ] = await Promise.all([
     readUserContext(access.uid),
+    readKitchenOperatorContext(
+      access.db,
+      request.kitchenId,
+      access.rootKitchen
+    ),
     readMenuManifest(access, request),
     readDishes(access, request),
     readRecipes(access, request),
@@ -278,10 +286,8 @@ export async function readKitchenAgentContext(
       request.kitchenId,
     tagline: readRecordString(identity, 'tagline'),
     userContext,
-    kitchenContext: readRecordString(
-      record(access.rootKitchen.workspace),
-      'context'
-    ),
+    kitchenContext: operatorContext.kitchen,
+    venueContext: operatorContext.venue,
     menuManifest,
     dishes,
     recipes,

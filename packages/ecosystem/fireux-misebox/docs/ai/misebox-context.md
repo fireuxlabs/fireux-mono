@@ -61,6 +61,10 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+Bären-specific operational assumptions and owner confirmation belong in
+[the Bären context](../../../../../projects/misebox/baeren-ringgenberg/docs/ai/baeren-context.md).
+They do not establish shared Misebox defaults or verified business hours.
+
 The unused `misebox-tenant` layout shell is retired. Bären and La Tap retain
 their App-owned branded layouts, composing the ecosystem-owned tenant Header
 and Footer components directly. Those shared components remain active.
@@ -881,6 +885,29 @@ current Core App-access source.
 
 ## KitchenAI
 
+Kitchen, linked venue and ordinary Menu documents each support one optional
+`context` string for operator background, decisions and questions. It lives on
+the owning document, not in question records or a context subcollection. Existing
+sparse documents without authored context read as empty text. Kitchen Identity &
+brand and Menu Settings compose Core's `components/Context/Editor.vue` text area;
+Kitchen's scoped controller saves changes on leaving the field. The trusted
+`kitchen/server/context/command.ts` updates only the selected document's context
+and audit stamp after current App membership and Kitchen association checks.
+Concurrent edits compare the previously read text before updating; failed edits
+remain visible. Context is omitted from public Kitchen/Place/Menu projections.
+
+`kitchen/server/context/authorized.ts` supplies the current Home and Menus intent
+interpreters with saved strings after selected-Kitchen authority. Menus includes
+up to 12 listed Menu contexts, prioritizing the selected Menu. Client page facts
+cannot override that context. The ecosystem agents and Menu summary endpoint
+reuse their already-read Kitchen/Menu documents and read the linked Place's
+context through `kitchen/server/context/read.ts`. Saved text is background, not
+instructions or measured evidence. Questions and provisional assumptions remain
+unconfirmed until the owner decides. Editing context never changes hours, prices
+or other operational settings. These are human Workspace commands, not new
+agent-callable write tools. Verify `fireux-kitchens/src/test/record-context.test.mjs`.
+
+
 - KitchenAI is Misebox’s Kitchen coordinator over registered capability agents,
   evidence, and named tools.
 - It never invents live operational facts or bypasses selection, subscription,
@@ -909,11 +936,16 @@ Inspect current source under Kitchen `components/Workspace/AI*` and
 `models/operation-*`, Misebox `runtime/ai` and `runtime/server/agent/kitchen`,
 and the owning tool/command consumers. The capability-tools guard is removed.
 
+Kitchen Home, Menus, Identity and Team intent interpreters, plus the shared Test
+interpreter, use the existing Codex development transport without a forced model
+id. Codex selects its supported default for the signed-in account; an API model
+name is not proof of Codex availability. Production retains the configured AI
+provider and model. Their source-owned intent tests protect the unpinned request
+and unchanged production envelope.
+
 Kitchen Team owns its bounded dialog-intent endpoint under
 `fireux-kitchens/src/runtime/kitchen/server/team/intent.ts`. It prepares the
-existing Team dialogs without performing membership mutations. This consumer
-opts into Codex with a lower model in development through the existing FireUX
-AI transport; production retains the configured provider. Other Kitchen AI
+existing Team dialogs without performing membership mutations. Other Kitchen AI
 consumers retain their existing integration boundaries.
 Kitchen Team presents basic person CRUD, workspace role labels and a separate
 copy-invitation action. Core’s shared role catalogue includes fixed Dev and

@@ -1,3 +1,4 @@
+import { operatorContextInstruction } from 'fireux-kitchens/runtime/kitchen/server/context/read'
 import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
@@ -262,8 +263,9 @@ export async function answerKitchenAgent(
     context: {
       agent: 'KitchenAI',
       user_context: context.userContext || undefined,
-      kitchen_context: context.kitchenContext || undefined,
-      instruction: `Act as KitchenAI for the selected Kitchen and delegate this request to ${agentName}. Answer using only the supplied authorized Kitchen identity, confirmed context, named operation-agent scope, and its status-bearing Tool catalogue. Treat requested or building Tools as planned language that cannot run. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
+      kitchen_context: context.kitchenContext,
+      venue_context: context.venueContext,
+      instruction: `Act as KitchenAI for the selected Kitchen and delegate this request to ${agentName}. Answer using only the supplied authorized Kitchen identity, confirmed context, named operation-agent scope, and its status-bearing Tool catalogue. Treat requested or building Tools as planned language that cannot run. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${operatorContextInstruction} ${fireuxAgentTipInstruction}`,
     },
   })
   const result = extractFireuxAgentTip(response.text, {
@@ -301,7 +303,8 @@ export async function answerKitchenAgent(
       kitchenName: context.kitchenName,
       userContext: Boolean(context.userContext),
       kitchenContext: Boolean(context.kitchenContext),
-      menuContext: false,
+      venueContext: Boolean(context.venueContext),
+      menuContext: context.menuManifest.some((menu) => Boolean(menu.context)),
       menuCount: context.menuManifest.length,
       delegates: [agentName],
       tipRecorded: Boolean(result.tip),

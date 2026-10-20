@@ -12,6 +12,8 @@ export type KitchenIdentity = {
 
 export type Kitchen = {
   id: string
+  /** Internal operator background; omitted from public projections. */
+  context?: string
   identity: KitchenIdentity
   tables?: { count: number }
 }

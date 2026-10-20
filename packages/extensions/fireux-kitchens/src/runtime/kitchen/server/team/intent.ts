@@ -51,7 +51,6 @@ export async function interpretKitchenTeam(
   }).generateJson<TeamAIIntent>({
     appId: useFireUXConfig(event).appId,
     task: 'extract_structured_data',
-    ...(import.meta.dev ? { model: 'gpt-5.4-mini' } : {}),
     input: { prompt: input.prompt.trim() },
     context: {
       instruction:

@@ -1,7 +1,13 @@
+import {
+  readKitchenOperatorContext,
+  operatorContextInstruction,
+} from 'fireux-kitchens/runtime/kitchen/server/context/read'
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
-  extractFireuxAgentTip, fireuxAgentTipInstruction, } from 'fireux-ai/runtime/models/agents/agent-tip'
+  extractFireuxAgentTip,
+  fireuxAgentTipInstruction,
+} from 'fireux-ai/runtime/models/agents/agent-tip'
 import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
@@ -158,6 +164,7 @@ async function readMenus(
         description: readRecordString(data, 'description'),
         status: readRecordString(data, 'status'),
         sections: boundedSections,
+        context: readRecordString(data, 'context'),
       }
     })
   )
@@ -169,9 +176,10 @@ export default defineEventHandler(async (event: H3Event) => {
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
   const prompt = readPrompt(body?.prompt)
   const access = await requireKitchenWriter(event, { appId, kitchenId })
-  const [userContext, menus] = await Promise.all([
+  const [userContext, menus, operatorContext] = await Promise.all([
     readUserContext(access.uid),
     readMenus(access, { appId, kitchenId }),
+    readKitchenOperatorContext(access.db, kitchenId, access.rootKitchen),
   ])
   const kitchenIdentity = record(access.rootKitchen.identity)
   const kitchenName =
@@ -194,7 +202,8 @@ export default defineEventHandler(async (event: H3Event) => {
     context: {
       agent: 'MiseboxAiMenu',
       user_context: userContext || undefined,
-      instruction: `Act as MiseboxAiMenu, an advisory Menu specialist for the selected Kitchen. Answer the operator question using only the supplied authorized Menu records, exact menu_manifest facts, and confirmed context. The menu_manifest counts are authoritative: copy them exactly and never recount or alter them. Treat context as operator knowledge, not measured evidence. State when the records do not support a claim. Never claim that you changed or published data. If asked to make a change, explain the proposed change and ask for approval. Be concise, concrete, and use the Menu and Dish names from the records. Return conversational plain text for a restaurant operator. Never return JSON, a schema, code fences, or internal field names. ${fireuxAgentTipInstruction}`,
+      operator_context: operatorContext,
+      instruction: `Act as MiseboxAiMenu, an advisory Menu specialist for the selected Kitchen. Answer the operator question using only the supplied authorized Menu records, exact menu_manifest facts, and confirmed context. The menu_manifest counts are authoritative: copy them exactly and never recount or alter them. Treat context as operator knowledge, not measured evidence. State when the records do not support a claim. Never claim that you changed or published data. If asked to make a change, explain the proposed change and ask for approval. Be concise, concrete, and use the Menu and Dish names from the records. Return conversational plain text for a restaurant operator. Never return JSON, a schema, code fences, or internal field names. ${operatorContextInstruction} ${fireuxAgentTipInstruction}`,
     },
   })
 
@@ -227,7 +236,7 @@ export default defineEventHandler(async (event: H3Event) => {
     answer,
     scope: {
       userContext: Boolean(userContext),
-      menuContext: false,
+      menuContext: menus.some((menu) => Boolean(menu.context)),
       menuCount: menus.length,
       source:
         response.execution === 'simulator'

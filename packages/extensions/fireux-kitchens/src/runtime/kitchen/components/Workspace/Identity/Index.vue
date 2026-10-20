@@ -47,6 +47,22 @@
       :state="identity.outcome.value"
       surface="bare"
     />
+    <template v-if="identity.status.value === 'ready'">
+      <WorkspaceKitchenContext
+        :key="`${identity.kitchenId.value}/kitchen`"
+        :kitchen-id="identity.kitchenId.value"
+        subject="kitchen"
+        title="Kitchen context"
+        :can-write="identity.canWriteKitchen.value"
+      />
+      <WorkspaceKitchenContext
+        :key="`${identity.kitchenId.value}/venue`"
+        :kitchen-id="identity.kitchenId.value"
+        subject="venue"
+        title="Venue context"
+        :can-write="identity.canWrite.value"
+      />
+    </template>
     <ClientOnly
       ><DiagnosticsDebugPanel v-bind="debug" title="Identity overview debug"
     /></ClientOnly>
