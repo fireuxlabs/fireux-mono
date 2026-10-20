@@ -1,4 +1,5 @@
 import {
+  dishCataloguePath,
   readDishCatalogueQuery,
   dishCatalogueQuery,
   dishCatalogueReturn,
@@ -382,6 +383,8 @@ function components(app, spec) {
     'DishMenu',
     'DishMenuSection',
     'MoleculesCopyError',
+    'ContextRecord',
+    'WorkspaceKitchenDishesCreate',
   ]
   for (const name of empty)
     app.component(name, {
@@ -464,6 +467,9 @@ function readView(overrides = {}) {
     suggestions: [],
     actionTargets: [],
     debug: {},
+    createKind: null,
+    closeCreate: () => {},
+    emit: () => {},
     ...overrides,
   }
 }
@@ -506,10 +512,22 @@ test('actual Dish index distinguishes Kitchen loading, failure, missing and inac
       new RegExp(expected)
     )
 })
+async function renderCatalogue(state) {
+  return (
+    await Promise.all(
+      ['Controls', 'Results'].map((child) =>
+        render(
+          `kitchen/components/Workspace/Dishes/Collection/${child}.vue`,
+          state
+        )
+      )
+    )
+  ).join('')
+}
+
 test('actual Dish collection hides premature counts, categories, filters and Create during loading/failure', async () => {
   for (const outcome of ['pending', 'error']) {
-    const html = await render(
-      'kitchen/components/Workspace/Dishes/Collection/Index.vue',
+    const html = await renderCatalogue(
       readView({
         outcome,
         pending: outcome === 'pending',
@@ -521,10 +539,7 @@ test('actual Dish collection hides premature counts, categories, filters and Cre
       /Count:|Dish categories|Filter catalogue|No dishes yet|Add dish/
     )
   }
-  const html = await render(
-    'kitchen/components/Workspace/Dishes/Collection/Index.vue',
-    readView({ outcome: 'empty' })
-  )
+  const html = await renderCatalogue(readView({ outcome: 'empty' }))
   assert.match(html, /Count: 0/)
   assert.match(html, /No dishes yet/)
   assert.match(html, /Add dish/)
@@ -726,11 +741,12 @@ test('combined catalogue filters food and drinks and opens each in its correct e
   const { context } = kindContext(f, 'all')
   const view = f.scope.run(() =>
     load(
-      'kitchen/components/Workspace/Dishes/Collection/Index.vue',
-      '({ kind, visibleDishes, dishLink, query, clearFilters, category })',
+      'kitchen/composables/workspace/dishes/useDishCatalogue.ts',
+      'useDishCatalogue()',
       {
         useRoute: () => ({ query: {} }),
         useRouter: () => ({ replace: async () => {} }),
+        dishCataloguePath,
         readDishCatalogueQuery,
         dishCatalogueQuery,
         useKitchenDishesContext: () => context,
@@ -755,8 +771,8 @@ test('combined catalogue filters food and drinks and opens each in its correct e
     ['tea']
   )
   assert.match(
-    view.dishLink('tea', 'drink'),
-    /^\/workspace\/kitchen\/food\/drinks\/tea\?/
+    view.dishLink('tea'),
+    /^\/workspace\/kitchen\/food-and-drink\/items\/tea\?/
   )
   view.kind.value = 'food'
   await nextTick()
@@ -765,8 +781,8 @@ test('combined catalogue filters food and drinks and opens each in its correct e
     ['soup']
   )
   assert.match(
-    view.dishLink('soup', 'food'),
-    /^\/workspace\/kitchen\/food\/dishes\/soup\?/
+    view.dishLink('soup'),
+    /^\/workspace\/kitchen\/food-and-drink\/items\/soup\?/
   )
   view.clearFilters()
   view.query.value = 'tea'
@@ -783,12 +799,15 @@ test('combined catalogue filters food and drinks and opens each in its correct e
 
 function catalogueView(f, query = {}) {
   const { context } = kindContext(f, 'all')
-  const route = reactive({ path: '/workspace/kitchen/food-and-drink/items', query })
+  const route = reactive({
+    path: '/workspace/kitchen/food-and-drink/items',
+    query,
+  })
   const destinations = []
   const view = f.scope.run(() =>
     load(
-      'kitchen/components/Workspace/Dishes/Collection/Index.vue',
-      '({ kind, query, category, filter, view, page, pageDishes, dishLink })',
+      'kitchen/composables/workspace/dishes/useDishCatalogue.ts',
+      'useDishCatalogue()',
       {
         useRoute: () => route,
         useRouter: () => ({
@@ -803,6 +822,7 @@ function catalogueView(f, query = {}) {
         watch,
         dishCategories,
         dishCategoryLabel,
+        dishCataloguePath,
         readDishCatalogueQuery,
         dishCatalogueQuery,
         buildMissingDishImageSuggestions: () => [],
@@ -834,8 +854,12 @@ test('Food & drinks item round trip restores kind, search, filters, layout and p
   assert.equal(route.query.page, '2')
   assert.equal(route.query.kind, 'drink')
   const link = new URL(
-    view.dishLink(view.pageDishes.value[0].id, 'drink'),
+    view.dishLink(view.pageDishes.value[0].id),
     'http://localhost'
+  )
+  assert.equal(
+    link.pathname,
+    `${dishCataloguePath}/${view.pageDishes.value[0].id}`
   )
   const returnTo = dishCatalogueReturn(Object.fromEntries(link.searchParams))
   assert.equal(returnTo.path, '/workspace/kitchen/food-and-drink/items')
@@ -907,5 +931,59 @@ test('first Kitchen resolution does not reset a restored catalogue page', async 
   f.settle(catalogueRows())
   await nextTick()
   assert.equal(view.page.value, 2)
+  f.scope.stop()
+})
+
+test('Items dialogs honour create authority, consume create links and close when the Kitchen changes', async () => {
+  const f = workspaceFixture()
+  const { context } = kindContext(f, 'all')
+  const route = reactive({ query: { create: 'drink', search: 'cola' } })
+  const state = f.scope.run(() =>
+    load(
+      'kitchen/components/Workspace/Dishes/Collection/Dialogs.vue',
+      '({ createKind, organise, aiOpen, openCreate, openCategories, openAI, closeCreate })',
+      {
+        computed,
+        ref,
+        watch,
+        useKitchenDishesContext: () => context,
+        useRoute: () => route,
+        useRouter: () => ({
+          replace: async ({ query }) => {
+            route.query = query
+          },
+        }),
+        buildMissingDishImageSuggestions: () => [],
+        buildMissingDrinkImageSuggestions: () => [],
+        defineExpose: () => {},
+      }
+    )
+  )
+  assert.equal(state.createKind.value, 'drink')
+  assert.equal(route.query.create, undefined)
+  assert.equal(route.query.search, 'cola')
+  state.closeCreate(false)
+  assert.equal(state.createKind.value, null)
+  state.openCreate('food')
+  assert.equal(state.createKind.value, 'food')
+  state.openCategories()
+  state.openAI()
+  f.workspace.id.value = 'other'
+  await nextTick()
+  assert.equal(state.createKind.value, null)
+  assert.equal(state.organise.value, false)
+  assert.equal(state.aiOpen.value, false)
+  state.openCreate('drink')
+  assert.equal(state.createKind.value, null)
+  f.scope.stop()
+})
+
+test('item editor links encode record identity without changing catalogue state', () => {
+  const f = workspaceFixture()
+  const { view } = catalogueView(f, { search: 'soup & tea' })
+  const link = new URL(view.dishLink('food/tea #1'), 'http://localhost')
+  assert.equal(link.pathname, `${dishCataloguePath}/food%2Ftea%20%231`)
+  assert.equal(link.searchParams.get('search'), 'soup & tea')
+  assert.equal(link.hash, '')
   f.scope.stop()
 })

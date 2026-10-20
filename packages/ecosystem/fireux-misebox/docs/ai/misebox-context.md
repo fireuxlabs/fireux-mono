@@ -326,7 +326,7 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 | ------------------ | ----------------- | ------------------------------------------------------------------ |
 | Orders             | `/orders`         | index, board (local views and filters) |
 | Prep & Production  | `/prep`           | index, plan, Recipes and Ingredients (`/food/*`), stations, batches |
-| Food & drink | `/food` | overview linking to Items (`/food/dishes`), Menus (`/menus`), Promotions (`/promotions`) and Services (`/services`) |
+| Food & drink | `/food-and-drink` | index, Items (`/items`), Menus (`/menus`), Promotions (`/promotions`) and Services (`/services`), all under this prefix |
 | Stock & Purchasing | `/stock`          | index, inventory, purchasing, receiving, suppliers, waste          |
 | Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                        |
 | Team               | `/team`           | index, people; Responsibilities remains a section anchor in people |
@@ -350,7 +350,7 @@ summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
 Core `WorkspaceGroupPage` framing with explicit route-owned children.
 Their indexes are mini overviews; the child pages remain the working surfaces.
-Food & drink has its own navigation-only index at `/workspace/kitchen/food-and-drink`,
+Food & drink has its own group index at `/workspace/kitchen/food-and-drink`,
 composing the existing Group component. Items, Menus, Promotions and Services
 are sibling children under that route; Menus is not the group
 index and Promotions is not nested beneath it. Route order puts Identity & brand
@@ -365,7 +365,12 @@ Verify these distinctions with `workspace-navigation.test.mjs`.
 Overview is a direct sidebar entrance for the selected Kitchen;
 the Menu setup tool directory remains a contextual route hidden from the sidebar.
 The combined catalogue reads the existing live Dish collection once, filters
-All/Food/Drinks locally, and opens each kind's existing create/detail editor.
+All/Food/Drinks locally, and opens the unified `/food-and-drink/items/[dishId]`
+editor. `Workspace/Dishes/Collection/Index.vue` composes Controls, Results and
+Dialogs. `useDishCatalogue` owns shared filters, pagination and return-query state;
+its strict provided context never acquires another collection. Dialogs owns local
+creation, category and AI disclosures, clearing them on Kitchen changes. Controls
+and Results emit actions without owning commands or dialog state.
 Kind-specific detail contexts retain their filtering and authority. Catalogue
 URLs and editor return links retain kind, search, category, completeness filter,
 layout and page using `kitchen/utils/dish-catalogue-route.ts`. Both editors return
