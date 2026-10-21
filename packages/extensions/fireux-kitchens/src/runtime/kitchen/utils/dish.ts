@@ -1,4 +1,4 @@
-import { readDishPricing } from './dish-pricing'
+import { normalizeDishPricingPatch } from './dish-pricing'
 // Concurrent edit — 2026-07-22 02:08 CEST — Dish media ownership: name the food-owned field image, independent of its Storage transport.
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -54,7 +54,6 @@ export const DishDefaults = {
   is_flagship: false as boolean,
   image: '' as string,
   kitchen_id: '' as string,
-  price: 0,
   price_options: [] as Dish['price_options'],
   add_ons: [] as Dish['add_ons'],
   created: {
@@ -99,7 +98,14 @@ export function normalizeDish(value: unknown): Dish {
 
   return {
     ...DishDefaults,
-    ...readDishPricing({ ...DishDefaults, ...source }),
+    ...normalizeDishPricingPatch({
+      ...(Object.hasOwn(source, 'price') ? { price: source.price } : {}),
+      price_options: source.price_options ?? [],
+      add_ons: source.add_ons ?? [],
+      ...(source.bottle_deposit !== undefined
+        ? { bottle_deposit: source.bottle_deposit }
+        : {}),
+    }),
     id: pickString(source.id),
     name: pickString(source.name),
     slug: pickString(source.slug),

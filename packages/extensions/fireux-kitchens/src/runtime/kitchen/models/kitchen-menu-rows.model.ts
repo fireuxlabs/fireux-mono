@@ -15,7 +15,7 @@ export type KitchenMenuItemRow = {
   name: string
   description: string
   image_url: string
-  price: number
+  price?: number
   priceLabel?: string
   priceOptions: DishPriceOption[]
   addOns: DishAddOnOption[]

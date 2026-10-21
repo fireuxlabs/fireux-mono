@@ -17,8 +17,7 @@ export function foodItemSummary(items: Partial<Dish>[]): FoodSummary {
       ...countFlag(
         items.filter(
           (item) =>
-            !validPrice(item.price) &&
-            !item.price_options?.some((option) => validPrice(option.price))
+            !validPrice(item.price)
         ).length,
         'need a price'
       ),

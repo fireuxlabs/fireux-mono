@@ -72,6 +72,7 @@ export function menuPublicationReadiness(
         }
       } else if (!dish) reason = 'Dish is missing.'
       else if (dish.status === 'archived') reason = 'Dish is archived.'
+      else if (!Object.hasOwn(dish, 'price')) reason = 'Dish price is not set.'
       else {
         try {
           readDishPricing(dish)

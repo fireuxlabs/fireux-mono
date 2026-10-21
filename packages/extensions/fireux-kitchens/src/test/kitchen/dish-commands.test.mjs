@@ -729,3 +729,19 @@ test('Dish deletion refuses an incomplete usage scan', async () => {
   await assert.rejects(h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }), /Too many records/)
   assert.deepEqual(h.writes, [])
 })
+
+
+test('Dish creation preserves unset, explicit zero and normal prices without changing existing records', async () => {
+  for (const price of [undefined, 0, 13]) {
+    const h = harness()
+    await h.createDish({}, { kitchenId: 'k', draft: { name: 'New item', ...(price === undefined ? {} : { price }) } })
+    const data = h.writes[0][3]
+    assert.equal(Object.hasOwn(data, 'price'), price !== undefined)
+    assert.equal(data.price, price)
+  }
+  for (const price of [null, '', -1, NaN]) {
+    const h = harness()
+    await assert.rejects(h.createDish({}, { kitchenId: 'k', draft: { name: 'Bad price', price } }))
+    assert.equal(h.writes.length, 0)
+  }
+})

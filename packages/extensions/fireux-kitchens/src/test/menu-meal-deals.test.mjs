@@ -419,3 +419,17 @@ for (const state of ['missing', 'archived']) {
     assert.deepEqual(f.records, before)
   })
 }
+
+
+test('public Menu omits an unpriced item, keeps other entries and displays explicit zero', async () => {
+  const f = fixture()
+  delete f.records.get('kitchens/k/dishes/d').price
+  const before = structuredClone(f.records)
+  const sections = await f.read()
+  assert.equal(sections[0].items.some(item => item.id === 'dish'), false)
+  assert.ok(sections[0].items.some(item => item.id === 'deal'))
+  assert.deepEqual(f.records, before)
+  f.records.get('kitchens/k/dishes/d').price = 0
+  const priced = await f.read()
+  assert.equal(priced[0].items.find(item => item.id === 'dish').price, 0)
+})

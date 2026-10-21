@@ -91,9 +91,10 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
             uploadDishImage: (x) => uploads.push(x),
           }),
         },
-        '({addDish,name,imageFile,message,saving})',
+        '({addDish,price,name,imageFile,message,saving})',
         true
       )
+      api.price.value = 13
       api.name.value = 'Pizza'
       api.imageFile.value = { name: 'image' }
       const result = api.addDish()
@@ -137,10 +138,11 @@ test('create captures original upload and reports saved Dish with failed image h
         },
       }),
     },
-    '({addDish,name,imageFile,message})',
+    '({addDish,price,name,imageFile,message})',
     true
   )
-  api.name.value = 'Pizza'
+  api.price.value = 13
+      api.name.value = 'Pizza'
   api.imageFile.value = original
   const result = api.addDish()
   pending.resolve({ id: 'pizza' })
@@ -173,9 +175,10 @@ test('Menu name flow stops before placement on destination change; failed placem
         }),
         useDishCreate: () => ({ createDish: () => pending.promise }),
       },
-      '({addNames,names,error,busy})',
+      '({addNames,names,prices,error,busy})',
       true
     )
+    api.prices.value = { Pizza: 13 }
     api.names.value = 'Pizza'
     const result = api.addNames()
     if (changed) {
@@ -564,4 +567,49 @@ test('item moves disable list boundaries and discard obsolete completion', async
   await request
   assert.deepEqual(h.notices, [])
   assert.equal(api.moving.value, '')
+})
+
+
+test('item creation requires a price and submits explicit zero for food and drinks', async () => {
+  for (const itemKind of ['food', 'drink']) {
+    const h = setup(), drafts = []
+    const api = evaluate(component('FoodAndDrink/Items/Create/Index'), {
+      ...h.deps,
+      defineProps: () => ({ itemKind }), defineEmits: () => () => {},
+      useKitchenDishesContext: () => ({ kitchenId: h.kitchenId, readOnly: ref(false), catalogue: { itemKind } }),
+      useDishCreate: () => ({ createDish: async draft => { drafts.push(draft); return { id: 'item' } } }),
+      useDishImageUpload: () => ({ uploadDishImage() {} }),
+    }, '({addDish,name,price,validPrice})', true)
+    api.name.value = 'Item'
+    assert.equal(api.validPrice.value, false)
+    await api.addDish()
+    assert.equal(drafts.length, 0)
+    api.price.value = 0
+    assert.equal(api.validPrice.value, true)
+    await api.addDish()
+    assert.equal(drafts[0].price, 0)
+    assert.equal(drafts[0].item_kind, itemKind)
+  }
+})
+
+test('Menu new-name creation asks for each price and preserves an explicit zero', async () => {
+  const h = setup(), drafts = [], placements = []
+  const api = evaluate(component('FoodAndDrink/Menus/Items/Add/ByName'), {
+    ...h.deps,
+    useKitchenWorkspaceMenuSection: () => ({
+      kitchenId: h.kitchenId, menuId: ref('menu'), sectionId: ref('section'),
+      dishes: ref([]), itemRows: ref([]), canWrite: ref(true),
+      createItem: async input => placements.push(input),
+    }),
+    useDishCreate: () => ({ createDish: async draft => { drafts.push(draft); return { id: draft.name } } }),
+  }, '({addNames,names,prices,error})', true)
+  api.names.value = 'Bread\nSoup'
+  api.prices.value = { Bread: 0 }
+  await api.addNames()
+  assert.match(api.error.value, /normal price for Soup/)
+  assert.equal(drafts.length, 0)
+  api.prices.value.Soup = 8
+  await api.addNames()
+  assert.deepEqual(drafts, [{ name: 'Bread', price: 0 }, { name: 'Soup', price: 8 }])
+  assert.equal(placements.length, 2)
 })

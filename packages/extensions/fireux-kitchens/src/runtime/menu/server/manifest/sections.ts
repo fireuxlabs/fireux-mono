@@ -170,7 +170,13 @@ export async function readKitchenMenuSections(
               const dishId = readRecordString(item, 'dish_id')
               const dish = dishesById.get(dishId) ?? null
               if (!dish || dish.status === 'archived') return null
-              const pricing = readDishPricing(dish)
+              // An incomplete catalogue item must not break an already published Menu.
+              let pricing
+              try {
+                pricing = readDishPricing(dish)
+              } catch {
+                return null
+              }
 
               return {
                 id: text(item.id),

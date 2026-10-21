@@ -1,56 +1,68 @@
 <template>
-    <form class="space-y-4" @submit.prevent="addDish">
-      <UFormField label="Image">
-        <div class="flex flex-col items-start gap-2">
-          <MoleculesFormsEditableImagePicker
-            :src="imagePreviewUrl"
-            :alt="name.trim() || `New ${singular}`"
-            :initials="imageInitials"
-            :button-label="`Choose ${singular} image`"
-            :disabled="saving || !canCreateDish"
-            :update="stageImage"
-          />
-          <p class="text-xs text-dimmed">
-            Use a transparent-background source. It will be stored as a 1200 ×
-            1200 WebP when the Dish is created.
-          </p>
-        </div>
-      </UFormField>
-
-      <div class="grid gap-4 md:grid-cols-2">
-        <UFormField label="Name">
-          <UInput
-            v-model="name"
-            placeholder="Margherita"
-            :disabled="saving || !canCreateDish"
-          />
-        </UFormField>
-
-        <UFormField label="Description">
-          <UTextarea
-            v-model="description"
-            placeholder="Tomato sauce, mozzarella, oregano"
-            :disabled="saving || !canCreateDish"
-            :rows="3"
-          />
-        </UFormField>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <UButton
-          type="submit"
-          icon="i-lucide-plus"
-          :loading="saving"
-          :disabled="!canCreateDish || saving || !name.trim()"
-        >
-          Create {{ singular }}
-        </UButton>
-
-        <p v-if="message" class="text-xs text-dimmed">
-          {{ message }}
+  <form class="space-y-4" @submit.prevent="addDish">
+    <UFormField label="Image">
+      <div class="flex flex-col items-start gap-2">
+        <MoleculesFormsEditableImagePicker
+          :src="imagePreviewUrl"
+          :alt="name.trim() || `New ${singular}`"
+          :initials="imageInitials"
+          :button-label="`Choose ${singular} image`"
+          :disabled="saving || !canCreateDish"
+          :update="stageImage"
+        />
+        <p class="text-xs text-dimmed">
+          Use a transparent-background source. It will be stored as a 1200 ×
+          1200 WebP when the Dish is created.
         </p>
       </div>
-    </form>
+    </UFormField>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <UFormField label="Name">
+        <UInput
+          v-model="name"
+          placeholder="Margherita"
+          :disabled="saving || !canCreateDish"
+        />
+      </UFormField>
+
+      <UFormField label="Description">
+        <UTextarea
+          v-model="description"
+          placeholder="Tomato sauce, mozzarella, oregano"
+          :disabled="saving || !canCreateDish"
+          :rows="3"
+        />
+      </UFormField>
+    </div>
+
+    <UFormField label="Normal price" required>
+      <UInput
+        v-model="price"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Enter price"
+        aria-label="Normal price"
+        :disabled="saving || !canCreateDish"
+      />
+    </UFormField>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <UButton
+        type="submit"
+        icon="i-lucide-plus"
+        :loading="saving"
+        :disabled="!canCreateDish || saving || !name.trim() || !validPrice"
+      >
+        Create {{ singular }}
+      </UButton>
+
+      <p v-if="message" class="text-xs text-dimmed">
+        {{ message }}
+      </p>
+    </div>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -65,11 +77,20 @@ import { useDishImageUpload } from '../../../../composables/dish/useDishImageUpl
 const { kitchenId, readOnly, catalogue } = useKitchenDishesContext()
 const props = defineProps<{ itemKind?: 'food' | 'drink' }>()
 const emit = defineEmits<{ created: [] }>()
-const itemKind = computed(() => props.itemKind || (catalogue.itemKind === 'drink' ? 'drink' : 'food'))
-const singular = computed(() => itemKind.value === 'drink' ? 'drink' : 'dish')
+const itemKind = computed(
+  () => props.itemKind || (catalogue.itemKind === 'drink' ? 'drink' : 'food')
+)
+const singular = computed(() => (itemKind.value === 'drink' ? 'drink' : 'dish'))
 const toast = useToastify()
 const route = useRoute()
 
+const price = ref<string | number>('')
+const validPrice = computed(
+  () =>
+    String(price.value).trim() !== '' &&
+    Number.isFinite(Number(price.value)) &&
+    Number(price.value) >= 0
+)
 const name = ref('')
 const description = ref('')
 const saving = ref(false)
@@ -105,6 +126,7 @@ onBeforeUnmount(clearImageDraft)
 useDishEditorScope(
   [kitchenId, () => itemKind.value, () => route.fullPath],
   () => {
+    price.value = ''
     name.value = ''
     description.value = ''
     message.value = ''
@@ -113,7 +135,7 @@ useDishEditorScope(
   }
 )
 const ownerSources = [kitchenId, () => itemKind.value, () => route.fullPath]
-const draftSources = [...ownerSources, name, description, imageFile]
+const draftSources = [...ownerSources, name, description, price, imageFile]
 const captureScope = useDishEditorScope(draftSources, () => {
   saving.value = false
   message.value = ''
@@ -123,7 +145,7 @@ const { uploadDishImage } = useDishImageUpload([...draftSources, canCreateDish])
 const addDish = async () => {
   const isCurrent = captureScope()
   const requestedImage = imageFile.value
-  if (!canCreateDish.value || saving.value) return
+  if (!canCreateDish.value || saving.value || !validPrice.value) return
 
   const dishName = normalizeString(name.value)
   if (!dishName) {
@@ -143,6 +165,7 @@ const addDish = async () => {
     const result = await createDish(
       {
         name: dishName,
+        price: Number(price.value),
         description: normalizeString(description.value),
         item_kind: itemKind.value,
       },
@@ -174,6 +197,7 @@ const addDish = async () => {
           icon: 'i-lucide-image-off',
         })
         clearImageDraft()
+        price.value = ''
         name.value = ''
         description.value = ''
         message.value = partialMessage
@@ -182,6 +206,7 @@ const addDish = async () => {
     }
 
     if (!isCurrent()) return
+    price.value = ''
     name.value = ''
     description.value = ''
     clearImageDraft()

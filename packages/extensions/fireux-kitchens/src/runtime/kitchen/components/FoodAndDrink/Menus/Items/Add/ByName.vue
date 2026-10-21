@@ -13,6 +13,21 @@
         Matching kitchen dishes are reused. New names create dishes in your
         catalogue.
       </p>
+      <UFormField
+        v-for="name in newNames"
+        :key="name"
+        :label="`${name} · Normal price`"
+        required
+      >
+        <UInput
+          v-model="prices[name]"
+          type="number"
+          min="0"
+          step="0.01"
+          :aria-label="`${name} normal price`"
+          :disabled="busy || !canWrite"
+        />
+      </UFormField>
       <UButton
         label="Add listed dishes"
         :loading="busy"
@@ -25,7 +40,7 @@
 </template>
 <script setup lang="ts">
 import { useDishEditorScope } from '../../../../../composables/dish/useDishEditorScope'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import { useDishCreate } from '../../../../../composables/dish/useDishCreate'
@@ -33,15 +48,39 @@ const { kitchenId, menuId, sectionId, dishes, itemRows, canWrite, createItem } =
   useKitchenWorkspaceMenuSection()
 const route = useRoute()
 const names = ref('')
+const prices = ref<Record<string, string | number>>({})
+const newNames = computed(() =>
+  [
+    ...new Set(
+      names.value
+        .split('\n')
+        .map((name) => name.trim())
+        .filter(Boolean)
+    ),
+  ].filter(
+    (name) =>
+      !dishes.value.some(
+        (dish) => dish.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      )
+  )
+)
 const error = ref('')
 const busy = ref(false)
 
 useDishEditorScope([kitchenId, menuId, sectionId, () => route.fullPath], () => {
+  prices.value = {}
   names.value = ''
   error.value = ''
   busy.value = false
 })
-const ownerSources = [kitchenId, menuId, sectionId, () => route.fullPath, names]
+const ownerSources = [
+  kitchenId,
+  menuId,
+  sectionId,
+  () => route.fullPath,
+  names,
+  () => JSON.stringify(prices.value),
+]
 const captureScope = useDishEditorScope(ownerSources, () => {
   error.value = ''
   busy.value = false
@@ -63,6 +102,7 @@ async function addNames() {
         .filter(Boolean)
     ),
   ]
+  const requestedPrices = { ...prices.value }
   const known = new Map(
     dishes.value.map((dish) => [dish.name.toLocaleLowerCase(), dish.id])
   )
@@ -72,11 +112,28 @@ async function addNames() {
   try {
     if (lines.length > 30 || lines.some((name) => name.length > 160))
       throw new Error('Use up to 30 dish names, each under 160 characters.')
+    for (const name of lines.filter(
+      (name) => !known.has(name.toLocaleLowerCase())
+    )) {
+      const price = requestedPrices[name]
+      if (
+        price === undefined ||
+        String(price).trim() === '' ||
+        !Number.isFinite(Number(price)) ||
+        Number(price) < 0
+      )
+        throw new Error(`Enter a normal price for ${name}.`)
+    }
     for (const name of lines) {
       if (!isCurrent()) return
       let id = known.get(name.toLocaleLowerCase())
       if (!id) {
-        id = (await createDish({ name }, { kitchenId: target.kitchenId })).id
+        id = (
+          await createDish(
+            { name, price: Number(requestedPrices[name]) },
+            { kitchenId: target.kitchenId }
+          )
+        ).id
         if (!isCurrent()) return
         known.set(name.toLocaleLowerCase(), id)
       }
@@ -92,6 +149,7 @@ async function addNames() {
       if (!isCurrent()) return
       placed.add(id)
     }
+    prices.value = {}
     names.value = ''
   } catch (cause) {
     if (isCurrent())

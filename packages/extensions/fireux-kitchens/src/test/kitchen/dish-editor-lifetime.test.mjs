@@ -516,9 +516,10 @@ test('Native creation locks food/drink inputs and invalidates changed text/image
         f = mount(
           h,
           'FoodAndDrink/Items/Create/Index',
-          '{addDish,name,description,imageFile,saving,message}'
+          '{addDish,price,name,description,imageFile,saving,message}'
         )
       f.identity.catalogue.itemKind = kind
+      f.api.price.value = 13
       f.api.name.value = 'Submitted'
       const flight = f.api.addDish()
       await vue.nextTick()
@@ -552,7 +553,7 @@ test('Creation reports saved Dish with failed image and suppresses obsolete foll
   for (const changed of [false, true]) {
     const h = context(),
       uploads = [],
-      f = mount(h, 'FoodAndDrink/Items/Create/Index', '{addDish,name,imageFile,message}', {
+      f = mount(h, 'FoodAndDrink/Items/Create/Index', '{addDish,price,name,imageFile,message}', {
         useDishImageUpload: () => ({
           uploadDishImage: async (input) => {
             uploads.push(input)
@@ -560,6 +561,7 @@ test('Creation reports saved Dish with failed image and suppresses obsolete foll
           },
         }),
       })
+    f.api.price.value = 13
     f.api.name.value = 'Dish'
     f.api.imageFile.value = new File(['original'], 'original.png')
     const flight = f.api.addDish()
@@ -742,7 +744,7 @@ test('Drink description assistance and Menu add-by-name retain changed local dra
         component,
         component.startsWith('FoodAndDrink/Items')
           ? '{notes,proposal,proposeDescription,approveDescription}'
-          : '{names,addNames,error}'
+          : '{names,prices,addNames,error}'
       )
     if (component.startsWith('FoodAndDrink/Items')) {
       f.identity.catalogue.itemKind = 'drink'
@@ -756,6 +758,7 @@ test('Drink description assistance and Menu add-by-name retain changed local dra
       assert.equal(f.api.notes.value, 'Replacement')
       assert.equal(f.api.proposal.value, '')
     } else {
+      f.api.prices.value = { Original: 13 }
       f.api.names.value = 'Original'
       const flight = f.api.addNames()
       await finish(h)

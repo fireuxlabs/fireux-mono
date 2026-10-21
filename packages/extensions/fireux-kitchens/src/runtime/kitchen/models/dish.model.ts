@@ -53,7 +53,9 @@ export type DishPricing = {
   add_ons: DishAddOnOption[]
 }
 export type Dish = FireuxStamped &
-  DishPricing & {
+  Omit<DishPricing, 'price'> & {
+    /** Absent until an operator sets a normal price; explicit zero is free. */
+    price?: number
     context?: string
     id: string
     name: string

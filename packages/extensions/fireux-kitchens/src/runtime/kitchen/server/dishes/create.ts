@@ -42,7 +42,7 @@ export async function createDish(event: H3Event, input: unknown) {
     draft.description === undefined ? '' : draft.description
   )
   const pricing = normalizeDishPricingPatch({
-    price: draft.price ?? 0,
+    ...(Object.hasOwn(draft, 'price') ? { price: draft.price } : {}),
     price_options: draft.price_options ?? [],
     add_ons: draft.add_ons ?? [],
     ...(draft.bottle_deposit !== undefined

@@ -2,6 +2,7 @@ import type { WatchSource } from 'vue'
 import { useDishMutation } from './useDishMutation'
 
 type DishCreateDraft = {
+  price?: number
   name: string
   description?: string
   item_kind?: string

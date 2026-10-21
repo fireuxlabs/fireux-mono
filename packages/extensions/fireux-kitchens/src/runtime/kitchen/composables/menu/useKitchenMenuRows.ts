@@ -53,7 +53,8 @@ export function useKitchenMenuRows(options: MenuRowOptions) {
             name: text(dish?.name) || dishId,
             description: text(dish?.description),
             image_url: text(record(dish).image),
-            price: Number(dish?.price || 0),
+            price: dish?.price,
+            ...(dish?.price === undefined ? { priceLabel: 'Price not set' } : {}),
             addOns: normalizeDishAddOns(record(dish).add_ons),
             priceOptions: normalizeDishPriceOptions(record(dish).price_options),
           }

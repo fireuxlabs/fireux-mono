@@ -2256,6 +2256,16 @@ Verify `kitchen-promotions.test.mjs`, `promotion-editor.test.mjs`,
 and the editor/customer presentations. These tests do not claim order-price
 reconciliation or release readiness.
 
+## Unset Dish prices
+
+Dish normal price is optional while a catalogue item is incomplete. Missing
+`price` remains absent through creation and catalogue projection; explicit zero
+is a valid free price. Both item creation and Menu add-by-name ask for a normal
+price. Menu readiness and trusted publication reject unpriced placements; public
+Menu manifests omit them without hiding unrelated items. Existing saved amounts
+are not rewritten. Verify `dish-commands.test.mjs`, `dish-reader-internals.test.mjs`,
+`dish-ui-scope.test.mjs`, `menu-publication.test.mjs` and `menu-meal-deals.test.mjs`.
+
 ## Dish removal boundary
 
 Kitchen Dish deletion checks all saved Menu-section and Promotion references,

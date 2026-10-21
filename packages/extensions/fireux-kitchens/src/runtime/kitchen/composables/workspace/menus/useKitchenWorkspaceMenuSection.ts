@@ -32,7 +32,7 @@ export type MenuSectionItemRow = {
   promotionId: string
   dishId: string
   label: string
-  price: number
+  price: number | undefined
   addOns: DishAddOnOption[]
   priceOptions: DishPriceOption[]
 }
@@ -110,7 +110,7 @@ function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
           clean(dish?.name) ||
           clean(item.promotion_id) ||
           clean(item.dish_id),
-        price: deal && 'price' in deal ? deal.price : Number(dish?.price || 0),
+        price: deal && 'price' in deal ? deal.price : dish?.price,
         addOns: normalizeDishAddOns(record(dish).add_ons),
         priceOptions: normalizeDishPriceOptions(record(dish).price_options),
       }

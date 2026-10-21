@@ -4,8 +4,8 @@ import { loadOfferingSource } from './offering-test-helpers.mjs'
 const { foodItemSummary, foodMenuSummary, foodPromotionSummary } = loadOfferingSource(
   'kitchen/utils/food-catalogue-summary', 'foodItemSummary,foodMenuSummary,foodPromotionSummary'
 )
-test('items flag missing names and prices, allowing zero and variant prices without requiring photos', () => {
-  assert.deepEqual(foodItemSummary([{name:'Water',price:0},{name:'Pizza',price_options:[{price:12}]}]).flags, [])
+test('items flag missing names and prices, allowing explicit zero but requiring a normal price even with variants', () => {
+  assert.deepEqual(foodItemSummary([{name:'Water',price:0},{name:'Pizza',price_options:[{price:12}]}]).flags, ['1 need a price'])
   assert.deepEqual(foodItemSummary([{name:' ',price:-1},{name:'Soup'}]).flags, ['1 missing a name','2 need a price'])
   assert.equal(foodItemSummary([]).status, 'No items yet')
 })

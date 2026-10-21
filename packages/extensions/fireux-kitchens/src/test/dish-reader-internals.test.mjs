@@ -711,7 +711,8 @@ test('Dish projection preserves canonical pricing and excludes the removed deal 
   assert.deepEqual(dish.price_options, input.price_options)
   assert.deepEqual(dish.add_ons, input.add_ons)
   assert.equal(Object.hasOwn(dish, 'is_deal'), false)
-  assert.equal(normalizeDish({ id: 'new-dish' }).price, 0)
+  assert.equal(Object.hasOwn(normalizeDish({ id: 'new-dish' }), 'price'), false)
+  assert.equal(normalizeDish({ id: 'free-dish', price: 0 }).price, 0)
 })
 
 test('combined Food & drinks catalogue retains both kinds and responds to live removal and owner changes', async () => {

@@ -10,7 +10,9 @@
       <span
         class="text-right text-sm text-muted whitespace-normal break-words"
         >{{
-          row.priceOptions.length
+          row.price === undefined
+            ? 'Price not set'
+            : row.priceOptions.length
             ? 'Multiple prices'
             : editor.formatPrice(row.price)
         }}</span
