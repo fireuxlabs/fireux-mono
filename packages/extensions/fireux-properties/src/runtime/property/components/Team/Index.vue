@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
-import type { usePropertyTeam } from '../../../composables/usePropertyTeam'
+import type { usePropertyTeam } from '../../composables/usePropertyTeam'
 import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
 import WorkspaceTeamAssignment from 'fireux-core/runtime/components/Workspace/Team/Assignment.vue'
 

@@ -9,7 +9,7 @@
         <WorkspaceHero compact title="Property Team" description="Property workspace team." />
         <WorkspacePropertySelector />
         <WorkspaceAI compact aria-label="Property Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
-      <WorkspacePropertyTeam :key="team.state.value.property.id" :team="team" />
+      <PropertyTeam :key="team.state.value.property.id" :team="team" />
       <WorkspaceFreemium
         family="property"
         capability="team"
@@ -22,7 +22,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspacePropertyTeam from '../../../property/components/Workspace/Team/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import { usePropertyTeam } from '../../../property/composables/usePropertyTeam'

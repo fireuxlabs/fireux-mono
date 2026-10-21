@@ -8,7 +8,7 @@ import { renderToString } from 'vue/server-renderer'
 
 const components = {
   kitchen: '../runtime/kitchen/components/Team/Index.vue',
-  property: '../../../fireux-properties/src/runtime/property/components/Workspace/Team/Index.vue',
+  property: '../../../fireux-properties/src/runtime/property/components/Team/Index.vue',
   project: '../../../../ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Team/Index.vue',
 }
 for (const [domain, path] of Object.entries(components)) test(`${domain} Team reuses shared presentation and retains domain roles and actions`, async () => {

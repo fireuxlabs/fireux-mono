@@ -449,8 +449,10 @@ Inside `runtime/<entity>/components`:
 Workspace components describe an operator surface; they do not own the records
 or commands exposed there. Components may be grouped by stable domain
 responsibility, independently of navigation labels. Kitchen is the current
-capability-first adopter; Project, Supplier, Property, Portfolio and Blank
-retain their existing named Workspace folders.
+capability-first adopter. Property Team is a bounded second adopter at
+`property/components/Team/Index.vue`, registered as `PropertyTeam` through the
+existing Property component root. Other Property capabilities, Project, Supplier,
+Portfolio and Blank retain their existing named Workspace folders.
 
 - `Workspace/Index.vue` composes the entity's entry surface and `Home/*` children.
 - `Workspace/Navigation.vue`, `Selector.vue` and `Dashboard.vue` may remain at
