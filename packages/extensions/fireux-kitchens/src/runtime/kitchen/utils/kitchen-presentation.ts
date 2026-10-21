@@ -18,6 +18,7 @@ export function readKitchenPresentation(
   currencyCode: string
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
+  showItemImages: boolean
   kitchen_theme?: WorkspaceTheme
   placeLogoImageUrl: string
   placeWordmarkImageUrl: string
@@ -39,6 +40,8 @@ export function readKitchenPresentation(
     currencyCode,
     currencyFormat: 'dash',
     showCurrency: true,
+    showItemImages:
+      (kitchenData.services as { item_images?: unknown } | undefined)?.item_images === true,
     ...(workspacePalette
       ? { kitchen_theme: { palette: workspacePalette } }
       : {}),

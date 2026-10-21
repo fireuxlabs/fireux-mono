@@ -144,6 +144,7 @@
         :copy="browseSurfaceCopy"
         :sections="activeDetailMenu.content.sections"
         :show-currency="showCurrency"
+        :show-item-images="activeDetailMenu.presentation.showItemImages"
       />
 
       <DiagnosticsDebugPanel

@@ -41,7 +41,10 @@ export function normalizeKitchen(
       status: status as Kitchen['identity']['status'],
       visibility: readKitchenVisibility(source),
     },
-    services: { title: String(record(source.services).title || '').trim() || 'Food & drinks' },
+    services: {
+      title: String(record(source.services).title || '').trim() || 'Food & drinks',
+      ...(record(source.services).item_images === true ? { item_images: true } : {}),
+    },
     place,
   }
 }

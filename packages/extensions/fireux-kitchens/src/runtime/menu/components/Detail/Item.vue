@@ -1,22 +1,14 @@
 <template>
   <article
     class="menu-browse-item"
-    :class="{ 'menu-browse-item--with-image': itemImageUrl }"
     :aria-labelledby="itemNameId"
     data-menu-item="true"
     :data-menu-item-id="item.id"
     data-menu-item-mode="read-only"
   >
-    <img
-      v-if="itemImageUrl"
-      :src="itemImageUrl"
-      alt=""
-      class="menu-browse-item__image"
-      width="80"
-      height="80"
-      loading="lazy"
-      decoding="async"
-      @error="hideImage"
+    <MenuItemImage
+      :enabled="showItemImages"
+      :image-url="item.imageUrl"
     />
 
     <div class="menu-browse-item__copy">
@@ -93,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { MenuManifestItem } from '../../models/menu-detail.model.ts'
@@ -105,6 +97,7 @@ const props = defineProps<{
   currencyCode: string
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
+  showItemImages?: boolean
   item: MenuManifestItem
   optionalExtrasLabel: string
 }>()
@@ -112,47 +105,20 @@ const props = defineProps<{
 const itemNameId = computed(() => `${props.accessibilityId}-name`)
 const priceOptionsLabelId = computed(() => `${props.accessibilityId}-options`)
 const addOnsLabelId = computed(() => `${props.accessibilityId}-add-ons`)
-const failedImageUrl = ref('')
-const itemImageUrl = computed(() => {
-  const url = String(props.item.imageUrl || '').trim()
-
-  return url && url !== failedImageUrl.value ? url : ''
-})
 const hasPriceOptions = computed(() => props.item.priceOptions.length > 0)
 const itemPrice = computed(() => {
-  if (
-    (props.item.promotionLabel || props.item.mealDeal) &&
-    props.item.price === 0
-  )
-    return formatPrice(0)
   if (!hasPriceOptions.value) return formatPrice(props.item.price)
-
-  const canonicalStartingPrice = Number(props.item.price)
-  if (Number.isFinite(canonicalStartingPrice) && canonicalStartingPrice > 0) {
-    return formatPrice(canonicalStartingPrice)
-  }
 
   const prices = props.item.priceOptions
     .map((option) => Number(option.price))
-    .filter((price) => Number.isFinite(price) && price > 0)
+    .filter((price) => Number.isFinite(price) && price >= 0)
 
-  return prices.length ? formatPrice(Math.min(...prices)) : ''
+  return prices.length
+    ? formatPrice(Math.min(...prices))
+    : formatPrice(props.item.price)
 })
 
-watch(
-  () => props.item.imageUrl,
-  () => {
-    failedImageUrl.value = ''
-  }
-)
-
-function hideImage() {
-  failedImageUrl.value = itemImageUrl.value
-}
-
 function formatPrice(price: number) {
-  if (price === 0 && (props.item.promotionLabel || props.item.mealDeal))
-    return props.showCurrency === false ? '0' : `0 ${props.currencyCode}`
   return formatCurrencyAmount(price, {
     currencyCode: props.currencyCode,
     format: props.currencyFormat,
@@ -174,16 +140,8 @@ function addOnPrice(price: number) {
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 12%, transparent);
 }
 
-.menu-browse-item--with-image {
+.menu-browse-item:has(> .menu-item-image) {
   grid-template-columns: 5rem minmax(0, 1fr);
-}
-
-.menu-browse-item__image {
-  display: block;
-  width: 5rem;
-  height: 5rem;
-  border-radius: calc(var(--ui-radius) * 3);
-  object-fit: cover;
 }
 
 .menu-browse-item__copy {
@@ -282,23 +240,22 @@ function addOnPrice(price: number) {
 }
 
 @media (max-width: 520px) {
-  .menu-browse-item--with-image {
+  .menu-browse-item:has(> .menu-item-image) {
     grid-template-columns: 4rem minmax(0, 1fr);
   }
 
-  .menu-browse-item__image {
-    width: 4rem;
-    height: 4rem;
+  .menu-browse-item {
+    --menu-item-image-size: 4rem;
   }
 }
 
 @media (max-width: 420px) {
-  .menu-browse-item--with-image .menu-browse-item__heading {
+  .menu-browse-item:has(> .menu-item-image) .menu-browse-item__heading {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--spacing);
   }
 
-  .menu-browse-item--with-image .menu-browse-item__price {
+  .menu-browse-item:has(> .menu-item-image) .menu-browse-item__price {
     justify-self: start;
   }
 

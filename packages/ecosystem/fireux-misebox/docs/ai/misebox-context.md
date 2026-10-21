@@ -429,12 +429,14 @@ their owning capability; larger setup stays in child pages. The separate Setting
 its explicit unconnected-controls notice and existing authority boundary.
 Menu records, imports and research live under `/menus`, an explicit exception to
 the sidebar group prefix. Public Menu URLs and HTTP command
-endpoints are unchanged. `/settings/kiosks` composes device management and links to
-`/stations`. Calendar remains a contextual doorway; record details, creation,
+endpoints are unchanged. Operational Kiosk device setup remains unfinished; the
+retired `/settings/kiosks` page is not registered. Calendar remains a contextual doorway; record details, creation,
 research and parked routes are not primary sidebar entries. Research routes follow
 the capability they describe. There are no retired-route aliases or fallback readers.
 
-Orders retains its configuration entrances and a draft-only board. The former lifecycle views and operational command surfaces have been deleted.
+Orders retains its index and board over saved drafts and submitted orders. The
+current exchange owns acceptance/rejection and preparing/ready/completed states;
+dispatch and physical handover remain separate unfinished work.
 
 Ordering is Kitchen-owned. Orders indexes its working and configuration children;
 website connection setup remains under Settings → Integrations. Settings must
@@ -455,8 +457,8 @@ presentation (branding, currency and Kitchen palette). Kitchen identity and Menu
 readers consume it directly; Kitchen identity does not depend on Menu ownership.
 Verify this projection with `kitchen-identity-shape.test.mjs`.
 
-Kitchen listing at `/workspace/kitchen/identity` is a focused Settings child
-composing the existing listing controls. Settings owns its sibling editor links.
+Kitchen listing at `/workspace/kitchen/identity` is an independent top-level
+group composing the existing listing controls and its venue/brand editor links.
 `/workspace/kitchen/identity/profile` owns the five focused venue edit sections;
 `/workspace/kitchen/identity/operating-hours` owns venue and Kitchen schedules;
 `/workspace/kitchen/identity/appearance` owns Kitchen menu palette editing.
@@ -1167,6 +1169,14 @@ draft until it is discarded. Preview presentation does not alter the Workspace t
 Kitchen-owned Menus consume that palette directly. Separate Menu layout and
 typography tools have no stored contract yet.
 
+Customer Item images use Kitchen-owned `services.item_images`, edited in Appearance
+through the existing protected Kitchen update command. Absent/false means text
+only; true shows Item images when available across Browse and service catalogues,
+including Collection selection. Images remain Dish-owned; missing/failed images
+retain names, prices and choices. No Menu image copy, image generation or required
+photo is introduced. Operational Kiosk presentation is not implemented by this
+preference. See `item-presentation.test.mjs` and `menu/server/payload/presentation.ts`.
+
 Kitchen `services.title` is the shared customer-facing food title, edited inline
 at the top of Workspace Services through the trusted Kitchen update command.
 Missing or cleared titles display “Food & drinks”. Public food portal cards use
@@ -1336,8 +1346,9 @@ index entrances redirect there. Website code targets the Kitchen's stable
 `/kitchens/:slug/order` entry, or `/order` in a tenant App. This chooser consumes
 the live published Menu directory and its safe offering-option projection, excludes
 paused and unsupported interactions, and carries the exact selected offering id
-to the existing per-Menu checkout. It does not combine several Menus into one
-basket. Ordinary offering/menu edits do not require a replacement snippet.
+to the existing per-Menu checkout. The dedicated Collection service entrance
+separately combines eligible Menus in one basket through `useCollectionCheckout`
+and the canonical multi-Menu resolver. Ordinary offering/menu edits do not require a replacement snippet.
 Kitchen-owned `components/Ordering/Setup.vue` is the shared website-ordering
 workflow in the App setup entrance and Workspace Integrations. It consumes live
 Kitchen/Menu/Offering records through the existing identity and offering readers.
@@ -1346,10 +1357,9 @@ Workspace selection. Payment summaries consume that same explicit Kitchen throug
 `useKitchenFulfilment`; the existing Workspace reader remains the default for
 Workspace-only consumers. Payment-edit actions in standalone setup use its
 explicit authorized handoff rather than another saved Workspace selection.
-The Services overview and exact-record route both compose `Offerings/Service.vue`
-and `Offerings/Setup.vue`; there is no second immediate-save configuration editor.
-The Setup draft owns availability, menu selection, hours and one scoped configure
-command. Discard invalidates pending intent even when it restores the same values.
+Services composes inline `FoodAndDrink/Services/Service.vue` and its Setup
+children; there is no exact-record Service route. Each local editor owns
+availability, menu selection, hours and its scoped automatic configure command.
 Credential waits reject obsolete account, Kitchen, App, membership, access,
 draft and disposal epochs. Same-owner refresh preserves authored drafts; owner
 changes dispose editors. Exact existing record identity is retained independently
@@ -1903,7 +1913,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 | Recipe create, update, delete     | `runtime/kitchen/server/recipes/{create,update,delete}.ts`                                                                      | `test/kitchen/recipe-commands.test.mjs`, `test/recipe-command-internals.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Direct route adapters consume each action; Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
 | Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                                                                   | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                                                                 |
 | Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                                                                        | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                      |
-| Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/items/write.ts`                                                | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim.                                                                       |
+| Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/items/write.ts`                                                | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve Dish-owned commercial terms and do not publish. Current section/item action menus invoke archive and adjacent movement commands; their transaction boundaries are mapped in the Menu family map.                                                                       |
 | Menu metadata/removal             | `runtime/menu/server/records/update.ts`, `runtime/menu/server/records/delete.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata writes only the canonical Menu; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                                                                |
 
 Menu manual creation lives in `menu/server/records/create.ts` and shares
@@ -2227,8 +2237,8 @@ joins choice names from Kitchen Dishes, omits paused/deleted deals, and exposes
 set price, choose counts and included/supplemented choices through the focused
 `Menu/Detail/MealDeal.vue` presentation. Browse filters deals by today's venue-local
 weekday; service surfaces use their current/next serving weekday and deduplicate
-by Promotion id. Standalone Dish offers never reprice a meal deal. Customer
-selection, extras policy and Order price calculation remain outside this slice.
+by Promotion id. Standalone Dish offers never reprice a meal deal. Collection selection and the canonical Menu resolver retain meal choices,
+supplements, extras and deposits when calculating the submitted pricing snapshot.
 
 The protected writer validates current Kitchen authority, venue currency and
 ownership/status of every referenced Dish. Active Dish offers cannot overlap on
@@ -2245,16 +2255,19 @@ across Menu placements, applies base/required-variant prices, and retains extras
 Browse resolves today's local price; service surfaces resolve now when open or
 the day of their next serving window. Existing Menu publication and service
 eligibility still determine where dishes appear; a promotion alone does not
-publish an unplaced dish or enable a service. Order resolution, submission,
-totals and saved records remain unchanged and need a separately authorized pass.
+publish an unplaced dish or enable a service. `menu/server/ordering.ts` applies
+current promotional terms in the submitting transaction and snapshots prices
+separately from Order facts; payment and delivery charges remain separate.
 
 The Sunday pizzas data cutover preserves the prior promotion as audit data and
 replaces Menu/section targeting with the explicit existing pizza Dish IDs at
 price 11. Retired migration controls and endpoints are not runtime fallbacks.
 Verify `kitchen-promotions.test.mjs`, `promotion-editor.test.mjs`,
 `menu-pricing.test.mjs`, `menu-meal-deals.test.mjs`, publication/content-command checks, service-view checks,
-and the editor/customer presentations. These tests do not claim order-price
-reconciliation or release readiness.
+and the editor/customer presentations. The controlled `food-foundation-journey.test.mjs` carries one fixture record set
+through Item creation, Menu placement/publication, Promotions and public Service
+projection, asserting unchanged catalogue terms and no Order path access. These
+checks do not establish a live customer journey or release readiness.
 
 ## Unset Dish prices
 
@@ -2437,6 +2450,10 @@ satisfy readiness. Removal-only configuration updates permit incremental cleanup
 without admitting new incompatible selections. Draft menus can be selected,
 but public eligibility requires a selected published eligible menu and serving hours.
 Unavailable existing selections remain labelled so operators can remove them.
+Kiosk cleanup permits strict removals within one mode even when the union of
+both mode selections stays unchanged; transfers or additions remain validated.
+The Food & drink summary flags a missing Menu/Service hour intersection from
+deterministic schedule data, independently of AI.
 Daily specials and document menus keep their own entrances. No catalogue prices
 or Order records are changed by these checks.
 
@@ -2494,7 +2511,7 @@ there are no mode activation switches. Each mode owns its `menu_ids`; the servic
 command-maintained union for menu references and discovery. Serving hours remain
 shared. Menu policy projections filter each mode by its own selected menus.
 
-The overview and single-service route expose only On/Off, menus and serving hours
+The inline service sections expose only On/Off, menus and serving hours
 for Collection, Delivery, Table service, QR table ordering and Room service.
 Pre-order retains advance notice; Kiosk retains mode-specific menus for both Eat in and Takeaway. Table-count, delivery-area, customer-link and QR/room
 link editors are not composed into Services. Existing stored settings, public

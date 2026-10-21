@@ -79,6 +79,7 @@ export type MenuKitchenPresentation = {
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
+  showItemImages?: boolean
   kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string

@@ -42,6 +42,7 @@
             :item="item"
             :optional-extras-label="copy.optionalExtrasLabel"
             :show-currency="showCurrency"
+            :show-item-images="showItemImages"
           />
         </div>
       </section>
@@ -67,10 +68,12 @@ const props = withDefaults(
     copy: MenuBrowseSurfaceCopy
     sections: MenuManifestSection[]
     showCurrency?: boolean
+    showItemImages?: boolean
   }>(),
   {
     currencyFormat: 'dash',
     showCurrency: true,
+    showItemImages: false,
   }
 )
 

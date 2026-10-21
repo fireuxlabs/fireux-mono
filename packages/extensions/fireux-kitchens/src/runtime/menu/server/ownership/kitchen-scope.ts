@@ -26,6 +26,7 @@ export type MenuKitchenScope = {
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
+  showItemImages?: boolean
   kitchen_theme?: WorkspaceTheme
   kitchen_offerings?: unknown
   sproochli?: SproochliAttachmentConfig

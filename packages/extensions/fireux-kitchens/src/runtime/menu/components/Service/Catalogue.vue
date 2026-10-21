@@ -37,6 +37,7 @@
             :currency-code="row.presentation.currencyCode"
             :currency-format="row.presentation.currencyFormat || 'code'"
             :show-currency="row.presentation.showCurrency !== false"
+            :show-item-images="row.presentation.showItemImages"
             available-options-label="Options"
             optional-extras-label="Extras"
           />

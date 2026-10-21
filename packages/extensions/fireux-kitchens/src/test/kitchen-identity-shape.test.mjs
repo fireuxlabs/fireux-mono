@@ -112,7 +112,9 @@ test('joined presentation retains canonical Identity and reads currency only fro
     visibility: false,
   }
   const view = useKitchenInterface().surface({
-    kitchen: { id: 'p', identity, currency: 'CHF' },
+    kitchen: { id: 'p', identity, currency: 'CHF', services: {
+      title: 'Food & drinks', item_images: true, private_legacy_field: 'excluded',
+    } },
     place: {
       name: 'Shared venue',
       slug: 'place-url',
@@ -125,6 +127,11 @@ test('joined presentation retains canonical Identity and reads currency only fro
   assert.equal(view.visibility, false)
   assert.equal(view.currency_code, 'GBP')
   assert.equal('currency' in view, false)
+  assert.deepEqual(view.services, { title: 'Food & drinks', item_images: true })
+  const oldServices = useKitchenInterface().surface({
+    kitchen: { id: 'p', identity, services: [{ type: 'delivery' }] },
+  })
+  assert.equal(oldServices.services, undefined)
   const noCurrency = useKitchenInterface().surface({
     kitchen: { id: 'p', identity, currency: 'CHF' },
     place: { name: 'Shared venue' },

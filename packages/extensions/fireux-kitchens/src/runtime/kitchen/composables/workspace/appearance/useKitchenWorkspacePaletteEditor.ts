@@ -16,9 +16,11 @@ const fallbackWorkspacePalette: WorkspacePalette = {
   accent_contrast: '#f8fafc',
 }
 
-export function useKitchenWorkspacePaletteEditor() {
+export function useKitchenWorkspacePaletteEditor(
+  identity = useKitchenWorkspaceIdentity()
+) {
   const { selectedKitchen, kitchenId, canWrite, outcome } =
-    useKitchenWorkspaceIdentity()
+    identity
   const toast = useToastify()
   const saving = ref(false)
   const saveState = ref('')

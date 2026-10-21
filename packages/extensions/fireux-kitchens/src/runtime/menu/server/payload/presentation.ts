@@ -25,6 +25,7 @@ export function menuPayloadPresentation(
     ...(currencyCode ? { currencyCode } : {}),
     currencyFormat: scope.currencyFormat || 'dash',
     showCurrency: scope.showCurrency !== false,
+    showItemImages: scope.showItemImages === true,
     ...(imageShade ? { kitchenImageShade: imageShade } : {}),
     ...(text(scope.kitchenImageUrl)
       ? { kitchenImageUrl: text(scope.kitchenImageUrl) }

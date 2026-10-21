@@ -109,6 +109,7 @@ export const scopedTarget = async (
       ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
       currencyFormat: identity.currencyFormat,
       showCurrency: identity.showCurrency,
+      showItemImages: identity.showItemImages,
       ...(identity.kitchen_theme
         ? { kitchen_theme: identity.kitchen_theme }
         : {}),

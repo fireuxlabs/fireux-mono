@@ -49,7 +49,11 @@
       :recipes="productDemo?.workspace.recipes || []"
       :error="Boolean(productDemoError)"
     />
-    <UAlert title="Ordering is being rebuilt" color="neutral" />
+    <UAlert
+      v-else-if="selectedSurface?.id === 'kitchen.orders'"
+      title="Ordering is being rebuilt"
+      color="neutral"
+    />
     <LandingWorkspacePreviewStations
       v-else-if="selectedSurface?.id === 'kitchen.stations'"
       :key="selectedSurface.id"

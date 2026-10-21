@@ -192,7 +192,12 @@ interface copy together with the translated Menu projection; the unselected
 default route never rewrites the original Menu content.
 
 Dish owns reusable food media. MenuItem may reference Dish but does not own a
-second food-image field. Storage normalization and exact image constraints are
+second food-image field. Kitchen `services.item_images` supplies the customer
+text-only/image-enabled preference through the existing presentation projection.
+Missing and failed images never remove item text, prices or choices. Zero-priced
+items display an explicit zero; absent prices remain absent. Verify with
+`item-presentation.test.mjs` and `food-foundation-journey.test.mjs`.
+Storage normalization and exact image constraints are
 implementation contracts in the Kitchen server/media source, not this family
 map.
 

@@ -15,6 +15,6 @@ export type Kitchen = {
   /** Internal operator background; omitted from public projections. */
   context?: string
   identity: KitchenIdentity
-  services?: { title: string }
+  services?: { title?: string; item_images?: boolean }
   tables?: { count: number }
 }

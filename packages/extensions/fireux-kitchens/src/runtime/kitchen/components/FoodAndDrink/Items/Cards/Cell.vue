@@ -1,66 +1,40 @@
 <template>
-  <component
-    :is="rootComponent"
-    v-bind="rootAttrs"
-    class="card card--cell operation-image-cell group flex min-w-0 flex-col text-left"
-    :class="{ 'dish-card-expanded': expanded, 'dish-card-list': list }"
-    @click="onClick"
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    class="card card--cell dish-card"
+    :class="{ 'dish-card--list': list }"
+    @activate="emit('action')"
   >
-    <div class="dish-card-media aspect-[4/3] overflow-hidden bg-elevated">
-      <img
-        v-if="imageUrl"
-        :src="imageUrl"
-        :alt="title"
-        class="size-full object-cover transition duration-300 group-hover:scale-[1.02]"
-        loading="lazy"
+    <div class="card__media">
+      <UAvatar
+        :src="imageUrl || undefined"
+        :alt="title || 'Untitled dish'"
+        icon="i-lucide-utensils"
+        size="3xl"
+        class="dish-card__image"
       />
-      <div
-        v-else
-        class="flex size-full items-center justify-center text-muted"
-        aria-hidden="true"
-      >
-        <UIcon name="i-lucide-utensils" class="size-7" />
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <h3 class="card__title" :title="title">{{ title || 'Untitled dish' }}</h3>
+          <UIcon
+            v-if="link && to"
+            name="i-lucide-arrow-right"
+            class="fx-card__icon"
+            aria-hidden="true"
+          />
+        </div>
+        <p v-if="expanded && description" class="fx-card__body">
+          {{ description }}
+        </p>
+        <p v-if="meta" class="card__subtitle">{{ meta }}</p>
+        <strong v-if="priceLabel" class="fx-type-caption">{{ priceLabel }}</strong>
       </div>
     </div>
-
-    <div
-      class="dish-card-caption flex min-w-0 flex-1 flex-col gap-1.5 border-t border-default px-3 py-2.5"
-    >
-      <div class="flex min-w-0 items-start gap-2">
-        <h3
-          class="min-w-0 flex-1 truncate text-sm font-semibold text-highlighted"
-        >
-          {{ title || 'Untitled dish' }}
-        </h3>
-        <UIcon
-          v-if="link && to"
-          name="i-lucide-arrow-right"
-          class="mt-0.5 size-3.5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
-          aria-hidden="true"
-        />
-      </div>
-
-      <p v-if="expanded && description" class="dish-card-description">
-        {{ description }}
-      </p>
-      <div class="flex min-w-0 items-center gap-2 text-xs">
-        <span v-if="meta" class="truncate text-muted">
-          {{ meta }}
-        </span>
-        <span
-          v-if="priceLabel"
-          class="ml-auto shrink-0 font-semibold text-toned"
-        >
-          {{ priceLabel }}
-        </span>
-      </div>
-    </div>
-  </component>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { computed, resolveComponent } from 'vue'
-
 type Props = {
   id: string
   to?: string
@@ -79,7 +53,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   to: '',
   imageUrl: '',
   description: '',
@@ -91,83 +65,35 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const nuxtLink = resolveComponent('NuxtLink')
-const rootComponent = computed(() => {
-  if (props.link && props.to) return nuxtLink
-  if (props.action) return 'button'
-  return 'article'
-})
-const rootAttrs = computed(() =>
-  props.link && props.to
-    ? { to: props.to }
-    : props.action
-      ? { type: 'button' }
-      : {}
-)
-
-const onClick = () => {
-  if (props.action) emit('action')
-}
 </script>
 
 <style scoped>
-.operation-image-cell {
-  display: flex;
-  flex-direction: column;
+.dish-card {
+  height: 100%;
   padding: 0;
 }
-.dish-card-expanded {
-  width: 100%;
-  min-width: 0;
+.dish-card .card__media {
   height: 100%;
-  border: 1px solid var(--ui-border);
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--ui-bg);
-  transition:
-    border-color 0.15s,
-    transform 0.15s;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
 }
-.dish-card-expanded:hover {
-  border-color: var(--ui-primary);
-  transform: translateY(-2px);
-}
-.dish-card-expanded:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 3px;
-}
-.dish-card-expanded .dish-card-media {
+.dish-card__image {
+  width: 100%;
+  height: auto;
   aspect-ratio: 4 / 3;
-  background: var(--ui-bg-elevated);
+  flex: none;
+  border-radius: 0;
 }
-.dish-card-expanded .dish-card-caption {
-  padding: 16px;
+.dish-card .card__content {
+  padding: calc(var(--spacing) * 4);
 }
-.dish-card-expanded h3 {
-  white-space: normal;
-  line-height: 1.4;
-  font-size: 15px;
-}
-.dish-card-description {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--ui-text-muted);
-}
-.dish-card-list {
+.dish-card--list .card__media {
   flex-direction: row;
   align-items: center;
 }
-.dish-card-list .dish-card-media {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-}
-.dish-card-list .dish-card-caption {
-  border-top: 0;
-  padding: 10px 14px;
+.dish-card--list .dish-card__image {
+  width: calc(var(--spacing) * 16);
+  height: calc(var(--spacing) * 16);
 }
 </style>

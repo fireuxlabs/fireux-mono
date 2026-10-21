@@ -33,6 +33,7 @@ export type MenuPayloadScope = {
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
+  showItemImages?: boolean
   kitchenOfferingId?: string
   menuContext?: MenuRouteContext
   kitchen_theme?: WorkspaceTheme

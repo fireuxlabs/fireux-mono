@@ -17,6 +17,10 @@
           :aria-label="`Choose ${row.item.name}`"
           @click="emit('select', row)"
         >
+          <MenuItemImage
+            :enabled="row.presentation.showItemImages"
+            :image-url="row.item.imageUrl"
+          />
           <div class="min-w-0 flex-1">
             <h3 class="font-semibold">{{ row.item.name }}</h3>
             <p

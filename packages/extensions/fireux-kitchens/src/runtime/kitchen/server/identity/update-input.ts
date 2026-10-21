@@ -16,6 +16,7 @@ const allowed = new Set([
   'identity.visibility',
   'tables.count',
   'services.title',
+  'services.item_images',
 ])
 
 function flatten(source: Record<string, unknown>) {
@@ -43,6 +44,11 @@ export function parseKitchenUpdate(value: unknown) {
   const out: Record<string, unknown> = {}
 
   for (const [key, raw] of Object.entries(patch)) {
+    if (key === 'services.item_images') {
+      if (typeof raw !== 'boolean') fail('Item image preference must be boolean.')
+      out[key] = raw
+      continue
+    }
     if (key === 'services.title') {
       if (typeof raw !== 'string' || raw.trim().length > 120)
         fail('Service title must be text up to 120 characters.')

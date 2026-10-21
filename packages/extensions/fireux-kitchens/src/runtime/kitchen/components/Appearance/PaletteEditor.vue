@@ -1,20 +1,15 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-6">
-    <div>
-      <h2 class="text-2xl font-semibold tracking-tight text-highlighted">
-        Appearance
-      </h2>
-      <p class="mt-2 text-sm text-muted">
-        Choose the colours used across your Kitchen’s menus.
-      </p>
+  <section class="workspace-surface" aria-labelledby="kitchen-menu-colours">
+    <div class="section__copy">
+      <h2 id="kitchen-menu-colours">Menu colours</h2>
     </div>
-    <div class="appearance-editor">
-      <div class="space-y-5">
+    <div class="workspace-surface__split">
+      <div class="workspace-surface workspace-surface__primary">
         <UCard v-for="group in groups" :key="group.label">
-          <template #header
-            ><h2 class="font-semibold">{{ group.label }}</h2></template
-          >
-          <div class="space-y-5">
+          <template #header>
+            <h3 class="fx-type-card-title">{{ group.label }}</h3>
+          </template>
+          <div class="workspace-surface__grid workspace-surface__grid--2">
             <UFormField
               v-for="field in group.fields"
               :key="field.key"
@@ -25,22 +20,18 @@
                   : 'Use a six-digit hex colour, such as #ffffff.'
               "
             >
-              <div class="flex items-center gap-3">
-                <input
-                  class="appearance-swatch"
-                  type="color"
+              <div class="fx-card-body-stack">
+                <UColorPicker
+                  size="sm"
                   :aria-label="`Choose ${field.label.toLowerCase()}`"
-                  :value="previewPalette[field.key]"
+                  :model-value="previewPalette[field.key]"
                   :disabled="!canWrite || saving"
-                  @input="
-                    set(field.key, ($event.target as HTMLInputElement).value)
-                  "
+                  @update:model-value="set(field.key, String($event))"
                 />
                 <UInput
                   :model-value="draft[field.key]"
                   :aria-label="field.label"
                   :disabled="!canWrite || saving"
-                  class="w-full"
                   maxlength="7"
                   @update:model-value="set(field.key, String($event))"
                 />
@@ -61,7 +52,7 @@
           color="error"
           ><template #actions><MoleculesCopyError :message="error" /></template
         ></UAlert>
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="fx-card__actions">
           <UButton
             label="Save colours"
             :disabled="!canWrite || !valid || !dirty || conflict"
@@ -76,12 +67,12 @@
             :disabled="saving"
             @click="reset"
           />
-          <span class="text-xs text-muted" aria-live="polite">{{
+          <span class="fx-type-caption" aria-live="polite">{{
             dirty ? 'Unsaved changes' : saveState
           }}</span>
         </div>
       </div>
-      <div class="appearance-editor__preview space-y-3">
+      <div class="workspace-surface__context fx-card-body-stack">
         <KitchenAppearancePreview
           :palette="previewPalette"
           :name="name"
@@ -89,7 +80,7 @@
           :image-fit="imageFit"
           :image-background="imageBackground"
         />
-        <p class="text-center text-xs text-muted">
+        <p class="fx-type-caption">
           Preview only. Your colours change when you save.
         </p>
       </div>
@@ -199,33 +190,3 @@ watch(
   { deep: true }
 )
 </script>
-<style scoped>
-.appearance-editor {
-  display: grid;
-  gap: 2rem;
-  align-items: start;
-}
-.appearance-swatch {
-  width: 2.75rem;
-  height: 2.75rem;
-  flex-shrink: 0;
-  padding: 0.15rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 0.65rem;
-  cursor: pointer;
-  background: var(--ui-bg);
-}
-.appearance-swatch:disabled {
-  cursor: default;
-  opacity: 0.5;
-}
-@media (min-width: 64rem) {
-  .appearance-editor {
-    grid-template-columns: minmax(18rem, 0.85fr) minmax(0, 1.15fr);
-  }
-  .appearance-editor__preview {
-    position: sticky;
-    top: 1rem;
-  }
-}
-</style>

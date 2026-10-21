@@ -1,20 +1,27 @@
 <template>
-  <KitchenAppearancePaletteEditor
-    v-if="outcome === 'ready'"
-    :key="kitchenId"
-    :palette="palette"
-    :debug-context="debugContext"
-    :stored-palette="storedPalette"
-    :can-write="canSave"
-    :saving="saving"
-    :save-state="saveState"
-    :error="error"
-    :name="place?.name || 'Your Kitchen'"
-    :image-url="media.imageUrl"
-    :image-fit="media.imageFit"
-    :image-background="media.imageBackground"
-    @save="save"
-  />
+  <div v-if="outcome === 'ready'" class="workspace-surface">
+    <KitchenAppearanceItemImages
+      :key="`images-${kitchenId}`"
+      :kitchen-id="kitchenId"
+      :enabled="identity.selectedKitchen.value?.services?.item_images === true"
+      :disabled="!canSave"
+    />
+    <KitchenAppearancePaletteEditor
+      :key="kitchenId"
+      :palette="palette"
+      :debug-context="debugContext"
+      :stored-palette="storedPalette"
+      :can-write="canSave"
+      :saving="saving"
+      :save-state="saveState"
+      :error="error"
+      :name="place?.name || 'Your Kitchen'"
+      :image-url="media.imageUrl"
+      :image-fit="media.imageFit"
+      :image-background="media.imageBackground"
+      @save="save"
+    />
+  </div>
   <MoleculesStateCard
     v-else
     entity="Kitchen"
@@ -28,7 +35,6 @@
       :objects="{ storedPalette }"
       :derived="debugContext"
       title="Appearance debug"
-      class="mt-6"
     />
   </ClientOnly>
 </template>
@@ -39,7 +45,9 @@ import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-iden
 import { useRoute } from '#imports'
 import { useKitchenWorkspacePaletteEditor } from '../../composables/workspace/appearance/useKitchenWorkspacePaletteEditor'
 import { useKitchenWorkspacePlace } from '../../composables/workspace/identity/useKitchenWorkspacePlace'
-const { place, placeId, placeOutcome } = useKitchenWorkspacePlace()
+import { useKitchenWorkspaceIdentity } from '../../composables/workspace/identity/useKitchenWorkspaceIdentity'
+const identity = useKitchenWorkspaceIdentity()
+const { place, placeId, placeOutcome } = useKitchenWorkspacePlace(identity)
 const {
   kitchenId,
   outcome,
@@ -50,7 +58,7 @@ const {
   saveState,
   error,
   save,
-} = useKitchenWorkspacePaletteEditor()
+} = useKitchenWorkspacePaletteEditor(identity)
 const media = computed(() => placeIdentityMedia(place.value))
 const route = useRoute()
 const debugContext = computed(() => ({

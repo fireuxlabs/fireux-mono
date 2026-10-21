@@ -99,7 +99,16 @@ export function useKitchenInterface() {
     if (!id) return null
     const visibility = readKitchenVisibility(merged)
     // Child attachment and fulfilment records are never read from root preimages.
-    delete (merged as Record<string, unknown>).services
+    // Only the current presentation fields survive; historical service arrays do not.
+    const services = (kitchen as Partial<Kitchen>).services
+    if (services && !Array.isArray(services)) {
+      ;(merged as Record<string, unknown>).services = {
+        ...(typeof services.title === 'string' ? { title: services.title } : {}),
+        ...(typeof services.item_images === 'boolean'
+          ? { item_images: services.item_images }
+          : {}),
+      }
+    } else delete (merged as Record<string, unknown>).services
     delete (merged as Record<string, unknown>).integrations
     delete (merged as Record<string, unknown>).sproochli
     delete (merged as Record<string, unknown>).fulfilment

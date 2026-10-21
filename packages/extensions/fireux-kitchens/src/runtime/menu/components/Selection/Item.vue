@@ -1,5 +1,9 @@
 <template>
   <div class="space-y-6">
+    <MenuItemImage
+      :enabled="offer.presentation.showItemImages"
+      :image-url="offer.item.imageUrl"
+    />
     <p v-if="offer.item.description" class="text-sm text-muted">
       {{ offer.item.description }}
     </p>

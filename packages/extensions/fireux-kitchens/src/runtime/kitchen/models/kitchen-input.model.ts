@@ -12,5 +12,6 @@ export type KitchenUpdateInput = {
   'identity.status'?: KitchenIdentity['status']
   'identity.visibility'?: KitchenIdentity['visibility']
   'services.title'?: string
+  'services.item_images'?: boolean
   'tables.count'?: number
 }
