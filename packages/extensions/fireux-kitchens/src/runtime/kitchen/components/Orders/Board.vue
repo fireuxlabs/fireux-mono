@@ -147,7 +147,8 @@
               </p>
               <template v-if="entry.state === 'received'">
                 <UFormField label="Estimate (minutes)"
-                  ><UInput
+                  ><!-- @vue-generic {string | number, {}} -->
+                  <UInput
                     v-model="estimates[entry.order.id]"
                     type="number"
                     min="1"

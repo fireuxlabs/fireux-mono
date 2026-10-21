@@ -21,21 +21,21 @@
     "@iconify-json/lucide": "^1.2.82",
     "@iconify-json/skill-icons": "^1.2.3",
     "@iconify-json/vscode-icons": "^1.2.37",
-    "@nuxt/icon": "2.x",
-    "@nuxt/ui": "^4.0.0-alpha.2",
+    "@nuxt/icon": "2.5.1",
+    "@nuxt/ui": "4.12.0",
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-granite": "workspace:*",
     "fireux-properties": "workspace:*",
-    "nuxt": "4.5.2",
-    "vue": "3.5.40",
-    "vue-router": "5.2.0",
+    "nuxt": "4.6.1",
+    "vue": "3.5.43",
+    "vue-router": "5.4.0",
     "fireux-compliance": "workspace:*",
     "fireux-documents": "workspace:*",
     "fireux-tasks": "workspace:*"
   },
   "devDependencies": {
-    "@vite-pwa/nuxt": "^1.0.4",
+    "@vite-pwa/nuxt": "1.1.1",
     "rimraf": "^6.0.1"
   }
 }

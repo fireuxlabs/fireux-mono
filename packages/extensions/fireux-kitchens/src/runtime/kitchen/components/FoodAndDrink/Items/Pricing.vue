@@ -9,7 +9,8 @@
         the item price.
       </p>
       <UFormField :label="`Normal price (${currency})`"
-        ><UInput
+        ><!-- @vue-generic {string | number, {}} -->
+        <UInput
           v-model="price"
           type="number"
           min="0"

@@ -3,7 +3,9 @@
   <div class="base-form-field-top">
     <div class="top-row">
       <div class="left">
-        <label :for="inputId || undefined" class="field-label">{{ label }}</label>
+        <label :for="inputId || undefined" class="field-label">{{
+          label
+        }}</label>
         <UBadge
           v-if="disabled"
           size="xs"
@@ -29,7 +31,11 @@
             :icon="'i-lucide-lock'"
             disabled
           />
-          <UTooltip v-else :text="`Edit ${fieldName}`" :popper="{ placement: 'top' }">
+          <UTooltip
+            v-else
+            :text="`Edit ${fieldName}`"
+            :content="{ side: 'top' }"
+          >
             <UButton
               :aria-label="`Edit ${fieldName}`"
               color="primary"
@@ -41,7 +47,7 @@
           </UTooltip>
         </template>
         <template v-else>
-          <UTooltip :text="`Save ${fieldName}`" :popper="{ placement: 'top' }">
+          <UTooltip :text="`Save ${fieldName}`" :content="{ side: 'top' }">
             <UButton
               :aria-label="`Save ${fieldName}`"
               color="success"
@@ -51,7 +57,10 @@
               @click="$emit('check')"
             />
           </UTooltip>
-          <UTooltip :text="`Cancel editing ${fieldName}`" :popper="{ placement: 'top' }">
+          <UTooltip
+            :text="`Cancel editing ${fieldName}`"
+            :content="{ side: 'top' }"
+          >
             <UButton
               :aria-label="`Cancel editing ${fieldName}`"
               color="neutral"
@@ -61,7 +70,11 @@
               @click="$emit('cancel')"
             />
           </UTooltip>
-          <UTooltip v-if="hasData" :text="`Clear ${fieldName}`" :popper="{ placement: 'top' }">
+          <UTooltip
+            v-if="hasData"
+            :text="`Clear ${fieldName}`"
+            :content="{ side: 'top' }"
+          >
             <UButton
               :aria-label="`Clear ${fieldName}`"
               color="error"
@@ -86,7 +99,9 @@
         variant="soft"
         :icon="'i-lucide-alert-triangle'"
       >
-        <template #actions><MoleculesCopyError :message="errorMessage" /></template>
+        <template #actions
+          ><MoleculesCopyError :message="errorMessage"
+        /></template>
       </UAlert>
     </div>
   </div>

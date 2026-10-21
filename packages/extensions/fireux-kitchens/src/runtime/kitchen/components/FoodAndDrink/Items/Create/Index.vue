@@ -37,6 +37,7 @@
     </div>
 
     <UFormField label="Normal price" required>
+      <!-- @vue-generic {string | number, {}} -->
       <UInput
         v-model="price"
         type="number"

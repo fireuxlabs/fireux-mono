@@ -40,7 +40,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends RouteLocationRaw">
 import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 
@@ -53,7 +53,7 @@ const props = withDefaults(
   defineProps<{
     action?: boolean
     disabled?: boolean
-    to?: RouteLocationRaw
+    to?: T
   }>(),
   {
     action: false,

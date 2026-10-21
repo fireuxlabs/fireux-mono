@@ -2,7 +2,7 @@
 import { createError } from 'h3'
 import { useRoute } from 'vue-router'
 
-const route = useRoute()
+const route = useRoute<'templates-slug'>()
 if (route.params.slug !== 'template-one')
   throw createError({ statusCode: 404, statusMessage: 'Template not found' })
 

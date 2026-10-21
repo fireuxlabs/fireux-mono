@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-10-21
-Ref: 4e71810f0
+Ref: add6006b3
 Role: map, not canon
 
 ## Purpose
@@ -141,20 +141,33 @@ requiring identical child layouts or inventing group pages.
 ## Core shared component families
 
 `fireux-core/src/runtime/components` is a finite shared boundary, not the
-default destination for UI whose owner is unclear. The current families were
-reviewed against authored consumers on 2026-08-27:
+default destination for UI whose owner is unclear. The current top-level
+families were reviewed against registration and immediate authored consumers
+on 2026-10-21. This classifies responsibilities; it does not certify every leaf
+or make every registered helper a public visual API.
 
-| Family       | Owner and admission reason                                                                         |
-| ------------ | -------------------------------------------------------------------------------------------------- |
-| `Auth`       | Core-owned authentication composition used by Core routes and App initialization.                  |
-| `Collection` | Cross-entity collection header and page presentation contracts.                                    |
-| `Dashboard`  | Core-owned Dashboard composition, including cross-entity administration panels.                    |
-| `Provider`   | Cross-App Tool-provider frames and transport presentation.                                         |
-| `Workspace`  | Cross-entity Workspace mechanics and presentation primitives.                                      |
-| `Diagnostics` | Cross-package runtime inspection and drift tooling.                                              |
-| `landing`    | Cross-App landing composition whose truth remains App-owned.                                       |
-| `layouts`    | Shared layout chrome consumed by Nuxt layouts; these are components, not route layout entrypoints. |
-| `molecules`  | Small cross-entity interaction and form contracts not supplied by Nuxt UI.                         |
+| Family | Owner, contract class and admission boundary |
+| --- | --- |
+| `Auth` | Connected Core authentication composition. Internal helpers depend on Auth, User readiness and navigation; product branding stays owner-supplied. |
+| `Collection` | Shared collection framing, supplied card models and Row content/value/actions layout. Pagination's button forwarding is a simplification candidate. |
+| `Context` | Editor owns draft/save/error interaction; Record is a connected record-context adapter. Endpoint authority remains outside the visual editor. |
+| `Create` | Shared Write/Preview composition. Domain drafts, validation and commands remain in callers. |
+| `Dashboard` | Connected Core platform/admin composition. Overview children and curation adapters are internal feature UI, not generic visual primitives. |
+| `Diagnostics` | Internal runtime inspection and drift tooling; developer visibility does not establish authorization. |
+| `Library` | Specimens and documentation. Examples do not establish production reuse or a public component contract. |
+| `Onboarding` | Shared framing, stage progress and error placement used by Place and Kitchen. Domains own stages, persistence and completion. |
+| `Provider` | Iframe transport/authentication/lifetime contract and separate visual framing; document their different prerequisites. |
+| `Workspace` | Shared layouts, outcomes and interactions alongside connected Team/AI/platform UI and developer harnesses. Classify each subfamily rather than advertising one pure visual surface. |
+| `landing` | Shared presentation and previews mixed with connected App metadata. Product truth/copy stays App-owned; forwarding and unproved cross-App effects need narrowing. |
+| `layouts` | Connected Core chrome consumed by Nuxt layouts; components are not route layout entrypoints. Domain destinations/actions stay outside Core chrome. |
+| `molecules` | Focused interaction, outcome and editing contracts beyond ordinary Nuxt UI controls. Internal helpers and runtime requirements remain explicit. |
+
+The [Nuxt UI library map](nuxt-ui.md) records the version baseline, extension
+path and classified cleanup findings. Core's broad runtime exports and Nuxt
+registration establish reachability, not supported library contracts. Public
+admission needs named inputs/slots/events, runtime prerequisites and real
+consumer evidence. Connected Core platform UI remains legitimate Core code;
+it must be distinguished from record-independent presentation.
 
 Core-only consumption does not by itself make `Auth` or `Dashboard`
 misplaced: Core owns those framework surfaces and their components do not
@@ -177,15 +190,20 @@ would compete with the declared owner-first Entity spines. Search Demand and
 Operation literature consume App models and therefore live beneath
 `runtime/app/components`; they are adjacent App capabilities, not a generic
 capability bucket. Documentation navigation and the docs layout belong to
-`fireux-docs`. Visual effects belong to the App whose presentation they serve;
-Core supplies no generic effects family or decorative one-off wrappers.
+`fireux-docs`. Visual effects belong to the App whose presentation they serve.
+Existing Core landing effects with unproved cross-App consumers require
+ownership review; their presence does not establish a shared effects contract.
 
 ## Design-system vocabulary and reuse
 
-Nuxt UI is the basis. FireUX extends it in unison through semantic tokens,
-repeated interaction contracts and named compositions; it does not build a
-parallel Button/Input/Card framework. Atoms, molecules and organisms remain
-useful design and Figma vocabulary:
+FireUX natively extends the current stable Nuxt UI. Its atoms, molecules and
+organisms compose the upstream controls and semantic theme with shared
+interaction and layout contracts. New upstream capabilities replace duplicated
+FireUX mechanisms through a bounded consumer migration; an older implementation
+does not justify a permanent compatibility layer. The version baseline,
+direct-use map and domain-library boundaries
+live in [nuxt-ui.md](nuxt-ui.md). These responsibilities also support the design
+and Figma vocabulary:
 
 - **Atoms:** Nuxt UI/Tailwind foundations and narrowly owned semantic tokens.
 - **Molecules:** coherent interactions combining foundations, such as selection,
@@ -193,12 +211,17 @@ useful design and Figma vocabulary:
 - **Organisms:** named regions composing those interactions for a real user job.
 
 These categories describe responsibility and composition depth, not compulsory
-Vue directories or package ownership. CSS may retain the atomic folders; Vue
-organisms retain discoverable names such as Collection, Payments or Order.
-Use Nuxt UI directly first. Add a FireUX piece only for missing semantics or a
-repeated contract, inspect real sibling consumers before extraction, and keep
-single-domain meaning with its owner. Small local composition is preferable to
-wrappers or configuration engines that exist only to reduce repeated markup.
+Vue directories or package ownership. CSS retains the shared atomic families;
+Vue organisms retain discoverable names such as Collection, Payments or Order.
+Use supported Nuxt UI props/slots and existing FireUX systems for ordinary UI.
+Inline utility classes and per-instance `ui` overrides supply specific final
+adjustments. Repeated layout, spacing, typography, surface and state recipes
+belong to their shared owner. Moving a utility string into a private stylesheet
+does not make it a composed system. Local CSS remains appropriate for a proved
+domain-specific visual contract, including media, responsive output and print.
+Add a FireUX piece for missing semantics or a repeated interaction, inspect real
+sibling consumers before extraction, and keep single-domain meaning with its
+owner. Avoid wrappers or configuration engines that only reduce repeated markup.
 
 ### Inspected molecule reuse
 
@@ -210,7 +233,8 @@ The following comparison is local evidence, not repository-wide certification:
 | StateCard, CopyError | Used across multiple domain and Core surfaces. **Keep** shared outcome/error presentation. |
 | DisclosurePanel, ActionSurface | Multiple real consumers share disclosure state and accessible link/button/static-card roots. **Keep**. |
 | SimpleField, ImagePicker, ObjectArray, ArrayOfStrings | Real editing consumers span named domains. **Keep** focused editable contracts and their command-intent protections. |
-| Select, Checkbox, ChoiceGroup | Current observed product consumers are Kitchen configuration. **Narrow** reuse claims to that proved scope; retain working consumers without introducing another layer. |
+| Select, Checkbox | Current observed callers are documentation specimens. **Unproved** production reuse; do not count catalogue examples as adoption. |
+| ChoiceGroup | One observed Kitchen Payments Methods product consumer. **Narrow** reuse claims to that proved scope; retain working consumers without introducing another layer. |
 | SegmentedSelector | One Kitchen library consumer. **Unproved** cross-domain reuse; retain the explicit local baseline and accessible Nuxt UI behaviour. |
 | ListActions | One App join-request consumer. **Narrow** to this focused Core-owned interaction; do not advertise broad domain reuse. |
 | Forms Top | Internal shared editing chrome. **Keep** as an implementation helper, not a standalone public API. |
@@ -248,9 +272,10 @@ after checking authored consumers and stylesheet registration.
 - A global CSS family must have a real repeated consumer contract or a narrow
   browser behavior that cannot be expressed through Nuxt UI. A single shared
   Vue component is not enough evidence: use the installed Nuxt UI component,
-  its props/slots, or a small component-local utility recipe first. Business
-  copy, routes, data authority, actions, and one-off presentation remain in the
-  named component or page that owns them.
+  its props/slots, theme configuration and existing FireUX semantic systems
+  first. A local styling delta needs a specific responsibility; routine utility
+  recipes do not justify a new per-file design system. Business copy, routes,
+  data authority, actions and unique presentation remain with their named owner.
 - The intended cross-tree mappings are: entity and preview card molecules to
   the prop/view-model-driven `X/Cards/Cell`, `Pill`, and `Summary` family
   classified in `card-family.md`; collection organisms to `X/Collection/*` and
@@ -698,8 +723,8 @@ extra forwarding entry components.
 
 Kitchen’s reusable `Orders/Ticket.vue` presents one Order and emits editing
 intent; Board, customer response and Library reuse it. Operational Board,
-Editor and Channels remain under `Workspace/Orders`. Neither placement changes
-order models, protected submission or operator commands.
+Editor and Channels remain under the direct `Orders` capability. Neither
+placement changes order models, protected submission or operator commands.
 
 `Tools/Index.vue` is the public domain tool catalogue; the standalone labour
 cost calculator remains a consumed tool leaf. `Workspace/Tools/Toolbar.vue`

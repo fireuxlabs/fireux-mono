@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-10-21
-Ref: b2a986b6b
+Ref: add6006b3
 Role: living context
 Scope: repository-wide
 
@@ -323,12 +323,30 @@ functions and entrypoints; do not invent presentation layers.
 - Apps use responsibility-first roots such as `Landing` and `Workspace`; do not
   repeat the App name beneath its own boundary.
 - Package Entity UI belongs beneath `runtime/<entity>/components`.
-- Nuxt UI is the design-system basis. FireUX may extend it in unison with atoms,
-  molecules and organisms as design vocabulary, not compulsory Vue folders or a
-  parallel primitive library. Prefer Nuxt UI directly; add shared CSS/components
-  for missing semantics or proved repeated contracts. Inspect real consumers and
-  lifecycle/accessibility before claiming reuse; prop counts and catalogue entries
-  are not reuse evidence. See `docs/concepts/components.md#design-system-vocabulary-and-reuse`.
+- FireUX's UI/UX library is a native extension of the current stable Nuxt UI.
+  Maintain one current upstream API contract. Check the current stable release
+  before Nuxt UI work and keep the framework dependency slice and real consumers
+  current together. Migrate changed APIs and retire replaced code in the same
+  bounded change; do not build legacy-version adapters, compatibility matrices,
+  parallel primitives or permanent fallbacks around older FireUX assumptions.
+  Reproducible version pins do not establish a frozen design baseline. A temporary
+  upstream-defect constraint needs concrete evidence and a removal condition;
+  it must not become another UI contract. When Nuxt UI supplies a previously
+  missing responsibility, compare real consumers and retire the duplicated
+  FireUX mechanism while preserving domain authority and lifecycle protections.
+  Extend through shared atoms, molecules and organisms. Reuse Nuxt UI controls,
+  semantic tokens and theme APIs, then compose
+  FireUX-owned interaction and layout contracts. Domain libraries retain their
+  business meaning and may catalogue lower-owned components without moving them.
+  Use the existing shared systems for ordinary layout, spacing, typography,
+  surfaces and states. Inline utilities and per-instance theme overrides are for
+  specific final adjustments; copying a utility recipe into scoped CSS does not
+  establish composition. Dynamic theme values flow through named tokens.
+  Add shared CSS/components for missing semantics or proved repeated contracts,
+  with explicit public inputs and runtime prerequisites. Inspect real consumers
+  and lifecycle/accessibility before claiming reuse; prop counts, registration
+  and catalogue entries are not reuse evidence. See `docs/concepts/nuxt-ui.md`
+  and `docs/concepts/components.md#design-system-vocabulary-and-reuse`.
 - Apply the Entity file admission contract in
   `docs/concepts/composables.md#entity-file-contract` before adding or retaining
   Entity adapters: one responsibility, one owner, a real consumer, and a proved
@@ -603,8 +621,11 @@ release builds require the same App's development server to be stopped; do not
 bypass that lock and let both processes write the same build directory.
 
 Standalone package checks use `types/nuxt-shims.d.ts` as an imports bridge.
-That bridge loads Core’s runtime-config declarations so dependent package checks
-share the same configuration contract.
+That bridge loads Core’s runtime-config declarations and the matching native
+Nitro adapter types so dependent package checks share the runtime configuration
+and server-event contract. Framework augmentations target `@nuxt/schema`;
+Nuxt bridges that canonical module into `nuxt/schema`. The bridge exports the
+public Nuxt fetch signature for explicit `#imports` consumers.
 Standard Vue and Nuxt helpers must retain their framework signatures, never
 loose `any` overloads. Core declares its own runtime-config additions in
 `packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing

@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { $fetch, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
@@ -41,7 +41,9 @@ export function useMenuMutation() {
     assertScope()
     requireWritableData()
     const result = await $fetch<
-      T & { kitchenId: string; menuId: string; id?: string; ok?: boolean }
+      T & { kitchenId: string; menuId: string; id?: string; ok?: boolean },
+      string,
+      'POST' | 'PATCH' | 'DELETE'
     >(`/api/workspace/kitchen/menus${endpoint ? `/${endpoint}` : ''}`, {
       method,
       headers: { Authorization: `Bearer ${token}` },

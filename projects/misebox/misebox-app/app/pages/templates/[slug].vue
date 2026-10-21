@@ -40,7 +40,7 @@ import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/t
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
-const route = useRoute()
+const route = useRoute<'MiseboxTemplateDetailPage'>()
 const presentation = findLandingTemplate(String(route.params.slug || ''))
 if (!presentation)
   throw createError({

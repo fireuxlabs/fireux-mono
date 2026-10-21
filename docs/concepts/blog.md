@@ -1,7 +1,7 @@
 # Blog literature
 
-Updated: 2026-10-03
-Ref: 2807ceca9
+Updated: 2026-10-21
+Ref: add6006b3
 Role: map, not canon
 
 ## Purpose
@@ -24,6 +24,12 @@ Client commands copy original input before credentials and verify exact App/slug
 responses. A committed result stays truthful after context changes; current UI
 predicates own messages, navigation and draft resets. Review and approval remain
 part of the editorial workflow, not a permission granted by reading this map.
+
+The creation form composes native Nuxt UI `UEditor` and `UEditorToolbar` over
+its HTML draft. Nuxt UI owns editing lifecycle and formatting; Blogs owns title,
+slug, reading time and the separate featured/social image tools. Inline images
+and mentions have no Blog authoring contract and remain disabled. The existing
+record editor described below remains a separate HTML-source editing surface.
 
 ## Editorial shape
 
@@ -144,6 +150,7 @@ or storage changes begin.
 - `packages/extensions/fireux-blogs/tests/blog-authoring.test.mjs`
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
 - `packages/extensions/fireux-blogs/src/runtime/blog/utils/editorial-review.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/components/Create/Write.vue`
 - `packages/extensions/fireux-blogs/src/runtime/blog/components/Edit/Index.vue`
 - `packages/extensions/fireux-blogs/src/runtime/blog/utils/blog-editor.ts`
 - `packages/extensions/fireux-blogs/tests/blog-editor.test.mjs`

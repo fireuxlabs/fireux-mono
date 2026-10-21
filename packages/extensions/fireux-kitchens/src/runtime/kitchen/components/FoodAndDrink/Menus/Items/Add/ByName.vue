@@ -19,6 +19,7 @@
         :label="`${name} · Normal price`"
         required
       >
+        <!-- @vue-generic {string | number, {}} -->
         <UInput
           v-model="prices[name]"
           type="number"

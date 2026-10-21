@@ -12,6 +12,7 @@
         placeholder="For example: Large"
         :disabled="disabled"
       />
+      <!-- @vue-generic {string | number, {}} -->
       <UInput
         v-model="option.price"
         :aria-label="`Option ${index + 1} full price`"

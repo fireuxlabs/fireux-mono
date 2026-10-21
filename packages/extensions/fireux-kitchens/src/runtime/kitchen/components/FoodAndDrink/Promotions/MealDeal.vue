@@ -1,6 +1,7 @@
 <template>
   <div class="space-y-5">
     <UFormField :label="`Set price (${currency})`">
+      <!-- @vue-generic {string | number, {}} -->
       <UInput
         v-model="price"
         type="number"
@@ -30,7 +31,8 @@
             :disabled="disabled"
         /></UFormField>
         <UFormField label="Number to choose"
-          ><UInput
+          ><!-- @vue-generic {string | number, {}} -->
+          <UInput
             v-model="group.choose"
             type="number"
             min="1"
@@ -71,6 +73,7 @@
           'Unavailable dish'
         }}</label>
         <UFormField :label="`Supplement (${currency})`">
+          <!-- @vue-generic {string | number, {}} -->
           <UInput
             :id="`supplement-${group.id}-${dish.dishId}`"
             class="w-full"

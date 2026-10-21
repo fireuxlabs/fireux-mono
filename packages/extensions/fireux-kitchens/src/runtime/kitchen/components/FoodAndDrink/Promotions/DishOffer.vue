@@ -14,7 +14,8 @@
     </UFormField>
     <div v-if="rows.length" class="flex flex-wrap items-end gap-2">
       <UFormField :label="`Set all prices (${currency})`"
-        ><UInput
+        ><!-- @vue-generic {string | number, {}} -->
+        <UInput
           v-model="allPrice"
           type="number"
           min="0"
@@ -35,6 +36,7 @@
         dishOptions.find((dish) => dish.value === row.dishId)?.label ||
         'Unavailable dish'
       }}</label>
+      <!-- @vue-generic {string | number, {}} -->
       <UInput
         :id="`promotion-price-${row.dishId}`"
         class="w-full"

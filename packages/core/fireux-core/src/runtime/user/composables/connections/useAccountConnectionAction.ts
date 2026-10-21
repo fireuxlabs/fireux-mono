@@ -1,3 +1,4 @@
+import { $fetch } from '#imports'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
@@ -48,7 +49,7 @@ export function useAccountConnectionAction(endpoint: string) {
         throw new Error('Your account changed. Please confirm it again.')
       const token = confirmed?.token || (await user.getIdToken())
       if (!isCurrent()) return null
-      const response = await $fetch<T>(endpoint, {
+      const response = await $fetch<T, string, 'POST'>(endpoint, {
         method: 'POST',
         body: input,
         headers: { Authorization: `Bearer ${token}` },

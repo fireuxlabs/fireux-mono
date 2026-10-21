@@ -1,3 +1,4 @@
+import { $fetch } from 'ofetch'
 import {
   createError,
   getHeader,

@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { $fetch, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -52,11 +52,11 @@ export function useJobCommand(ownerSources: WatchSource[] = []) {
       throw new Error('The account changed. Reopen this Job action.')
     const token = await user.getIdToken()
     assertCurrent()
-    return $fetch<T, string>(path, {
+    return (await $fetch<T, string, 'POST' | 'PATCH'>(path, {
       method,
       headers: { Authorization: `Bearer ${token}` },
       ...(body === undefined ? {} : { body }),
-    })
+    })) as T
   }
   return { command, captureIntent, scopeEpoch }
 }

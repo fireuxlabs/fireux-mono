@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, type ImgHTMLAttributes } from 'vue'
 import type { BlogCard } from '../../composables/useBlogInterface'
 
 defineOptions({ name: 'BlogCardsStory' })
@@ -103,12 +103,12 @@ const authors = computed(() => [
     name: props.author,
     description: authorDescription.value,
     avatar: props.authorAvatarUrl
-      ? {
+      ? ({
           src: props.authorAvatarUrl,
           alt: '',
           loading: 'lazy',
           decoding: 'async',
-        }
+        } satisfies ImgHTMLAttributes)
       : undefined,
   },
 ])

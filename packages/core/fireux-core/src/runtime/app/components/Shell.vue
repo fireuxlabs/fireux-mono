@@ -21,7 +21,7 @@
               v-if="panelOpen"
               class="flex items-center gap-1 rounded-full border border-default bg-elevated/95 px-2 py-1 shadow-lg backdrop-blur"
             >
-              <UTooltip text="Open /dev" :popper="{ placement: 'top' }">
+              <UTooltip text="Open /dev" :content="{ side: 'top' }">
                 <UButton
                   aria-label="Open dev page"
                   size="xs"
@@ -32,7 +32,7 @@
                 />
               </UTooltip>
 
-              <UTooltip :text="mediaSyncTooltip" :popper="{ placement: 'top' }">
+              <UTooltip :text="mediaSyncTooltip" :content="{ side: 'top' }">
                 <UButton
                   aria-label="Sync App media"
                   size="xs"
@@ -53,7 +53,7 @@
                       : 'Show developer notes'
                     : 'No developer notes on this page yet'
                 "
-                :popper="{ placement: 'top' }"
+                :content="{ side: 'top' }"
               >
                 <UButton
                   :aria-label="
@@ -86,7 +86,7 @@
                       : 'Copy visible developer notes'
                     : 'Show developer notes to copy them'
                 "
-                :popper="{ placement: 'top' }"
+                :content="{ side: 'top' }"
               >
                 <UButton
                   :aria-label="
@@ -105,7 +105,7 @@
 
               <UTooltip
                 text="Collapse dev controls"
-                :popper="{ placement: 'top' }"
+                :content="{ side: 'top' }"
               >
                 <UButton
                   aria-label="Collapse dev controls"
@@ -122,7 +122,7 @@
               :text="
                 panelOpen ? 'Collapse dev controls' : 'Expand dev controls'
               "
-              :popper="{ placement: 'top' }"
+              :content="{ side: 'top' }"
             >
               <UButton
                 :aria-label="
@@ -150,7 +150,6 @@
         v-if="showOnboardingModal"
         :open="showOnboardingModal"
         :dismissible="false"
-        prevent-close
         title="🚫 Blocked"
         :description="setupDescription"
       >

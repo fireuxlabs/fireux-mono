@@ -176,24 +176,16 @@
       </UCard>
 
       <UAccordion
-        v-if="warnings.length || notes.length"
-        variant="soft"
-        size="sm"
+        v-if="configurationMessages.length"
+        :items="configurationMessages"
       >
-        <UAccordionItem
-          v-if="warnings.length"
-          value="warnings"
-          title="Warnings"
-        >
+        <template #body="{ item }">
           <ul class="mt-2 list-disc pl-5 text-sm">
-            <li v-for="(w, index) in warnings" :key="index">{{ w }}</li>
+            <li v-for="(message, index) in item.messages" :key="index">
+              {{ message }}
+            </li>
           </ul>
-        </UAccordionItem>
-        <UAccordionItem v-if="notes.length" value="notes" title="Notes">
-          <ul class="mt-2 list-disc pl-5 text-sm">
-            <li v-for="(n, index) in notes" :key="index">{{ n }}</li>
-          </ul>
-        </UAccordionItem>
+        </template>
       </UAccordion>
 
       <UAlert
@@ -274,6 +266,12 @@ const brandAssets = computed(() => {
 
 const warnings = computed(() => envData.value?.warnings ?? [])
 const notes = computed(() => envData.value?.notes ?? [])
+const configurationMessages = computed(() =>
+  [
+    { value: 'warnings', label: 'Warnings', messages: warnings.value },
+    { value: 'notes', label: 'Notes', messages: notes.value },
+  ].filter((item) => item.messages.length)
+)
 const copiedRequired = ref(false)
 
 const missingRequiredCount = computed(

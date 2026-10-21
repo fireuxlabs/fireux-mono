@@ -74,6 +74,7 @@
               />
             </UFormField>
             <UFormField label="Quantity" required>
+              <!-- @vue-generic {string | number, {}} -->
               <UInput
                 v-model="quantity"
                 type="number"

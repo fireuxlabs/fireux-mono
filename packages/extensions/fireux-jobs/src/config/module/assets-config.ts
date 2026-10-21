@@ -13,7 +13,7 @@ export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
   const nitro = (options.nitro ||= {})
   const publicAssets = (nitro.publicAssets ||= [])
   const alreadyRegistered = publicAssets.some((entry) =>
-    typeof entry === 'string' ? entry === publicDir : entry.dir === publicDir
+    typeof entry === 'string' ? entry === publicDir : entry?.dir === publicDir
   )
 
   if (!alreadyRegistered) {

@@ -26,6 +26,7 @@
     </div>
 
     <div v-else>
+      <!-- @vue-generic {string | number, {}} -->
       <UTextarea
         v-if="isTextarea"
         v-model="draft"
@@ -38,6 +39,7 @@
         @keydown.enter="saveOnEnter"
         @keydown.esc.prevent="cancel"
       />
+      <!-- @vue-generic {string | number, {}} -->
       <UInput
         v-else
         v-model="draft"

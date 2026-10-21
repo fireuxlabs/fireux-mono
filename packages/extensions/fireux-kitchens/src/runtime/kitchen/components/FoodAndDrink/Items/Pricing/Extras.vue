@@ -11,6 +11,7 @@
         :aria-label="`Extra ${index + 1} name`"
         :disabled="disabled"
       />
+      <!-- @vue-generic {string | number, {}} -->
       <UInput
         v-model="extra.price"
         :aria-label="`Extra ${index + 1} additional price`"

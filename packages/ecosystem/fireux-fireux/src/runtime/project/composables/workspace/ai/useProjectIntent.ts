@@ -1,4 +1,4 @@
-import { useRoute } from '#imports'
+import { $fetch, useRoute } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -43,13 +43,16 @@ export function useProjectIntent() {
         }),
       ])
       if (!isCurrent()) throw obsolete()
-      const result = await $fetch<T>('/api/workspace/project/intent', {
-        method: 'POST',
-        timeout: 60_000,
-        retry: 0,
-        headers: { authorization: `Bearer ${token}` },
-        body: payload,
-      })
+      const result = await $fetch<T, '/api/workspace/project/intent', 'POST'>(
+        '/api/workspace/project/intent',
+        {
+          method: 'POST',
+          timeout: 60_000,
+          retry: 0,
+          headers: { authorization: `Bearer ${token}` },
+          body: payload,
+        }
+      )
       if (!isCurrent()) throw obsolete()
       return result as T
     } finally {

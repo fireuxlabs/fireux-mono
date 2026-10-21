@@ -50,6 +50,7 @@
           "
         >
           <UFormField :label="`Quantity for ${line.item.name}`">
+            <!-- @vue-generic {string | number, {}} -->
             <UInput
               v-model="editQuantity"
               type="number"

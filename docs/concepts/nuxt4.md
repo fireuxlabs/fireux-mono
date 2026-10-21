@@ -1,7 +1,7 @@
 # Nuxt 4 and Vue 3 concept map
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-10-21
+Ref: add6006b3
 Role: map, not canon
 
 ## Purpose
@@ -26,7 +26,9 @@ Explain the app framework context for agents.
 
 ## Framework
 
-- FireUX apps are Nuxt 4 apps.
+- FireUX apps are Nuxt 4 apps. The coordinated version and verification
+  baseline lives in [nuxt-ui.md](nuxt-ui.md); root manifests, workspace overrides
+  and the lockfile establish the installed graph.
 - FireUX apps run Nuxt 4 with `future.compatibilityVersion: 5` supplied by the
   Core App-config baseline so Nuxt 5 defaults are exercised before the major
   upgrade.

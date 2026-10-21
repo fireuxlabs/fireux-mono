@@ -21,7 +21,7 @@
       <UTooltip
         v-if="showNotifications"
         :text="notificationTooltip"
-        :shortcuts="['N']"
+        :kbds="['N']"
       >
         <UButton
           color="neutral"

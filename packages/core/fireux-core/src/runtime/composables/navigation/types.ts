@@ -93,8 +93,11 @@ export type NavigationConfig = {
   >
 }
 
-declare module 'nuxt/schema' {
+declare module '@nuxt/schema' {
   interface AppConfigInput {
+    navigation?: NavigationConfig
+  }
+  interface CustomAppConfig {
     navigation?: NavigationConfig
   }
   interface AppConfig {

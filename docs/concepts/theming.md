@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-10-21
+Ref: add6006b3
 Role: map, not canon
 
 ## Purpose
@@ -10,6 +10,10 @@ Keep generic FireUX theme primitives, entity-owned media, tenant App brands,
 brand injections, reusable presentation templates and commercial storefronts
 separate. Rich presentation stays composable without moving product artwork or
 sales ownership into FireUX Core.
+
+For the installed Nuxt UI version, Core component-theme integration and shared
+UI extension contract, use [nuxt-ui.md](nuxt-ui.md). The stored palettes and
+template/brand contracts below do not establish a second global chrome theme.
 
 ## Links
 
@@ -366,7 +370,8 @@ sources exist.
   `packages/core/fireux-core/src/runtime/models/utils/style.model.ts`
 - Kitchen theme mutation/editor:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
-  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Theme.vue`
+  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Appearance/Index.vue`
+  with `Appearance/PaletteEditor.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
   and `TemplateOne*.vue`
@@ -376,7 +381,8 @@ sources exist.
 - Kitchen capability projection and collection grouping:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`
   and `runtime/kitchen/components/Collection/Index.vue`
-- Guard: `scripts/guards/landing-templates.mjs`
+- Focused current theme test:
+  `packages/extensions/fireux-kitchens/src/test/kitchen/menu-theme.test.ts`
 
 ## Delta register
 
@@ -394,7 +400,9 @@ When template anatomy, injection fields, seller routes, purchase semantics,
 theme storage or brand ownership changes, update this map and
 `docs/ai/templates-context.md`. Verify both storefront routes, every injection
 at desktop and phone sizes, media provenance, and the absence of copied
-anatomy. Run the focused guard, relevant App builds and `pnpm guard`.
+anatomy. Inspect and run the relevant focused tests and package/App checks for
+the changed slice. The former landing-template guard and `pnpm guard` no longer
+exist; do not treat them as current verification.
 
 Do not record temporary mockups, generated-image prompts, campaign copy or
 individual review history here.

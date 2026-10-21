@@ -2,6 +2,7 @@
 // Standalone package declarations for Nuxt-generated imports.
 // Applications use their generated declarations and must exclude this bridge.
 import type {} from '../packages/core/fireux-core/src/types/runtime-config'
+import type {} from '@nuxt/nitro-server/augments'
 
 // Standalone package bridge for the generated Nuxt imports module.
   // Re-export everything Nuxt normally auto-imports
@@ -32,6 +33,7 @@ import type {} from '../packages/core/fireux-core/src/types/runtime-config'
   export const useSeoMeta: typeof import('nuxt/app')['useSeoMeta']
   export const useToast: typeof import('../node_modules/@nuxt/ui/dist/runtime/composables/useToast')['useToast']
   export const useFetch: typeof import('nuxt/app')['useFetch']
+  export const $fetch: import('nuxt/app').$Fetch
   export const useNuxtApp: typeof import('nuxt/app')['useNuxtApp']
 
   // Minimal shims for package-context runtime plugins.
