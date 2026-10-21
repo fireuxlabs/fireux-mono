@@ -2429,8 +2429,12 @@ Offering and interaction/channel remain internal implementation terms, not
 alternative operator labels for the service record.
 
 Services menu selection and readiness share `kitchen/utils/service-menus.ts` across
-the inline setup, the service editor and trusted command validation. Only regular
-interactive, non-archived menus supply service items; draft menus can be selected,
+the inline setup, the service editor and trusted command validation. Only public regular
+interactive, non-archived menus supply service items; absent audience retains the
+public default. Private-link and protected-group menus are not service choices.
+Incompatible saved selections remain removable with visible warnings and cannot
+satisfy readiness. Removal-only configuration updates permit incremental cleanup
+without admitting new incompatible selections. Draft menus can be selected,
 but public eligibility requires a selected published eligible menu and serving hours.
 Unavailable existing selections remain labelled so operators can remove them.
 Daily specials and document menus keep their own entrances. No catalogue prices

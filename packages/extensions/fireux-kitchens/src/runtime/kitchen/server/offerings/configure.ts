@@ -243,7 +243,29 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
     const validateMenus =
       config.changes.menu_ids !== undefined ||
       config.interactions.some((row) => row.changes.menu_ids !== undefined)
-    for (const menuId of validateMenus ? offering.menu_ids : []) {
+    // Removing saved choices must remain possible even when other old choices are incompatible.
+    const removingOnly = Boolean(
+      current &&
+        offering.menu_ids.length < current.menu_ids.length &&
+        offering.menu_ids.every((menuId) =>
+          current.menu_ids.includes(menuId)
+        ) &&
+        config.interactions.every(
+          ({ type, changes }) =>
+            !changes.menu_ids ||
+            changes.menu_ids.every((menuId) =>
+              current.interactions.some(
+                (row) =>
+                  row.type === type &&
+                  'menu_ids' in row &&
+                  row.menu_ids?.includes(menuId)
+              )
+            )
+        )
+    )
+    for (const menuId of validateMenus && !removingOnly
+      ? offering.menu_ids
+      : []) {
       const menu = await tx.read(
         serverKitchenMenusTarget(config.kitchenId),
         menuId

@@ -25,7 +25,13 @@
       <span
         v-if="editor.enabled && !readiness.canEnable"
         class="text-xs text-warning"
-        >Needs menus</span
+        >{{
+          !editor.menuIds.length
+            ? 'Needs menus'
+            : !readiness.validSelection
+              ? 'Replace unavailable menus'
+              : 'Publish a selected menu'
+        }}</span
       >
       <span v-if="editor.busy" class="text-xs text-muted" role="status"
         >Updating…</span

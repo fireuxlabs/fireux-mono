@@ -858,3 +858,57 @@ test('custom service hours cannot extend beyond the Kitchen schedule', async () 
   )
   assert.deepEqual(h.writes, [])
 })
+
+
+test('configuration rejects non-public selections without writes, including Kiosk mode menus', async () => {
+  for (const audience of ['private_link', 'protected_group']) {
+    const h = harness({ menu: { status: 'published', format: 'interactive', audience } })
+    await assert.rejects(h.configureKitchenOffering({}, input()), /public regular interactive menus/)
+    await assert.rejects(h.configureKitchenOffering({}, {
+      kitchenId: 'venue', option: 'counter', enabled: true,
+      interactions: [
+        { type: 'eat_in', changes: { menu_ids: [] } },
+        { type: 'takeaway', changes: { menu_ids: ['food'] } },
+      ],
+    }), /public regular interactive menus/)
+    assert.equal(h.writes.length, 0)
+  }
+})
+
+test('saved incompatible choices can be removed one at a time, but new incompatible choices cannot be added', async () => {
+  const menu = { status: 'published', format: 'interactive' }
+  const h = harness({ menu })
+  const first = await h.configureKitchenOffering({}, input({ menu_ids: ['food', 'second', 'third'] }))
+  menu.audience = 'private_link'
+  const writes = h.writes.length
+  await assert.rejects(h.configureKitchenOffering({}, input({ offeringId: first.offering.id, menu_ids: ['food', 'new'] })), /public regular interactive menus/)
+  assert.equal(h.writes.length, writes)
+  for (const menu_ids of [['food', 'second'], ['food'], []]) {
+    const result = await h.configureKitchenOffering({}, input({ offeringId: first.offering.id, menu_ids }))
+    assert.deepEqual(result.offering.menu_ids, menu_ids)
+  }
+  assert.ok(h.writes.every(write => write.target.collectionPath === 'kitchens/venue/offerings'))
+})
+
+
+test('Kiosk cleanup cannot move an incompatible saved menu into another mode', async () => {
+  const menu = { status: 'published', format: 'interactive' }
+  const h = harness({ menu })
+  const body = { kitchenId: 'venue', option: 'counter', enabled: true, interactions: [
+    { type: 'eat_in', changes: { menu_ids: ['private', 'second'] } },
+    { type: 'takeaway', changes: { menu_ids: [] } },
+  ] }
+  const first = await h.configureKitchenOffering({}, body)
+  menu.audience = 'private_link'
+  const writes = h.writes.length
+  await assert.rejects(h.configureKitchenOffering({}, { ...body, offeringId: first.offering.id, interactions: [
+    { type: 'eat_in', changes: { menu_ids: [] } },
+    { type: 'takeaway', changes: { menu_ids: ['private'] } },
+  ] }), /public regular interactive menus/)
+  assert.equal(h.writes.length, writes)
+  const clean = await h.configureKitchenOffering({}, { ...body, offeringId: first.offering.id, interactions: [
+    { type: 'eat_in', changes: { menu_ids: ['private'] } },
+    { type: 'takeaway', changes: { menu_ids: [] } },
+  ] })
+  assert.deepEqual(clean.offering.menu_ids, ['private'])
+})

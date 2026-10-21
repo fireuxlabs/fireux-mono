@@ -133,7 +133,7 @@ export function requireServiceMenus(
 ) {
   if (!menus.length || menus.some((menu) => !isServiceMenu(menu)))
     fail(
-      'Choose regular interactive menus. Daily specials, documents and archived menus cannot supply this service.'
+      'Choose public regular interactive menus. Private menus, Daily specials, documents and archived menus cannot supply this service.'
     )
   if (enabled && !menus.some((menu) => menu.status === 'published'))
     fail('Publish at least one selected menu before enabling the service.')

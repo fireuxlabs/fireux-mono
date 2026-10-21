@@ -90,3 +90,25 @@ test('Workspace distinguishes menus with the same public name using internal nam
   ])
   assert.equal(menus[1].name, 'Drinks')
 })
+
+
+test('public audience policy is shared by choices and readiness; incompatible saved menus remain removable', () => {
+  for (const audience of ['private_link', 'protected_group', 'unexpected', null]) {
+    const incompatible = { ...menu, audience }
+    assert.equal(isServiceMenu(incompatible), false)
+    assert.deepEqual(serviceMenuOptions([incompatible]), [])
+    const saved = serviceMenuOptions([incompatible], ['food'])
+    assert.equal(saved.length, 1)
+    assert.match(saved[0].description, /remove from selection/)
+    assert.notEqual(saved[0].disabled, true)
+    assert.equal(serviceMenuReadiness(['food'], [incompatible]).validSelection, false)
+    assert.equal(serviceMenuReadiness(['food'], [incompatible]).canEnable, false)
+    const publicMenu = { ...menu, id: 'public', audience: 'public' }
+    assert.equal(serviceMenuReadiness(['food', 'public'], [incompatible, publicMenu]).canEnable, false)
+    assert.equal(serviceMenuReadiness(['public'], [incompatible, publicMenu]).canEnable, true)
+  }
+  for (const audience of [undefined, 'public']) {
+    assert.equal(isServiceMenu({ ...menu, audience }), true)
+    assert.equal(isServiceMenu({ ...menu, audience, status: 'draft' }), true)
+  }
+})

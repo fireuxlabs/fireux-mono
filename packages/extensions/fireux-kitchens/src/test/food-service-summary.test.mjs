@@ -113,3 +113,11 @@ test('missing setup flags come from data and do not mistake closed services for 
   assert.equal(summary({ hours: undefined }).needsSetup, true)
   assert.equal(summary({ hours: undefined }).open, false)
 })
+
+
+test('private-link selections flag setup instead of claiming the service is serving', () => {
+  const [row] = foodServiceSummary([service], [{ ...menu, audience: 'private_link' }], at('17:00'))
+  assert.equal(row.open, false)
+  assert.equal(row.label, 'Needs setup')
+  assert.ok(row.issues.includes('Replace unavailable menus'))
+})

@@ -2,12 +2,20 @@ import type { Menu } from '../../menu/models/menu.model'
 
 type ServiceMenu = Pick<
   Menu,
-  'id' | 'name' | 'internal_name' | 'status' | 'format' | 'schedule' | 'doc'
+  | 'id'
+  | 'name'
+  | 'internal_name'
+  | 'status'
+  | 'format'
+  | 'schedule'
+  | 'doc'
+  | 'audience'
 >
 
-/** Services supply structured items; documents and Daily specials have their own entrances. */
+/** Public services use regular structured menus; drafts may be configured before publication. */
 export function isServiceMenu(menu: Partial<ServiceMenu>) {
   return (
+    (menu.audience === undefined || menu.audience === 'public') &&
     menu.format !== 'document' &&
     menu.schedule !== 'daily' &&
     menu.status !== 'archived' &&
@@ -42,7 +50,9 @@ export function serviceMenuOptions(
       value: menu.id,
       label: menu.internal_name?.trim() || menu.name,
       description: !isServiceMenu(menu)
-        ? 'Unavailable for this service · remove from selection'
+        ? menu.audience && menu.audience !== 'public'
+          ? 'Not public · remove from selection'
+          : 'Unavailable for this service · remove from selection'
         : menu.status === 'published'
           ? undefined
           : 'Draft · not available to customers',
