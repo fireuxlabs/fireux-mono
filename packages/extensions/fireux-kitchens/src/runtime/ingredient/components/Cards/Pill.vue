@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo } from '#imports'
+import { computed } from '#imports'
 
 import type { IngredientCard } from '../../composables/useIngredientInterface'
 

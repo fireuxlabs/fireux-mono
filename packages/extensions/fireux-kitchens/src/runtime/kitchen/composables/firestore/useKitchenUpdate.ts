@@ -23,10 +23,10 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
     () => route.path,
     ...sources,
   ])
-  async function updateKitchen(input: {
-    kitchenId: string
-    changes: KitchenUpdateInput
-  }) {
+  async function updateKitchen(
+    input: { kitchenId: string; changes: KitchenUpdateInput },
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
     const id = clean(input.kitchenId)
     if (!id) throw new Error('Kitchen id is required.')
     const uid = currentUser.value?.uid
@@ -35,7 +35,7 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
     )
     const isCurrent = capture()
     const assertCurrent = () => {
-      if (!uid || !isCurrent())
+      if (!uid || !isCurrent() || !isSurfaceCurrent())
         throw new Error(
           'The Kitchen or account context changed. Please try again.'
         )

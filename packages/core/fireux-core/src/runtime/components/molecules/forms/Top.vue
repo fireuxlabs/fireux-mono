@@ -85,7 +85,9 @@
         color="error"
         variant="soft"
         :icon="'i-lucide-alert-triangle'"
-      />
+      >
+        <template #actions><MoleculesCopyError :message="errorMessage" /></template>
+      </UAlert>
     </div>
   </div>
 </template>

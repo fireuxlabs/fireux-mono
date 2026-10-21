@@ -244,9 +244,17 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
       config.changes.menu_ids !== undefined ||
       config.interactions.some((row) => row.changes.menu_ids !== undefined)
     // Removing saved choices must remain possible even when other old choices are incompatible.
+    const removesModeSelection = config.interactions.some(({ type, changes }) => {
+      const previous = current?.interactions.find((row) => row.type === type)
+      return changes.menu_ids !== undefined &&
+        changes.menu_ids.length < (previous && 'menu_ids' in previous
+          ? previous.menu_ids?.length || 0
+          : 0)
+    })
     const removingOnly = Boolean(
       current &&
-        offering.menu_ids.length < current.menu_ids.length &&
+        (offering.menu_ids.length < current.menu_ids.length ||
+          (config.option.key === 'counter' && removesModeSelection)) &&
         offering.menu_ids.every((menuId) =>
           current.menu_ids.includes(menuId)
         ) &&

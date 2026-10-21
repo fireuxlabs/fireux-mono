@@ -17,7 +17,6 @@
 import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed } from 'vue'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
-import type { MenuLoadFailure } from '../../../menu/composables/useMenu'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
 
 type KitchenMenuPresentation = {
@@ -37,15 +36,6 @@ const presentationPath = computed(
 )
 const { data: presentation } =
   await useLiveFetch<KitchenMenuPresentation>(presentationPath)
-const kitchenPath = computed(
-  () => `/kitchens/${encodeURIComponent(presentation.value?.kitchenSlug || '')}`
-)
-const failure: MenuLoadFailure = {
-  statusCode: 404,
-  title: 'Collection unavailable',
-  description:
-    'This kitchen is not accepting collection orders here right now.',
-}
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
     theme: computed(() => presentation.value?.theme),

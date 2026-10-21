@@ -8,7 +8,7 @@
     </div>
 
     <div
-      ref="qrContainer"
+      :ref="(element) => { qrContainer = element as HTMLElement | null }"
       class="menu-qr-code"
       :aria-busy="!qrReady && !qrError"
       :aria-label="`QR code for ${target.label}`"

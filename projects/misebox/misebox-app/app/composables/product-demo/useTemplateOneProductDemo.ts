@@ -26,9 +26,11 @@ export async function useTemplateOneProductDemo(): Promise<{
         ({ section, items }) => ({
           id: section.id,
           label: section.label,
-          items: items.map((item) => {
-            const dish = dishById.get(item.dish_id || '')!
-            return {
+          items: items.flatMap((item) => {
+            const dish = dishById.get(item.dish_id || '')
+            if (!dish || typeof dish.price !== 'number' || !Number.isFinite(dish.price) || dish.price < 0)
+              return []
+            return [{
               id: item.id,
               dishId: dish.id,
               itemKind: dish.item_kind,
@@ -48,7 +50,7 @@ export async function useTemplateOneProductDemo(): Promise<{
                 ...addOn,
                 priceLabel: money(addOn.price),
               })),
-            }
+            }]
           }),
         })
       ),

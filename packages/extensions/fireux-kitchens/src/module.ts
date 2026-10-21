@@ -46,6 +46,7 @@ export default defineNuxtModule<ModuleOptions>({
       references.push({
         path: resolver.resolve('./runtime/menu/models/pdf-worker.d.ts'),
       })
+      references.push({ path: resolver.resolve('./types/runtime-config.d.ts') })
     })
     registerReservedRootRouteKeys([
       'menus',

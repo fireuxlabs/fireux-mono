@@ -21,8 +21,9 @@ export const formatCurrencyAmount = (
   amount: number,
   options: CurrencyAmountFormatOptions = {}
 ) => {
-  const value = Number(amount || 0)
-  if (!Number.isFinite(value) || value <= 0) return ''
+  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0)
+    return ''
+  const value = amount
 
   const currencyCode = cleanCurrencyCode(options.currencyCode) || 'CHF'
   const format = options.format ?? 'dash'

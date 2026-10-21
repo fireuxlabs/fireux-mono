@@ -14,11 +14,11 @@
 import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdate'
 const props = defineProps<{ kitchenId: string; title: string; disabled: boolean }>()
 const { updateKitchen, captureIntent } = useKitchenUpdate([() => props.kitchenId])
-async function updateTitle(value: string) {
+async function updateTitle(value: string, isSurfaceCurrent?: () => boolean) {
   if (props.disabled) throw new Error('This Kitchen is read-only.')
   await updateKitchen({
     kitchenId: props.kitchenId,
     changes: { 'services.title': value.trim() || 'Food & drinks' },
-  })
+  }, isSurfaceCurrent)
 }
 </script>

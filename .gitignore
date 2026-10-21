@@ -69,6 +69,7 @@ packages/core/fireux-core/build/*
 **/src/**/*.js
 **/src/**/*.js.map
 **/src/**/*.d.ts
+!packages/extensions/fireux-kitchens/src/types/runtime-config.d.ts
 
 # Editor configs and OS files
 # VS Code: ignore all settings by default, allow only tasks/launch

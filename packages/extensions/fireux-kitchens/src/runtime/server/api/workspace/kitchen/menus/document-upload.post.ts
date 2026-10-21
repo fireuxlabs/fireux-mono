@@ -26,6 +26,8 @@ export default defineEventHandler(async (event) => {
     ...request,
     uploadId: randomUUID(),
   })
+  if (!file)
+    throw createError({ statusCode: 502, statusMessage: 'The Menu document was not uploaded. Please try again.' })
   await updateKitchenMenu(event, {
     kitchenId: request.kitchenId,
     menuId,

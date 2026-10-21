@@ -44,7 +44,7 @@ export function foodServiceSummary(
         offering.hours, offering.hours?.timezone, now
       )
       if (!hoursStatus.known) issues.push('Set serving hours')
-      const ready = readiness.canEnable && hoursStatus.known
+      const selectionReady = readiness.canEnable && hoursStatus.known
       const windows = menus
         .filter(
           (menu) =>
@@ -59,6 +59,9 @@ export function foodServiceSummary(
           )[0]?.hours
           return readOpeningHoursStatus(hours, hours?.timezone, now)
         })
+      if (selectionReady && windows.length && !windows.some((window) => window.known))
+        issues.push('Align menu and service hours')
+      const ready = selectionReady && issues.length === 0
       const open =
         ready &&
         status !== 'Paused' &&

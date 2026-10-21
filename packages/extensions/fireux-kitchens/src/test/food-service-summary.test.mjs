@@ -121,3 +121,16 @@ test('private-link selections flag setup instead of claiming the service is serv
   assert.equal(row.label, 'Needs setup')
   assert.ok(row.issues.includes('Replace unavailable menus'))
 })
+
+test('non-overlapping Menu and Service windows report a deterministic setup issue', () => {
+  const narrow = { ...service, hours: hours('16:00', '17:00') }
+  const lateMenu = { ...menu, serving_hours: hours('18:00', '20:00') }
+  const [row] = foodServiceSummary([narrow], [lateMenu], at('16:30'))
+  assert.equal(row.label, 'Needs setup')
+  assert.equal(row.needsSetup, true)
+  assert.equal(row.open, false)
+  assert.deepEqual(row.issues, ['Align menu and service hours'])
+  const [usable] = foodServiceSummary([narrow], [menu], at('16:30'))
+  assert.equal(usable.needsSetup, false)
+  assert.equal(usable.label, 'Serving now')
+})

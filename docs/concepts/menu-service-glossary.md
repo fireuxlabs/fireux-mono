@@ -83,7 +83,7 @@ a separate counter-ordering option. Do not claim every glossary entry is configu
 or available at every venue. Refresh this map when service vocabulary changes.
 
 Workspace entry: `/workspace/kitchen/food-and-drink/services`, separate from Orders.
-The Services overview and individual setup reuse the existing records and commands.
+Services configures each provided option inline using the existing records and commands.
 
 Services names the Workspace setup surface. `Offering` remains an internal record
 name. Operators use Service consistently; “offering” and “channel” are not
@@ -91,9 +91,9 @@ alternative names for that setup. Recipes and Ingredients belong to Prep &
 Production; Menus and Services belong to customer-facing menu setup.
 
 
-A named setup such as **Picnic** can use the Collection service with next-day timing and
-its own menus and collection hours. It appears through its named entrance;
-creating it does not edit the main Collection or Delivery setup. Its separate
+An existing named setup such as **Picnic** can retain Collection next-day timing,
+its own menus and collection hours, and its named entrance. The current Services
+chooser does not create additional named setups of an already configured type. Its separate
 identity, Services row and customer link remain when its collection timing changes. “From tomorrow”
 uses the venue’s local calendar, rather than meaning 24 hours from now.
 

@@ -83,7 +83,8 @@ export function kitchenDemoManifestSections(
         .sort((left, right) => left.sort_order - right.sort_order)
         .flatMap<MenuManifestItem>((item) => {
           const dish = dishesById.get(clean(item.dish_id))
-          if (!dish) return []
+          if (!dish || typeof dish.price !== 'number' || !Number.isFinite(dish.price) || dish.price < 0)
+            return []
 
           return [
             {

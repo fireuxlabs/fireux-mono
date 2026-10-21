@@ -18,7 +18,7 @@
       <div class="menu-qr__code" :aria-busy="!qrReady && !qrError">
         <div
           v-show="qrReady"
-          ref="qrContainer"
+          :ref="(element) => { qrContainer = element as HTMLElement | null }"
           class="menu-qr__canvas"
           :aria-label="`QR code linking to ${view.menuName}`"
           data-menu-qr-image

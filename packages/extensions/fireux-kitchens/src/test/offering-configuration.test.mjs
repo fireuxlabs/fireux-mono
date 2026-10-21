@@ -912,3 +912,27 @@ test('Kiosk cleanup cannot move an incompatible saved menu into another mode', a
   ] })
   assert.deepEqual(clean.offering.menu_ids, ['private'])
 })
+
+test('Kiosk can remove an incompatible Menu from one mode while its union stays unchanged', async () => {
+  const menu = { status: 'published', format: 'interactive' }
+  const h = harness({ menu })
+  const body = { kitchenId: 'venue', option: 'counter', enabled: true, interactions: [
+    { type: 'eat_in', changes: { menu_ids: ['shared', 'eat-only'] } },
+    { type: 'takeaway', changes: { menu_ids: ['shared'] } },
+  ] }
+  const first = await h.configureKitchenOffering({}, body)
+  menu.audience = 'private_link'
+  const writes = h.writes.length
+  await assert.rejects(h.configureKitchenOffering({}, { ...body, offeringId: first.offering.id, interactions: [
+    { type: 'eat_in', changes: { menu_ids: ['eat-only'] } },
+    { type: 'takeaway', changes: { menu_ids: ['shared', 'eat-only'] } },
+  ] }), /public regular interactive menus/)
+  assert.equal(h.writes.length, writes, 'a cross-mode transfer cannot disguise itself as cleanup')
+  const clean = await h.configureKitchenOffering({}, { ...body, offeringId: first.offering.id, interactions: [
+    { type: 'eat_in', changes: { menu_ids: ['eat-only'] } },
+    { type: 'takeaway', changes: { menu_ids: ['shared'] } },
+  ] })
+  assert.deepEqual(new Set(clean.offering.menu_ids), new Set(first.offering.menu_ids))
+  assert.deepEqual(clean.offering.interactions.find(row => row.type === 'eat_in').menu_ids, ['eat-only'])
+  assert.deepEqual(clean.offering.interactions.find(row => row.type === 'takeaway').menu_ids, ['shared'])
+})
