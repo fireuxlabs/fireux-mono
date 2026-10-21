@@ -214,8 +214,8 @@ All paths below are relative to `packages/extensions/fireux-kitchens/src`:
 
 - `runtime/pages/workspace/kitchen/menus/index.vue`: route composition.
 - `runtime/kitchen/composables/workspace/menus/useKitchenWorkspaceMenus.ts`: workflow.
-- `runtime/kitchen/components/Workspace/Menus/`: index, creation and editing UI.
-- `runtime/kitchen/components/Workspace/Menus/Edit/Theme.vue`: remaining palette drift.
+- `runtime/kitchen/components/FoodAndDrink/Menus/`: index, creation and editing UI.
+- `runtime/kitchen/components/FoodAndDrink/Menus/Edit/Theme.vue`: remaining palette drift.
 - `runtime/menu/composables/useKitchenMenuCollection.ts`: live collection.
 - `runtime/menu/composables/firestore/mutations/useMenuUpdate.ts`: mixed update paths.
 - `runtime/menu/server/workspace-commands.ts`: trusted commands.

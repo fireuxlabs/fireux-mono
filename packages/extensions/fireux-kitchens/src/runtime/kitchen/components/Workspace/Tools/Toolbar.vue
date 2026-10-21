@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenStationsTools v-if="capability === 'stations'" />
+  <KitchenPrepAndProductionStationsTools v-if="capability === 'stations'" />
 
   <section
     v-else-if="tools.length"

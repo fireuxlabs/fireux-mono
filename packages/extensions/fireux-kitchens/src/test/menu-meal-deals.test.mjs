@@ -302,7 +302,7 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
   }
   const source = readFileSync(
     new URL(
-      'kitchen/components/Workspace/Menus/Items/Add/MealDeal.vue',
+      'kitchen/components/FoodAndDrink/Menus/Items/Add/MealDeal.vue',
       runtime
     ),
     'utf8'

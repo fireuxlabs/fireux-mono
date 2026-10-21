@@ -4,32 +4,11 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Property Team"
   >
-    <WorkspaceTeamEditor :team="team">
-      <template #collection>
-        <UAlert
-          v-if="derived.status === 'error'"
-          title="Property Team could not be loaded"
-          color="error"
-        >
-          <template #description>
-            {{ team.error.value?.message }}
-            <MoleculesCopyError
-              :message="
-                team.error.value?.message ||
-                'Property Team could not be loaded.'
-              "
-            />
-          </template>
-        </UAlert>
-        <WorkspaceTeamPeople
-          v-else
-          :members="state.team.members"
-          :role-labels="roleLabels"
-          :selected-id="state.team.selectedTeamMemberId"
-          :pending="derived.status === 'loading'"
-          @select="natives.select"
-        />
-      </template>
+    <WorkspaceTeamEditor
+      :team="team"
+      :role-labels="roleLabels"
+      :error="team.error.value?.message"
+    >
       <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
@@ -37,11 +16,6 @@
         />
       </template>
     </WorkspaceTeamEditor>
-    <UAlert
-      v-if="derived.status === 'ready' && !state.team.members.length"
-      title="No team members yet"
-      description="Add the first person to begin this Property Team."
-    />
     <WorkspaceTeamRoles
       ref="rolesEditor"
       compact
@@ -68,7 +42,6 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/People.vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
 import type { usePropertyTeam } from '../../../composables/usePropertyTeam'
 import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
@@ -77,7 +50,7 @@ import WorkspaceTeamAssignment from 'fireux-core/runtime/components/Workspace/Te
 const props = defineProps<{
   team: ReturnType<typeof usePropertyTeam>
 }>()
-const { state, derived, natives } = props.team
+const { state, derived } = props.team
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})
 function updateLabels(labels: Record<string, string[]>) {

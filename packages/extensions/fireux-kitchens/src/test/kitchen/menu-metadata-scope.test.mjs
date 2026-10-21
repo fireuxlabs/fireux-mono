@@ -174,7 +174,7 @@ test('Details and Delete ignore stale error/success before navigation or notific
         }
         const isDelete = action === 'deleteSelectedMenu',
           api = load(
-            `../../runtime/kitchen/components/Workspace/Menus/${isDelete ? 'Delete' : 'Edit/Details'}.vue`,
+            `../../runtime/kitchen/components/FoodAndDrink/Menus/${isDelete ? 'Delete' : 'Edit/Details'}.vue`,
             deps,
             isDelete
               ? '({deleteSelectedMenu,deleting})'

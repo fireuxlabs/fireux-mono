@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-promotions">
     <template #header><LayoutsWorkspaceNavbar title="Promotions" /></template>
-    <template #body><WorkspaceKitchenPromotions /></template>
+    <template #body><KitchenFoodAndDrinkPromotions /></template>
   </UDashboardPanel>
 </template>
 <script setup lang="ts">

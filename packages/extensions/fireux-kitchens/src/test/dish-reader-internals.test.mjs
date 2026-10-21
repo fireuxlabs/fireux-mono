@@ -252,7 +252,7 @@ test('No selected Kitchen preserves pending or failed account/access outcomes be
     assert.equal(f.state.pending.value, parentOutcome === 'pending')
     assert.equal(f.path, '')
     assert.deepEqual(f.state.dishes.value, [])
-    const html = await render('kitchen/components/Workspace/Dishes/Index.vue', {
+    const html = await render('kitchen/components/FoodAndDrink/Items/Index.vue', {
       storageKitchenId: f.state.storageKitchenId,
       outcome: f.state.outcome,
       catalogue,
@@ -370,21 +370,21 @@ function components(app, spec) {
     'UIcon',
     'UAvatar',
     'UBadge',
-    'WorkspaceKitchenDishesCollection',
-    'WorkspaceKitchenDishesCardsCell',
+    'KitchenFoodAndDrinkItemsCollection',
+    'KitchenFoodAndDrinkItemsCardsCell',
     'UPagination',
-    'WorkspaceKitchenDishesCategories',
+    'KitchenFoodAndDrinkItemsCategories',
     'WorkspaceKitchenAICapability',
-    'WorkspaceKitchenDishesEdit',
-    'WorkspaceKitchenDishesPricing',
-    'WorkspaceKitchenDishesDelete',
+    'KitchenFoodAndDrinkItemsEdit',
+    'KitchenFoodAndDrinkItemsPricing',
+    'KitchenFoodAndDrinkItemsDelete',
     'DishPreparation',
     'DishMenus',
     'DishMenu',
     'DishMenuSection',
     'MoleculesCopyError',
     'ContextRecord',
-    'WorkspaceKitchenDishesCreate',
+    'KitchenFoodAndDrinkItemsCreate',
   ]
   for (const name of empty)
     app.component(name, {
@@ -504,7 +504,7 @@ test('actual Dish index distinguishes Kitchen loading, failure, missing and inac
     ['idle', 'Select a kitchen'],
   ])
     assert.match(
-      await render('kitchen/components/Workspace/Dishes/Index.vue', {
+      await render('kitchen/components/FoodAndDrink/Items/Index.vue', {
         storageKitchenId: '',
         outcome,
         catalogue,
@@ -517,7 +517,7 @@ async function renderCatalogue(state) {
     await Promise.all(
       ['Controls', 'Results'].map((child) =>
         render(
-          `kitchen/components/Workspace/Dishes/Collection/${child}.vue`,
+          `kitchen/components/FoodAndDrink/Items/Collection/${child}.vue`,
           state
         )
       )
@@ -546,13 +546,13 @@ test('actual Dish collection hides premature counts, categories, filters and Cre
 })
 test('actual Dish record error does not render not-found, old read header or editable management', async () => {
   const html = await render(
-    'kitchen/components/Workspace/Dishes/Detail/Index.vue',
+    'kitchen/components/FoodAndDrink/Items/Detail/Index.vue',
     recordView({ dish: null, outcome: 'error', error: new Error('Failed') })
   )
   assert.match(html, /dish unavailable/)
   assert.doesNotMatch(html, /not found|Manage dish|Soup/)
   const missing = await render(
-    'kitchen/components/Workspace/Dishes/Detail/Index.vue',
+    'kitchen/components/FoodAndDrink/Items/Detail/Index.vue',
     recordView({ dish: null, outcome: 'missing' })
   )
   assert.match(missing, /dish not found/)
@@ -594,7 +594,7 @@ test('actual Dish owner retains mounted Spec through child refresh/failure and r
     warnings = [],
     app = renderer.createApp({
       setup: () => state,
-      render: template('kitchen/components/Workspace/Dishes/Detail/Index.vue'),
+      render: template('kitchen/components/FoodAndDrink/Items/Detail/Index.vue'),
     })
   app.config.warnHandler = (warning) => warnings.push(warning)
   components(app, {
@@ -651,7 +651,7 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
     }
     const scope = effectScope()
     scope.run(() =>
-      load(`kitchen/components/Workspace/Dishes/${view}.vue`, '({})', {
+      load(`kitchen/components/FoodAndDrink/Items/${view}.vue`, '({})', {
         computed,
         reactive,
         watch,
@@ -677,7 +677,7 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
 })
 test('actual Dish Preparation and Menu perspectives render failed linked reads without false empty states', async () => {
   const prep = await render(
-    'kitchen/components/Workspace/Dishes/Preparation.vue',
+    'kitchen/components/FoodAndDrink/Items/Preparation.vue',
     {
       dish: { spec: { portion: 1 } },
       error: new Error('Denied'),
@@ -688,7 +688,7 @@ test('actual Dish Preparation and Menu perspectives render failed linked reads w
   )
   assert.match(prep, /Prep items unavailable/)
   assert.doesNotMatch(prep, /No mise en place linked|Loading preparations/)
-  const menus = await render('kitchen/components/Workspace/Dishes/Menus.vue', {
+  const menus = await render('kitchen/components/FoodAndDrink/Items/Menus.vue', {
     error: new Error('Denied'),
     pending: true,
     activeMenus: [],
@@ -940,7 +940,7 @@ test('Items dialogs honour create authority, consume create links and close when
   const route = reactive({ query: { create: 'drink', search: 'cola' } })
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/Workspace/Dishes/Collection/Dialogs.vue',
+      'kitchen/components/FoodAndDrink/Items/Collection/Dialogs.vue',
       '({ createKind, organise, aiOpen, openCreate, openCategories, openAI, closeCreate })',
       {
         computed,

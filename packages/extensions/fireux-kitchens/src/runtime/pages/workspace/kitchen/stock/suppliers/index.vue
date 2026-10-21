@@ -11,11 +11,11 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenSuppliersSelector />
+          <KitchenSuppliersSelector />
           <WorkspaceKitchenToolsToolbar capability="suppliers" />
           <WorkspaceKitchenAICapability capability="suppliers" />
           <WorkspaceKitchenResearchCapabilitySummary capability="suppliers" />
-          <WorkspaceKitchenSuppliers />
+          <KitchenSuppliers />
           <WorkspaceKitchenResearchGuide capability="suppliers" />
           <WorkspaceKitchenResearchSegue
             capability="Suppliers"

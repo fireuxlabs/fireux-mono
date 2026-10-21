@@ -1,4 +1,4 @@
-<template><WorkspaceKitchenFoodSafetyPage view="actions" /></template>
+<template><KitchenFoodSafetyPage view="actions" /></template>
 <script setup lang="ts">
 definePageMeta({
   layout: 'workspace',

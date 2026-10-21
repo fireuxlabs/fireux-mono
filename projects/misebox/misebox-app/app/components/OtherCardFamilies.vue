@@ -137,7 +137,7 @@
     :variants="['cell']"
   >
     <CardSpecimen label="Cell" candidate>
-      <WorkspaceKitchenIngredientsCardsCell
+      <KitchenPrepAndProductionIngredientsCardsCell
         id="beef-mince"
         to="/"
         title="Ground beef"
@@ -156,7 +156,7 @@
     :variants="['cell']"
   >
     <CardSpecimen label="Cell" candidate>
-      <WorkspaceKitchenSuppliersCardsCell v-bind="kitchenSupplierCell" />
+      <KitchenSuppliersCardsCell v-bind="kitchenSupplierCell" />
     </CardSpecimen>
   </CardFamilySection>
 

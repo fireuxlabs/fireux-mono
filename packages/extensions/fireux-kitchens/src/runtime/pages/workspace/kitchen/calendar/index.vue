@@ -38,7 +38,7 @@ const intro = {
   ai: 'No AI actions are connected to this surface.',
 }
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-import KitchenCalendar from '../../../../kitchen/components/Workspace/Calendar/Index.vue'
+import KitchenCalendar from '../../../../kitchen/components/Calendar/Index.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -1,6 +1,6 @@
 <template>
   <div v-if="dishes.length" class="workspace-preview-dishes max-h-[24rem] overflow-y-auto pr-1">
-    <WorkspaceKitchenDishesCardsCell
+    <KitchenFoodAndDrinkItemsCardsCell
       v-for="dish in dishes"
       :id="dish.id"
       :key="dish.id"

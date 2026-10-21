@@ -67,7 +67,7 @@ const notes: Record<
         'Create or import a menu, edit its content and publish it. Publishing a menu and enabling orders are separate steps. Menu deletion has no connected supported flow.',
     },
     references: {
-      Component: 'Workspace/Menus/Index.vue',
+      Component: 'FoodAndDrink/Menus/Index.vue',
       Reader: 'useKitchenMenuCollection — live menus for the selected Kitchen.',
       Ownership:
         'Kitchen composes the workspace; Menu owns menu records and publication.',
@@ -85,7 +85,7 @@ const notes: Record<
         'Summaries showing which menus use an item and its pricing are not connected.',
     },
     references: {
-      Component: 'Workspace/Dishes/Index.vue — food or drink context.',
+      Component: 'FoodAndDrink/Items/Index.vue — food or drink context.',
       Reader:
         'useKitchenDishCollection — live dishes for the selected Kitchen.',
       Classification: 'item_kind separates food and drink records.',
@@ -102,7 +102,7 @@ const notes: Record<
         'The page does not yet show which dishes use a recipe.',
     },
     references: {
-      Component: 'Workspace/Recipes/Index.vue',
+      Component: 'PrepAndProduction/Recipes/Index.vue',
       Reader:
         'useKitchenRecipeCollection — live recipes for the selected Kitchen.',
       Usage: 'useKitchenWorkspaceRecipes — dish usage is not connected.',
@@ -122,7 +122,7 @@ const notes: Record<
         'Removal checks current recipes, dishes, prep items and supplier links. Later reference creation does not yet enforce Kitchen ingredient-link existence.',
     },
     references: {
-      Component: 'Workspace/Ingredients/Index.vue',
+      Component: 'PrepAndProduction/Ingredients/Index.vue',
       Reader:
         'useKitchenIngredients — live Kitchen links combined with shared Ingredient records.',
       Model:

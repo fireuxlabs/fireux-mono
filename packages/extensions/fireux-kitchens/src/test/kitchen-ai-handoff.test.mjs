@@ -6,7 +6,7 @@ import test from 'node:test'
 import { currentKitchenAIHandoff } from '../runtime/kitchen/models/ai-handoff.ts'
 const require = createRequire(new URL('../../package.json', import.meta.url))
 const { computed, ref, watch, nextTick } = require('vue')
-const raw = readFileSync(new URL('../runtime/kitchen/components/Workspace/Menus/Ai.vue', import.meta.url), 'utf8').split('<script setup lang="ts">')[1].split('</script>')[0]
+const raw = readFileSync(new URL('../runtime/kitchen/components/FoodAndDrink/Menus/Ai.vue', import.meta.url), 'utf8').split('<script setup lang="ts">')[1].split('</script>')[0]
 const source = stripTypeScriptTypes(raw.replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replaceAll('import.meta.dev', 'true'))
 const record = { userId: 'user', kitchenId: 'kitchen', capability: 'menus', prompt: 'Open Create Menu', createdAt: Date.now() }
 function setup(handoffValue = record) {

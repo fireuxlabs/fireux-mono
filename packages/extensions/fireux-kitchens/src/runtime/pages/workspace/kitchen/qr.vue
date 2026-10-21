@@ -7,7 +7,7 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenMenusQR />
+        <KitchenFoodAndDrinkMenusQR />
       </template>
     </UDashboardPanel>
   </div>

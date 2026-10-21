@@ -20,7 +20,7 @@ const { requireOperatingHours } = loadOfferingSource(
 )
 const source = readFileSync(
   new URL(
-    '../../runtime/kitchen/components/Workspace/Offerings/Setup/Hours.vue',
+    '../../runtime/kitchen/components/FoodAndDrink/Services/Setup/Hours.vue',
     import.meta.url
   ),
   'utf8'

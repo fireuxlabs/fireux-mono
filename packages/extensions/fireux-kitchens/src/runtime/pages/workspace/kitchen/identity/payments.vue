@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="kitchen-payments"
     ><template #header><LayoutsWorkspaceNavbar title="Payments" /></template
-    ><template #body><WorkspaceKitchenIdentityPayments /></template
+    ><template #body><KitchenIdentityPayments /></template
   ></UDashboardPanel>
 </template>
 <script setup lang="ts">

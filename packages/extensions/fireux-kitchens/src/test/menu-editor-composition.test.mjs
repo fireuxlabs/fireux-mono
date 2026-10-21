@@ -7,7 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { renderToString } from 'vue/server-renderer'
 
 const base = new URL(
-  '../runtime/kitchen/components/Workspace/Menus/',
+  '../runtime/kitchen/components/FoodAndDrink/Menus/',
   import.meta.url
 )
 async function render(relative, props) {
@@ -38,10 +38,10 @@ async function render(relative, props) {
     'UDropdownMenu',
     'MoleculesFormsEditableSimpleField',
     'MoleculesDisclosurePanel',
-    'WorkspaceKitchenMenusItemsSharedTerms',
-    'WorkspaceKitchenMenusItemsAdoptSharedTerms',
-    'WorkspaceKitchenMenusItemsOptions',
-    'WorkspaceKitchenMenusSectionsDishes',
+    'KitchenFoodAndDrinkMenusItemsSharedTerms',
+    'KitchenFoodAndDrinkMenusItemsAdoptSharedTerms',
+    'KitchenFoodAndDrinkMenusItemsOptions',
+    'KitchenFoodAndDrinkMenusSectionsDishes',
   ]) {
     app.component(name, {
       inheritAttrs: false,
@@ -178,6 +178,6 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   assert.equal(seen.USwitch, undefined)
   assert.doesNotMatch(html, /rounded-lg|On menu/)
   assert.equal(seen.MoleculesFormsEditableSimpleField, undefined)
-  assert.equal(seen.WorkspaceKitchenMenusItemsSharedTerms, undefined)
-  assert.equal(seen.WorkspaceKitchenMenusItemsOptions, undefined)
+  assert.equal(seen.KitchenFoodAndDrinkMenusItemsSharedTerms, undefined)
+  assert.equal(seen.KitchenFoodAndDrinkMenusItemsOptions, undefined)
 })

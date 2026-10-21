@@ -89,7 +89,7 @@ test('mounted Promotions editor survives refresh/error and closes only when its 
   let mounted = 0,
     unmounted = 0
   const source = readFileSync(
-    new URL('components/Workspace/Promotions/Index.vue', runtime),
+    new URL('components/FoodAndDrink/Promotions/Index.vue', runtime),
     'utf8'
   )
   const template = source
@@ -99,7 +99,7 @@ test('mounted Promotions editor survives refresh/error and closes only when its 
   const app = host.createApp({
     setup: () =>
       load(
-        'components/Workspace/Promotions/Index.vue',
+        'components/FoodAndDrink/Promotions/Index.vue',
         '({ editor, canCreate, createPromotion })',
         {
           provideKitchenPromotionsContext: () => f.context,
@@ -116,10 +116,10 @@ test('mounted Promotions editor survives refresh/error and closes only when its 
         Vue.h('header', slots.actions?.()),
   })
   app.component('UButton', { render: () => Vue.h('button') })
-  app.component('WorkspaceKitchenPromotionsCollection', {
+  app.component('KitchenFoodAndDrinkPromotionsCollection', {
     render: () => Vue.h('div'),
   })
-  app.component('WorkspaceKitchenPromotionsEditor', {
+  app.component('KitchenFoodAndDrinkPromotionsEditor', {
     setup() {
       mounted++
       Vue.onUnmounted(() => unmounted++)

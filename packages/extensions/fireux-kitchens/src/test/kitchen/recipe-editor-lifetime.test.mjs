@@ -377,7 +377,7 @@ function mountForm(h, recipe = null) {
   }
   const Form = compileComponent(
     new URL(
-      '../../runtime/kitchen/components/Workspace/Recipes/Form/Index.vue',
+      '../../runtime/kitchen/components/PrepAndProduction/Recipes/Form/Index.vue',
       import.meta.url
     )
   )
@@ -418,16 +418,16 @@ function mountForm(h, recipe = null) {
   })
   for (const section of ['Identity', 'Ingredients', 'PrepItems', 'Instructions'])
     app.component(
-      `WorkspaceKitchenRecipesForm${section}`,
+      `KitchenPrepAndProductionRecipesForm${section}`,
       compileComponent(new URL(
-        `../../runtime/kitchen/components/Workspace/Recipes/Form/${section}.vue`,
+        `../../runtime/kitchen/components/PrepAndProduction/Recipes/Form/${section}.vue`,
         import.meta.url
       ))
     )
   app.component(
-    'WorkspaceKitchenPrepItemsCreate',
+    'KitchenPrepAndProductionPrepItemsCreate',
     compileComponent(new URL(
-      '../../runtime/kitchen/components/Workspace/PrepItems/Create.vue',
+      '../../runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue',
       import.meta.url
     ))
   )

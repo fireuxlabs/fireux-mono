@@ -9,7 +9,7 @@
         <section class="workspace-surface">
           <UPageHeader title="Stations" />
           <WorkspaceKitchenToolsToolbar capability="stations" />
-          <WorkspaceKitchenStations />
+          <KitchenPrepAndProductionStations />
         </section>
       </template>
     </UDashboardPanel>

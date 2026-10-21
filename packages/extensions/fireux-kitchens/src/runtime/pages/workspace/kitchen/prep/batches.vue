@@ -4,7 +4,7 @@
       <template #header
         ><LayoutsWorkspaceNavbar title="Prep & Production"
       /></template>
-      <template #body><WorkspaceKitchenPrep view="batches" /></template>
+      <template #body><KitchenPrepAndProductionPlanning view="batches" /></template>
     </UDashboardPanel>
   </div>
 </template>

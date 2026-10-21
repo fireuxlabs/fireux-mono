@@ -143,7 +143,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
     for (const failed of [false, true]) {
       const h = context(),
         api = h.run(
-          'kitchen/components/Workspace/Menus/Create/Form.vue',
+          'kitchen/components/FoodAndDrink/Menus/Create/Form.vue',
           '({save,name,description,busy,error})',
           {
             defineModel: () => ref(''),
@@ -193,7 +193,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
     for (const changed of changes) {
       const h = context(),
         api = h.run(
-          'kitchen/components/Workspace/Menus/Create/Url.vue',
+          'kitchen/components/FoodAndDrink/Menus/Create/Url.vue',
           '({save,sourceUrl,pending,error})',
           {
             crypto: { randomUUID: () => 'test-source' },
@@ -247,7 +247,7 @@ test('Menu removal returns to the collection after live data removes the record'
     menuSlug = ref('main'),
     canManage = ref(true)
   const api = h.run(
-    'kitchen/components/Workspace/Menus/Detail/Remove.vue',
+    'kitchen/components/FoodAndDrink/Menus/Detail/Remove.vue',
     '({apply,confirm,busy,error})',
     {
       useKitchenMenuRecordContext: () => ({
@@ -285,7 +285,7 @@ test('Menu suggestions stay locked for Free and create ordinary interactive draf
   for (const tier of ['free', 'premium', 'business']) {
     const h = context()
     const api = h.run(
-      'kitchen/components/Workspace/Menus/Collection/Suggestions.vue',
+      'kitchen/components/FoodAndDrink/Menus/Collection/Suggestions.vue',
       '({create,hasPlus,suggestions})',
       {
         useKitchenMenusContext: () => ({
@@ -326,7 +326,7 @@ test('Menu archive UI shows affected services and restores only to draft', async
       status: archived ? 'archived' : 'published',
     })
     const api = h.run(
-      'kitchen/components/Workspace/Menus/Detail/Remove.vue',
+      'kitchen/components/FoodAndDrink/Menus/Detail/Remove.vue',
       '({apply,confirm,canDelete,affectedServices,busy})',
       {
         useKitchenMenuRecordContext: () => ({

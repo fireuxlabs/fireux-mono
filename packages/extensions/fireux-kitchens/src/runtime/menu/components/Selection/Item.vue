@@ -66,7 +66,7 @@
     </p>
     <p v-if="error" class="text-sm text-error" role="alert">{{ error }}</p>
     <UButton
-      label="Add to basket"
+      :label="initialChoices ? 'Update basket' : 'Add to basket'"
       block
       size="lg"
       :disabled="!preview.line"
@@ -85,14 +85,14 @@ const props = defineProps<{
   offer: MenuServiceOffer
   money: (value: number) => string
   error: string
+  initialChoices?: ServiceItemChoices
 }>()
 const emit = defineEmits<{ add: [choices: ServiceItemChoices] }>()
-const choices = reactive<ServiceItemChoices>({
-  optionId: '',
-  extraIds: [],
-  groups: {},
-  quantity: 1,
-})
+const choices = reactive<ServiceItemChoices>(
+  props.initialChoices
+    ? JSON.parse(JSON.stringify(props.initialChoices))
+    : { optionId: '', extraIds: [], groups: {}, quantity: 1 }
+)
 const options = computed(() =>
   props.offer.item.priceOptions.map((row) => ({
     value: row.id,

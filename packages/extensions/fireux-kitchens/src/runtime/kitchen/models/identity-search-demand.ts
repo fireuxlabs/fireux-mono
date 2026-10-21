@@ -189,7 +189,7 @@ export const kitchenIdentitySearchDemand = {
         'Canonical Place fields updated; Kitchen identity remains separate',
       ],
       evidence: [
-        'kitchen/components/Workspace/Identity/Profile.vue',
+        'kitchen/components/Identity/Profile.vue',
         'fireux-places/runtime/place/components/Edit/Index.vue',
       ],
       status: 'available',
@@ -227,7 +227,7 @@ export const kitchenIdentitySearchDemand = {
         'Only the submitted owner schedule changes; offering schedules stay separate',
       ],
       evidence: [
-        'kitchen/components/Workspace/OperatingHours/Index.vue',
+        'kitchen/components/OperatingHours/Index.vue',
         'kitchen/server/ordering/hours.ts',
       ],
       status: 'available',
@@ -246,7 +246,7 @@ export const kitchenIdentitySearchDemand = {
         'Kitchen palette updated; venue branding and Menu presentation stay separate',
       ],
       evidence: [
-        'kitchen/components/Workspace/Appearance/Index.vue',
+        'kitchen/components/Appearance/Index.vue',
         'kitchen/server/identity/theme.ts',
       ],
       status: 'available',

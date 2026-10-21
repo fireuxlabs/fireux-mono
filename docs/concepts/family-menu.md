@@ -203,7 +203,7 @@ map.
   current root Directory entry.
 - `runtime/menu/components/Detail` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
-- `runtime/kitchen/components/Workspace/Menus` owns upload,
+- `runtime/kitchen/components/FoodAndDrink/Menus` owns upload,
   processing, editing, publishing, sections, items, QR management, and
   links to Kitchen service configuration.
 - `runtime/menu/components/Json` is temporary diagnostic rendering for

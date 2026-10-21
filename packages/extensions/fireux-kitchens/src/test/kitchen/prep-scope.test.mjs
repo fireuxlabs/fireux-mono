@@ -171,7 +171,7 @@ test('Recipe Prep button saves only Prep and snapshots quantity for its local un
       ingredientOptions: [],
     }
     const api = load(
-      '../../runtime/kitchen/components/Workspace/PrepItems/Create.vue',
+      '../../runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue',
       {
         ref,
         computed,
@@ -222,7 +222,7 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
     'useDishEditorScope'
   )
   const api = load(
-    '../../runtime/kitchen/components/Workspace/Dishes/Spec.vue',
+    '../../runtime/kitchen/components/FoodAndDrink/Items/Spec.vue',
     {
       ref,
       computed,

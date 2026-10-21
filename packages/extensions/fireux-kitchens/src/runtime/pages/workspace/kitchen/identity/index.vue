@@ -10,7 +10,7 @@
       hide-description
       placement="top"
     />
-    <WorkspaceKitchenIdentity :identity="identity" />
+    <KitchenIdentity :identity="identity" />
   </WorkspaceGroupPage>
 </template>
 

@@ -366,7 +366,7 @@ sources exist.
   `packages/core/fireux-core/src/runtime/models/utils/style.model.ts`
 - Kitchen theme mutation/editor:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
-  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Theme.vue`
+  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Theme.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
   and `TemplateOne*.vue`

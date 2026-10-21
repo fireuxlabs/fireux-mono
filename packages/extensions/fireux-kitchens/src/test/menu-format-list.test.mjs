@@ -77,25 +77,25 @@ test('Menu list keeps regular menus together and Daily specials and archives sep
 test('Workspace creation has one Menu path and keeps source import available', () => {
   const create = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Workspace/Menus/Create/Index.vue',
+      '../runtime/kitchen/components/FoodAndDrink/Menus/Create/Index.vue',
       import.meta.url
     ),
     'utf8'
   )
-  assert.match(create, /<WorkspaceKitchenMenusCreateForm v-else \/>/)
+  assert.match(create, /<KitchenFoodAndDrinkMenusCreateForm v-else \/>/)
   assert.match(
     create,
-    /<WorkspaceKitchenMenusCreateUrl v-else-if="method === 'url'" \/>/
+    /<KitchenFoodAndDrinkMenusCreateUrl v-else-if="method === 'url'" \/>/
   )
   const url = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Workspace/Menus/Create/Url.vue',
+      '../runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue',
       import.meta.url
     ),
     'utf8'
   )
   assert.doesNotMatch(url, /label="Menu name"/)
-  assert.match(create, /<WorkspaceKitchenMenusCreateUpload/)
+  assert.match(create, /<KitchenFoodAndDrinkMenusCreateUpload/)
   assert.match(create, /v-if="method === 'upload'"/)
   for (const label of ['PDF or photos', 'Menu URL', 'Start blank'])
     assert.ok(create.includes(label))

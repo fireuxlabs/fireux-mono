@@ -21,7 +21,7 @@
         :disabled="checkout.locked"
         :sections="sections"
         :money="money"
-        @select="select"
+        @select="itemEditor.select"
       />
       <p
         v-if="!sections.length"
@@ -44,19 +44,23 @@
       />
     </div>
     <UModal
-      :open="itemOpen && catalogueReady"
-      @update:open="itemOpen = $event"
-      :title="selected?.item.name || 'Choose an item'"
+      :open="itemEditor.open && catalogueReady"
+      @update:open="!$event && itemEditor.close()"
+      :title="itemEditor.selection?.offer.item.name || 'Choose an item'"
       description="Choose your options and extras."
     >
       <template #body>
         <MenuSelectionItem
-          v-if="selected"
-          :key="serviceItemSignature(selected)"
-          :offer="selected"
+          v-if="itemEditor.selection"
+          :key="
+            itemEditor.selection.key ||
+            serviceItemSignature(itemEditor.selection.offer)
+          "
+          :offer="itemEditor.selection.offer"
+          :initial-choices="itemEditor.selection.choices"
           :money="money"
-          :error="error"
-          @add="add"
+          :error="itemEditor.error"
+          @add="itemEditor.save"
         />
       </template>
     </UModal>
@@ -80,6 +84,7 @@
           :stale-keys="basket.staleKeys.value"
           :total-minor="basket.totalMinor.value"
           :money="money"
+          @edit="edit"
           @adjust="basket.adjust"
           @remove="basket.remove"
           @close="basketOpen = false"
@@ -97,15 +102,10 @@
 <script setup lang="ts">
 import { computed, ref, reactive, toRef, watch } from 'vue'
 import { useCollectionCheckout } from '../../composables/useCollectionCheckout'
-import type {
-  MenuServiceOffer,
-  MenuServiceSection,
-} from '../../utils/service-sections'
-import {
-  serviceItemSignature,
-  type ServiceItemChoices,
-} from '../../utils/service-basket'
+import type { MenuServiceSection } from '../../utils/service-sections'
+import { serviceItemSignature } from '../../utils/service-basket'
 import { useServiceBasket } from '../../composables/useServiceBasket'
+import { useServiceItemEditor } from '../../composables/useServiceItemEditor'
 import type { KitchenDetailPresentation } from '../../../kitchen/models/kitchen-detail.response'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 const props = defineProps<{
@@ -138,16 +138,29 @@ const checkout = reactive(
     entryId: toRef(() => props.entryId || ''),
   })
 )
-const selected = ref<MenuServiceOffer | null>(null)
-const itemOpen = ref(false)
 const basketOpen = ref(false)
+const itemEditor = reactive(
+  useServiceItemEditor({
+    basket,
+    offers,
+    locked: () => checkout.locked,
+    onClose: (editing) => {
+      if (editing) basketOpen.value = true
+    },
+  })
+)
+function edit(key: string) {
+  if (itemEditor.edit(key)) basketOpen.value = false
+}
 watch(
   () => checkout.locked,
   (locked) => {
-    if (locked) basketOpen.value = true
+    if (locked) {
+      itemEditor.close()
+      basketOpen.value = true
+    }
   }
 )
-const error = ref('')
 const money = (value: number) =>
   value === 0
     ? '0'
@@ -156,23 +169,6 @@ const money = (value: number) =>
           props.currencyCode || basket.lines.value[0]?.currency || '',
         showCurrency: false,
       })
-function select(offer: MenuServiceOffer) {
-  if (checkout.locked) return
-  selected.value = offer
-  error.value = ''
-  itemOpen.value = true
-}
-function add(choices: ServiceItemChoices) {
-  if (!selected.value || checkout.locked) return
-  try {
-    basket.add(selected.value, choices)
-    itemOpen.value = false
-    error.value = ''
-  } catch (cause) {
-    error.value =
-      cause instanceof Error ? cause.message : 'Please choose this item again.'
-  }
-}
 </script>
 <style scoped>
 .collection-basket-bar {

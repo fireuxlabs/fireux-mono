@@ -105,7 +105,7 @@ test('Food & drink has its own index and four sibling working pages', () => {
   }
   assert.ok(
     readFileSync(join(root, 'food-and-drink/index.vue'), 'utf8').includes(
-      'WorkspaceKitchenFood'
+      'KitchenFoodAndDrink'
     )
   )
   assert.equal(navigation(join(root, 'overview/index.vue')).hidden, undefined)
@@ -213,10 +213,10 @@ test('every Kitchen sidebar group has one working index and operational screens 
     )
   }
   const operational = [
-    ['orders/board.vue', 'WorkspaceKitchenOrdersBoard'],
-    ['prep/plan.vue', 'WorkspaceKitchenPrep'],
-    ['food-safety/checks.vue', 'WorkspaceKitchenFoodSafetyPage'],
-    ['team/people.vue', 'WorkspaceKitchenTeam'],
+    ['orders/board.vue', 'KitchenOrdersBoard'],
+    ['prep/plan.vue', 'KitchenPrepAndProductionPlanning'],
+    ['food-safety/checks.vue', 'KitchenFoodSafetyPage'],
+    ['team/people.vue', 'KitchenTeam'],
   ]
   for (const [file, component] of operational) {
     assert.equal(navigation(join(root, file)).hidden, true, file)
@@ -536,21 +536,21 @@ test('Food & drink creation and service configuration have no redundant child pa
 
 
 test('group child surfaces retain every entrance and compose summaries inside the standard card', () => {
-  const components = new URL('../runtime/kitchen/components/Workspace/', import.meta.url)
+  const components = new URL('../runtime/kitchen/components/', import.meta.url)
   const group = readFileSync(new URL('../../../../core/fireux-core/src/runtime/components/Workspace/GroupPage.vue', import.meta.url), 'utf8')
-  const food = readFileSync(new URL('Food/Index.vue', components), 'utf8')
-  const services = readFileSync(new URL('Food/Services.vue', components), 'utf8')
+  const food = readFileSync(new URL('FoodAndDrink/Index.vue', components), 'utf8')
+  const services = readFileSync(new URL('FoodAndDrink/Services/Overview.vue', components), 'utf8')
   assert.match(group, /v-for="item in children"/)
   assert.match(group, /<slot>/)
   assert.ok(!group.includes('excludePages'))
-  assert.ok(food.indexOf('<WorkspaceKitchenFoodAI') < food.indexOf('<WorkspaceKitchenFoodItems'))
+  assert.ok(food.indexOf('<KitchenFoodAndDrinkAI') < food.indexOf('<KitchenFoodAndDrinkItemsOverview'))
   assert.match(food, /<WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-food"/)
-  assert.match(food, /<WorkspaceKitchenFoodServices/)
+  assert.match(food, /<KitchenFoodAndDrinkServicesOverview/)
   const keys = navigation(join(root, 'food-and-drink/index.vue')).children.map(child => child.key)
   assert.deepEqual(keys, ['items', 'menus', 'promotions', 'services'])
   assert.ok(!food.includes('<template #'))
   for (const name of ['Items', 'Menus', 'Promotions', 'Services']) {
-    const child = readFileSync(new URL(`Food/${name}.vue`, components), 'utf8')
+    const child = readFileSync(new URL(`FoodAndDrink/${name}/Overview.vue`, components), 'utf8')
     assert.match(child, /WorkspaceKitchenNavigationChild/)
     assert.ok(child.includes(`child-key="${name.toLowerCase()}"`))
   }
@@ -566,12 +566,14 @@ test('every declared Kitchen group index composes the shared group shell', () =>
   for (const file of groups) {
     const source = readFileSync(file, 'utf8')
     const composition = file.endsWith('/food-and-drink/index.vue')
-      ? readFileSync(new URL('../runtime/kitchen/components/Workspace/Food/Index.vue', import.meta.url), 'utf8')
-      : source
+      ? readFileSync(new URL('../runtime/kitchen/components/FoodAndDrink/Index.vue', import.meta.url), 'utf8')
+      : file.endsWith('/prep/index.vue')
+        ? readFileSync(new URL('../runtime/kitchen/components/PrepAndProduction/Index.vue', import.meta.url), 'utf8')
+        : source
     assert.match(composition, /<WorkspaceGroupPage\b/, relative(root,file))
     assert.ok(!composition.includes('<UDashboardPanel'), relative(root,file))
   }
   assert.equal(existsSync(join(root,'menu-setup.vue')),false)
-  const identity = readFileSync(new URL('../runtime/kitchen/components/Workspace/Identity/Index.vue', import.meta.url),'utf8')
+  const identity = readFileSync(new URL('../runtime/kitchen/components/Identity/Index.vue', import.meta.url),'utf8')
   assert.ok(!identity.includes('<UBreadcrumb'))
 })

@@ -238,7 +238,7 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
         menuId = ref('m'),
         sectionId = ref('s')
       const api = load(
-        '../../runtime/kitchen/components/Workspace/Menus/Items/Add/Repertoire.vue',
+        '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/Repertoire.vue',
         {
           ref,
           computed,

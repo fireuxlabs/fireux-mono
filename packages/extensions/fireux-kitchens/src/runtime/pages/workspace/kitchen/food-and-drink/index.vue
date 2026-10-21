@@ -1,9 +1,9 @@
 <template>
-  <WorkspaceKitchenFood />
+  <KitchenFoodAndDrink />
 </template>
 
 <script setup lang="ts">
-import WorkspaceKitchenFood from '../../../../kitchen/components/Workspace/Food/Index.vue'
+import KitchenFoodAndDrink from '../../../../kitchen/components/FoodAndDrink/Index.vue'
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',

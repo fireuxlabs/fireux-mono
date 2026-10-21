@@ -76,10 +76,20 @@
           @click="emit('adjust', line.key, 1)"
         />
         <UButton
-          label="Remove"
+          label="Edit"
+          :aria-label="`Edit ${line.name}`"
           color="neutral"
           variant="ghost"
           class="ml-auto"
+          :disabled="
+            disabled || !catalogueReady || staleKeys.includes(line.key)
+          "
+          @click="emit('edit', line.key)"
+        />
+        <UButton
+          label="Remove"
+          color="neutral"
+          variant="ghost"
           :disabled="disabled"
           @click="emit('remove', line.key)"
         />
@@ -111,6 +121,7 @@ defineProps<{
   money: (value: number) => string
 }>()
 const emit = defineEmits<{
+  edit: [key: string]
   adjust: [key: string, change: number]
   remove: [key: string]
   close: []

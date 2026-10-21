@@ -17,14 +17,14 @@
           hide-description
           placement="top"
         />
-        <WorkspaceKitchenIdentityProfile :identity="identity" />
+        <KitchenIdentityProfile :identity="identity" />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import WorkspaceKitchenIdentityProfile from '../../../../kitchen/components/Workspace/Identity/Profile.vue'
+import KitchenIdentityProfile from '../../../../kitchen/components/Identity/Profile.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
 const identity = useKitchenIdentity()

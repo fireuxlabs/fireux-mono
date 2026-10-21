@@ -331,12 +331,12 @@ async function render(path, state) {
     'DiagnosticsDebugPanel',
     'UButton',
     'UIcon',
-    'WorkspaceKitchenRecipesCollection',
-    'WorkspaceKitchenRecipesPreparation',
+    'KitchenPrepAndProductionRecipesCollection',
+    'KitchenPrepAndProductionRecipesPreparation',
   ])
     app.component(name, {
       render: () =>
-        name === 'WorkspaceKitchenRecipesPreparation'
+        name === 'KitchenPrepAndProductionRecipesPreparation'
           ? h('p', 'Recipe method remains')
           : null,
     })
@@ -345,7 +345,7 @@ async function render(path, state) {
       props: ['title'],
       setup: (props) => () => h('p', props.title),
     })
-  app.component('WorkspaceKitchenRecipesForm', {
+  app.component('KitchenPrepAndProductionRecipesForm', {
     props: ['recipe', 'canWrite'],
     setup: (props) => () =>
       h(
@@ -420,7 +420,7 @@ test('actual Recipe index distinguishes owner states before collection', async (
     ['idle', 'Select a kitchen'],
   ])
     assert.match(
-      await render('kitchen/components/Workspace/Recipes/Index.vue', {
+      await render('kitchen/components/PrepAndProduction/Recipes/Index.vue', {
         storageKitchenId: '',
         outcome,
       }),
@@ -430,7 +430,7 @@ test('actual Recipe index distinguishes owner states before collection', async (
 test('actual Recipe collection hides premature counts and filters while loading or failing', async () => {
   for (const outcome of ['pending', 'error']) {
     const html = await render(
-      'kitchen/components/Workspace/Recipes/Collection/Index.vue',
+      'kitchen/components/PrepAndProduction/Recipes/Collection/Index.vue',
       readView({
         outcome,
         pending: outcome === 'pending',
@@ -440,7 +440,7 @@ test('actual Recipe collection hides premature counts and filters while loading 
     assert.doesNotMatch(html, /Count:|Recipe status filter|No recipes yet/)
   }
   const html = await render(
-    'kitchen/components/Workspace/Recipes/Collection/Index.vue',
+    'kitchen/components/PrepAndProduction/Recipes/Collection/Index.vue',
     readView({ outcome: 'empty' })
   )
   assert.match(html, /Count: 0/)
@@ -470,7 +470,7 @@ test('actual Recipe detail retains method while linked Ingredients or Prep detai
     prepError: new Error('Prep'),
   }
   const html = await render(
-    'kitchen/components/Workspace/Recipes/Detail/Index.vue',
+    'kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue',
     state
   )
   assert.match(html, /Ingredient details unavailable/)
@@ -478,7 +478,7 @@ test('actual Recipe detail retains method while linked Ingredients or Prep detai
   assert.match(html, /Recipe method remains/)
   assert.doesNotMatch(html, /Loading prep|Loading ingredient|Recipe not found/)
   const inactive = await render(
-    'kitchen/components/Workspace/Recipes/Detail/Index.vue',
+    'kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue',
     { ...state, outcome: 'idle', recipe: null, error: new Error('Old') }
   )
   assert.match(inactive, /Select a kitchen/)
@@ -486,7 +486,7 @@ test('actual Recipe detail retains method while linked Ingredients or Prep detai
 })
 test('actual Recipe preview exposes independent linked failures', async () => {
   const html = await render(
-    'kitchen/components/Workspace/Recipes/Collection/Index.vue',
+    'kitchen/components/PrepAndProduction/Recipes/Collection/Index.vue',
     readView({
       previewOpen: true,
       selectedRecipe: { id: 'dough', name: 'Dough' },
@@ -505,7 +505,7 @@ test('Dish Prep consumer receives additive lifecycle states without losing saved
     })
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/Workspace/Dishes/Preparation.vue',
+      'kitchen/components/FoodAndDrink/Items/Preparation.vue',
       '({rows, groups, pending, error})',
       {
         computed,
@@ -544,7 +544,7 @@ test('Dish Spec options consume masked Prep data while preserving their existing
   )
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/Workspace/Dishes/Spec.vue',
+      'kitchen/components/FoodAndDrink/Items/Spec.vue',
       '({prepOptions, readError})',
       {
         computed,
@@ -603,7 +603,7 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
   let invalidate
   const state = scope.run(() =>
     load(
-      'kitchen/components/Workspace/Recipes/Detail/Index.vue',
+      'kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue',
       '({editing, editorRecipe, editRecipe})',
       {
         computed,
@@ -653,7 +653,7 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
 })
 
 test('actual Detail template keeps a locked local editor mounted through its own live refresh', async () => {
-  const html = await render('kitchen/components/Workspace/Recipes/Detail/Index.vue', {
+  const html = await render('kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue', {
     outcome: 'pending',
     closeEditor: () => {},
     recipe: null,

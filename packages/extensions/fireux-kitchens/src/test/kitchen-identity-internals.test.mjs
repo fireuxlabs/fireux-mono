@@ -167,7 +167,7 @@ test('Kitchen linked Place hides retained failed or pending data and accepts onl
 
 test('Venue profile renders failures rather than missing records or retained editors', async () => {
   const template = readTemplate(
-    '../runtime/kitchen/components/Workspace/Identity/Profile.vue'
+    '../runtime/kitchen/components/Identity/Profile.vue'
   )
   const app = createSSRApp({
     setup: () => ({
@@ -248,7 +248,7 @@ function aiFixture() {
   const owner = effectScope()
   const api = owner.run(() =>
     load(
-      '../runtime/kitchen/components/Workspace/Identity/AI.vue',
+      '../runtime/kitchen/components/Identity/AI.vue',
       '({submit,prompt,message,submitting})',
       {
         computed,

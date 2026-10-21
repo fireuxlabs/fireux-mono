@@ -18,7 +18,7 @@ import {
 import { renderToString } from 'vue/server-renderer'
 
 const runtime = new URL('../../runtime/', import.meta.url)
-const workspace = 'kitchen/components/Workspace/'
+const workspace = 'kitchen/components/'
 function load(path, result, deps) {
   let source = readFileSync(new URL(path, runtime), 'utf8')
   if (path.endsWith('.vue'))

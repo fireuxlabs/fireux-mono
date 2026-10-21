@@ -24,7 +24,10 @@ export type TeamContext = {
       selectedTeamMemberId: string
     }
   }>
-  derived: Ref<{ capability: WorkspaceCapabilityContext }>
+  derived: Ref<{
+    status: 'loading' | 'error' | 'ready' | 'empty'
+    capability: WorkspaceCapabilityContext
+  }>
   primitives: {
     create(input: {
       name: string
@@ -107,7 +110,7 @@ export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
       memberId,
     }
   }
-  const derived = computed(() => {
+  const derived = computed<TeamContext['derived']['value']>(() => {
     const status = options.error.value
       ? 'error'
       : options.pending.value

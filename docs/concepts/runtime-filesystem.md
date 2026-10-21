@@ -1,6 +1,6 @@
 # Runtime filesystem ownership
 
-Updated: 2026-10-01
+Updated: 2026-10-21
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -181,7 +181,7 @@ or capability:
 
 ```text
 src/runtime/kitchen/
-├── components/Workspace/Menus/
+├── components/FoodAndDrink/Menus/
 ├── composables/workspace/Menus/
 ├── models/menu/
 └── server/operations/menus/
@@ -215,7 +215,7 @@ src/runtime/kitchen/server/
 ```
 
 Workspace capability components and composables sit directly beneath their
-entity-owned Workspace role, producing names such as `WorkspaceKitchenOrders`.
+entity-owned Workspace role, producing names such as `KitchenOrders`.
 Sidebar groups may group capability doorways in navigation, but `Operations`,
 `Capabilities`, `Supporting` and `Sundries` are not component-folder owners.
 Entry controls live in `Home`; cross-page helpers have specific names.
@@ -322,7 +322,7 @@ filesystem migration changes ownership and discovery paths, not product behaviou
 ## Inspected Kitchen route delegation
 
 Kitchen Finance and Tools routes delegate to the registered domain compositions
-`WorkspaceKitchenFinance` and `KitchenTools`. Ingredient, Chef and Driver detail
+`KitchenFinance` and `KitchenTools`. Ingredient, Chef and Driver detail
 routes own their record reads, read states, SEO and canonical-response behaviour.
 Named Detail compositions receive the resolved records and own presentation and
 local actions; they do not reacquire those records.

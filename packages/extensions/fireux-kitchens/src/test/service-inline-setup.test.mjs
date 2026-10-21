@@ -7,7 +7,7 @@ import { renderToString } from 'vue/server-renderer'
 import { offeringOverviewPolicy } from './offering-test-helpers.mjs'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/components/Workspace/Offerings/Service.vue',
+    '../runtime/kitchen/components/FoodAndDrink/Services/Service.vue',
     import.meta.url
   ),
   'utf8'
@@ -54,14 +54,14 @@ async function render(option, enabled) {
     render: vue.compile(template),
   })
   for (const [name, file] of [
-    ['WorkspaceKitchenOfferingsSetup', 'Setup.vue'],
-    ['WorkspaceKitchenOfferingsSetupKiosk', 'Setup/Kiosk.vue'],
-    ['WorkspaceKitchenOfferingsSetupPreOrder', 'Setup/PreOrder.vue'],
+    ['KitchenFoodAndDrinkServicesSetup', 'Setup.vue'],
+    ['KitchenFoodAndDrinkServicesSetupKiosk', 'Setup/Kiosk.vue'],
+    ['KitchenFoodAndDrinkServicesSetupPreOrder', 'Setup/PreOrder.vue'],
   ]) {
     const child = parse(
       readFileSync(
         new URL(
-          `../runtime/kitchen/components/Workspace/Offerings/${file}`,
+          `../runtime/kitchen/components/FoodAndDrink/Services/${file}`,
           import.meta.url
         ),
         'utf8'
@@ -77,20 +77,20 @@ async function render(option, enabled) {
       vue.h('button', { role: 'switch', 'aria-checked': props.modelValue }),
   })
   for (const [name, label] of [
-    ['WorkspaceKitchenOfferingsSetupMenus', 'Selected menus'],
-    ['WorkspaceKitchenOfferingsSetupServiceHours', 'Serving hours'],
+    ['KitchenFoodAndDrinkServicesSetupMenus', 'Selected menus'],
+    ['KitchenFoodAndDrinkServicesSetupServiceHours', 'Serving hours'],
   ])
     app.component(name, { setup: () => () => vue.h('div', label) })
   const interaction = parse(
     readFileSync(
       new URL(
-        '../runtime/kitchen/components/Workspace/Offerings/Setup/Interaction.vue',
+        '../runtime/kitchen/components/FoodAndDrink/Services/Setup/Interaction.vue',
         import.meta.url
       ),
       'utf8'
     )
   ).descriptor.template.content
-  app.component('WorkspaceKitchenOfferingsSetupInteraction', {
+  app.component('KitchenFoodAndDrinkServicesSetupInteraction', {
     props: [
       'config',
       'label',
@@ -102,7 +102,7 @@ async function render(option, enabled) {
     setup: () => ({ update() {}, updateMenus() {} }),
     render: vue.compile(interaction),
   })
-  app.component('WorkspaceKitchenOfferingsTiming', {
+  app.component('KitchenFoodAndDrinkServicesTiming', {
     props: ['config'],
     setup: (props) => () =>
       vue.h(

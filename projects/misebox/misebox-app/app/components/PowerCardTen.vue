@@ -1,6 +1,6 @@
 <template>
   <div class="misebox-power-card-ten">
-    <WorkspaceKitchenSuppliersCardsCell v-bind="supplier" />
+    <KitchenSuppliersCardsCell v-bind="supplier" />
   </div>
 </template>
 

@@ -993,6 +993,20 @@ context tools retain their distinct responsibilities.
 
 ### Team construction contract
 
+Core `Workspace/Team/Editor.vue` owns the default collection presentation through
+People, loading/error feedback and a settled empty message. Existing collection
+slots remain available to other domain consumers. Kitchen, Property and Project
+use those defaults and retain their role endpoint, authored suggestions,
+assignment editor and domain actions. Kitchen invitation creation/copy remains
+Kitchen-owned; Property retains its role-label refresh callback. Kitchen and
+Project derive their Team title from the already acquired Team state rather
+than acquiring another Identity controller. The shared `TeamContext` includes
+the existing status projection; it adds no reader or command authority.
+Verify `team-editor-composition.test.mjs` in Core and Kitchen's
+`team-workspace-composition.test.mjs`, plus the existing Team selection,
+command-scope and domain tests.
+
+
 Kitchen, Project, Supplier, Property, Portfolio and Blank retain named Team
 routes, components and `useXTeam` composables. Every domain controller calls
 Core `useTeam` for selection, post-create focus and capacity. Routes own

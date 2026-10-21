@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-prep-plan"
     ><template #header><LayoutsWorkspaceNavbar title="Prep plan" /></template
-    ><template #body><WorkspaceKitchenPrep /></template
+    ><template #body><KitchenPrepAndProductionPlanning /></template
   ></UDashboardPanel>
 </template>
 <script setup lang="ts">

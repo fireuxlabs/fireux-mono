@@ -29,7 +29,7 @@ test('Waste snapshots its observation and guards scope across auth/token/respons
 test('Waste Create captures result label and drops obsolete success/error',async()=>{
  for(const changed of [false,true])for(const outcome of ['success','error']){
   const pending=deferred(),currentUser=ref({uid:'u'}),kitchenId=ref('k'),emits=[]
-  const api=load('../../runtime/kitchen/components/Workspace/Waste/Create.vue',{computed,ref,watch,onBeforeUnmount:()=>{},useAuth:()=>({currentUser}),defineEmits:()=> (...args)=>emits.push(args),useKitchenWaste:()=>({kitchenId,canWrite:ref(true),recordWaste:()=>pending.promise})},'({submit,itemName,quantity,unit,error,saving})',true)
+  const api=load('../../runtime/kitchen/components/Waste/Create.vue',{computed,ref,watch,onBeforeUnmount:()=>{},useAuth:()=>({currentUser}),defineEmits:()=> (...args)=>emits.push(args),useKitchenWaste:()=>({kitchenId,canWrite:ref(true),recordWaste:()=>pending.promise})},'({submit,itemName,quantity,unit,error,saving})',true)
   api.itemName.value='Bread';api.quantity.value=1;api.unit.value='piece';const result=api.submit();api.itemName.value='Changed'
   if(changed){currentUser.value=null;currentUser.value={uid:'u'}}
   if(outcome==='success')pending.resolve('event');else pending.reject(Error('Failure'))

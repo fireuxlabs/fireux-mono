@@ -68,7 +68,7 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['venue'],
       uses: ['kitchen'],
       sourcePaths: [
-        source + 'kitchen/components/Workspace/Identity/Profile.vue',
+        source + 'kitchen/components/Identity/Profile.vue',
       ],
     },
     {
@@ -77,7 +77,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['menu'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/Workspace/Menus/Index.vue'],
+      sourcePaths: [source + 'kitchen/components/FoodAndDrink/Menus/Index.vue'],
     },
     {
       id: 'offerings',
@@ -86,8 +86,8 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['configuration'],
       uses: ['kitchen', 'menus'],
       sourcePaths: [
-        source + 'kitchen/components/Workspace/Offerings/Index.vue',
-        source + 'kitchen/components/Workspace/Identity/Payments/Index.vue',
+        source + 'kitchen/components/FoodAndDrink/Services/Index.vue',
+        source + 'kitchen/components/Identity/Payments/Index.vue',
       ],
     },
     {
@@ -117,7 +117,7 @@ export const miseboxReference: IgnitionAssembly = {
       uses: ['kitchen'],
       sourcePaths: [
         source +
-          'kitchen/components/Workspace/Orders/Board.vue',
+          'kitchen/components/Orders/Board.vue',
       ],
     },
     {
@@ -136,7 +136,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['fulfil'],
       uses: ['orders', 'order-actions', 'workspace'],
-      sourcePaths: [source + 'kitchen/components/Workspace/Orders/Board.vue'],
+      sourcePaths: [source + 'kitchen/components/Orders/Board.vue'],
     },
   ],
   evidence: collectionOrderingBrief.requirements.map((requirement) => ({
@@ -162,7 +162,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'Domain presentation',
       references: [
         source + 'pages/workspace/kitchen/orders/index.vue',
-        source + 'kitchen/components/Workspace/Offerings/Index.vue',
+        source + 'kitchen/components/FoodAndDrink/Services/Index.vue',
       ],
     },
     {

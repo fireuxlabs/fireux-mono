@@ -8,7 +8,7 @@
       <template #body>
         <section class="space-y-4">
           <UBreadcrumb :items="breadcrumbItems" />
-          <WorkspaceKitchenIngredientsAdd />
+          <KitchenPrepAndProductionIngredientsAdd />
         </section>
       </template>
     </UDashboardPanel>

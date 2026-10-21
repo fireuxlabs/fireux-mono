@@ -377,7 +377,7 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
   let nextId = 0
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Workspace/Orders/Editor.vue',
+      '../../runtime/kitchen/components/Orders/Editor.vue',
       import.meta.url
     ),
     'utf8'
@@ -497,7 +497,7 @@ test('POS initiation cannot save a missing or impersonated staff identity', asyn
 
 test('actual library channel switches show correct empty entry context without retaining prior data', () => {
   const scope = Vue.effectScope()
-  const source = readFileSync(new URL('../../runtime/kitchen/components/Library/Orders.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const source = readFileSync(new URL('../../runtime/kitchen/components/Orders/Examples/Index.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
   const validation = load('../../runtime/kitchen/utils/order-submission.ts', 'orderSubmissionIssues')
  const deps = { ...Vue, ...ordering, ...model, ...validation }
   const state = scope.run(() => compileFunction(`${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,tableName,tableId,order,itemsAdded,channels,postLocation,customerName,phone,address,requestedTime,needsName,needsLocation,initOrder,preOrder,itemsOrder }`, Object.keys(deps))(...Object.values(deps)))
@@ -583,7 +583,7 @@ test('actual library channel switches show correct empty entry context without r
 
 test('library review blocks incomplete orders and captures valid local examples for each channel', () => {
  const scope = Vue.effectScope()
- const source = readFileSync(new URL('../../runtime/kitchen/components/Library/Orders.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+ const source = readFileSync(new URL('../../runtime/kitchen/components/Orders/Examples/Index.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
  const validation = load('../../runtime/kitchen/utils/order-submission.ts', 'orderSubmissionIssues')
  const deps = { ...Vue, ...ordering, ...model, ...validation }
  const state = scope.run(() => compileFunction(`${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,itemsAdded,customerName,phone,address,tableName,postLocation,requestedTime,order,reviewIssues,submittedOrder,submitExample,successOutcome,successView }`, Object.keys(deps))(...Object.values(deps)))
@@ -642,7 +642,7 @@ test('library review blocks incomplete orders and captures valid local examples 
 
 test('board refresh is independent of actions and revoked access clears submitted tickets', async () => {
  const scope = Vue.effectScope()
- const source = readFileSync(new URL('../../runtime/kitchen/components/Workspace/Orders/Board.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+ const source = readFileSync(new URL('../../runtime/kitchen/components/Orders/Board.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
  const access = { outcome: Vue.ref('ready'), ids: Vue.ref(['kitchen']), error: Vue.ref(null) }
  const session = { pending: Vue.ref(false), error: Vue.ref(null), appUser: Vue.ref({id:'member'}) }
  const transports = []

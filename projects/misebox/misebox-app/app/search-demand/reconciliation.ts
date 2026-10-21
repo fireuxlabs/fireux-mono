@@ -14,7 +14,7 @@ export const kitchenReconciliation = {
         settings: ['Kitchen currency', 'Venue address and timezone'],
         tool: 'Review and edit Kitchen identity',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Index.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Index.vue',
           'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/identity/useKitchenWorkspacePlace.ts',
         ],
       },
@@ -27,7 +27,7 @@ export const kitchenReconciliation = {
         ],
         tool: 'Edit and publish a Menu',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue',
           'packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts',
         ],
       },
@@ -70,7 +70,7 @@ export const kitchenReconciliation = {
         tool: 'Allow a website and copy its ordering button',
         source_paths: [
           'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/integrations/website-ordering.ts',
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Integrations/WebsiteOrdering.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Integrations/WebsiteOrdering.vue',
         ],
       },
     ],
@@ -97,7 +97,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen / Menu',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Publication/Actions.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Publication/Actions.vue',
         ],
       },
       {
@@ -105,7 +105,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/Index.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Services/Index.vue',
         ],
       },
       {
@@ -180,7 +180,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep editing and publication; prove the operator-to-customer ordering handoff and accurate food information.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts',
       ],
       source_capability_ids: ['menus'],
@@ -194,7 +194,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep menu-ready food records; do not equate a Dish with a costed Recipe.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Index.vue',
       ],
       source_capability_ids: ['dishes'],
       source_observation_ids: ['swiss-chef-work'],
@@ -233,7 +233,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep recipe editing and scaling; prove units, yields and purchase-price inputs before claiming authoritative cost or margin.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Recipes/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Recipes/Index.vue',
       ],
       source_capability_ids: ['recipes-costing'],
       source_observation_ids: ['swiss-chef-work'],
@@ -260,7 +260,7 @@ export const kitchenReconciliation = {
       rationale:
         'Prep creation primitives do not establish connected planning or batch execution. Validate daily preparation work before joining them.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Planning.vue',
       ],
       source_capability_ids: ['mise-production'],
       source_observation_ids: ['swiss-chef-work'],
@@ -286,7 +286,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep buyer relationships; supplier commercial offers, order acceptance and delivery remain Supplier-side responsibilities.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Suppliers/SupplyOptions.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Suppliers/SupplyOptions.vue',
       ],
       source_capability_ids: ['suppliers'],
       source_observation_ids: ['purchasing-workflows'],
@@ -299,7 +299,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep observed waste records; add measurable usage and cost evidence before claiming stock adjustments or savings.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Waste/Create.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Waste/Create.vue',
       ],
       source_capability_ids: ['waste'],
       source_observation_ids: ['waste-measurement-case'],
@@ -312,7 +312,7 @@ export const kitchenReconciliation = {
       rationale:
         'The current pages are unconnected. Validate checks, corrective actions, records and procedures; product references are not an approved safety plan.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/FoodSafety/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodSafety/Index.vue',
       ],
       source_capability_ids: ['food-safety'],
       source_observation_ids: ['swiss-self-control', 'swiss-allergens'],
@@ -364,7 +364,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep completed-sales summaries. Cost, waste and performance reports must wait for their authoritative producers.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Finance/Overview.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Finance/Overview.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/costs/index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/performance/index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/waste-report/index.vue',
@@ -380,7 +380,7 @@ export const kitchenReconciliation = {
       rationale:
         'Retain the explicit boundary. Full front-of-house is not established by Kitchen ordering.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Tables/Edit/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tables/Edit/Index.vue',
       ],
       source_capability_ids: ['front-of-house'],
       source_observation_ids: ['swiss-chef-work'],

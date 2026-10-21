@@ -58,7 +58,7 @@ function deferred() {
   return { promise, resolve, reject }
 }
 const component = (name) =>
-  `../../runtime/kitchen/components/Workspace/${name}.vue`
+  `../../runtime/kitchen/components/${name}.vue`
 const specification = evaluate(
   '../../runtime/kitchen/utils/dish-specification.ts',
   { isFirestoreDocumentId },
@@ -76,7 +76,7 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
         pending = deferred(),
         uploads = []
       const api = evaluate(
-        component('Dishes/Create/Index'),
+        component('FoodAndDrink/Items/Create/Index'),
         {
           ...h.deps,
           defineProps: () => ({}),
@@ -119,7 +119,7 @@ test('create captures original upload and reports saved Dish with failed image h
     uploads = [],
     original = { name: 'original' }
   const api = evaluate(
-    component('Dishes/Create/Index'),
+    component('FoodAndDrink/Items/Create/Index'),
     {
       ...h.deps,
       defineProps: () => ({}),
@@ -156,7 +156,7 @@ test('Menu name flow stops before placement on destination change; failed placem
       sectionId = ref('section'),
       placements = []
     const api = evaluate(
-      component('Menus/Items/Add/ByName'),
+      component('FoodAndDrink/Menus/Items/Add/ByName'),
       {
         ...h.deps,
         useKitchenWorkspaceMenuSection: () => ({
@@ -197,7 +197,7 @@ test('delete does not navigate or toast after record changes, including same-tic
     pending = deferred(),
     navigations = []
   const api = evaluate(
-    component('Dishes/Delete'),
+    component('FoodAndDrink/Items/Delete'),
     {
       ...h.deps,
       navigateTo: (x) => navigations.push(x),
@@ -236,7 +236,7 @@ test('description proposal snapshots its body and never dispatches after focus c
       calls = []
     h.currentUser.value = { uid: 'u', getIdToken: () => pending.promise }
     const api = evaluate(
-      component('Dishes/DescriptionAssistant'),
+      component('FoodAndDrink/Items/DescriptionAssistant'),
       {
         ...h.deps,
         useAuth: () => ({ currentUser: h.currentUser }),
@@ -275,7 +275,7 @@ test('category update ignores stale rejection and releases busy state on Kitchen
   const h = setup(),
     pending = deferred()
   const api = evaluate(
-    component('Dishes/Categories'),
+    component('FoodAndDrink/Items/Categories'),
     {
       ...h.deps,
       dishCategories: [{ value: 'main' }],
@@ -316,7 +316,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     catalogue: { singular: 'dish' },
   }
   const edit = evaluate(
-    component('Dishes/Edit/Index'),
+    component('FoodAndDrink/Items/Edit/Index'),
     {
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
@@ -336,7 +336,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
   const second = deferred(),
     calls = []
   const spec = evaluate(
-    component('Dishes/Spec'),
+    component('FoodAndDrink/Items/Spec'),
     {
       ...h.deps,
       useRoute: () => ({ query: {} }),
@@ -389,7 +389,7 @@ test('Surviving Dish route completes its live removal but rejects external inten
       'useDishEditorScope'
     )
     const api = evaluate(
-      component('Dishes/Detail/Index'),
+      component('FoodAndDrink/Items/Detail/Index'),
       {
         ...h.deps,
         useDishEditorScope,
@@ -438,7 +438,7 @@ for (const state of ['loading', 'error', 'referenced']) {
     let removed = 0
     let confirmed = 0
     const api = evaluate(
-      component('Dishes/Delete'),
+      component('FoodAndDrink/Items/Delete'),
       {
         ...h.deps,
         window: {

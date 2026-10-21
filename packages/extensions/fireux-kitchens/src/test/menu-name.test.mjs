@@ -91,7 +91,7 @@ test('Free rename is denied while duplicate display names preserve stable URLs',
 test('Workspace rename passes stable target to the surviving Record owner', async () => {
   const component = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Workspace/Menus/Edit/Details.vue',
+      '../runtime/kitchen/components/FoodAndDrink/Menus/Edit/Details.vue',
       import.meta.url
     ),
     'utf8'

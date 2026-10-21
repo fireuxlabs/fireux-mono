@@ -56,7 +56,7 @@ async function render(Card, props) {
   return renderToString(app)
 }
 const File = component(
-  'kitchen/components/Workspace/Menus/Uploads/Detail/File.vue'
+  'kitchen/components/FoodAndDrink/Menus/Uploads/Detail/File.vue'
 )
 test('upload detail preserves URL, photo, document and missing-file presentation', async () => {
   const base = {

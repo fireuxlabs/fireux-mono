@@ -62,29 +62,29 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'WorkspaceKitchenMenusItemsEditRow',
-    'WorkspaceKitchenMenusItemsAdd',
-    'WorkspaceKitchenMenusSectionsCreate',
-    'WorkspaceKitchenMenusSectionsCollectionRow',
-    'WorkspaceKitchenMenusProcess',
-    'WorkspaceKitchenMenusUploadsDetailFile',
+    'KitchenFoodAndDrinkMenusItemsEditRow',
+    'KitchenFoodAndDrinkMenusItemsAdd',
+    'KitchenFoodAndDrinkMenusSectionsCreate',
+    'KitchenFoodAndDrinkMenusSectionsCollectionRow',
+    'KitchenFoodAndDrinkMenusProcess',
+    'KitchenFoodAndDrinkMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',
     'DiagnosticsDebugPanel',
     'UFormField',
-    'WorkspaceKitchenMenusSectionsDishes',
-    'WorkspaceKitchenMenusSectionsCollectionSchedule',
+    'KitchenFoodAndDrinkMenusSectionsDishes',
+    'KitchenFoodAndDrinkMenusSectionsCollectionSchedule',
     'UButton',
     'UModal',
     'NuxtLink',
     'USwitch',
-    'WorkspaceKitchenMenusItemsSharedTerms',
-    'WorkspaceKitchenMenusItemsAdoptSharedTerms',
+    'KitchenFoodAndDrinkMenusItemsSharedTerms',
+    'KitchenFoodAndDrinkMenusItemsAdoptSharedTerms',
     'MoleculesFormsEditableSimpleField',
     'MoleculesDisclosurePanel',
-    'WorkspaceKitchenMenusItemsOptions',
-    'WorkspaceKitchenMenusCollection',
-    'WorkspaceKitchenMenusAi',
+    'KitchenFoodAndDrinkMenusItemsOptions',
+    'KitchenFoodAndDrinkMenusCollection',
+    'KitchenFoodAndDrinkMenusAi',
   ])
     app.component(name, { render: () => null })
   app.component('UButton', {
@@ -137,7 +137,7 @@ async function render(path, state) {
   return html
 }
 const sectionsPath =
-  'kitchen/components/Workspace/Menus/Sections/Collection/Index.vue'
+  'kitchen/components/FoodAndDrink/Menus/Sections/Collection/Index.vue'
 function sectionView(overrides = {}) {
   return {
     menu: { description: 'Current menu' },
@@ -180,7 +180,7 @@ test('Menu sections show empty copy only after the child read settles', async ()
     (await render(sectionsPath, sectionView())).includes('No sections yet.')
   )
 })
-const itemsPath = 'kitchen/components/Workspace/Menus/Items/Edit/Index.vue'
+const itemsPath = 'kitchen/components/FoodAndDrink/Menus/Items/Edit/Index.vue'
 function itemView(overrides = {}) {
   return {
     menuSlug: 'food',
@@ -439,7 +439,7 @@ test('an independent source-upload failure does not hide a loaded Menu', () => {
 })
 for (const outcome of ['pending', 'error', 'missing'])
   test(`Menus entry shows the owning Kitchen ${outcome} before collection tools`, async () => {
-    const html = await render('kitchen/components/Workspace/Menus/Index.vue', {
+    const html = await render('kitchen/components/FoodAndDrink/Menus/Index.vue', {
       storageKitchenId: '',
       outcome,
       error: outcome === 'error' ? new Error('Kitchen failed') : null,
@@ -459,7 +459,7 @@ for (const outcome of ['pending', 'error', 'missing'])
 for (const state of ['pending', 'error', 'empty'])
   test(`uploaded Menu source ${state} has truthful detail feedback`, async () => {
     const html = await render(
-      'kitchen/components/Workspace/Menus/Uploads/Detail/Index.vue',
+      'kitchen/components/FoodAndDrink/Menus/Uploads/Detail/Index.vue',
       {
         source: null,
         breadcrumbItems: [],

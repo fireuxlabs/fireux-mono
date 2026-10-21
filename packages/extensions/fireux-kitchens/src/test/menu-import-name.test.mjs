@@ -59,7 +59,7 @@ test('extraction carries a printed title into the merged draft without using the
 test('review proposes the extracted name, requires confirmation and sends the edited name', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/Workspace/Menus/Process/Review/Apply.vue',
+      '../runtime/kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue',
       import.meta.url
     ),
     'utf8'

@@ -27,11 +27,11 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceKitchenTeamAI
+      <KitchenTeamAI
         :team="team"
         @action="teamView?.openAction($event)"
       />
-      <WorkspaceKitchenTeam
+      <KitchenTeam
         :key="team.state.value.kitchen.id"
         ref="teamView"
         :team="team"
@@ -49,8 +49,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceKitchenTeam from '../../../../kitchen/components/Workspace/Team/Index.vue'
-const teamView = ref<InstanceType<typeof WorkspaceKitchenTeam>>()
+import KitchenTeam from '../../../../kitchen/components/Team/Index.vue'
+const teamView = ref<InstanceType<typeof KitchenTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 

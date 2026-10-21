@@ -10,6 +10,7 @@ import {
   h,
   nextTick,
   ref,
+  reactive,
   toValue,
 } from 'vue'
 
@@ -437,4 +438,162 @@ test('Collection keeps the same basket through refresh, error, empty recovery an
     app.unmount()
   }
   assert.equal(disposals, 3)
+})
+
+const { useServiceItemEditor } = load(
+  'menu/composables/useServiceItemEditor',
+  'useServiceItemEditor',
+  { computed, ref, toValue, ...policy }
+)
+
+test('editing replaces options, extras and quantity without changing catalogue prices', () => {
+  const item = offer('food', {
+    priceOptions: [
+      { id: 'small', label: 'Small', price: 13 },
+      { id: 'large', label: 'Large', price: 16 },
+    ],
+    addOns: [{ id: 'cheese', label: 'Cheese', price: 2 }],
+  })
+  const before = structuredClone(item)
+  const basket = useServiceBasket([item])
+  basket.add(item, choices({ optionId: 'small', quantity: 2 }))
+  basket.update(
+    basket.lines.value[0].key,
+    item,
+    choices({ optionId: 'large', extraIds: ['cheese'], quantity: 3 })
+  )
+  assert.equal(basket.lines.value.length, 1)
+  assert.equal(basket.totalMinor.value, 5400)
+  assert.deepEqual(basket.lines.value[0].details, ['Large', 'Cheese'])
+  assert.deepEqual(item, before)
+})
+
+test('editing bottle choice merges identical selections and keeps deposit totals exact', () => {
+  const drink = offer('drinks', { price: 4, bottleDeposit: 10 })
+  const basket = useServiceBasket([drink])
+  basket.add(drink, choices({ bottle: 'deposit', quantity: 2 }))
+  basket.add(drink, choices({ bottle: 'exchange', quantity: 3 }))
+  basket.update(
+    basket.lines.value[0].key,
+    drink,
+    choices({ bottle: 'exchange', quantity: 2 })
+  )
+  assert.equal(basket.lines.value.length, 1)
+  assert.equal(basket.count.value, 5)
+  assert.equal(basket.totalMinor.value, 2000)
+  assert.equal(basket.lines.value[0].depositUnitMinor, 0)
+})
+
+test('failed updates leave both original and matching selections intact', () => {
+  const item = offer('food', {
+    addOns: [{ id: 'cheese', label: 'Cheese', price: 1 }],
+  })
+  const offers = ref([item]),
+    ready = ref(true)
+  const basket = useServiceBasket(offers, ready)
+  basket.add(item, choices({ quantity: 99 }))
+  basket.add(item, choices({ extraIds: ['cheese'] }))
+  const key = basket.lines.value[1].key
+  const before = JSON.stringify(basket.lines.value)
+  assert.throws(() => basket.update(key, item, choices()), /99/)
+  assert.throws(
+    () => basket.update(key, item, choices({ extraIds: ['missing'] })),
+    /extra/
+  )
+  ready.value = false
+  assert.throws(() => basket.update(key, item, choices()), /reloading/)
+  ready.value = true
+  offers.value = [offer('food', { price: 20 })]
+  assert.throws(() => basket.update(key, item, choices()), /changed/)
+  assert.throws(() => basket.update(key, offers.value[0], choices()), /changed/)
+  assert.throws(() => basket.update('removed', item, choices()), /no longer/)
+  assert.equal(JSON.stringify(basket.lines.value), before)
+})
+
+test('item editor returns to the basket on cancel and update, and blocks locked editing', () => {
+  const item = offer(),
+    offers = ref([item]),
+    locked = ref(false)
+  const basket = useServiceBasket(offers)
+  basket.add(item, choices({ quantity: 2 }))
+  const closed = []
+  const editor = useServiceItemEditor({
+    basket,
+    offers,
+    locked,
+    onClose: (editing) => closed.push(editing),
+  })
+  const key = basket.lines.value[0].key
+  assert.equal(editor.edit(key), true)
+  assert.equal(editor.selection.value.choices.quantity, 2)
+  editor.close()
+  assert.equal(basket.count.value, 2)
+  assert.deepEqual(closed, [true])
+  editor.edit(key)
+  editor.save(choices({ quantity: 3 }))
+  assert.equal(basket.count.value, 3)
+  assert.equal(editor.open.value, false)
+  assert.deepEqual(closed, [true, true])
+  locked.value = true
+  assert.equal(editor.edit(basket.lines.value[0].key), false)
+  editor.select(item)
+  assert.equal(editor.open.value, false)
+})
+
+test('an item changed during editing stays in the basket and reports an error', () => {
+  const item = offer(),
+    offers = ref([item])
+  const basket = useServiceBasket(offers)
+  basket.add(item, choices())
+  const editor = useServiceItemEditor({
+    basket,
+    offers,
+    locked: false,
+    onClose: () => assert.fail('must stay open'),
+  })
+  editor.edit(basket.lines.value[0].key)
+  offers.value = [offer('food', { price: 20 })]
+  editor.save(choices({ quantity: 2 }))
+  assert.match(editor.error.value, /changed/)
+  assert.equal(editor.open.value, true)
+  assert.equal(basket.totalMinor.value, 1300)
+})
+
+test('existing selector prefills a detached draft including meal choices and bottle choice', () => {
+  const source = readFileSync(
+    new URL('../runtime/menu/components/Selection/Item.vue', import.meta.url),
+    'utf8'
+  )
+  const initialChoices = choices({
+    optionId: 'large',
+    extraIds: ['cheese'],
+    groups: { main: ['pizza'] },
+    bottle: 'exchange',
+    quantity: 2,
+  })
+  const before = structuredClone(initialChoices)
+  const script = source
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+  const state = compileFunction(
+    stripTypeScriptTypes(script) + '; return { choices }',
+    ['computed', 'reactive', 'defineProps', 'defineEmits', 'serviceBasketLine']
+  )(
+    computed,
+    reactive,
+    () => ({ offer: offer(), money: String, error: '', initialChoices }),
+    () => () => {},
+    policy.serviceBasketLine
+  )
+  assert.deepEqual(JSON.parse(JSON.stringify(state.choices)), before)
+  state.choices.extraIds.push('onion')
+  state.choices.groups.main.push('salad')
+  state.choices.bottle = 'deposit'
+  assert.deepEqual(
+    initialChoices,
+    before,
+    'cancelling never mutates the saved basket line'
+  )
+  assert.match(source, /Update basket/)
 })

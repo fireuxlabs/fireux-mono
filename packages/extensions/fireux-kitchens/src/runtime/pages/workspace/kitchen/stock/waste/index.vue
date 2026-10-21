@@ -11,14 +11,14 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenWasteTools />
-          <WorkspaceKitchenWasteAI />
-          <WorkspaceKitchenWaste />
+          <KitchenWasteTools />
+          <KitchenWasteAI />
+          <KitchenWaste />
           <WorkspaceKitchenResearchSegue
             capability="Waste"
             base-path="/workspace/kitchen/stock/waste/search-demand"
           />
-          <WorkspaceKitchenWasteInspection v-if="isDevelopment" />
+          <KitchenWasteInspection v-if="isDevelopment" />
         </section>
       </template>
     </UDashboardPanel>

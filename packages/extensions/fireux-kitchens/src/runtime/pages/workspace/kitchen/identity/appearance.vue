@@ -11,7 +11,7 @@
               { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
               { label: 'Appearance' },
             ]"
-          /><WorkspaceKitchenAppearance />
+          /><KitchenAppearance />
         </div>
       </template>
     </UDashboardPanel>

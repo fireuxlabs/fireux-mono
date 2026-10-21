@@ -225,7 +225,7 @@ test('Identity tools describe implemented controls and route to their actual pag
 
 test('venue failure preserves Kitchen settings, while absent Kitchen hides them', async () => {
   const source = readFileSync(
-    new URL('kitchen/components/Workspace/Identity/Index.vue', runtime),
+    new URL('kitchen/components/Identity/Index.vue', runtime),
     'utf8'
   )
   const template = source.slice(
@@ -287,14 +287,14 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
     ])
       app.component(name, { render: () => null })
     const listingSource = readFileSync(
-      new URL('kitchen/components/Workspace/Identity/Listing.vue', runtime),
+      new URL('kitchen/components/Identity/Listing.vue', runtime),
       'utf8'
     )
-    app.component('WorkspaceKitchenIdentityListing', {
+    app.component('KitchenIdentityListing', {
       props: ['identity'],
       setup: (props) =>
         load(
-          'kitchen/components/Workspace/Identity/Listing.vue',
+          'kitchen/components/Identity/Listing.vue',
           '({kitchenPath,kitchenStatus,kitchenEditorOpen})',
           {
             computed,
@@ -366,7 +366,7 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
   }
   const page = scope.run(() =>
     load(
-      'kitchen/components/Workspace/Identity/Profile.vue',
+      'kitchen/components/Identity/Profile.vue',
       '({sections, section, sectionTitle, kitchenPath, publicTo})',
       {
         computed,
@@ -386,7 +386,7 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
     page,
     scope.run(() =>
       load(
-        'kitchen/components/Workspace/Identity/Listing.vue',
+        'kitchen/components/Identity/Listing.vue',
         '({kitchenEditorOpen, kitchenStatus})',
         { computed, ref, watch, defineProps: () => ({ identity }) }
       )

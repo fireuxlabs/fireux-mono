@@ -13,7 +13,7 @@
               { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
               { label: 'Operating hours' },
             ]"
-          /><WorkspaceKitchenOperatingHours />
+          /><KitchenOperatingHours />
         </div>
       </template>
     </UDashboardPanel>

@@ -18,7 +18,7 @@ members are Menu entities or inherit Menu data authority.
 - Parent: `workspace.md`
 - Horizontal: `components.md`, `pages.md`, `collection-manager.md`
 - Reference member:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus`
 - Source checks: `fireux-kitchens/src/test/menu-record-controller.test.mjs`,
   `menu-record-view.test.mjs` and `menu-record-navigation.test.mjs`.
 - Current composition: Kitchen-owned `Workspace/Menus/Index.vue` and

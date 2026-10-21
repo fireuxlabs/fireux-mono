@@ -12,21 +12,6 @@
       :member-id="memberId"
       :single-path="selectedPath"
     >
-      <template #collection>
-        <UAlert
-          v-if="derived.status === 'error'"
-          title="Project Team could not be loaded"
-          color="error"
-        ><template #actions><MoleculesCopyError message="Project Team could not be loaded." /></template></UAlert>
-        <WorkspaceTeamPeople
-          v-else
-          :members="state.team.members"
-          :role-labels="roleLabels"
-          :selected-id="selectedId"
-          :pending="derived.status === 'loading'"
-          @select="natives.select"
-        />
-      </template>
       <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
@@ -34,11 +19,6 @@
         />
       </template>
     </WorkspaceTeamEditor>
-    <UAlert
-      v-if="derived.status === 'ready' && !state.team.members.length"
-      title="No team members yet"
-      description="Add the first person to begin this Project Team."
-    />
     <WorkspaceTeamRoles
       ref="rolesEditor"
       compact
@@ -63,16 +43,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useProjectIdentity } from '../../../composables/useProjectIdentity'
-const workspaceIdentity = useProjectIdentity()
-const collectionTitle = computed(() =>
-  workspaceIdentity.name.value
-    ? `${workspaceIdentity.name.value}’s Team`
-    : 'Team'
-)
-
 import { computed, ref } from 'vue'
-import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/People.vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import type { useProjectTeam } from '../../../composables/useProjectTeam'
@@ -83,7 +54,10 @@ const props = defineProps<{
   memberId?: string
   team: ReturnType<typeof useProjectTeam>
 }>()
-const { state, derived, natives } = props.team
+const { state, derived } = props.team
+const collectionTitle = computed(() =>
+  state.value.project.name ? `${state.value.project.name}’s Team` : 'Team'
+)
 const selectedId = computed(
   () => props.memberId || state.value.team.selectedTeamMemberId
 )

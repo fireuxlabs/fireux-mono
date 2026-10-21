@@ -31,7 +31,7 @@ source and executable checks establish implementation.
   from the caller and must be unique within the Order; quantities may be fractional
   but must be finite and positive. These pure functions do not authorize actors, submit or persist records.
 - `kitchen/components/Orders/Ticket.vue`: presents one Order without commands.
-- `kitchen/components/Library/Orders.vue`, exposed at `/packages/fireux-kitchens/ordering/ticket`,
+- `kitchen/components/Orders/Examples/Index.vue`, exposed at `/packages/fireux-kitchens/ordering/ticket`,
   provides an initially empty local ticket specimen using the actual Ticket
   component. The library exposes POS, Kiosk and Website. All begin empty; the shared
   Items stage adds the same fixed food lines for comparison across channels.
@@ -151,8 +151,8 @@ Payments presentation is composed directly by `Workspace/Identity/Payments/Index
 Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
 Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
 Services configures the existing service choices and their menus and serving times.
-Library stage previews share `Library/Orders/Preview.vue`; success presentation is
-`Library/Orders/Success.vue`, with local example state and shared validation retained.
+Library stage previews share `Orders/Examples/Preview.vue`; success presentation is
+`Orders/Examples/Success.vue`, with local example state and shared validation retained.
 
 Public Collection, Delivery and Table submissions require a currently open,
 menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`

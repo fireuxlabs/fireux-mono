@@ -9,7 +9,7 @@
     </template>
     <template #body>
       <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
-        <WorkspaceKitchenDishes />
+        <KitchenFoodAndDrinkItems />
       </div>
     </template>
   </UDashboardPanel>

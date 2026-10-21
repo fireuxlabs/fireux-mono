@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenFinance />
+  <KitchenFinance />
 </template>
 
 <script setup lang="ts">

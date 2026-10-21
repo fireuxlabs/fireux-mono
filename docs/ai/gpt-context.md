@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-20
+Updated: 2026-10-21
 Ref: b2a986b6b
 Role: living context
 Scope: repository-wide
@@ -236,8 +236,13 @@ functions and entrypoints; do not invent presentation layers.
 
 
 
-- Entity Workspace presentation uses direct named capability folders, not
-  `Operations`, `Capabilities`, `Supporting` or `Sundries` containers. `Index`,
+- Entity components group stable domain responsibilities beneath their technical
+  role. Kitchen uses `FoodAndDrink/{Items,Menus,Promotions,Services}` and
+  `PrepAndProduction/{Recipes,Ingredients,Stations,PrepItems}`; its `Workspace`
+  folder retains Home, selection, navigation, overview and cross-page helpers.
+  Other existing families retain their named Workspace capability folders until
+  separately inspected. Navigation labels alone do not establish folder ownership.
+  Do not introduce `Operations`, `Capabilities`, `Supporting` or `Sundries` containers. `Index`,
   `Navigation`, `Selector` and `Dashboard` may be root components when consumed;
   entry-only collection/single controls and creation dialogs belong in `Home`.
   Cross-page domain helpers use their specific responsibility (for example

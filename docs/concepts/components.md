@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-10-14
+Updated: 2026-10-21
 Ref: 4e71810f0
 Role: map, not canon
 
@@ -447,8 +447,10 @@ Inside `runtime/<entity>/components`:
 ## Workspace component folders
 
 Workspace components describe an operator surface; they do not own the records
-or commands exposed there. All named Workspace families use the same placement
-rule, including Kitchen, Project, Supplier, Property, Portfolio and Blank.
+or commands exposed there. Components may be grouped by stable domain
+responsibility, independently of navigation labels. Kitchen is the current
+capability-first adopter; Project, Supplier, Property, Portfolio and Blank
+retain their existing named Workspace folders.
 
 - `Workspace/Index.vue` composes the entity's entry surface and `Home/*` children.
 - `Workspace/Navigation.vue`, `Selector.vue` and `Dashboard.vue` may remain at
@@ -456,10 +458,19 @@ rule, including Kitchen, Project, Supplier, Property, Portfolio and Blank.
 - `Workspace/Home` contains entry collection/single presentation and entry-owned
   creation/edit dialogs. Blank uses `Home/Collection.vue` and `Home/Single.vue`
   like the other collection-based entries.
-- Named capabilities sit directly under `Workspace`: `Menus`, `Orders`,
+- Kitchen groups food management under `FoodAndDrink` (Items, Menus, Promotions,
+  Services), and production under `PrepAndProduction` (Recipes, Ingredients,
+  Stations, PrepItems). Group Index composes its AI and child overview surfaces;
+  each child owns its Overview beside its working components. Finance, Identity,
+  Team and other implemented capabilities live directly beneath Kitchen components.
+  Kitchen `Workspace` retains entry, selection, navigation, overview, diagnostics
+  and cross-page AI/research/tool helpers. Menu and Ingredient runtime owners
+  retain their existing independent components; Kitchen groups compose them.
+- Other inspected families retain named capabilities under `Workspace`: `Orders`,
   `Catalogue`, `Items`, `Properties`, `Reservations`, `Apps`, `Ecosystem`,
   `Overview`, `Identity`, `Team`, and others only where implemented.
-- Sidebar groups do not add filesystem owners. Do not introduce `Operations`,
+- Stable domain groups may organise components; sidebar-only groups do not add
+  filesystem owners. Do not introduce `Operations`,
   `Capabilities`, `Supporting` or `Sundries` containers around capability folders.
 - Shared entity-specific controls use an explicit responsibility: Kitchen has
   `Navigation/Food.vue`, `AI/*`, `Research/*` and the cross-capability `Tools.vue`.

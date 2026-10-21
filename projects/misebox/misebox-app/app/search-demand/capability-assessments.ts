@@ -20,7 +20,7 @@ export const capabilityAssessments: Record<
       scope:
         'Safety check, record, corrective-action and procedure pages explicitly report unconnected sources. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/FoodSafety/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodSafety/Index.vue',
       ],
     },
   },
@@ -43,7 +43,7 @@ export const capabilityAssessments: Record<
       scope:
         'Menu editing and publication have source-connected UI and commands. Complete operator/customer acceptance and food-information handling remain separate proofs. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts',
       ],
     },
@@ -111,7 +111,7 @@ export const capabilityAssessments: Record<
         'Recipe definitions exist; actual batches, purchase-price inputs and authoritative cost reporting are unconnected. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts',
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Prep/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Planning.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/costs/index.vue',
       ],
     },
@@ -169,7 +169,7 @@ export const capabilityAssessments: Record<
       scope:
         'Supplier relationships and catalogue entrances exist. Ingredient-to-supplier purchasing options remain unconnected. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Suppliers/SupplyOptions.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Suppliers/SupplyOptions.vue',
       ],
     },
   },
@@ -188,7 +188,7 @@ export const capabilityAssessments: Record<
       scope:
         'A form and trusted command record observations. Reporting, costing and stock effects remain unconnected. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Waste/Create.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Waste/Create.vue',
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/waste/record.ts',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/waste-report/index.vue',
       ],
@@ -209,7 +209,7 @@ export const capabilityAssessments: Record<
       scope:
         'Completed-order gross sales are connected. Costs, margin, cash balances, budgets and forecasts are not. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Finance/Overview.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Finance/Overview.vue',
       ],
     },
   },

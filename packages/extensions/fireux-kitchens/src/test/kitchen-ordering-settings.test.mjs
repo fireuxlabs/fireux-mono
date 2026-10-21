@@ -22,7 +22,7 @@ const useCommandScope = compileFunction(
 function load(component, props, names, dependencies = {}) {
   const source = readFileSync(
     new URL(
-      `../runtime/kitchen/components/Workspace/Offerings/${component}.vue`,
+      `../runtime/kitchen/components/FoodAndDrink/Services/${component}.vue`,
       import.meta.url
     ),
     'utf8'

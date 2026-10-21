@@ -86,7 +86,7 @@ test('mounted service editors and local drafts survive refresh/error; actual own
   const f = fixture(),
     { renderer, make } = host()
   const source = readFileSync(
-    new URL('components/Workspace/Offerings/Index.vue', runtime),
+    new URL('components/FoodAndDrink/Services/Index.vue', runtime),
     'utf8'
   )
   let mounted = 0,
@@ -95,7 +95,7 @@ test('mounted service editors and local drafts survive refresh/error; actual own
   const app = renderer.createApp({
     setup: () =>
       load(
-        'components/Workspace/Offerings/Index.vue',
+        'components/FoodAndDrink/Services/Index.vue',
         '({ source, retained, snapshot, options })',
         {
           provideKitchenServicesContext: () => f.context,
@@ -104,12 +104,12 @@ test('mounted service editors and local drafts survive refresh/error; actual own
     render: Vue.compile(parse(source).descriptor.template.content),
   })
   for (const name of [
-    'WorkspaceKitchenOfferingsStatus',
-    'WorkspaceKitchenOfferingsTitle',
+    'KitchenFoodAndDrinkServicesStatus',
+    'KitchenFoodAndDrinkServicesTitle',
     'DiagnosticsDebugPanel',
   ])
     app.component(name, { render: () => null })
-  app.component('WorkspaceKitchenOfferingsService', {
+  app.component('KitchenFoodAndDrinkServicesService', {
     setup() {
       mounted++
       draft = Vue.ref('18:')

@@ -143,7 +143,7 @@ export const fireuxDocsCatalogue = [
     source: molecules('forms/editable/Checkbox'),
     uses: [
       component(
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Ordering/WhatsApp.vue'
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Ordering/WhatsApp.vue'
       ),
     ],
     passed: [
@@ -205,7 +205,7 @@ export const fireuxDocsCatalogue = [
     source: molecules('forms/editable/Select'),
     uses: [
       component(
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/Timing.vue'
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Services/Timing.vue'
       ),
     ],
     passed: [

@@ -29,7 +29,7 @@ export function useServiceBasket(
       .filter((line) => !signatures.has(line.signature))
       .map((line) => line.key)
   })
-  function add(offer: MenuServiceOffer, choices: ServiceItemChoices) {
+  function currentLine(offer: MenuServiceOffer, choices: ServiceItemChoices) {
     if (!toValue(catalogueReady))
       throw new Error('Food and drinks are reloading. Please try again.')
     if (
@@ -42,6 +42,10 @@ export function useServiceBasket(
     const line = serviceBasketLine(offer, choices)
     if (lines.value.some((existing) => existing.currency !== line.currency))
       throw new Error('These items use different currencies.')
+    return line
+  }
+  function add(offer: MenuServiceOffer, choices: ServiceItemChoices) {
+    const line = currentLine(offer, choices)
     const existing = lines.value.find((row) => row.key === line.key)
     if (existing) {
       if (existing.choices.quantity + choices.quantity > 99)
@@ -52,6 +56,29 @@ export function useServiceBasket(
         throw new Error('Your basket has reached 50 different selections.')
       lines.value.push(line)
     }
+  }
+  function update(
+    key: string,
+    offer: MenuServiceOffer,
+    choices: ServiceItemChoices
+  ) {
+    const index = lines.value.findIndex((row) => row.key === key)
+    if (index < 0)
+      throw new Error('This selection is no longer in your basket.')
+    const original = lines.value[index]!
+    if (original.signature !== serviceItemSignature(offer))
+      throw new Error('This item has changed. Please choose it again.')
+    const line = currentLine(offer, choices)
+    const matching = lines.value.find(
+      (row) => row.key === line.key && row.key !== key
+    )
+    if (matching && matching.choices.quantity + line.choices.quantity > 99)
+      throw new Error('Choose up to 99 of each selection.')
+    // Validate everything before replacing or merging either selection.
+    if (matching) {
+      matching.choices.quantity += line.choices.quantity
+      lines.value.splice(index, 1)
+    } else lines.value.splice(index, 1, line)
   }
   function adjust(key: string, change: number) {
     const line = lines.value.find((row) => row.key === key)
@@ -69,6 +96,18 @@ export function useServiceBasket(
   function remove(key: string) {
     lines.value = lines.value.filter((row) => row.key !== key)
   }
-  function clear() { lines.value = [] }
-  return { lines, count, totalMinor, staleKeys, add, adjust, remove, clear }
+  function clear() {
+    lines.value = []
+  }
+  return {
+    lines,
+    count,
+    totalMinor,
+    staleKeys,
+    add,
+    update,
+    adjust,
+    remove,
+    clear,
+  }
 }

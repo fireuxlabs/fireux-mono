@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import { computed, reactive, ref, compile, createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 const path =
-  '../runtime/kitchen/components/Workspace/Menus/Publication/Readiness.vue'
+  '../runtime/kitchen/components/FoodAndDrink/Menus/Publication/Readiness.vue'
 const component = readFileSync(new URL(path, import.meta.url), 'utf8')
 function readiness(props = {}) {
   const source = component
@@ -49,7 +49,7 @@ async function render(api) {
     component.lastIndexOf('</template>')
   )
   const app = createSSRApp({ setup: () => api, render: compile(template) })
-  app.component('WorkspaceKitchenMenusPublicationReadinessSection', {
+  app.component('KitchenFoodAndDrinkMenusPublicationReadinessSection', {
     render: () => null,
   })
   app.component('MoleculesCopyError', {

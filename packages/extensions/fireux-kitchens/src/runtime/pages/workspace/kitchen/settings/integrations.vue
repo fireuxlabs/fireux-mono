@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="kitchen-integrations"
     ><template #header><LayoutsWorkspaceNavbar title="Integrations" /></template
-    ><template #body><WorkspaceKitchenIntegrations /></template
+    ><template #body><KitchenIntegrations /></template
   ></UDashboardPanel>
 </template>
 <script setup lang="ts">

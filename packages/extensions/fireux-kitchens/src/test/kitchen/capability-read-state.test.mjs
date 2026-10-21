@@ -329,7 +329,7 @@ async function render(path, state) {
 }
 test('Both Sales surfaces hide metrics, charts, transactions and empty claims until settled', async () => {
   for (const path of [
-    'components/Workspace/Finance/Overview.vue',
+    'components/Finance/Overview.vue',
     'components/Workspace/Overview/Finance.vue',
   ]) {
     for (const [outcome, expected] of [

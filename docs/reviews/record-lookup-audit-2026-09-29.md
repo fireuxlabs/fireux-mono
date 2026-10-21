@@ -130,7 +130,7 @@ State: Review. Local patch remains uncommitted.
   one provided workflow per Menu/section entry; direct existing Workspace selection,
   Kitchen access/read/presentation seams; separate existing App-role edit gate.
   Removed `useKitchenWorkspaceMenuRecord.ts` and `useKitchenWorkspaceMenu.ts`.
-- Updated direct record consumers under `kitchen/components/Workspace/Menus/`:
+- Updated direct record consumers under `kitchen/components/FoodAndDrink/Menus/`:
   Record, WorkspaceHeader, IdentityBar, Navigation, Facts, Services, Publishing,
   Edit/Details, Delete, Publish, Schedule, Source, Process/Cost, Process/Index,
   Sections/Dishes, Sections/Read, Sections/Section. Also updated

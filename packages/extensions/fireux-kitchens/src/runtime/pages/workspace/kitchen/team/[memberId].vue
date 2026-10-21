@@ -20,7 +20,7 @@
       >
         <template #description><MoleculesCopyError message="Team could not be loaded" /></template>
       </UAlert>
-      <WorkspaceKitchenTeam
+      <KitchenTeam
         v-else-if="member"
         :key="memberId"
         :team="team"
