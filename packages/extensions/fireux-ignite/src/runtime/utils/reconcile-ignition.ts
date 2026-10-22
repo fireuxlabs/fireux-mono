@@ -1,4 +1,5 @@
 import type { IgnitionAssembly, IgnitionBrief } from '../models/ignition.js'
+import { reviewSearchPlan } from './review-search-plan.ts'
 
 function validateAssembly(brief: IgnitionBrief, assembly: IgnitionAssembly) {
   const requirements = new Set(brief.requirements.map((item) => item.id))
@@ -96,6 +97,7 @@ export function reconcileIgnition(
   return {
     briefId: brief.id,
     proposalSupplied: proposal !== null,
+    search: reviewSearchPlan(brief.search),
     coverage,
     learnings: reference.learnings,
     boundary:

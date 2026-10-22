@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-10-21
-Ref: add6006b3
+Ref: d05ded3fd
 Role: map, not canon
 
 ## Purpose
@@ -138,6 +138,15 @@ status, styles, readers and commands remain domain-owned. Kitchen group indexes
 are the current adopters; other Workspaces may use the same framing without
 requiring identical child layouts or inventing group pages.
 
+Core `layouts/shared/PlatformFooter.vue` composes FireUX attribution and links to the shared platform privacy, terms and storage disclosures. The default footer and Interlaken Bike Tours' branded footer consume it directly; business-specific booking policies remain App-owned. The component performs no reads or commands.
+
+Core `components/Pwa/Controls.vue` presents installation, explicit offline
+support and update/removal controls at `/install`; the shared platform footer
+supplies its entrance. `components/Pwa/Status.vue` appears through AppShell only
+for offline or waiting-update state. Both consume one Core `usePwa` controller,
+which owns registration and storage. Manual installation and the current
+window's installed state remain distinct from offline opt-in.
+
 ## Core shared component families
 
 `fireux-core/src/runtime/components` is a finite shared boundary, not the
@@ -250,6 +259,12 @@ behaviour. Domain validation and protected persistence commands stay outside.
 Refresh consumer evidence when a new use changes the contract. Prefer improving
 an existing owner over creating another primitive, and remove tokens/helpers only
 after checking authored consumers and stylesheet registration.
+
+The focused [Core duplication audit](nuxt-ui.md#focused-duplicate-and-styling-review)
+retires the unused generic Workspace CRUD toolbar/button chain. Shared CRUD
+availability types and connected `Workspace/Team/Crud` interactions remain
+distinct responsibilities. Collection Load more and landing wrappers still need
+complete consumer migrations; their registration alone is not a reuse contract.
 
 ## CSS-to-component mapping
 
@@ -397,13 +412,12 @@ after checking authored consumers and stylesheet registration.
   Demo loading, live reads, Firebase, or write authority. The project source
   begins at
   `projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Index.vue`.
-  FireUX consumes the same shell for its Project Operations and projects Apps
-  and Ecosystems from the explicitly FireUX-owned Core Project Demo scenario.
-  Ignition requests remain App intake with a separate private app-admin delivery
-  workflow; it is not a Project Operation. User activity remains a truthful
-  private state. The Workspace doorway enters `/workspace/project` without
-  changing Workspace selection. Mobile keeps each component before the text and desktop places it
-  to the left. Project proof truth never moves into Core. Core
+  FireUX's App-owned `/product` explanation instead composes native Nuxt UI,
+  shared framework sections and Core's public platform meaning at
+  `projects/fireux/fireux-app/app/components/Landing/Index.vue`. Its product
+  explanation does not acquire Project Demo data or live App/Ecosystem
+  directories. Ignition remains App intake with a separate private app-admin
+  delivery workflow. Core
   `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
   interaction, a one-shot visibility-gated desktop launch with one stable
   per-mount vector, two closed turns through one long deceleration that settles
@@ -412,10 +426,8 @@ after checking authored consumers and stylesheet registration.
   snapping the pack or changing touch/root keyboard behavior, fully opaque and
   crisp orbital elements whose scale and stacking carry depth, gentle mobile
   autoplay that continues while the document is visible, and reduced-motion behavior
-  for card showcases. It receives typed items and one dumb item slot; FireUX
-  projects its bounded public
-  App/Ecosystem directory into canonical Cards from the explicit `live` source.
-  Misebox instead projects its network-free Demo PowerCards into a local,
+  for card showcases. It receives typed items and one dumb item slot.
+  Misebox projects its network-free Demo PowerCards into a local,
   keyboard-focusable left-to-right scroll window with a responsive bento grid.
   The shared
   orbit source discriminant is closed to `demo | live`; an orbit cannot mix,

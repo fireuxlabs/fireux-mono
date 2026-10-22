@@ -1,0 +1,39 @@
+{
+  "hosting": {
+    "site": "interlaken-bike-tours-prototype",
+    "public": ".output/public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "interlakenBikeTours",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "interlaken-bike-tours-ssr",
+      "runtime": "nodejs22"
+    }
+  ]
+}

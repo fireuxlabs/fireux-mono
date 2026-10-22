@@ -1,6 +1,6 @@
 # FireUX App Ignition intake context
 
-Updated: 2026-10-12
+Updated: 2026-10-21
 Ref: eddc8186c
 Role: living context
 Scope: FireUX App Ignition requests and private delivery tracking
@@ -19,9 +19,14 @@ FireUX App owns its Misebox reference case and the presentation consuming `fireu
 
 ## Product intent and family
 
-FireUX enables people to create industry operating systems with connected Apps
-and Workspaces. The shorthand positioning is “Lovable for ecosystem SaaS”.
-Ignition is intended to assemble that product family from an independent brief.
+FireUX is an industry SaaS framework for industry founders and the teams building
+their software. Shared SaaS foundations and industry libraries compose connected
+Apps and Workspaces; Nuxt and Nuxt UI provide the technical and interface foundation.
+Its public offering distinguishes source-workspace development, scoped industry
+SaaS work and branded App requests. Industry SaaS enquiries use the existing
+Your Ecosystem offer and contact path; the App-specific Ignition form retains
+its own terms and validation. Ignition is the guided scoping and delivery process;
+repeatable assembly from an independent brief remains a separate proving boundary.
 Use the statement “[Brand] is a [domain] operating system” to describe the intended
 operating scope; it is not evidence of automatic generation or shipped capabilities.
 

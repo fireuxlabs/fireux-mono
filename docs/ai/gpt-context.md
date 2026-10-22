@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-10-21
-Ref: add6006b3
+Ref: d05ded3fd
 Role: living context
 Scope: repository-wide
 
@@ -106,8 +106,11 @@ renamed alias is not proof.
   host's `/`, with one registered Home and no `/workspace/kitchen` Home alias.
   BuenoHost and Granite keep `/workspace/property` and `/workspace/portfolio`.
   FireUX
-  opens `/workspace/project` from `/`, with secondary Explore Projects below
-  its working area. Tenant Apps keep their branded customer root and a Workspace
+  presents its industry SaaS framework offering at public `/`, with developer
+  resources for Docs, Components, Theme, Templates and the public App Showcase.
+  Its separate Project Workspace entrance
+  remains `/workspace/project`; the Workspace host still redirects its root
+  there. Tenant Apps keep their branded customer root and a Workspace
   entrance. Core header and sidebar reuse route-owned Workspace entry resolution;
   Workspace sidebars omit a separate Directory row; the existing brand and
   account navigation remain available.
@@ -476,6 +479,14 @@ from this repository guidance. FireUX App publishes it at
 Lower context scopes add specific meaning rather than copying this block;
 publication does not automatically inject it into AI requests or grant authority.
 
+FireUX's product category is an industry SaaS framework for industry founders
+and the teams building their software. Shared SaaS foundations and industry
+libraries compose Apps and Workspaces; Nuxt and Nuxt UI are its technical and
+interface foundation. FireUX App's `app/content/meta/source.ts` owns the public
+offer paths and their presentation. Framework resources, scoped industry SaaS
+work and branded App requests retain distinct destinations and terms. Ignition
+scoping and delivery do not establish automatic generation or provisioning.
+
 - Derive literature bottom-up from current fields, states, commands, and pages.
 - Keep product discovery traceable from sourced evidence through operator jobs,
   bounded Tool hypotheses, capability decisions, and implemented pages. A Tool
@@ -602,6 +613,18 @@ App-specific navigation presentation belongs in the existing `app/app.config.ts`
 Core navigation consumes it directly; deployment runtime config does not carry
 navigation overrides or hidden route keys. Shared route defaults remain with
 the route owner.
+
+Core owns PWA identity, installation/offline controls and worker/cache policy for
+every FireUX App. Consume AppShell and Core `/install`; do not add App-local
+registration or caching. Native/manual installation is separate from explicit
+offline opt-in. A fresh visit creates no PWA registration or cache; a saved
+App-specific choice may resume it. Offline support caches only self-contained
+reconnect HTML, excluding App pages/data, API/auth responses and queued writes.
+Keep owned removal controls and deliberate update/reload behavior. Source and
+verification live in Core `src/config/app/pwa.ts`,
+`src/runtime/utils/pwa-controller.ts`, `src/runtime/components/Pwa`,
+`src/runtime/pages/install.vue` and `src/test/pwa.test.mjs`; Apps retain their
+identity and brand assets.
 
 ### Framework typing boundary
 

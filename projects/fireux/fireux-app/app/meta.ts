@@ -53,7 +53,7 @@ export const appMeta = {
 
   getStarted: sourceMeta.getStarted,
 
-  seoHome: sourceMeta.workspace.seo,
+  seoHome: sourceMeta.landing.seo,
   seoProduct: sourceMeta.landing.seo,
   seoAbout: sourceMeta.about.seo,
   seoGetStarted: sourceMeta.getStarted.seo,
@@ -94,16 +94,16 @@ export const metaContent = defineFireuxMeta({
     title: appMeta.seoHome.title,
     description: appMeta.seoHome.description,
     keywords: [
-      'FireUX Project',
+      'industry SaaS framework',
+      'industry software',
       'FireUX App',
       'FireUX Ecosystem',
-      'Project Workspace',
-      'app ignition',
-      'modular web apps',
+      'industry libraries',
+      'Nuxt UI',
     ],
-    audience: ['project owners', 'app operators', 'founders', 'partners'],
-    categories: ['project operations', 'app platforms', 'ecosystem software'],
-    primary_topic: 'FireUX Projects and Apps',
+    audience: ['industry founders', 'development teams', 'app operators'],
+    categories: ['industry SaaS', 'application frameworks', 'industry software'],
+    primary_topic: 'Industry SaaS framework',
   },
   cta: {
     primary: {

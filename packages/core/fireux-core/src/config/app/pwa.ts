@@ -3,6 +3,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 
 export type FireUXPwaConfig = {
+  id: string
   name: string
   shortName: string
   themeColor: string
@@ -14,21 +15,51 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
   const brandAssets = resolveFireuxBrandAssets()
   ;(nuxt as any).pwa = {
     ...((nuxt as any).pwa || {}),
-    // A public visit must not create Cache Storage or a service-worker
-    // registration before the visitor explicitly requests an install/offline
-    // feature. FireUX currently exposes no such opt-in, so keep it disabled.
+    // Core's client controller registers only after an explicit offline request.
+    // The Nuxt module's own plugin is a separate automatic-registration path.
     injectRegister: false,
+    client: { registerPlugin: false, installPrompt: false },
+    registerType: 'prompt',
     // Keep service worker disabled during local development by default.
     devOptions: { enabled: false },
     workbox: {
       ...(((nuxt as any).pwa?.workbox || {}) as Record<string, unknown>),
-      navigateFallback: '/',
+      cacheId: `fireux-${c.id}`,
+      navigateFallback: null,
       cleanupOutdatedCaches: true,
       clientsClaim: true,
-      skipWaiting: true,
-      // Firebase Auth redirect flows use /__/auth/* and must bypass the app-shell
-      // fallback, especially in installed PWAs where redirect auth is more common.
-      navigateFallbackDenylist: [/^\/__\//],
+      skipWaiting: false,
+      // Offline support never stores SSR HTML, payloads or operational data.
+      globPatterns: ['fireux-offline.html'],
+      globIgnores: ['**/*.json', '**/_payload*'],
+      // Nuxt's default transform rewrites .html URLs and adds build payloads.
+      // This standalone document retains one exact precache/fallback identity.
+      manifestTransforms: [
+        (entries: Array<{ url: string; revision?: string | null }>) => ({
+          manifest: entries.filter(
+            (entry) => entry.url === 'fireux-offline.html'
+          ),
+          warnings: [],
+        }),
+      ],
+      runtimeCaching: [
+        {
+          urlPattern: ({ request, url }: { request: Request; url: URL }) => {
+            const path = url.pathname.slice(
+              self.location.pathname.lastIndexOf('/')
+            )
+            return (
+              request.mode === 'navigate' &&
+              url.origin === self.location.origin &&
+              !/^\/(?:api|auth|__)(?:\/|$)/.test(path)
+            )
+          },
+          handler: 'NetworkOnly',
+          options: {
+            precacheFallback: { fallbackURL: 'fireux-offline.html' },
+          },
+        },
+      ],
     },
     // Core's server route owns the manifest so it can version configured assets
     // with Nuxt's per-build id. Keep Vite PWA focused on service-worker behavior.
@@ -43,12 +74,20 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
   head.meta.push(
     { name: 'theme-color', content: c.themeColor },
     { name: 'apple-mobile-web-app-capable', content: 'yes' },
-    { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+    {
+      name: 'apple-mobile-web-app-status-bar-style',
+      content: 'black-translucent',
+    },
     { name: 'mobile-web-app-capable', content: 'yes' }
   )
 
   head.link.push(
     { rel: 'icon', href: brandAssets.favicon },
-    { rel: 'apple-touch-icon', sizes: '180x180', href: brandAssets.pwaIcon192 }
+    {
+      key: 'fireux-apple-touch-icon',
+      rel: 'apple-touch-icon',
+      sizes: '192x192',
+      href: brandAssets.pwaIcon192,
+    }
   )
 }

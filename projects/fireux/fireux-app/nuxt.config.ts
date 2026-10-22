@@ -9,7 +9,8 @@ const appConfig = defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-app',
-  context: "FireUX is the main entrance for organising Projects and preparing Apps. Project management and App preparation are distinct from provisioning, deployment and release.",
+  context:
+    'FireUX is an industry SaaS framework combining shared SaaS foundations with industry libraries to create connected Apps and Workspaces. Its public offering serves industry founders and development teams through framework resources, scoped industry SaaS work and branded App requests. Nuxt and Nuxt UI provide the technical and interface foundation. Project Workspace remains the separate working entrance for organising Projects and preparing Apps; provisioning, deployment and release retain their own authority.',
   name: 'FireUX',
   shortName: 'FireUX',
   role: 'global',
@@ -22,7 +23,17 @@ const appConfig = defineFireuxConfig({
   },
   seo: {
     siteUrl: 'https://fireux.app',
-    staticPaths: ['/product', '/apps', '/ecosystems', '/ecosystems/werkbox'],
+    staticPaths: [
+      '/',
+      '/getting-started',
+      '/components',
+      '/theme',
+      '/templates',
+      '/product',
+      '/apps',
+      '/ecosystems',
+      '/ecosystems/werkbox',
+    ],
     sitemapDocuments: ['/sitemaps/directory.xml'],
     noindexPaths: ['/apps/fireux-blank'],
   },
@@ -51,8 +62,22 @@ const appConfig = defineFireuxConfig({
   ],
 })
 
+const firebaseOptions = appConfig.nitro?.firebase
+
 export default {
   ...appConfig,
+  nitro: {
+    ...appConfig.nitro,
+    firebase: {
+      ...firebaseOptions,
+      httpsOptions: {
+        ...(firebaseOptions && 'httpsOptions' in firebaseOptions
+          ? firebaseOptions.httpsOptions
+          : {}),
+        maxInstances: 20,
+      },
+    },
+  },
   runtimeConfig: {
     ...appConfig.runtimeConfig,
     public: { ...appConfig.runtimeConfig?.public, packageComponents: {} },

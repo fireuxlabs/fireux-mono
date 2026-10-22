@@ -2,6 +2,9 @@
 <!-- Concurrent edit — 2026-07-20 15:50 CEST — Repo Efficiency Pass 1 of 6: resolve initialization through a narrow background DTO. -->
 <template>
   <UApp>
+    <ClientOnly>
+      <PwaStatus />
+    </ClientOnly>
     <!-- App content -->
     <UMain>
       <NuxtLayout>
@@ -103,10 +106,7 @@
                 />
               </UTooltip>
 
-              <UTooltip
-                text="Collapse dev controls"
-                :content="{ side: 'top' }"
-              >
+              <UTooltip text="Collapse dev controls" :content="{ side: 'top' }">
                 <UButton
                   aria-label="Collapse dev controls"
                   size="xs"
@@ -163,6 +163,7 @@
 
 <script setup lang="ts">
 import { computed, ref, type CSSProperties } from 'vue'
+import { resolveSeoRobots } from '../../../utils/seoIndexing'
 import { useRouter } from 'vue-router'
 import { useHead, useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../composables/config/FireUXConfig'
@@ -171,9 +172,7 @@ import { useDiagnosticsUi } from '../../composables/diagnostics/useDiagnosticsUi
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../utils/sync-app-media'
-import {
-  workspaceFamilyFromRouteContext,
-} from '../../composables/fireux/workspace/workspaceRoutes'
+import { workspaceFamilyFromRouteContext } from '../../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
@@ -246,7 +245,10 @@ const setupDescription = 'This App needs to be initialized.'
 const showOnboardingModal = computed(() => appExists.value === false)
 
 useHead(() => ({
-  meta: fireuxConfig.isTenant
+  meta: resolveSeoRobots({
+    path: route.path,
+    ...runtimeConfig.public.fireux.seo,
+  }).includes('noindex')
     ? [{ name: 'robots', content: 'noindex, nofollow' }]
     : [],
   link: [{ key: 'fireux-manifest', rel: 'manifest', href: manifestHref.value }],

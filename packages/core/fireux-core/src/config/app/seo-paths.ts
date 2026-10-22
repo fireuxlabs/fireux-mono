@@ -1,4 +1,15 @@
-const AUTO_EXCLUDED_PREFIXES = ['/api', '/_nuxt', '/diagnostics', '/admin', '/workspace', '/auth']
+import {
+  normalizeSeoPath as normalizePath,
+  matchesSeoPath as patternMatchesPath,
+} from '../../utils/seoIndexing'
+const AUTO_EXCLUDED_PREFIXES = [
+  '/api',
+  '/_nuxt',
+  '/diagnostics',
+  '/admin',
+  '/workspace',
+  '/auth',
+]
 
 type FireuxPageRecord = {
   path?: string
@@ -44,28 +55,6 @@ function isLocalHost(value: string): boolean {
   )
 }
 
-function normalizePath(input: string): string | null {
-  let path = input.trim()
-  if (!path) return null
-
-  if (/^https?:\/\//i.test(path)) {
-    try {
-      path = new URL(path).pathname || '/'
-    } catch {
-      return null
-    }
-  }
-
-  const queryIdx = path.indexOf('?')
-  if (queryIdx >= 0) path = path.slice(0, queryIdx)
-  const hashIdx = path.indexOf('#')
-  if (hashIdx >= 0) path = path.slice(0, hashIdx)
-
-  if (!path.startsWith('/')) path = `/${path}`
-  path = path.replace(/\/+$/, '')
-  return path || '/'
-}
-
 function normalizeNoindexPattern(input: string): string | null {
   const raw = input.trim()
   if (!raw) return null
@@ -91,46 +80,14 @@ export function normalizePatterns(values: readonly string[]): string[] {
   return uniq(values.map((v) => normalizeNoindexPattern(v)))
 }
 
-function globToRegex(pattern: string) {
-  let regex = '^'
-  for (let i = 0; i < pattern.length; i += 1) {
-    const char = pattern.charAt(i)
-    if (char === '*') {
-      const next = pattern[i + 1]
-      if (next === '*') {
-        regex += '.*'
-        i += 1
-      } else {
-        regex += '[^/]*'
-      }
-    } else if (char === '?') {
-      regex += '[^/]'
-    } else {
-      regex += char.replace(/[\\^$+?.()|[\]{}]/g, '\\$&')
-    }
-  }
-  regex += '$'
-  return new RegExp(regex)
-}
-
-function patternMatchesPath(path: string, rawPattern: string): boolean {
-  const pattern = rawPattern.trim()
-  if (!pattern) return false
-
-  if (pattern.includes('*') || pattern.includes('?')) {
-    return globToRegex(pattern).test(path)
-  }
-
-  const normalized = normalizePath(pattern)
-  if (!normalized) return false
-  return path === normalized || path.startsWith(`${normalized}/`)
-}
-
 function matchesAnyPattern(path: string, patterns: readonly string[]): boolean {
   return patterns.some((pattern) => patternMatchesPath(path, pattern))
 }
 
-function flattenPages(pages: FireuxPageRecord[], out: FireuxPageRecord[] = []): FireuxPageRecord[] {
+function flattenPages(
+  pages: FireuxPageRecord[],
+  out: FireuxPageRecord[] = []
+): FireuxPageRecord[] {
   for (const page of pages) {
     out.push(page)
     if (Array.isArray(page.children) && page.children.length) {
@@ -162,7 +119,8 @@ function metaRequestsNoindex(metaInput: unknown): boolean {
   const meta = asRecord(metaInput)
   if (!meta) return false
   if (meta.sitemap === false || meta.index === false) return true
-  if (typeof meta.robots === 'string' && /noindex/i.test(meta.robots)) return true
+  if (typeof meta.robots === 'string' && /noindex/i.test(meta.robots))
+    return true
 
   const seo = asRecord(meta.seo)
   if (!seo) return false
@@ -180,12 +138,17 @@ function hasBlockedSegment(path: string): boolean {
   return segments.some((segment) => AUTO_EXCLUDED_SEGMENTS.has(segment))
 }
 
-export function mergeSitemapPaths(current: unknown, additions: readonly string[]): string[] {
+export function mergeSitemapPaths(
+  current: unknown,
+  additions: readonly string[]
+): string[] {
   const existing = Array.isArray(current)
     ? current.map((entry) => String(entry ?? ''))
     : []
 
-  return normalizePaths([...existing, ...additions]).sort((a, b) => a.localeCompare(b))
+  return normalizePaths([...existing, ...additions]).sort((a, b) =>
+    a.localeCompare(b)
+  )
 }
 
 export function collectAutoSitemapPaths(
@@ -214,7 +177,11 @@ export function collectAutoSitemapPaths(
     const forced = metaForcesSitemap(page.meta)
     if (!forced) {
       if (metaRequestsNoindex(page.meta)) continue
-      if (AUTO_EXCLUDED_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`)))
+      if (
+        AUTO_EXCLUDED_PREFIXES.some(
+          (prefix) => path === prefix || path.startsWith(`${prefix}/`)
+        )
+      )
         continue
       if (hasBlockedSegment(path)) continue
       if (matchesAnyPattern(path, blockedPatterns)) continue

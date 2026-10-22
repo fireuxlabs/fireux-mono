@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-10-11
-Ref: 57d034087
+Updated: 2026-10-21
+Ref: d05ded3fd
 Role: map, not canon
 
 ## Purpose
@@ -77,9 +77,9 @@ visible Workspace availability does not grant mutation authority.
 
 Misebox, BuenoHost and Granite have public Directory roots and separate Workspace
 entrances. Misebox's Workspace host renders Home at `/`; BuenoHost and Granite
-retain explicit family Home routes. FireUX is the accepted exception: `/` redirects to Project Workspace
-with secondary Explore Projects below its working area. Detailed product tours
-remain on their existing literature routes. Core navigation supplies the explicit Workspace entrance; Workspace sidebars
+retain explicit family Home routes. FireUX's public `/` is its framework-library
+homepage; Project Workspace remains at `/workspace/project`. Detailed product
+tours remain on their existing literature routes. Core navigation supplies the explicit Workspace entrance; Workspace sidebars
 omit a separate Directory row and retain existing brand/account navigation. This does
 not change membership or turn browsing into management authority.
 
@@ -624,16 +624,19 @@ Pages may supply their title and capability-specific context body, but they do
 not hide or reconstruct those controls. A control without current runtime data
 remains visible and unavailable rather than changing the navbar anatomy.
 
-Core owns one presentation primitive for each basic record operation:
-`WorkspaceCrudCreate`, `WorkspaceCrudRead`, `WorkspaceCrudUpdate`, and
-`WorkspaceCrudDelete`. `WorkspaceCrud` owns their fixed toolbar order and the
-open/close interaction for four named modal slots. Unavailable actions remain
-visible and disabled. Each Entity or Capability supplies only the slots it can
-execute and retains its forms, records, validation, commands, authority, and
-non-CRUD Tools. Project and Kitchen roots prove available-action differences.
-Supplier proves that an Entity may reuse the same controller while truthfully
-disabling Create, Update, and Delete until its Workspace authority exists.
-Project Team and Kitchen Team prove capability consumers.
+Shared capability availability remains expressed by
+`WorkspaceCrudPrimitiveId` and `defineWorkspaceCapabilityContext` in
+`runtime/composables/fireux/workspace/workspaceCapabilityContext.ts`.
+Availability does not require a Core button wrapper for every CRUD verb.
+Native `UButton` supplies ordinary control behaviour; a shared availability
+vocabulary does not imply a generic modal or toolbar owner.
+
+Connected Team compositions remain separate: `Workspace/Team/Crud/Create.vue`
+owns the Add person modal over `CreatePerson.vue`, while Team Single/Settings
+own the selected person's editing interaction. They preserve active-dialog
+intent, domain-supplied commands and availability. Entity and Capability owners
+retain records, forms, validation, authority and non-CRUD Tools. See the focused
+[Core duplication audit](nuxt-ui.md#focused-duplicate-and-styling-review).
 
 ## Migration and drift register
 

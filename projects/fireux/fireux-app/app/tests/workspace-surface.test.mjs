@@ -85,15 +85,8 @@ for (const host of [`workspace.${app}.app`, localHost]) {
   })
 }
 for (const host of [`${app}.app`, `www.${app}.app`, 'localhost', '127.0.0.1']) {
-  test(`${host} opens Workspace from root and retains direct-link destinations`, () => {
-    assert.deepEqual(route(host, '/', { source: 'invite' }, '#start'), {
-      to: {
-        path: '/workspace/project',
-        query: { source: 'invite' },
-        hash: '#start',
-      },
-      options: { redirectCode: 302, replace: true },
-    })
+  test(`${host} keeps the public framework root and direct Workspace destinations`, () => {
+    assert.equal(route(host, '/', { source: 'invite' }, '#start'), undefined)
     assert.equal(
       route(host, '/workspace/project/team', { source: 'invite' }, '#member'),
       undefined

@@ -1,7 +1,7 @@
 # Workspace
 
 Updated: 2026-10-21
-Ref: e81d90995
+Ref: d05ded3fd
 Role: map, not canon
 
 ## Purpose and authority
@@ -152,8 +152,10 @@ there is no universal `crud.create` shape required of every controller.
 
 Misebox serves public discovery at its public host's `/` and Kitchen Home at the
 Workspace host's `/`, without a `/workspace/kitchen` Home alias. BuenoHost and
-Granite retain `/workspace/property` and `/workspace/portfolio`. FireUX opens
-Project Workspace from `/`. Tenant Apps retain their customer root and an
+Granite retain `/workspace/property` and `/workspace/portfolio`. FireUX presents
+its industry SaaS offering and framework resources at `/` and keeps Project Workspace at
+`/workspace/project`. Only its Workspace host redirects root to Project Home.
+Tenant Apps retain their customer root and an
 App-resolved Workspace entrance. Use `useWorkspaceEntryCta`, not a hard-coded
 family path, for shared entry actions.
 

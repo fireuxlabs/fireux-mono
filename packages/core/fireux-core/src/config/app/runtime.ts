@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
 import type { NuxtConfig } from '@nuxt/schema'
-import type { FireuxSeoConfig } from './seo'
+import type { FireuxSeoConfig, FireuxSeoResolved } from './seo'
 import type { FireuxMetaContent } from './meta-content'
 import type {
   FireuxAppConfig,
@@ -24,6 +24,8 @@ type RuntimeNormalizedFields =
 export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   /** Optional signed-in uid allowed to access developer-only dashboard tools. */
   developerId?: string
+  /** Resolved public search policy and transport configuration. */
+  seo?: FireuxSeoResolved
   domain: string
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string

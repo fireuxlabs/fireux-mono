@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>You're offline</title>
+    <style>
+      :root { color-scheme: light dark; font: 16px/1.6 system-ui, sans-serif; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 0 1.5rem; background: light-dark(#f8fafc, #0f172a); color: light-dark(#0f172a, #f8fafc); }
+      main { max-width: 30rem; padding: 3rem 0; }
+      h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.1; }
+      button { font: inherit; font-weight: 600; padding: .7rem 1.25rem; border: 1px solid currentColor; border-radius: .5rem; color: inherit; background: transparent; cursor: pointer; }
+      button:focus-visible { outline: 3px solid #3b82f6; outline-offset: 4px; }
+      #connection { min-height: 1.6em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>Connection unavailable</p>
+      <h1>You're offline.</h1>
+      <p>This page needs an internet connection. Your private data is not saved in the offline cache, and actions are not queued.</p>
+      <p id="connection" role="status">Reconnect, then try again.</p>
+      <button type="button" onclick="location.reload()">Try again</button>
+    </main>
+    <script>
+      addEventListener('online', () => { document.getElementById('connection').textContent = 'Connection restored. You can try again.' })
+    </script>
+  </body>
+</html>

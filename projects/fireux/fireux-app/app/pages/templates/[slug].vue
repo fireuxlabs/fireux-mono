@@ -9,7 +9,7 @@ if (route.params.slug !== 'template-one')
 const query = route.fullPath.includes('?')
   ? `?${route.fullPath.split('?')[1]}`
   : ''
-await navigateTo(`http://localhost:3001/templates/template-one${query}`, {
+await navigateTo(`https://misebox.app/templates/template-one${query}`, {
   external: true,
   redirectCode: 302,
 })

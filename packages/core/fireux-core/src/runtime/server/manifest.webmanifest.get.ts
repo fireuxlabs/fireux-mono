@@ -48,7 +48,9 @@ export default defineEventHandler((event) => {
           typeof family === 'string' && /^[a-z][a-z0-9-]*$/.test(family)
       )
     : []
-  const workspaceConfig = fireux.workspaceConfig as Record<string, { origin?: string }> | undefined
+  const workspaceConfig = fireux.workspaceConfig as
+    | Record<string, { origin?: string }>
+    | undefined
   const requestOrigin = getRequestURL(event).origin
   const workspaceSurface =
     query.surface === 'workspace' &&
@@ -68,7 +70,13 @@ export default defineEventHandler((event) => {
     (typeof fireux.shortName === 'string' && fireux.shortName.trim()) ||
     (typeof pub.appShortName === 'string' && pub.appShortName.trim()) ||
     name
+  const seo =
+    fireux.seo && typeof fireux.seo === 'object'
+      ? (fireux.seo as Record<string, unknown>)
+      : {}
   const description =
+    (typeof seo.defaultDescription === 'string' &&
+      seo.defaultDescription.trim()) ||
     (typeof pub.appDescription === 'string' && pub.appDescription.trim()) ||
     'FireUX application'
   const themeColor = readPaletteColor(fireux, 'accent') || DEFAULT_THEME

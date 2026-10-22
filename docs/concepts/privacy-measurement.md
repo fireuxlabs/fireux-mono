@@ -1,21 +1,21 @@
 # Privacy-first measurement
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-10-21
+Ref: d05ded3fd
 Role: map, not canon
 
 ## Purpose
 
 Define the repo-wide boundary that lets FireUX and Misebox understand service
 health without tracking people. This map inherits `AGENTS.md` and
-`docs/ai/gpt-context.md`. Current source and `scripts/guards/privacy-measurement.mjs`
-remain stronger authority.
+`docs/ai/gpt-context.md`. Current source and source-owned tests remain stronger
+authority.
 
 ## Current release
 
 No analytics collection is active. FireUX Core does not accept a Firebase
-measurement id, and the guard rejects known behavioural analytics/ad-tech
-packages and browser tracking primitives in analytics-named source.
+measurement id. Feature storage must not introduce behavioural analytics,
+advertising identifiers or browser tracking.
 
 Core splits public authority without duplicating it:
 
@@ -23,21 +23,33 @@ Core splits public authority without duplicating it:
   no-tracking boundary;
 - `/legal/storage` owns the exact cookies-and-browser-storage inventory;
 - `packages/core/fireux-core/src/config/privacy/browser-storage.json` is the
-  machine-readable policy checked by the privacy guard.
+  machine-readable feature-storage inventory.
 
 The current essential feature storage includes:
 
 - authentication and security state;
 - a remembered language choice;
-- a short-lived anonymous-order recovery capability.
-- an explicitly selected colour mode, Workspace selection, and chat recovery.
+- a short-lived anonymous-order recovery capability;
+- an explicitly selected colour mode, Workspace selection, and chat recovery;
+- an explicitly enabled App-specific offline preference, worker and reconnect
+  page cache.
 
 These feature values are not analytics identifiers and must never be consumed
 by measurement code.
 
-Public visits do not automatically register the PWA service worker. Public
-Google Maps embeds require an explicit load action. After authentication is
-explicitly requested, Firebase Auth keeps the sign-in across reloads and
+Fresh public visits do not register a PWA service worker or create its cache.
+Core `/install` separates native or manual browser installation from optional
+offline support. Enabling offline support saves `fireux:pwa:{appId}` and
+registers the App's worker; later visits may resume that saved choice. The worker
+caches only self-contained reconnect HTML. Navigation uses the network, with
+that generic page as a failure fallback; App pages/data, API/auth responses and
+queued writes are excluded. App-specific caches and the owned registration are
+removed through Disable offline support. An open page may retain worker control
+until reloaded or closed. Update and reload explicitly applies a waiting worker;
+the install-status display describes the current window, not a device inventory.
+
+Public Google Maps embeds require an explicit load action. After authentication
+is explicitly requested, Firebase Auth keeps the sign-in across reloads and
 browser restarts until explicit sign-out or browser-data removal. Anonymous-
 order recovery values expire after no more than 24 hours.
 
@@ -47,6 +59,12 @@ behind the trusted `/api/chat` boundary. The browser receives an unguessable
 conversation/message creation is atomic. Direct browser Firestore access stays
 closed. New-session abuse control keeps only an ephemeral salted IP hash in
 process memory; it never persists or logs a raw address.
+
+The PWA policy and verification entrypoints are Core `src/config/app/pwa.ts`,
+`src/runtime/utils/pwa-controller.ts`, `src/runtime/components/Pwa`,
+`src/runtime/pages/install.vue` and `src/test/pwa.test.mjs`.
+Browser checks must separately confirm fresh-visit storage, opt-in, cache
+contents, removal and deliberate update/reload behavior.
 
 ## Required future aggregate seam
 

@@ -1,3 +1,4 @@
+import { resolveSeoRobots } from '../../../utils/seoIndexing'
 import {
   readSitemapPublicFilters,
   matchesSitemapPublicFilters,
@@ -165,6 +166,13 @@ export function readRuntimeSeoSitemaps(): RuntimeSeoSitemaps {
   const fireux = (pub.fireux || {}) as AnyRecord
   const seo = (fireux.seo || {}) as AnyRecord
 
+  const isIndexable = (path: string) =>
+    !resolveSeoRobots({
+      path,
+      enabled: seo.enabled as boolean | undefined,
+      noindexPaths: toStrings(seo.noindexPaths),
+    }).includes('noindex')
+
   const siteUrl =
     normalizeSiteUrl(seo.siteUrl) ||
     normalizeSiteUrl(fireux.siteUrl) ||
@@ -174,11 +182,13 @@ export function readRuntimeSeoSitemaps(): RuntimeSeoSitemaps {
     new Set(
       ['/', ...toStrings(seo.sitemapPaths), ...toStrings(seo.hubs)]
         .map((path) => normalizePath(path))
-        .filter((path): path is string => !!path)
+        .filter((path): path is string => !!path && isIndexable(path))
     )
   ).sort((a, b) => a.localeCompare(b))
 
-  const entities = toEntityList(seo.sitemapEntities)
+  const entities = toEntityList(seo.sitemapEntities).filter((entity) =>
+    isIndexable(entity.routePrefix)
+  )
   const documents = Array.from(
     new Set(
       toStrings(seo.sitemapDocuments)
@@ -188,6 +198,7 @@ export function readRuntimeSeoSitemaps(): RuntimeSeoSitemaps {
         )
         .filter((path) => path !== '/sitemaps/index.xml')
         .filter((path) => path !== '/sitemaps/static.xml')
+        .filter(isIndexable)
     )
   ).sort((a, b) => a.localeCompare(b))
 
@@ -368,7 +379,18 @@ export async function fetchEntitySitemapPage(
   page: number
 ): Promise<SitemapIndexEntry[]> {
   try {
-    return await fetchCanonicalEntitySitemapPage(entity, page)
+    const entries = await fetchCanonicalEntitySitemapPage(entity, page)
+    const seo = useRuntimeConfig().public?.fireux?.seo
+    return entries.filter(
+      (entry) =>
+        !resolveSeoRobots({
+          path: entry.path,
+          enabled: seo?.enabled,
+          noindexPaths: Array.isArray(seo?.noindexPaths)
+            ? seo.noindexPaths
+            : [],
+        }).includes('noindex')
+    )
   } catch {
     if (import.meta.dev) {
       console.warn(

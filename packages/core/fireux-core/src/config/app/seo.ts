@@ -1,3 +1,4 @@
+import { resolveSeoRobots } from '../../utils/seoIndexing'
 import {
   readSitemapPublicFilters,
   type SitemapPublicFilter,
@@ -109,6 +110,9 @@ export type FireuxSeoSitemapsExtendContext = {
 
 const DEFAULT_DISALLOW = ['/workspace', '/admin']
 const DEFAULT_NOINDEX = [
+  '/install',
+  '/auth',
+  '/auth/**',
   '/workspace',
   '/workspace/**',
   '/admin',
@@ -301,7 +305,14 @@ export async function configureSeoDefaults(
     defaultDescription:
       options.seo?.defaultDescription?.trim() || `${options.appName} on FireUX`,
     hubs,
-    sitemapPaths,
+    sitemapPaths: sitemapPaths.filter(
+      (path) =>
+        !resolveSeoRobots({
+          path,
+          enabled: options.seo?.enabled,
+          noindexPaths,
+        }).includes('noindex')
+    ),
     sitemapDocuments,
     sitemapEntities: sitemaps.entities,
     disallowPaths,

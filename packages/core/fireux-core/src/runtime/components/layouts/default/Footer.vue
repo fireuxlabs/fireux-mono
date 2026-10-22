@@ -4,7 +4,10 @@
     <UContainer class="py-8">
       <div class="flex w-full flex-col items-center gap-6">
         <ClientOnly>
-          <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" :show-badges="false" />
+          <LayoutsDefaultFooterAdmins
+            class="w-full max-w-4xl"
+            :show-badges="false"
+          />
         </ClientOnly>
 
         <UFooter
@@ -25,38 +28,18 @@
 
         <div class="flex flex-col items-center gap-4 text-center">
           <div class="flex flex-col items-center gap-2">
-            <AppBrandLogo
-              size="small"
-              :alt="`${appName} logo`"
-            />
-            <AppBrandWordmark
-              size="medium"
-              :alt="appName"
-            />
+            <AppBrandLogo size="small" :alt="`${appName} logo`" />
+            <AppBrandWordmark size="medium" :alt="appName" />
           </div>
           <div class="flex flex-col items-center gap-2">
-            <a
-              v-if="hasParentBrand"
-              :href="providerHref"
-              target="_blank"
-              rel="noopener noreferrer"
-              :aria-label="providerName"
-              class="flex flex-col items-center gap-1"
+            <span
+              v-if="fireux.isTenant && ecosystemName"
+              class="text-xs text-muted"
             >
-              <img
-                :src="providerLogoSrc"
-                :alt="`${providerName} logo`"
-                class="h-8 w-8"
-              />
-              <AppBrandWordmark
-                size="medium"
-                :alt="providerName"
-                :light-src="providerWordmarkLight"
-                :dark-src="providerWordmarkDark"
-              />
-            </a>
+              Part of the {{ ecosystemName }} ecosystem.
+            </span>
             <span class="text-xs text-muted">
-              {{ copyrightName }} &copy; {{ currentYear }}. All rights reserved.
+              {{ appName }} &copy; {{ currentYear }}. All rights reserved.
             </span>
             <a
               v-if="contactEmail"
@@ -67,6 +50,7 @@
             </a>
           </div>
         </div>
+        <LayoutsSharedPlatformFooter class="w-full" />
       </div>
     </UContainer>
   </footer>
@@ -74,38 +58,25 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
+import { useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useNav } from '../../../composables/navigation/useNav'
 
 // Footer uses UFooter + UContainer from Nuxt UI 4
 const fireux = useFireUXConfig()
+const runtimeConfig = useRuntimeConfig()
 const { contactEmail } = fireux
 const currentYear = new Date().getFullYear()
-const isTenant = fireux.isTenant
-const appName = String(fireux.appName || fireux.appShortName || fireux.appId).trim() || 'App'
-const ecosystemSlug = String(fireux.ecosystem || '').trim().toLowerCase()
-const hasParentBrand =
-  isTenant ||
-  fireux.isStandalone ||
-  (fireux.isGlobal && ecosystemSlug !== 'fireux')
-const providerName = isTenant ? labelizeEcosystemName(ecosystemSlug) : 'FIReUX'
-const copyrightName = hasParentBrand ? providerName : appName
-const providerHref = isTenant && ecosystemSlug
-  ? `https://${ecosystemSlug}.app`
-  : 'https://fireux.app'
-const providerLogoSrc = isTenant
-  ? '/img/ecosystem/logo.png'
-  : '/img/core/brand/logo.png'
-const providerWordmarkLight = isTenant
-  ? '/img/ecosystem/wordmark-light.svg'
-  : '/img/core/brand/wordmark-light.svg'
-const providerWordmarkDark = isTenant
-  ? '/img/ecosystem/wordmark-dark.png'
-  : '/img/core/brand/wordmark-dark.png'
+const appName =
+  String(fireux.appName || fireux.appShortName || fireux.appId).trim() || 'App'
+const ecosystemName = computed(() =>
+  String(runtimeConfig.public.firebaseEcosystem?.name || '').trim()
+)
 
 const route = useRoute()
-const currentLayout = computed(() => typeof route.meta.layout === 'string' ? route.meta.layout : 'default')
+const currentLayout = computed(() =>
+  typeof route.meta.layout === 'string' ? route.meta.layout : 'default'
+)
 const { items: navItems } = useNav(currentLayout)
 const footerItems = computed(() =>
   navItems.value.filter((item) => item.position === 'bottom')
@@ -113,14 +84,6 @@ const footerItems = computed(() =>
 const footerNavItems = computed(() =>
   footerItems.value.map(({ icon: _icon, ...item }) => item)
 )
-
-function labelizeEcosystemName(value: string) {
-  return value
-    .split(/[-_]+/g)
-    .filter(Boolean)
-    .map((part) => part[0]?.toUpperCase() + part.slice(1))
-    .join(' ') || 'Ecosystem'
-}
 </script>
 
 <style scoped>

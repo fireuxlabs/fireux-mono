@@ -1,3 +1,4 @@
+import { resolveSeoRobots } from '../../../../utils/seoIndexing'
 import { useHead, useRequestURL, useRuntimeConfig, useSeoMeta } from '#imports'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
@@ -19,6 +20,7 @@ export type UseSeoOptions = {
   description?: MaybeRefOrGetter<string | null | undefined>
   path: MaybeRefOrGetter<string | null | undefined>
   image?: MaybeRefOrGetter<string | null | undefined>
+  ogType?: MaybeRefOrGetter<'website' | 'article'>
   imageHeight?: MaybeRefOrGetter<number | null | undefined>
   imageWidth?: MaybeRefOrGetter<number | null | undefined>
   robots?: MaybeRefOrGetter<string | null | undefined>
@@ -227,8 +229,13 @@ export function useSeo(options: UseSeoOptions) {
   const image = computed(() =>
     absoluteUrl(origin.value, clean(toValue(options.image)))
   )
-  const robots = computed(
-    () => clean(toValue(options.robots)) || 'index, follow'
+  const robots = computed(() =>
+    resolveSeoRobots({
+      path: path.value,
+      enabled: seo.enabled,
+      noindexPaths: Array.isArray(seo.noindexPaths) ? seo.noindexPaths : [],
+      robots: clean(toValue(options.robots)),
+    })
   )
   const jsonLd = computed(() => {
     if (options.jsonLdBuilder) {
@@ -249,6 +256,11 @@ export function useSeo(options: UseSeoOptions) {
   useSeoMeta({
     title: () => title.value || undefined,
     description: () => description.value || undefined,
+    ogType: () => toValue(options.ogType) || 'website',
+    twitterCard: () => (image.value ? 'summary_large_image' : 'summary'),
+    twitterTitle: () => title.value || undefined,
+    twitterDescription: () => description.value || undefined,
+    twitterImage: () => image.value || undefined,
     ogTitle: () => title.value || undefined,
     ogDescription: () => description.value || undefined,
     ogUrl: () => canonicalUrl.value || undefined,

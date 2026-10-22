@@ -4,7 +4,7 @@ export function readPlatformContext() {
   return {
     title: 'FireUX',
     summary:
-      'FireUX provides a shared foundation for Apps built around workspaces, capabilities and tools.',
+      'FireUX is an industry SaaS framework combining shared SaaS foundations with industry libraries to create connected Apps and Workspaces.',
     mission: {
       intent: 'Enable people to create industry operating systems with connected Apps and Workspaces. Ignition is intended to assemble these products from an industry brief.',
       whiteLabel: 'A branded App can compose existing capabilities while retaining its own identity and operating context.',

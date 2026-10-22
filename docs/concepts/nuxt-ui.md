@@ -1,7 +1,7 @@
 # Nuxt UI baseline and FireUX library map
 
 Updated: 2026-10-21
-Ref: add6006b3
+Ref: d05ded3fd
 Role: map, not canon
 
 ## Purpose and authority
@@ -264,6 +264,79 @@ independent architecture debt; a framework upgrade does not resolve it:
 Shared card, typography and Workspace systems have real consumers. Similar
 values or overlapping names are not sufficient evidence for deletion or global
 consolidation. Compare meaning, cascade and affected consumers first.
+
+### Focused duplicate and styling review
+
+The bounded Core review compares installed Nuxt UI 4.12.0 source/theme APIs with
+Core registration, shared controls/styles and their authored App/domain
+consumers. The official release page still identifies 4.12.0 as current stable.
+Consumer counts below describe this inspected source set; catalogue registration
+and specimens do not establish production reuse. Dynamic component resolution
+was checked before classifying unused names. This is not an exhaustive audit of
+every Core leaf or a completed visual migration.
+
+| Component responsibility | Decision and consumer evidence |
+| --- | --- |
+| Generic Workspace CRUD buttons | **Remove, implemented.** The unused `WorkspaceCrudToolbar` and four `Workspace/Crud` leaves only supplied fixed `UButton` props and forwarded events. No authored external caller, imported type or matching dynamic resolver was found. Their five files are retired. Shared availability types and connected `Workspace/Team/Crud` remain separate. |
+| Cursor-based Load more | **Simplify.** [Collection Pagination](../../packages/core/fireux-core/src/runtime/components/Collection/Pagination.vue) only centres a button and forwards state/events. Five page consumers are Properties, Portfolios, Places, Jobs and Menus. Migrate the complete set to direct `UButton`, retaining `hasMore`, `loadingMore`, `loadMore` and live readers. `UPagination` is not equivalent: it owns numbered pages rather than append-cursor loading. |
+| Product pricing forwarding | **Remove after consumer migration.** [ProductPricingStrip](../../packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue) forwards plans and derives an aria label for the existing PricingStrip. Its four callers are Core EcosystemHome and the FireUX, Werkbox and Misebox landing compositions. Keep PricingStrip's real sticky/animation layout. Complete caller migration waits while Misebox is paused. |
+| Landing card-grid chrome | **Replace/simplify.** [CardGrid](../../packages/core/fireux-core/src/runtime/components/landing/CardGrid.vue) repeats native section/grid/card structure and accepts duplicate input aliases. Four callers span Bringli (two), FireUX and paused Misebox. Use native PageSection/PageGrid/PageCard within one meaningful landing composition and one input shape. Preserve CTA-only navigation: native PageCard `to` would add a whole-card overlay link. |
+| Disclosure composition | **Keep.** [DisclosurePanel](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosurePanel.vue) composes native UCollapsible state/accessibility with a repeated labelled trigger, description/icon and chevron. Twenty-five non-specimen Vue consumers span Kitchen, FireUX App, Core App, Blogs and Places. Preserve controlled/default state, events and `unmountOnHide`. |
+| Editing and action semantics | **Keep.** SimpleField and the other proved editable molecules add save/cancel/error and command-intent lifetimes over native inputs. ActionSurface and domain Cards/Cell distinguish link, action and static roots. UFormField/UCard alone do not replace those contracts. |
+
+The remaining unused `Workspace/FormActions.vue` has no observed authored caller,
+but is outside the retired five-file chain. It has no proved public adoption.
+
+| Styling responsibility | Decision and concrete boundary |
+| --- | --- |
+| Global colour mode | **Replace.** Two FireUX preference-helper entrypoints and four resolved-mode consumers duplicate native state/storage/root-class ownership. Migrate all six, then retire the helper and replace its partial colour-mode type signature in the standalone bridge. Keep brand resolution/failure semantics. Exact consumers and checks live in [color-mode.md](color-mode.md). |
+| Workspace Hero | **Simplify.** [Hero](../../packages/core/fireux-core/src/runtime/components/Workspace/Hero.vue) replaces UPageHero's header, so its title/description theme adjustments do not style that replacement. Global `!important` container spacing competes with the theme. Keep the shared compact/secondary-heading contract using native `as: { title: 'h2' }` and supported slots. Project, Property, Portfolio and Blank prove non-Misebox consumers. |
+| Page-body rhythm | **Replace the competing spacing recipe.** [page-layouts.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/page-layouts.scss) adds flex gap while native UPageBody supplies child spacing. [Privacy](../../packages/core/fireux-core/src/runtime/pages/legal/privacy.vue) and [Portfolio Learn More](../../packages/extensions/fireux-properties/src/runtime/pages/portfolios/learn-more.vue) combine these mechanisms; a local `space-y-*` changes only the margin contribution. Select one supported UPageBody base/theme rhythm, preserving min-width and scroll anchors. Compare computed spacing before migration. |
+| Image collection-card chrome | **Simplify.** [Collection Cell](../../packages/core/fireux-core/src/runtime/components/Collection/Cell.vue) layers border hover over native UCard ring chrome, references undefined `--ui-shadow-lg` in the inspected style graph and adds local hover motion. Property Collection List proves the cover branch. Use supported card slots/ring/shadow/motion treatment; keep cover geometry, fallback, metadata and navigation semantics. |
+| Semantic type and browser field policy | **Keep/narrow.** [Typography](../../packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/typography.scss) uses upstream scale/tokens inside `@layer components`; User, Project and FireUX About provide real consumers. Avoid redundant application over equivalent native title slots. [forms.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/forms.scss) is a narrow mobile font-size policy preventing focus zoom, not a second input skin. |
+
+Core has no inspected global Card/Input skin engine. The current integration
+uses App colour settings and one Dashboard body default. Do not replace all
+semantic SCSS with a new universal theme engine or blanket cascade-layer change.
+For example, the wrapping flex collection grid is not equivalent to native
+UPageGrid's responsive columns.
+
+The next bounded runtime slices are native colour-mode ownership, then Workspace
+Hero's supported theme composition. Each needs its own affected-consumer and
+browser proof. The retired unused controls require only dependency/registration
+and type verification because they have no rendered consumer. Misebox feature
+work and the landing migrations coupled to its callers remain paused.
+
+### FireUX public framework surface
+
+The FireUX App owns its public framework website at `/` through
+`app/components/Framework` and the native-slot `app/layouts/framework.vue`.
+Its persistent library navigation reuses Core's route-meta `useNav` reader and
+App-owned overrides; the separate Workspace action reuses the existing entry
+resolver. Native Nuxt UI Header, NavigationMenu, PageHero, PageSection, PageCard
+and Footer supply the presentation. No new Core page or skin engine is added.
+
+The public guide is `/getting-started`; `/components` demonstrates real Core
+disclosure/state patterns over native controls; `/theme` demonstrates native
+colour modes/variants and shared semantic type. `/templates` describes the
+existing neutral source starter. Showcase keeps `/apps` and its existing public
+reader/outcomes. The conditional `/docs` viewer remains repository reference,
+and generated package-name inspection remains distinct from curated API docs.
+The public homepage does not imply published package distribution, a theme
+exporter, template downloads or shipped customer-case-study claims.
+
+This App presentation does not change Project Workspace, Auth, selection or
+commands. Public root no longer redirects; only the Workspace host retains its
+existing redirect to `/workspace/project`. Other Ecosystem Apps are outside this
+frontend change.
+
+The public slice is verified by generated FireUX App types, its production build
+including the reference viewer, and 21 public/Workspace routing and entry tests.
+An isolated browser using the real App components/styles verified all five
+destinations, local input/action/disabled state, keyboard disclosure, native colour
+modes and a 390-pixel framed navigation/guide layout. The fixture supplied an
+empty local Showcase projection; live directory content and authenticated
+Workspace workflows were not exercised by that visual check.
 
 ## Verification and refresh
 

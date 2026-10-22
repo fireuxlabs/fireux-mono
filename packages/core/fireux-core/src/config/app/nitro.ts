@@ -27,6 +27,15 @@ export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
   } else {
     nitro.preset = 'firebase'
 
+    // Google's Functions Framework reserves /robots.txt and returns 404 before
+    // invoking an HTTP function. Project the Core handler into Hosting output;
+    // Apps still declare policy through SEO config, never a second static file.
+    nitro.prerender ||= {}
+    nitro.prerender.routes = Array.from(
+      new Set([...(nitro.prerender.routes || []), '/robots.txt'])
+    )
+    nitro.prerender.failOnError ??= true
+
     // Firebase preset options are not fully represented in Nuxt's TS union,
     // so we intentionally set this via `any` to match runtime behaviour.
     nitro.firebase = {

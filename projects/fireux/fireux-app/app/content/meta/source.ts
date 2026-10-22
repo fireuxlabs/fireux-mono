@@ -1,11 +1,41 @@
 export const fireuxOffer = {
+  category: 'Industry SaaS framework',
+  headline: 'Build the SaaS your industry needs.',
   heroDescription:
-    'Design, build and launch your SaaS App. Develop your business tools. Manage your team and users. Monitor your Project from the Workspace.',
+    'Combine shared SaaS foundations with industry libraries to create connected Apps and Workspaces.',
   heroBullets: [
-    'Send an App request through Ignition',
-    'Review Project Apps and Ecosystems',
-    'Review Project Apps and Ecosystems',
-    'Browse public Apps, Solutions, Operations, and Modules',
+    'Build with shared SaaS foundations and industry libraries',
+    'Create an industry platform with connected customer Apps',
+    'Shape a branded App around existing capabilities',
+  ],
+  paths: [
+    {
+      title: 'Build with FireUX',
+      description:
+        'Develop your product with shared SaaS foundations, industry libraries and native Nuxt UI.',
+      icon: 'i-lucide-code-xml',
+      action: { label: 'Read the developer guide', to: '/getting-started' },
+    },
+    {
+      title: 'Create your industry SaaS',
+      description:
+        'Work with FireUX to define and assemble an industry platform, its Workspaces and customer Apps.',
+      icon: 'i-lucide-orbit',
+      action: {
+        label: 'Explore the ecosystem offer',
+        to: '/pricing/your-ecosystem',
+      },
+    },
+    {
+      title: 'Create your branded App',
+      description:
+        'Request a dedicated App using an existing industry platform’s supported capabilities, with your brand and agreed scope.',
+      icon: 'i-lucide-app-window',
+      action: {
+        label: 'Request a branded App',
+        to: '/get-started#ignition-request',
+      },
+    },
   ],
   entry: {
     description:
@@ -83,7 +113,7 @@ export const sourceMeta = {
       },
     ],
     seo: {
-      title: 'Build and Launch Your SaaS App | FireUX',
+      title: 'FireUX · Industry SaaS framework',
       description: fireuxOffer.heroDescription,
     },
   },
@@ -91,7 +121,7 @@ export const sourceMeta = {
     hero: {
       label: 'About FireUX',
       supportingCopy:
-        'FireUX also publishes the Apps, Ecosystems, Modules, Solutions, and Operations that make up the wider platform.',
+        'Industry libraries own domain records, capabilities and workflows. Apps and Ecosystems compose them into products. Nuxt and Nuxt UI provide the technical and interface foundation.',
       primaryAction: {
         label: 'Open Project Workspace',
         to: '/workspace/project',
@@ -116,7 +146,7 @@ export const sourceMeta = {
       modulesEyebrow: 'Modules',
       modulesTitle: 'What FireUX is built from',
       modulesDescription:
-        'Core owns the shared runtime. Project surfaces and extension Modules add explicit capability.',
+        'FireUX Core supplies shared SaaS and interaction foundations. Industry libraries add domain models, capabilities and workflows.',
       entitiesEyebrow: 'Entities',
       entitiesTitle: 'The records FireUX connects',
       structureEyebrow: 'Structure',
@@ -151,12 +181,12 @@ export const sourceMeta = {
       {
         title: 'Workspace',
         description:
-          'A Workspace is the authenticated workspace for a selected Project, App, or Ecosystem.',
+          'A Workspace is a working surface with capabilities and Tools for the work an App supports.',
       },
       {
-        title: 'Operation',
+        title: 'Capability',
         description:
-          'An Operation names work performed inside a Workspace and links to its working route.',
+          'A Capability is an area of responsibility in a Workspace. Its Tools perform supported actions.',
       },
       {
         title: 'Solution',
@@ -171,9 +201,9 @@ export const sourceMeta = {
     ],
     appSpec: {
       name: 'FireUX',
-      tagline: 'The parent App for FireUX Projects and Ecosystems',
+      tagline: fireuxOffer.category,
       description:
-        'FireUX runs the Project Workspace and public catalogues used to request Apps through Ignition, review Project and Ecosystem relationships, and monitor new App users.',
+        'FireUX is an industry SaaS framework for industry founders and the teams building their software. Shared SaaS foundations and industry libraries compose connected Apps and Workspaces.',
       modules: [
         {
           name: 'FireUX Core',
@@ -302,7 +332,7 @@ Module package manifest
     seo: {
       title: 'About FireUX',
       description:
-        'How FireUX connects Projects, Apps, Ecosystems, Modules, Operations, Solutions, and users.',
+        'How FireUX combines shared SaaS foundations and industry libraries to build connected Apps and Workspaces on Nuxt and Nuxt UI.',
     },
   },
   getStarted: {

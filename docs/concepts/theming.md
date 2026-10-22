@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
 Updated: 2026-10-21
-Ref: add6006b3
+Ref: d05ded3fd
 Role: map, not canon
 
 ## Purpose
@@ -26,8 +26,10 @@ template/brand contracts below do not establish a second global chrome theme.
 
 ## Vocabulary and ownership
 
-FireUX Core owns generic semantic colour tokens, page-style vocabulary,
-light/dark behaviour and reusable UI primitives. It does not own tenant
+FireUX Core owns generic semantic colour tokens, page-style vocabulary and
+reusable UI compositions. Nuxt UI and its native colour-mode module own global
+light/dark preference and root-class lifecycle; Core's duplicate writer remains
+retirement work in [color-mode.md](color-mode.md). Core does not own tenant
 artwork, typography, photography or presentation-specific scene chrome.
 
 An App brand belongs to a genuine tenant App and uses the canonical

@@ -36,6 +36,22 @@
             {{ brief.actors.join(' · ') }}
           </p></UCard
         >
+        <UCard>
+          <h2 class="text-lg font-semibold">Search plan</h2>
+          <p class="mt-2">{{ searchStatusLabels[report.search.status] }}</p>
+          <ul
+            v-if="report.search.findings.length"
+            class="mt-3 list-disc space-y-2 pl-5 text-sm"
+          >
+            <li v-for="finding in report.search.findings" :key="finding">
+              {{ finding }}
+            </li>
+          </ul>
+          <p class="mt-3 text-sm text-muted">
+            This reviews declared policy. Deployed pages, indexation and
+            search performance need separate evidence.
+          </p>
+        </UCard>
         <UCard v-for="item in report.coverage" :key="item.id">
           <h2 class="font-semibold">{{ item.need }}</h2>
           <p class="mt-2 text-sm text-muted">{{ item.acceptance }}</p>
@@ -96,6 +112,11 @@ import {
   miseboxReference,
 } from '../../../ignition/misebox-reference'
 const report = reconcileIgnition(brief, null, miseboxReference)
+const searchStatusLabels = {
+  missing: 'Missing',
+  'needs-review': 'Needs review',
+  declared: 'Declared',
+} satisfies Record<typeof report.search.status, string>
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -1,6 +1,6 @@
 # Product language
 
-Updated: 2026-10-12
+Updated: 2026-10-21
 Ref: 411ea9ffe
 Role: map, not canon
 
@@ -47,8 +47,14 @@ See the global context's data and mutation rules and the owning trusted commands
 “[Brand] is a [domain] operating system” describes the product's intended
 operating scope: connected Apps and Workspaces with domain capabilities, Tools
 and service workflows. It does not describe a computer operating system or prove
-that every capability is shipped. FireUX's shorthand positioning is “Lovable for
-ecosystem SaaS”; its generic intent is published by Core's platform context.
+that every capability is shipped. FireUX is an industry SaaS framework for
+industry founders and the teams building their software. Shared SaaS foundations
+and industry libraries compose connected Apps and Workspaces; Nuxt and Nuxt UI
+provide the technical and interface foundation. Core's platform context publishes
+that shared meaning. FireUX App owns the three public offer paths in
+`app/content/meta/source.ts`: Build with FireUX, Create your industry SaaS and
+Create your branded App. Their resource, scoping and intake journeys remain
+distinct from end-customer use of an industry product.
 The named Ignition product family has one owner in the
 [FireUX App intake context](../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md#product-intent-and-family).
 Current feature and release claims still derive from implemented behaviour below.

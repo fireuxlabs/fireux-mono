@@ -1,7 +1,7 @@
 # Landing templates context
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-21
+Ref: d05ded3fd
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
 
@@ -26,8 +26,11 @@ injected owner data.
 
 - `fireux-misebox` owns Template One's contract, atom anatomy, reusable scene
   compositions and catalogue fixtures.
-- Misebox owns the canonical `/templates/template-one` product page. FireUX
-  keeps a catalogue referral and does not copy anatomy or fixtures.
+- Misebox owns the canonical `/templates/template-one` product page. FireUX's
+  public framework `/templates` index describes the neutral source starter;
+  its separate Template One detail route refers to the canonical Misebox public
+  URL. FireUX does not copy template anatomy or catalogue fixtures into that
+  framework overview.
 - The catalogue also exposes `Default` for Root presentation and `Theme` for
   Workspace presentation. They are presentation levels, not template records.
   Template One is the only current template. Do not publish a nominal Template

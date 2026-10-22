@@ -57,10 +57,14 @@ export function resolveSeoConfig(
     )
     .map((slug) => `/operations/${slug}`)
 
-  if (!solutionPaths.length && !operationPaths.length) return seo
+  const defaultDescription =
+    seo?.defaultDescription?.trim() || meta?.seo?.description?.trim()
+  if (!solutionPaths.length && !operationPaths.length && !defaultDescription)
+    return seo
 
   return {
     ...(seo || {}),
+    ...(defaultDescription ? { defaultDescription } : {}),
     staticPaths: mergeStaticPaths([
       ...(seo?.staticPaths || []),
       ...(solutionPaths.length ? ['/solutions', ...solutionPaths] : []),

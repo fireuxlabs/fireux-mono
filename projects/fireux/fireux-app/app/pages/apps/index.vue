@@ -1,50 +1,50 @@
 <template>
-  <UPage>
-    <UPageBody>
-      <header class="mb-6 space-y-2">
-        <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
-          Explore apps
-        </h1>
-        <p class="text-muted">Find an app and see what it offers.</p>
-      </header>
-      <MoleculesStateCard
-        v-if="outcome === 'pending'"
-        entity="apps"
-        kind="collection"
-        loading
+  <UContainer>
+    <UPage>
+      <UPageHeader
+        title="Showcase"
+        description="Explore the public App directory and see what each product offers."
       />
-      <MoleculesStateCard
-        v-else-if="outcome === 'error'"
-        entity="apps"
-        kind="collection"
-        state="error"
-      />
-      <MoleculesStateCard
-        v-else-if="outcome === 'empty'"
-        entity="apps"
-        kind="collection"
-        state="empty"
-      />
-      <AppCollection v-else :apps="apps" />
-      <MoleculesCopyError v-if="error" :message="String(error)" />
-      <MoleculesCopyError
-        v-if="loadMoreError"
-        :message="String(loadMoreError)"
-      />
-      <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore"
-        >Load more Apps</UButton
-      >
-      <DiagnosticsDebugPanel
-        title="Apps index acquisition"
-        context="Platform Apps passed into the FL index surface."
-        object-origin="fetched"
-        :objects="{ apps }"
-        :derived="{ count: apps.length, scope: 'platform' }"
-        include-route
-        launcher
-      />
-    </UPageBody>
-  </UPage>
+      <UPageBody>
+        <MoleculesStateCard
+          v-if="outcome === 'pending'"
+          entity="apps"
+          kind="collection"
+          loading
+        />
+        <MoleculesStateCard
+          v-else-if="outcome === 'error'"
+          entity="apps"
+          kind="collection"
+          state="error"
+        />
+        <MoleculesStateCard
+          v-else-if="outcome === 'empty'"
+          entity="apps"
+          kind="collection"
+          state="empty"
+        />
+        <AppCollection v-else :apps="apps" />
+        <MoleculesCopyError v-if="error" :message="String(error)" />
+        <MoleculesCopyError
+          v-if="loadMoreError"
+          :message="String(loadMoreError)"
+        />
+        <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore"
+          >Load more Apps</UButton
+        >
+        <DiagnosticsDebugPanel
+          title="Apps index acquisition"
+          context="Platform Apps passed into the FL index surface."
+          object-origin="fetched"
+          :objects="{ apps }"
+          :derived="{ count: apps.length, scope: 'platform' }"
+          include-route
+          launcher
+        />
+      </UPageBody>
+    </UPage>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -71,7 +71,7 @@ definePageMeta({
   },
   title: 'Apps',
   description: 'Browse all FireUX Apps.',
-  layout: 'default',
+  layout: 'framework',
   name: 'FireuxAppsIndexPage',
 })
 

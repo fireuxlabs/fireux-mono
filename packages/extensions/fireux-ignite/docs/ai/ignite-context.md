@@ -1,6 +1,6 @@
 # FireUX Ignite context
 
-Updated: 2026-10-20
+Updated: 2026-10-21
 Ref: eddc8186c
 Role: living context
 Scope: reusable FireUX app ignition and reconciliation
@@ -41,16 +41,47 @@ Select capabilities using evidence breadth, operational frequency and consequenc
 
 Sandbox comparisons may evaluate page grouping, meaningful index configuration, substantial child pages and plan affordances against a hypothetical industry. Keep these expectations separate from source readiness, stored schemas and shipped Tools. Applying the method does not require creating the hypothetical App or authorizing its deployment. Shared responsibility does not require identical group counts or domain fields.
 
+A FireUX App assembled through Ignition uses the actual framework: `defineFireuxConfig`, its owning native runtime layers, and Core `AppShell`. Prototype scope limits delivered domain journeys; it does not replace FireUX with standalone Nuxt. A brief, assembly type or unused package dependency alone is not runtime integration. Verify registered owners and the running shell before describing the result as built on FireUX. The baseline includes visible shared platform attribution and legal/account entrances, Core SEO metadata with coherent canonical/robots/sitemap policy, and the Core manifest populated from App identity and assets. A branded layout composes these owners; it does not silently omit them. A noindex preview can still prove the complete technical SEO contract. See Core `layouts/shared/PlatformFooter.vue`, `composables/fireux/seo/useSeo.ts`, and `server/manifest.webmanifest.get.ts` beneath `src/runtime`.
+
 Build and reconcile bounded journeys. The method’s build and verify steps apply the global mandatory composition checks: named responsibilities, readable parent composition, explicit state/lifecycle ownership, reused controls and commands, and no duplicate reads or authority. Composition is required from the first implementation; shorter files alone do not prove it. Record where a reusable mechanism was sufficient, where a domain decision was needed, and which service revealed a missing capability. Put the correction with its lowest owning package. A reference implementation is evidence for a decision, not a universal industry blueprint. Publication and release remain explicit App-owned work with their own accepted authority and checks.
 
 The [FireUX App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md) owns concrete requests and delivery tracking. Request acceptance does not itself create an App, an assembly or a proved product.
 
+## Search strategy and acceptance
+
+The `search-strategy` step in `src/runtime/utils/ignition-method.ts` makes search
+planning part of Ignition before assembly. The existing reconciliation page
+renders this same method; do not maintain an App-local copy of the steps.
+Each concrete App owns its search plan and evidence. Distinguish people finding
+the software from customers finding participating businesses or services.
+Private-only products record why public discovery is not applicable.
+
+The plan names audiences, geography, languages, sourced intent, useful page
+families, public fact owners, intended actions, canonical Main/tenant ownership,
+index/sitemap policy, truthful structured data and measurement responsibilities.
+The optional `IgnitionBrief.search` carries the App-owned plan. Existing briefs
+without a plan report `missing`, never search-ready. `reviewSearchPlan` checks
+origin, journey references, route metadata and indexing/sitemap consistency;
+`reconcileIgnition` includes that review. A `declared` result validates policy
+shape, not deployed behavior, indexation or rankings. Shared metadata and transport remain Core-owned;
+domain eligibility, schema facts and sitemap providers remain domain-owned.
+External listings and review requests are separate capabilities, not implicit
+features of on-site SEO. Follow [search visibility](../../../../../docs/concepts/search-visibility.md).
+
+Verification follows the plan through representative rendered routes and actual
+hosting endpoints. Production identity must not point to loopback or preview
+origins. Missing measurements, inaccessible endpoints and incomplete language
+variants remain explicit gaps. Source review, local checks, deployed verification,
+indexation and search results are different evidence. This method does not run
+research, crawl sites, generate pages or certify rankings automatically.
+
 ## Current source
 
-- `package.json` and `tsconfig.build.json`: prepack compiles the explicitly consumed runtime to `dist`; external Node consumers execute JavaScript without a TypeScript loader. This package owns no provider credentials or automatic code-generation executor.
+- `package.json` and `tsconfig.build.json`: prepack compiles the explicitly consumed runtime to `dist`, rewriting relative TypeScript imports to JavaScript; external Node consumers execute JavaScript without a TypeScript loader. This package owns no provider credentials or automatic code-generation executor.
 
 - `src/runtime/models/industry-comparison.ts`, `src/runtime/utils/compare-industries.ts` and `src/test/industry-comparison.test.mjs`: shared language, explicit deltas, missing-evidence and source checks.
-- `src/runtime/models/ignition.ts`: brief, assembly and evidence contracts.
+- `src/runtime/models/ignition.ts`: brief, search-plan, assembly and evidence contracts.
+- `src/runtime/utils/review-search-plan.ts` and `src/test/search-plan.test.mjs`: declared origin, page/journey and indexing-policy review.
 - `src/runtime/utils/ignition-method.ts`: reusable evidence-led build/reconciliation loop.
 - `src/runtime/utils/reconcile-ignition.ts`: declared coverage and dependency validation.
 - `src/test/reconciliation.test.mjs`: absent-proposal, invalid-reference, cycle, evidence and reference-source checks.

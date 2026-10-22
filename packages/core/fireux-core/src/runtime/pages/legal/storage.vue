@@ -5,7 +5,7 @@
       description="The exact browser storage used by FireUX-powered apps and when it begins."
     />
     <UPageBody class="pagebody">
-      <p class="text-sm text-muted">Last updated: August 3, 2026</p>
+      <p class="text-sm text-muted">Last updated: October 21, 2026</p>
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">No tracking storage</h2>
@@ -14,7 +14,8 @@
           fingerprints, or cross-App behavioural identity. An ordinary public
           visit does not need a consent popup because optional tracking is not
           active. Storage begins only when you ask an App to remember a choice,
-          sign you in, retain a cart or order, or continue a conversation.
+          sign you in, enable offline support, retain a cart or order, or
+          continue a conversation.
         </p>
       </section>
 
@@ -41,6 +42,23 @@
                 </td>
               </tr>
               <tr>
+                <td>Offline support</td>
+                <td>
+                  After you enable it, Core remembers the choice for this App,
+                  registers its service worker and caches only a self-contained
+                  reconnect page. Live App pages, data, API responses,
+                  authentication state and queued writes are excluded.
+                </td>
+                <td>
+                  Until you disable offline support on the
+                  <NuxtLink to="/install">Install app page</NuxtLink> or clear
+                  browser site data. Disabling removes the preference,
+                  unregisters the App worker and deletes its cache. Open pages
+                  may retain worker control until reloaded or closed; browsers
+                  may also evict cached content.
+                </td>
+              </tr>
+              <tr>
                 <td>Authentication</td>
                 <td>
                   Firebase maintains sign-in and security state for the current
@@ -49,9 +67,9 @@
                   after sign-in.
                 </td>
                 <td>
-                  Current browser session. Sign-out or ending the browser
-                  session clears local sign-in state; temporary values are
-                  removed after completion or expiry.
+                  Across reloads and browser restarts until explicit sign-out or
+                  browser site-data removal. Temporary tab values are removed
+                  after completion or expiry.
                 </td>
               </tr>
               <tr>
@@ -108,6 +126,14 @@
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Your controls</h2>
+        <p>
+          Browser installation is separate from offline support. The
+          <NuxtLink to="/install">Install app page</NuxtLink> opens a native
+          install prompt where available or shows manual browser instructions.
+          Its installed status describes the current window. Offline support is
+          optional, and applying an available worker update deliberately reloads
+          the page after you choose Update and reload.
+        </p>
         <p>
           You can use the feature controls described above or your browser's
           site-data controls. Blocking essential storage may prevent the

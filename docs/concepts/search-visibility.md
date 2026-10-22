@@ -1,6 +1,6 @@
 # Search visibility
 
-Updated: 2026-08-19
+Updated: 2026-10-21
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -50,6 +50,15 @@ Use current source, guards, and tests above this map.
 Never read a broader root, copy protected fields, or weaken publication rules
 to enrich metadata, structured data, or a sitemap.
 
+## Ignition integration
+
+`packages/extensions/fireux-ignite/src/runtime/utils/ignition-method.ts` owns the
+search-strategy step before assembly and rendered/deployed verification after
+build. Concrete Apps own the resulting audience, intent, page and measurement
+plan. Ignition coordinates these decisions; it does not own SEO transport,
+domain publication or an automatic optimization engine. See the package's
+`docs/ai/ignite-context.md` for the method boundary.
+
 ## Shared search spine
 
 Every visible route belongs to one explicit class:
@@ -98,11 +107,9 @@ not filled with invented claims; richer descriptions appear only when the App
 owner publishes them to the public projection.
 
 The platform relationship graph follows one rule across all Apps. FireUX
-publishes the `/apps` directory. A global or tenant App detail links to its
-bounded Ecosystem parent; the Ecosystem page links back to its active Apps. A
-standalone App has no canonical Ecosystem parent and links directly back to the
-FireUX Apps directory. The App's `ecosystem` runtime package selector does not
-manufacture a stored `ecosystem_id` relationship for standalone Apps.
+publishes the `/apps` directory. Every App, including standalone Apps, declares a canonical Ecosystem parent;
+the Ecosystem page links back to its active Apps. Runtime package selection and
+database binding remain separate from the stored relationship.
 
 FireUX owns `/sitemaps/directory.xml` for dynamic App and Ecosystem details.
 The JSON directory endpoint and XML sitemap share one bounded reader, so search
@@ -130,8 +137,16 @@ restaurant/publication semantics.
 
 ## Robots and private routes
 
-Core owns the runtime `robots.txt` response and shared header-level noindex
-defaults. Project Apps must not add a competing static `public/robots.txt`.
+Core owns the `robots.txt` handler and shared header-level noindex defaults.
+Firebase builds prerender that handler into Hosting output because Google's
+Functions Framework reserves `/robots.txt` before invoking an HTTP function.
+The generated file uses the same resolved App SEO configuration; changing that
+policy requires a rebuild and deploy. Project Apps must not add a competing
+static `public/robots.txt`.
+
+Configured noindex exclusions take precedence over page-level index requests
+in shared metadata and sitemap transport. App role alone does not decide public
+indexing.
 
 Core defaults protect shared private families. Apps add genuine local private
 families, such as Interlaken Essen `/mis/**`, through typed SEO config. App
@@ -252,7 +267,7 @@ templates have measurable baselines.
 | FireUX Operations and Solutions prove hub/detail search transport  | `accepted`   | Source catalogues feed canonical collection/detail pages, connected lists, sitemap policy, and rendered smoke |
 | FireUX describes Misebox at one parent Ecosystem route             | `accepted`   | Source-owned relationship copy, released Solutions, and bounded active App records feed the rendered page     |
 | Dynamic App/Ecosystem details use one directory sitemap            | `accepted`   | JSON and XML share the bounded reader; App details expose their canonical parent relationship                 |
-| Standalone Apps have no canonical Ecosystem parent                 | `accepted`   | Runtime package selection does not create a stored public relationship                                        |
+| Every App declares one canonical Ecosystem parent                 | `accepted`   | App role does not remove its explicit Ecosystem relationship; infrastructure binding remains separate         |
 | FireUX Blank remains visible but non-indexable                     | `migration`  | Current source defines a harness; archive its public record or approve a product role before indexing         |
 | Interlaken changes page language without crawlable alternate URLs  | `to-confirm` | Approve a stable language-route policy before emitting `hreflang` or multilingual sitemap entries             |
 | Public-template performance has no shared budget                   | `to-confirm` | Measure representative siblings before guarding thresholds                                                    |
@@ -264,19 +279,18 @@ Start with:
 
 - `packages/core/fireux-core/src/config/app/seo.ts`
 - `packages/core/fireux-core/src/config/app/seo-paths.ts`
+- `packages/core/fireux-core/src/utils/seoIndexing.ts`
+- `packages/core/fireux-core/src/config/app/nitro.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/seo/useSeo.ts`
-- `scripts/_lib/smoke.mjs` and `scripts/_lib/app-smoke-contracts.mjs`
 - `packages/core/fireux-core/src/runtime/server/robots.txt.get.ts`
 - `packages/core/fireux-core/src/runtime/server/utils/seo-sitemaps.ts`
-- `scripts/guards/seo-spine.mjs`
 - the owning extension `src/module.ts`, bounded DTO, route page, and SEO
   composable
 - the concrete App `nuxt.config.ts` and public page composition
 
 For a change, verify the canonical origin, route/redirect outcome, headers,
 rendered metadata, sitemap membership, structured-data payload, public DTO,
-locale, and visible content together. Run the focused SEO guard while
-iterating and `pnpm guard` before repository handoff.
+locale, and visible content together. Run Core's `src/test/seo-baseline.test.mjs` and `sitemap-public-filters.test.mjs`, the affected App typecheck/build, and a rendered HTML/endpoints check. The former `scripts/` guards and smoke wrappers are removed.
 
 ## Alignment roadmap
 

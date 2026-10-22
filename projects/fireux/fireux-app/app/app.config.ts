@@ -5,4 +5,14 @@ export default defineAppConfig({
       neutral: 'zinc',
     },
   },
+  navigation: {
+    overrides: {
+      apps: {
+        label: 'Showcase',
+        icon: '',
+        order: 50,
+        layouts: ['default', 'landing', 'framework'],
+      },
+    },
+  },
 })

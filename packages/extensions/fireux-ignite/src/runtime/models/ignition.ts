@@ -10,6 +10,7 @@ export type IgnitionBrief = {
   industry: string
   outcome: string
   actors: readonly string[]
+  search?: IgnitionSearchPlan
   requirements: readonly { id: string; need: string; acceptance: string }[]
 }
 export type IgnitionAssembly = {
@@ -34,4 +35,34 @@ export type IgnitionAssembly = {
     owner: string
     references: readonly string[]
   }[]
+}
+
+/** App-authored decisions, not keyword-volume or live indexing evidence. */
+export type IgnitionSearchPlan = {
+  mode: 'preview' | 'public' | 'private'
+  origin: string
+  owner: string
+  geography: string
+  languages: readonly string[]
+  journeys: readonly {
+    id: string
+    audience: string
+    intent: string
+    action: string
+    references: readonly string[]
+  }[]
+  pages: readonly {
+    path: string
+    journey: string
+    owner: string
+    index: boolean
+    sitemap: boolean
+    title: string
+    description: string
+  }[]
+  measurement: {
+    status: 'planned' | 'connected'
+    owner: string
+    measures: readonly string[]
+  }
 }

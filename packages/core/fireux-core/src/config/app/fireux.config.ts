@@ -118,6 +118,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   })
 
   configPwa(nuxt, {
+    id: app.id,
     name: app.name,
     shortName: app.shortName,
     themeColor: app.theme?.palette.accent || '#000000',

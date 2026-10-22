@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-10-11
-Ref: 53fa40ee6
+Updated: 2026-10-21
+Ref: d05ded3fd
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -28,8 +28,19 @@ shared public-language or pricing seam applies to them.
 
 ## Ownership boundaries
 
-- FireUX opens Project Workspace from `/` and places Explore Projects below the
-  working area; its existing `/projects` directory remains secondary. Misebox,
+- FireUX public `/` leads with its industry SaaS framework offering for industry
+  founders and the teams building their software. The three offer paths—Build
+  with FireUX, Create your industry SaaS and Create your branded App—are owned by
+  `app/content/meta/source.ts`. App-owned `Framework` compositions present the
+  offer, shared SaaS foundations, industry libraries and developer resources;
+  the `framework` layout owns their public shell. Nuxt and Nuxt UI remain the
+  technical and interface foundation. Docs leads to the
+  curated `/getting-started` guide; the conditional `/docs` viewer retains its
+  repository-reference role. Showcase reuses the public `/apps` reader. The
+  template overview describes the existing source starter without promoting
+  paused domain previews or a package/download service. Project Workspace remains
+  at `/workspace/project`, and only its Workspace host redirects root there.
+  The `/projects` directory remains secondary. Misebox,
   BuenoHost and Granite lead with public discovery at `/`. Misebox's declared
   Workspace origin renders Kitchen Home at `/`; BuenoHost and Granite keep
   `/workspace/property` and `/workspace/portfolio`.
@@ -53,10 +64,12 @@ shared public-language or pricing seam applies to them.
   contact, and explicit ecosystem-tier eligibility. Pricing literature is not
   App boot configuration and never enters `defineFireuxConfig` or public
   runtime config.
-- Core owns the exact Main App Hero font family and display weight. Both remain
-  identical across Main Apps unless an explicit product typography delta is
-  declared.
-- Product-literature surfaces for FireUX, Misebox, Werkbox, BuenoHost, Bringli,
+- Core owns the product-literature Main App Hero font family and display weight.
+  FireUX's framework homepage is a separate App-owned surface composed with native
+  Nuxt UI PageHero and theme defaults. Its `/product` explanation uses the same
+  framework layout, shared foundation section and Core's public platform meaning;
+  it does not wait for live App or Ecosystem directory reads.
+- Product-literature surfaces for Misebox, Werkbox, BuenoHost, Bringli,
   and Granite use Core's shared immersive section dwell. Slap shares the anatomy but is an accepted
   brand-commerce interaction delta and opts out through the Core seam.
 - Main App product literature uses Hero, pricing, product surfaces, then App-owned deeper
@@ -78,7 +91,7 @@ shared public-language or pricing seam applies to them.
   literature subset does not create a separate Operation layer. Derive that
   subset from its actual consumers and preserve their release boundaries.
 - Static ecosystem hero photography shows people doing the product's current
-  work through Core's sharp image frame. FireUX's live App/Ecosystem orbit and
+  work through Core's sharp image frame. FireUX's framework presentation and
   Misebox Kitchen's product-surface composition are the explicit non-people
   hero exceptions. Reviewed static hero sources use the 1600 x 1000
   pixel, 8-bit opaque RGB PNG contract; subject, alternative text, and focal
@@ -101,6 +114,10 @@ shared public-language or pricing seam applies to them.
   source-backed explanations of supported situations.
 - Pricing literature separates access, product capacity, human service,
   branded deployment, new development, and external costs.
+- Framework resources lead to the source guide. Industry SaaS work leads to the
+  existing Your Ecosystem offer and scoping enquiry; branded App requests use
+  their existing App-specific intake and terms. Do not present the App request
+  form's price as an industry ecosystem price or imply automatic delivery.
 
 ## Authority
 
@@ -142,6 +159,8 @@ Review implementation claims when their referenced owners change.
 - `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`
 - `packages/core/fireux-core/src/runtime/app/utils/pricing/page.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
+- `projects/fireux/fireux-app/app/content/meta/source.ts`
+- `projects/fireux/fireux-app/app/components/Framework/*`
 - `projects/*/*-app/app/components/*/Landing`
 - `docs/concepts/product-language.md`
 
@@ -164,9 +183,12 @@ chat decisions here.
 - Compare changed literature with its owning source and nearest Main App sibling;
   the former product-landing guard is removed.
 - Run focused lint and App type checks for touched consumers.
-- Visually verify the hero, two actions, operational rail, pricing strip,
-  surface presentation, pricing index, and each tier detail route at phone and
-  desktop widths.
+- Visually verify the changed product-literature regions and their actions at
+  phone and desktop widths; include pricing index/tier routes when pricing changes.
+- For FireUX's framework frontend, verify the offering's three destinations,
+  persistent five-section resource navigation, native light/dark controls, local
+  component examples, source guide and separate Workspace destination. Verify
+  Showcase read outcomes through its existing owner.
 - Run relevant source-owned tests and `git diff --check` before handoff.
 - Search for superseded prices and tier names after changing the shared source.
 

@@ -12,6 +12,24 @@
       "deletion": "Selecting System removes the value"
     },
     {
+      "key": "fireux:pwa:{appId}",
+      "technology": "localStorage",
+      "owner": "FireUX Core for the current App",
+      "purpose": "Remember the visitor's explicit offline-support choice",
+      "trigger": "Enable offline support at /install",
+      "lifetime": "Until offline support is disabled or browser site data is cleared",
+      "deletion": "Disable offline support removes the value"
+    },
+    {
+      "key": "{App baseURL}/sw.js and fireux-{appId}-*",
+      "technology": "Service worker registration and Cache Storage",
+      "owner": "FireUX Core for the current App",
+      "purpose": "Cache only a self-contained reconnect HTML page for failed navigation; App pages, App data, API responses, authentication state and queued writes are excluded",
+      "trigger": "Enable offline support; later visits may resume the saved App-specific choice",
+      "lifetime": "Until disabled or browser site data is cleared; browsers may also evict cached content",
+      "deletion": "Disable offline support unregisters the owned worker and deletes its App-specific cache; an open page may retain worker control until reloaded or closed"
+    },
+    {
       "key": "fireux_pending_account_consent",
       "technology": "sessionStorage",
       "owner": "FireUX Core",
