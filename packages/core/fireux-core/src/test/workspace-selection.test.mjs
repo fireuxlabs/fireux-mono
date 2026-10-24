@@ -92,28 +92,45 @@ for (const family of [
     }
     const useIndex = load(
       family === 'project'
-        ? '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspaceIndex.ts'
+        ? '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspace.ts'
         : family === 'kitchen'
-          ? '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts'
+          ? '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts'
           : family === 'blank'
-            ? '../../../../../projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/index/useBlankWorkspaceIndex.ts'
+            ? '../../../../../projects/fireux/fireux-blank/app/composables/workspace/useBlankWorkspace.ts'
             : family === 'supplier'
-              ? '../../../../extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspaceIndex.ts'
+              ? '../../../../extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspace.ts'
               : family === 'portfolio'
-                ? '../../../../extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspaceIndex.ts'
-                : '../../../../extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspaceIndex.ts',
+                ? '../../../../extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace.ts'
+                : '../../../../extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspace.ts',
       family === 'project'
-        ? 'useProjectWorkspaceIndex'
+        ? 'useProjectWorkspace'
         : family === 'kitchen'
-          ? 'useKitchenWorkspaceIndex'
+          ? 'useKitchenWorkspace'
           : family === 'blank'
-            ? 'useBlankWorkspaceIndex'
+            ? 'useBlankWorkspace'
             : family === 'supplier'
-              ? 'useSupplierWorkspaceIndex'
+              ? 'useSupplierWorkspace'
               : family === 'portfolio'
-                ? 'usePortfolioWorkspaceIndex'
-                : 'usePropertyWorkspaceIndex',
+                ? 'usePortfolioWorkspace'
+                : 'usePropertyWorkspace',
       {
+        defineWorkspace: (create) => create,
+        normalizeString: (value) => String(value ?? '').trim(),
+        useProjectAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
+        useKitchenAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
+        useKitchenRead: () => ({
+          kitchen: ref(null),
+          place: ref(null),
+          outcome: ref('idle'),
+        }),
+        useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+        useProjectRead: () => ({ data: ref(null), outcome: ref('idle') }),
+        useSupplierFetch: () => ({ supplier: ref(null), outcome: ref('idle') }),
+        usePortfolioFetch: () => ({
+          portfolio: ref(null),
+          outcome: ref('idle'),
+        }),
+        usePropertyFetch: () => ({ property: ref(null), outcome: ref('idle') }),
         computed,
         watch,
         useCommandScope,
@@ -172,58 +189,58 @@ for (const family of [
         [family === 'project'
           ? 'useProjectCollection'
           : family === 'kitchen'
-            ? 'useKitchenWorkspaceKitchens'
+            ? 'useKitchenTargets'
             : 'useBlankCollection']: () => source,
       }
     )
     const scope = effectScope()
     const index = scope.run(useIndex)
     scope.run(useIndex) // Selector and persistent sidebar share the same selection.
-    assert.equal(index.selectedId.value, 'saved')
+    assert.equal(index.id.value, 'saved')
     assert.equal('clear' in index, false)
 
     records.value = [{ id: 'first' }, { id: 'saved' }]
     outcome.value = 'ready'
     await nextTick()
-    assert.equal(index.selectedId.value, 'saved')
+    assert.equal(index.id.value, 'saved')
     index.select('first')
     await nextTick()
-    assert.equal(index.selectedId.value, 'first')
+    assert.equal(index.id.value, 'first')
     records.value.reverse()
     await nextTick()
-    assert.equal(index.selectedId.value, 'first')
+    assert.equal(index.id.value, 'first')
 
     outcome.value = 'pending'
     records.value = []
     await nextTick()
-    assert.equal(index.selectedId.value, 'first')
+    assert.equal(index.id.value, 'first')
     outcome.value = 'error'
     await nextTick()
-    assert.equal(index.selectedId.value, 'first')
+    assert.equal(index.id.value, 'first')
 
     source.projectIds.value = ['retained']
     outcome.value = family === 'project' ? 'empty' : 'missing'
     await nextTick()
-    assert.equal(index.outcome.value, 'missing')
-    assert.equal(index.selectedId.value, 'first')
+    assert.equal(index.collectionOutcome.value, 'missing')
+    assert.equal(index.id.value, 'first')
     source.projectIds.value = []
 
     records.value = [{ id: 'replacement' }]
     outcome.value = 'ready'
     await nextTick()
-    assert.equal(index.selectedId.value, 'replacement')
+    assert.equal(index.id.value, 'replacement')
     index.select('')
     await nextTick()
-    assert.equal(index.selectedId.value, 'replacement')
+    assert.equal(index.id.value, 'replacement')
 
     outcome.value = 'empty'
     records.value = []
     await nextTick()
-    assert.equal(index.selectedId.value, '')
+    assert.equal(index.id.value, '')
     records.value = [{ id: 'created' }]
     outcome.value = 'ready'
     await nextTick()
-    assert.equal(index.selectedId.value, 'created')
+    assert.equal(index.id.value, 'created')
     scope.stop()
   })
 }
@@ -245,9 +262,23 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
   })
   const navigations = []
   const useIndex = load(
-    '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
-    'useKitchenWorkspaceIndex',
+    '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
+    'useKitchenWorkspace',
     {
+      defineWorkspace: (create) => create,
+      normalizeString: (value) => String(value ?? '').trim(),
+      useProjectAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
+      useKitchenAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
+      useKitchenRead: () => ({
+        kitchen: ref(null),
+        place: ref(null),
+        outcome: ref('idle'),
+      }),
+      useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+      useProjectRead: () => ({ data: ref(null), outcome: ref('idle') }),
+      useSupplierFetch: () => ({ supplier: ref(null), outcome: ref('idle') }),
+      usePortfolioFetch: () => ({ portfolio: ref(null), outcome: ref('idle') }),
+      usePropertyFetch: () => ({ property: ref(null), outcome: ref('idle') }),
       computed,
       watch,
       useCommandScope,
@@ -256,7 +287,7 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
         assert.equal(family, 'kitchen')
         return { workspaceEntryPath: ref('/') }
       },
-      useKitchenWorkspaceKitchens: () => source,
+      useKitchenTargets: () => source,
       useAppSession: () => ({
         uid: ref('actor'),
         pending: ref(false),
@@ -291,19 +322,19 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
   )
   const scope = effectScope()
   const index = scope.run(useIndex)
-  assert.equal(index.selectedId.value, 'previous')
+  assert.equal(index.id.value, 'previous')
   assert.equal(route.query.kitchenId, 'allowed')
   assert.deepEqual(navigations, [])
 
   source.outcome.value = 'error'
   await nextTick()
-  assert.equal(index.selectedId.value, 'previous')
+  assert.equal(index.id.value, 'previous')
   assert.equal(route.query.kitchenId, 'allowed')
   assert.deepEqual(navigations, [])
 
   source.outcome.value = 'ready'
   await nextTick()
-  assert.equal(index.selectedId.value, 'allowed')
+  assert.equal(index.id.value, 'allowed')
   assert.deepEqual(navigations, [
     {
       to: { path: '/', query: { keep: 'yes' }, hash: '#overview' },
@@ -315,7 +346,7 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
   route.meta.workspace = undefined
   route.query = { kitchenId: 'other', keep: 'yes' }
   await nextTick()
-  assert.equal(index.selectedId.value, 'allowed')
+  assert.equal(index.id.value, 'allowed')
   assert.equal(route.query.kitchenId, 'other')
   assert.equal(
     navigations.length,
@@ -528,15 +559,17 @@ test('last selection survives reconciliation; first available is used only after
   assert.equal(workspace.selectedId.value, 'first')
 })
 
-
 test('a Kitchen selected in another tab replaces stale state and survives later component disposal', () => {
-  const states = new Map(), cookies = []
+  const states = new Map(),
+    cookies = []
   let stored = 'la-tap'
   const use = load(
-    '../runtime/workspace/composables/useWorkspace.ts', 'useWorkspace',
+    '../runtime/workspace/composables/useWorkspace.ts',
+    'useWorkspace',
     {
-      computed, watch,
-      normalizeString: value => String(value || '').trim(),
+      computed,
+      watch,
+      normalizeString: (value) => String(value || '').trim(),
       useFireUXConfig: () => ({ appId: 'app' }),
       useCookie: () => {
         const value = ref(stored)
@@ -565,11 +598,19 @@ test('a Kitchen selected in another tab replaces stale state and survives later 
   assert.equal(use('kitchen').selectedId.value, 'baeren')
 })
 
-
 test('Workspace footer composes the active family switcher independently of bottom navigation entries', () => {
-  const source = readFileSync(new URL('../runtime/layouts/workspace.vue', import.meta.url), 'utf8')
+  const source = readFileSync(
+    new URL('../runtime/layouts/workspace.vue', import.meta.url),
+    'utf8'
+  )
   assert.match(source, /:is="workspaceNavigation"/)
-  assert.match(source, /Workspace\$\{toWorkspaceFamilyLabel\(workspace.value\)\}Navigation/)
+  assert.match(
+    source,
+    /Workspace\$\{toWorkspaceFamilyLabel\(workspace.value\)\}Navigation/
+  )
   assert.ok(!source.includes('familyRootNav'))
-  assert.ok(source.indexOf(':is="workspaceNavigation"') < source.indexOf('<LayoutsSharedSideBarFooter'))
+  assert.ok(
+    source.indexOf(':is="workspaceNavigation"') <
+      source.indexOf('<LayoutsSharedSideBarFooter')
+  )
 })

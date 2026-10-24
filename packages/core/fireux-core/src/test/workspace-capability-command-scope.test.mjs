@@ -37,11 +37,11 @@ function deferred() {
 const specs = [
   [
     'Project',
-    'packages/ecosystem/fireux-fireux/src/runtime/project/composables/useProjectTest.ts',
+    'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
   ],
   [
     'Kitchen',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenTest.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts',
   ],
 ]
 function client(family, path, responseGate = false) {
@@ -57,7 +57,7 @@ function client(family, path, responseGate = false) {
   const config = reactive({ appId: 'app-a' })
   const workspace = { id: ref('entity-a') }
   const scope = effectScope()
-  const create = load(path, `use${family}Test`, {
+  const create = load(path, `use${family}WorkspaceTest`, {
     useAuth: () => ({ currentUser }),
     useFireUXConfig: () => config,
     useUserSession: () => ({ appUser }),

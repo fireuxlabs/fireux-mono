@@ -61,7 +61,7 @@ test('Freemium is shown only for free plans at top or discovery, with configured
   let card = make()
   assert.equal(card.visible.value, true)
   assert.match(card.currentAllowance.value, /2 Test records remaining/)
-  assert.match(card.upgradeAllowance.value, /Premium supports up to 10/)
+  assert.match(card.upgradeAllowance.value, /Professional supports up to 10/)
   session.appUser.value.subscription = 'premium'
   assert.equal(card.visible.value, false)
   props.placement = 'bottom'
