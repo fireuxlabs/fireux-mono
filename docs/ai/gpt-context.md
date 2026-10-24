@@ -99,9 +99,12 @@ renamed alias is not proof.
   Granite's Workspace overview composes Properties, Documents, Tasks and
   Compliance at the Ecosystem level. Project-specific UI stays under Project.
 - Name Entity capability readers for their domain responsibility, such as
-  `useProjectApps` or `useProjectTeam`; do not insert `Workspace` merely because
-  the capability is displayed there. Reserve Workspace naming for actual
-  selection, navigation, and surface mechanics.
+  `useProjectApps`; do not insert `Workspace` merely because the capability is
+  displayed there. A controller that acquires the current selection is an actual
+  Workspace adapter: `useXWorkspaceIdentity()`, `useXWorkspaceTeam()` or
+  `useXWorkspaceCalendar()`. These accept no Entity ID. Explicit-ID domain
+  readers remain outside the Workspace owner. Optional presentation inputs do
+  not change that distinction.
 - Workspace availability does not change Entity ownership. A capability composes
   the domains it manages; an independently identified child retains its own
   domain, while a parent-owned record stays with its proved parent. UI children
@@ -119,11 +122,16 @@ renamed alias is not proof.
   Core retains generic App event transport and
   shared Workspace primitives. Stored Team-role fragments still in Core remain
   separate migration debt, not templates for new industries.
-  Identity controllers reuse Core `useIdentity` for ready-state action availability
-  and explicit loading/empty/missing/error presentation outcomes. Domain sections,
+  Core `useIdentity` owns identity read outcomes and content scope;
+  `useWorkspaceIdentity` composes that state with management action availability.
+  Selected-Entity Identity controllers reuse this management owner. Domain sections,
   linked sources, field editors and mutation authority stay local. The shared
   content scope key is not a command or account-switch guard. Focused Identity
   editors reuse existing domain commands; unfinished editing remains explicit.
+  Generic `useCalendar` owns date selection; `useWorkspaceCalendar` resets it
+  when the selected Entity changes. Event sources and policy remain domain-owned.
+  Home shares existing presentation components; do not add a composable merely
+  to forward those components or manufacture four layers for every capability.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
 - The inspected Main Apps use Directory ↔ Workspace entrances. Misebox renders
   public discovery at the public host's `/` and Kitchen Workspace at the Workspace
@@ -611,6 +619,11 @@ files in scope, and what remains unaudited. Be direct about drift; do not
 reassure beyond the evidence.
 
 ## Development and verification
+
+The manually run Workspace migration checks `workspace-team-command-scope.test.mjs`, `project-identity.test.mjs`, `project-landing-client.test.mjs`, `project-team-client.test.mjs`, `identity-state.test.mjs`, `kitchen-identity-internals.test.mjs`, `offering-website-client-internals.test.mjs`, `ordering-setup.test.mjs`, `team-controller.test.mjs`, `workspace-readiness.test.mjs`, `identity-surface.test.mjs`, `property-team-composition.test.mjs`, `supplier-identity-scope.test.mjs` have been removed.
+References to these names in older maps and reviews are historical evidence,
+not available checks or instructions to recreate them. Existing package test
+commands and CI remain unchanged; CI currently runs types, lint and builds.
 
 - The desktop App picker lives in `tools/fireux-launcher`; it discovers Apps and
   ports from their package-owned dev commands. `pnpm launcher` opens the picker.

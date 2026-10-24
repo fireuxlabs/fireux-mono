@@ -56,9 +56,9 @@ the neutral reference and independent industry builds.
 
 Sources: [catalogue](../../projects/fireux/fireux-app/app/components/Framework/Capabilities.vue),
 [page](../../projects/fireux/fireux-app/app/pages/capabilities.vue),
-[Blank Team](../../projects/fireux/fireux-blank/app/composables/useBlankTeam.ts),
-[Blank Identity](../../projects/fireux/fireux-blank/app/composables/useBlankIdentity.ts),
-[Blank Calendar](../../projects/fireux/fireux-blank/app/composables/useBlankCalendar.ts).
+[Blank Team](../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceTeam.ts),
+[Blank Identity](../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceIdentity.ts),
+[Blank Calendar](../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceCalendar.ts).
 
 ## Next: deliver one bounded reference loop
 

@@ -978,7 +978,7 @@ not change workspace access. Core `models/workspace-team-member.model.ts` define
 three-field stored profile: name, user_id and role_ids. Legacy access,
 job-title and dossier fields are retired. AI prepares basic person controls and
 directs role assignment to the selected-person panel.
-`useKitchenTeam` is the page command entrypoint for create, update,
+`useKitchenWorkspaceTeam` is the page command entrypoint for create, update,
 remove and invitation preparation. It combines one live
 member collection with an authorised account-identity projection; these have
 different responsibilities and are not interchangeable read implementations.
@@ -2571,3 +2571,17 @@ Kitchen Workspace Ingredients uses `useKitchenWorkspaceIngredients` for its
 collection. A single Kitchen–Ingredient link is read by the domain-owned
 `kitchen/composables/ingredients/useKitchenIngredientDetail`, with explicit
 Kitchen and Ingredient IDs; the page supplies Workspace selection and route ID.
+
+Kitchen shared capability composition uses zero-ID-argument
+`useKitchenWorkspaceIdentity()`, `useKitchenWorkspaceTeam()` and
+`useKitchenWorkspaceCalendar()`. Explicit setup targets use
+`useKitchenIdentity(kitchenId)`; linked Place projection uses
+`useKitchenPlace(identity)`. These domain readers do not choose or reconcile
+Workspace selection. Core owns shared management/read state and Calendar date
+state; Kitchen retains fields, roster authority, commands and event integration.
+
+### Retired manual checks
+
+The Workspace migration checks listed as removed in
+`docs/ai/gpt-context.md` are no longer available. References to those filenames
+in this document describe historical verification, not current coverage.

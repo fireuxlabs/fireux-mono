@@ -563,7 +563,7 @@ components use this shared vocabulary.
 | Delta                                                         | State      | Why it exists                                                                                                                                                                                                       | Evidence or owner                                                                                             |
 | ------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Place-backed Kitchen identity uses its same-id Place          | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                            | Current Kitchen and Place models plus package/entity guards                                                   |
-| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains domain-owned.                                                | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                                  |
+| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains domain-owned.                                                | `useKitchenWorkspaceTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                                  |
 | Supplier, Portfolio, and Property Team are minimal today      | `accepted` | Their named Team controllers and components compose the same shared roster controls                                                                                                                                 | family `useXTeam` composables and shared Team Editor                                                          |
 | Blank has no domain capabilities                              | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and Blank-owned access                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
 | Project Create produces an inactive empty shell               | `accepted` | The trusted FireUX command creates only the canonical Project and caller's linked Team profile; publication and further product composition remain separate lifecycles                                              | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
@@ -773,13 +773,13 @@ For the current Team proving siblings:
 ```text
 useProjectWorkspace
 ├─ useProjectTest
-└─ useProjectTeam
+└─ useProjectWorkspaceTeam
    ├─ Project Team records and authority
    └─ useWorkspaceTeam
 
 useKitchenWorkspace
 ├─ useKitchenTest
-└─ useKitchenTeam
+└─ useKitchenWorkspaceTeam
    ├─ Kitchen Team records and authority
    └─ useWorkspaceTeam
 ```
@@ -814,7 +814,7 @@ expose the previous roster, and no selected Project is a settled empty surface.
 `packages/ecosystem/fireux-fireux/src/test/project-team-client.test.mjs` protects
 these states alongside the command-intent tests.
 
-`useKitchenTeam` and `useProjectTeam` each own their domain reads and commands,
+`useKitchenWorkspaceTeam` and `useProjectWorkspaceTeam` each own their domain reads and commands,
 compose shared `useWorkspaceTeam`, and return a single context to the Team UI through a
 `team` prop. There is no separate TeamData, WorkspaceTeam or provider layer.
 Identity reads workspace association directly and does not load Team for access.
@@ -1060,7 +1060,7 @@ Core retains only the shared interaction primitives.
 ### Supplier Team proving sibling
 
 Supplier Team adopts the same route → domain component and
-`useSupplierTeam` → `useWorkspaceTeam` construction as Kitchen and Project. Shared Editor,
+`useSupplierWorkspaceTeam` → `useWorkspaceTeam` construction as Kitchen and Project. Shared Editor,
 People, Roles and Assignment retain their owners. Supplier owns its role
 suggestions and endpoints; it has no copied Kitchen invitation or AI surface.
 Its authenticated collection reader refreshes after commands rather than
@@ -1114,8 +1114,8 @@ identical Main children; the old `workspace-pages.mjs` guard is retired. Other c
 
 ### Identity composition proving pair
 
-Kitchen and Project Identity use named `useKitchenIdentity` and
-`useProjectIdentity` controllers over Core `useIdentity`. Core owns ready-state
+Kitchen and Project Identity use named `useKitchenWorkspaceIdentity` and
+`useProjectWorkspaceIdentity` controllers over Core `useWorkspaceIdentity`. Core owns ready-state
 read/edit availability, explicit `readState` presentation outcomes and a reactive
 scope key; it owns no identity fields,
 validation, account association or save endpoint. Kitchen retains Place-owned
@@ -1147,7 +1147,7 @@ selector or large AI panel. These are single-entity presentations, not
 collection/focus layouts.
 
 Supplier, Property, Portfolio and Blank have named Identity controllers consuming
-`useIdentity`. Supplier reads the linked Company/same-id Place profile. Its
+`useWorkspaceIdentity`. Supplier reads the linked Company/same-id Place profile. Its
 focused profile, brand, photo, contact and location panels reuse `PlaceEdit`,
 with a Supplier-owned update adapter. Supplier identity media uses the same
 Place logo/backdrop and photo-fallback resolution as Kitchen; settled joined
@@ -1322,7 +1322,7 @@ Portfolio Documents/Tasks/Compliance routes remain thin entrypoints over extensi
 
 Supplier, Property, Portfolio and Blank expose named Test components with an
 explicit unconnected storage state. Supplier, Portfolio and Blank Calendar
-components use their named Calendar composable over `useCalendar`; Property
+components use their named Calendar composable over `useWorkspaceCalendar`; Property
 preserves the Reservation package override and its domain-owned booking tools.
 Their capability routes keep Hero, named selector, visible AI availability and
 content in order. Main App Landing places selection before AI and collection /
@@ -1548,3 +1548,35 @@ Core `WorkspaceTeamCollection` owns member collection presentation and reuses
 `useCollectionSearch` for names, User IDs and domain-supplied role labels.
 Domains supply membership, permissions, role meanings and commands. There is no
 separate Team People component or filter owner.
+
+## Shared capability ownership
+
+Selected-Entity adapters are named `useXWorkspaceIdentity()`,
+`useXWorkspaceTeam()` and `useXWorkspaceCalendar()` and acquire their target
+through `useXWorkspace()`. They accept no Entity-ID argument. Current adapters
+live under the Entity's `composables/workspace/<capability>`; Blank retains its
+App-local harness composables. Domain fields, roles, events and commands remain
+with each domain. A domain-only name must not silently acquire Workspace selection.
+
+Core `useIdentity` owns read states and content scope. Core
+`useWorkspaceIdentity` adds management action availability. Core
+`useWorkspaceTeam` owns shared roster selection and management availability.
+Generic `useCalendar` lives under shared composables; `useWorkspaceCalendar`
+adds selected-Entity date-state disposal. Home uses existing shared collection,
+entry and overview components without a forwarding Home composable.
+
+Kitchen demonstrates an explicit-ID domain identity path with
+`useKitchenIdentity(kitchenId)` and `useKitchenPlace(identity)`. Its Workspace
+Identity adapter composes these with the current selection and shared management
+state. Setup workflows supply their explicit ID directly to the domain reader.
+These private readers retain membership checks; this migration does not publish
+a new public identity API or claim event integrations for Calendar placeholders.
+Other Identity and Team adapters retain their existing domain reads and commands;
+no empty domain wrappers have been introduced for symmetry. Property's Calendar
+remains Reservation-owned rather than acquiring a second adapter.
+
+### Retired manual checks
+
+The Workspace migration checks listed as removed in
+`docs/ai/gpt-context.md` are no longer available. References to those filenames
+in this document describe historical verification, not current coverage.
