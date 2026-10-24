@@ -31,7 +31,8 @@ export function useKitchenWorkspaceRecipes() {
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const canWrite = computed(
     () =>
-      workspace.outcome.value === 'ready' &&
+      workspace.accountReady.value &&
+      workspace.hasAccount.value &&
       Boolean(storageKitchenId.value) &&
       access.ids.value.includes(kitchenId.value)
   )

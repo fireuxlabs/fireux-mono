@@ -47,14 +47,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenCreationAllowance } from '../../../composables/useKitchenCreationAllowance'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 
 withDefaults(defineProps<{ showUpgrade?: boolean; returnTo?: string }>(), {
   showUpgrade: true,
   returnTo: '',
 })
-const creation = useKitchenCreationAllowance()
+const creation = useKitchenWorkspace()
 const createOpen = ref(false)
 const index = useKitchenWorkspaceIndex()
 </script>

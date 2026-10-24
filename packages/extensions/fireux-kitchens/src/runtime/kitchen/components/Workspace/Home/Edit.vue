@@ -37,12 +37,10 @@
 import { ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdate'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 
 const props = defineProps<{ open: boolean }>()
 const workspace = useKitchenWorkspace()
-const { updateKitchen } = useKitchenUpdate()
 const emit = defineEmits<{ 'update:open': [open: boolean] }>()
 
 const editingKitchenId = ref('')
@@ -96,13 +94,10 @@ async function save() {
   saving.value = true
   updateError.value = ''
   try {
-    await updateKitchen({
-      kitchenId: editingKitchenId.value,
-      changes: {
-        'identity.slug': normalizedSlug,
-        'identity.status': status.value,
-        'identity.visibility': visibility.value,
-      },
+    await workspace.crud.update({
+      'identity.slug': normalizedSlug,
+      'identity.status': status.value,
+      'identity.visibility': visibility.value,
     })
     if (isCurrent()) emit('update:open', false)
   } catch (cause) {

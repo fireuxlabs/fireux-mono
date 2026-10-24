@@ -1,18 +1,18 @@
 <template>
   <WorkspaceKitchenHomeGuest v-if="currentUser?.isAnonymous" />
   <UAlert
-    v-else-if="adoption.error.value"
+    v-else-if="workspace.adoption.error.value"
     color="error"
-    :title="adoption.error.value"
+    :title="workspace.adoption.error.value"
   >
     <template #actions
       ><UButton
         label="Try again"
-        @click="adoption.adopt()" /><MoleculesCopyError
-        :message="adoption.error.value"
+        @click="workspace.adoption.adopt()" /><MoleculesCopyError
+        :message="workspace.adoption.error.value"
     /></template>
   </UAlert>
-  <p v-else-if="adoption.pending.value" role="status">
+  <p v-else-if="workspace.adoption.pending.value" role="status">
     Connecting your Kitchen…
   </p>
   <p
@@ -35,7 +35,7 @@
   <WorkspaceKitchenHomeWelcome
     v-else-if="landingState === 'empty'"
     :can-create="creation.canCreate.value"
-    :signed-in="creation.hasAccount.value"
+    :signed-in="workspace.hasAccount.value"
     :creation-reason="
       intro.tools?.find((tool) => tool.id === 'create')?.reason || ''
     "
@@ -64,8 +64,6 @@ import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
 } from '../../models/landing-intent'
-import { useKitchenCreationAllowance } from '../../composables/useKitchenCreationAllowance'
-import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitchenAnonymousAdoption'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 
@@ -76,8 +74,7 @@ defineProps<{ dedicatedAppName?: string }>()
 
 const { currentUser } = useAuth()
 const workspace = useKitchenWorkspace()
-const creation = useKitchenCreationAllowance()
-const adoption = useKitchenAnonymousAdoption()
+const creation = workspace
 const index = useKitchenWorkspaceIndex()
 const session = useAppSession()
 const createOpen = ref(false)
@@ -87,17 +84,17 @@ const landingState = computed(() =>
     outcome: index.outcome.value,
     accountPending: session.pending.value,
     accountError: Boolean(session.error.value),
-    associationCount: creation.allowance.value.used,
+    associationCount: workspace.allowance.value.used,
     recordCount: index.collection.value.length,
     selectedId: index.selectedId.value,
   })
 )
 function openCreate() {
-  if (creation.canCreate.value) createOpen.value = true
+  if (workspace.canCreate.value) createOpen.value = true
 }
 function performAction(intent: KitchenLandingIntent) {
   if (!['ready', 'empty'].includes(landingState.value)) return false
-  if (intent.action === 'create' && creation.canCreate.value) {
+  if (intent.action === 'create' && workspace.canCreate.value) {
     openCreate()
     return true
   } else if (
@@ -138,12 +135,12 @@ const intro = computed(() =>
     status: index.outcome.value,
     count: index.collection.value.length,
     selected: Boolean(selected.value),
-    canCreate: creation.canCreate.value,
+    canCreate: workspace.canCreate.value,
     canUpdate: Boolean(selected.value && workspace.outcome.value === 'ready'),
-    accountReady: creation.accountReady.value,
-    hasAccount: creation.hasAccount.value,
-    creationEnabled: creation.creationEnabled.value,
-    allowance: creation.allowance.value,
+    accountReady: workspace.accountReady.value,
+    hasAccount: workspace.hasAccount.value,
+    creationEnabled: workspace.creationEnabled.value,
+    allowance: workspace.allowance.value,
   })
 )
 watchEffect(() =>
@@ -178,7 +175,7 @@ watchEffect(() =>
       status: index.outcome.value,
       multipleKitchenView: index.multipleKitchenView.value,
       canCreate: creation.canCreate.value,
-      allowance: creation.allowance.value,
+      allowance: workspace.allowance.value,
       canUpdate: Boolean(selected.value && workspace.outcome.value === 'ready'),
     },
   })

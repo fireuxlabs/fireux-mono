@@ -1,18 +1,18 @@
 <template>
   <section class="space-y-4" aria-label="Your Kitchens">
     <UAlert
-      v-if="adoption.error.value"
+      v-if="creation.adoption.error.value"
       color="error"
-      :title="adoption.error.value"
+      :title="creation.adoption.error.value"
     >
       <template #actions
         ><UButton
           label="Try again"
-          @click="adoption.adopt()" /><MoleculesCopyError
-          :message="adoption.error.value"
+          @click="creation.adoption.adopt()" /><MoleculesCopyError
+          :message="creation.adoption.error.value"
       /></template>
     </UAlert>
-    <p v-else-if="adoption.pending.value" role="status">
+    <p v-else-if="creation.adoption.pending.value" role="status">
       Connecting your Kitchen…
     </p>
     <WorkspaceKitchenHomeCollection
@@ -31,10 +31,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
-import { useKitchenAnonymousAdoption } from '../../../composables/workspace/useKitchenAnonymousAdoption'
-import { useKitchenCreationAllowance } from '../../../composables/useKitchenCreationAllowance'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 const index = useKitchenWorkspaceIndex()
 const createOpen = ref(false)
-const creation = useKitchenCreationAllowance()
-const adoption = useKitchenAnonymousAdoption()
+const creation = useKitchenWorkspace()
 </script>

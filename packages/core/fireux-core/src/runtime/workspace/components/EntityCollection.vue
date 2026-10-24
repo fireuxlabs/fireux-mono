@@ -49,7 +49,7 @@
     />
 
     <MoleculesStateCard
-      v-else-if="outcome === 'error' || outcome === 'missing'"
+      v-else-if="outcome === 'error'"
       class="workspace-entity-collection__state"
       :entity="entity"
       state="error"

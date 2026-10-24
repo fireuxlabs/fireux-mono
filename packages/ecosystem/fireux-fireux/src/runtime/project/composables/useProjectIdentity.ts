@@ -1,4 +1,3 @@
-import { useProjectUpdate } from './useProjectUpdate'
 import { projectIdentityMedia } from '../utils/project-identity-media'
 import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
@@ -13,7 +12,6 @@ export function useProjectIdentity(
   } = {}
 ) {
   const workspace = useProjectWorkspace()
-  const { updateProject } = useProjectUpdate()
   const access = useProjectAccess()
   const publication = computed(() => {
     const source = toValue(options.publication)
@@ -91,10 +89,9 @@ export function useProjectIdentity(
       if (url.protocol !== 'https:' || url.username || url.password)
         throw new Error('Use an HTTPS image URL without credentials.')
     }
-    await updateProject({
-      projectId: input.projectId,
-      changes: publication.value ? { name } : { name, description, image_url },
-    })
+    await workspace.crud.update(
+      publication.value ? { name } : { name, description, image_url }
+    )
   }
   const intro = computed(() => ({
     title: 'Project Identity',

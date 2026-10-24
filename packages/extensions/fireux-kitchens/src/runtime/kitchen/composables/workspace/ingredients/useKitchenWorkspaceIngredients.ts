@@ -80,7 +80,8 @@ export function useKitchenWorkspaceIngredients() {
 
   const canWrite = computed(
     () =>
-      workspace.outcome.value === 'ready' &&
+      workspace.accountReady.value &&
+      workspace.hasAccount.value &&
       Boolean(storageKitchenId.value) &&
       ['ready', 'empty'].includes(outcome.value) &&
       access.ids.value.includes(kitchenId.value)
