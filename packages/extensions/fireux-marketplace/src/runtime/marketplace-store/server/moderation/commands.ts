@@ -33,7 +33,7 @@ import {
   text,
 } from '../core/authority'
 import { assertOfferMethods } from '../offers/commands'
-import { resolveTeamMemberInput } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { resolveTeamMemberInput } from 'fireux-core/runtime/workspace/server/team/members'
 
 export async function listAdminMarketplaceStores(
   event: H3Event

@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-waste-search-demand">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Waste search demand" />
+        <WorkspaceNavbar title="Waste search demand" />
       </template>
 
       <template #body>

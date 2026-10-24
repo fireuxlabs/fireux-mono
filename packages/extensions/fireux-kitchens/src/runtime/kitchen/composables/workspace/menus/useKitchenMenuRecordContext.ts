@@ -9,7 +9,7 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenRead } from '../../firestore/useKitchenRead'
 import { useKitchenInterface } from '../../useKitchenInterface'

@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
 import { computed, ref, toRef, watch } from 'vue'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const props = defineProps<{

@@ -83,11 +83,11 @@
 
 <script setup lang="ts">
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useWorkspaceEntryCta } from '../../../composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from '../../../workspace/composables/useWorkspaceEntryCta'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from '../../../workspace/composables/useWorkspaceEntryState'
 import { useNav } from '../../../composables/navigation/useNav'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'

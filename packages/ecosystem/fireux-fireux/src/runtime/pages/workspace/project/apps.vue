@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-apps">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Project Apps" />
+        <WorkspaceNavbar title="Project Apps" />
       </template>
 
       <template #body>

@@ -1,8 +1,23 @@
 # Runtime package family
 
-Updated: 2026-09-11
+Updated: 2026-10-24
 Ref: 53fa40ee6
 Role: map, not canon
+
+## Package root spine
+
+The common authored root is `src/`, `package.json`, `tsconfig.json` and
+`README.md`. Manifests own package identity, dependencies, exports and commands.
+There is no separate package metadata registry. Runtime App and Ecosystem records
+retain their domain identity; package metadata does not replace those records.
+
+Build files are present only for a real build responsibility. Core's
+`build.config.ts` calls `build/config.mjs`; its `prepack` command calls the same
+compiler to supply production configuration exports. Other packages use the
+module-builder defaults unless their own source establishes another need.
+Package-owned `docs/` and existing required configuration files remain scoped to
+their actual responsibilities. `.nuxt/`, `dist/` and `node_modules/` are generated
+or installed content, excluded from the authored root.
 
 ## Purpose
 

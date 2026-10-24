@@ -3,14 +3,14 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-identity">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Project Identity"
+        <WorkspaceNavbar title="Project Identity"
           ><template #right
             ><WorkspaceIntroInfo
               :intro="{
                 ...identity.intro.value,
                 ai: 'Use the Identity editor to review and save changes.',
               }" /></template
-        ></LayoutsWorkspaceNavbar>
+        ></WorkspaceNavbar>
       </template>
 
       <template #body>
@@ -35,9 +35,9 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
 import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import WorkspaceProjectIdentity from '../../../project/components/Workspace/Identity/Index.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useProjectIdentity } from '../../../project/composables/useProjectIdentity'
 const appContext = useProjectAppContext()
 const identity = useProjectIdentity({
@@ -59,7 +59,7 @@ watchEffect(() =>
     },
   })
 )
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

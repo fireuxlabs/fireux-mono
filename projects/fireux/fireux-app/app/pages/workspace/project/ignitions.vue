@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-ignitions">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Ignition Requests" />
+        <WorkspaceNavbar title="Ignition Requests" />
       </template>
 
       <template #body>

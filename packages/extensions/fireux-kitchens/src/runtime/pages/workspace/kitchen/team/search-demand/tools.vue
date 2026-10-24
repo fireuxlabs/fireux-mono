@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-team-search-demand-tools"
-      ><template #header><LayoutsWorkspaceNavbar title="Team Tools" /></template
+      ><template #header><WorkspaceNavbar title="Team Tools" /></template
       ><template #body
         ><section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
           <WorkspaceKitchenResearchStageNav

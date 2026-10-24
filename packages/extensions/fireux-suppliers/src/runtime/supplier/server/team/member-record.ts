@@ -1,4 +1,4 @@
-import type { WorkspaceTeamMemberRecord } from 'fireux-core/runtime/models/workspace-team-member.model'
+import type { WorkspaceTeamMemberRecord } from 'fireux-core/runtime/workspace/models/team-member.model'
 
 export function buildSupplierTeamMemberRecord(input: {
   name: string

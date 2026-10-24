@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
+import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import { kitchenTeamAgentTools } from '../../tools/team'
 
 export async function interpretKitchenTeam(

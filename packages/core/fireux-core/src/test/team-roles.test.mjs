@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs'
 import {stripTypeScriptTypes} from 'node:module'
 import {compileFunction} from 'node:vm'
 import test from 'node:test'
-const source=readFileSync(new URL('../runtime/server/utils/workspace-team/roles.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
+const source=readFileSync(new URL('../runtime/workspace/server/team/roles.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
 const command=compileFunction(`${stripTypeScriptTypes(source)}; return teamRolesCommand`,['randomUUID','createError','serverAuditStamp'])(()=> 'new-role',x=>new Error(x.statusMessage),()=>({by:'actor'}))
 const policy = { fixedRoles: [{ id: 'dev', name: 'Dev' }, { id: 'operator', name: 'Operator' }], fixedRoleRenameMessage: 'Dev and Operator are fixed roles.' }
 test('role catalogue creates, renames and validates member assignments',async()=>{

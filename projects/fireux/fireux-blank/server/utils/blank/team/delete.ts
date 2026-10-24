@@ -6,7 +6,7 @@ import {
   readBlankMutationActor,
   requireBlankMutationAuthority,
 } from './authority'
-import { deleteTeamMember } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { deleteTeamMember } from 'fireux-core/runtime/workspace/server/team/members'
 export async function deleteBlankTeamMember(
   event: H3Event,
   input: { blankId: string; memberId: string }

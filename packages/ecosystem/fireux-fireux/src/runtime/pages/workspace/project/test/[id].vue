@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-project-test-detail">
-    <template #header><LayoutsWorkspaceNavbar title="Test" /></template>
+    <template #header><WorkspaceNavbar title="Test" /></template>
     <template #body>
       <UButton
         to="/workspace/project/test"

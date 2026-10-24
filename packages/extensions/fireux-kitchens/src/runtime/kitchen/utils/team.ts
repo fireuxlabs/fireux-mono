@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/team.ts
 
-import { FireuxWorkspaceTeamRequestModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
+import { FireuxWorkspaceTeamRequestModel } from 'fireux-core/runtime/workspace/models/entity.model'
 import type { AppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
 import {
@@ -10,7 +10,7 @@ import {
 import type {
   FireuxWorkspaceTeamRequest,
   FireuxWorkspaceTeamRequestStatus,
-} from 'fireux-core/runtime/models/utils/workspace-entity.model'
+} from 'fireux-core/runtime/workspace/models/entity.model'
 export type KitchenTeamJoinRequest = FireuxWorkspaceTeamRequest & {
   id: string
   kitchen_id: string

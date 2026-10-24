@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { useSupplierAccess } from '../useSupplierAccess'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useSupplierFetch } from '../firestore/fetch/useSupplierFetch'
 
 export function useSupplierWorkspace() {

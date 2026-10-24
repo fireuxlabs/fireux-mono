@@ -1,5 +1,5 @@
 import { computed, watchEffect, onScopeDispose } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useFoodCatalogueSummary } from './useFoodCatalogueSummary'
 import { useKitchenOfferings } from '../../offerings/useKitchenOfferings'
 import { useKitchenOfferingNow } from '../../useKitchenOfferingNow'

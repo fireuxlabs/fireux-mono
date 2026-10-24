@@ -5,7 +5,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import {
   teamRolesCommand,
   type TeamRolePolicy,
-} from 'fireux-core/runtime/server/utils/workspace-team/roles'
+} from 'fireux-core/runtime/workspace/server/team/roles'
 import {
   requireProjectOperator,
   requireProjectOperatorInTransaction,

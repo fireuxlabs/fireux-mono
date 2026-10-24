@@ -1,16 +1,19 @@
 <template>
   <UDashboardPanel id="workspace-project-index">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="intro.title"
+      <WorkspaceNavbar :title="intro.title"
         ><template #right
           ><WorkspaceIntroInfo
             :intro="intro"
             workspace="project"
             :show-structured-details="false" /></template
-      ></LayoutsWorkspaceNavbar>
-      <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
-        ><WorkspaceProjectSelector :publication="appContext.publication.value"
-      /></UDashboardToolbar>
+      ></WorkspaceNavbar>
+      <ClientOnly>
+        <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+          ><WorkspaceProjectSelector
+            :publication="appContext.publication.value"
+        /></UDashboardToolbar>
+      </ClientOnly>
     </template>
     <template #body>
       <WorkspaceHero
@@ -18,31 +21,36 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceGuestWelcome />
-      <WorkspaceProjectHomeAI
-        :perform-action="performLandingAction"
-        :can-prepare-app="canPrepareApp"
-      />
-      <WorkspaceProject
-        ref="surface"
-        :publication="appContext.publication.value"
-      />
-      <WorkspaceProjectHomeExploreProjects />
+      <ClientOnly>
+        <WorkspaceGuestWelcome />
+        <WorkspaceProjectHomeAI
+          :perform-action="performLandingAction"
+          :can-prepare-app="canPrepareApp"
+        />
+        <WorkspaceProject
+          ref="surface"
+          :publication="appContext.publication.value"
+        />
+        <WorkspaceProjectHomeExploreProjects />
+        <template #fallback>
+          <p role="status" class="py-6 text-muted">Loading your Workspace…</p>
+        </template>
+      </ClientOnly>
     </template>
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
-import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
 const { isSignedIn } = useWorkspaceEntryState()
-import WorkspaceGuestWelcome from 'fireux-core/runtime/components/Workspace/GuestWelcome.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useSeoMeta } from '#imports'
 import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
 const appContext = useProjectAppContext()
 import { computed, ref } from 'vue'
 import type { ProjectLandingIntent } from 'fireux-fireux/runtime/project/models/landing-intent'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import type { WorkspaceIntro } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
 import { projectWorkspaceIntro } from 'fireux-fireux/runtime/project/utils/project-workspace-intro'
 const { state: pageState } = useWorkspacePageState('project')
 const surface = ref<{

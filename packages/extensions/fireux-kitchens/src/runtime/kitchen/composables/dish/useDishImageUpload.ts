@@ -1,6 +1,6 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { ref, type WatchSource } from 'vue'
 import { useRoute } from '#imports'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'

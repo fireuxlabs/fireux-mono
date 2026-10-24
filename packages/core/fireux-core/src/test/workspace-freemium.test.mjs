@@ -25,7 +25,7 @@ function load(relativePath, name, dependencies) {
 
 test('Freemium is shown only for free plans at top or discovery, with configured allowance copy', () => {
   const source = readFileSync(
-    new URL('../runtime/components/Workspace/Freemium.vue', import.meta.url),
+    new URL('../runtime/workspace/components/Freemium.vue', import.meta.url),
     'utf8'
   )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]

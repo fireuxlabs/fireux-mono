@@ -389,7 +389,7 @@ test('Dish transport snapshots nested input and invalidates account/Kitchen roun
           }),
           useAuth: () => ({ currentUser }),
           useRequireUser: () => auth,
-          useKitchenWorkspaceSelection: () => ({ selectedId }),
+          useWorkspace: () => ({ selectedId }),
           useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
           $fetch: (...args) => {
             calls.push(args)

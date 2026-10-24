@@ -1,5 +1,5 @@
 import { defineKitchenTeamTool } from './types'
-import { workspaceTeamMemberCreatePrimitive } from 'fireux-core/runtime/tools/workspace/team/create-member'
+import { workspaceTeamMemberCreatePrimitive } from 'fireux-core/runtime/workspace/tools/team/create-member'
 
 export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
   id: 'kitchen.team.create-member',

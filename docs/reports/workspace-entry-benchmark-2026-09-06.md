@@ -7,7 +7,7 @@ Status: accepted design checkpoint; functional prototype, not a release claim.
 
 - Both App-owned `/` routes open the Workspace layout without requiring sign-in or selection.
 - Existing domain selectors, workspace CRUD controls, subscription presentation and capability links are composed into the page. This pass did not reimplement their commands or prove every destination complete.
-- The shared `packages/core/fireux-core/src/runtime/components/Workspace/Start.vue` accepts domain copy and tools from the two App root pages.
+- The shared `packages/core/fireux-core/src/runtime/workspace/components/Start.vue` accepts domain copy and tools from the two App root pages.
 - Suggestions fill an editable brief. Review displays that text; Keep editing returns to editing. Workflow buttons fill authored templates.
 - Briefs live in Nuxt client state keyed by workspace scope. They are not database records and are not durable across reloads.
 - Page JSON exposes selection, brief and draft-only execution status. The info control explains this limitation.

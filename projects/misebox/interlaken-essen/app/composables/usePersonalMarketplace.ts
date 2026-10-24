@@ -8,7 +8,7 @@ import type {
 } from '@/content/marketplace-profile'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { computed, ref, watch } from '#imports'
-import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'

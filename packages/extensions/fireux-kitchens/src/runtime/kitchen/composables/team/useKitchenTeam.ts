@@ -1,20 +1,18 @@
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
+import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useTeam } from 'fireux-core/runtime/composables/fireux/useTeam'
+import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { kitchenTeamMemberLimit } from '../../utils/team.ts'
 import { useKitchenWorkspace } from '../workspace/useKitchenWorkspace'
 import { useKitchenChildCollection } from '../useKitchenChildCollection'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import { useKitchenMemberInvitationCreate } from './useKitchenMemberInvitationCreate'
 
 type KitchenTeamResponse = {
@@ -133,7 +131,7 @@ export function useKitchenTeam() {
         : undefined) ??
       undefined
   )
-  const team = useTeam({
+  const team = useWorkspaceTeam({
     canWrite,
     members: selectableTeamMembers,
     workspaceId: kitchenId,
@@ -167,24 +165,20 @@ export function useKitchenTeam() {
   }))
   const derived = team.derived
 
-  const captureCommand = useCommandScope([
-    kitchenId,
-    currentUser,
-    appSession.appUser,
-    () => fireux.appId,
-  ])
-
   async function createTeamMember(input: { name: string; userId?: string }) {
-    const isCurrent = captureCommand()
     input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     requireWritableData()
     const targetId = kitchenId.value
-    const user = await useRequireUser()
+    if (!targetId)
+      throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       '/api/workspace/kitchen/team/members',
       {
@@ -201,20 +195,22 @@ export function useKitchenTeam() {
     )
     if (result.ok !== true || !result.memberId)
       throw new Error('Add team member response was invalid.')
-    if (isCurrent() && targetId === kitchenId.value)
-      team.selectCreated(result.memberId)
+    if (targetId === kitchenId.value) team.selectCreated(result.memberId)
     return result
   }
 
   async function updateTeamMember(input: { memberId: string; name: string }) {
     const targetId = kitchenId.value
-    const isCurrent = captureCommand()
     input = { ...input }
     requireWritableData()
-    const user = await useRequireUser()
+    if (!targetId)
+      throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(input.memberId)}`,
       {
@@ -232,13 +228,16 @@ export function useKitchenTeam() {
   }
 
   async function removeTeamMember(memberId: string) {
-    const isCurrent = captureCommand()
     requireWritableData()
     const targetId = kitchenId.value
-    const user = await useRequireUser()
+    if (!targetId)
+      throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`,
       {
@@ -248,7 +247,6 @@ export function useKitchenTeam() {
       }
     )
     if (
-      isCurrent() &&
       kitchenId.value === targetId &&
       team.selectedTeamMemberId.value === memberId
     )
@@ -276,6 +274,7 @@ export function useKitchenTeam() {
   watchEffect(() => pageState.publish(context.value))
 
   return {
+    workspaceId: kitchenId,
     context,
     teamMembers,
     pending,

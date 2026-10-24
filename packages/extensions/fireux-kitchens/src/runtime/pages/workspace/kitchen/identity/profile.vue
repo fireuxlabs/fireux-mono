@@ -2,11 +2,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-identity-profile">
       <template #header>
-        <LayoutsWorkspaceNavbar :title="navTitle">
+        <WorkspaceNavbar :title="navTitle">
           <template #right
             ><WorkspaceIntroInfo :intro="identity.intro.value"
           /></template>
-        </LayoutsWorkspaceNavbar>
+        </WorkspaceNavbar>
       </template>
 
       <template #body>
@@ -25,10 +25,10 @@
 
 <script setup lang="ts">
 import KitchenIdentityProfile from '../../../../kitchen/components/Identity/Profile.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
 const identity = useKitchenIdentity()
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 const navTitle = 'Venue profile'
 
 definePageMeta({

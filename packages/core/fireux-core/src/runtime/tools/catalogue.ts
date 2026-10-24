@@ -6,7 +6,7 @@ import {
   fileValidatePrimitive,
   storedFileDeletePrimitive,
 } from './files'
-import { workspaceTeamMemberCreatePrimitive } from './workspace/team/create-member'
+import { workspaceTeamMemberCreatePrimitive } from '../workspace/tools/team/create-member'
 
 export const coreToolPrimitives = [
   workspaceTeamMemberCreatePrimitive,

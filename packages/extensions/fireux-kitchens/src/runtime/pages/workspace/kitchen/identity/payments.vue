@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="kitchen-payments"
-    ><template #header><LayoutsWorkspaceNavbar title="Payments" /></template
+    ><template #header><WorkspaceNavbar title="Payments" /></template
     ><template #body><KitchenIdentityPayments /></template
   ></UDashboardPanel>
 </template>

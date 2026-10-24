@@ -4,14 +4,14 @@ import { useDishEditorScope } from './useDishEditorScope'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 
 /** Shared credential and stale-intent boundary for the three Dish commands. */
 export function useDishMutation(ownerSources: WatchSource[] = []) {
   const route = useRoute()
   const { currentUser } = useAuth()
-  const { selectedId } = useKitchenWorkspaceSelection()
+  const { selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const captureIntent = useDishEditorScope([
     selectedId,

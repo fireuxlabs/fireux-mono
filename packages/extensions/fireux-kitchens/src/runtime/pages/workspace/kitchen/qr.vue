@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-qr">
       <template #header>
-        <LayoutsWorkspaceNavbar title="QR" />
+        <WorkspaceNavbar title="QR" />
       </template>
 
       <template #body>

@@ -83,7 +83,7 @@ function context() {
     useUserSession: () => ({ appUser, appPending, appError, appOutcome }),
     useKitchenAccess: () => access,
     useRoute: () => route,
-    useKitchenWorkspaceSelection: () => ({ selectedId }),
+    useWorkspace: () => ({ selectedId }),
     useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
     useRequireUser: () => auth.promise,
     useTranslationSeed: () => ({

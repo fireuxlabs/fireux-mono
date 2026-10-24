@@ -91,7 +91,7 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useSupplierWorkspaceSelection } from '../../composables/workspace/useSupplierWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useSupplierCreate } from '../../composables/firestore/mutations/useSupplierCreate'
 
 const props = defineProps<{
@@ -109,7 +109,7 @@ const emit = defineEmits<{
 const router = useRouter()
 const route = useRoute()
 const { createSupplier, createSupplierWorkspace } = useSupplierCreate()
-const { setSupplierWorkspaceSelection } = useSupplierWorkspaceSelection()
+const { select } = useWorkspace('supplier')
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -187,7 +187,7 @@ const handleCreate = async () => {
           })
     if (!isCurrent()) return
     if (workspaceMode) {
-      setSupplierWorkspaceSelection({ supplierId: result.id })
+      select(result.id)
     }
     emit('created', result)
     await router.push(returnTo)

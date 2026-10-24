@@ -14,7 +14,7 @@ const template = (source) =>
     source.lastIndexOf('</template>')
   )
 const summarySource = read(
-  '../core/fireux-core/src/runtime/components/Workspace/Overview/Summary.vue'
+  '../core/fireux-core/src/runtime/workspace/components/Overview/Summary.vue'
 )
 const Summary = {
   props: [

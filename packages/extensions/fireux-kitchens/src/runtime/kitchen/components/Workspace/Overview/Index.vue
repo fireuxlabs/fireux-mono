@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import OverviewGroups from './Groups.vue'
 import { watchEffect } from 'vue'
-import type { WorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import type { WorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useKitchenOverview } from '../../../composables/workspace/overview/useKitchenOverview'
 const {
   pageState,

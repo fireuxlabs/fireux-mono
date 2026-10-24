@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-property-reservations-create">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Add booking">
+        <WorkspaceNavbar title="Add booking">
           <template #right>
             <UButton
               to="/workspace/property/reservations"
@@ -14,7 +14,7 @@
               Close
             </UButton>
           </template>
-        </LayoutsWorkspaceNavbar>
+        </WorkspaceNavbar>
       </template>
 
       <template #body>

@@ -32,8 +32,8 @@
       <h2 class="fx-type-card-title">Workflow reminder</h2>
       <ol>
         <li>
-          Treat package <code>registry.json</code> files as package metadata,
-          not App or Ecosystem entity truth.
+          Read package identity and metadata from <code>package.json</code>.
+          App and Ecosystem records own their directory identity.
         </li>
         <li>Visit <code>/diagnostics/registry</code> and copy the payload.</li>
         <li>Use that JSON for public projection and parity checks only.</li>

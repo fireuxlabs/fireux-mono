@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-prep">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Prep & Production"
+        ><WorkspaceNavbar title="Prep & Production"
       /></template>
       <template #body><KitchenPrepAndProductionPlanning view="batches" /></template>
     </UDashboardPanel>

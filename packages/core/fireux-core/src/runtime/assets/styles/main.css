@@ -2,6 +2,7 @@
 @import '@nuxt/ui';
 @source '../../layouts';
 @source '../../components';
+@source '../../workspace/components';
 @source '../../app/components';
 
 @layer base {

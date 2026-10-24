@@ -68,7 +68,7 @@ function client(family, path, responseGate = false) {
       error: ref(null),
     }),
     useCommandScope,
-    useTest: (source) => source,
+    useWorkspaceTest: (source) => source,
     $fetch: async (url, options) => {
       calls.push({ url, options })
       return responseGate
@@ -299,7 +299,7 @@ for (const event of ['draft change', 'modal ABA', 'owner change', 'dispose']) {
     })
     const form = () =>
       load(
-        'packages/core/fireux-core/src/runtime/components/Workspace/Test/Form.vue',
+        'packages/core/fireux-core/src/runtime/workspace/components/Test/Form.vue',
         '({ save, value, busy, error })',
         {
           ref,

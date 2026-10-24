@@ -16,7 +16,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
+import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
 import { useSupplierWorkspaceIndex } from '../../composables/workspace/useSupplierWorkspaceIndex'
 const index = useSupplierWorkspaceIndex()
 const selected = computed(

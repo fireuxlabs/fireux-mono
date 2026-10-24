@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="kitchen-integrations"
-    ><template #header><LayoutsWorkspaceNavbar title="Integrations" /></template
+    ><template #header><WorkspaceNavbar title="Integrations" /></template
     ><template #body><KitchenIntegrations /></template
   ></UDashboardPanel>
 </template>

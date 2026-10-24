@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-project-team">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="intro.title">
+      <WorkspaceNavbar :title="intro.title">
         <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
       <UDashboardToolbar :ui="{ root: 'border-b-0' }"><UTabs
           v-if="team.state.value.team.members.length"
           :model-value="team.state.value.team.selectedTeamMemberId"
@@ -38,8 +38,8 @@
 import { computed, ref } from 'vue'
 import WorkspaceProjectTeam from '../../../../project/components/Workspace/Team/Index.vue'
 const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'

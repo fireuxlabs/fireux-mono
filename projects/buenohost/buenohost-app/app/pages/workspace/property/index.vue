@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="buenohost-property-home">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Property Workspace" />
+      <WorkspaceNavbar title="Property Workspace" />
       <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
         ><WorkspacePropertySelector
       /></UDashboardToolbar>
@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
 const { isSignedIn } = useWorkspaceEntryState()
-import WorkspaceGuestWelcome from 'fireux-core/runtime/components/Workspace/GuestWelcome.vue'
+import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
 import { useSeoMeta } from '#imports'
 
 definePageMeta({

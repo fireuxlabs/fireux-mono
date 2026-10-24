@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="kitchen-offerings"
-    ><template #header><LayoutsWorkspaceNavbar title="Services" /></template
+    ><template #header><WorkspaceNavbar title="Services" /></template
     ><template #body><KitchenFoodAndDrinkServices /></template
   ></UDashboardPanel>
 </template>

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { computed, ref } from 'vue'
-const source = readFileSync(new URL('../runtime/components/Workspace/GroupPage.vue', import.meta.url), 'utf8')
+const source = readFileSync(new URL('../runtime/workspace/components/GroupPage.vue', import.meta.url), 'utf8')
 function group(workspace, entry, items, navKey) {
   const props = { workspace, navKey }
   const script = source.split('<script setup lang="ts">')[1].split('</script>')[0]

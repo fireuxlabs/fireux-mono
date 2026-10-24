@@ -2,9 +2,9 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import type {
   KitchenFulfilment,
   KitchenFulfilmentPaymentPolicy,
@@ -21,7 +21,7 @@ export function useKitchenFulfilmentUpdate() {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
   const { appUser } = useUserSession()
-  const { selectedId } = useKitchenWorkspaceSelection()
+  const { selectedId } = useWorkspace('kitchen')
   const captureIntent = useCommandScope([selectedId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value)])
   async function updateKitchenFulfilment(input: {
     kitchenId: string

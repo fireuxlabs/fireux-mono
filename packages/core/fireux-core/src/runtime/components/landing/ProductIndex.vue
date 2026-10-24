@@ -146,7 +146,7 @@
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
-import type { LandingProductIndexContent } from '../../../types/landing-product'
+import type { LandingProductIndexContent } from './product.types'
 import { useLandingMotion } from '../../composables/fireux/motion/useLandingMotion'
 
 type LandingProductRegion =

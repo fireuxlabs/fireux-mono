@@ -8,7 +8,7 @@ import { computed, ref, watch } from 'vue'
 test('Team AI opens the existing available editor without executing writes', async () => {
   const vue = readFileSync(
     new URL(
-      '../runtime/components/Workspace/Team/Single.vue',
+      '../runtime/workspace/components/Team/Single.vue',
       import.meta.url
     ),
     'utf8'

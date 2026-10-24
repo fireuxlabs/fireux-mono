@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
 
 defineProps<{
   id?: string

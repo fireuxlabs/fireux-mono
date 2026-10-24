@@ -1,6 +1,6 @@
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { useKitchenAnonymousAdoption } from './useKitchenAnonymousAdoption'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useKitchenUpdate } from '../firestore/useKitchenUpdate'
 import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../firestore/useKitchenRead'
@@ -8,7 +8,7 @@ import { computed } from 'vue'
 import { useKitchenAccess } from '../useKitchenAccess'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'
 import { resolveKitchenAllowance } from '../../utils/kitchen-capacity'
 
 export function useKitchenWorkspace() {

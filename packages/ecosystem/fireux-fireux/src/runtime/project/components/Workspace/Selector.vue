@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
-import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
+import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
 withDefaults(

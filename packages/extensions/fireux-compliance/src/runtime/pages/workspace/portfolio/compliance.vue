@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-portfolio-compliance">
-      <template #header><LayoutsWorkspaceNavbar title="Compliance" /></template>
+      <template #header><WorkspaceNavbar title="Compliance" /></template>
       <template #body><PortfolioCompliance /></template>
     </UDashboardPanel>
   </div>

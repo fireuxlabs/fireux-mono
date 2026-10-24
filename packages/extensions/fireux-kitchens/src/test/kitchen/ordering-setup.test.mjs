@@ -270,7 +270,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
     }
     const useFireUXConfig = () => ({ appId: 'app' })
     const { useWorkspace } = load(
-      '../../../../../core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts',
+      '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspace.ts',
       {
         computed,
         useState,

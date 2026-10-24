@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-waste-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Waste Tool specifications" />
+        <WorkspaceNavbar title="Waste Tool specifications" />
       </template>
 
       <template #body>

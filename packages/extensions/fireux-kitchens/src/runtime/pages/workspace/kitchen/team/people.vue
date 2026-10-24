@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-team">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="intro.title">
+      <WorkspaceNavbar :title="intro.title">
         <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
       <UDashboardToolbar :ui="{ root: 'border-b-0' }"
         ><UTabs
           v-if="team.state.value.team.members.length"
@@ -51,8 +51,8 @@
 import { computed, ref } from 'vue'
 import KitchenTeam from '../../../../kitchen/components/Team/Index.vue'
 const teamView = ref<InstanceType<typeof KitchenTeam>>()
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'

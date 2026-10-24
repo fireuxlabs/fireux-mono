@@ -47,9 +47,9 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { computed } from 'vue'
-import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
+import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
 import { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 

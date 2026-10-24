@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-food-safety-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Food Safety Tool specifications" />
+        <WorkspaceNavbar title="Food Safety Tool specifications" />
       </template>
 
       <template #body>

@@ -56,7 +56,7 @@ function harness({
           return route.value
         },
       }),
-      useKitchenWorkspaceSelection: () => ({ selectedId }),
+      useWorkspace: () => ({ selectedId }),
       useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
       useMenuEditorScope,
       $fetch: async (...args) => {

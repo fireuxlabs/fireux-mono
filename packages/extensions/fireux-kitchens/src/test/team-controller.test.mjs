@@ -10,8 +10,8 @@ function fixture() {
   const members = ref([{id: 'a', name: 'A', user_id: '', role_ids: []}])
   const allowed = ref(true)
   let finishCreate, finishDelete, shared
-  const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/composables/fireux/useTeam.ts', import.meta.url), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')
-  const useSharedTeam = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useTeam`, ['computed','ref','watchEffect','defineWorkspaceCapabilityContext'])(computed,ref,watchEffect,x=>x)
+  const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceTeam.ts', import.meta.url), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')
+  const useSharedTeam = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useWorkspaceTeam`, ['computed','ref','watchEffect','defineWorkspaceCapabilityContext'])(computed,ref,watchEffect,x=>x)
   const commandScopeSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts', import.meta.url), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')
   const useCommandScope = compileFunction(`${stripTypeScriptTypes(commandScopeSource)}; return useCommandScope`, ['watch', 'onScopeDispose'])(watch, onScopeDispose)
   const deps = { useCommandScope,
@@ -28,7 +28,7 @@ function fixture() {
     useKitchenWorkspace: () => ({data:computed(()=>({id:kitchenId.value,identity:{display_name:'Kitchen'}})), outcome:ref('ready')}),
     useKitchenChildCollection: () => ({items:members,pending:ref(false),error:ref(null)}),
     useLiveAsyncData: () => ({data:computed(()=>({kitchenId:kitchenId.value,canManageTeam:true,members:[]})),error:ref(null)}),
-    useTeam: options => {shared=useSharedTeam(options);return {...shared,canCreateTeamMember:allowed}},
+    useWorkspaceTeam: options => {shared=useSharedTeam(options);return {...shared,canCreateTeamMember:allowed}},
     useWorkspacePageState: () => ({publish(){}}),
     useKitchenMemberInvitationCreate: () => ({createKitchenMemberInvitation:async()=>({link:'test'})}),
   }

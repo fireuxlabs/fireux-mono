@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-blank-home">
-    <template #header><LayoutsWorkspaceNavbar title="Blank Workspace" /></template>
+    <template #header><WorkspaceNavbar title="Blank Workspace" /></template>
     <template #body>
       <WorkspaceHero title="Blank Workspace" description="Choose a record and explore its capabilities." />
       <WorkspaceBlankSelector />

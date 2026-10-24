@@ -5,9 +5,8 @@ Sharer ecosystem package for FireUX.
 This package defines Sharer branding, configuration, and ecosystem-specific wiring used by apps in the Sharer ecosystem.
 
 ## Structure
-- config/ - ecosystem configuration inputs
 - src/ - authored source code (runtime + helpers)
-- registry.json - ecosystem registry metadata
+- package.json - package identity, exports, dependencies and commands
 - tsconfig.json - TypeScript config
 
 ## Notes

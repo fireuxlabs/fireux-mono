@@ -8,7 +8,7 @@ import {
   onScopeDispose,
   type InjectionKey,
 } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useKitchenOfferings } from './useKitchenOfferings'
 import { kitchenOfferingOptions } from '../../utils/offering-options'
 import { serviceOverviewSnapshot } from '../../utils/service-overview'

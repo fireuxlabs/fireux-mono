@@ -1,16 +1,14 @@
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
-  useTeam,
+  useWorkspaceTeam,
   type WorkspaceTeamMember,
-} from 'fireux-core/runtime/composables/fireux/useTeam'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+} from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { usePropertyWorkspace } from './workspace/usePropertyWorkspace'
 
 type PropertyTeamResponse = {
@@ -101,7 +99,7 @@ export function usePropertyTeam() {
       appSession.appUser.value?.subscription || 'free'
     )
   )
-  const team = useTeam({
+  const team = useWorkspaceTeam({
     workspaceId: propertyId,
     capabilityId: 'property.team',
     members,
@@ -118,20 +116,18 @@ export function usePropertyTeam() {
     },
   }))
 
-  const captureCommand = useCommandScope([
-    propertyId, currentUser, appSession.appUser, () => fireux.appId,
-  ])
-
   async function create(input: { name: string; userId?: string }) {
-    const isCurrent = captureCommand()
     input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     const id = propertyId.value
-    const user = await useRequireUser()
+    if (!id) throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ memberId: string; name: string }>(
       '/api/workspace/property/team/members',
       {
@@ -146,20 +142,21 @@ export function usePropertyTeam() {
         },
       }
     )
-    if (isCurrent() && id === propertyId.value) {
+    if (id === propertyId.value) {
       team.selectCreated(result.memberId)
-      await refresh()
     }
     return result
   }
   async function update(input: { memberId: string; name: string }) {
-    const isCurrent = captureCommand()
     input = { ...input }
     const id = propertyId.value
-    const user = await useRequireUser()
+    if (!id) throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     await $fetch(
       `/api/workspace/property/team/members/${encodeURIComponent(input.memberId)}`,
       {
@@ -170,15 +167,16 @@ export function usePropertyTeam() {
         body: { propertyId: id, changes: { name: input.name.trim() } },
       }
     )
-    if (isCurrent() && id === propertyId.value) await refresh()
   }
   async function remove(memberId: string) {
-    const isCurrent = captureCommand()
     const id = propertyId.value
-    const user = await useRequireUser()
+    if (!id) throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ name: string }>(
       `/api/workspace/property/team/members/${encodeURIComponent(memberId)}`,
       {
@@ -189,7 +187,6 @@ export function usePropertyTeam() {
         query: { propertyId: id },
       }
     )
-    if (isCurrent() && id === propertyId.value) await refresh()
     return result
   }
   const context = computed(() => ({
@@ -201,6 +198,7 @@ export function usePropertyTeam() {
   const pageState = useWorkspacePageState('property')
   watchEffect(() => pageState.publish(context.value))
   return {
+    workspaceId: propertyId,
     state,
     context,
     derived: team.derived,

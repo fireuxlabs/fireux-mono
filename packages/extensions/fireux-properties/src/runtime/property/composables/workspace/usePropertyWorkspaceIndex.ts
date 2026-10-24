@@ -4,7 +4,7 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useState, useRoute, useRouter, navigateTo } from '#imports'
 import { propertyWorkspaceSwitchPath } from '../../utils/workspace-switch-route'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { usePropertyCollection } from '../usePropertyCollection'
 import { usePropertyAccess } from '../usePropertyAccess'
 

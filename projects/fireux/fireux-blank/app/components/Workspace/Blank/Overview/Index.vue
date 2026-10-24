@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspace/types'
+import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/components/types'
 import type { Blank } from '../../../../models/blank.model'
 import { useBlankOverview } from '../../../../composables/useBlankOverview'
 

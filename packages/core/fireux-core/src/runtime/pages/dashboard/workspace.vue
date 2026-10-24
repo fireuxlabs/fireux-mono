@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 
 definePageMeta({
   layout: 'dashboard',

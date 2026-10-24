@@ -10,7 +10,7 @@ import { createError } from 'h3'
 import {
   createTeamMember,
   resolveTeamMemberInput,
-} from 'fireux-core/runtime/server/utils/workspace-team/members'
+} from 'fireux-core/runtime/workspace/server/team/members'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 export type CreateSupplierTeamMemberInput = {
   supplierId: string

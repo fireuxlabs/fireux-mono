@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="bringli-supplier-home">
-    <LayoutsWorkspaceNavbar title="Supplier Workspace" />
+    <WorkspaceNavbar title="Supplier Workspace" />
     <WorkspaceHero
       title="Build your Supplier Workspace"
       description="Manage catalogues, ingredients and supply operations."

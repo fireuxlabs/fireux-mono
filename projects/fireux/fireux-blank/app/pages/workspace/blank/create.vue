@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-blank-create">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Create Blank" />
+        <WorkspaceNavbar title="Create Blank" />
       </template>
 
       <template #body>

@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-supplier-supply-options">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Supplier Supply Options" />
+        <WorkspaceNavbar title="Supplier Supply Options" />
       </template>
 
       <template #body>

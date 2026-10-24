@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
 import type { KitchenCapabilitySuggestion } from '../../../models/capability-suggestions'
 import type { KitchenCapabilityActionTarget } from '../../../models/kitchen-ai-presentation.model'

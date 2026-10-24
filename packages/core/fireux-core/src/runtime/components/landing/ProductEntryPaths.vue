@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingProductEntryContent } from '../../../types/landing-product'
+import type { LandingProductEntryContent } from './product.types'
 
 defineProps<{
   content: LandingProductEntryContent

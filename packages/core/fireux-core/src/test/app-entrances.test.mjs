@@ -496,7 +496,7 @@ async function renderPolishComponent(
 
 test('shared Home guest guidance retains the exact sign-in destination', async () => {
   const html = await renderPolishComponent(
-    'components/Workspace/GuestWelcome.vue'
+    'workspace/components/GuestWelcome.vue'
   )
   assert.match(html, /Start with your account/)
   assert.match(
@@ -507,7 +507,7 @@ test('shared Home guest guidance retains the exact sign-in destination', async (
 test('shared Home guidance does not flash for loading or signed-in accounts', async () => {
   for (const phase of ['loading', 'signed-in'])
     assert.doesNotMatch(
-      await renderPolishComponent('components/Workspace/GuestWelcome.vue', {
+      await renderPolishComponent('workspace/components/GuestWelcome.vue', {
         phase,
       }),
       /Start with your account/

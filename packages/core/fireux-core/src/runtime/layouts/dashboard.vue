@@ -94,7 +94,7 @@ import { useRoute } from 'vue-router'
 import { useDashboardNav } from '../composables/navigation/useDashboardNav'
 import { useNavGrouping } from '../composables/navigation/useNavGrouping'
 import { useAuthRedirect } from '../composables/fireux/firebase/useAuthRedirect'
-import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspaceNotifications } from '../workspace/composables/useWorkspaceNotifications'
 
 defineOptions({ name: 'dashboard' })
 

@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-supplier-home">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Supplier Workspace" />
+        <WorkspaceNavbar title="Supplier Workspace" />
       </template>
       <template #body>
         <WorkspaceHero

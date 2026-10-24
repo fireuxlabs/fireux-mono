@@ -6,7 +6,7 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
   addComponent({
     name: 'WorkspacePortfolioOverview',
     filePath: resolver.resolve(
-      './runtime/components/Workspace/Portfolio/Overview/Index.vue'
+      './runtime/workspace/components/Portfolio/Overview/Index.vue'
     ),
     priority: 30,
   })

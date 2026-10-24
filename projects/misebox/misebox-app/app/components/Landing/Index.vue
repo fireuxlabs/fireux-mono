@@ -100,8 +100,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-import type { LandingProductCatalogueContent } from 'fireux-core/types/landing-product'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import type { LandingProductCatalogueContent } from 'fireux-core/runtime/components/landing/product.types'
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,

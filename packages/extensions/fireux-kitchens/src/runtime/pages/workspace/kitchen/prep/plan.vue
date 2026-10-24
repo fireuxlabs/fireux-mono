@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-prep-plan"
-    ><template #header><LayoutsWorkspaceNavbar title="Prep plan" /></template
+    ><template #header><WorkspaceNavbar title="Prep plan" /></template
     ><template #body><KitchenPrepAndProductionPlanning /></template
   ></UDashboardPanel>
 </template>

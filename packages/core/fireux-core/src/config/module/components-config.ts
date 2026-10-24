@@ -7,6 +7,12 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
   })
 
+  registerComponentsDir(resolver, './runtime/workspace/components', {
+    global: false,
+    pathPrefix: true,
+    prefix: 'Workspace',
+  })
+
   registerComponentsDir(resolver, './runtime/app/components', {
     global: false,
     pathPrefix: true,

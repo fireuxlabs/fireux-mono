@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-blank-team">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Blank Team" />
+        <WorkspaceNavbar title="Blank Team" />
       </template>
 
       <template #body>

@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-ingredient-add">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Create Kitchen Ingredient" />
+        <WorkspaceNavbar title="Create Kitchen Ingredient" />
       </template>
 
       <template #body>

@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-project-team-member-detail">
-    <template #header><LayoutsWorkspaceNavbar title="Team member" /></template>
+    <template #header><WorkspaceNavbar title="Team member" /></template>
     <template #body>
       <UButton
         to="/workspace/project/team"

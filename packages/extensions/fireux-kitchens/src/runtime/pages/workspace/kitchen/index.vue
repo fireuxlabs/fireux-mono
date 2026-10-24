@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="workspaceTitle" />
+      <WorkspaceNavbar :title="workspaceTitle" />
       <UDashboardToolbar
         v-if="!fireux.isTenant || ready"
         :ui="{ root: 'border-b-0' }"
@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import WorkspaceKitchen from '../../../kitchen/components/Workspace/Index.vue'
 const fireux = useFireUXConfig()
 const { state } = useWorkspacePageState('kitchen')

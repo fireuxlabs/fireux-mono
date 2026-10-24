@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
+import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import {
   onboardingText as text,
   requireOnboardingMemberRole as memberRole,

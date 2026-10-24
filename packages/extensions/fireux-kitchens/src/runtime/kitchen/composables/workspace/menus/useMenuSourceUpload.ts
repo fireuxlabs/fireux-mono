@@ -7,7 +7,7 @@ import {
 } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useOptionalKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 import { useKitchenMenusContextSource } from './useKitchenMenusContext'

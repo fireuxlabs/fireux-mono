@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-ecosystem">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Project Ecosystem" />
+        <WorkspaceNavbar title="Project Ecosystem" />
       </template>
 
       <template #body>

@@ -18,7 +18,7 @@ function load(relative, name, bindings) {
 const normalize = (value) => String(value || '').trim().toLowerCase().replace(/^kitchens$/, 'kitchen')
 function entry({ origin = 'http://localhost:3001', role = 'global', config = {}, routes, family = 'kitchen' } = {}) {
   const calls = []
-  const useEntry = load('../runtime/composables/fireux/workspace/useWorkspaceEntryCta.ts', 'useWorkspaceEntryCta', {
+  const useEntry = load('../runtime/workspace/composables/useWorkspaceEntryCta.ts', 'useWorkspaceEntryCta', {
     computed,
     useRequestURL: () => new URL(origin),
     useRouter: () => ({ getRoutes: () => routes || [{ path: '/', meta: { nav: { key: 'workspace-kitchen' } } }] }),

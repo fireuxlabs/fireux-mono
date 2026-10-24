@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-dishes-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Dishes Tool specifications" />
+        <WorkspaceNavbar title="Dishes Tool specifications" />
       </template>
 
       <template #body>

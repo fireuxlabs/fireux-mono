@@ -6,7 +6,7 @@ import {
   readPropertyMutationActor,
   requirePropertyMutationAuthority,
 } from './authority'
-import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { updateTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 export async function updatePropertyTeamMember(
   event: H3Event,
   input: { propertyId: string; memberId: string; changes: { name: string } }

@@ -1,15 +1,14 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
-  useTeam,
+  useWorkspaceTeam,
   type WorkspaceTeamMember,
-} from 'fireux-core/runtime/composables/fireux/useTeam'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+} from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useBlankWorkspace } from './fireux/workspace/blank/core/useBlankWorkspace'
 
 type BlankTeamResponse = {
@@ -97,7 +96,7 @@ export function useBlankTeam() {
       appSession.appUser.value?.subscription || 'free'
     )
   )
-  const team = useTeam({
+  const team = useWorkspaceTeam({
     workspaceId: blankId,
     capabilityId: 'blank.team',
     members,
@@ -115,17 +114,24 @@ export function useBlankTeam() {
   }))
 
   async function create(input: { name: string; userId?: string }) {
+    input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     const id = blankId.value
-    const user = await useRequireUser()
+    if (!id) throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
+    const token = await user.getIdToken()
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ memberId: string; name: string }>(
       '/api/workspace/blank/team/members',
       {
         method: 'POST',
         retry: 0,
         timeout: 15000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         body: {
           blankId: id,
           name: input.name.trim(),
@@ -135,39 +141,49 @@ export function useBlankTeam() {
     )
     if (id === blankId.value) {
       team.selectCreated(result.memberId)
-      await refresh()
     }
     return result
   }
   async function update(input: { memberId: string; name: string }) {
+    input = { ...input }
     const id = blankId.value
-    const user = await useRequireUser()
+    if (!id) throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
+    const token = await user.getIdToken()
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     await $fetch(
       `/api/workspace/blank/team/members/${encodeURIComponent(input.memberId)}`,
       {
         method: 'PATCH',
         retry: 0,
         timeout: 15000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         body: { blankId: id, changes: { name: input.name.trim() } },
       }
     )
-    if (id === blankId.value) await refresh()
   }
   async function remove(memberId: string) {
     const id = blankId.value
-    const user = await useRequireUser()
+    if (!id) throw new Error('Select a record before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
+    const token = await user.getIdToken()
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ name: string }>(
       `/api/workspace/blank/team/members/${encodeURIComponent(memberId)}`,
       {
         method: 'DELETE',
         retry: 0,
         timeout: 15000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         query: { blankId: id },
       }
     )
-    if (id === blankId.value) await refresh()
     return result
   }
   const context = computed(() => ({
@@ -179,6 +195,7 @@ export function useBlankTeam() {
   const pageState = useWorkspacePageState('blank')
   watchEffect(() => pageState.publish(context.value))
   return {
+    workspaceId: blankId,
     state,
     context,
     derived: team.derived,

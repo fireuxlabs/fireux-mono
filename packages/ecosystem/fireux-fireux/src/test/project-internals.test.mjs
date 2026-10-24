@@ -188,7 +188,7 @@ test('Project AI captures nested input before credentials and preserves the huma
   }
   const dialog = fixture.owner.run(() =>
     load(
-      '../runtime/components/Workspace/Project/Home/Intent.vue',
+      '../runtime/workspace/components/Project/Home/Intent.vue',
       '{ submit, prompt }',
       {
         ref,
@@ -435,7 +435,7 @@ for (const changed of ['record', 'actions'])
       const owner = effectScope()
       const dialog = owner.run(() =>
         load(
-          '../runtime/components/Workspace/Project/Home/Intent.vue',
+          '../runtime/workspace/components/Project/Home/Intent.vue',
           '{ submit, prompt, message, submitting }',
           {
             ref,

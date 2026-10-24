@@ -4,7 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
-const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/server/utils/workspace-team/members.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
+const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/workspace/server/team/members.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
 const shared = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return updateTeamMembers`, ['createError','requireFirestoreDocumentId'])(input => Object.assign(new Error(input.statusMessage), input), value => value)
 const source = readFileSync(new URL('../runtime/kitchen/server/team/update.ts', import.meta.url), 'utf8')
   .replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')

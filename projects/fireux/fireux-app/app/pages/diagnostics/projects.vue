@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useProjectWorkspaceSelection } from 'fireux-fireux/runtime/project/composables/workspace/useProjectWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useProjectCollection } from 'fireux-fireux/runtime/project/composables/useProjectCollection'
 import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
 
@@ -110,7 +110,7 @@ const projectModelRuntime: Project = {
   updated: { at: { seconds: 0, nanoseconds: 0 } },
 }
 const { appId } = useFireUXConfig()
-const { selectedId } = useProjectWorkspaceSelection()
+const { selectedId } = useWorkspace('project')
 const resolvedAppId = computed(() => String(appId || '').trim())
 
 const { projects } = useProjectCollection()

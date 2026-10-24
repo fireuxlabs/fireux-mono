@@ -2,14 +2,15 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, toValue, watch, nextTick } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import test from 'node:test'
 
 test('People filters derive assigned role labels from live members', async () => {
-  const source = readFileSync(new URL('../runtime/composables/fireux/workspace/useTeamPeopleFilter.ts', import.meta.url), 'utf8').replace(/^import .*\n/gm, '').replace('export function', 'function')
-  const make = compileFunction(`${stripTypeScriptTypes(source)}; return useTeamPeopleFilter`, ['computed', 'ref', 'toValue', 'watch'])(computed, ref, toValue, watch)
+  const source = readFileSync(new URL('../runtime/workspace/components/Team/People.vue', import.meta.url), 'utf8')
+  const stateSource = source.slice(source.indexOf("const filter = ref('all')"), source.indexOf('</script>'))
+  const make = compileFunction(`${stripTypeScriptTypes(stateSource)}; return { filter, options, filtered }`, ['computed', 'ref', 'watch', 'sortedMembers'])
   const members = ref([{ id: 'a', organisationRoles: ['Commis'] }, { id: 'b', organisationRoles: ['Commis', 'Operator'] }, { id: 'c', organisationRoles: [] }])
-  const state = make(members)
+  const state = make(computed, ref, watch, members)
   assert.ok(state.options.value.some(item => item.label === 'Commis (2)'))
   state.filter.value = 'role:Commis'
   assert.deepEqual(state.filtered.value.map(member => member.id), ['a', 'b'])

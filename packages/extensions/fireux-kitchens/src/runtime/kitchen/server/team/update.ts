@@ -6,7 +6,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
-import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { updateTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 export type KitchenTeamMemberChanges = { name: string }
 export type KitchenTeamMemberUpdate = {
   memberId: string

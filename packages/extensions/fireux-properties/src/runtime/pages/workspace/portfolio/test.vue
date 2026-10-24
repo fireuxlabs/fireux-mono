@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-portfolio-test">
-    <template #header><LayoutsWorkspaceNavbar title="Portfolio Test" /></template>
+    <template #header><WorkspaceNavbar title="Portfolio Test" /></template>
     <template #body>
       <WorkspaceHero compact title="Portfolio Test" description="Save and manage simple strings." />
       <WorkspacePortfolioSelector />

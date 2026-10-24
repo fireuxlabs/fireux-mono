@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspaceNotifications } from '../../../workspace/composables/useWorkspaceNotifications'
 
 withDefaults(
   defineProps<{

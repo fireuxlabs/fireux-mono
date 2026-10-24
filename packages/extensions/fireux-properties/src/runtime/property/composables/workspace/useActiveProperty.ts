@@ -1,5 +1,5 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import type { PropertySurface } from '../firestore/utils/view/usePropertyInterface'
 import { usePropertyWorkspace } from './usePropertyWorkspace'
 import { usePropertyAccess } from '../usePropertyAccess'

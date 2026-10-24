@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { propertyAccessCollection } from '../utils/access'
 
 /** Live Property access is independent of the organisational Team. */

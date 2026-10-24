@@ -1,6 +1,6 @@
 # Runtime filesystem ownership
 
-Updated: 2026-10-21
+Updated: 2026-10-24
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -35,13 +35,16 @@ The first runtime path segment must answer one of two questions without
 historical knowledge:
 
 1. Is this a Nuxt entrypoint or a shared technical role?
-2. Which declared Entity owns it?
+2. Which declared Entity or shared Workspace concept owns it?
 
-A first-level feature, product surface, workflow, transport, or implementation
-detail is drift unless it is itself a declared Entity or a Nuxt-required
-entrypoint. `Workspace`, `Detail`, `Directory`, `AI`, and similar concepts come
-after their owner and technical role, or remain in the shared technical spine
-only when their behavior is genuinely cross-entity.
+Named runtime roots are reserved for the package's owned Entities and the
+shared Workspace concept. Core owns `app/`, `ecosystem/`, `user/` and
+`workspace/`; other packages retain their named Entity roots and may add
+`workspace/` for genuine package-wide composition. Workspace owns
+shared management presentation and selection, without owning the domain records
+being managed. `Detail`, `Directory`, `AI` and other surfaces stay beneath their
+actual owner and technical role. Nuxt entrypoints and genuinely shared technical
+mechanisms retain their conventional root folders.
 
 ```text
 src/runtime/
@@ -196,15 +199,34 @@ inside an arbitrary feature root outside the entity scope.
 Workspace is a shared surface and runtime, not an entity and not the owner of
 Kitchen, Supplier, Project, or their records.
 
-Shared Workspace mechanics remain in the root spine:
+Shared Workspace implementation has one concept owner:
 
 ```text
-src/runtime/components/Workspace/
-src/runtime/composables/fireux/workspace/
-src/runtime/layouts/
-src/runtime/pages/workspace/
-src/runtime/server/api/workspace/
+src/runtime/workspace/
+├── components/
+├── composables/
+├── models/
+├── server/
+├── tools/
+└── utils/
 ```
+
+Nuxt adapters remain under `runtime/layouts/`, `runtime/pages/workspace/`,
+`runtime/middleware/` and `runtime/server/api/workspace/`. They consume the
+Workspace owner or the appropriate Entity owner. Core explicitly registers
+`workspace/components` with the `Workspace` prefix and registers its composables;
+its Tailwind source list includes the moved component root. The shared Team and
+Test controllers are `useWorkspaceTeam` and `useWorkspaceTest`.
+
+Package-wide Workspace composition belongs to the package that selects and
+combines its domain capabilities. Granite proves this at
+`fireux-granite/src/runtime/workspace/components/Portfolio/Overview/Index.vue`:
+it composes the Portfolio overview with Documents, Tasks and Compliance and
+registers the existing `WorkspacePortfolioOverview` name explicitly. Core does
+not import those domains, and Properties does not import its upper Ecosystem.
+No package-level directory is required for a package containing only one Entity's
+Workspace implementation. Project-specific Intent, Team AI and App context UI
+live beneath `fireux-fireux/runtime/project/components/Workspace`.
 
 Entity-specific Workspace implementation lives with the entity:
 

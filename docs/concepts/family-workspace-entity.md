@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-10-21
+Updated: 2026-10-24
 Ref: d05ded3fd
 Role: map, not canon
 
@@ -34,6 +34,39 @@ map in `workspace.md`. The family deltas are:
 | Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                                                              |
 | Project           | `accepted`: FireUX control-plane root with Team authority and trusted empty-shell Create                                                                                                          |
 | Marketplace Store | `accepted`: root Workspace ownership is declared now; its Workspace surface remains future product work                                                                                           |
+
+## Team edits and the selected Entity
+
+Blank, Project, Kitchen, Supplier, Property and Portfolio Team actions copy the
+selected Entity ID and submitted fields before awaiting credentials, then send
+that exact target to their existing trusted server commands. No selected ID or
+signed-in actor means no dispatch. An account change during credential acquisition
+is rejected; server authority still validates current membership on the target.
+Switching Entity does not cancel or redirect an action already submitted.
+
+Core `Workspace/Team/Editor.vue` keys its editing subtree with the controller's
+`workspaceId`. Switching Entity disposes old drafts and dialogs. Member forms are
+also keyed by member ID, and closing a dialog disposes its form. Forms own local
+busy/error state and suppress completion after disposal; they do not acquire Auth,
+App membership or selection-epoch watchers. Domain controllers use the live roster
+and apply post-create selection only if its original Entity remains selected.
+The six `use*Team` owners and Core's `useWorkspaceTeam.ts` define this bounded contract;
+other capability preparation flows remain outside this cutover.
+
+## Workspace ownership levels
+
+Core's `runtime/workspace` owns shared selection and presentation. Granite's
+`runtime/workspace` owns the cross-package Portfolio overview composition;
+Project, Kitchen, Supplier, Property and Portfolio retain Entity-specific
+surfaces beneath their Entity technical roles. Nuxt route and API adapters stay
+in native entrypoint folders and delegate to these owners. Main Apps retain
+host routing, brand and App-specific entry composition.
+
+All active Entity selection consumers use Core `useWorkspace(family)` directly;
+Entity index controllers still reconcile the permitted collection and own any
+navigation needed when switching. There is no second `useXWorkspaceSelection`
+forwarding API. Core routing normalizes the supplied family without a domain
+alias table; Apps and route metadata provide canonical family names.
 
 ## Selected identity in navigation
 
@@ -296,7 +329,7 @@ Canonical storage follows the Entity boundary. Project owns
 `kitchens/{kitchenId}/team/{uid}` while its root model contains
 `id` and nested `identity.{slug,status,visibility,source?}`. Shared venue
 profile and currency remain on the linked same-id Place.
-Core's `server/utils/workspace-team/roles.ts` receives a required `TeamRolePolicy`
+Core's `workspace/server/team/roles.ts` receives a required `TeamRolePolicy`
 from each domain's existing `server/team/roles.ts` boundary (Blank retains its
 App-local `server/utils/blank/team/roles.ts`). The policy owns fixed IDs, labels
 and fixed-role rename copy. Core combines those fixed roles with persisted
@@ -333,7 +366,7 @@ migration verification, and protected Workspace consumer are complete.
 - Core owns only server primitives proven across entity families. Shared App
   runtime policy, membership validation, bounded Team-authority parsing,
   and capacity enforcement live in
-  `packages/core/fireux-core/src/runtime/server/utils/workspace-entity/onboarding-authority.ts`.
+  `packages/core/fireux-core/src/runtime/workspace/server/entity/onboarding-authority.ts`.
   Entity-specific management validation, projections, messages, and
   transactions remain in the owning entity slice.
 
@@ -416,7 +449,7 @@ migration verification, and protected Workspace consumer are complete.
   Missing root records still count; rejoining never merges old grants. The
   Workspace composable and command resolve the same domain allowance.
 - Workspace Entity creation has one Core-owned identity decision in
-  `runtime/server/utils/workspace-entity/creation-identity.ts`. An explicit
+  `runtime/workspace/server/entity/creation-identity.ts`. An explicit
   first shell uses the beneficiary User UID; an explicit existing-source path
   preserves that source id. The Entity family still owns what its authoritative
   source is: Kitchen currently proves same-id Place onboarding, while Project
@@ -626,7 +659,7 @@ remains visible and unavailable rather than changing the navbar anatomy.
 
 Shared capability availability remains expressed by
 `WorkspaceCrudPrimitiveId` and `defineWorkspaceCapabilityContext` in
-`runtime/composables/fireux/workspace/workspaceCapabilityContext.ts`.
+`runtime/workspace/composables/workspaceCapabilityContext.ts`.
 Availability does not require a Core button wrapper for every CRUD verb.
 Native `UButton` supplies ordinary control behaviour; a shared availability
 vocabulary does not imply a generic modal or toolbar owner.
@@ -742,13 +775,13 @@ useProjectWorkspace
 ├─ useProjectTest
 └─ useProjectTeam
    ├─ Project Team records and authority
-   └─ useTeam
+   └─ useWorkspaceTeam
 
 useKitchenWorkspace
 ├─ useKitchenTest
 └─ useKitchenTeam
    ├─ Kitchen Team records and authority
-   └─ useTeam
+   └─ useWorkspaceTeam
 ```
 
 The Entity's `/` page and its capability composables consume `useXWorkspace`.
@@ -757,7 +790,7 @@ temporary Kitchen index adapter only translates the bridge into legacy
 component props and must disappear when those components accept the canonical
 contract directly.
 
-A named shared capability composable such as `useTeam`,
+A named shared capability composable such as `useWorkspaceTeam`,
 `useWorkspaceMenus`, or `useWorkspaceStations` may own only behaviour that two
 materially different Entity families prove for the same reason. Candidate
 mechanics include temporary item selection, defaulting to the first valid
@@ -770,7 +803,7 @@ composables later repeat smaller mechanics, compare them first; only then may a
 small Core primitive such as selection or capacity resolution be extracted.
 
 Team page roots pass one domain Team controller to their selector, AI,
-interaction, and tool adapters. The Core `useTeam` composable owns member
+interaction, and tool adapters. The Core `useWorkspaceTeam` composable owns member
 selection, post-create focus, count, capacity and CRUD availability; workspace access-id projections remain with the
 Entity access context. Small leaf components may still receive the few values
 they render or mutate directly.
@@ -782,7 +815,7 @@ expose the previous roster, and no selected Project is a settled empty surface.
 these states alongside the command-intent tests.
 
 `useKitchenTeam` and `useProjectTeam` each own their domain reads and commands,
-compose shared `useTeam`, and return a single context to the Team UI through a
+compose shared `useWorkspaceTeam`, and return a single context to the Team UI through a
 `team` prop. There is no separate TeamData, WorkspaceTeam or provider layer.
 Identity reads workspace association directly and does not load Team for access.
 
@@ -798,7 +831,7 @@ Current evidence and confidence:
 | Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                     |
 | -------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                              |
-| Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project and Kitchen tool entrypoints now accept associated AppUsers regardless of Team role during development; the complete sibling comparison is not yet proved |
+| Named `useWorkspaceTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project and Kitchen tool entrypoints now accept associated AppUsers regardless of Team role during development; the complete sibling comparison is not yet proved |
 | `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                       |
 | Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                        |
 
@@ -880,7 +913,7 @@ Both surfaces consume `models/workspace-team-member.model.ts` and `TeamAIIntent`
 directly. Core owns Team Selector, Create and Editor; domain Index components
 compose those surfaces with their routes, headings, role controls and invitations.
 Domain-named type re-exports and forwarding UI copies are retired. Their data adapters compose Core
-`useTeam` for selection, post-create focus, capacity and CRUD availability;
+`useWorkspaceTeam` for selection, post-create focus, capacity and CRUD availability;
 workspace controllers retain their transport and domain-specific invitation actions.
 Names for linked people come from their accounts. Role catalogues contain names;
 member role_ids refer to fixed or workspace-defined labels. Legacy job titles,
@@ -1012,7 +1045,7 @@ command-scope and domain tests.
 
 Kitchen, Project, Supplier, Property, Portfolio and Blank retain named Team
 routes, components and `useXTeam` composables. Every domain controller calls
-Core `useTeam` for selection, post-create focus and capacity. Routes own
+Core `useWorkspaceTeam` for selection, post-create focus and capacity. Routes own
 framing, navigation, SEO and the AI entry. Domain Team Index components own
 role orchestration, endpoints and suggestions, and compose shared Team Editor,
 People, Roles and Assignment. Kitchen additionally owns invitations and its
@@ -1028,7 +1061,7 @@ Core retains only the shared interaction primitives.
 ### Supplier Team proving sibling
 
 Supplier Team adopts the same route → domain component and
-`useSupplierTeam` → `useTeam` construction as Kitchen and Project. Shared Editor,
+`useSupplierTeam` → `useWorkspaceTeam` construction as Kitchen and Project. Shared Editor,
 People, Roles and Assignment retain their owners. Supplier owns its role
 suggestions and endpoints; it has no copied Kitchen invitation or AI surface.
 Its authenticated collection reader refreshes after commands rather than
@@ -1046,7 +1079,7 @@ the current membership lifetime. Bringli owns the Supplier and Team capacity pol
 
 The old Supplier Team panel and `useSupplierWorkspaceTeam` path are retired.
 Property, Portfolio and Blank use the same construction and shared Server
-member mechanics in `runtime/server/utils/workspace-team/members.ts`. Stored
+member mechanics in `runtime/workspace/server/team/members.ts`. Stored
 members have only `name`, `user_id` and `role_ids`; document identity remains
 separate and survives later account linking. Named domain entrypoints remain
 intentional growth points, not a configuration-driven generic page.
@@ -1316,7 +1349,7 @@ transport-envelope parity. This relationship is local to Landing and Menus.
 
 ### Shared Test AI capability
 
-Kitchen and Project Test consume Core `components/Workspace/Test/AI.vue` and
+Kitchen and Project Test consume Core `workspace/components/Test/AI.vue` and
 `models/test-intent.ts`. Their named adapters supply scope, label and their
 registered intent endpoint; the shared presentation owns prompts, review forms,
 stale-context rejection and invoking the supplied `TestController`. Account

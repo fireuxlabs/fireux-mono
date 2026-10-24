@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-portfolio-overview">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Portfolio Overview" />
+        <WorkspaceNavbar title="Portfolio Overview" />
       </template>
 
       <template #body>

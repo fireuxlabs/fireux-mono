@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-performance-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Performance Tool specifications" />
+        <WorkspaceNavbar title="Performance Tool specifications" />
       </template>
 
       <template #body>

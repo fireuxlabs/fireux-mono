@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')

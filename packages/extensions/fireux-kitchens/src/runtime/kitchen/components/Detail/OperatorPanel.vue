@@ -28,9 +28,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useKitchenAccess } from '../../composables/useKitchenAccess'
-import { useKitchenWorkspaceSelection } from '../../composables/workspace/useKitchenWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 
 const props = defineProps<{ kitchen?: { id: string; slug?: string } | null }>()
 const access = useKitchenAccess()
@@ -48,11 +48,11 @@ const { workspaceEntryHref, openWorkspace: navigateToWorkspace } = useWorkspaceE
 const workspaceTo = computed(() =>
   `${workspaceEntryHref.value}?${new URLSearchParams({ kitchenId: kitchenId.value })}`
 )
-const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
+const { select } = useWorkspace('kitchen')
 async function openWorkspace(event: MouseEvent) {
   event.preventDefault()
   if (!showPanel.value) return
-  setKitchenWorkspaceSelection({ kitchenId: kitchenId.value })
+  select(kitchenId.value)
   await navigateToWorkspace({ kitchenId: kitchenId.value })
 }
 </script>

@@ -4,7 +4,7 @@
   </WorkspaceCalendarSurface>
 </template>
 <script setup lang="ts">
-import WorkspaceCalendarSurface from 'fireux-core/runtime/components/Workspace/CalendarSurface.vue'
+import WorkspaceCalendarSurface from 'fireux-core/runtime/workspace/components/CalendarSurface.vue'
 import { usePortfolioCalendar } from '../../../composables/usePortfolioCalendar'
 const calendar = usePortfolioCalendar()
 </script>

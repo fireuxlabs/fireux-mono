@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingPricingPlan } from '../../../types/landing-product'
+import type { LandingPricingPlan } from './product.types'
 
 defineProps<{
   ariaLabel: string

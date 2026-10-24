@@ -500,8 +500,8 @@ test('Supplier Create passes its full draft scope into the command and suppresse
           () =>
           (...args) =>
             effects.push(args),
-        useSupplierWorkspaceSelection: () => ({
-          setSupplierWorkspaceSelection: (value) => effects.push(value),
+        useWorkspace: () => ({
+          select: (value) => effects.push(value),
         }),
         useSupplierCreate: () => ({
           createSupplierWorkspace: (options) => {

@@ -36,7 +36,7 @@
   </DirectoryHome>
 </template>
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import DirectoryHome from 'fireux-core/runtime/components/landing/DirectoryHome.vue'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
 const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')

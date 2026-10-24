@@ -114,8 +114,8 @@ test('public operator panel follows exact live Kitchen access', () => {
     useWorkspaceEntryCta: () => ({
       workspaceEntryPath: ref('/workspace/kitchen'),
     }),
-    useKitchenWorkspaceSelection: () => ({
-      setKitchenWorkspaceSelection: () => {},
+    useWorkspace: () => ({
+      select: () => {},
     }),
   }
   const { showPanel, editTo } = compileFunction(

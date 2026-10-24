@@ -1,5 +1,5 @@
 import { useProjectTestRecords } from './useProjectTestRecords'
-import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
+import { useWorkspaceTest } from 'fireux-core/runtime/workspace/composables/useWorkspaceTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from './workspace/useProjectWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -33,5 +33,5 @@ export function useProjectTest() {
       throw new Error('Test response did not match the requested Project and Test.')
     return result
   }
-  return useTest({ id: workspace.id, family: 'project', records, pending, error, write, captureIntent })
+  return useWorkspaceTest({ id: workspace.id, family: 'project', records, pending, error, write, captureIntent })
 }

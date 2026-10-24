@@ -61,7 +61,7 @@ import type {
   LandingOperationRailItem,
   LandingProductIndexContent,
   LandingProductSurface,
-} from '../../../types/landing-product'
+} from './product.types'
 
 const props = withDefaults(
   defineProps<{

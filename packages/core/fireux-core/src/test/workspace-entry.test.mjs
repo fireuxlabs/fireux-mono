@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, watch } from 'vue'
-import * as routes from '../runtime/composables/fireux/workspace/workspaceRoutes.ts'
+import * as routes from '../runtime/workspace/utils/routes.ts'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
@@ -12,7 +12,7 @@ import {
 
 const source = readFileSync(
   new URL(
-    '../runtime/composables/fireux/workspace/useWorkspaceEntryCta.ts',
+    '../runtime/workspace/composables/useWorkspaceEntryCta.ts',
     import.meta.url
   ),
   'utf8'

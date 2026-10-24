@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-training">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Training" />
+        <WorkspaceNavbar title="Kitchen Training" />
       </template>
 
       <template #body>

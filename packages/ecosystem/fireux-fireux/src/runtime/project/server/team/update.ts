@@ -1,5 +1,5 @@
 import { fireuxProjectTeamMembersTarget } from '../targets'
-import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { updateTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'

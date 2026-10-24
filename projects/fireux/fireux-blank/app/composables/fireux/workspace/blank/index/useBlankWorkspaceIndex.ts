@@ -1,5 +1,5 @@
 import { watch } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
 
 export function useBlankWorkspaceIndex() {

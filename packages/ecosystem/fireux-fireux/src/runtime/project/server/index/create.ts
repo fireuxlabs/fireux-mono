@@ -8,8 +8,8 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
+import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
+import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
@@ -23,7 +23,7 @@ import {
 } from 'fireux-core/runtime/app/utils/membership-access'
 import { serverProjectAccessTarget } from '../access'
 import { isGuestProject } from '../../utils/guest-project'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })

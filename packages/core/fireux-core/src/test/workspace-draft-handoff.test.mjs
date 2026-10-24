@@ -5,7 +5,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 test('draft handoff is scoped, bounded, expiring and consumed once', () => {
-  const source = readFileSync(new URL('../runtime/composables/fireux/workspace/useWorkspaceDraftHandoff.ts', import.meta.url), 'utf8')
+  const source = readFileSync(new URL('../runtime/workspace/composables/useWorkspaceDraftHandoff.ts', import.meta.url), 'utf8')
     .replace(/^import .*\n/gm, '').replace('export function', 'function')
   const uid = { value: 'alice' }
   const pending = { value: null }

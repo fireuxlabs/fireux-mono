@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 
 defineProps<{ appName: string }>()
 const { currentUser, signOutUser } = useAuth()

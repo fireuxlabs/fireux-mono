@@ -1,4 +1,4 @@
-import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
+import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'
 export type KitchenDemoTeamMember = WorkspaceTeamMemberDocument
 export const deanosKitchenDemoTeam: readonly KitchenDemoTeamMember[] = [
   {

@@ -4,7 +4,7 @@ import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useUserView } from '../../user/composables/useUserView'
 import { useUserRead } from '../../user/composables/useUserRead'
 import { useToastify } from '../ui/useToastify'
-import { useWorkspaceEntryCta } from '../fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 
 type StringSource = string | null | undefined | Ref<string | null | undefined>
 

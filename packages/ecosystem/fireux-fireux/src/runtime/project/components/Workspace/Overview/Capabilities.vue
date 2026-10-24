@@ -123,13 +123,13 @@
 import { computed, type Ref } from 'vue'
 import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectEcosystems } from '../../../composables/useProjectEcosystems'
-import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { useProjectTeamSummary } from '../../../composables/useProjectTeamSummary'
 import { useProjectTestRecords } from '../../../composables/useProjectTestRecords'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useProjectWorkspaceIndex } from '../../../composables/workspace/useProjectWorkspaceIndex'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
-import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspaceNotifications } from 'fireux-core/runtime/workspace/composables/useWorkspaceNotifications'
 
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()

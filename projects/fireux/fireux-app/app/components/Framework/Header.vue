@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 
 const { desktop, mobile } = useNav('framework')
 const { hasWorkspaceEntry, workspaceEntryHref } = useWorkspaceEntryCta()

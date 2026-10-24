@@ -4,9 +4,9 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { useState, useRoute, useRouter, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useKitchenWorkspaceKitchens } from './useKitchenWorkspaceKitchens'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { kitchenWorkspaceSwitchPath } from '../../utils/workspace-switch-route'
 
 export function useKitchenWorkspaceIndex() {

@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 
 const props = defineProps<{
   existingMenuName?: string

@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-property-test">
-    <template #header><LayoutsWorkspaceNavbar title="Property Test" /></template>
+    <template #header><WorkspaceNavbar title="Property Test" /></template>
     <template #body>
       <WorkspaceHero compact title="Property Test" description="Save and manage simple strings." />
       <WorkspacePropertySelector />

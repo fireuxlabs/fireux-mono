@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-menu-source-detail">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Review menu import" />
+        <WorkspaceNavbar title="Review menu import" />
       </template>
 
       <template #body>

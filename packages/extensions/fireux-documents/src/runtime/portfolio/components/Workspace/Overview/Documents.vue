@@ -11,7 +11,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { usePortfolioDocuments } from '../../../composables/documents/usePortfolioDocuments'

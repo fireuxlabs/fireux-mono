@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-test-detail">
-    <template #header><LayoutsWorkspaceNavbar title="Test" /></template>
+    <template #header><WorkspaceNavbar title="Test" /></template>
     <template #body>
       <UButton
         to="/workspace/kitchen/developer/test"

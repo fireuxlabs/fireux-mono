@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="ignition-industry-comparison">
     <template #header
-      ><LayoutsWorkspaceNavbar title="Like-for-like industry comparison"
+      ><WorkspaceNavbar title="Like-for-like industry comparison"
     /></template>
     <template #body>
       <div class="mx-auto grid w-full max-w-6xl gap-6">

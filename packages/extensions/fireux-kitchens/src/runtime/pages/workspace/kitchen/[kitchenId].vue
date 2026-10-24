@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-detail">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Kitchen" />
+      <WorkspaceNavbar title="Kitchen" />
     </template>
     <template #body>
       <section class="workspace-surface workspace-surface--compact">
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import { useKitchenAccess } from '../../../kitchen/composables/useKitchenAccess'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'

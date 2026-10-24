@@ -250,7 +250,7 @@ test('Kitchen selection survives unresolved access and child reads before a sett
   const cookie = ref('baeren')
   const states = new Map()
   const useWorkspace = load(
-    '../../../../core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts',
+    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspace.ts',
     'useWorkspace',
     {
       computed,

@@ -31,7 +31,7 @@
 </template>
 <script setup lang="ts">
 import { computed, type Ref } from 'vue'
-import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { useSupplierWorkspace } from '../../../composables/workspace/useSupplierWorkspace'
 import { useSupplierCatalogueCollection } from '../../../composables/useSupplierCatalogueCollection'
 import { useSupplierItemCollection } from '../../../composables/useSupplierItemCollection'

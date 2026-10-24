@@ -1,7 +1,7 @@
 <template>
-  <LayoutsWorkspaceNavbar title="Kitchen Workspace">
+  <WorkspaceNavbar title="Kitchen Workspace">
     <template #right>
       <WorkspaceKitchenHomeInfo />
     </template>
-  </LayoutsWorkspaceNavbar>
+  </WorkspaceNavbar>
 </template>

@@ -7,9 +7,9 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
-import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type {
   KitchenPrepItemInput,
   KitchenPrepItemUnit,
@@ -36,7 +36,7 @@ type KitchenPrepItemCreateOptions = {
 export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { currentUser } = useAuth()
-  const { selectedId } = useKitchenWorkspaceSelection()
+  const { selectedId } = useWorkspace('kitchen')
   const route = useRoute()
   const { seedTranslations } = useTranslationSeed()
   const config = useFireUXConfig()

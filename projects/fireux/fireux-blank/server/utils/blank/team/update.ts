@@ -6,7 +6,7 @@ import {
   readBlankMutationActor,
   requireBlankMutationAuthority,
 } from './authority'
-import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { updateTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 export type BlankTeamMemberChanges = { name: string }
 export type BlankTeamMemberUpdate = {
   memberId: string

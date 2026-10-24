@@ -21,12 +21,12 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { useSupplierTeamSummary } from '../../../composables/useSupplierTeamSummary'
 import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
 import { useSupplierWorkspaceIndex } from '../../../composables/workspace/useSupplierWorkspaceIndex'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
-import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspaceNotifications } from 'fireux-core/runtime/workspace/composables/useWorkspaceNotifications'
 const team = useSupplierTeamSummary()
 const identity = useSupplierIdentity()
 const index = useSupplierWorkspaceIndex()

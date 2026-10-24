@@ -3,7 +3,7 @@ import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firesto
 import { serverSupplierTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { teamRolesCommand, type TeamRolePolicy } from 'fireux-core/runtime/server/utils/workspace-team/roles'
+import { teamRolesCommand, type TeamRolePolicy } from 'fireux-core/runtime/workspace/server/team/roles'
 import {
   readSupplierMutationActor,
   requireSupplierMutationAuthority,

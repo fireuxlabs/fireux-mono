@@ -32,7 +32,7 @@
 import { computed, ref } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 

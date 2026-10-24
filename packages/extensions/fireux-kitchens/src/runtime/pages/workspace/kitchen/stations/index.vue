@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-stations">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Stations" />
+        <WorkspaceNavbar title="Stations" />
       </template>
 
       <template #body>

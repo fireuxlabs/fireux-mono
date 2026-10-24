@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-property-overview">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Property Overview" />
+        <WorkspaceNavbar title="Property Overview" />
       </template>
 
       <template #body>

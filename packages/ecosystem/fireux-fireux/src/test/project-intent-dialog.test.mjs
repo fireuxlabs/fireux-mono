@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-const source = readFileSync(new URL('../runtime/components/Workspace/Project/Home/Intent.vue', import.meta.url), 'utf8').split('<script setup lang="ts">')[1].split('</script>')[0].replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
+const source = readFileSync(new URL('../runtime/workspace/components/Project/Home/Intent.vue', import.meta.url), 'utf8').split('<script setup lang="ts">')[1].split('</script>')[0].replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
 function harness(request) {
   const emitted = []
   const props = { scopeKey: 'p:member', availableActions: ['update'], request }

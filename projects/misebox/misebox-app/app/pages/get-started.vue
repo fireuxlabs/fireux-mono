@@ -152,7 +152,7 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { appMeta } from '../meta'
 
 definePageMeta({

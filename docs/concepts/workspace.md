@@ -45,12 +45,12 @@ Ecosystem / App         Product composition, enabled surfaces and App policy
 
 Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 
-- `composables/fireux/workspace/useWorkspace.ts`: active Entity selection.
-- `composables/fireux/workspace/useWorkspaceEntryCta.ts`: App-aware entry links.
-- `components/Workspace/EntitySwitcher.vue`: selected-Entity switching control.
-- `components/Workspace/GroupPage.vue`: group framing and breadcrumbs.
-- `composables/fireux/useIdentity.ts` and `useTeam.ts`: shared interaction state.
-- `components/Workspace/Team/`: Editor, People, Assignment and Roles controls.
+- `workspace/composables/useWorkspace.ts`: active Entity selection.
+- `workspace/composables/useWorkspaceEntryCta.ts`: App-aware entry links.
+- `workspace/components/EntitySwitcher.vue`: selected-Entity switching control.
+- `workspace/components/GroupPage.vue`: group framing and breadcrumbs.
+- `composables/fireux/useIdentity.ts` and `useWorkspaceTeam.ts`: shared interaction state.
+- `workspace/components/Team/`: Editor, People, Assignment and Roles controls.
 
 ## Home, Overview, groups and children
 

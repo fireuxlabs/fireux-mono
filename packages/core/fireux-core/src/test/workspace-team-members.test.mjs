@@ -7,7 +7,7 @@ import test from 'node:test'
 function mechanics() {
   const source = readFileSync(
     new URL(
-      '../runtime/server/utils/workspace-team/members.ts',
+      '../runtime/workspace/server/team/members.ts',
       import.meta.url
     ),
     'utf8'

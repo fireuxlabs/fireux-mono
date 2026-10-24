@@ -14,7 +14,7 @@ import { ref } from 'vue'
 import Collection from './Home/Collection.vue'
 import Create from './Home/Create.vue'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
-import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
+import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
 const index = useProjectWorkspaceIndex()
 const createOpen = ref(false)
 const creation = useWorkspaceCreation('project', () => ({

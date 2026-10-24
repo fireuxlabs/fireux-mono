@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-supplier-identity">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Supplier Identity"
+        ><WorkspaceNavbar title="Supplier Identity"
       /></template>
       <template #body><WorkspaceSupplierIdentity /></template>
     </UDashboardPanel>

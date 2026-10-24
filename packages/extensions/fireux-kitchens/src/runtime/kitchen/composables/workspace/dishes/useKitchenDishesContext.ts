@@ -7,8 +7,8 @@ import {
   watch,
   type InjectionKey,
 } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/workspace/models/capability-context'
 import { useKitchenWorkspaceDishes } from './useKitchenWorkspaceDishes'
 
 export type KitchenDishCatalogueKind = 'all' | 'food' | 'drink'

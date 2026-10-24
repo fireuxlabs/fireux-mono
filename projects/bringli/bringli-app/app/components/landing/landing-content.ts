@@ -2,7 +2,7 @@ import type {
   LandingOperationRailItem,
   LandingProductIndexContent,
   LandingProductSurface,
-} from 'fireux-core/types/landing-product'
+} from 'fireux-core/runtime/components/landing/product.types'
 import { supplierCapabilities } from 'fireux-suppliers/runtime/supplier/models/capabilities'
 
 export const content = {

@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
 import { resolveKitchenAllowance } from '../../../utils/kitchen-capacity.ts'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
+import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,

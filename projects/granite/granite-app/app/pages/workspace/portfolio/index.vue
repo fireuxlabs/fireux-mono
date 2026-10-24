@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="granite-portfolio-home">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Portfolio Workspace">
+      <WorkspaceNavbar title="Portfolio Workspace">
         <template #right><WorkspacePortfolioHomeInfo /></template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
       <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
         ><WorkspacePortfolioSelector
       /></UDashboardToolbar>
@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
 const { isSignedIn } = useWorkspaceEntryState()
-import WorkspaceGuestWelcome from 'fireux-core/runtime/components/Workspace/GuestWelcome.vue'
+import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
 import { useSeoMeta } from '#imports'
 
 definePageMeta({

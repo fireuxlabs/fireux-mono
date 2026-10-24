@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-finance-transactions">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Finance Transactions" />
+        <WorkspaceNavbar title="Finance Transactions" />
       </template>
 
       <template #body>

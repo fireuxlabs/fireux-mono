@@ -2,9 +2,9 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-calendar">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Project Calendar"
+        <WorkspaceNavbar title="Project Calendar"
           ><template #right><WorkspaceIntroInfo :intro="intro" /></template
-        ></LayoutsWorkspaceNavbar>
+        ></WorkspaceNavbar>
       </template>
 
       <template #body>
@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 const intro = {
   title: 'Project Calendar',
   purpose: 'Browse dates in a visual month view.',
@@ -35,7 +35,7 @@ const intro = {
   boundaries: 'Selecting a date does not create or change events.',
   ai: 'No AI actions are connected to this surface.',
 }
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

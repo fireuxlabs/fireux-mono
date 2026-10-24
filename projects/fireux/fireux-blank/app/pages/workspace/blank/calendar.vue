@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-blank-calendar">
-    <template #header><LayoutsWorkspaceNavbar title="Blank Calendar" /></template>
+    <template #header><WorkspaceNavbar title="Blank Calendar" /></template>
     <template #body>
       <WorkspaceHero compact title="Blank Calendar" description="Explore dates and scheduled work." />
       <WorkspaceBlankSelector />

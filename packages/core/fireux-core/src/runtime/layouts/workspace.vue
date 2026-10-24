@@ -98,7 +98,7 @@
         <template #error="{ error: pageError, clearError: clearPageError }">
           <UDashboardPanel id="workspace-page-unavailable">
             <template #header>
-              <LayoutsWorkspaceNavbar
+              <WorkspaceNavbar
                 :title="`${workspaceLabel} unavailable`"
               />
             </template>
@@ -148,17 +148,17 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
 import { useNuxtApp, useRoute } from '#imports'
 import { computed, ref } from 'vue'
-import { workspaceSidebarNext, type WorkspaceSidebarMode } from '../composables/navigation/workspace-sidebar-mode'
+import { workspaceSidebarNext, type WorkspaceSidebarMode } from '../workspace/utils/sidebar-mode'
 import type { NavigationMenuItem } from '@nuxt/ui'
 import {
   workspaceFamilyFromRouteContext,
   toWorkspaceFamilyLabel,
-} from '../composables/fireux/workspace/workspaceRoutes'
-import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
-import { workspaceActiveDestination } from '../composables/navigation/workspace-active-destination'
-import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
-import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
-import { useWorkspaceEntryCta } from '../composables/fireux/workspace/useWorkspaceEntryCta'
+} from '../workspace/utils/routes'
+import { useWorkspaceNav } from '../workspace/composables/useWorkspaceNav'
+import { workspaceActiveDestination } from '../workspace/utils/active-destination'
+import { useWorkspaceNotifications } from '../workspace/composables/useWorkspaceNotifications'
+import { useWorkspace } from '../workspace/composables/useWorkspace'
+import { useWorkspaceEntryCta } from '../workspace/composables/useWorkspaceEntryCta'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 defineOptions({ name: 'workspace' })
 

@@ -6,7 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compile, createSSRApp, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 
-const source = readFileSync(new URL('../runtime/components/Workspace/Team/Editor.vue', import.meta.url), 'utf8')
+const source = readFileSync(new URL('../runtime/workspace/components/Team/Editor.vue', import.meta.url), 'utf8')
 const template = source.slice(source.indexOf('<template>') + 10, source.lastIndexOf('</template>'))
 const script = source.split('<script setup lang="ts">')[1].split('</script>')[0].replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
 async function render({ status = 'ready', members = [], memberId, custom = false } = {}) {

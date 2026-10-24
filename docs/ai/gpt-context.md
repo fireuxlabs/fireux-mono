@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-21
+Updated: 2026-10-24
 Ref: d05ded3fd
 Role: living context
 Scope: repository-wide
@@ -36,6 +36,17 @@ or adapt it; they do not copy it.
 Repository and runtime placement are defined by `docs/concepts/fireux-mono.md`,
 `docs/concepts/runtime-filesystem.md`, `docs/concepts/runtime-package.md`, and
 `docs/concepts/lasagne.md`.
+
+## Package roots
+
+Packages keep authored implementation in `src/`, package identity, exports and
+commands in `package.json`, package typing in `tsconfig.json`, and entrypoint
+explanations in `README.md`. Add root build files only for an actual package build
+responsibility; Core's `build/config.mjs` and `build.config.ts` compile production
+configuration exports. Package metadata has one owner in `package.json`.
+Generated `.nuxt/`, `dist/` and installed `node_modules/` stay ignored. Existing
+scope-owned `docs/` and required ecosystem deployment bindings retain their
+separate responsibilities. See `docs/concepts/runtime-package.md`.
 
 ## New work
 
@@ -73,7 +84,20 @@ renamed alias is not proof.
   An Entity without its own Workspace may be managed inside another Entity’s
   Workspace through its supported capabilities. Preserve its actual root or
   parent-scoped identity; UI placement does not decide storage ownership.
-- Entity-specific Workspace behavior stays beneath the owning Entity runtime.
+- Core's runtime spine combines Nuxt technical entrypoints with the named
+  `app`, `ecosystem`, `user` and `workspace` owners. Shared Workspace components,
+  composables, models, server helpers and tools live under `runtime/workspace`
+  by technical role. Entity-specific Workspace behavior stays beneath its owning
+  Entity runtime. Conventional Nuxt pages, layouts, middleware and API adapters
+  delegate inward; root technical folders are not alternative concept owners.
+  See `docs/concepts/runtime-filesystem.md`.
+- Workspace ownership has three levels: Core owns FireUX-wide mechanics;
+  an Ecosystem or Extension may own `runtime/workspace/<technical-role>` for
+  actual package-wide composition; Entity-specific surfaces remain under that
+  Entity. A package Workspace consumes Core selection and supported domain
+  capabilities rather than defining another selection or authority system.
+  Granite's Workspace overview composes Properties, Documents, Tasks and
+  Compliance at the Ecosystem level. Project-specific UI stays under Project.
 - Name Entity capability readers for their domain responsibility, such as
   `useProjectApps` or `useProjectTeam`; do not insert `Workspace` merely because
   the capability is displayed there. Reserve Workspace naming for actual
@@ -147,6 +171,15 @@ renamed alias is not proof.
   membership is separate from each domain’s creation and capability requirements.
   Review sign-in requirements tool by tool on each capability page, requesting
   sign-in at the point of use where required. Do not add a global onboarding gate.
+- Workspace edits take the selected Entity ID and submitted values once, before
+  asynchronous credentials or requests. The command keeps that explicit target;
+  later selection changes do not retarget an already submitted edit. No selection
+  means no edit. The server validates the actor's permission on that exact target.
+  Team editors are keyed to the selected Entity so switching starts a fresh editor;
+  disposed editors cannot publish completion feedback into their replacements.
+  Team actions do not need selection-epoch cancellation or waits for a different
+  user to sign in. Other multi-step preparation workflows retain their own
+  lifetime rules. See `docs/concepts/family-workspace-entity.md` for adoption.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty

@@ -3,8 +3,8 @@ import { useUserSession } from 'fireux-core/runtime/user/composables/session/use
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 
 type CreateKitchenStationInput = {
   kitchenId: string
@@ -15,7 +15,7 @@ type CreateKitchenStationInput = {
 export function useKitchenStationCreate() {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { currentUser } = useAuth()
-  const { selectedId } = useKitchenWorkspaceSelection()
+  const { selectedId } = useWorkspace('kitchen')
   const config = useFireUXConfig()
   const { appUser } = useUserSession()
   const captureIntent = useCommandScope([selectedId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value)])

@@ -173,7 +173,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 import { useKeyEntityTags } from '../../composables/landing/useKeyEntityTags'
 import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../../utils/brandAssets'
 

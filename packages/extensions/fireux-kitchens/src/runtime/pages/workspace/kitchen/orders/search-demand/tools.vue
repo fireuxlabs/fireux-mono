@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-orders-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Orders & Service Tool specifications" />
+        <WorkspaceNavbar title="Orders & Service Tool specifications" />
       </template>
 
       <template #body>

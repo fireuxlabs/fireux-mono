@@ -3,9 +3,9 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-overview">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Project Overview"
+        <WorkspaceNavbar title="Project Overview"
           ><template #right><WorkspaceIntroInfo :intro="intro" /></template
-        ></LayoutsWorkspaceNavbar>
+        ></WorkspaceNavbar>
       </template>
 
       <template #body>
@@ -38,9 +38,9 @@
 import { ref, watchEffect } from 'vue'
 import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
 import { useProjectWorkspace } from '../../../project/composables/workspace/useProjectWorkspace'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import WorkspaceProjectOverviewAppContext from '../../../components/Workspace/Project/Overview/AppContext.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import WorkspaceProjectOverviewAppContext from '../../../project/components/Workspace/Overview/AppContext.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 const workspace = useProjectWorkspace()
 const published = useProjectAppContext()
 const appContext = ref<unknown>(null)
@@ -73,7 +73,7 @@ const intro = {
     'Setup links open their owning capability. This page does not change records.',
   ai: 'No AI actions are connected to this surface.',
 }
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -6,7 +6,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-create">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Add Kitchen" />
+        <WorkspaceNavbar title="Add Kitchen" />
       </template>
 
       <template #body>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useRoute } from '#imports'
 import { computed } from 'vue'
 

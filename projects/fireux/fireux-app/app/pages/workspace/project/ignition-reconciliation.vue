@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="ignition-reconciliation">
     <template #header
-      ><LayoutsWorkspaceNavbar title="Ignition reconciliation"
+      ><WorkspaceNavbar title="Ignition reconciliation"
     /></template>
     <template #body>
       <div class="mx-auto grid w-full max-w-5xl gap-6">

@@ -61,7 +61,7 @@ application edits, commits or deployments were made for this audit.
 - **Live reads and outcomes:** Core binding and read-state precedence. Domain
   readers keep exact scope and projection. The separate record-lookup board
   already tracks adoption; do not duplicate those tasks here.
-- **Team member persistence:** Core `runtime/server/utils/workspace-team/members.ts`
+- **Team member persistence:** Core `runtime/workspace/server/team/members.ts`
   is consumed by Kitchen, Property, Portfolio, Supplier, Project and Blank.
   Member creation, duplicate linked-user checks and enrichment are shared;
   domain authority and capacity are caller-owned.
@@ -79,7 +79,7 @@ application edits, commits or deployments were made for this audit.
 
 ### Improve an existing shared boundary
 
-Core `runtime/server/utils/workspace-team/roles.ts:26` hardcodes Dev/Operator
+Core `runtime/workspace/server/team/roles.ts:26` hardcodes Dev/Operator
 and their edit policy for six domains. Separate domain-provided role policy from
 shared persistence, using two materially different real consumers to prove it.
 Do not confuse organizational labels with access rights.
@@ -235,7 +235,7 @@ Core no longer contains Dev/Operator IDs or copy. All six callers migrated
 in the same patch; no old signature wrapper remains.
 
 Source files:
-- Core `runtime/server/utils/workspace-team/roles.ts`
+- Core `runtime/workspace/server/team/roles.ts`
 - Kitchen `kitchen/server/team/roles.ts`
 - Supplier `supplier/server/team/roles.ts`
 - Property and Portfolio `<entity>/server/team/roles.ts`

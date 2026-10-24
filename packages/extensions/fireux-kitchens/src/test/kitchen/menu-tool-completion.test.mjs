@@ -72,7 +72,7 @@ function context() {
       appOutcome: ref('ready'),
     }),
     useKitchenAccess: () => ({ ids: ref(['kitchen']), outcome: ref('ready') }),
-    useKitchenWorkspaceSelection: () => ({ selectedId: kitchenId }),
+    useWorkspace: () => ({ selectedId: kitchenId }),
     useFireUXConfig: () => config,
     useRoute: () => route,
   }

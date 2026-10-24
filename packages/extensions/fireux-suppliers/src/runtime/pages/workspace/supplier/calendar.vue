@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-supplier-calendar">
-    <template #header><LayoutsWorkspaceNavbar title="Supplier Calendar" /></template>
+    <template #header><WorkspaceNavbar title="Supplier Calendar" /></template>
     <template #body>
       <WorkspaceHero compact title="Supplier Calendar" description="Explore dates and scheduled work." />
       <WorkspaceSupplierSelector />

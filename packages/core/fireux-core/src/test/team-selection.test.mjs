@@ -24,16 +24,16 @@ function load(relativePath, name, dependencies) {
 }
 
 test('Team retains selection while its collection is unsettled', async () => {
-  const useTeam = load(
-    '../runtime/composables/fireux/useTeam.ts',
-    'useTeam',
+  const useWorkspaceTeam = load(
+    '../runtime/workspace/composables/useWorkspaceTeam.ts',
+    'useWorkspaceTeam',
     { computed, ref, watchEffect, defineWorkspaceCapabilityContext: value => value }
   )
   const members = ref([{ id: 'first' }, { id: 'chosen' }])
   const pending = ref(false)
   const scope = effectScope()
   const team = scope.run(() =>
-    useTeam({ members, pending, error: ref(null), workspaceId: ref('one'), capabilityId: 'test.team', canWrite: ref(true) })
+    useWorkspaceTeam({ members, pending, error: ref(null), workspaceId: ref('one'), capabilityId: 'test.team', canWrite: ref(true) })
   )
   team.selectedTeamMemberId.value = 'chosen'
   pending.value = true
@@ -52,13 +52,13 @@ test('Team retains selection while its collection is unsettled', async () => {
 
 
 test('Team focuses a created member only in its original workspace and shares capacity', async () => {
-  const useTeam = load('../runtime/composables/fireux/useTeam.ts', 'useTeam', {
+  const useWorkspaceTeam = load('../runtime/workspace/composables/useWorkspaceTeam.ts', 'useWorkspaceTeam', {
     computed, ref, watchEffect, defineWorkspaceCapabilityContext: value => value,
   })
   const members = ref([{id: 'one'}])
   const workspaceId = ref('workspace-a')
   const scope = effectScope()
-  const team = scope.run(() => useTeam({members, workspaceId, capabilityId: 'test.team', pending: ref(false), error: ref(null), canWrite: ref(true), memberLimit: ref(2)}))
+  const team = scope.run(() => useWorkspaceTeam({members, workspaceId, capabilityId: 'test.team', pending: ref(false), error: ref(null), canWrite: ref(true), memberLimit: ref(2)}))
   team.selectCreated('new')
   members.value.push({id: 'new'})
   await nextTick()

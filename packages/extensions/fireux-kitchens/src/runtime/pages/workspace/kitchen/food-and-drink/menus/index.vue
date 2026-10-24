@@ -1,11 +1,11 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-menus">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Menus">
+      <WorkspaceNavbar title="Menus">
         <template #right>
           <WorkspaceKitchenAICapabilityInfo capability="menus" />
         </template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
     </template>
     <template #body>
       <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">

@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { WorkspaceOutcome } from './workspace/workspace-outcome'
+import type { WorkspaceOutcome } from '../../workspace/models/outcome'
 
 /** Selected-entity state shared by domain-owned Overview controllers. */
 export function useOverview<Entity>(options: {

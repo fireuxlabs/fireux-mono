@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-operating-hours">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Operating hours"
+        ><WorkspaceNavbar title="Operating hours"
       /></template>
       <template #body>
         <div class="workspace-profile">

@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-overview-search-demand-analysis">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Overview demand analysis"
+        ><WorkspaceNavbar title="Overview demand analysis"
       /></template>
       <template #body>
         <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">

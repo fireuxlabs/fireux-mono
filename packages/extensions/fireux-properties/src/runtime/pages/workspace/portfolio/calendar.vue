@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-portfolio-calendar">
-    <template #header><LayoutsWorkspaceNavbar title="Portfolio Calendar" /></template>
+    <template #header><WorkspaceNavbar title="Portfolio Calendar" /></template>
     <template #body>
       <WorkspaceHero compact title="Portfolio Calendar" description="Explore dates and scheduled work." />
       <WorkspacePortfolioSelector />

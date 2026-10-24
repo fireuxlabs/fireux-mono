@@ -23,7 +23,7 @@ test('Recipe mutation rejects obsolete pre-dispatch intent and preserves an alre
  for(const stage of ['prepare','auth','token','response'])for(const changed of ['account','kitchen','route','logout','dispose']){
   const h=scope(),prep=deferred(),auth=deferred(),token=deferred(),response=deferred(),calls=[]
   const user={uid:'u',getIdToken:()=>token.promise};h.currentUser.value=user
-  const factory=load('../../runtime/kitchen/composables/recipe/useRecipeMutation.ts',{useRecipeScope:h.useRecipeScope,useRoute:()=>({get fullPath(){return h.routePath.value}}),useAuth:()=>({currentUser:h.currentUser}),useKitchenWorkspaceSelection:()=>({selectedId:h.selectedId}),useWorkspaceWriteGuard:()=>({requireWritableData(){}}),useRequireUser:()=>auth.promise,$fetch:(...args)=>{calls.push(args);return response.promise}},'useRecipeMutation')
+  const factory=load('../../runtime/kitchen/composables/recipe/useRecipeMutation.ts',{useRecipeScope:h.useRecipeScope,useRoute:()=>({get fullPath(){return h.routePath.value}}),useAuth:()=>({currentUser:h.currentUser}),useWorkspace:()=>({selectedId:h.selectedId}),useWorkspaceWriteGuard:()=>({requireWritableData(){}}),useRequireUser:()=>auth.promise,$fetch:(...args)=>{calls.push(args);return response.promise}},'useRecipeMutation')
   const pending=factory().mutate('POST',{draft:{name:'Dough'}},'k',()=>prep.promise),rejected=stage==='response'?pending:assert.rejects(pending,/changed/)
   if(stage!=='prepare'){prep.resolve({kitchenId:'k',draft:{name:'Dough'}});await Promise.resolve()}
   if(stage==='token'||stage==='response'){auth.resolve(user);await Promise.resolve()}

@@ -20,7 +20,7 @@ function harness() {
     useAuth: () => ({ currentUser }),
     useRequireUser: async () => user,
     useWorkspaceWriteGuard: () => ({ requireWritableData: () => {} }),
-    useKitchenWorkspaceSelection: () => ({ selectedId }),
+    useWorkspace: () => ({ selectedId }),
     useMenuEditorScope: () => () => () => true,
     $fetch: async (url, options) => {
       calls.push({ url, ...options })

@@ -22,7 +22,7 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'
 import { useProjectRead } from '../../../composables/useProjectRead'
 import { isGuestProject } from '../../../utils/guest-project'
 

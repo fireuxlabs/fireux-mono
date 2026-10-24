@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { LandingProductSurface } from '../../../types/landing-product'
+import type { LandingProductSurface } from './product.types'
 
 const props = withDefaults(defineProps<{
   items: readonly LandingProductSurface[]

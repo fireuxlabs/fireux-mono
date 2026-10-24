@@ -456,7 +456,7 @@ test('shared Workspace navigation preserves the agreed Kitchen group order', () 
   const source = readFileSync(
     fileURLToPath(
       new URL(
-        '../../../../core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceNav.ts',
+        '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceNav.ts',
         import.meta.url
       )
     ),
@@ -537,7 +537,7 @@ test('Food & drink creation and service configuration have no redundant child pa
 
 test('group child surfaces retain every entrance and compose summaries inside the standard card', () => {
   const components = new URL('../runtime/kitchen/components/', import.meta.url)
-  const group = readFileSync(new URL('../../../../core/fireux-core/src/runtime/components/Workspace/GroupPage.vue', import.meta.url), 'utf8')
+  const group = readFileSync(new URL('../../../../core/fireux-core/src/runtime/workspace/components/GroupPage.vue', import.meta.url), 'utf8')
   const food = readFileSync(new URL('FoodAndDrink/Index.vue', components), 'utf8')
   const services = readFileSync(new URL('FoodAndDrink/Services/Overview.vue', components), 'utf8')
   assert.match(group, /v-for="item in children"/)

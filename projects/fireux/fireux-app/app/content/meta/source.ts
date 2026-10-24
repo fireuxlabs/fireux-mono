@@ -1,8 +1,8 @@
 export const fireuxOffer = {
   category: 'Industry SaaS framework',
-  headline: 'Build the SaaS your industry needs.',
+  headline: 'Build your industry SaaS ecosystem.',
   heroDescription:
-    'Combine shared SaaS foundations with industry libraries to create connected Apps and Workspaces.',
+    'Identity · Team · Customers · Products · Services · Calendar · Tasks · Orders · Finance · Documents · Notifications · Reporting',
   heroBullets: [
     'Build with shared SaaS foundations and industry libraries',
     'Create an industry platform with connected customer Apps',

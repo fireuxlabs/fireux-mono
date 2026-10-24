@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-settings">
-      <template #header><LayoutsWorkspaceNavbar title="Access" /></template>
+      <template #header><WorkspaceNavbar title="Access" /></template>
       <template #body><KitchenSettingsAccess /></template>
     </UDashboardPanel>
   </div>

@@ -6,7 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 const source = readFileSync(
   new URL(
-    '../runtime/composables/navigation/workspace-active-destination.ts',
+    '../runtime/workspace/utils/active-destination.ts',
     import.meta.url
   ),
   'utf8'

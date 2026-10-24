@@ -6,7 +6,7 @@ import {
   readPropertyMutationActor,
   requirePropertyMutationAuthority,
 } from './authority'
-import { enrichTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { enrichTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 export async function readPropertyTeamMembers(
   event: H3Event,

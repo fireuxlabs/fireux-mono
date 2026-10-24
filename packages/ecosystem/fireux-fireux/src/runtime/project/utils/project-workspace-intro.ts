@@ -1,4 +1,4 @@
-import type { WorkspaceIntro } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
+import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
 
 type ProjectLandingFacts = {
   status: string

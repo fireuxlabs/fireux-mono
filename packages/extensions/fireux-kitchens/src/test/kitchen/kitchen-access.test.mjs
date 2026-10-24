@@ -30,7 +30,7 @@ import {
   resolvePostAuthDestination,
   userOnboardingPath,
 } from 'fireux-core/runtime/utils/onboarding-route'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
+import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import {
   serverKitchenAccessTarget,
   resolveKitchenGrantIds,

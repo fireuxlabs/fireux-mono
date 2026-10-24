@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { usePortfolioTaskCollection } from '../../../composables/usePortfolioTaskCollection'
 const tasks = usePortfolioTaskCollection()
 const settled = computed(

@@ -25,7 +25,7 @@ function harness() {
     watch,
     useAuth: () => ({ currentUser }),
     useRequireUser: () => auth,
-    useKitchenWorkspaceSelection: () => ({ selectedId }),
+    useWorkspace: () => ({ selectedId }),
     $fetch: async (...args) => {
       calls.push(args)
       return {

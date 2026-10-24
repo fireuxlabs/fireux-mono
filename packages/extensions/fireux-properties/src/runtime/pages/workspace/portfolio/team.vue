@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-portfolio-team">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Portfolio Team">
+      <WorkspaceNavbar title="Portfolio Team">
         <template #right><WorkspaceIntroInfo :intro="intro" /></template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
     </template>
     <template #body>
         <WorkspaceHero compact title="Portfolio Team" description="Portfolio workspace team." />
@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WorkspacePortfolioTeam from '../../../portfolio/components/Workspace/Team/Index.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import { usePortfolioTeam } from '../../../portfolio/composables/usePortfolioTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

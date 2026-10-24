@@ -5,7 +5,7 @@ import { createError, type H3Event } from 'h3'
 import { type Project } from '../../models/project.model'
 import { readProjectDocument } from '../../utils/readProject'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
+import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverProjectAccessTarget } from '../access'
 

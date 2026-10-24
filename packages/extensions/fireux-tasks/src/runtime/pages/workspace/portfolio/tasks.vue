@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-portfolio-tasks">
-      <template #header><LayoutsWorkspaceNavbar title="Tasks" /></template>
+      <template #header><WorkspaceNavbar title="Tasks" /></template>
       <template #body><PortfolioTasks /></template>
     </UDashboardPanel>
   </div>

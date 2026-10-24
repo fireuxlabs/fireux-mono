@@ -6,7 +6,7 @@ import {
   readSupplierMutationActor,
   requireSupplierMutationAuthority,
 } from './authority'
-import { deleteTeamMember } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { deleteTeamMember } from 'fireux-core/runtime/workspace/server/team/members'
 export async function deleteSupplierTeamMember(
   event: H3Event,
   input: { supplierId: string; memberId: string }

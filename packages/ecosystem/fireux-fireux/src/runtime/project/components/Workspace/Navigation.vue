@@ -50,8 +50,8 @@
 import { computed } from 'vue'
 import { projectIdentityMedia } from '../../utils/project-identity-media'
 import { useProjectAppContext } from '../../composables/workspace/identity/useProjectAppContext'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
 withDefaults(

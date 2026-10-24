@@ -79,7 +79,7 @@ test('Prep create captures seed inputs, invalidates pre-dispatch continuations a
             },
           }),
           useAuth: () => ({ currentUser: h.currentUser }),
-          useKitchenWorkspaceSelection: () => ({ selectedId: h.selectedId }),
+          useWorkspace: () => ({ selectedId: h.selectedId }),
           useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
           useRequireUser: () => auth.promise,
           useTranslationSeed: () => ({
@@ -280,7 +280,7 @@ test('stable Prep create preserves pure seed maps and failedLanguages return con
       onBeforeUnmount: () => {},
       useRoute: () => ({ fullPath: '/recipes/a' }),
       useAuth: () => ({ currentUser: h.currentUser }),
-      useKitchenWorkspaceSelection: () => ({ selectedId: h.selectedId }),
+      useWorkspace: () => ({ selectedId: h.selectedId }),
       useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
       useRequireUser: async () => user,
       useTranslationSeed: () => ({

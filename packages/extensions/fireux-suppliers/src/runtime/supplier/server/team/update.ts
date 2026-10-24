@@ -6,7 +6,7 @@ import {
   readSupplierMutationActor,
   requireSupplierMutationAuthority,
 } from './authority'
-import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { updateTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 export type SupplierTeamMemberChanges = { name: string }
 export type SupplierTeamMemberUpdate = {
   memberId: string

@@ -73,7 +73,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
             useAuth: () => ({ currentUser }),
             useRequireUser: () => auth.promise,
             useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
-            useKitchenWorkspaceSelection: () => ({ selectedId }),
+            useWorkspace: () => ({ selectedId }),
             useMenuEditorScope: scope(currentUser, disposed),
             $fetch: (...args) => {
               calls.push(args)

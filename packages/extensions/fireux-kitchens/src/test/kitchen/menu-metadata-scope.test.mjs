@@ -69,7 +69,7 @@ test('Menu metadata/rename/Delete preserve target across waits and reject scope 
             useAuth: () => ({ currentUser }),
             useRequireUser: () => auth.promise,
             useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
-            useKitchenWorkspaceSelection: () => ({ selectedId }),
+            useWorkspace: () => ({ selectedId }),
             useMenuEditorScope: scope(currentUser, disposed),
             $fetch: (...args) => {
               calls.push(args)

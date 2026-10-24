@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-supplier-team">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Supplier Team">
+      <WorkspaceNavbar title="Supplier Team">
         <template #right><WorkspaceIntroInfo :intro="intro" /></template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
     </template>
     <template #body>
         <WorkspaceHero compact title="Supplier Team" description="Supplier workspace team." />
@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WorkspaceSupplierTeam from '../../../supplier/components/Workspace/Team/Index.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import { useSupplierTeam } from '../../../supplier/composables/useSupplierTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

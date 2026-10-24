@@ -52,7 +52,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type {
   LandingCardOrbitDataSource,
   LandingCardOrbitItem,
-} from '../../../types/landing-card-orbit'
+} from './card-orbit.types'
 import {
   landingOrbitItemCoordinates,
   landingOrbitItemStyle,

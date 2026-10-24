@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { ProjectLandingIntent } from '../../../models/landing-intent'
 

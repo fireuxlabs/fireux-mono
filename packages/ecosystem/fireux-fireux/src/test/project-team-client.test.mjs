@@ -4,8 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import { computed, effectScope, ref, watchEffect } from 'vue'
-import { useTeam } from '../../../../core/fireux-core/src/runtime/composables/fireux/useTeam.ts'
-import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
+import { useWorkspaceTeam } from '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceTeam.ts'
 
 function fixture() {
   const source = readFileSync(
@@ -22,16 +21,12 @@ function fixture() {
     data: ref({ id: 'project-a', identity: { name: 'Project A' } }),
     outcome: ref('ready'),
   }
-  const read = Object.assign(
-    ref([{ id: 'person-a', name: 'Person A', role_ids: [] }]),
-    {
-      pending: ref(false),
-      error: ref(undefined),
-      outcome: ref('ready'),
-    }
-  )
   const projection = {
-    data: ref({ ok: true, project_id: 'project-a', members: [] }),
+    data: ref({
+      ok: true,
+      project_id: 'project-a',
+      members: [{ id: 'person-a', name: 'Person A', roleIds: [] }],
+    }),
     pending: ref(false),
     error: ref(undefined),
   }
@@ -43,15 +38,12 @@ function fixture() {
   const dependencies = {
     computed,
     watchEffect,
-    useTeam,
-    useCommandScope,
+    useWorkspaceTeam,
     useAuth: () => ({ currentUser, hasAuthState: ref(true) }),
     useAppSession: () => session,
     useProjectWorkspace: () => workspace,
     useFireUXConfig: () => ({ appId: 'fireux', subscriptionCapacity: {} }),
     useLiveAsyncData: () => projection,
-    readRuntimeFirestoreDatabaseId: () => 'runtime',
-    useFirestoreRead: () => ({ firestoreFetchCollection: () => read }),
     normalizeString: (value) => String(value ?? '').trim(),
     appSubscriptionCapacity: () => 10,
     useWorkspacePageState: () => ({ publish() {} }),
@@ -65,7 +57,6 @@ function fixture() {
   return {
     state,
     workspace,
-    read,
     projection,
     session,
     stop: () => owner.stop(),
@@ -76,18 +67,15 @@ test('Project Team distinguishes a failed collection read from loading or an emp
   const f = fixture()
   assert.equal(f.state.derived.value.status, 'ready')
   assert.equal(f.state.context.value.collection.records.length, 1)
-  f.read.value = undefined
-  f.read.outcome.value = 'error'
-  f.read.error.value = new Error('Team could not be read')
+  f.projection.error.value = new Error('Team could not be read')
   assert.equal(f.state.derived.value.status, 'error')
   assert.equal(
     f.state.derived.value.capability.primitives.create.available,
     false
   )
   assert.equal(f.state.context.value.collection.records.length, 0)
-  f.read.error.value = undefined
-  f.read.outcome.value = 'empty'
-  f.read.value = []
+  f.projection.error.value = undefined
+  f.projection.data.value = { ok: true, project_id: 'project-a', members: [] }
   assert.equal(f.state.derived.value.status, 'ready')
   assert.equal(
     f.state.derived.value.capability.primitives.create.available,
@@ -99,18 +87,19 @@ test('Project Team distinguishes a failed collection read from loading or an emp
 test('Project Team hides old roster records while the next scope is loading', () => {
   const f = fixture()
   f.workspace.data.value = { id: 'project-b', identity: { name: 'Project B' } }
-  f.read.pending.value = true
-  f.read.outcome.value = 'pending'
+  f.projection.pending.value = true
   assert.equal(f.state.context.value.collection.records.length, 0)
   assert.equal(f.state.derived.value.status, 'loading')
   assert.equal(
     f.state.derived.value.capability.primitives.create.available,
     false
   )
-  f.read.pending.value = false
-  f.read.outcome.value = 'ready'
-  f.read.value = [{ id: 'person-b', name: 'Person B', role_ids: [] }]
-  f.projection.data.value = { ok: true, project_id: 'project-b', members: [] }
+  f.projection.pending.value = false
+  f.projection.data.value = {
+    ok: true,
+    project_id: 'project-b',
+    members: [{ id: 'person-b', name: 'Person B', roleIds: [] }],
+  }
   assert.equal(f.state.context.value.collection.records[0].id, 'person-b')
   assert.equal(
     f.state.derived.value.capability.primitives.create.available,
@@ -123,8 +112,6 @@ test('a settled Workspace without a Project shows an empty surface rather than p
   const f = fixture()
   f.workspace.data.value = null
   f.workspace.outcome.value = 'idle'
-  f.read.value = undefined
-  f.read.outcome.value = 'idle'
   assert.equal(f.state.derived.value.status, 'empty')
   assert.equal(f.state.context.value.collection.records.length, 0)
   assert.equal(

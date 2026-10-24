@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 const links = [
+  { label: 'Capabilities', to: '/capabilities' },
   { label: 'Product', to: '/product' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Packages', to: '/packages' },

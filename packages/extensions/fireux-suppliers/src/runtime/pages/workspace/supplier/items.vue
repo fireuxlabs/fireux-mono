@@ -3,11 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-supplier-items">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Items">
+        <WorkspaceNavbar title="Items">
           <template #right>
             <WorkspaceAICapabilityPlaceholder capability="Supplier Items" />
           </template>
-        </LayoutsWorkspaceNavbar>
+        </WorkspaceNavbar>
       </template>
 
       <template #body>

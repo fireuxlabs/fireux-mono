@@ -523,7 +523,7 @@ Portfolio and Blank retain their existing named Workspace folders.
 - App entry-only literature stays in `app/components/Workspace/<Entity>/Home`.
   Names such as Header, Info, CapabilityLinks and DiscoveryLinks distinguish
   App framing from lower domain Home components; do not shadow those components.
-- Shared Core mechanics stay in Core's `components/Workspace`. Its Overview
+- Shared Core Workspace mechanics stay in Core's `workspace/components`. Its Overview
   presentation lives together under `Overview`; `DedicatedApp.vue` describes
   the associated App, not generic management or access policy.
 

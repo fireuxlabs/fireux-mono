@@ -2,7 +2,7 @@ import type { NavItem, NavPosition } from './types'
 import { computed } from 'vue'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useDeveloperAccess } from '../../app/composables/useDeveloperAccess'
-import { useWorkspaceEntryCta } from '../fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 import { useNav } from './useNav'
 
 const canShowDashboardItem = (

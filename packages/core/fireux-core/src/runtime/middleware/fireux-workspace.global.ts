@@ -9,14 +9,14 @@ import {
 import {
   workspaceFamilyFromRouteContext,
   normalizeWorkspaceFamily,
-} from '../composables/fireux/workspace/workspaceRoutes'
+} from '../workspace/utils/routes'
 import {
   createClientRouteCheck,
   resolveClientAppAdmin,
   resolveClientAuthState,
 } from '../utils/routeAuthGuard'
 
-import { useWorkspaceEntryCta } from '../composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from '../workspace/composables/useWorkspaceEntryCta'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500

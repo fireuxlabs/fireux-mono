@@ -3,7 +3,7 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { Portfolio } from '../../models/portfolio.model'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import {
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,

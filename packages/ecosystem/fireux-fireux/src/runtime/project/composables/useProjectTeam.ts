@@ -1,19 +1,14 @@
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { useTeam } from 'fireux-core/runtime/composables/fireux/useTeam'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
+import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useProjectWorkspace } from './workspace/useProjectWorkspace'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 
 type ProjectTeamResponse = {
   ok: true
@@ -58,50 +53,22 @@ export function useProjectTeam() {
       watch: [currentUser, hasAuthState, projectId],
     }
   )
-  const collectionPath = computed(() =>
-    projectId.value ? `projects/${projectId.value}/team` : ''
-  )
-  const { firestoreFetchCollection } = useFirestoreRead({
-    databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
-  })
-  const liveMembers =
-    firestoreFetchCollection<WorkspaceTeamMemberDocument>(collectionPath)
-  const enrichedById = computed(
-    () =>
-      new Map<string, WorkspaceTeamMember>(
-        (data.value && data.value.project_id === projectId.value
-          ? data.value.members
-          : []
-        ).map((member: WorkspaceTeamMember) => [member.id, member])
-      )
-  )
   const members = computed<WorkspaceTeamMember[]>(() =>
-    (projectId.value && ['ready', 'empty'].includes(liveMembers.outcome.value)
-      ? (liveMembers.value ?? [])
+    !requestError.value && data.value?.project_id === projectId.value
+      ? data.value.members
       : []
-    ).map((member) => {
-      const enriched = enrichedById.value.get(member.id)
-      return {
-        id: member.id,
-        userId: enriched?.userId || member.user_id || '',
-        name: enriched?.name || member.name || 'Unnamed team member',
-        avatar: enriched?.avatar || '',
-        roleIds: member.role_ids || [],
-      }
-    })
   )
   const pending = computed(
     () =>
       !hasAuthState.value ||
       appSession.pending.value ||
       workspace.outcome.value === 'pending' ||
-      requestPending.value ||
-      liveMembers.pending.value
+      (Boolean(projectId.value) &&
+        (requestPending.value || data.value?.project_id !== projectId.value))
   )
   const error = computed<Error | undefined>(() => {
     const cause =
       requestError.value ??
-      liveMembers.error.value ??
       appSession.error.value ??
       (workspace.outcome.value === 'error'
         ? new Error('Project workspace could not be read.')
@@ -127,7 +94,7 @@ export function useProjectTeam() {
         data.value.project_id === projectId.value
     )
   )
-  const team = useTeam<WorkspaceTeamMember>({
+  const team = useWorkspaceTeam<WorkspaceTeamMember>({
     canWrite,
     members,
     workspaceId: projectId,
@@ -151,23 +118,19 @@ export function useProjectTeam() {
   }))
   const derived = team.derived
 
-  const captureCommand = useCommandScope([
-    projectId,
-    currentUser,
-    appSession.appUser,
-    () => fireux.appId,
-  ])
-
   async function createTeamMember(input: { name: string; userId?: string }) {
-    const isCurrent = captureCommand()
     input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     const targetId = state.value.project.id
-    const user = await useRequireUser()
+    if (!targetId)
+      throw new Error('Select a Project before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ memberId: string; name: string }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team`,
       {
@@ -176,19 +139,21 @@ export function useProjectTeam() {
         body: input,
       }
     )
-    if (isCurrent() && targetId === projectId.value)
-      team.selectCreated(result.memberId)
+    if (targetId === projectId.value) team.selectCreated(result.memberId)
     return result
   }
 
   async function updateTeamMember(input: { memberId: string; name: string }) {
-    const isCurrent = captureCommand()
     input = { ...input }
     const targetId = state.value.project.id
-    const user = await useRequireUser()
+    if (!targetId)
+      throw new Error('Select a Project before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     await $fetch(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(input.memberId)}`,
       {
@@ -202,12 +167,15 @@ export function useProjectTeam() {
   }
 
   async function removeTeamMember(memberId: string) {
-    const isCurrent = captureCommand()
     const targetId = state.value.project.id
-    const user = await useRequireUser()
+    if (!targetId)
+      throw new Error('Select a Project before changing Team members.')
+    const user = currentUser.value
+    if (!user || user.isAnonymous)
+      throw new Error('Sign in before changing Team members.')
     const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
-      throw new Error('Team action context changed. Try again.')
+    if (user.uid !== currentUser.value?.uid)
+      throw new Error('The signed-in account changed. Try again.')
     const result = await $fetch<{ name: string }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(memberId)}`,
       {
@@ -216,7 +184,6 @@ export function useProjectTeam() {
       }
     )
     if (
-      isCurrent() &&
       targetId === projectId.value &&
       team.selectedTeamMemberId.value === memberId
     )
@@ -237,6 +204,7 @@ export function useProjectTeam() {
   watchEffect(() => pageState.publish(context.value))
 
   return {
+    workspaceId: projectId,
     context,
     state,
     derived,

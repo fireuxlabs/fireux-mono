@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-property-identity">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Property Identity"
+        ><WorkspaceNavbar title="Property Identity"
       /></template>
       <template #body><WorkspacePropertyIdentity /></template>
     </UDashboardPanel>

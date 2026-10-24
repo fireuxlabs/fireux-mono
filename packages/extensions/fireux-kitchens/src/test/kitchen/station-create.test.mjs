@@ -72,7 +72,7 @@ test('client blocks account/Kitchen round trips during both waits and dispatches
     const auth = new Promise(resolve => { resolveUser = resolve }), token = new Promise(resolve => { resolveToken = resolve })
     const user = { uid: 'u', getIdToken: () => token }, currentUser = ref(user), selectedId = ref('k'), calls = []
     const factory = load('../../runtime/kitchen/composables/stations/useKitchenStationCreate.ts', {
-      watch, useAuth: () => ({ currentUser }), useRequireUser: () => auth, useKitchenWorkspaceSelection: () => ({ selectedId }),
+      watch, useAuth: () => ({ currentUser }), useRequireUser: () => auth, useWorkspace: () => ({ selectedId }),
       useWorkspaceWriteGuard: () => ({ requireWritableData() {} }), $fetch: async (...args) => { calls.push(args); return { id: 'grill' } },
     }, 'useKitchenStationCreate')
     const input = { kitchenId: 'k', name: 'Grill', sortOrder: 1 }, pending = factory().createKitchenStation(input)

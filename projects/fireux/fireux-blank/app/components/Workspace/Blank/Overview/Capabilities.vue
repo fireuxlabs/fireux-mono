@@ -21,12 +21,12 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { useBlankTeamSummary } from '../../../../composables/useBlankTeamSummary'
 import { useBlankIdentity } from '../../../../composables/useBlankIdentity'
 import { useBlankWorkspaceIndex } from '../../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
-import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspaceNotifications } from 'fireux-core/runtime/workspace/composables/useWorkspaceNotifications'
 const team = useBlankTeamSummary()
 const identity = useBlankIdentity()
 const index = useBlankWorkspaceIndex()

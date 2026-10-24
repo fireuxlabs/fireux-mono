@@ -11,7 +11,7 @@ import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-su
 import {
   createTeamMember,
   resolveTeamMemberInput,
-} from 'fireux-core/runtime/server/utils/workspace-team/members'
+} from 'fireux-core/runtime/workspace/server/team/members'
 export async function createPortfolioTeamMember(
   event: H3Event,
   input: { portfolioId: string; name: string; userId?: string }

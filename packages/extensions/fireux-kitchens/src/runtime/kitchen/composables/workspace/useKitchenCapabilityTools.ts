@@ -1,7 +1,7 @@
 import { navigateTo, useRoute, useState } from '#imports'
 import { computed, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import {
   kitchenCapabilityTools,

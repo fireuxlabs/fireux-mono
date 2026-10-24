@@ -63,6 +63,14 @@ family statements nor an intake status change authorize publication or deploymen
 
 ## Current source and boundaries
 
+The homepage's `app/components/Framework/IgnitionPrompt.vue` carries a local,
+in-memory idea into `app/pages/ignite.vue`. This industry-platform entrance
+prepares a visitor-reviewed brief and opens an email draft to the existing
+FireUX contact. It neither submits a Conversation nor invokes a model, creates
+an App or persists the draft. Refresh may clear it. Keep it separate from the
+priced branded-App request below; do not silently apply those terms to an
+industry-platform enquiry.
+
 Paths below are relative to this App:
 
 - `app/pages/get-started.vue` and `app/composables/useIgnitionRequestForm.ts`: public intake and `/api/conversations` submission.

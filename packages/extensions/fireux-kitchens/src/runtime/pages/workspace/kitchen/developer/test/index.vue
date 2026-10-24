@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-test">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Test" />
+      <WorkspaceNavbar title="Test" />
       <UDashboardToolbar :ui="{ root: 'border-b-0' }"
         ><UTabs
           v-if="test.records.value.length"

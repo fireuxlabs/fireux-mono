@@ -6,7 +6,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
-import { enrichTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { enrichTeamMembers } from 'fireux-core/runtime/workspace/server/team/members'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 export async function readKitchenTeamMembers(
   event: H3Event,

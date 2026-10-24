@@ -133,6 +133,21 @@ summarises its children; it does not create a second product promise.
 
 ## FireUX Patterns
 
+The public homepage leads with an App-owned industry prompt in
+`Framework/IgnitionPrompt.vue`. It carries an in-memory idea into `/ignite`,
+where the visitor prepares a brief and opens an email enquiry. This is a
+separate industry-platform scoping entrance, not the priced branded-App request
+form, automatic generation or persisted intake. No industry idea goes in the URL.
+The three existing offer paths remain below the hero.
+
+FireUX App owns the public `/capabilities` library explanation. Its
+`app/components/Framework/Capabilities.vue` is curated source-backed literature,
+not runtime registration, entitlements or a published-package catalogue. Preserve
+the distinctions between connected reference behavior, read-only surfaces,
+presentation, shared primitives and industry-specific implementations. Blank is
+the neutral reference; its catalogue presence does not prove a complete business
+journey or cross-industry reuse. Native Nuxt UI remains the presentation owner.
+
 FireUX App owns the explanatory `/patterns` catalogue and its articles under
 `projects/fireux/fireux-app/app/pages/patterns`. The product page links to it.
 Articles explain source-backed examples, boundaries and implementation limits;
@@ -144,11 +159,11 @@ Review implementation claims when their referenced owners change.
 ## Current source
 
 - `packages/core/fireux-core/src/runtime/components/landing/DirectoryHome.vue`
-- `packages/core/fireux-core/src/runtime/components/Workspace/Hero.vue`
-- `packages/core/fireux-core/src/runtime/components/Workspace/GuestWelcome.vue`
-- `packages/core/fireux-core/src/runtime/components/Workspace/EntityCollection.vue`
+- `packages/core/fireux-core/src/runtime/workspace/components/Hero.vue`
+- `packages/core/fireux-core/src/runtime/workspace/components/GuestWelcome.vue`
+- `packages/core/fireux-core/src/runtime/workspace/components/EntityCollection.vue`
 
-- `packages/core/fireux-core/src/types/landing-product.ts`
+- `packages/core/fireux-core/src/runtime/components/landing/product.types.ts`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/EcosystemHome.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductSurfaceShowcase.vue`
@@ -186,7 +201,7 @@ chat decisions here.
 - Visually verify the changed product-literature regions and their actions at
   phone and desktop widths; include pricing index/tier routes when pricing changes.
 - For FireUX's framework frontend, verify the offering's three destinations,
-  persistent five-section resource navigation, native light/dark controls, local
+  persistent resource navigation including Capabilities, native light/dark controls, local
   component examples, source guide and separate Workspace destination. Verify
   Showcase read outcomes through its existing owner.
 - Run relevant source-owned tests and `git diff --check` before handoff.

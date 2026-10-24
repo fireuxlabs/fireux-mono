@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { LandingPricingPlan } from '../../../../types/landing-product'
+import type { LandingPricingPlan } from '../../../components/landing/product.types'
 
 export type AppPricingTierId =
   | 'free'

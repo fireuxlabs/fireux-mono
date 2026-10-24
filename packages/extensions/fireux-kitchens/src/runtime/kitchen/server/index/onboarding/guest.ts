@@ -9,7 +9,7 @@ import {
   serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
+import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record'
 import { createKitchenSystemMenus } from './system-menus'

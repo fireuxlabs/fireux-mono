@@ -27,6 +27,7 @@ const appConfig = defineFireuxConfig({
       '/',
       '/getting-started',
       '/components',
+      '/capabilities',
       '/theme',
       '/templates',
       '/product',

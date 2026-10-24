@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'vue'
-import type { LandingCardOrbitItem } from '../../../types/landing-card-orbit'
+import type { LandingCardOrbitItem } from './card-orbit.types'
 
 export type ResolvedOrbitItem = Required<LandingCardOrbitItem>
 

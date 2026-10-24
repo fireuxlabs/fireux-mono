@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
+import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import type { KitchenOnboardingFirestore as Firestore } from './onboarding-actor'
 import { onboardingText as text } from './onboarding-policy'
 

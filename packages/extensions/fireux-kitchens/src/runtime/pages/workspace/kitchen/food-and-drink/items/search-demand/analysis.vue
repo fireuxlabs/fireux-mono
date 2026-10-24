@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-dishes-search-demand-analysis">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Dishes demand analysis" />
+        <WorkspaceNavbar title="Dishes demand analysis" />
       </template>
 
       <template #body>

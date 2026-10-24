@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-supplier-catalogue">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Supplier Catalogue" />
+        <WorkspaceNavbar title="Supplier Catalogue" />
       </template>
 
       <template #body>

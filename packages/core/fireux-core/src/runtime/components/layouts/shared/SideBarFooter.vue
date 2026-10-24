@@ -61,7 +61,7 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from '../../../workspace/composables/useWorkspaceEntryState'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../../user/composables/session/useUserSession'

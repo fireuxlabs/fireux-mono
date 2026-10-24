@@ -1,6 +1,7 @@
 <template>
   <div>
     <FrameworkHero />
+    <FrameworkComparison />
     <FrameworkOffers />
     <FrameworkLayers />
     <FrameworkLibrary />

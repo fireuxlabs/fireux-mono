@@ -172,8 +172,8 @@ import { useDiagnosticsUi } from '../../composables/diagnostics/useDiagnosticsUi
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../utils/sync-app-media'
-import { workspaceFamilyFromRouteContext } from '../../composables/fireux/workspace/workspaceRoutes'
-import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
+import { workspaceFamilyFromRouteContext } from '../../workspace/utils/routes'
+import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev

@@ -3,11 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-portfolio-finance">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Financial Signals">
+        <WorkspaceNavbar title="Financial Signals">
           <template #right>
             <WorkspaceAICapabilityPlaceholder capability="Portfolio Finance" />
           </template>
-        </LayoutsWorkspaceNavbar>
+        </WorkspaceNavbar>
       </template>
 
       <template #body>

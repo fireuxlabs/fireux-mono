@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-supplier-test">
-    <template #header><LayoutsWorkspaceNavbar title="Supplier Test" /></template>
+    <template #header><WorkspaceNavbar title="Supplier Test" /></template>
     <template #body>
       <WorkspaceHero compact title="Supplier Test" description="Save and manage simple strings." />
       <WorkspaceSupplierSelector />

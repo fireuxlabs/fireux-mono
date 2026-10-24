@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-identity-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Identity Tool specifications" />
+        <WorkspaceNavbar title="Identity Tool specifications" />
       </template>
 
       <template #body>

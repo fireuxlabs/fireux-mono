@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-calendar-search-demand-tools">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Calendar coordination boundary"
+        ><WorkspaceNavbar title="Calendar coordination boundary"
       /></template>
       <template #body>
         <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">

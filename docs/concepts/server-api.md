@@ -225,7 +225,7 @@ Current reusable server evidence includes:
   tree and delegate environment checks, Index projections, initialization,
   media, settings, membership, and Team work to `runtime/app/server/`;
 - Workspace Entity onboarding authority:
-  `packages/core/fireux-core/src/runtime/server/utils/workspace-entity/onboarding-authority.ts`;
+  `packages/core/fireux-core/src/runtime/workspace/server/entity/onboarding-authority.ts`;
 - Menu ownership/manifest/ordering workflows:
   `packages/extensions/fireux-kitchens/src/runtime/menu/server/`;
 - Kitchen order transition enforcement:

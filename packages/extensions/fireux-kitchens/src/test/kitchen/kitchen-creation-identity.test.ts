@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
+import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import { resolveKitchenGrantIds } from '../../runtime/kitchen/server/core/access.ts'
 import { readKitchenAccessIds } from '../../runtime/kitchen/utils/kitchen-access.ts'
 import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'

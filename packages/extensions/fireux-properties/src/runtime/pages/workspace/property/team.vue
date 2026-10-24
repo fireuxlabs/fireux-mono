@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-property-team">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Property Team">
+      <WorkspaceNavbar title="Property Team">
         <template #right><WorkspaceIntroInfo :intro="intro" /></template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
     </template>
     <template #body>
         <WorkspaceHero compact title="Property Team" description="Property workspace team." />
@@ -22,8 +22,8 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import { usePropertyTeam } from '../../../property/composables/usePropertyTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

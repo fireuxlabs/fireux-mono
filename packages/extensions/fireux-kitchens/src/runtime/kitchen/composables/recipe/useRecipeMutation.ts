@@ -4,14 +4,14 @@ import { useRoute } from '#imports'
 import { useRecipeScope } from './useRecipeScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 
 /** Shared credential and stale-intent boundary for the three Recipe commands. */
 export function useRecipeMutation(ownerSources: WatchSource[] = []) {
   const route = useRoute()
   const { currentUser } = useAuth()
-  const { selectedId } = useKitchenWorkspaceSelection()
+  const { selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const captureScope = useRecipeScope([
     selectedId,

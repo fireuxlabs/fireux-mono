@@ -15,7 +15,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 const props = defineProps<{ title: string }>()
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const route = useRoute()

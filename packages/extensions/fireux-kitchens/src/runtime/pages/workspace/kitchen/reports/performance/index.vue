@@ -2,11 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-performance">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Performance">
+        <WorkspaceNavbar title="Kitchen Performance">
           <template #right
             ><WorkspaceKitchenAICapabilityInfo capability="performance"
           /></template>
-        </LayoutsWorkspaceNavbar>
+        </WorkspaceNavbar>
       </template>
 
       <template #body>

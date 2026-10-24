@@ -1,11 +1,11 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-recipes">
     <template #header>
-      <LayoutsWorkspaceNavbar title="Recipes">
+      <WorkspaceNavbar title="Recipes">
         <template #right>
           <WorkspaceKitchenAICapabilityInfo capability="recipes" />
         </template>
-      </LayoutsWorkspaceNavbar>
+      </WorkspaceNavbar>
     </template>
     <template #body>
       <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">

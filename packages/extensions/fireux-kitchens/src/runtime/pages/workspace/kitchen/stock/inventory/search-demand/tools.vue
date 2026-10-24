@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-inventory-search-demand-tools">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Inventory Tool specifications" />
+        <WorkspaceNavbar title="Inventory Tool specifications" />
       </template>
 
       <template #body>

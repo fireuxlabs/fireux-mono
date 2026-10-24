@@ -1,13 +1,13 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="intro.title"
+      <WorkspaceNavbar :title="intro.title"
         ><template #right
           ><WorkspaceIntroInfo
             :intro="intro"
             workspace="kitchen"
             :show-structured-details="false" /></template
-      ></LayoutsWorkspaceNavbar>
+      ></WorkspaceNavbar>
       <UDashboardToolbar
         :ui="{ root: 'border-b-0' }"
         v-if="
@@ -30,10 +30,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceGuestWelcome from 'fireux-core/runtime/components/Workspace/GuestWelcome.vue'
-import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import type { WorkspaceIntro } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
+import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
+import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
 import WorkspaceKitchen from 'fireux-kitchens/runtime/kitchen/components/Workspace/Index.vue'
 import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex'
 import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/models/landing-intent'

@@ -55,15 +55,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToast } from '#imports'
-import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
-import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
+import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
+import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import type { useKitchenTeam } from '../../composables/team/useKitchenTeam'
 
 type Workspace = ReturnType<typeof useKitchenTeam>
 
-import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
-import WorkspaceTeamAssignment from 'fireux-core/runtime/components/Workspace/Team/Assignment.vue'
+import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
+import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'
 
 const props = defineProps<{
   memberId?: string

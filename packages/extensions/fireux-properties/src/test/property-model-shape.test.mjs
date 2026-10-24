@@ -235,7 +235,7 @@ test('Malformed granted Property roots fail the selector without clearing its se
     return map.get(key)
   }
   const workspace = load(
-    '../../../../core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts',
+    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspace.ts',
     'useWorkspace',
     {
       computed,

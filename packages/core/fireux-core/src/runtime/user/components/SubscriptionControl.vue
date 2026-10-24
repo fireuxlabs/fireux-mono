@@ -25,7 +25,7 @@
 import { computed, onMounted, ref, useToast } from '#imports'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useWorkspaceEntryState } from '../../composables/fireux/workspace/useWorkspaceEntryState'
+import { useWorkspaceEntryState } from '../../workspace/composables/useWorkspaceEntryState'
 import { useAppUserSubscriptions } from '../../app/composables/membership/useAppUserSubscriptions'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { resolveAppUserAccess } from '../../app/utils/app-user-access'

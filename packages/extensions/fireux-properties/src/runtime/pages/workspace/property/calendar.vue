@@ -2,11 +2,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-property-calendar">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Calendar">
+        <WorkspaceNavbar title="Calendar">
           <template #right>
             <WorkspaceAICapabilityPlaceholder capability="Property Calendar" />
           </template>
-        </LayoutsWorkspaceNavbar>
+        </WorkspaceNavbar>
       </template>
       <template #body>
         <WorkspaceHero compact title="Property Calendar" description="View scheduled property activity." />

@@ -39,7 +39,7 @@ import {
   readGuestKitchenClaim,
   rememberGuestKitchenClaim,
 } from '../../../utils/guest-kitchen-claim'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/workspace/utils/policy'
 const { currentUser } = useAuth()
 const config = useFireUXConfig()
 const claim = ref(readGuestKitchenClaim(config.appId))

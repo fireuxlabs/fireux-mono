@@ -22,7 +22,7 @@
   </WorkspaceGettingStarted>
 </template>
 <script setup lang="ts">
-import WorkspaceGettingStarted from 'fireux-core/runtime/components/Workspace/GettingStarted.vue'
+import WorkspaceGettingStarted from 'fireux-core/runtime/workspace/components/GettingStarted.vue'
 defineProps<{ canCreate: boolean; signedIn: boolean; creationReason: string }>()
 const emit = defineEmits<{ create: [] }>()
 </script>

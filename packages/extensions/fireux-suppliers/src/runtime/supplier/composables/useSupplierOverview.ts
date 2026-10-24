@@ -1,6 +1,6 @@
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { useSupplierWorkspace } from './workspace/useSupplierWorkspace'
 import { useSupplierWorkspaceIndex } from './workspace/useSupplierWorkspaceIndex'
 

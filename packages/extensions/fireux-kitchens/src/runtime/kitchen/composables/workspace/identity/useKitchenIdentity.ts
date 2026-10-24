@@ -1,7 +1,7 @@
 import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed, watchEffect } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import {
   readPlaceIdentity,
   placeIdentityFields,

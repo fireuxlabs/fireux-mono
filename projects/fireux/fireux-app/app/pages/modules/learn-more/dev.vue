@@ -13,7 +13,7 @@
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Module identity and metadata live with each source-controlled extension package and its <code>registry.json</code>.</li>
+          <li>Module identity and metadata live with each source-controlled extension package and its <code>package.json</code>.</li>
           <li>Apps select the modules they use through their FireUX configuration.</li>
           <li>The module index is an authored public projection of reusable packages under <code>packages/extensions/fireux-*</code>.</li>
           <li>Module detail route is exposed as <code>/modules/[id]</code>.</li>

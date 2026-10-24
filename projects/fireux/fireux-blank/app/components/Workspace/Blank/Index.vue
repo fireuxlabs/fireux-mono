@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
+import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
 import { useBlankWorkspaceIndex } from '../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
 
 const { collection, selectedId, outcome, select } =

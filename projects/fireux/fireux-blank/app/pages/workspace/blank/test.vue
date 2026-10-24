@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="workspace-blank-test">
-    <template #header><LayoutsWorkspaceNavbar title="Blank Test" /></template>
+    <template #header><WorkspaceNavbar title="Blank Test" /></template>
     <template #body>
       <WorkspaceHero compact title="Blank Test" description="Save and manage simple strings." />
       <WorkspaceBlankSelector />

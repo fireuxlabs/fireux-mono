@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { navigateTo } from '#imports'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'

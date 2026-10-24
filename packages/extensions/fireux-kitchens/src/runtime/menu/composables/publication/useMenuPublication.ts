@@ -1,12 +1,12 @@
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { useKitchenWorkspaceSelection } from '../../../kitchen/composables/workspace/useKitchenWorkspaceSelection'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
+import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useMenuEditorScope } from '../useMenuEditorScope'
 
 export function useMenuPublication() {
   const { currentUser } = useAuth()
-  const { selectedId } = useKitchenWorkspaceSelection()
+  const { selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const route = useRoute()
   const captureScope = useMenuEditorScope([selectedId, () => route.fullPath])
