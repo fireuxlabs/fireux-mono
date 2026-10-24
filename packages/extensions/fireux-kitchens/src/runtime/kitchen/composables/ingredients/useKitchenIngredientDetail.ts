@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import {
   collection,
   documentId,
@@ -8,7 +8,6 @@ import {
   where,
   type Query,
 } from 'firebase/firestore'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -16,31 +15,33 @@ import {
   readRuntimeFirestoreDatabaseId,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { IngredientInterfaceItem } from '../../../../ingredient/composables/useIngredientInterface'
-import { useIngredientDetail } from '../../../../ingredient/composables/useIngredientDetail'
-import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { useKitchenAccess } from '../../useKitchenAccess'
+import type { IngredientInterfaceItem } from '../../../ingredient/composables/useIngredientInterface'
+import { useIngredientDetail } from '../../../ingredient/composables/useIngredientDetail'
+import { useKitchenAccess } from '../useKitchenAccess'
 import {
   KitchenIngredientStorage,
   type KitchenIngredient,
-} from '../../../utils/kitchen-ingredient'
+} from '../../utils/kitchen-ingredient'
 
-export function useKitchenWorkspaceIngredient() {
-  const workspace = useKitchenWorkspace()
+export function useKitchenIngredientDetail(
+  requestedKitchenId: MaybeRefOrGetter<string>,
+  requestedIngredientId: MaybeRefOrGetter<string>
+) {
   const access = useKitchenAccess()
   const session = useAppSession()
   const config = useFireUXConfig()
-  const kitchenId = workspace.id
-  const selectedKitchen = workspace.data
-  const ingredientId = useRouteParam('ingredientId')
+  const kitchenId = computed(() =>
+    String(toValue(requestedKitchenId) || '').trim()
+  )
+  const ingredientId = computed(() =>
+    String(toValue(requestedIngredientId) || '').trim()
+  )
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const permitted = computed(
     () =>
-      workspace.accountReady.value &&
-      workspace.hasAccount.value &&
-      workspace.outcome.value === 'ready' &&
-      selectedKitchen.value?.id === kitchenId.value &&
+      !access.pending.value &&
+      !access.error.value &&
       access.ids.value.includes(kitchenId.value)
   )
   const collectionPath = computed(() =>
@@ -80,12 +81,7 @@ export function useKitchenWorkspaceIngredient() {
   const canonical = useIngredientDetail(canonicalId)
   const loadError = computed(() => {
     if (!kitchenId.value) return null
-    if (workspace.outcome.value !== 'ready')
-      return workspace.outcome.value === 'error'
-        ? session.error.value ||
-            access.error.value ||
-            new Error('Kitchen could not be loaded.')
-        : null
+    if (access.error.value) return access.error.value
     if (!permitted.value) return null
     return (
       source.error.value ||
@@ -99,7 +95,9 @@ export function useKitchenWorkspaceIngredient() {
   })
   const outcome = computed(() => {
     if (!kitchenId.value) return 'idle'
-    if (workspace.outcome.value !== 'ready') return workspace.outcome.value
+    if (access.error.value) return 'error'
+    if (access.pending.value) return 'pending'
+    if (!access.ids.value.includes(kitchenId.value)) return 'missing'
     if (!permitted.value) return 'pending'
     if (loadError.value) return 'error'
     if (source.pending.value || (canonicalId.value && canonical.pending.value))
@@ -133,7 +131,6 @@ export function useKitchenWorkspaceIngredient() {
   )
   const readOnly = computed(() => !canWrite.value)
   return {
-    selectedKitchen,
     kitchenId,
     rootCollection,
     collectionPath,

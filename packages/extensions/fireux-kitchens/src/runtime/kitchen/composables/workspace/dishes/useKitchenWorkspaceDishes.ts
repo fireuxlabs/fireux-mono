@@ -48,8 +48,7 @@ export function useKitchenWorkspaceDishes() {
   const readOnly = computed(
     () =>
       !(
-        workspace.accountReady.value &&
-        workspace.hasAccount.value &&
+        workspace.outcome.value === 'ready' &&
         storageKitchenId.value &&
         access.ids.value.includes(kitchenId.value)
       )

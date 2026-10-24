@@ -99,10 +99,13 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceIngredient } from '../../../../composables/workspace/ingredients/useKitchenWorkspaceIngredient'
+import { useKitchenIngredientDetail } from '../../../../composables/ingredients/useKitchenIngredientDetail'
+import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { ref, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { useKitchenIngredientSelection } from '../../../../composables/workspace/ingredients/useKitchenIngredientSelection'
+const workspace = useKitchenWorkspace()
 const {
   ingredient,
   ingredientId,
@@ -112,7 +115,10 @@ const {
   outcome,
   loadError,
   debug,
-} = useKitchenWorkspaceIngredient()
+} = useKitchenIngredientDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('ingredientId')
+)
 const deleteOpen = ref(false)
 const deleting = ref(false)
 const deleteError = ref('')

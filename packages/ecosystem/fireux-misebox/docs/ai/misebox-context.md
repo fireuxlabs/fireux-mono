@@ -2566,3 +2566,8 @@ each selected Menu's effective availability and links to its existing record.
 No extra acquisition or new mutation owner is introduced. Verify with
 `menu-hours.test.mjs`, `kitchen-operation-hours.test.mjs`,
 `menu-workspace-commands.test.mjs` and the Service hours tests.
+
+Kitchen Workspace Ingredients uses `useKitchenWorkspaceIngredients` for its
+collection. A single Kitchen–Ingredient link is read by the domain-owned
+`kitchen/composables/ingredients/useKitchenIngredientDetail`, with explicit
+Kitchen and Ingredient IDs; the page supplies Workspace selection and route ID.

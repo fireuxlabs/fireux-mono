@@ -38,7 +38,7 @@ function fixture() {
   }
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/composables/workspace/ingredients/useKitchenWorkspaceIngredient.ts',
+      '../runtime/kitchen/composables/ingredients/useKitchenIngredientDetail.ts',
       import.meta.url
     ),
     'utf8'
@@ -47,6 +47,9 @@ function fixture() {
     .replace(/^export /gm, '')
   const deps = {
     computed,
+    toValue: (value) => (typeof value === 'function' ? value() : value.value),
+    workspace,
+    id,
     useRouteParam: () => id,
     useKitchenWorkspace: () => workspace,
     useKitchenAccess: () => access,
@@ -84,7 +87,7 @@ function fixture() {
     },
   }
   const state = compileFunction(
-    `${stripTypeScriptTypes(source)};return useKitchenWorkspaceIngredient()`,
+    `${stripTypeScriptTypes(source)};return useKitchenIngredientDetail(() => workspace.outcome.value === "ready" ? workspace.id.value : "", id)`,
     Object.keys(deps)
   )(...Object.values(deps))
   return {

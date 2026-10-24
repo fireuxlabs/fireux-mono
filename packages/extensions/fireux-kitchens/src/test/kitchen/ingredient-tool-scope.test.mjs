@@ -237,7 +237,9 @@ function detail(h) {
       '({removeIngredient, deleteOpen, deleting, deleteError})',
       {
         ...h.deps,
-        useKitchenWorkspaceIngredient: () => ({
+        useKitchenWorkspace: () => ({ outcome: vue.ref('ready'), id: h.kitchenId }),
+        useRouteParam: () => h.ingredientId,
+        useKitchenIngredientDetail: () => ({
           ingredient,
           ingredientId: h.ingredientId,
           kitchenId: h.kitchenId,
@@ -348,7 +350,10 @@ function mountEdit(h) {
     deps
   )
   const content = readFileSync(
-    new URL('../../runtime/ingredient/components/Edit/Index.vue', import.meta.url),
+    new URL(
+      '../../runtime/ingredient/components/Edit/Index.vue',
+      import.meta.url
+    ),
     'utf8'
   ).replace(
     '</script>',
