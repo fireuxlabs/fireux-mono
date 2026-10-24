@@ -34,7 +34,7 @@
 import OverviewGroups from './Groups.vue'
 import { watchEffect } from 'vue'
 import type { WorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import { useKitchenOverview } from '../../../composables/workspace/overview/useKitchenOverview'
+import { useKitchenWorkspaceHome } from '../../../composables/workspace/useKitchenWorkspaceHome'
 const {
   pageState,
   selectedKitchen,
@@ -42,7 +42,7 @@ const {
   kitchenTitle,
   kitchenSubtitle,
   identityImage,
-} = useKitchenOverview()
+} = useKitchenWorkspaceHome()
 const emit = defineEmits<{ state: [value: WorkspacePageState] }>()
 watchEffect(() => emit('state', pageState.value))
 </script>

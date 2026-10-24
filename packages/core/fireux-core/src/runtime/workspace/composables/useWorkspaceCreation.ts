@@ -1,3 +1,4 @@
+import type { FireuxAppSubscriptionCapacity } from '../../../config/app/types'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
@@ -12,7 +13,8 @@ export type WorkspaceCreationUsage = {
 
 export function useWorkspaceCreation(
   family: string,
-  usage: MaybeRefOrGetter<WorkspaceCreationUsage>
+  usage: MaybeRefOrGetter<WorkspaceCreationUsage>,
+  capacity?: FireuxAppSubscriptionCapacity
 ) {
   const session = useAppSession()
   const config = useFireUXConfig()
@@ -36,7 +38,7 @@ export function useWorkspaceCreation(
     if (!ready.value || !session.appUser.value) return false
     const membership = session.appUser.value
     const limit = appSubscriptionCapacity(
-      config.subscriptionCapacity,
+      capacity ?? config.subscriptionCapacity,
       family,
       membership?.subscription || 'free'
     )
@@ -44,5 +46,5 @@ export function useWorkspaceCreation(
   })
   const canCreate = computed(() => enabled && ready.value && !atCapacity.value)
   const showUpgrade = computed(() => enabled && ready.value && atCapacity.value)
-  return { canCreate, showUpgrade }
+  return { canCreate, showUpgrade, creationEnabled: computed(() => enabled) }
 }

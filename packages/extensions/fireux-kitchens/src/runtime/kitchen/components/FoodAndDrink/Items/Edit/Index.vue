@@ -99,19 +99,26 @@
 </template>
 
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
+const workspace = useKitchenWorkspace()
+const { catalogue } = useKitchenDishesContext()
 import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceDish } from '../../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../../composables/dish/useKitchenDishDetail'
 import { useDishImageUpload } from '../../../../composables/dish/useDishImageUpload'
 import { useDishUpdate } from '../../../../composables/dish/useDishUpdate'
 import { dishCategories } from '../../../../models/dish.model'
 import type { DishUpdateInput } from '../../../../utils/dish.ts'
 
-const { dish, dishId, kitchenId, canWrite, catalogue } =
-  useKitchenWorkspaceDish()
+const { dish, dishId, kitchenId, canWrite } = useKitchenDishDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('dishId')
+)
 
 const toast = useToastify()
 const { currentUser } = useAuth()

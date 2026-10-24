@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-4" aria-label="Your Projects">
     <Collection
-      :index="index"
+      :workspace="workspace"
       :can-create="creation.canCreate.value"
       open-on-select
       @create="createOpen = true"
@@ -13,12 +13,12 @@
 import { ref } from 'vue'
 import Collection from './Home/Collection.vue'
 import Create from './Home/Create.vue'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
+import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
-const index = useProjectWorkspaceIndex()
+const workspace = useProjectWorkspace()
 const createOpen = ref(false)
 const creation = useWorkspaceCreation('project', () => ({
-  count: index.access.ids.value.length,
-  outcome: index.access.outcome.value,
+  count: workspace.access.ids.value.length,
+  outcome: workspace.access.outcome.value,
 }))
 </script>

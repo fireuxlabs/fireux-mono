@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioWorkspaceIndex } from 'fireux-properties/runtime/portfolio/composables/workspace/usePortfolioWorkspaceIndex'
-const index = usePortfolioWorkspaceIndex()
+import { usePortfolioWorkspace } from 'fireux-properties/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+const workspace = usePortfolioWorkspace()
 
 const tools = computed(() =>
-  Boolean(index.selectedId.value)
+  Boolean(workspace.id.value)
     ? [
         {
           id: 'portfolio.view',

@@ -27,7 +27,11 @@
 
 <script setup lang="ts">
 import WorkspaceCalendarSurface from 'fireux-core/runtime/workspace/components/CalendarSurface.vue'
-import { useProjectCalendar } from '../../../composables/workspace/calendar/useProjectCalendar'
+import { useProjectWorkspaceCalendar } from '../../../composables/workspace/useProjectWorkspaceCalendar'
 
-const { selectedDate, ready: calendarReady, outcome } = useProjectCalendar()
+const {
+  selectedDate,
+  ready: calendarReady,
+  outcome,
+} = useProjectWorkspaceCalendar()
 </script>

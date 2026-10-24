@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePropertyWorkspaceIndex } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspaceIndex'
-const index = usePropertyWorkspaceIndex()
+import { usePropertyWorkspace } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspace'
+const workspace = usePropertyWorkspace()
 
 const tools = computed(() =>
-  Boolean(index.selectedId.value)
+  Boolean(workspace.id.value)
     ? [
         {
           id: 'property.view',

@@ -4,16 +4,29 @@
       <WorkspaceNavbar :title="intro.title">
         <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
       </WorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><UTabs
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+        ><UTabs
           v-if="team.state.value.team.members.length"
           :model-value="team.state.value.team.selectedTeamMemberId"
-          :items="team.state.value.team.members.map(member => ({ label: member.name, value: member.id }))"
-          :content="false" variant="link" size="sm" aria-label="Select Team member"
+          :items="
+            team.state.value.team.members.map((member) => ({
+              label: member.name,
+              value: member.id,
+            }))
+          "
+          :content="false"
+          variant="link"
+          size="sm"
+          aria-label="Select Team member"
           @update:model-value="team.natives.select(String($event))"
-        /></UDashboardToolbar>
+      /></UDashboardToolbar>
     </template>
     <template #body>
-      <WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+      <WorkspaceHero
+        compact
+        :title="intro.title"
+        :description="intro.purpose"
+      />
       <WorkspaceProjectTeamAI
         :team="team"
         @action="teamView?.openAction($event)"
@@ -43,7 +56,7 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroIn
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectTeam } from '../../../../project/composables/useProjectTeam'
+import { useProjectWorkspaceTeam } from '../../../../project/composables/workspace/useProjectWorkspaceTeam'
 
 const intro = {
   title: 'Project Team',
@@ -54,7 +67,7 @@ const intro = {
   ai: 'AI prepares the same Team controls used on this page. You review and confirm changes.',
 }
 
-const team = useProjectTeam()
+const team = useProjectWorkspaceTeam()
 const liveIntro = computed(() => ({
   ...intro,
   status: team.derived.value.status,

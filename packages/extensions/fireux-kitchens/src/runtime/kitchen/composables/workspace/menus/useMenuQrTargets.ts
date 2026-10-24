@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useKitchenWorkspaceMenuSources } from './useKitchenWorkspaceMenuSources'
 import { useKitchenOfferingCollection } from '../../useKitchenOfferingCollection'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 import { useRequestURL } from '#imports'
@@ -20,10 +21,10 @@ import type {
 } from '../../../models/menu-qr-presentation.model'
 
 export function useMenuQrTargets() {
+  const { menuSources } = useKitchenWorkspaceMenuSources()
   const {
     selectedKitchen,
     menus,
-    menuSources,
     storageKitchenId,
     outcome: menusOutcome,
   } = useKitchenWorkspaceMenus()

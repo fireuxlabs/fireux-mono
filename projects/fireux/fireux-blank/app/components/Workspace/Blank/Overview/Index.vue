@@ -18,8 +18,6 @@
         :cards="multipleCards"
       />
     </div>
-
-
   </section>
 </template>
 
@@ -27,11 +25,13 @@
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/components/types'
 import type { Blank } from '../../../../models/blank.model'
-import { useBlankOverview } from '../../../../composables/useBlankOverview'
+import { useBlankWorkspaceHome } from '../../../../composables/workspace/useBlankWorkspaceHome'
 
-const { focus, multiple } = useBlankOverview()
+const { focus, multiple } = useBlankWorkspaceHome()
 
-const toCard = (blank: Blank | null | undefined): WorkspaceTargetCard | null => {
+const toCard = (
+  blank: Blank | null | undefined
+): WorkspaceTargetCard | null => {
   if (!blank?.id) return null
 
   return {

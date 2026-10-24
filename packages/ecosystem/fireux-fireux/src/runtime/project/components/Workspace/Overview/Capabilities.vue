@@ -97,10 +97,10 @@
       title="Workspaces"
       icon="i-lucide-panels-top-left"
       to="/"
-      :value="index.collection.value.length"
+      :value="workspace.collection.value.length"
       description="Available project workspaces"
-      :pending="index.outcome.value === 'pending'"
-      :error="index.outcome.value === 'error'"
+      :pending="workspace.collectionOutcome.value === 'pending'"
+      :error="workspace.collectionOutcome.value === 'error'"
     />
     <Summary
       title="Notifications"
@@ -124,16 +124,14 @@ import { computed, type Ref } from 'vue'
 import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectEcosystems } from '../../../composables/useProjectEcosystems'
 import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
-import { useProjectTeamSummary } from '../../../composables/useProjectTeamSummary'
+import { useProjectWorkspaceHome } from '../../../composables/workspace/useProjectWorkspaceHome'
 import { useProjectTestRecords } from '../../../composables/useProjectTestRecords'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
-import { useProjectWorkspaceIndex } from '../../../composables/workspace/useProjectWorkspaceIndex'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/workspace/composables/useWorkspaceNotifications'
 
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
-const workspace = useProjectWorkspace()
 const relationshipId = computed(() =>
   workspace.outcome.value === 'ready' ? workspace.id.value : ''
 )
@@ -151,8 +149,8 @@ const relationshipValue = (source: RelationshipSource) =>
   ['ready', 'empty'].includes(relationshipOutcome(source))
     ? source.count.value
     : '—'
-const index = useProjectWorkspaceIndex()
-const team = useProjectTeamSummary()
+const workspace = useProjectWorkspace()
+const team = useProjectWorkspaceHome().team
 const tests = useProjectTestRecords(workspace.id)
 const notifications = useUserNotifications()
 const notificationPanel = useWorkspaceNotifications()

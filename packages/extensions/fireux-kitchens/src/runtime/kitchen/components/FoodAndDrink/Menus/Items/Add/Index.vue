@@ -22,10 +22,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 const { section, menu, canWrite, kitchenId, menuId, sectionId } =
-  useKitchenWorkspaceMenuSection()
+  useMenuSection()
 const open = ref(false),
   mode = ref('catalogue')
 const modes = computed(() => [

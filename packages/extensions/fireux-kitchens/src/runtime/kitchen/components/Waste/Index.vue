@@ -65,9 +65,9 @@ import {
   KITCHEN_WASTE_SOURCE_OPTIONS,
   type KitchenWasteEvent,
 } from '../../utils/waste-event'
-import { useKitchenWaste } from '../../composables/workspace/waste/useKitchenWaste'
+import { useKitchenWorkspaceWaste } from '../../composables/workspace/waste/useKitchenWorkspaceWaste'
 
-const { events, outcome } = useKitchenWaste()
+const { events, outcome } = useKitchenWorkspaceWaste()
 const timestampMillis = (event: KitchenWasteEvent) => {
   const value = event.occurred_at as unknown as { toMillis?: () => number }
   return typeof value?.toMillis === 'function' ? value.toMillis() : 0

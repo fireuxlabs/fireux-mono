@@ -84,11 +84,17 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import { computed } from 'vue'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 const { dish, storageKitchenId, databaseId, rootCollection } =
-  useKitchenWorkspaceDish()
+  useKitchenDishDetail(
+    () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+    useRouteParam('dishId')
+  )
 const { prepItems, pending, error } = useKitchenPrepItems(storageKitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,

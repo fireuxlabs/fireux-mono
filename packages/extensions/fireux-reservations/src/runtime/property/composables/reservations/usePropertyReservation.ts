@@ -4,13 +4,13 @@ import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/fires
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useActiveProperty } from 'fireux-properties/runtime/property/composables/workspace/useActiveProperty'
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
 import type { ReservationResponse } from '../../models/reservation.model'
 
 /** Exact, authorized live detail; the Reservation list is not an identity index. */
 export function usePropertyReservation(
   reservationId: MaybeRefOrGetter<string>,
-  runtimeProperty = useActiveProperty()
+  runtimeProperty: ReturnType<typeof usePropertyScope>
 ) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()

@@ -18,15 +18,16 @@
           Read state: <span class="font-medium">{{ runtimeOutcome }}</span>
         </div>
       </UCard>
-
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { usePortfolioWorkspace } from '../../../../../../extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+
 // Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: compose Granite-owned portfolio child diagnostics.
 import { computed } from 'vue'
-import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 
 definePageMeta({
   layout: 'diagnostics',
@@ -40,7 +41,7 @@ definePageMeta({
   },
 })
 
-const runtimePortfolio = useActivePortfolio()
+const runtimePortfolio = usePortfolioScope(usePortfolioWorkspace().id)
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeOutcome = computed(() => runtimePortfolio.targetOutcome.value)
 </script>

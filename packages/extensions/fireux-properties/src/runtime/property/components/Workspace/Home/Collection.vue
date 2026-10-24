@@ -1,6 +1,6 @@
 <template>
   <WorkspaceEntityCollection
-    :outcome="index.outcome.value"
+    :outcome="workspace.collectionOutcome.value"
     :count="cards.length"
     entity="properties"
     error-description="Properties could not be loaded."
@@ -14,20 +14,20 @@
       :card="card"
       action
       :show-badges="false"
-      @action="index.select(card.id)"
+      @action="workspace.select(card.id)"
     />
   </WorkspaceEntityCollection>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePropertyInterface } from '../../../composables/firestore/utils/view/usePropertyInterface'
-import type { usePropertyWorkspaceIndex } from '../../../composables/workspace/usePropertyWorkspaceIndex'
+import type { usePropertyWorkspace } from '../../../composables/workspace/usePropertyWorkspace'
 const props = defineProps<{
-  index: ReturnType<typeof usePropertyWorkspaceIndex>
+  workspace: ReturnType<typeof usePropertyWorkspace>
 }>()
 const { pill } = usePropertyInterface()
 const cards = computed(() =>
-  props.index.collection.value
+  props.workspace.collection.value
     .map((entity) => pill(entity))
     .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )

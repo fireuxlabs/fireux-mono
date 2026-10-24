@@ -130,6 +130,9 @@
 </template>
 
 <script setup lang="ts">
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
+import { usePropertyWorkspace } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspace'
+
 import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
 import {
   reservationSourceColor,
@@ -145,7 +148,7 @@ import {
 } from '../../../utils/reservation-date'
 
 const { collection, summary, pending, error, outcome, truncated } =
-  usePropertyReservations()
+  usePropertyReservations(usePropertyScope(usePropertyWorkspace().id))
 
 const formatDate = formatDateOnly
 const nights = reservationNights

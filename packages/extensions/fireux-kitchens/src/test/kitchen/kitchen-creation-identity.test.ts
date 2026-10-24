@@ -3,11 +3,15 @@ import test from 'node:test'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import { resolveKitchenGrantIds } from '../../runtime/kitchen/server/core/access.ts'
 import { readKitchenAccessIds } from '../../runtime/kitchen/utils/kitchen-access.ts'
-import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
+import {
+  kitchenCapacity,
+  resolveKitchenAllowance,
+} from '../../runtime/kitchen/utils/kitchen-capacity.ts'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref } from 'vue'
+import { computed, ref, toValue } from 'vue'
+import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 
 test('Workspace creation reacts to actual account allowance and waits for account readiness', () => {
   const session = {
@@ -21,47 +25,66 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
   }
   const access = {
     ids: ref(['one', 'two', 'three', 'four']),
+    outcome: ref('ready'),
     pending: ref(false),
     error: ref(null),
   }
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/composables/useKitchenCreationAllowance.ts',
+      '../../runtime/kitchen/composables/firestore/useKitchenCreate.ts',
       import.meta.url
     ),
     'utf8'
   )
-    .replace(/^import .* from .+\n/gm, '')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
     .replace(/^export /gm, '')
+  const sharedSource = readFileSync(
+    new URL(
+      '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceCreation.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+    .replace(/^export /gm, '')
+  const config = {
+    role: 'global',
+    workspaceConfig: {},
+    subscriptionPreview: 'business',
+  }
+  const sharedDeps = {
+    computed,
+    toValue,
+    useAppSession: () => session,
+    useFireUXConfig: () => config,
+    appSubscriptionCapacity,
+    resolveWorkspaceCanCreate: () => true,
+  }
+  const useWorkspaceCreation = compileFunction(
+    `${stripTypeScriptTypes(sharedSource)}; return useWorkspaceCreation`,
+    Object.keys(sharedDeps)
+  )(...Object.values(sharedDeps))
   const dependencies = {
     computed,
     resolveKitchenAllowance,
-    useWorkspace: () => ({ selectedId: ref('one') }),
-    useKitchenAnonymousAdoption: () => ({}),
-    useKitchenUpdate: () => ({ updateKitchen() {} }),
-    useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
-    useKitchenRead: () => ({
-      place: ref(null),
-      kitchen: ref({ id: 'one' }),
-      outcome: ref('ready'),
-    }),
+    kitchenCapacity,
+    useWorkspaceCreation,
     useAppSession: () => session,
     useKitchenAccess: () => access,
-    useFireUXConfig: () => ({
-      role: 'global',
-      workspaceConfig: {},
-      subscriptionPreview: 'business',
-    }),
-    resolveWorkspaceCanCreate: () => true,
+    useFireUXConfig: () => config,
+    useAuth: () => ({ currentUser: ref({ uid: 'user' }) }),
+    useCommandScope: () => () => () => true,
+    usePlaceCreate: () => ({ ensurePlaceExists() {} }),
+    defineFireuxCreatePlan: (plan) => plan,
   }
-  const useKitchenCreationAllowance = compileFunction(
-    `${stripTypeScriptTypes(source)}\nreturn useKitchenCreationAllowance`,
+  const useKitchenCreate = compileFunction(
+    `${stripTypeScriptTypes(source)}\nreturn useKitchenCreate`,
     Object.keys(dependencies)
   )(...Object.values(dependencies))
-  const workspace = useKitchenCreationAllowance()
+  const workspace = useKitchenCreate()
   assert.equal(workspace.allowance.value.used, 4)
   assert.equal(workspace.canCreate.value, false)
-  assert.equal(workspace.canAdd.value, false)
+  assert.equal(workspace.allowance.value.canAdd, false)
   assert.equal(workspace.showUpgrade.value, true)
   session.appUser.value.subscription = 'business'
   assert.equal(workspace.canCreate.value, true)

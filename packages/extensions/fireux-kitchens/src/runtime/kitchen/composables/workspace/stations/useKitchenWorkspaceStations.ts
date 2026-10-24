@@ -1,12 +1,8 @@
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   computed,
   inject,
   provide,
   ref,
-  watch,
   watchEffect,
   type InjectionKey,
 } from 'vue'
@@ -25,10 +21,17 @@ function createKitchenWorkspaceStations() {
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const readOnly = computed(() => false)
-  const canWrite = computed(() => Boolean(workspace.data.value))
+  const readOnly = computed(() => !canWrite.value)
+  const canWrite = computed(
+    () =>
+      workspace.outcome.value === 'ready' &&
+      workspace.data.value?.id === kitchenId.value
+  )
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    workspace.outcome.value === 'ready' &&
+    workspace.data.value?.id === kitchenId.value
+      ? kitchenId.value
+      : ''
   )
   const {
     kitchenStations: fetchedStations,
@@ -40,38 +43,10 @@ function createKitchenWorkspaceStations() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
-  const { currentUser } = useAuth()
-  const config = useFireUXConfig()
-  const { appUser } = useUserSession()
-  const defaultStationError = ref('')
-  watch(
-    [fetchKitchenId, canWrite, () => currentUser.value?.uid || '', () => config.appId, () => JSON.stringify(appUser.value)],
-    async ([id, writable], _, onCleanup) => {
-      let current = true
-      onCleanup(() => {
-        current = false
-      })
-      defaultStationError.value = ''
-      const user = currentUser.value
-      if (!import.meta.client || !id || !writable || !user) return
-      try {
-        const token = await user.getIdToken()
-        if (!current) return
-        await $fetch('/api/workspace/kitchen/stations/ensure-default', {
-          method: 'POST',
-          headers: { Authorization: 'Bearer ' + token },
-          body: { kitchenId: id },
-        })
-      } catch {
-        if (current)
-          defaultStationError.value =
-            'Could not set up the Pass station. Reload to retry.'
-      }
-    },
-    { immediate: true, flush: 'sync' }
-  )
   const workspaceStations = computed(() =>
-    stationsOutcome.value === 'ready' ? fetchedStations.value : []
+    workspace.outcome.value === 'ready' && stationsOutcome.value === 'ready'
+      ? fetchedStations.value
+      : []
   )
   const selectedStationId = ref('')
   const selectedStation = computed(
@@ -107,7 +82,6 @@ function createKitchenWorkspaceStations() {
 
   return {
     ...page,
-    defaultStationError,
     selectedKitchen,
     kitchenId,
     collectionPath,
@@ -119,7 +93,11 @@ function createKitchenWorkspaceStations() {
     selectedStation,
     selectedStationId,
     pending,
-    outcome: stationsOutcome,
+    outcome: computed(() =>
+      workspace.outcome.value === 'ready'
+        ? stationsOutcome.value
+        : workspace.outcome.value
+    ),
     error: stationsError,
     debug,
   }

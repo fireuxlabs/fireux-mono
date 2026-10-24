@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
@@ -104,7 +105,6 @@ import {
 } from '../../utils/identity-debug'
 import PlaceEditBusinessHours from 'fireux-places/runtime/place/components/Edit/BusinessHours.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useKitchenWorkspacePlace } from '../../composables/workspace/identity/useKitchenWorkspacePlace'
 const {
   place,
   placeId,
@@ -113,7 +113,7 @@ const {
   canWrite,
   selectedKitchen,
   outcome: kitchenOutcome,
-} = useKitchenWorkspacePlace()
+} = useKitchenWorkspaceIdentity()
 const fireux = useFireUXConfig()
 const { appId } = fireux
 const route = useRoute()

@@ -1,3 +1,4 @@
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { computed, watchEffect, onScopeDispose } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useFoodCatalogueSummary } from './useFoodCatalogueSummary'
@@ -19,7 +20,7 @@ export function useFoodAndDrinkIndex() {
     placeOutcome,
     kitchenHours,
     canWrite,
-  } = useKitchenOfferings()
+  } = useKitchenOfferings(useKitchenWorkspace().id)
   const catalogue = useFoodCatalogueSummary(
     storageKitchenId,
     menus,

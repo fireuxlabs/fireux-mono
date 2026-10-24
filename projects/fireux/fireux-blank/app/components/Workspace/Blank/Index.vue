@@ -9,22 +9,20 @@
       />
     </template>
     <template #single-panel>
-      <WorkspaceBlankHomeSingle
-        :blank="blank"
-        :blank-id="selectedId"
-      />
+      <WorkspaceBlankHomeSingle :blank="blank" :blank-id="id" />
     </template>
   </WorkspaceCapability>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
-import { useBlankWorkspaceIndex } from '../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
+import { useBlankWorkspace } from '../../../composables/workspace/useBlankWorkspace'
 
-const { collection, selectedId, outcome, select } =
-  useBlankWorkspaceIndex()
-const blank = computed(
-  () => collection.value.find((item) => item.id === selectedId.value) ?? null
-)
+const {
+  collection,
+  id,
+  data: blank,
+  collectionOutcome: outcome,
+  select,
+} = useBlankWorkspace()
 </script>

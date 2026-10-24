@@ -4,8 +4,8 @@ import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
   type MenuSectionItemRow,
-  useKitchenWorkspaceMenuSection,
-} from './useKitchenWorkspaceMenuSection'
+  useMenuSection,
+} from '../../../../menu/composables/useMenuSection'
 
 export function useMenuSectionItemsEditor() {
   const { rememberView } = useMenuRecordNavigation()
@@ -26,7 +26,7 @@ export function useMenuSectionItemsEditor() {
     currencyCode,
     removeItem,
     moveItem,
-  } = useKitchenWorkspaceMenuSection()
+  } = useMenuSection()
   const moveError = ref('')
   const moving = ref('')
   const removing = ref('')

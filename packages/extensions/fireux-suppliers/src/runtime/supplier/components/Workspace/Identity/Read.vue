@@ -109,9 +109,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
-import type { SupplierIdentityState } from '../../../composables/useSupplierIdentity'
+import type { SupplierWorkspaceIdentityState } from '../../../composables/workspace/useSupplierWorkspaceIdentity'
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
-const props = defineProps<{ identity: SupplierIdentityState }>()
+const props = defineProps<{ identity: SupplierWorkspaceIdentityState }>()
 const emit = defineEmits<{ edit: [section: PlaceIdentitySection] }>()
 const { readState, companyId, name, tagline, summary, imageUrl } =
   props.identity

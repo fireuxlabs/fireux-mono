@@ -33,9 +33,9 @@
 </template>
 
 <script setup lang="ts">
+import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/useKitchenWorkspaceIdentity'
 import { computed } from 'vue'
-import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
-const workspaceIdentity = useKitchenWorkspacePlace()
+const workspaceIdentity = useKitchenWorkspaceIdentity()
 const collectionTitle = computed(() =>
   workspaceIdentity.place.value?.name
     ? `${workspaceIdentity.place.value.name}’s Tests`

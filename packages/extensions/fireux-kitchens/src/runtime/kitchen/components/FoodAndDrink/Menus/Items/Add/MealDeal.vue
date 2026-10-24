@@ -31,7 +31,10 @@
         @click="add"
         >Add meal deal</UButton
       >
-      <UButton to="/workspace/kitchen/food-and-drink/promotions" color="neutral" variant="link"
+      <UButton
+        to="/workspace/kitchen/food-and-drink/promotions"
+        color="neutral"
+        variant="link"
         >Manage promotions</UButton
       >
     </div>
@@ -39,7 +42,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 const {
@@ -52,7 +55,7 @@ const {
   itemRows,
   canWrite,
   createItem,
-} = useKitchenWorkspaceMenuSection()
+} = useMenuSection()
 const promotionId = ref('')
 const saving = ref(false)
 const toast = useToastify()

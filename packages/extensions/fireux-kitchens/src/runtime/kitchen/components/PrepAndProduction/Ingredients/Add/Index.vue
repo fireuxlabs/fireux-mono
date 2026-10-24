@@ -73,7 +73,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useKitchenWorkspaceIngredients } from '../../../../composables/workspace/ingredients/useKitchenWorkspaceIngredients'
-import { useKitchenIngredientSelection } from '../../../../composables/workspace/ingredients/useKitchenIngredientSelection'
+import { useKitchenIngredientUpdate } from '../../../../composables/ingredients/useKitchenIngredientUpdate'
 import { useIngredientCollection } from '../../../../../ingredient/composables/useIngredientCollection'
 import { ingredientCategoryLabel } from '../../../../../ingredient/models/ingredient-taxonomy'
 import type { Ingredient } from '../../../../../ingredient/utils/ingredient.ts'
@@ -123,7 +123,7 @@ const candidates = computed<Ingredient[]>(() => {
 })
 
 const { selectIngredient, captureIntent, authorityEpoch } =
-  useKitchenIngredientSelection([rootCollection, canWrite, query])
+  useKitchenIngredientUpdate([rootCollection, canWrite, query])
 watch(
   [authorityEpoch, kitchenId, rootCollection, canWrite, query],
   () => {

@@ -1,3 +1,4 @@
+import { useKitchenWorkspace } from '../workspace/useKitchenWorkspace'
 import {
   computed,
   inject,
@@ -14,7 +15,7 @@ import { kitchenOfferingOptions } from '../../utils/offering-options'
 import { serviceOverviewSnapshot } from '../../utils/service-overview'
 
 function createKitchenServicesContext() {
-  const source = useKitchenOfferings()
+  const source = useKitchenOfferings(useKitchenWorkspace().id)
   // Retained values are presentation only. Commands always use source authority.
   const retained = shallowRef<{
     kitchen: NonNullable<typeof source.selectedKitchen.value>

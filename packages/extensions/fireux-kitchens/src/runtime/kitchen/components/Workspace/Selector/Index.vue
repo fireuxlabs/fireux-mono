@@ -5,16 +5,18 @@
     aria-label="Kitchen selector"
   >
     <WorkspaceKitchenSelectorChoices
-      v-if="index.multipleKitchenView.value && index.collection.value.length"
-      :collection="index.collection.value"
-      :selected-id="index.selectedId.value"
-      @select="index.select"
+      v-if="
+        workspace.multipleKitchenView.value && workspace.collection.value.length
+      "
+      :collection="workspace.collection.value"
+      :selected-id="workspace.id.value"
+      @select="workspace.select"
     />
-    <span v-if="index.outcome.value === 'pending'" role="status"
+    <span v-if="workspace.collectionOutcome.value === 'pending'" role="status"
       >Loading Kitchens…</span
     >
     <UAlert
-      v-else-if="index.outcome.value === 'error'"
+      v-else-if="workspace.collectionOutcome.value === 'error'"
       color="error"
       title="Kitchens could not be loaded"
     />
@@ -27,7 +29,7 @@
       variant="soft"
     />
     <UButton
-      v-else-if="index.collection.value.length && creation.canCreate.value"
+      v-else-if="workspace.collection.value.length && creation.canCreate.value"
       label="Create workspace"
       icon="i-lucide-plus"
       color="neutral"
@@ -47,14 +49,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useKitchenCreate } from '../../../composables/firestore/useKitchenCreate'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 
 withDefaults(defineProps<{ showUpgrade?: boolean; returnTo?: string }>(), {
   showUpgrade: true,
   returnTo: '',
 })
-const creation = useKitchenWorkspace()
+const creation = useKitchenCreate()
 const createOpen = ref(false)
-const index = useKitchenWorkspaceIndex()
+const workspace = useKitchenWorkspace()
 </script>

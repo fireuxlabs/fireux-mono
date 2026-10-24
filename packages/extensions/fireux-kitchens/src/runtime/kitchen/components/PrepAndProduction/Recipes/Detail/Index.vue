@@ -27,7 +27,7 @@
       @saved="closeEditor"
     />
     <UAlert
-      v-if="outcome === 'idle' || outcome === 'empty'"
+      v-if="outcome === 'idle'"
       title="Select a kitchen"
       description="Choose a Kitchen before viewing its recipes."
       color="neutral"
@@ -91,13 +91,16 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import type { Recipe } from '../../../../models/recipe.model'
 import { useRecipeScope } from '../../../../composables/recipe/useRecipeScope'
 import { useKitchenPrepItems } from '../../../../composables/prep-item/useKitchenPrepItems'
 import { navigateTo } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceRecipe } from '../../../../composables/workspace/recipes/useKitchenWorkspaceRecipe'
+import { useKitchenRecipeDetail } from '../../../../composables/recipe/useKitchenRecipeDetail'
 import { useRecipeDelete } from '../../../../composables/recipe/useRecipeDelete'
 import { useKitchenIngredients } from '../../../../composables/ingredients/useKitchenIngredients'
 const {
@@ -108,12 +111,14 @@ const {
   outcome,
   rootCollection,
   databaseId,
-  dishUsage,
   pending,
   canWrite,
   debug,
   error,
-} = useKitchenWorkspaceRecipe()
+} = useKitchenRecipeDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('recipeId')
+)
 const {
   ingredients,
   pending: ingredientsPending,
@@ -188,12 +193,8 @@ const deleteSelectedRecipe = async () => {
   if (!canWrite.value || !recipe.value || deleting.value) return
 
   const title = normalizeString(recipe.value.name || recipeId.value)
-  const usageCount = dishUsage.value.length
-  const usageNote = usageCount
-    ? `\n\n${usageCount} dish record${usageCount === 1 ? '' : 's'} reference this recipe. This delete will not cascade.`
-    : ''
   const ok = window.confirm(
-    `Delete recipe "${title}"?\n\nThis will only delete the recipe document.${usageNote}`
+    `Delete recipe "${title}"?\n\nThis will only delete the recipe document.`
   )
   if (!ok) return
 

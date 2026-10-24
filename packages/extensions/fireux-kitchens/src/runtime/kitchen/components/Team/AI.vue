@@ -19,9 +19,9 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composables/useWorkspaceDraftHandoff'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { useKitchenTeam } from '../../composables/team/useKitchenTeam'
+import type { useKitchenWorkspaceTeam } from '../../composables/workspace/useKitchenWorkspaceTeam'
 const props = defineProps<{
-  team: ReturnType<typeof useKitchenTeam>
+  team: ReturnType<typeof useKitchenWorkspaceTeam>
 }>()
 const emit = defineEmits<{ action: [intent: TeamAIIntent] }>()
 const prompt = ref('')

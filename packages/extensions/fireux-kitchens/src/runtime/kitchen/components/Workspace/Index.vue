@@ -1,18 +1,18 @@
 <template>
   <WorkspaceKitchenHomeGuest v-if="currentUser?.isAnonymous" />
   <UAlert
-    v-else-if="workspace.adoption.error.value"
+    v-else-if="adoption.error.value"
     color="error"
-    :title="workspace.adoption.error.value"
+    :title="adoption.error.value"
   >
     <template #actions
       ><UButton
         label="Try again"
-        @click="workspace.adoption.adopt()" /><MoleculesCopyError
-        :message="workspace.adoption.error.value"
+        @click="adoption.adopt()" /><MoleculesCopyError
+        :message="adoption.error.value"
     /></template>
   </UAlert>
-  <p v-else-if="workspace.adoption.pending.value" role="status">
+  <p v-else-if="adoption.pending.value" role="status">
     Connecting your Kitchen…
   </p>
   <p
@@ -35,7 +35,7 @@
   <WorkspaceKitchenHomeWelcome
     v-else-if="landingState === 'empty'"
     :can-create="creation.canCreate.value"
-    :signed-in="workspace.hasAccount.value"
+    :signed-in="creation.hasAccount.value"
     :creation-reason="
       intro.tools?.find((tool) => tool.id === 'create')?.reason || ''
     "
@@ -64,8 +64,9 @@ import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
 } from '../../models/landing-intent'
+import { useKitchenCreate } from '../../composables/firestore/useKitchenCreate'
+import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitchenAnonymousAdoption'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
-import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'
@@ -73,37 +74,37 @@ import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'
 defineProps<{ dedicatedAppName?: string }>()
 
 const { currentUser } = useAuth()
+const creation = useKitchenCreate()
+const adoption = useKitchenAnonymousAdoption()
 const workspace = useKitchenWorkspace()
-const creation = workspace
-const index = useKitchenWorkspaceIndex()
 const session = useAppSession()
 const createOpen = ref(false)
 const single = ref<InstanceType<typeof WorkspaceKitchenHomeSingle> | null>(null)
 const landingState = computed(() =>
   workspaceLandingState({
-    outcome: index.outcome.value,
+    outcome: workspace.collectionOutcome.value,
     accountPending: session.pending.value,
     accountError: Boolean(session.error.value),
-    associationCount: workspace.allowance.value.used,
-    recordCount: index.collection.value.length,
-    selectedId: index.selectedId.value,
+    associationCount: creation.allowance.value.used,
+    recordCount: workspace.collection.value.length,
+    selectedId: workspace.id.value,
   })
 )
 function openCreate() {
-  if (workspace.canCreate.value) createOpen.value = true
+  if (creation.canCreate.value) createOpen.value = true
 }
 function performAction(intent: KitchenLandingIntent) {
   if (!['ready', 'empty'].includes(landingState.value)) return false
-  if (intent.action === 'create' && workspace.canCreate.value) {
+  if (intent.action === 'create' && creation.canCreate.value) {
     openCreate()
     return true
   } else if (
     intent.action === 'read' &&
-    (index.multipleKitchenView.value ||
-      intent.target === index.selectedId.value) &&
-    index.collection.value.some((item) => item.id === intent.target)
+    (workspace.multipleKitchenView.value ||
+      intent.target === workspace.id.value) &&
+    workspace.collection.value.some((item) => item.id === intent.target)
   ) {
-    index.select(intent.target)
+    workspace.select(intent.target)
     return true
   } else if (
     intent.action === 'update' &&
@@ -113,7 +114,7 @@ function performAction(intent: KitchenLandingIntent) {
     return Boolean(single.value)
   } else if (
     intent.action === 'open' &&
-    index.selectedId.value &&
+    workspace.id.value &&
     Object.hasOwn(kitchenLandingDestinations, intent.target)
   ) {
     void navigateTo(
@@ -127,31 +128,31 @@ function performAction(intent: KitchenLandingIntent) {
 }
 defineExpose({ performAction })
 const selected = computed(() =>
-  index.collection.value.find((item) => item.id === index.selectedId.value)
+  workspace.collection.value.find((item) => item.id === workspace.id.value)
 )
 const pageState = useWorkspacePageState('kitchen')
 const intro = computed(() =>
   kitchenWorkspaceIntro({
-    status: index.outcome.value,
-    count: index.collection.value.length,
+    status: workspace.collectionOutcome.value,
+    count: workspace.collection.value.length,
     selected: Boolean(selected.value),
-    canCreate: workspace.canCreate.value,
+    canCreate: creation.canCreate.value,
     canUpdate: Boolean(selected.value && workspace.outcome.value === 'ready'),
-    accountReady: workspace.accountReady.value,
-    hasAccount: workspace.hasAccount.value,
-    creationEnabled: workspace.creationEnabled.value,
-    allowance: workspace.allowance.value,
+    creationEnabled: creation.creationEnabled.value,
+    accountReady: creation.accountReady.value,
+    hasAccount: creation.hasAccount.value,
+    allowance: creation.allowance.value,
   })
 )
 watchEffect(() =>
   pageState.publish({
     intro: intro.value,
     collection: {
-      records: index.collection.value
+      records: workspace.collection.value
         .filter(
           (item) =>
-            index.multipleKitchenView.value ||
-            item.id === index.selectedId.value
+            workspace.multipleKitchenView.value ||
+            item.id === workspace.id.value
         )
         .map((item) => ({
           id: item.id,
@@ -172,10 +173,10 @@ watchEffect(() =>
       : null,
     derived: {
       landingState: landingState.value,
-      status: index.outcome.value,
-      multipleKitchenView: index.multipleKitchenView.value,
+      status: workspace.collectionOutcome.value,
+      multipleKitchenView: workspace.multipleKitchenView.value,
       canCreate: creation.canCreate.value,
-      allowance: workspace.allowance.value,
+      allowance: creation.allowance.value,
       canUpdate: Boolean(selected.value && workspace.outcome.value === 'ready'),
     },
   })

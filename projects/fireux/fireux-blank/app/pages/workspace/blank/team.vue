@@ -6,9 +6,15 @@
       </template>
 
       <template #body>
-        <WorkspaceHero compact title="Blank Team" description="Blank workspace team." />
+        <WorkspaceHero
+          compact
+          title="Blank Team"
+          description="Blank workspace team."
+        />
         <WorkspaceBlankSelector />
-        <WorkspaceAI compact aria-label="Blank Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
+        <WorkspaceAI compact aria-label="Blank Team AI"
+          ><UAlert title="Team AI is not connected yet" color="neutral"
+        /></WorkspaceAI>
         <section class="space-y-4">
           <WorkspaceBlankTeam :team="team" />
         </section>
@@ -18,8 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { useBlankTeam } from '../../../composables/useBlankTeam'
-const team = useBlankTeam()
+import { useBlankWorkspaceTeam } from '../../../composables/workspace/useBlankWorkspaceTeam'
+const team = useBlankWorkspaceTeam()
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceCatalogue } from '../../../composables/workspace/catalogue/useSupplierWorkspaceCatalogue'
+import { useSupplierWorkspaceCatalogues } from '../../../composables/workspace/catalogue/useSupplierWorkspaceCatalogues'
 import { useSupplierCatalogueInterface } from '../../../composables/firestore/utils/view/useSupplierCatalogueInterface'
 
 const {
@@ -87,7 +87,7 @@ const {
   emptyTitle,
   emptyDescription,
   debug,
-} = useSupplierWorkspaceCatalogue()
+} = useSupplierWorkspaceCatalogues()
 const { pill } = useSupplierCatalogueInterface()
 
 const cards = computed(() =>

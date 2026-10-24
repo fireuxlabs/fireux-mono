@@ -5,24 +5,24 @@
     single-label="Details"
   >
     <template #collection-panel
-      ><WorkspacePropertyHomeCollection :index="index"
+      ><WorkspacePropertyHomeCollection :workspace="workspace"
     /></template>
     <template #single-panel
       ><WorkspacePropertyHomeSingle
         :entity="selected"
-        :outcome="index.outcome.value"
+        :outcome="workspace.collectionOutcome.value"
     /></template>
   </WorkspaceCapability>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
-import { usePropertyWorkspaceIndex } from '../../composables/workspace/usePropertyWorkspaceIndex'
-const index = usePropertyWorkspaceIndex()
+import { usePropertyWorkspace } from '../../composables/workspace/usePropertyWorkspace'
+const workspace = usePropertyWorkspace()
 const selected = computed(
   () =>
-    index.collection.value.find(
-      (entity) => entity.id === index.selectedId.value
+    workspace.collection.value.find(
+      (entity) => entity.id === workspace.id.value
     ) ?? null
 )
 </script>

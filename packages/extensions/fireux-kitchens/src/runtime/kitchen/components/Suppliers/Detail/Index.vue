@@ -10,10 +10,7 @@
       Back to suppliers
     </UButton>
 
-    <KitchenSuppliersDetailSummary
-      v-if="supplier"
-      :supplier="supplier"
-    />
+    <KitchenSuppliersDetailSummary v-if="supplier" :supplier="supplier" />
 
     <UCard v-if="supplier">
       <div class="space-y-4">
@@ -77,8 +74,11 @@
 </template>
 
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import { computed } from 'vue'
-import { useKitchenWorkspaceSupplier } from '../../../composables/workspace/suppliers/useKitchenWorkspaceSupplier'
+import { useKitchenSupplierDetail } from '../../../composables/suppliers/useKitchenSupplierDetail'
 
 const {
   supplier,
@@ -86,10 +86,12 @@ const {
   pending,
   hasIntegratedCatalogue,
   isEcosystemSupplier,
-  cataloguePath,
-  supplyOptionsPath,
+
   debug,
-} = useKitchenWorkspaceSupplier()
+} = useKitchenSupplierDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('supplierId')
+)
 const statusTitle = computed(() =>
   isEcosystemSupplier.value
     ? 'Supplier catalogue available'
@@ -99,5 +101,18 @@ const statusDescription = computed(() =>
   isEcosystemSupplier.value
     ? 'Use the supplier catalogue to review official product options connected to this kitchen.'
     : 'This supplier is currently a public reference without an integrated catalogue.'
+)
+
+const supplierRouteId = useRouteParam('supplierId')
+const supplierBasePath = computed(() =>
+  supplierRouteId.value
+    ? `/workspace/kitchen/stock/suppliers/${encodeURIComponent(supplierRouteId.value)}`
+    : ''
+)
+const cataloguePath = computed(() =>
+  supplierBasePath.value ? `${supplierBasePath.value}/catalogue` : ''
+)
+const supplyOptionsPath = computed(() =>
+  supplierBasePath.value ? `${supplierBasePath.value}/supply-options` : ''
 )
 </script>

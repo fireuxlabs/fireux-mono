@@ -1,16 +1,13 @@
+import { usePortfolioWorkspace } from '../usePortfolioWorkspace'
 // Concurrent edit — 2026-07-20 22:52 CEST — Both-Entity Authority — Property: carry access-ready relationship state into the Portfolio operation.
 import { computed } from 'vue'
-import {
-  useActivePortfolio,
-  type ActivePortfolioRuntime,
-} from '../useActivePortfolio'
+import { usePortfolioScope } from '../../usePortfolioScope'
 import { usePortfolioPropertyCollection } from '../../usePortfolioPropertyCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function usePortfolioWorkspaceProperties(
-  runtimePortfolio: ActivePortfolioRuntime = useActivePortfolio()
-) {
+export function usePortfolioWorkspaceProperties() {
+  const runtimePortfolio = usePortfolioScope(usePortfolioWorkspace().id)
   // Operation support spine: keep selected parent and child collection wiring out of Vue surfaces.
   const selectedPortfolio = runtimePortfolio.entity
   const {

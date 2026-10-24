@@ -26,10 +26,10 @@
 import CatalogueSummary from './Catalogue.vue'
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/components/types'
-import { useSupplierOverview } from '../../../composables/useSupplierOverview'
+import { useSupplierWorkspaceHome } from '../../../composables/workspace/useSupplierWorkspaceHome'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
 
-const { focus, multiple } = useSupplierOverview()
+const { focus, multiple } = useSupplierWorkspaceHome()
 const { pill } = useSupplierInterface()
 function workspaceCard(
   entity: Parameters<typeof pill>[0],

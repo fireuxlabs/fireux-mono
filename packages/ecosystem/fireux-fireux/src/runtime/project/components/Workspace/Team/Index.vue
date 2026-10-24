@@ -46,13 +46,13 @@
 import { computed, ref } from 'vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { useProjectTeam } from '../../../composables/useProjectTeam'
+import type { useProjectWorkspaceTeam } from '../../../composables/workspace/useProjectWorkspaceTeam'
 import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
 import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'
 
 const props = defineProps<{
   memberId?: string
-  team: ReturnType<typeof useProjectTeam>
+  team: ReturnType<typeof useProjectWorkspaceTeam>
 }>()
 const { state, derived } = props.team
 const collectionTitle = computed(() =>

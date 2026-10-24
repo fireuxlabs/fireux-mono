@@ -43,11 +43,11 @@
 import { computed } from 'vue'
 import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 import { useRoute } from '#imports'
-import { useKitchenWorkspacePaletteEditor } from '../../composables/workspace/appearance/useKitchenWorkspacePaletteEditor'
-import { useKitchenWorkspacePlace } from '../../composables/workspace/identity/useKitchenWorkspacePlace'
-import { useKitchenWorkspaceIdentity } from '../../composables/workspace/identity/useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceColours } from '../../composables/workspace/identity/useKitchenWorkspaceColours'
+import { useKitchenPlace } from '../../composables/useKitchenPlace'
+import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 const identity = useKitchenWorkspaceIdentity()
-const { place, placeId, placeOutcome } = useKitchenWorkspacePlace(identity)
+const { place, placeId, placeOutcome } = useKitchenPlace(identity.kitchenId)
 const {
   kitchenId,
   outcome,
@@ -58,7 +58,7 @@ const {
   saveState,
   error,
   save,
-} = useKitchenWorkspacePaletteEditor(identity)
+} = useKitchenWorkspaceColours()
 const media = computed(() => placeIdentityMedia(place.value))
 const route = useRoute()
 const debugContext = computed(() => ({

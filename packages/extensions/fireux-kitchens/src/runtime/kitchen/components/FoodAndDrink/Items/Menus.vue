@@ -28,11 +28,17 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import DishMenu from './Menu.vue'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 const { kitchenId, storageKitchenId, rootCollection, databaseId } =
-  useKitchenWorkspaceDish()
+  useKitchenDishDetail(
+    () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+    useRouteParam('dishId')
+  )
 const { activeMenus, pending, error } = useKitchenMenuCollection(
   storageKitchenId,
   {

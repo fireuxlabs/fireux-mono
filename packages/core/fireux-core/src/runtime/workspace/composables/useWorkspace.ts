@@ -1,5 +1,11 @@
-import { useCookie, useState } from '#imports'
-import { computed, watch } from 'vue'
+import { useCookie, useState, useNuxtApp } from '#imports'
+import {
+  computed,
+  watch,
+  effectScope,
+  onScopeDispose,
+  type EffectScope,
+} from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeString } from '../../utils/string'
 import type { WorkspaceOutcome } from '../models/outcome'
@@ -60,5 +66,37 @@ export function useWorkspace(workspace: string) {
     select,
     reconcile,
     clear: () => select(''),
+  }
+}
+
+/** One domain Workspace instance per Nuxt App, released with its last consumer. */
+export function defineWorkspace<State>(create: () => State): () => State {
+  const owners = new WeakMap<
+    object,
+    { state: State; scope: EffectScope; consumers: number }
+  >()
+  return () => {
+    const app = useNuxtApp()
+    let owner = owners.get(app)
+    if (!owner) {
+      const scope = effectScope(true)
+      try {
+        owner = { state: scope.run(create) as State, scope, consumers: 0 }
+        owners.set(app, owner)
+      } catch (error) {
+        scope.stop()
+        throw error
+      }
+    }
+    const current = owner
+    current.consumers += 1
+    onScopeDispose(() => {
+      current.consumers -= 1
+      if (!current.consumers) {
+        current.scope.stop()
+        owners.delete(app)
+      }
+    })
+    return current.state
   }
 }

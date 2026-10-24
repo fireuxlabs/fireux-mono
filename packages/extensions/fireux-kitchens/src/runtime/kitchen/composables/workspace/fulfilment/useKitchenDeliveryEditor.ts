@@ -1,3 +1,4 @@
+import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
 import type {
   KitchenFulfilment,
   KitchenDeliveryZone,
@@ -24,7 +25,6 @@ import {
   zonePlaceholder,
   type EditableZone,
 } from '../../../utils/delivery-zones'
-import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 
 export function useKitchenDeliveryEditor(props: {
   fulfilment: KitchenFulfilment
@@ -42,7 +42,7 @@ export function useKitchenDeliveryEditor(props: {
   const { updateKitchenFulfilment, captureIntent } =
     useKitchenFulfilmentUpdate()
 
-  const { place, currencyCode } = useKitchenWorkspacePlace()
+  const { place, currencyCode } = useKitchenWorkspaceIdentity()
 
   const zones = ref<EditableZone[]>([])
 

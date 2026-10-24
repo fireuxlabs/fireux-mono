@@ -197,6 +197,9 @@
 </template>
 
 <script setup lang="ts">
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
+import { usePropertyWorkspace } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspace'
+
 import { computed, ref } from 'vue'
 import type {
   Reservation,
@@ -213,7 +216,7 @@ const {
   error,
   outcome,
   truncated,
-} = usePropertyReservations()
+} = usePropertyReservations(usePropertyScope(usePropertyWorkspace().id))
 
 const today = new Date()
 const visibleMonth = ref(

@@ -64,7 +64,8 @@ const capabilities = [
     state: 'Connected reference',
     boundary:
       'Blank has scoped readers and commands. Role labels are separate from permission enforcement; invitation delivery is not demonstrated.',
-    source: 'projects/fireux/fireux-blank/app/composables/useBlankTeam.ts',
+    source:
+      'projects/fireux/fireux-blank/app/composables/workspace/useBlankWorkspaceTeam.ts',
   },
   {
     title: 'Identity',
@@ -73,7 +74,8 @@ const capabilities = [
     state: 'Read-only reference',
     boundary:
       'Blank exposes its name and read outcomes. Its identity controller explicitly disables writing.',
-    source: 'projects/fireux/fireux-blank/app/composables/useBlankIdentity.ts',
+    source:
+      'projects/fireux/fireux-blank/app/composables/workspace/useBlankWorkspaceIdentity.ts',
   },
   {
     title: 'Products',

@@ -106,13 +106,18 @@
 </template>
 
 <script setup lang="ts">
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
+import { usePropertyWorkspace } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspace'
+
 import { reactive, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
 import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
 import { useReservationCreate } from '../../../composables/reservations/useReservationCreate'
 
-const { runtimeProperty, collection, canWrite } = usePropertyReservations()
+const { runtimeProperty, collection, canWrite } = usePropertyReservations(
+  usePropertyScope(usePropertyWorkspace().id)
+)
 const { createReservation, captureIntent } = useReservationCreate(
   collection,
   runtimeProperty

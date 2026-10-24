@@ -21,13 +21,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
-import type { useSupplierWorkspaceIndex } from '../../../composables/workspace/useSupplierWorkspaceIndex'
+import type { useSupplierWorkspace } from '../../../composables/workspace/useSupplierWorkspace'
 type Entity = ReturnType<
-  typeof useSupplierWorkspaceIndex
+  typeof useSupplierWorkspace
 >['collection']['value'][number]
 const props = defineProps<{
   entity: Entity | null
-  outcome: ReturnType<typeof useSupplierWorkspaceIndex>['outcome']['value']
+  outcome: ReturnType<typeof useSupplierWorkspace>['outcome']['value']
 }>()
 const { pill } = useSupplierInterface()
 const card = computed(() => {

@@ -30,6 +30,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceIdentity } from '../../composables/workspace/identity/useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 const { selectedKitchen, kitchenId, outcome } = useKitchenWorkspaceIdentity()
 </script>

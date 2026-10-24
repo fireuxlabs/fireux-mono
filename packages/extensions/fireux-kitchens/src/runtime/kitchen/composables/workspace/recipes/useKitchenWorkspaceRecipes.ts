@@ -7,14 +7,6 @@ import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-export type KitchenRecipeDishUsage = {
-  recipeId: string
-  dishId: string
-  dishName: string
-}
-
 export function useKitchenWorkspaceRecipes() {
   const workspace = useKitchenWorkspace()
   const session = useAppSession()
@@ -77,25 +69,13 @@ export function useKitchenWorkspaceRecipes() {
     pending,
     collectionPath,
   })
-  const dishes = computed(() => [])
   const count = computed(() => page.collection.value.count)
-  const dishUsageByRecipeId = computed<
-    Record<string, KitchenRecipeDishUsage[]>
-  >(() => ({}))
-  const getDishUsageForRecipe = (recipeId: string) =>
-    dishUsageByRecipeId.value[normalizeString(recipeId)] || []
   const debug = computed(() => ({
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: count.value,
-    dishesCount: dishes.value.length,
-    dishUsageRecipeCount: Object.keys(dishUsageByRecipeId.value).length,
-    dishUsageCount: Object.values(dishUsageByRecipeId.value).reduce(
-      (total, entries) => total + entries.length,
-      0
-    ),
     pending: pending.value,
     outcome: outcome.value,
     hasError: Boolean(error.value),
@@ -114,13 +94,10 @@ export function useKitchenWorkspaceRecipes() {
     readOnly,
     canWrite,
     recipes: workspaceRecipes,
-    dishes,
     count,
     pending,
     error,
     outcome,
-    dishUsageByRecipeId,
-    getDishUsageForRecipe,
     debug,
   }
 }

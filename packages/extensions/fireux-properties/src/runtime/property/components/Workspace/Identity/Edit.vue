@@ -84,16 +84,22 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { usePropertyIdentityUpdate } from '../../../composables/usePropertyIdentityUpdate'
-import type { PropertyIdentityState } from '../../../composables/usePropertyIdentity'
+import type { PropertyWorkspaceIdentityState } from '../../../composables/workspace/usePropertyWorkspaceIdentity'
 import type { PropertyIdentityUpdateInput } from '../../../models/property.model'
-const props = defineProps<{ identity: PropertyIdentityState }>()
+const props = defineProps<{ identity: PropertyWorkspaceIdentityState }>()
 const emit = defineEmits<{ close: [] }>()
-const { updateIdentity, captureIntent } = usePropertyIdentityUpdate(
-  props.identity
-)
+const { updateIdentity } = usePropertyIdentityUpdate()
+const { currentUser } = useAuth()
+const captureIntent = useCommandScope([
+  () => currentUser.value?.uid,
+  props.identity.propertyId,
+  props.identity.canWrite,
+])
 const readFields = () => {
   const saved = props.identity.selectedProperty.value?.identity
   return {
@@ -171,7 +177,10 @@ async function save() {
     ) as PropertyIdentityUpdateInput
     if (!Object.keys(changes).length) return
     saving.value = true
-    await updateIdentity(changes)
+    await updateIdentity({
+      propertyId: props.identity.propertyId.value,
+      changes,
+    })
     if (isEditorCurrent()) {
       toast.success('Property profile updated')
       emit('close')

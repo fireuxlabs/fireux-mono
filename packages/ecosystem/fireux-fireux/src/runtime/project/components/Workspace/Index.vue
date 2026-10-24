@@ -26,7 +26,7 @@
     >
       <template #collection-panel>
         <WorkspaceProjectHomeCollection
-          :index="index"
+          :workspace="workspace"
           :can-create="creation.canCreate.value"
           :publication="publication"
           @create="openCreate"
@@ -58,8 +58,8 @@ import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capabi
 import type { ProjectLandingIntent } from '../../models/landing-intent'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
-import { useProjectIdentity } from '../../composables/useProjectIdentity'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
+import { useProjectWorkspaceIdentity } from '../../composables/workspace/useProjectWorkspaceIdentity'
+import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const { currentUser } = useAuth()
@@ -69,12 +69,12 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { projectWorkspaceIntro } from '../../utils/project-workspace-intro'
 
-const index = useProjectWorkspaceIndex()
+const workspace = useProjectWorkspace()
 const creation = useWorkspaceCreation('project', () => ({
-  count: index.access.ids.value.length,
-  outcome: index.access.outcome.value,
+  count: workspace.access.ids.value.length,
+  outcome: workspace.access.outcome.value,
 }))
-const identity = useProjectIdentity({
+const identity = useProjectWorkspaceIdentity({
   publication: computed(() => props.publication),
 })
 const pageState = useWorkspacePageState('project')
@@ -85,12 +85,12 @@ function openCreate() {
 }
 const landingState = computed(() =>
   workspaceLandingState({
-    outcome: index.outcome.value,
+    outcome: workspace.collectionOutcome.value,
     accountPending: session.pending.value,
     accountError: Boolean(session.error.value),
-    associationCount: index.access.ids.value.length,
-    recordCount: index.collection.value.length,
-    selectedId: index.selectedId.value,
+    associationCount: workspace.access.ids.value.length,
+    recordCount: workspace.collection.value.length,
+    selectedId: workspace.id.value,
   })
 )
 function performAction(intent: ProjectLandingIntent) {
@@ -101,9 +101,9 @@ function performAction(intent: ProjectLandingIntent) {
   }
   if (
     intent.action === 'read' &&
-    index.collection.value.some((item) => item.id === intent.target)
+    workspace.collection.value.some((item) => item.id === intent.target)
   ) {
-    index.select(intent.target)
+    workspace.select(intent.target)
     return true
   }
   return false
@@ -113,8 +113,8 @@ const config = useFireUXConfig()
 const intro = computed(() => {
   const subscription = session.appUser.value?.subscription || 'free'
   return projectWorkspaceIntro({
-    status: index.outcome.value,
-    count: index.collection.value.length,
+    status: workspace.collectionOutcome.value,
+    count: workspace.collection.value.length,
     canCreate: creation.canCreate.value,
     canUpdate: identity.canWrite.value,
     accountReady: !session.pending.value && !session.error.value,
@@ -122,7 +122,7 @@ const intro = computed(() => {
     configured:
       config.subscriptionCapacity.project?.[subscription] !== undefined,
     subscription,
-    used: index.access.ids.value.length,
+    used: workspace.access.ids.value.length,
     limit: appSubscriptionCapacity(
       config.subscriptionCapacity,
       'project',
@@ -135,7 +135,7 @@ watchEffect(() =>
   pageState.publish({
     intro: intro.value,
     collection: {
-      records: index.collection.value.map((item) => ({
+      records: workspace.collection.value.map((item) => ({
         id: item.id,
         name: item.identity.name,
         image: item.identity.image_url,
@@ -143,7 +143,7 @@ watchEffect(() =>
     },
     selected: identity.selectedProject.value
       ? {
-          id: index.selectedId.value,
+          id: workspace.id.value,
           name: identity.name.value,
           image: identity.imageUrl.value,
           description: identity.description.value,
@@ -151,7 +151,7 @@ watchEffect(() =>
       : null,
     derived: {
       landingState: landingState.value,
-      status: index.outcome.value,
+      status: workspace.collectionOutcome.value,
       canCreate: creation.canCreate.value,
       canUpdate: identity.canWrite.value,
     },

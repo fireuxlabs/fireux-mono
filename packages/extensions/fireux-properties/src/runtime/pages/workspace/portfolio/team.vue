@@ -6,10 +6,19 @@
       </WorkspaceNavbar>
     </template>
     <template #body>
-        <WorkspaceHero compact title="Portfolio Team" description="Portfolio workspace team." />
-        <WorkspacePortfolioSelector />
-        <WorkspaceAI compact aria-label="Portfolio Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
-      <WorkspacePortfolioTeam :key="team.state.value.portfolio.id" :team="team" />
+      <WorkspaceHero
+        compact
+        title="Portfolio Team"
+        description="Portfolio workspace team."
+      />
+      <WorkspacePortfolioSelector />
+      <WorkspaceAI compact aria-label="Portfolio Team AI"
+        ><UAlert title="Team AI is not connected yet" color="neutral"
+      /></WorkspaceAI>
+      <WorkspacePortfolioTeam
+        :key="team.state.value.portfolio.id"
+        :team="team"
+      />
       <WorkspaceFreemium
         family="portfolio"
         capability="team"
@@ -25,11 +34,11 @@ import { computed } from 'vue'
 import WorkspacePortfolioTeam from '../../../portfolio/components/Workspace/Team/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
-import { usePortfolioTeam } from '../../../portfolio/composables/usePortfolioTeam'
+import { usePortfolioWorkspaceTeam } from '../../../portfolio/composables/workspace/usePortfolioWorkspaceTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
-const team = usePortfolioTeam()
+const team = usePortfolioWorkspaceTeam()
 const intro = computed(() => ({
   title: 'Portfolio Team',
   purpose: 'Add people to your team, update their details and assign roles.',

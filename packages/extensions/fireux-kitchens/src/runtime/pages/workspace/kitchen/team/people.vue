@@ -27,10 +27,7 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <KitchenTeamAI
-        :team="team"
-        @action="teamView?.openAction($event)"
-      />
+      <KitchenTeamAI :team="team" @action="teamView?.openAction($event)" />
       <KitchenTeam
         :key="team.state.value.kitchen.id"
         ref="teamView"
@@ -56,7 +53,7 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroIn
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenTeam } from '../../../../kitchen/composables/team/useKitchenTeam'
+import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/useKitchenWorkspaceTeam'
 
 import { kitchenTeamAgentTools } from '../../../../kitchen/tools/team'
 
@@ -82,7 +79,7 @@ const intro = {
   ai: 'AI prepares the same Team controls used on this page. Review and confirm changes yourself.',
 }
 
-const team = useKitchenTeam()
+const team = useKitchenWorkspaceTeam()
 const liveIntro = computed(() => ({
   ...intro,
   status: team.derived.value.status,

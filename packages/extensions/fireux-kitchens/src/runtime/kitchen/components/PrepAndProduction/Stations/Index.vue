@@ -9,6 +9,12 @@
       v-if="defaultStationError"
       :message="defaultStationError"
     />
+    <UButton
+      v-if="outcome === 'empty' && canWrite"
+      label="Add Pass station"
+      :loading="creating"
+      @click="addPass"
+    />
     <KitchenPrepAndProductionStationsCollection />
 
     <UAlert
@@ -22,7 +28,29 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useKitchenStationCreate } from '../../../composables/stations/useKitchenStationCreate'
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
-const { readOnly, defaultStationError } = useKitchenWorkspaceStations()
+const { readOnly, canWrite, outcome, kitchenId } = useKitchenWorkspaceStations()
+const { ensureDefaultStation } = useKitchenStationCreate()
+const defaultStationError = ref('')
+const creating = ref(false)
+async function addPass() {
+  if (creating.value || !canWrite.value) return
+  const targetId = kitchenId.value
+  creating.value = true
+  defaultStationError.value = ''
+  try {
+    await ensureDefaultStation(targetId)
+  } catch (error) {
+    if (kitchenId.value === targetId)
+      defaultStationError.value =
+        error instanceof Error
+          ? error.message
+          : 'Could not add the Pass station.'
+  } finally {
+    creating.value = false
+  }
+}
 </script>

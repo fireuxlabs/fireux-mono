@@ -141,8 +141,8 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
-const props = defineProps<{ identity: ProjectIdentityState }>()
+import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+const props = defineProps<{ identity: ProjectWorkspaceIdentityState }>()
 const { selectedProject, outcome, name, description, imageUrl } = props.identity
 const coverFailed = ref(false)
 watch(imageUrl, () => {

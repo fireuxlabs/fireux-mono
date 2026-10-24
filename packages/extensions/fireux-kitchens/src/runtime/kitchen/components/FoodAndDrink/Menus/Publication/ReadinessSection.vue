@@ -18,7 +18,7 @@
 </template>
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import type { useKitchenWorkspaceMenuSection } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import type { useMenuSection } from '../../../../../menu/composables/useMenuSection'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuSectionItemCollection } from '../../../../../menu/composables/useMenuSectionItemCollection'
 import {
@@ -30,7 +30,7 @@ const props = defineProps<{
   dishes: Record<string, unknown>[]
   promotions: Record<string, unknown>[]
   currency: string
-  currentSection?: ReturnType<typeof useKitchenWorkspaceMenuSection>
+  currentSection?: ReturnType<typeof useMenuSection>
   hidden?: boolean
 }>()
 const emit = defineEmits<{

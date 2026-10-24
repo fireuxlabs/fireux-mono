@@ -29,6 +29,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useBlankIdentity } from '../../../../composables/useBlankIdentity'
-const { selectedBlank, readState } = useBlankIdentity()
+import { useBlankWorkspaceIdentity } from '../../../../composables/workspace/useBlankWorkspaceIdentity'
+const { selectedBlank, readState } = useBlankWorkspaceIdentity()
 </script>

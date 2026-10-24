@@ -58,8 +58,16 @@ type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMemberIdentity> = {
 export function useWorkspaceTeam<Member extends WorkspaceTeamMemberIdentity>(
   options: UseWorkspaceTeamOptions<Member>
 ) {
-  const canWrite = computed(() => options.canWrite.value)
-  const members = computed(() => options.members.value)
+  const canWrite = computed(
+    () =>
+      Boolean(options.workspaceId.value) &&
+      !options.pending.value &&
+      !options.error.value &&
+      options.canWrite.value
+  )
+  const members = computed(() =>
+    options.pending.value || options.error.value ? [] : options.members.value
+  )
   const selectedTeamMemberId = ref('')
   const selectedTeamMember = computed(
     () =>

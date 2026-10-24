@@ -28,16 +28,21 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import { useMenuRecordNavigation } from '../../../composables/workspace/menus/useMenuRecordNavigation'
 const { rememberView } = useMenuRecordNavigation()
 import { computed, reactive } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
 import DishMenuSection from './MenuSection.vue'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 const props = defineProps<{ menu: Menu }>()
-const { storageKitchenId, databaseId, rootCollection } =
-  useKitchenWorkspaceDish()
+const { storageKitchenId, databaseId, rootCollection } = useKitchenDishDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('dishId')
+)
 const { sections, pending, error } = useMenuSectionCollection(
   storageKitchenId,
   computed(() => props.menu.id),

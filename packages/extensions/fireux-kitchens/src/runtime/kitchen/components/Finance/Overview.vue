@@ -160,7 +160,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenFinanceOverview } from '../../composables/workspace/overview/useKitchenFinanceOverview'
+import { useKitchenWorkspaceFinanceOverview } from '../../composables/workspace/finance/useKitchenWorkspaceFinanceOverview'
 
 const props = defineProps<{ fromDate: string; toDate: string }>()
 const {
@@ -177,7 +177,7 @@ const {
   formatMoney,
   formatCount,
   formatTransactionType,
-} = useKitchenFinanceOverview(props)
+} = useKitchenWorkspaceFinanceOverview(props)
 
 const supportingMetrics = computed(() => [
   {

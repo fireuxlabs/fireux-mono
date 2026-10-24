@@ -21,10 +21,15 @@
   </section>
 </template>
 <script setup lang="ts">
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
+import { usePropertyWorkspace } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspace'
+
 import { computed } from 'vue'
 import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
-const reservations = usePropertyReservations()
+const reservations = usePropertyReservations(
+  usePropertyScope(usePropertyWorkspace().id)
+)
 const settled = computed(
   () =>
     reservations.outcome.value === 'ready' ||

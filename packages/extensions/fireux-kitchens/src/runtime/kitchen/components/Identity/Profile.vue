@@ -296,10 +296,12 @@ import {
 import PlaceEditIdentity from 'fireux-places/runtime/place/components/Edit/Identity.vue'
 import PlaceEditGoogleReview from 'fireux-places/runtime/place/components/Edit/GoogleReview.vue'
 import type { KitchenIdentityIntent } from '../../models/identity-intent'
-import type { useKitchenIdentity } from '../../composables/workspace/identity/useKitchenIdentity'
+import type { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
 import { readKitchenVisibility } from '../../utils/kitchen-readers'
-const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
+const props = defineProps<{
+  identity: ReturnType<typeof useKitchenWorkspaceIdentity>
+}>()
 const route = useRoute()
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const section = ref<PlaceIdentitySection | null>(null)

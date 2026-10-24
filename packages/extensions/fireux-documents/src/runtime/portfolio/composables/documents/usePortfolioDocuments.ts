@@ -3,14 +3,16 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { DocumentStorage, type Document } from '../../models/document.model'
 
-export function usePortfolioDocuments(runtimePortfolio = useActivePortfolio()) {
+export function usePortfolioDocuments(
+  runtimePortfolio: ReturnType<typeof usePortfolioScope>
+) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const collectionPath = usePortfolioWorkspaceChildPath(
+  const collectionPath = usePortfolioChildPath(
     runtimePortfolio,
     DocumentStorage.collection
   )

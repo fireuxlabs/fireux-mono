@@ -15,8 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
-const identity = useKitchenIdentity()
+import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/workspace/useKitchenWorkspaceIdentity'
+const identity = useKitchenWorkspaceIdentity()
 
 definePageMeta({
   layout: 'workspace',

@@ -43,12 +43,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
-import type { usePropertyTeam } from '../../composables/usePropertyTeam'
+import type { usePropertyWorkspaceTeam } from '../../composables/workspace/usePropertyWorkspaceTeam'
 import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
 import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'
 
 const props = defineProps<{
-  team: ReturnType<typeof usePropertyTeam>
+  team: ReturnType<typeof usePropertyWorkspaceTeam>
 }>()
 const { state, derived } = props.team
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()

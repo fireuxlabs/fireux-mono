@@ -41,10 +41,10 @@
 import { computed, reactive } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useKitchenChildCollection } from '../../../../composables/useKitchenChildCollection'
-import type { useKitchenWorkspaceMenuSection } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import type { useMenuSection } from '../../../../../menu/composables/useMenuSection'
 import type { MenuReadiness } from '../../../../../menu/utils/publication-readiness'
 const props = defineProps<{
-  sectionContext?: ReturnType<typeof useKitchenWorkspaceMenuSection>
+  sectionContext?: ReturnType<typeof useMenuSection>
 }>()
 const {
   menu,

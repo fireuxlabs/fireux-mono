@@ -10,13 +10,15 @@
   />
 </template>
 <script setup lang="ts">
+import { usePortfolioWorkspace } from '../../../../../../../fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+
 import { computed } from 'vue'
 import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
-import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { usePortfolioDocuments } from '../../../composables/documents/usePortfolioDocuments'
 import { usePortfolioDocumentLinks } from '../../../composables/documents/usePortfolioDocumentLinks'
-const portfolio = useActivePortfolio()
+const portfolio = usePortfolioScope(usePortfolioWorkspace().id)
 const documents = usePortfolioDocuments(portfolio)
 const links = usePortfolioDocumentLinks(portfolio)
 const outcome = computed(() =>

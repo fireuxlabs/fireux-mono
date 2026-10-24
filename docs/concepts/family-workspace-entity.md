@@ -134,7 +134,7 @@ selection, enabled families or permissions. Authentication remains origin-scoped
 ## Landing creation allowance
 
 Kitchen exposes allowance, used count, `canAdd`, `canCreate` and `showUpgrade`
-through its domain-owned `useKitchenCreationAllowance`. Its pure
+through its domain-owned `useKitchenCreate`. Its pure
 `kitchen/utils/kitchen-capacity.ts` is also consumed by trusted onboarding:
 Free and Premium allow one associated Kitchen; Business has no subscription
 count limit. The existing relationship storage ceiling is separate. Counts use
@@ -385,7 +385,7 @@ migration verification, and protected Workspace consumer are complete.
   projection.
 - Each domain's `useXWorkspace` bridges those ignorant selection mechanics to
   its Entity reader. It exposes `data`, `id`, `outcome`, and only the commands
-  actually consumed by that surface. There is no compulsory CRUD bag. Index pages use `useXWorkspaceIndex` for
+  actually consumed by that surface. There is no compulsory CRUD bag. Index pages use `useXWorkspace` for
   the collection and selection; they do
   not establish another Entity reader or selection authority.
   Outcomes are `idle`, `pending`, `error`, `empty`, `missing`, or `ready`; read failure
@@ -500,7 +500,7 @@ migration verification, and protected Workspace consumer are complete.
   contains only selected Entity inputs read directly.
 
   `state.derived` contains values the page computes and consumes from those
-  inputs. Family `useXWorkspaceIndex` readers publish the common Workspace state;
+  inputs. Family `useXWorkspace` readers publish the common Workspace state;
   capability pages must explicitly extend or replace it when they require
   narrower capability props. Tokens, Firestore internals, unused root fields,
   and broad debug objects are never part of this contract.
@@ -692,12 +692,12 @@ Shared source names and their generated entry components:
 - `Workspace/<Capability>/Index.vue` → `WorkspaceX<Capability>`
 - `WorkspaceXOverview`
 - `useXWorkspace`
-- `useXWorkspaceOverview`
+- `useXWorkspaceHome` where actual summary composition exists
 
-Each `useXWorkspace` exposes `data`, `id` and `outcome`; consumed commands
-remain explicit domain decisions. Each `useXWorkspaceIndex` exposes
-`collection`, its read `outcome`, `selectedId` and `select`. User-facing Index
-adapters do not expose a clear-selection action.
+Each `useXWorkspace` exposes selected `data`, `id` and `outcome`, together
+with available `collection`, `collectionOutcome` and `select`. There is one
+selection owner and no separate Index composable. Consumed commands remain
+explicit domain decisions. The public owner does not expose a clear-selection action.
 Entity-specific storage, membership, subscription, and authority decisions
 remain inside that bridge. Index-page presentation may derive local props from
 the bridge but does not own a second runtime, reader, or selection contract.
@@ -886,7 +886,7 @@ this Workspace map owns only their application to active-Entity surfaces.
 - Preserve canonical Supplier and related Place records in Workspace readers;
   Portfolio remains its canonical readable root with scoped and private work
   owned separately. Its Workspace root subscription uses only a selected ID
-  present in the current ready membership-bound access set. `useActivePortfolio`
+  present in the current ready membership-bound access set. `usePortfolioScope`
   adapts the actual root `data/id/outcome` and Portfolio model; it does not
   recreate a collection/selection/runtime contract. Child paths are empty until
   that exact root is ready, and obsolete data is hidden.
@@ -976,7 +976,7 @@ The App roots now contain framing, short copy and their domain Index. The
 unconnected draft/workflow landing and unused Landing Read modals are removed;
 the inline list is the reader surface. No shared `useIndex` was added because
 `useWorkspace` already owns the common selection mechanics. The short
-`useKitchenWorkspaceIndex` and `useProjectWorkspaceIndex` still bind their real
+`useKitchenWorkspace` and `useProjectWorkspace` still bind their real
 domain readers. Team's larger controller remains a separate simplification
 candidate; this comparison does not prove every Team branch necessary.
 
@@ -1264,7 +1264,7 @@ of other capabilities.
 
 Kitchen, Project, Supplier, Property and Portfolio Landing Index components
 compose named `Home/Collection` and `Home/Single` children inside
-`WorkspaceCapability`. Each keeps its `useXWorkspaceIndex` selection controller,
+`WorkspaceCapability`. Each keeps its `useXWorkspace` selection controller,
 which consumes `useWorkspace`; there is no extra `useIndex` forwarding layer.
 Blank composes its named Home/Collection and Home/Single children into the same
 collection/focus positions. Domain cards and creation doorways remain local.
@@ -1467,7 +1467,7 @@ Portfolio contributions remain owned by Compliance, Documents and Tasks;
 Property Reservations remain owned by Reservations. MarketplaceStore has no
 proved Workspace interface and is outside this family. Component-local
 presentation helpers may remain beside their component; the shared Kitchen
-Finance Overview controller belongs in `kitchen/composables/workspace/overview`.
+Finance Overview controller belongs in `kitchen/composables/workspace/finance`.
 Supplier capability labels consume its live detail projection’s Place identity;
 root Supplier records do not carry hydrated `company_place` fields.
 
@@ -1539,9 +1539,10 @@ Project, Kitchen, Supplier, Portfolio and Property Home collections reuse Core
 `WorkspaceEntityCollection` for loading, error, empty and ready presentation.
 Entity rows, creation policy and navigation remain with their domain.
 
-Selected-record `useXWorkspace` projections return `{ id, data, outcome }`;
+The single `useXWorkspace` owner returns selected `{ id, data, outcome }`
+and chooser `{ collection, collectionOutcome, select }`;
 they do not acquire creation or mutation commands. Kitchen creation policy lives
-in `useKitchenCreationAllowance`, and adoption is explicitly composed at entry.
+in `useKitchenCreate`, and adoption is explicitly composed at entry.
 Identity editors acquire their domain commands and submit an explicit Entity ID.
 
 Core `WorkspaceTeamCollection` owns member collection presentation and reuses
@@ -1554,19 +1555,19 @@ separate Team People component or filter owner.
 Selected-Entity adapters are named `useXWorkspaceIdentity()`,
 `useXWorkspaceTeam()` and `useXWorkspaceCalendar()` and acquire their target
 through `useXWorkspace()`. They accept no Entity-ID argument. Current adapters
-live under the Entity's `composables/workspace/<capability>`; Blank retains its
-App-local harness composables. Domain fields, roles, events and commands remain
+live directly under the Entity's `composables/workspace`; domain-specific
+capabilities keep named child folders. Blank uses App-local `composables/workspace`. Domain fields, roles, events and commands remain
 with each domain. A domain-only name must not silently acquire Workspace selection.
 
 Core `useIdentity` owns read states and content scope. Core
 `useWorkspaceIdentity` adds management action availability. Core
 `useWorkspaceTeam` owns shared roster selection and management availability.
 Generic `useCalendar` lives under shared composables; `useWorkspaceCalendar`
-adds selected-Entity date-state disposal. Home uses existing shared collection,
-entry and overview components without a forwarding Home composable.
+adds selected-Entity date-state disposal. Home uses existing shared collection, entry and overview components through
+`useXWorkspaceHome()`, which owns the real chooser and summary composition.
 
 Kitchen demonstrates an explicit-ID domain identity path with
-`useKitchenIdentity(kitchenId)` and `useKitchenPlace(identity)`. Its Workspace
+`useKitchenIdentity(kitchenId)` and `useKitchenPlace(kitchenId)`. Its Workspace
 Identity adapter composes these with the current selection and shared management
 state. Setup workflows supply their explicit ID directly to the domain reader.
 These private readers retain membership checks; this migration does not publish
@@ -1580,3 +1581,49 @@ remains Reservation-owned rather than acquiring a second adapter.
 The Workspace migration checks listed as removed in
 `docs/ai/gpt-context.md` are no longer available. References to those filenames
 in this document describe historical verification, not current coverage.
+
+## Capability organisation
+
+Common Home, Identity, Team and supported Calendar adapters live directly under
+`composables/workspace`; domain-specific collections use named capability child
+folders with `useXWorkspaceY` owners. Home includes its
+lightweight Team summary; separate Team-summary controllers are retired.
+Kitchen creation availability lives in `useKitchenCreate` and reuses Core
+creation policy with Kitchen's capacity table. Available Kitchen targets are
+read by domain-owned `useKitchenTargets`; they are not children of a Kitchen.
+
+Kitchen Dish, Recipe, Ingredient and Supplier detail readers receive explicit
+Kitchen and record IDs. Dish, Recipe and Ingredient detail do not load their
+entire collection to locate a record. Supplier detail retains existing domain
+relationship hydration; its collection-wide hydration remains a separate
+performance concern. Workspace pages own route parameters, catalogue labels
+and navigation paths. Menu source uploads have the separate plural
+`useKitchenWorkspaceMenuSources` owner. Menu Section receives its parent record
+state and section ID explicitly; it has no fallback to routed selection.
+
+Stations collection reads never create records. The empty Stations page offers
+an explicit Add Pass station action backed by `useKitchenStationCreate`.
+Table Tabs and Supplier Catalogues use accurate plural collection names.
+
+`usePortfolioScope(id)` and `usePropertyScope(id)` resolve explicit, authorised
+domain scope and storage paths. They do not read Workspace selection. Domain
+collections and commands require a scope input; Workspace surfaces establish
+it from their selected Entity. Property Identity and Supplier profile commands
+submit explicit target IDs, while editor lifetime and feedback remain UI-owned.
+These moves do not change storage schemas, server authority or deployment.
+
+## Unified Workspace selection owner
+
+Kitchen, Project, Supplier, Portfolio, Property and Blank combine their former
+Index and selected-record readers in `useXWorkspace`. Collection consumers use
+`collectionOutcome` and `id`; selected-record capabilities use `outcome`, `id`
+and `data`. Home and navigation acquire this same owner. Core `defineWorkspace`
+shares the effects per Nuxt App and releases them with the last consumer; the
+cache is request-isolated during SSR. It does not serialise runtime instances
+into payload state or share actor data between server requests.
+
+Common `useXWorkspaceHome`, Identity, Team and Calendar adapters sit directly
+under `composables/workspace`. Named child folders are reserved for genuinely
+domain-specific capability implementation. Home retains its summary composition;
+it is not a second selector. Retired Index files and one-file common capability
+folders are removed without compatibility exports.

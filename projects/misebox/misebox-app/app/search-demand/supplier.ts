@@ -339,7 +339,7 @@ export const supplierResearch = defineAppSearchDemand({
               'Catalogue, Ingredient and Item readers exist. A complete authored offer, unit/pack model and publication workflow are not established. Source inspection only; no fresh operator acceptance test.',
             source_paths: [
               'packages/extensions/fireux-suppliers/src/runtime/supplier/models/capabilities.ts',
-              'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/catalogue/useSupplierWorkspaceCatalogue.ts',
+              'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/catalogue/useSupplierWorkspaceCatalogues.ts',
               'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/items/useSupplierWorkspaceItems.ts',
             ],
           },

@@ -5,25 +5,27 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useRoute } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import {
-  requirePropertyWorkspaceWrite,
-  useActiveProperty,
-  type ActivePropertyRuntime,
-} from 'fireux-properties/runtime/property/composables/workspace/useActiveProperty'
+  requirePropertyWrite,
+  usePropertyScope,
+  type PropertyScope,
+} from 'fireux-properties/runtime/property/composables/usePropertyScope'
 import type {
   ReservationResponse,
   ReservationUpdateInput,
 } from '../../models/reservation.model.ts'
 
-export function useReservationUpdate(
-  runtimeProperty: ActivePropertyRuntime = useActiveProperty()
-) {
+export function useReservationUpdate(runtimeProperty: PropertyScope) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
   const { appUser } = useUserSession()
   const route = useRoute()
   const captureIntent = useCommandScope([
-    () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value),
-    () => runtimeProperty.id.value, () => runtimeProperty.canWrite.value, () => route.fullPath,
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    () => runtimeProperty.id.value,
+    () => runtimeProperty.canWrite.value,
+    () => route.fullPath,
   ])
   async function updateReservation(input: {
     reservationId: string
@@ -33,14 +35,16 @@ export function useReservationUpdate(
     const actorUid = currentUser.value?.uid
     const body = JSON.parse(JSON.stringify(input.changes))
     const reservationId = input.reservationId
-    const propertyId = requirePropertyWorkspaceWrite(
+    const propertyId = requirePropertyWrite(
       runtimeProperty,
       'fireux-reservations'
     )
     const user = await useRequireUser()
-    if (!isCurrent() || user.uid !== actorUid) throw new Error('The account or Property changed. Reopen the action.')
+    if (!isCurrent() || user.uid !== actorUid)
+      throw new Error('The account or Property changed. Reopen the action.')
     const token = await user.getIdToken()
-    if (!isCurrent()) throw new Error('The account or Property changed. Reopen the action.')
+    if (!isCurrent())
+      throw new Error('The account or Property changed. Reopen the action.')
     const response = await $fetch<ReservationResponse>(
       `/api/workspace/properties/${encodeURIComponent(propertyId)}/reservations/${encodeURIComponent(reservationId)}`,
       {
@@ -50,8 +54,14 @@ export function useReservationUpdate(
         retry: 0,
       }
     )
-    if (!response?.reservation?.id || response.reservation.property_id !== propertyId || response.reservation.id !== reservationId)
-      throw new Error('Reservation response did not match the requested Property and Reservation.')
+    if (
+      !response?.reservation?.id ||
+      response.reservation.property_id !== propertyId ||
+      response.reservation.id !== reservationId
+    )
+      throw new Error(
+        'Reservation response did not match the requested Property and Reservation.'
+      )
     return response.reservation
   }
   return { updateReservation, captureIntent }

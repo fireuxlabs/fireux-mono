@@ -1,3 +1,4 @@
+import { useKitchenIdentity } from '../useKitchenIdentity'
 import {
   computed,
   onScopeDispose,
@@ -12,8 +13,7 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { useKitchenAccess } from '../useKitchenAccess'
-import { useKitchenWorkspaceIdentity } from '../workspace/identity/useKitchenWorkspaceIdentity'
-import { useKitchenWorkspacePlace } from '../workspace/identity/useKitchenWorkspacePlace'
+import { useKitchenPlace } from '../useKitchenPlace'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenOfferingCollection } from '../useKitchenOfferingCollection'
 import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
@@ -25,10 +25,10 @@ import type {
 } from '../../models/offering.model'
 
 export function useKitchenOfferings(
-  explicitKitchenId?: MaybeRefOrGetter<string>
+  explicitKitchenId: MaybeRefOrGetter<string>
 ) {
   const config = useFireUXConfig()
-  const identity = useKitchenWorkspaceIdentity(explicitKitchenId)
+  const identity = useKitchenIdentity(explicitKitchenId)
   const { currentUser } = useAuth()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
   const access = useKitchenAccess()
@@ -96,7 +96,7 @@ export function useKitchenOfferings(
   const storageKitchenId = computed(() =>
     ownerOutcome.value === 'ready' ? identity.kitchenId.value : ''
   )
-  const { place, placeOutcome } = useKitchenWorkspacePlace(identity)
+  const { place, placeOutcome } = useKitchenPlace(identity.kitchenId)
   const collection = useKitchenMenuCollection(storageKitchenId)
   const offeringRead = useKitchenOfferingCollection(storageKitchenId)
   const outcome = computed(() =>

@@ -46,6 +46,6 @@
   <p v-else class="text-sm text-muted">Choose a Project from the collection.</p>
 </template>
 <script setup lang="ts">
-import type { useProjectIdentity } from '../../../composables/useProjectIdentity'
-defineProps<{ identity: ReturnType<typeof useProjectIdentity> }>()
+import type { useProjectWorkspaceIdentity } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+defineProps<{ identity: ReturnType<typeof useProjectWorkspaceIdentity> }>()
 </script>

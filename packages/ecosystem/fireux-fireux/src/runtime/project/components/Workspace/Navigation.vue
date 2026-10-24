@@ -40,7 +40,8 @@
     :to="workspaceEntryPath"
     :collapsed="collapsed"
     :pending="
-      index.outcome.value === 'pending' || index.outcome.value === 'idle'
+      workspace.collectionOutcome.value === 'pending' ||
+      workspace.collectionOutcome.value === 'idle'
     "
     workspace-label="Project"
   />
@@ -52,7 +53,7 @@ import { projectIdentityMedia } from '../../utils/project-identity-media'
 import { useProjectAppContext } from '../../composables/workspace/identity/useProjectAppContext'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
+import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 
 withDefaults(
   defineProps<{
@@ -66,12 +67,12 @@ withDefaults(
     backdropOnly: false,
   }
 )
-const index = useProjectWorkspaceIndex()
+const workspace = useProjectWorkspace()
 const { publication } = useProjectAppContext()
 const { workspaceEntryPath } = useWorkspaceEntryCta('project')
 const selected = computed(() =>
-  index.collection.value.find(
-    (project) => project.id === index.selectedId.value
+  workspace.collection.value.find(
+    (project) => project.id === workspace.id.value
   )
 )
 const backdropImage = computed(() => '')
@@ -89,22 +90,25 @@ function avatar(project: Parameters<typeof projectIdentityMedia>[0]) {
 }
 const item = computed(() => ({
   label:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'Projects unavailable'
       : selected.value?.identity.name ||
         selected.value?.id ||
         'Project Workspace',
-  avatar: avatar(index.outcome.value === 'ready' ? selected.value : null),
+  avatar: avatar(
+    workspace.collectionOutcome.value === 'ready' ? selected.value : null
+  ),
   icon:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-briefcase-business',
   choices:
-    index.outcome.value === 'ready' && index.collection.value.length > 1
-      ? index.collection.value.map((project) => ({
+    workspace.collectionOutcome.value === 'ready' &&
+    workspace.collection.value.length > 1
+      ? workspace.collection.value.map((project) => ({
           label: project.identity.name || project.id,
           avatar: avatar(project),
-          onSelect: () => index.select(project.id),
+          onSelect: () => workspace.select(project.id),
         }))
       : [],
 }))

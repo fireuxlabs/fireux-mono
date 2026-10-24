@@ -23,21 +23,23 @@
   </NuxtLink>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import { computed, watch } from 'vue'
 import type { Menu } from '../../../../menu/models/menu.model'
 import type { MenuSection } from '../../../../menu/models/menu-section.model'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
 import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
 const props = defineProps<{ menu: Menu; section: MenuSection }>()
 const emit = defineEmits<{
   result: [value: 'pending' | 'error' | 'empty' | 'match']
 }>()
-const {
-  dishId,
-  storageKitchenId,
-  databaseId,
-  rootCollection,
-} = useKitchenWorkspaceDish()
+const { dishId, storageKitchenId, databaseId, rootCollection } =
+  useKitchenDishDetail(
+    () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+    useRouteParam('dishId')
+  )
 const { items, pending, error } = useMenuSectionItemCollection(
   storageKitchenId,
   computed(() => props.menu.id),

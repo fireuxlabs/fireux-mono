@@ -43,10 +43,10 @@
 import { useDishEditorScope } from '../../../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
 import { useDishCreate } from '../../../../../composables/dish/useDishCreate'
 const { kitchenId, menuId, sectionId, dishes, itemRows, canWrite, createItem } =
-  useKitchenWorkspaceMenuSection()
+  useMenuSection()
 const route = useRoute()
 const names = ref('')
 const prices = ref<Record<string, string | number>>({})

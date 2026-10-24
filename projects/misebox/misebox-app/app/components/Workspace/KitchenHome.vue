@@ -11,13 +11,14 @@
       <UDashboardToolbar
         :ui="{ root: 'border-b-0' }"
         v-if="
-          index.multipleKitchenView.value && index.collection.value.length > 1
+          workspace.multipleKitchenView.value &&
+          workspace.collection.value.length > 1
         "
       >
         <WorkspaceKitchenSelectorChoices
-          :collection="index.collection.value"
-          :selected-id="index.selectedId.value"
-          @select="index.select"
+          :collection="workspace.collection.value"
+          :selected-id="workspace.id.value"
+          @select="workspace.select"
         />
       </UDashboardToolbar>
     </template>
@@ -35,11 +36,11 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroIn
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import type { WorkspaceIntro } from 'fireux-core/runtime/workspace/models/capability-context'
 import WorkspaceKitchen from 'fireux-kitchens/runtime/kitchen/components/Workspace/Index.vue'
-import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex'
+import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspace'
 import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/models/landing-intent'
 import { kitchenWorkspaceIntro } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-workspace-intro'
 
-const index = useKitchenWorkspaceIndex()
+const workspace = useKitchenWorkspace()
 const workspaceSurface = ref<InstanceType<typeof WorkspaceKitchen> | null>(null)
 const { state: pageState } = useWorkspacePageState('kitchen')
 const intro = computed(

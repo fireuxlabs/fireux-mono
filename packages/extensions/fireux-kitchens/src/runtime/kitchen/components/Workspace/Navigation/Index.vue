@@ -40,7 +40,8 @@
     :to="workspaceEntryPath"
     :collapsed="collapsed"
     :pending="
-      index.outcome.value === 'pending' || index.outcome.value === 'idle'
+      workspace.collectionOutcome.value === 'pending' ||
+      workspace.collectionOutcome.value === 'idle'
     "
     workspace-label="Kitchen"
   />
@@ -50,7 +51,7 @@
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
-import { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
@@ -67,10 +68,10 @@ withDefaults(
     backdropOnly: false,
   }
 )
-const index = useKitchenWorkspaceIndex()
+const workspace = useKitchenWorkspace()
 const selected = computed(() =>
-  index.collection.value.find(
-    (kitchen) => kitchen.id === index.selectedId.value
+  workspace.collection.value.find(
+    (kitchen) => kitchen.id === workspace.id.value
   )
 )
 const backdropImage = computed(
@@ -82,27 +83,27 @@ const backdropImage = computed(
 )
 const item = computed(() => ({
   label:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'Kitchens unavailable'
       : selected.value?.display_name ||
         selected.value?.id ||
         'Kitchen Workspace',
   avatar:
-    index.outcome.value === 'ready'
+    workspace.collectionOutcome.value === 'ready'
       ? kitchenWorkspaceAvatar(selected.value)
       : undefined,
   icon:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-chef-hat',
   choices:
-    index.multipleKitchenView.value &&
-    index.outcome.value === 'ready' &&
-    index.collection.value.length > 1
-      ? index.collection.value.map((kitchen) => ({
+    workspace.multipleKitchenView.value &&
+    workspace.collectionOutcome.value === 'ready' &&
+    workspace.collection.value.length > 1
+      ? workspace.collection.value.map((kitchen) => ({
           label: kitchen.display_name || kitchen.id,
           avatar: kitchenWorkspaceAvatar(kitchen),
-          onSelect: () => index.select(kitchen.id || ''),
+          onSelect: () => workspace.select(kitchen.id || ''),
         }))
       : [],
 }))

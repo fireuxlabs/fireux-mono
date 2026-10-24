@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProjectIdentity } from '../../../composables/useProjectIdentity'
-const workspaceIdentity = useProjectIdentity()
+import { useProjectWorkspaceIdentity } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+const workspaceIdentity = useProjectWorkspaceIdentity()
 const collectionTitle = computed(() =>
   workspaceIdentity.name.value
     ? `${workspaceIdentity.name.value}’s Tests`

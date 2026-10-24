@@ -23,13 +23,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
-import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/usePortfolioWorkspaceIndex'
+import type { usePortfolioWorkspace } from '../../../composables/workspace/usePortfolioWorkspace'
 type Entity = ReturnType<
-  typeof usePortfolioWorkspaceIndex
+  typeof usePortfolioWorkspace
 >['collection']['value'][number]
 const props = defineProps<{
   entity: Entity | null
-  outcome: ReturnType<typeof usePortfolioWorkspaceIndex>['outcome']['value']
+  outcome: ReturnType<typeof usePortfolioWorkspace>['outcome']['value']
 }>()
 const { pill } = usePortfolioInterface()
 const card = computed(() => {

@@ -48,14 +48,20 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
+const selectedKitchen = workspace.data
 import { computed, ref, watch } from 'vue'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { normalizeDishPricingPatch } from '../../../utils/dish-pricing'
-const { dish, dishId, kitchenId, canWrite, selectedKitchen } =
-  useKitchenWorkspaceDish()
+const { dish, dishId, kitchenId, canWrite } = useKitchenDishDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('dishId')
+)
 const currency = computed(() => readPlaceCurrencyCode(selectedKitchen.value))
 const price = ref<string | number>('')
 const options = ref<

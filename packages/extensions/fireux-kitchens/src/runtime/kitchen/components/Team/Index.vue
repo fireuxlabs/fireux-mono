@@ -58,9 +58,9 @@ import { useToast } from '#imports'
 import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { useKitchenTeam } from '../../composables/team/useKitchenTeam'
+import type { useKitchenWorkspaceTeam } from '../../composables/workspace/useKitchenWorkspaceTeam'
 
-type Workspace = ReturnType<typeof useKitchenTeam>
+type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
 import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
 import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'

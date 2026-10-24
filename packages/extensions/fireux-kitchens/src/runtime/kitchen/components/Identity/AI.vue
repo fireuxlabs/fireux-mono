@@ -26,9 +26,9 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { KitchenIdentityIntent } from '../../models/identity-intent'
-import type { useKitchenIdentity } from '../../composables/workspace/identity/useKitchenIdentity'
+import type { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 const props = defineProps<{
-  identity: ReturnType<typeof useKitchenIdentity>
+  identity: ReturnType<typeof useKitchenWorkspaceIdentity>
 }>()
 const emit = defineEmits<{ action: [intent: KitchenIdentityIntent] }>()
 const prompt = ref(''),

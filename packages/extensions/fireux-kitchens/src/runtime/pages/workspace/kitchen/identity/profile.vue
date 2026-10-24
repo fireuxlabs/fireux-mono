@@ -26,8 +26,8 @@
 <script setup lang="ts">
 import KitchenIdentityProfile from '../../../../kitchen/components/Identity/Profile.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
-import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
-const identity = useKitchenIdentity()
+import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/workspace/useKitchenWorkspaceIdentity'
+const identity = useKitchenWorkspaceIdentity()
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 const navTitle = 'Venue profile'
 

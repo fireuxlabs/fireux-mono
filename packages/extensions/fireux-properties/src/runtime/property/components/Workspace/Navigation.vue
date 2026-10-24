@@ -9,7 +9,8 @@
     :to="workspaceEntryPath"
     :collapsed="collapsed"
     :pending="
-      index.outcome.value === 'pending' || index.outcome.value === 'idle'
+      workspace.collectionOutcome.value === 'pending' ||
+      workspace.collectionOutcome.value === 'idle'
     "
     workspace-label="Property"
   />
@@ -20,7 +21,7 @@ import { computed } from 'vue'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { usePropertyInterface } from '../../composables/firestore/utils/view/usePropertyInterface'
-import { usePropertyWorkspaceIndex } from '../../composables/workspace/usePropertyWorkspaceIndex'
+import { usePropertyWorkspace } from '../../composables/workspace/usePropertyWorkspace'
 
 withDefaults(
   defineProps<{
@@ -32,27 +33,29 @@ withDefaults(
 )
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('property')
-const index = usePropertyWorkspaceIndex()
+const workspace = usePropertyWorkspace()
 const { pill } = usePropertyInterface()
 const selected = computed(() =>
-  index.collection.value.find(
-    (property) => property.id === index.selectedId.value
+  workspace.collection.value.find(
+    (property) => property.id === workspace.id.value
   )
 )
 const card = computed(() => pill(selected.value))
 const item = computed(() => ({
   label:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'Properties unavailable'
-      : card.value?.title || index.selectedId.value || 'Property Workspace',
-  image: index.outcome.value === 'ready' ? card.value?.imageUrl : '',
+      : card.value?.title || workspace.id.value || 'Property Workspace',
+  image:
+    workspace.collectionOutcome.value === 'ready' ? card.value?.imageUrl : '',
   icon:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-building-2',
   choices:
-    index.outcome.value === 'ready' && index.collection.value.length > 1
-      ? index.collection.value.flatMap((property) => {
+    workspace.collectionOutcome.value === 'ready' &&
+    workspace.collection.value.length > 1
+      ? workspace.collection.value.flatMap((property) => {
           const identity = pill(property)
           if (!identity) return []
           return [
@@ -63,7 +66,7 @@ const item = computed(() => ({
                 alt: identity.title,
                 icon: 'i-lucide-building-2',
               },
-              onSelect: () => index.select(identity.id),
+              onSelect: () => workspace.select(identity.id),
             },
           ]
         })

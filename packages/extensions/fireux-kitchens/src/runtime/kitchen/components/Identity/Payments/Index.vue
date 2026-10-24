@@ -29,7 +29,9 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useKitchenFulfilment } from '../../../composables/workspace/fulfilment/useKitchenFulfilment'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+
+import { useKitchenFulfilment } from '../../../composables/fulfilment/useKitchenFulfilment'
 const {
   selectedKitchen,
   kitchenId,
@@ -38,5 +40,5 @@ const {
   pending,
   error,
   outcome,
-} = useKitchenFulfilment()
+} = useKitchenFulfilment(useKitchenWorkspace().id)
 </script>

@@ -36,15 +36,36 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { PlaceUpdateAdapter } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceUpdate'
+
+import { computed, ref, watch } from 'vue'
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
 import SupplierIdentityRead from './Read.vue'
-import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
+import { useSupplierWorkspaceIdentity } from '../../../composables/workspace/useSupplierWorkspaceIdentity'
 import { useSupplierProfileUpdate } from '../../../composables/useSupplierProfileUpdate'
-const identity = useSupplierIdentity()
-const updateAdapter = useSupplierProfileUpdate(identity)
+const identity = useSupplierWorkspaceIdentity()
+const { updateProfile } = useSupplierProfileUpdate()
 const { currentUser } = useAuth()
+const captureIntent = useCommandScope([
+  () => currentUser.value?.uid,
+  identity.supplierId,
+  identity.companyId,
+  identity.canWrite,
+])
+const updateAdapter: PlaceUpdateAdapter = {
+  captureIntent,
+  update: (placeId, patch) => {
+    if (!identity.canWrite.value || identity.companyId.value !== placeId)
+      throw new Error('Reopen Identity for the current Supplier.')
+    return updateProfile({
+      supplierId: identity.supplierId.value,
+      placeId,
+      patch,
+    })
+  },
+}
 const section = ref<PlaceIdentitySection | null>(null)
 const labels = {
   profile: 'Business profile',

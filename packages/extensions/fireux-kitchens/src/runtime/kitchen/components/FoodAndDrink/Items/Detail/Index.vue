@@ -9,7 +9,7 @@
       >← Back to menu selection</NuxtLink
     >
     <UAlert
-      v-if="outcome === 'idle' || outcome === 'empty'"
+      v-if="outcome === 'idle'"
       color="neutral"
       title="Select a kitchen"
       description="Choose a Kitchen before viewing its food and drinks."
@@ -115,6 +115,12 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
+const workspace = useKitchenWorkspace()
+const { catalogue } = useKitchenDishesContext()
+const selectedKitchen = workspace.data
 import { computed, ref } from 'vue'
 import { dishCatalogueReturn } from '../../../../utils/dish-catalogue-route'
 import { useRoute, navigateTo } from '#imports'
@@ -125,7 +131,7 @@ import DishSpec from '../Spec.vue'
 import DishMenus from '../Menus.vue'
 import { dishCategoryLabel } from '../../../../models/dish.model'
 import DishPreparation from '../Preparation.vue'
-import { useKitchenWorkspaceDish } from '../../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../../composables/dish/useKitchenDishDetail'
 const {
   dish,
   dishId,
@@ -135,9 +141,10 @@ const {
   error,
   outcome,
   canWrite,
-  catalogue,
-  selectedKitchen,
-} = useKitchenWorkspaceDish()
+} = useKitchenDishDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('dishId')
+)
 const route = useRoute()
 const manage = ref(false)
 const { deleteDish } = useDishDelete()

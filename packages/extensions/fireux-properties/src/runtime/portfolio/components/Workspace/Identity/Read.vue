@@ -86,8 +86,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PortfolioIdentityState } from '../../../composables/usePortfolioIdentity'
-const props = defineProps<{ identity: PortfolioIdentityState }>()
+import type { PortfolioWorkspaceIdentityState } from '../../../composables/workspace/usePortfolioWorkspaceIdentity'
+const props = defineProps<{ identity: PortfolioWorkspaceIdentityState }>()
 
 const {
   selectedPortfolio,

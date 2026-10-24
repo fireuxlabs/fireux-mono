@@ -43,8 +43,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import KitchenListingEdit from '../Workspace/Home/Edit.vue'
-import type { useKitchenIdentity } from '../../composables/workspace/identity/useKitchenIdentity'
-const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
+import type { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
+const props = defineProps<{
+  identity: ReturnType<typeof useKitchenWorkspaceIdentity>
+}>()
 const kitchenEditorOpen = ref(false)
 const kitchenPath = computed(() => {
   const slug = props.identity.selectedKitchen.value?.identity?.slug

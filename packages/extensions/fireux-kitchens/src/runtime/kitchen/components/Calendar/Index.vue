@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenCalendar } from '../../composables/workspace/calendar/useKitchenCalendar'
+import { useKitchenWorkspaceCalendar } from '../../composables/workspace/useKitchenWorkspaceCalendar'
 
-const { selectedDate } = useKitchenCalendar()
+const { selectedDate } = useKitchenWorkspaceCalendar()
 </script>

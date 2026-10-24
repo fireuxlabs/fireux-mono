@@ -7,33 +7,14 @@ import { computed, watchEffect } from 'vue'
 import { useCookie, useState } from '#imports'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
-import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
+import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
-import { useKitchenChildCollection } from '../../useKitchenChildCollection'
-import {
-  MenuSourceUploadStorage,
-  type MenuSourceUpload,
-} from '../../../../menu/utils/menu-source-upload.ts'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const text = (value: unknown) => String(value ?? '').trim()
-
-const timestampSeconds = (value: unknown) => {
-  if (!value || typeof value !== 'object') return 0
-  const seconds = Number((value as Record<string, unknown>).seconds)
-  return Number.isFinite(seconds) ? seconds : 0
-}
-
-const sortMenuSources = (sources: MenuSourceUpload[]) =>
-  [...sources].sort((a, b) => {
-    const left = timestampSeconds(a.created?.at)
-    const right = timestampSeconds(b.created?.at)
-    if (left || right) return right - left
-    return text(a.id).localeCompare(text(b.id))
-  })
 
 export function useKitchenWorkspaceMenus() {
   const session = useAppSession()
@@ -61,14 +42,6 @@ export function useKitchenWorkspaceMenus() {
   const create = useMenuCreate({
     kitchenId: kitchenWorkspace.id,
   })
-  const sourceUploads = useKitchenChildCollection<MenuSourceUpload>(
-    MenuSourceUploadStorage.collection,
-    storageKitchenId,
-    {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-    }
-  )
   const rawMenus = fetchedMenus
   const activeMenus = fetchedActiveMenus
   const selectionKey = `kitchen-menu-selection-${fireux.appId}`
@@ -126,16 +99,6 @@ export function useKitchenWorkspaceMenus() {
   })
   const pending = computed(() => outcome.value === 'pending')
   const collectionPath = fetchedCollectionPath
-  const menuSources = computed(() => sortMenuSources(sourceUploads.items.value))
-  const menuSourcesOutcome = computed(() =>
-    storageKitchenId.value ? sourceUploads.outcome.value : outcome.value
-  )
-  const menuSourcesError = computed(() =>
-    storageKitchenId.value ? sourceUploads.error.value : error.value
-  )
-  const menuSourcesPending = computed(
-    () => menuSourcesOutcome.value === 'pending'
-  )
   const currencyCode = computed(() =>
     readPlaceCurrencyCode(identity.selectedKitchen.value)
   )
@@ -212,11 +175,6 @@ export function useKitchenWorkspaceMenus() {
     pending,
     outcome,
     error,
-    menuSources,
-    menuSourcesPending,
-    menuSourcesOutcome,
-    menuSourcesError,
-    menuSourcesCollectionPath: sourceUploads.collectionPath,
     createMenu,
     menuCreateBlockedMessage,
     debug: computed(() => ({
@@ -225,10 +183,7 @@ export function useKitchenWorkspaceMenus() {
       collectionPath: collectionPath.value,
       menusCount: activeMenus.value.length,
       rawMenusCount: (rawMenus.value ?? []).length,
-      menuSourcesCollectionPath: sourceUploads.collectionPath.value,
-      menuSourcesCount: menuSources.value.length,
       pending: pending.value,
-      menuSourcesPending: menuSourcesPending.value,
     })),
   }
 }

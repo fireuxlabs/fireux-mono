@@ -1,10 +1,15 @@
 <template>
   <WorkspaceCalendarSurface v-model="calendar.selectedDate.value">
-    <UAlert title="No events connected yet" description="Scheduled Portfolio work will appear here when an event source is connected." icon="i-lucide-calendar" color="neutral" />
+    <UAlert
+      title="No events connected yet"
+      description="Scheduled Portfolio work will appear here when an event source is connected."
+      icon="i-lucide-calendar"
+      color="neutral"
+    />
   </WorkspaceCalendarSurface>
 </template>
 <script setup lang="ts">
 import WorkspaceCalendarSurface from 'fireux-core/runtime/workspace/components/CalendarSurface.vue'
-import { usePortfolioCalendar } from '../../../composables/usePortfolioCalendar'
-const calendar = usePortfolioCalendar()
+import { usePortfolioWorkspaceCalendar } from '../../../composables/workspace/usePortfolioWorkspaceCalendar'
+const calendar = usePortfolioWorkspaceCalendar()
 </script>

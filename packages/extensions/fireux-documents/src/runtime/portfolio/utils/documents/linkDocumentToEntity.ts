@@ -1,4 +1,4 @@
-import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import type { DocumentLinkTargetType } from '../../models/document-link.model'
 import { useDocumentMutation } from '../../composables/useDocumentMutation'
 
@@ -10,7 +10,12 @@ export type LinkDocumentToEntityInput = {
   targetLabel?: string
   createTask?: boolean
 }
-export function linkDocumentToEntity(portfolio = useActivePortfolio()) {
+export function linkDocumentToEntity(
+  portfolio: ReturnType<typeof usePortfolioScope>
+) {
   const mutate = useDocumentMutation(portfolio)
-  return { linkDocumentToEntity: (input: LinkDocumentToEntityInput) => mutate('links', input) }
+  return {
+    linkDocumentToEntity: (input: LinkDocumentToEntityInput) =>
+      mutate('links', input),
+  }
 }

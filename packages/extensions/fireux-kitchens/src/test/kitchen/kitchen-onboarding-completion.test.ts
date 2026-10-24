@@ -3,16 +3,38 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, watch, nextTick, reactive, onScopeDispose, effectScope } from 'vue'
+import {
+  computed,
+  ref,
+  watch,
+  nextTick,
+  reactive,
+  onScopeDispose,
+  effectScope,
+} from 'vue'
 
-const helper = readFileSync(new URL('../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts', import.meta.url), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')
-const useCommandScope = compileFunction(`${stripTypeScriptTypes(helper)};return useCommandScope`, ['watch','onScopeDispose'])(watch,onScopeDispose)
+const helper = readFileSync(
+  new URL(
+    '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+  .replace(/^import[^\n]*\n/gm, '')
+  .replace(/^export /gm, '')
+const useCommandScope = compileFunction(
+  `${stripTypeScriptTypes(helper)};return useCommandScope`,
+  ['watch', 'onScopeDispose']
+)(watch, onScopeDispose)
 
 function harness() {
   const scope = effectScope()
-  const app = { uid: ref('actor'), appUser: ref({created:{at:1}}) }
-  const route = reactive({path:'/workspace/kitchen/create',fullPath:'/workspace/kitchen/create'})
-  const config = reactive({appId:'app'})
+  const app = { uid: ref('actor'), appUser: ref({ created: { at: 1 } }) }
+  const route = reactive({
+    path: '/workspace/kitchen/create',
+    fullPath: '/workspace/kitchen/create',
+  })
+  const config = reactive({ appId: 'app' })
   const events: unknown[] = []
   const collection = ref<Array<{ id: string }>>([])
   let timeout: () => void = () => {}
@@ -28,14 +50,16 @@ function harness() {
   const create = compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn useKitchenOnboarding`,
     [
-      'useCommandScope', 'useFireUXConfig', 'onScopeDispose',
+      'useCommandScope',
+      'useFireUXConfig',
+      'onScopeDispose',
       'computed',
       'useKitchenCreate',
       'useOnboarding',
       'ref',
       'watch',
       'useAppSession',
-      'useKitchenWorkspaceKitchens',
+      'useKitchenTargets',
       'useWorkspace',
       'useRoute',
       'useRouter',
@@ -43,7 +67,9 @@ function harness() {
       'clearTimeout',
     ]
   )(
-    useCommandScope, () => config, onScopeDispose,
+    useCommandScope,
+    () => config,
+    onScopeDispose,
     computed,
     () => ({}),
     () => ({ reset() {}, error: ref('') }),
@@ -85,14 +111,26 @@ function harness() {
     () => ({ workspaceEntryPath: '/' }),
     (props: object, defaults: object) => ({ ...defaults, ...props })
   )
-  const flow = scope.run(() => create({
-    selectWorkspace: () => true,
-    returnTo: () => '/',
-    onCreated: close,
-    onError: (message: string) => events.push(['error', message]),
-  }))
+  const flow = scope.run(() =>
+    create({
+      selectWorkspace: () => true,
+      returnTo: () => '/',
+      onCreated: close,
+      onError: (message: string) => events.push(['error', message]),
+    })
+  )
   const result = { kitchen_id: 'new', owner_user_id: 'actor' }
-  return { scope, app, route, config, events, collection, flow, result, expire: () => timeout() }
+  return {
+    scope,
+    app,
+    route,
+    config,
+    events,
+    collection,
+    flow,
+    result,
+    expire: () => timeout(),
+  }
 }
 
 test('completion waits for collection, selects, closes the existing modal and returns home once', async () => {
@@ -141,19 +179,44 @@ test('provisioning for another user does not select their Kitchen in the acting 
   ])
 })
 
-for (const changed of ['account','membership','app','route','disposal']) test(`completion suppresses obsolete ${changed} round trip`, async () => {
- const h=harness();const pending=h.flow.finishSelection(h.result)
- if(changed==='account'){h.app.uid.value='other';h.app.uid.value='actor'}
- if(changed==='membership'){const old=h.app.appUser.value;h.app.appUser.value={created:{at:2}};h.app.appUser.value=old}
- if(changed==='app'){h.config.appId='other';h.config.appId='app'}
- if(changed==='route'){h.route.fullPath='/other';h.route.fullPath=h.route.path}
- if(changed==='disposal')h.scope.stop()
- h.collection.value=[{id:'new'}];await nextTick();await pending;assert.deepEqual(h.events,[]);h.scope.stop()
-})
+for (const changed of ['account', 'membership', 'app', 'route', 'disposal'])
+  test(`completion suppresses obsolete ${changed} round trip`, async () => {
+    const h = harness()
+    const pending = h.flow.finishSelection(h.result)
+    if (changed === 'account') {
+      h.app.uid.value = 'other'
+      h.app.uid.value = 'actor'
+    }
+    if (changed === 'membership') {
+      const old = h.app.appUser.value
+      h.app.appUser.value = { created: { at: 2 } }
+      h.app.appUser.value = old
+    }
+    if (changed === 'app') {
+      h.config.appId = 'other'
+      h.config.appId = 'app'
+    }
+    if (changed === 'route') {
+      h.route.fullPath = '/other'
+      h.route.fullPath = h.route.path
+    }
+    if (changed === 'disposal') h.scope.stop()
+    h.collection.value = [{ id: 'new' }]
+    await nextTick()
+    await pending
+    assert.deepEqual(h.events, [])
+    h.scope.stop()
+  })
 
 test('clearing selection cancels the old live wait and permits the next handoff', async () => {
- const h=harness();const old=h.flow.finishSelection(h.result)
- h.flow.clearSelection();await old;assert.equal(h.flow.finishing.value,false);assert.deepEqual(h.events,[])
- h.collection.value=[{id:'next'}];await h.flow.finishSelection({...h.result,kitchen_id:'next'})
- assert.deepEqual(h.events[0],['select','next']);h.scope.stop()
+  const h = harness()
+  const old = h.flow.finishSelection(h.result)
+  h.flow.clearSelection()
+  await old
+  assert.equal(h.flow.finishing.value, false)
+  assert.deepEqual(h.events, [])
+  h.collection.value = [{ id: 'next' }]
+  await h.flow.finishSelection({ ...h.result, kitchen_id: 'next' })
+  assert.deepEqual(h.events[0], ['select', 'next'])
+  h.scope.stop()
 })

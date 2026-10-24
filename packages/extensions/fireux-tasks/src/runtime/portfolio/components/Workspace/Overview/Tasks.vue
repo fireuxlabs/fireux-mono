@@ -12,10 +12,15 @@
   />
 </template>
 <script setup lang="ts">
+import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
+import { usePortfolioWorkspace } from 'fireux-properties/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+
 import { computed } from 'vue'
 import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { usePortfolioTaskCollection } from '../../../composables/usePortfolioTaskCollection'
-const tasks = usePortfolioTaskCollection()
+const tasks = usePortfolioTaskCollection(
+  usePortfolioScope(usePortfolioWorkspace().id)
+)
 const settled = computed(
   () => tasks.outcome.value === 'ready' || tasks.outcome.value === 'empty'
 )

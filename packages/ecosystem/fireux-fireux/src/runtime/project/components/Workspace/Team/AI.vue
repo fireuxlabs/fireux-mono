@@ -12,12 +12,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composables/useWorkspaceDraftHandoff'
-import type { useProjectTeam } from '../../../composables/useProjectTeam'
+import type { useProjectWorkspaceTeam } from '../../../composables/workspace/useProjectWorkspaceTeam'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import { useProjectIntent } from '../../../composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../models/intent'
 const props = defineProps<{
-  team: ReturnType<typeof useProjectTeam>
+  team: ReturnType<typeof useProjectWorkspaceTeam>
 }>()
 const handoff = useWorkspaceDraftHandoff()
 const initialPrompt = ref('')

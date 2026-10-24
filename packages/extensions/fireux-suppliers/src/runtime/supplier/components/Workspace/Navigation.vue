@@ -14,7 +14,8 @@
     :to="workspaceEntryPath"
     :collapsed="collapsed"
     :pending="
-      index.outcome.value === 'pending' || index.outcome.value === 'idle'
+      workspace.collectionOutcome.value === 'pending' ||
+      workspace.collectionOutcome.value === 'idle'
     "
     workspace-label="Supplier"
   />
@@ -27,7 +28,7 @@ import type { SupplierCard } from '../../composables/firestore/utils/view/useSup
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { useSupplierInterface } from '../../composables/firestore/utils/view/useSupplierInterface'
-import { useSupplierWorkspaceIndex } from '../../composables/workspace/useSupplierWorkspaceIndex'
+import { useSupplierWorkspace } from '../../composables/workspace/useSupplierWorkspace'
 
 withDefaults(
   defineProps<{
@@ -39,11 +40,11 @@ withDefaults(
 )
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('supplier')
-const index = useSupplierWorkspaceIndex()
+const workspace = useSupplierWorkspace()
 const { pill } = useSupplierInterface()
 const selected = computed(() =>
-  index.collection.value.find(
-    (supplier) => supplier.id === index.selectedId.value
+  workspace.collection.value.find(
+    (supplier) => supplier.id === workspace.id.value
   )
 )
 const card = computed(() => pill(selected.value))
@@ -65,24 +66,27 @@ function avatar(card?: SupplierCard.Card | null): AvatarProps {
 }
 const item = computed(() => ({
   label:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'Suppliers unavailable'
-      : card.value?.title || index.selectedId.value || 'Supplier Workspace',
-  avatar: avatar(index.outcome.value === 'ready' ? card.value : null),
+      : card.value?.title || workspace.id.value || 'Supplier Workspace',
+  avatar: avatar(
+    workspace.collectionOutcome.value === 'ready' ? card.value : null
+  ),
   icon:
-    index.outcome.value === 'error'
+    workspace.collectionOutcome.value === 'error'
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-truck',
   choices:
-    index.outcome.value === 'ready' && index.collection.value.length > 1
-      ? index.collection.value.flatMap((supplier) => {
+    workspace.collectionOutcome.value === 'ready' &&
+    workspace.collection.value.length > 1
+      ? workspace.collection.value.flatMap((supplier) => {
           const identity = pill(supplier)
           if (!identity) return []
           return [
             {
               label: identity.title,
               avatar: avatar(identity),
-              onSelect: () => index.select(identity.id),
+              onSelect: () => workspace.select(identity.id),
             },
           ]
         })

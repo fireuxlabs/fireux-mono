@@ -403,7 +403,7 @@
 
 <script setup lang="ts">
 import FinanceReportTrend from 'fireux-finance/runtime/components/Finance/ReportTrend.vue'
-import { useKitchenFinanceOverview } from '../../../composables/workspace/overview/useKitchenFinanceOverview'
+import { useKitchenWorkspaceFinanceOverview } from '../../../composables/workspace/finance/useKitchenWorkspaceFinanceOverview'
 
 const props = defineProps<{ fromDate: string; toDate: string }>()
 const {
@@ -433,5 +433,5 @@ const {
   formatTransactionTime,
   formatTransactionType,
   inspectTransaction,
-} = useKitchenFinanceOverview(props)
+} = useKitchenWorkspaceFinanceOverview(props)
 </script>

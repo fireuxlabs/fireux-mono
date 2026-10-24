@@ -28,10 +28,7 @@
       @update:open="(open) => !open && closeTool()"
     >
       <template #body>
-        <KitchenWasteCreate
-          @cancel="closeTool"
-          @created="handleCreated"
-        />
+        <KitchenWasteCreate @cancel="closeTool" @created="handleCreated" />
       </template>
     </UModal>
   </section>
@@ -41,10 +38,10 @@
 import { computed } from 'vue'
 import { useToast } from '#imports'
 import { useKitchenCapabilityTools } from '../../composables/workspace/useKitchenCapabilityTools'
-import { useKitchenWaste } from '../../composables/workspace/waste/useKitchenWaste'
+import { useKitchenWorkspaceWaste } from '../../composables/workspace/waste/useKitchenWorkspaceWaste'
 
 const toast = useToast()
-const { canWrite } = useKitchenWaste()
+const { canWrite } = useKitchenWorkspaceWaste()
 const { tools, activeToolId, performAction, closeTool } =
   useKitchenCapabilityTools('waste')
 const tool = computed(() =>

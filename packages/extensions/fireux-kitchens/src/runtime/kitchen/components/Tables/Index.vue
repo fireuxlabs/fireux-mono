@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceTables } from '../../composables/workspace/tables/useKitchenWorkspaceTables'
+import { useKitchenWorkspaceTableTabs } from '../../composables/workspace/tables/useKitchenWorkspaceTableTabs'
 
-const { readOnly } = useKitchenWorkspaceTables()
+const { readOnly } = useKitchenWorkspaceTableTabs()
 </script>

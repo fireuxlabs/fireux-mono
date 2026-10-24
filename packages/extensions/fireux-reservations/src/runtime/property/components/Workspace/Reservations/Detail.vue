@@ -161,6 +161,9 @@
 </template>
 
 <script setup lang="ts">
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
+import { usePropertyWorkspace } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspace'
+
 import { computed, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
@@ -187,8 +190,12 @@ const {
   error,
   outcome,
   canWrite,
-} = usePropertyReservation(computed(() => props.reservationId))
-const { updateReservation, captureIntent } = useReservationUpdate(runtimeProperty)
+} = usePropertyReservation(
+  computed(() => props.reservationId),
+  usePropertyScope(usePropertyWorkspace().id)
+)
+const { updateReservation, captureIntent } =
+  useReservationUpdate(runtimeProperty)
 const toast = useToast()
 const saving = ref(false)
 const pendingStatus = ref<ReservationStatus | null>(null)
@@ -225,8 +232,19 @@ const statusLabel = reservationStatusLabel
 const syncColor = reservationSyncColor
 const syncLabel = reservationSyncLabel
 
-const captureRecord = useCommandScope([() => props.reservationId, () => runtimeProperty.id.value, canWrite])
-watch([() => props.reservationId, () => runtimeProperty.id.value, canWrite], () => { saving.value = false; pendingStatus.value = null }, { flush: 'sync' })
+const captureRecord = useCommandScope([
+  () => props.reservationId,
+  () => runtimeProperty.id.value,
+  canWrite,
+])
+watch(
+  [() => props.reservationId, () => runtimeProperty.id.value, canWrite],
+  () => {
+    saving.value = false
+    pendingStatus.value = null
+  },
+  { flush: 'sync' }
+)
 async function setStatus(status: ReservationStatus) {
   if (!selected.value || !canWrite.value || saving.value) return
   const local = captureRecord()
@@ -253,7 +271,10 @@ async function setStatus(status: ReservationStatus) {
       color: 'error',
     })
   } finally {
-    if (local()) { saving.value = false; pendingStatus.value = null }
+    if (local()) {
+      saving.value = false
+      pendingStatus.value = null
+    }
   }
 }
 </script>

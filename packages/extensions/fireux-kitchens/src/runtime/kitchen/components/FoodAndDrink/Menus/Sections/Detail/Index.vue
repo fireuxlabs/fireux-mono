@@ -31,9 +31,10 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { provideMenuSection } from '../../../../../../menu/composables/useMenuSection'
 import { provideKitchenMenuRecordContext } from '../../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 const menuState = provideKitchenMenuRecordContext()
 const { menu, outcome, error, pending, canWrite, selectedKitchen } = menuState
-const sectionState = provideKitchenWorkspaceMenuSection(menuState)
+const sectionState = provideMenuSection(menuState, useRouteParam('sectionId'))
 </script>

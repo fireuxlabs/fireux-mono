@@ -1,9 +1,9 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
-  requirePortfolioWorkspaceWrite,
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from '../workspace/useActivePortfolio'
+  requirePortfolioWrite,
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from '../usePortfolioScope'
 import {
   ClientStorage,
   type Client,
@@ -12,15 +12,17 @@ import {
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useClientCreate(runtimePortfolio = useActivePortfolio()) {
+export function useClientCreate(
+  runtimePortfolio: ReturnType<typeof usePortfolioScope>
+) {
   const { createDocument: create } = useFirestoreCreate()
-  const collectionPath = usePortfolioWorkspaceChildPath(
+  const collectionPath = usePortfolioChildPath(
     runtimePortfolio,
     ClientStorage.collection
   )
 
   async function createClient(input: ClientCreateInput): Promise<string> {
-    const portfolioId = requirePortfolioWorkspaceWrite(
+    const portfolioId = requirePortfolioWrite(
       runtimePortfolio,
       'fireux-properties'
     )

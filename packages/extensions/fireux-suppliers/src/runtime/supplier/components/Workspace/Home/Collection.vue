@@ -1,6 +1,6 @@
 <template>
   <WorkspaceEntityCollection
-    :outcome="index.outcome.value"
+    :outcome="workspace.collectionOutcome.value"
     :count="cards.length"
     entity="suppliers"
     error-description="Suppliers could not be loaded."
@@ -20,20 +20,20 @@
       :card="card"
       action
       :show-badges="false"
-      @action="index.select(card.id)"
+      @action="workspace.select(card.id)"
     />
   </WorkspaceEntityCollection>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
-import type { useSupplierWorkspaceIndex } from '../../../composables/workspace/useSupplierWorkspaceIndex'
+import type { useSupplierWorkspace } from '../../../composables/workspace/useSupplierWorkspace'
 const props = defineProps<{
-  index: ReturnType<typeof useSupplierWorkspaceIndex>
+  workspace: ReturnType<typeof useSupplierWorkspace>
 }>()
 const { pill } = useSupplierInterface()
 const cards = computed(() =>
-  props.index.collection.value
+  props.workspace.collection.value
     .map((entity) => pill(entity))
     .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )

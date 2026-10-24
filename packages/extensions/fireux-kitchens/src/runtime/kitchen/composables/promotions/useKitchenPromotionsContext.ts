@@ -6,13 +6,13 @@ import {
   watch,
   type InjectionKey,
 } from 'vue'
-import { useKitchenPromotions } from './useKitchenPromotions'
+import { useKitchenWorkspacePromotions } from '../workspace/promotions/useKitchenWorkspacePromotions'
 import type { KitchenPromotion } from '../../models/promotion.model'
 
 type PromotionEditorSession = { key: string; promotion?: KitchenPromotion }
 
 function createKitchenPromotionsContext() {
-  const state = useKitchenPromotions()
+  const state = useKitchenWorkspacePromotions()
   const editor = shallowRef<PromotionEditorSession | null>(null)
   const settled = computed(
     () =>

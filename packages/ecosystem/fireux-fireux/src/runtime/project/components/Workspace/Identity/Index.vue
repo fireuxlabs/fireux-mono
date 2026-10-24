@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import WorkspaceProjectIdentityWrite from './Write.vue'
-import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
-defineProps<{ identity: ProjectIdentityState }>()
+import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+defineProps<{ identity: ProjectWorkspaceIdentityState }>()
 const editor = ref<InstanceType<typeof WorkspaceProjectIdentityWrite>>()
 </script>

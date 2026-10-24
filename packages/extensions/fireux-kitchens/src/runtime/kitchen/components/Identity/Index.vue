@@ -64,8 +64,10 @@ import {
   identityKitchenDebug,
   identityPlaceDebug,
 } from '../../utils/identity-debug'
-import type { useKitchenIdentity } from '../../composables/workspace/identity/useKitchenIdentity'
-const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
+import type { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
+const props = defineProps<{
+  identity: ReturnType<typeof useKitchenWorkspaceIdentity>
+}>()
 const navigation = useNav(['workspace'])
 const pages = computed(
   () =>

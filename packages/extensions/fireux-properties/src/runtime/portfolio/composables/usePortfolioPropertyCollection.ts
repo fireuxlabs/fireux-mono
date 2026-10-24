@@ -4,7 +4,7 @@ import { collection, query, where, type Query } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useActivePortfolio } from './workspace/useActivePortfolio'
+import { usePortfolioScope } from './usePortfolioScope'
 import {
   PropertyStorage,
   type Property,
@@ -30,7 +30,7 @@ const propertyBelongsToApp = (
 }
 
 export function usePortfolioPropertyCollection(
-  runtimePortfolio = useActivePortfolio()
+  runtimePortfolio: ReturnType<typeof usePortfolioScope>
 ) {
   const db = useFirestore()
   const { firestoreQuery } = useFirestoreRead()

@@ -130,8 +130,9 @@ renamed alias is not proof.
   editors reuse existing domain commands; unfinished editing remains explicit.
   Generic `useCalendar` owns date selection; `useWorkspaceCalendar` resets it
   when the selected Entity changes. Event sources and policy remain domain-owned.
-  Home shares existing presentation components; do not add a composable merely
-  to forward those components or manufacture four layers for every capability.
+  `useXWorkspaceHome()` owns actual selected-Entity summaries and chooser
+  composition, using shared presentation components. Do not add forwarding-only
+  composables or manufacture four layers for every capability.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
 - The inspected Main Apps use Directory ↔ Workspace entrances. Misebox renders
   public discovery at the public host's `/` and Kitchen Workspace at the Workspace
@@ -188,8 +189,13 @@ renamed alias is not proof.
   Team actions do not need selection-epoch cancellation or waits for a different
   user to sign in. Other multi-step preparation workflows retain their own
   lifetime rules. See `docs/concepts/family-workspace-entity.md` for adoption.
-- Selected-record `useXWorkspace` projections expose `{ id, data, outcome }`;
+- The single `useXWorkspace()` owner exposes selected `{ id, data, outcome }`
+  plus `{ collection, collectionOutcome, select }`;
   creation policy and mutation commands remain separate domain capabilities.
+  Kitchen creation availability is part of `useKitchenCreate`, reusing Core
+  `useWorkspaceCreation` with the domain capacity table. Explicit-ID Portfolio
+  and Property scopes do not acquire Workspace selection; domain commands and
+  collection readers receive those scopes from their consuming surface.
   Home collections reuse `WorkspaceEntityCollection`; shared Team collection
   presentation reuses `useCollectionSearch`, with domain-supplied roles and commands.
 - One active Entity id is the ordinary Workspace selection contract; collections
@@ -847,3 +853,18 @@ consumers in the same move; do not add forwarding guides or per-folder scaffolds
 Internal working guidance is distinct from curated public runtime explanations.
 Neither reading a context nor publishing an explanation grants command authority
 or implies automatic AI context injection.
+
+### Workspace Entity spine
+
+`useXWorkspace()` is the single Entity Workspace owner for available records,
+selection actions and the authorised selected-record projection. There is no
+separate Index composable. `collectionOutcome` describes available records;
+`outcome` describes the selected record. Do not conflate them or add a
+`selectedId` alias to the Entity owner; its canonical selection field is `id`.
+Core `defineWorkspace` shares one instance per Nuxt App, including separate
+instances for SSR requests, and releases its effects after the last consumer.
+
+Common Home, Identity, Team and supported Calendar adapters sit directly under
+`composables/workspace`. Home exists only for actual summary composition.
+Domain-specific capabilities may use named child folders. UI consumers reuse
+the owner rather than creating another selection or Index adapter.

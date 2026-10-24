@@ -118,8 +118,8 @@ and Footer components directly. Those shared components remain active.
   focused current-day work belongs on the registered Kitchen Home once onboarding prerequisites prove
   that the Kitchen is ready for that operational landing state.
 - Kitchen's `useKitchenWorkspace` exposes the selected Entity as
-  `{ data, id, outcome }`. `useKitchenWorkspaceIndex` owns the collection,
-  its read outcome, and selection. Neither data composable owns page JSON; the domain Index UI owns its
+  `{ data, id, outcome }` and owns `{ collection, collectionOutcome, select }`.
+  There is no separate Index owner. The composable does not own page JSON; the domain Index UI owns its
   bounded landing inspector projection and capability-specific props.
   Kitchen selection is a local App-scoped preference through Core
   `useWorkspace`; it does not invoke the account primary-change command or
@@ -632,7 +632,7 @@ from Kitchen and currency from the linked same-id Place.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
 Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
 owns the public detail response. Associated Workspace choices use the live
-`useKitchenWorkspaceKitchens` collection; individual routes use `useKitchenRead`
+`useKitchenTargets` collection; individual routes use `useKitchenRead`
 with an exact associated id. The retired targets/current/primary/choices HTTP
 readers and workspace response model are removed. Operational configuration
 continues through its capability-owned readers. No response is the type of a
@@ -864,14 +864,14 @@ The trusted boundaries and retained legacy writers are mapped in
 - Role is separate: User, Admin, or Developer.
 - Kitchen allowance is owned by
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-capacity.ts`
-  and exposed by `useKitchenCreationAllowance`: Free and Premium allow one associated
+  and exposed by `useKitchenCreate`: Free and Premium allow one associated
   Kitchen; Business has no subscription count limit. Kitchen’s separate
   50-id access ceiling remains enforced by its domain access helper. Both new Kitchen creation and
   adding an existing Kitchen use this policy in trusted onboarding transactions.
   Existing associations remain readable/manageable over allowance; reopening one
   does not count again. UI creation uses the actual AppUser subscription and
   hides unavailable Create controls. Preview tiers do not grant capacity.
-  Kitchen entry, selector, and sidebar use `useKitchenWorkspaceIndex` to show
+  Kitchen entry, selector, and sidebar use `useKitchenWorkspace` to show
   one selected Kitchen for Free/Professional and the multi-Kitchen chooser for
   Business. This is presentation only: retained associations and selection are
   not truncated on downgrade. The subscription badge lets a settled App Admin
@@ -1379,7 +1379,7 @@ registry. Ongoing management remains in Workspace. `/mvp` redirects to setup.
 Main Misebox `/services/ordering/setup` reuses the public `landing` layout and its account controls.
 It is an App-owned find/create entrance without the Workspace
 shell. Signed-in users first see their live membership-bound Kitchens through
-`useKitchenWorkspaceKitchens`; local choice does not change Workspace selection.
+`useKitchenTargets`; local choice does not change Workspace selection.
 The setup URL retains that choice as `?kitchen=<id>` for reload/resume; it is
 only a requested identity, never access evidence. Pending collection reads do
 not discard it. Current membership-bound access still gates the setup reader,
@@ -2576,7 +2576,7 @@ Kitchen shared capability composition uses zero-ID-argument
 `useKitchenWorkspaceIdentity()`, `useKitchenWorkspaceTeam()` and
 `useKitchenWorkspaceCalendar()`. Explicit setup targets use
 `useKitchenIdentity(kitchenId)`; linked Place projection uses
-`useKitchenPlace(identity)`. These domain readers do not choose or reconcile
+`useKitchenPlace(kitchenId)`. These domain readers do not choose or reconcile
 Workspace selection. Core owns shared management/read state and Calendar date
 state; Kitchen retains fields, roster authority, commands and event integration.
 
@@ -2585,3 +2585,20 @@ state; Kitchen retains fields, roster authority, commands and event integration.
 The Workspace migration checks listed as removed in
 `docs/ai/gpt-context.md` are no longer available. References to those filenames
 in this document describe historical verification, not current coverage.
+
+Kitchen Home owns its chooser and lightweight summaries in
+`useKitchenWorkspaceHome`. Creation availability belongs to `useKitchenCreate`,
+using shared creation policy and Kitchen's domain capacity table. Domain
+Offerings and Fulfilment require explicit Kitchen IDs. Dish, Recipe, Ingredient
+and Supplier detail readers take explicit Kitchen and record IDs; Workspace
+pages supply route/selection and own navigation. Menu sources have their own
+plural Workspace collection owner; Menu Section receives explicit parent state.
+Stations reads no longer create a Pass station automatically: the empty view
+provides an explicit Add Pass station command. Table collection naming reflects
+its actual Table Tab records.
+
+Kitchen uses one shared `useKitchenWorkspace` instance for its available
+records, selection and selected-record read. Collection presentation consumes
+`collectionOutcome`; capability presentation consumes selected `outcome`. Common
+Home, Identity, Team and Calendar adapters live directly in the Workspace
+composable folder. Core owns App/request isolation and subscriber disposal.

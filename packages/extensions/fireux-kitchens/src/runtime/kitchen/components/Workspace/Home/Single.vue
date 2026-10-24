@@ -18,11 +18,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
-import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
+import type { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 
 const props = defineProps<{
   selected:
-    | ReturnType<typeof useKitchenWorkspaceIndex>['collection']['value'][number]
+    | ReturnType<typeof useKitchenWorkspace>['collection']['value'][number]
     | undefined
   canUpdate: boolean
 }>()

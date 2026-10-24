@@ -106,10 +106,10 @@ import type {
   KitchenTableTab,
   KitchenTableTabStatus,
 } from '../../../utils/table-tab.ts'
-import { useKitchenWorkspaceTables } from '../../../composables/workspace/tables/useKitchenWorkspaceTables'
+import { useKitchenWorkspaceTableTabs } from '../../../composables/workspace/tables/useKitchenWorkspaceTableTabs'
 
 const { activeTabs, stagingTabs, billingTabs, tableCount, pending, debug } =
-  useKitchenWorkspaceTables()
+  useKitchenWorkspaceTableTabs()
 
 const summaries = computed(() => [
   {

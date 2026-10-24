@@ -25,10 +25,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/components/types'
-import { usePortfolioOverview } from '../../../composables/usePortfolioOverview'
+import { usePortfolioWorkspaceHome } from '../../../composables/workspace/usePortfolioWorkspaceHome'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
 
-const { focus, multiple } = usePortfolioOverview()
+const { focus, multiple } = usePortfolioWorkspaceHome()
 const { pill } = usePortfolioInterface()
 function workspaceCard(
   entity: Parameters<typeof pill>[0],

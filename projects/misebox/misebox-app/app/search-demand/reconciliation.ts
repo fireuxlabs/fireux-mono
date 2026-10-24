@@ -15,7 +15,7 @@ export const kitchenReconciliation = {
         tool: 'Review and edit Kitchen identity',
         source_paths: [
           'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Index.vue',
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/identity/useKitchenWorkspacePlace.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenPlace.ts',
         ],
       },
       {
@@ -380,7 +380,7 @@ export const kitchenReconciliation = {
       rationale:
         'Retain the explicit boundary. Full front-of-house is not established by Kitchen ordering.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tables/Edit/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tables/Index.vue',
       ],
       source_capability_ids: ['front-of-house'],
       source_observation_ids: ['swiss-chef-work'],

@@ -21,9 +21,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenTest } from '../../../../../kitchen/composables/workspace/test/useKitchenTest'
+import { useKitchenWorkspaceTest } from '../../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
 const route = useRoute()
-const test = useKitchenTest()
+const test = useKitchenWorkspaceTest()
 const recordId = computed(() => String(route.params.id || ''))
 definePageMeta({
   layout: 'workspace',

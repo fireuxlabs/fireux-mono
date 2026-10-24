@@ -13,7 +13,7 @@
     </div>
 
     <UAlert
-      v-if="outcome === 'idle' || outcome === 'empty'"
+      v-if="outcome === 'idle'"
       color="neutral"
       title="Select a kitchen"
       description="Choose a Kitchen before viewing its ingredients."
@@ -104,7 +104,7 @@ import { useKitchenWorkspace } from '../../../../composables/workspace/useKitche
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { ref, watch } from 'vue'
 import { navigateTo } from '#imports'
-import { useKitchenIngredientSelection } from '../../../../composables/workspace/ingredients/useKitchenIngredientSelection'
+import { useKitchenIngredientUpdate } from '../../../../composables/ingredients/useKitchenIngredientUpdate'
 const workspace = useKitchenWorkspace()
 const {
   ingredient,
@@ -123,7 +123,7 @@ const deleteOpen = ref(false)
 const deleting = ref(false)
 const deleteError = ref('')
 const { unselectIngredient, captureIntent, authorityEpoch } =
-  useKitchenIngredientSelection([ingredientId, deleteOpen])
+  useKitchenIngredientUpdate([ingredientId, deleteOpen])
 watch(
   deleteOpen,
   () => {

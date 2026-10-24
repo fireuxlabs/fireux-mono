@@ -6,7 +6,7 @@ import { useUserSession } from 'fireux-core/runtime/user/composables/session/use
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useActiveProperty } from 'fireux-properties/runtime/property/composables/workspace/useActiveProperty'
+import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
 import type {
   Reservation,
   ReservationListResponse,
@@ -14,7 +14,9 @@ import type {
 } from '../../models/reservation.model.ts'
 import { reservationNights } from '../../utils/reservation-date'
 
-export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
+export function usePropertyReservations(
+  runtimeProperty: ReturnType<typeof usePropertyScope>
+) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
   const { appUser } = useUserSession()

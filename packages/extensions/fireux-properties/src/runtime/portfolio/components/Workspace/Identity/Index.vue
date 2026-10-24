@@ -48,8 +48,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { usePortfolioIdentity } from '../../../composables/usePortfolioIdentity'
-const identity = usePortfolioIdentity()
+import { usePortfolioWorkspaceIdentity } from '../../../composables/workspace/usePortfolioWorkspaceIdentity'
+const identity = usePortfolioWorkspaceIdentity()
 const { currentUser } = useAuth()
 const open = ref(false)
 const editorSection = ref<'profile' | 'context'>('profile')

@@ -38,9 +38,9 @@ import { useProjectAppContext } from '../../../project/composables/workspace/ide
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import WorkspaceProjectIdentity from '../../../project/components/Workspace/Identity/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
-import { useProjectIdentity } from '../../../project/composables/useProjectIdentity'
+import { useProjectWorkspaceIdentity } from '../../../project/composables/workspace/useProjectWorkspaceIdentity'
 const appContext = useProjectAppContext()
-const identity = useProjectIdentity({
+const identity = useProjectWorkspaceIdentity({
   publication: appContext.publication,
 })
 const pageState = useWorkspacePageState('project')

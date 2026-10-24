@@ -6,9 +6,15 @@
       </WorkspaceNavbar>
     </template>
     <template #body>
-        <WorkspaceHero compact title="Supplier Team" description="Supplier workspace team." />
-        <WorkspaceSupplierSelector />
-        <WorkspaceAI compact aria-label="Supplier Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
+      <WorkspaceHero
+        compact
+        title="Supplier Team"
+        description="Supplier workspace team."
+      />
+      <WorkspaceSupplierSelector />
+      <WorkspaceAI compact aria-label="Supplier Team AI"
+        ><UAlert title="Team AI is not connected yet" color="neutral"
+      /></WorkspaceAI>
       <WorkspaceSupplierTeam :key="team.state.value.supplier.id" :team="team" />
       <WorkspaceFreemium
         family="supplier"
@@ -25,11 +31,11 @@ import { computed } from 'vue'
 import WorkspaceSupplierTeam from '../../../supplier/components/Workspace/Team/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
-import { useSupplierTeam } from '../../../supplier/composables/useSupplierTeam'
+import { useSupplierWorkspaceTeam } from '../../../supplier/composables/workspace/useSupplierWorkspaceTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
-const team = useSupplierTeam()
+const team = useSupplierWorkspaceTeam()
 const intro = computed(() => ({
   title: 'Supplier Team',
   purpose: 'Add people to your team, update their details and assign roles.',

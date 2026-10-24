@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceIndex } from 'fireux-suppliers/runtime/supplier/composables/workspace/useSupplierWorkspaceIndex'
-const index = useSupplierWorkspaceIndex()
+import { useSupplierWorkspace } from 'fireux-suppliers/runtime/supplier/composables/workspace/useSupplierWorkspace'
+const workspace = useSupplierWorkspace()
 
 const tools = computed(() =>
-  Boolean(index.selectedId.value)
+  Boolean(workspace.id.value)
     ? [
         {
           id: 'supplier.view',

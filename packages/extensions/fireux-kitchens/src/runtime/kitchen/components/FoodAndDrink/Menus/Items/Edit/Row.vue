@@ -13,8 +13,8 @@
           row.price === undefined
             ? 'Price not set'
             : row.priceOptions.length
-            ? 'Multiple prices'
-            : editor.formatPrice(row.price)
+              ? 'Multiple prices'
+              : editor.formatPrice(row.price)
         }}</span
       >
     </template>
@@ -33,7 +33,7 @@
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'
-import type { MenuSectionItemRow } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import type { MenuSectionItemRow } from '../../../../../../menu/composables/useMenuSection'
 import type { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
 const props = defineProps<{
   row: MenuSectionItemRow
@@ -68,7 +68,10 @@ const actions = computed(() => [
             },
           },
         }
-      : { label: 'Edit meal deal', to: '/workspace/kitchen/food-and-drink/promotions' },
+      : {
+          label: 'Edit meal deal',
+          to: '/workspace/kitchen/food-and-drink/promotions',
+        },
   ],
   ...(props.editor.canWrite
     ? [

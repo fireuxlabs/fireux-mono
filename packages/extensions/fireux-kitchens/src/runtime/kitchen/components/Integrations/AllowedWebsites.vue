@@ -52,10 +52,10 @@
 <script setup lang="ts">
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { computed, ref, watch } from 'vue'
-import { useKitchenWebsiteOrdering } from '../../composables/workspace/integrations/useKitchenWebsiteOrdering'
+import { useKitchenWorkspaceWebsiteOrdering } from '../../composables/workspace/integrations/useKitchenWorkspaceWebsiteOrdering'
 import { normalizeAllowedWebsites } from '../../utils/allowed-websites'
 const { origins, outcome, error, canWrite, update, captureIntent, ownerScope } =
-  useKitchenWebsiteOrdering()
+  useKitchenWorkspaceWebsiteOrdering()
 const text = ref(''),
   baseline = ref(''),
   busy = ref(false),

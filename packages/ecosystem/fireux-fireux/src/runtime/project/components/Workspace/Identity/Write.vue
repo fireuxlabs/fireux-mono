@@ -109,9 +109,9 @@ import { useToast } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import type { ProjectIdentityIntent } from '../../../models/identity-intent'
-import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
+import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
 const props = defineProps<{
-  identity: ProjectIdentityState
+  identity: ProjectWorkspaceIdentityState
   requestedOpen?: boolean
 }>()
 const emit = defineEmits<{ close: [] }>()

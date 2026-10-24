@@ -1,6 +1,11 @@
 <template>
   <section class="space-y-6">
-    <UAlert v-if="writeError" color="error" title="Task action could not be completed" :description="writeError">
+    <UAlert
+      v-if="writeError"
+      color="error"
+      title="Task action could not be completed"
+      :description="writeError"
+    >
       <template #actions><MoleculesCopyError :message="writeError" /></template>
     </UAlert>
 
@@ -145,10 +150,12 @@
 </template>
 
 <script setup lang="ts">
+import { usePortfolioWorkspace } from '../../../../../../../fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+
 import {
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { computed, ref } from 'vue'
 import { useTaskScope } from '../../../composables/useTaskScope'
 import { usePortfolioTaskCollection } from '../../../composables/usePortfolioTaskCollection'
@@ -158,9 +165,9 @@ import { useTaskInterface } from '../../../composables/tasks/useTaskInterface'
 import { TaskStorage, type Task } from '../../../models/task.model.ts'
 
 const isDev = import.meta.dev
-const runtimePortfolio = useActivePortfolio()
+const runtimePortfolio = usePortfolioScope(usePortfolioWorkspace().id)
 const canWrite = computed(() => runtimePortfolio.canWrite.value)
-const tasksPath = usePortfolioWorkspaceChildPath(
+const tasksPath = usePortfolioChildPath(
   runtimePortfolio,
   TaskStorage.collection
 )

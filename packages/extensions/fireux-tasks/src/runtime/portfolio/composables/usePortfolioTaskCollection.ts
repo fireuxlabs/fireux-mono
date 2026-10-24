@@ -3,16 +3,16 @@ import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { TaskStorage, type Task } from '../models/task.model'
 
 export function usePortfolioTaskCollection(
-  runtimePortfolio = useActivePortfolio()
+  runtimePortfolio: ReturnType<typeof usePortfolioScope>
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const collectionPath = usePortfolioWorkspaceChildPath(
+  const collectionPath = usePortfolioChildPath(
     runtimePortfolio,
     TaskStorage.collection
   )

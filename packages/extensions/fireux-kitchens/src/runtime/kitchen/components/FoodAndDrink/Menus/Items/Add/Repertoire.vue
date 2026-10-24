@@ -59,7 +59,7 @@ import { dishCategories } from '../../../../../models/dish.model'
 import { computed, ref, watch } from 'vue'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
+import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
 
 const {
   kitchenId,
@@ -70,7 +70,7 @@ const {
   itemRows,
   canWrite,
   createItem,
-} = useKitchenWorkspaceMenuSection()
+} = useMenuSection()
 const toast = useToastify()
 const dishId = ref('')
 const query = ref('')

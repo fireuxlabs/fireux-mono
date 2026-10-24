@@ -19,6 +19,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceSupplier } from '../../composables/workspace/suppliers/useKitchenWorkspaceSupplier'
-const { supplierBasePath } = useKitchenWorkspaceSupplier()
+import { computed } from 'vue'
+import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
+import { useKitchenSupplierDetail } from '../../composables/suppliers/useKitchenSupplierDetail'
+const {} = useKitchenSupplierDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('supplierId')
+)
+
+const supplierRouteId = useRouteParam('supplierId')
+const supplierBasePath = computed(() =>
+  supplierRouteId.value
+    ? `/workspace/kitchen/stock/suppliers/${encodeURIComponent(supplierRouteId.value)}`
+    : ''
+)
 </script>

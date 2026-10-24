@@ -1,3 +1,10 @@
+import { computed } from 'vue'
+import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
+import { useKitchenAccess } from '../useKitchenAccess'
+import {
+  kitchenCapacity,
+  resolveKitchenAllowance,
+} from '../../utils/kitchen-capacity'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -33,6 +40,34 @@ export function useKitchenCreate() {
   const { currentUser } = useAuth()
   const appSession = useAppSession()
   const fireux = useFireUXConfig()
+  const access = useKitchenAccess()
+  const allowance = computed(() =>
+    resolveKitchenAllowance(appSession.appUser.value, access.ids.value)
+  )
+  const accountReady = computed(
+    () =>
+      Boolean(appSession.uid.value) &&
+      !appSession.pending.value &&
+      !appSession.error.value &&
+      !access.pending.value &&
+      !access.error.value
+  )
+  const creation = useWorkspaceCreation(
+    'kitchen',
+    () => ({ count: access.ids.value.length, outcome: access.outcome.value }),
+    kitchenCapacity
+  )
+  const canCreate = computed(
+    () =>
+      accountReady.value && allowance.value.canAdd && creation.canCreate.value
+  )
+  const showUpgrade = computed(
+    () =>
+      accountReady.value &&
+      allowance.value.showUpgrade &&
+      creation.showUpgrade.value
+  )
+
   const captureCommand = useCommandScope([
     currentUser,
     appSession.appUser,
@@ -186,6 +221,14 @@ export function useKitchenCreate() {
   }
 
   return {
+    allowance,
+    accountReady,
+    hasAccount: computed(() =>
+      Boolean(appSession.uid.value && appSession.appUser.value)
+    ),
+    canCreate,
+    showUpgrade,
+    creationEnabled: creation.creationEnabled,
     completeKitchenOnboarding,
     contributeKitchenDirectory,
     createPlan: KitchenCreatePlan,

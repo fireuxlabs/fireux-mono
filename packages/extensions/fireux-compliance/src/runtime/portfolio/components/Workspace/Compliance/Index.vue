@@ -105,10 +105,12 @@
 </template>
 
 <script setup lang="ts">
+import { usePortfolioWorkspace } from '../../../../../../../fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+
 import {
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/tasks/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/tasks/useTaskProjection'
 import { computed, ref } from 'vue'
@@ -118,13 +120,13 @@ import { useComplianceInterface } from '../../../composables/compliance/useCompl
 import { ComplianceRecordStorage } from '../../../models/compliance-record.model.ts'
 
 const isDev = import.meta.dev
-const runtimePortfolio = useActivePortfolio()
+const runtimePortfolio = usePortfolioScope(usePortfolioWorkspace().id)
 const { collection, outcome } =
   usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { pill: complianceInterface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
-const compliancePath = usePortfolioWorkspaceChildPath(
+const compliancePath = usePortfolioChildPath(
   runtimePortfolio,
   ComplianceRecordStorage.collection
 )

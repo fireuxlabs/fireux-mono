@@ -5,17 +5,17 @@
     aria-label="Project selector"
   >
     <WorkspaceProjectSelectorChoices
-      v-if="index.collection.value.length"
-      :collection="index.collection.value"
-      :selected-id="index.selectedId.value"
+      v-if="workspace.collection.value.length"
+      :collection="workspace.collection.value"
+      :selected-id="workspace.id.value"
       :publication="publication"
-      @select="index.select"
+      @select="workspace.select"
     />
-    <span v-if="index.outcome.value === 'pending'" role="status"
+    <span v-if="workspace.collectionOutcome.value === 'pending'" role="status"
       >Loading Projects…</span
     >
     <UAlert
-      v-else-if="index.outcome.value === 'error'"
+      v-else-if="workspace.collectionOutcome.value === 'error'"
       color="error"
       title="Projects could not be loaded"
     />
@@ -28,7 +28,7 @@
       variant="soft"
     />
     <UButton
-      v-else-if="index.collection.value.length && creation.canCreate.value"
+      v-else-if="workspace.collection.value.length && creation.canCreate.value"
       label="Create workspace"
       icon="i-lucide-plus"
       color="neutral"
@@ -50,7 +50,7 @@
 import { ref } from 'vue'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
+import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 
 withDefaults(
   defineProps<{
@@ -60,10 +60,10 @@ withDefaults(
   { showUpgrade: true }
 )
 const createOpen = ref(false)
-const index = useProjectWorkspaceIndex()
+const workspace = useProjectWorkspace()
 const creation = useWorkspaceCreation('project', () => ({
-  count: index.access.ids.value.length,
-  outcome: index.access.outcome.value,
+  count: workspace.access.ids.value.length,
+  outcome: workspace.access.outcome.value,
 }))
 
 function created() {

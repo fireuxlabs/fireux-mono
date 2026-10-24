@@ -42,14 +42,29 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceSupplierSupplyOptions } from '../../composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions'
+import { computed } from 'vue'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+import { useKitchenSupplierDetail } from '../../composables/suppliers/useKitchenSupplierDetail'
+const workspace = useKitchenWorkspace()
+const { supplier, hasIntegratedCatalogue } = useKitchenSupplierDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('supplierId')
+)
+const title = computed(
+  () =>
+    `${String(supplier.value?.company_place?.short_name || supplier.value?.company_place?.name || 'Supplier')} supply options`
+)
+const description =
+  'Supply options are not connected yet. The supplier catalogue remains available where integrated.'
 
-const {
-  supplierBasePath,
-  hasIntegratedCatalogue,
-  cataloguePath,
-  title,
-  description,
-} = useKitchenWorkspaceSupplierSupplyOptions()
-
+const supplierRouteId = useRouteParam('supplierId')
+const supplierBasePath = computed(() =>
+  supplierRouteId.value
+    ? `/workspace/kitchen/stock/suppliers/${encodeURIComponent(supplierRouteId.value)}`
+    : ''
+)
+const cataloguePath = computed(() =>
+  supplierBasePath.value ? `${supplierBasePath.value}/catalogue` : ''
+)
 </script>

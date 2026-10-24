@@ -43,13 +43,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useKitchenWorkspaceMenuSources } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSources'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenMenusContextSource } from '../../../../../composables/workspace/menus/useKitchenMenusContext'
 
+const { menuSources, menuSourcesPending, menuSourcesError } =
+  useKitchenWorkspaceMenuSources()
 const {
-  menuSources,
-  menuSourcesPending,
-  menuSourcesError,
   kitchenId,
   activeKitchenAppId,
   canWrite,

@@ -3,19 +3,19 @@ import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import {
   ComplianceRecordStorage,
   type ComplianceRecord,
 } from '../models/compliance-record.model'
 
 export function usePortfolioComplianceRecordCollection(
-  runtimePortfolio = useActivePortfolio()
+  runtimePortfolio: ReturnType<typeof usePortfolioScope>
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const collectionPath = usePortfolioWorkspaceChildPath(
+  const collectionPath = usePortfolioChildPath(
     runtimePortfolio,
     ComplianceRecordStorage.collection
   )

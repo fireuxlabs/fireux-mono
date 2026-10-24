@@ -311,6 +311,9 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const workspace = useKitchenWorkspace()
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
@@ -320,7 +323,7 @@ import {
   emptyDishSpecification,
   validateDishSpecification,
 } from '../../../utils/dish-specification'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useKitchenDishDetail } from '../../../composables/dish/useKitchenDishDetail'
 import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { useKitchenRecipeCollection } from '../../../composables/useKitchenRecipeCollection'
@@ -334,7 +337,10 @@ const {
   rootCollection,
   databaseId,
   canWrite,
-} = useKitchenWorkspaceDish()
+} = useKitchenDishDetail(
+  () => (workspace.outcome.value === 'ready' ? workspace.id.value : ''),
+  useRouteParam('dishId')
+)
 const options = { kitchenCollectionPath: rootCollection, databaseId }
 const { ingredients, error: ingredientError } = useKitchenIngredients(
   storageKitchenId,

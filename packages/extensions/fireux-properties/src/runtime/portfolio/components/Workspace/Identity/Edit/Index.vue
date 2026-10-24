@@ -92,12 +92,12 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: route identity edits through the fixed root mutation.
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import type { PortfolioIdentityState } from '../../../../composables/usePortfolioIdentity'
+import type { PortfolioWorkspaceIdentityState } from '../../../../composables/workspace/usePortfolioWorkspaceIdentity'
 import { usePortfolioUpdate } from '../../../../composables/firestore/mutations/usePortfolioUpdate'
 import type { PortfolioUpdateInput } from '../../../../models/portfolio.model.ts'
 
 const props = defineProps<{
-  identity: PortfolioIdentityState
+  identity: PortfolioWorkspaceIdentityState
   section: 'profile' | 'context'
 }>()
 const {

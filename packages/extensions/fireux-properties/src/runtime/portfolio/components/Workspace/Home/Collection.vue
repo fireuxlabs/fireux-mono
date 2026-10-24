@@ -1,6 +1,6 @@
 <template>
   <WorkspaceEntityCollection
-    :outcome="index.outcome.value"
+    :outcome="workspace.collectionOutcome.value"
     :count="cards.length"
     entity="portfolios"
     error-description="Portfolios could not be loaded."
@@ -20,20 +20,20 @@
       :card="card"
       action
       :show-badges="false"
-      @action="index.select(card.id)"
+      @action="workspace.select(card.id)"
     />
   </WorkspaceEntityCollection>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
-import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/usePortfolioWorkspaceIndex'
+import type { usePortfolioWorkspace } from '../../../composables/workspace/usePortfolioWorkspace'
 const props = defineProps<{
-  index: ReturnType<typeof usePortfolioWorkspaceIndex>
+  workspace: ReturnType<typeof usePortfolioWorkspace>
 }>()
 const { pill } = usePortfolioInterface()
 const cards = computed(() =>
-  props.index.collection.value
+  props.workspace.collection.value
     .map((entity) => pill(entity))
     .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )

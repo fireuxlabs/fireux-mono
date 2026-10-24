@@ -74,9 +74,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { usePropertyIdentity } from '../../../composables/usePropertyIdentity'
+import { usePropertyWorkspaceIdentity } from '../../../composables/workspace/usePropertyWorkspaceIdentity'
 import PropertyIdentityEdit from './Edit.vue'
-const identity = usePropertyIdentity()
+const identity = usePropertyWorkspaceIdentity()
 const { selectedProperty, name, imageUrl, readState } = identity
 const { currentUser } = useAuth()
 const open = ref(false)

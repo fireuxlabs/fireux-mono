@@ -31,8 +31,8 @@
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
-import { useKitchenTest } from '../../../../../kitchen/composables/workspace/test/useKitchenTest'
-const test = useKitchenTest()
+import { useKitchenWorkspaceTest } from '../../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
+const test = useKitchenWorkspaceTest()
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,

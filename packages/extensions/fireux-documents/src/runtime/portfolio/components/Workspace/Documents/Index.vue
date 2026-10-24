@@ -181,10 +181,12 @@
 </template>
 
 <script setup lang="ts">
+import { usePortfolioWorkspace } from '../../../../../../../fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace'
+
 import {
-  useActivePortfolio,
-  usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+  usePortfolioScope,
+  usePortfolioChildPath,
+} from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
 import { computed, ref } from 'vue'
 import { usePortfolioDocuments } from '../../../composables/documents/usePortfolioDocuments'
 import { usePortfolioDocumentLinks } from '../../../composables/documents/usePortfolioDocumentLinks'
@@ -197,10 +199,10 @@ import { useDocumentInterface } from '../../../composables/documents/useDocument
 import { DocumentStorage } from '../../../models/document.model.ts'
 
 const isDev = import.meta.dev
-const runtimePortfolio = useActivePortfolio()
+const runtimePortfolio = usePortfolioScope(usePortfolioWorkspace().id)
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const canWrite = computed(() => runtimePortfolio.canWrite.value)
-const documentsPath = usePortfolioWorkspaceChildPath(
+const documentsPath = usePortfolioChildPath(
   runtimePortfolio,
   DocumentStorage.collection
 )

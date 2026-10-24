@@ -80,13 +80,13 @@ import {
   type KitchenWasteReason,
   type KitchenWasteSource,
 } from '../../utils/waste-event'
-import { useKitchenWaste } from '../../composables/workspace/waste/useKitchenWaste'
+import { useKitchenWorkspaceWaste } from '../../composables/workspace/waste/useKitchenWorkspaceWaste'
 
 const emit = defineEmits<{
   cancel: []
   created: [result: { id: string; itemName: string }]
 }>()
-const { kitchenId, canWrite, recordWaste } = useKitchenWaste()
+const { kitchenId, canWrite, recordWaste } = useKitchenWorkspaceWaste()
 const itemName = ref('')
 const quantity = ref<number | null>(null)
 const unit = ref('')
@@ -107,12 +107,29 @@ const { currentUser } = useAuth()
 const config = useFireUXConfig()
 const { appUser } = useUserSession()
 let epoch = 0
-watch([kitchenId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value)], () => {
-  epoch += 1; saving.value = false; error.value = ''
-  itemName.value = ''; quantity.value = null; unit.value = ''; notes.value = ''
-  reason.value = 'spoilage'; source.value = 'prep'
-}, { flush: 'sync' })
-onScopeDispose(() => { epoch += 1 })
+watch(
+  [
+    kitchenId,
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+  ],
+  () => {
+    epoch += 1
+    saving.value = false
+    error.value = ''
+    itemName.value = ''
+    quantity.value = null
+    unit.value = ''
+    notes.value = ''
+    reason.value = 'spoilage'
+    source.value = 'prep'
+  },
+  { flush: 'sync' }
+)
+onScopeDispose(() => {
+  epoch += 1
+})
 async function submit() {
   const expected = epoch
   const requestedItemName = itemName.value.trim()

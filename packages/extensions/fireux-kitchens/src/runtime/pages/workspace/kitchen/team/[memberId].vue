@@ -18,7 +18,9 @@
         color="error"
         title="Team could not be loaded"
       >
-        <template #description><MoleculesCopyError message="Team could not be loaded" /></template>
+        <template #description
+          ><MoleculesCopyError message="Team could not be loaded"
+        /></template>
       </UAlert>
       <KitchenTeam
         v-else-if="member"
@@ -38,9 +40,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenTeam } from '../../../../kitchen/composables/team/useKitchenTeam'
+import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/useKitchenWorkspaceTeam'
 const route = useRoute()
-const team = useKitchenTeam()
+const team = useKitchenWorkspaceTeam()
 const memberId = computed(() => String(route.params.memberId || ''))
 const member = computed(() =>
   team.state.value.team.members.find((member) => member.id === memberId.value)

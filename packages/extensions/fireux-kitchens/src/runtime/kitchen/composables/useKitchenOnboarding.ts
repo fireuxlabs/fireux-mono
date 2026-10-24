@@ -7,7 +7,7 @@ import {
 import { computed, ref, watch, onScopeDispose } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useKitchenWorkspaceKitchens } from './workspace/useKitchenWorkspaceKitchens'
+import { useKitchenTargets } from './useKitchenTargets'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type {
   KitchenOnboardingCompleteResult,
@@ -48,7 +48,12 @@ export function useKitchenOnboarding(options: {
   const fireux = useFireUXConfig()
   const route = useRoute()
   const router = useRouter()
-  const authoritySources = [app.uid, app.appUser, () => fireux.appId, () => route.fullPath]
+  const authoritySources = [
+    app.uid,
+    app.appUser,
+    () => fireux.appId,
+    () => route.fullPath,
+  ]
   const captureAuthority = useCommandScope(authoritySources)
   const place = ref<KitchenOnboardingPlace | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
@@ -163,7 +168,8 @@ export function useKitchenOnboarding(options: {
       }
       return false
     } finally {
-      if (isCurrent() && sequence === selectionSequence) selectionPending.value = false
+      if (isCurrent() && sequence === selectionSequence)
+        selectionPending.value = false
     }
   }
 
@@ -197,12 +203,20 @@ export function useKitchenOnboarding(options: {
     onboarding.reset()
   }
 
-  const kitchens = useKitchenWorkspaceKitchens()
+  const kitchens = useKitchenTargets()
   // Onboarding needs the live collection, not the Workspace index's automatic
   // reconciliation. Selection happens only in the explicit completion branch.
   const workspace = useWorkspace('kitchen')
   onScopeDispose(() => cancelWait?.())
-  watch(authoritySources, () => { cancelWait?.(); finishing.value = false; clearSelection() }, { flush: 'sync' })
+  watch(
+    authoritySources,
+    () => {
+      cancelWait?.()
+      finishing.value = false
+      clearSelection()
+    },
+    { flush: 'sync' }
+  )
 
   async function finishSelection(result: KitchenOnboardingCompleteResult) {
     if (finishing.value) return
@@ -220,8 +234,15 @@ export function useKitchenOnboarding(options: {
           )
         ) {
           await new Promise<void>((resolve, reject) => {
-            const cleanup = () => { clearTimeout(timer); stop(); cancelWait = undefined }
-            cancelWait = () => { cleanup(); resolve() }
+            const cleanup = () => {
+              clearTimeout(timer)
+              stop()
+              cancelWait = undefined
+            }
+            cancelWait = () => {
+              cleanup()
+              resolve()
+            }
             const timer = setTimeout(() => {
               cleanup()
               reject(
@@ -233,7 +254,11 @@ export function useKitchenOnboarding(options: {
             const stop = watch(
               [kitchens.kitchens, place, preview],
               ([kitchens]) => {
-                if (!current()) { cleanup(); resolve(); return }
+                if (!current()) {
+                  cleanup()
+                  resolve()
+                  return
+                }
                 if (
                   !kitchens.some((kitchen) => kitchen.id === result.kitchen_id)
                 )
@@ -249,8 +274,7 @@ export function useKitchenOnboarding(options: {
       }
       if (!current()) return
       options.onCreated(result)
-      if (route.path !== returnTo)
-        await router.push(returnTo)
+      if (route.path !== returnTo) await router.push(returnTo)
     } catch (cause) {
       if (!current()) return
       options.onError(

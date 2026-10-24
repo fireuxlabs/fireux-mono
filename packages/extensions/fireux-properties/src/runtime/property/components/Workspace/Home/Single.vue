@@ -21,13 +21,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePropertyInterface } from '../../../composables/firestore/utils/view/usePropertyInterface'
-import type { usePropertyWorkspaceIndex } from '../../../composables/workspace/usePropertyWorkspaceIndex'
+import type { usePropertyWorkspace } from '../../../composables/workspace/usePropertyWorkspace'
 type Entity = ReturnType<
-  typeof usePropertyWorkspaceIndex
+  typeof usePropertyWorkspace
 >['collection']['value'][number]
 const props = defineProps<{
   entity: Entity | null
-  outcome: ReturnType<typeof usePropertyWorkspaceIndex>['outcome']['value']
+  outcome: ReturnType<typeof usePropertyWorkspace>['outcome']['value']
 }>()
 const { pill } = usePropertyInterface()
 const card = computed(() => {

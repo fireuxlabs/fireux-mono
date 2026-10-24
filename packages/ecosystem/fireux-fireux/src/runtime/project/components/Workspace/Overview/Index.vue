@@ -57,9 +57,9 @@ import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import WorkspaceOverview from 'fireux-core/runtime/workspace/components/Overview/Index.vue'
-import { useProjectOverview } from '../../../composables/useProjectOverview'
+import { useProjectWorkspaceHome } from '../../../composables/workspace/useProjectWorkspaceHome'
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
-const { selectedProject: data, outcome } = useProjectOverview()
+const { selectedProject: data, outcome } = useProjectWorkspaceHome()
 const description = computed(() =>
   props.publication
     ? props.publication.description
