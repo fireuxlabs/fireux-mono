@@ -149,6 +149,10 @@ for (const domain of Object.keys(paths)) {
     ])
       test(`${domain}: ${action} ${changed} change retains the explicit Team target`, async () => {
         const f = teamControllerFixture(domain)
+        if (action === 'update')
+          f.respond(
+            Promise.resolve({ ok: true, memberId: 'member', name: 'New' })
+          )
         let release
         f.wait(new Promise((resolve) => (release = resolve)))
         const pending = f.controller.primitives[action](

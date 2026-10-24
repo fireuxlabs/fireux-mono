@@ -118,7 +118,7 @@ and Footer components directly. Those shared components remain active.
   focused current-day work belongs on the registered Kitchen Home once onboarding prerequisites prove
   that the Kitchen is ready for that operational landing state.
 - Kitchen's `useKitchenWorkspace` exposes the selected Entity as
-  `{ data, id, outcome, crud }`. `useKitchenWorkspaceIndex` owns the collection,
+  `{ data, id, outcome }`. `useKitchenWorkspaceIndex` owns the collection,
   its read outcome, and selection. Neither data composable owns page JSON; the domain Index UI owns its
   bounded landing inspector projection and capability-specific props.
   Kitchen selection is a local App-scoped preference through Core
@@ -864,7 +864,7 @@ The trusted boundaries and retained legacy writers are mapped in
 - Role is separate: User, Admin, or Developer.
 - Kitchen allowance is owned by
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-capacity.ts`
-  and exposed by `useKitchenWorkspace`: Free and Premium allow one associated
+  and exposed by `useKitchenCreationAllowance`: Free and Premium allow one associated
   Kitchen; Business has no subscription count limit. Kitchen’s separate
   50-id access ceiling remains enforced by its domain access helper. Both new Kitchen creation and
   adding an existing Kitchen use this policy in trusted onboarding transactions.

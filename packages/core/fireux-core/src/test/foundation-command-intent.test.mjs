@@ -241,35 +241,35 @@ function harness(spec, waitAt = 'token', invalid = false) {
       : kind === 'notification'
         ? controller.markRead('n1')
         : kind === 'portfolio'
-            ? controller.updatePortfolio({
-                portfolioId: selected.value,
-                changes: { identity: { name: input.name } },
-              })
-            : kind === 'settings'
-              ? controller.updateSocialLinks(input.social)
-              : kind === 'membership'
-                ? controller({
-                    action: input.action,
-                    userId: input.userId,
-                    role: input.role,
-                  })
-                : kind === 'profile'
-                  ? controller.update(input)
-                  : kind === 'handle'
-                    ? controller('actor', 'ada', input)
-                    : kind === 'avatar'
-                      ? controller(
-                          'actor',
-                          new Blob(['image'], { type: 'image/png' })
-                        )
-                      : kind === 'media'
-                        ? controller(input.kinds)
-                        : kind === 'kitchen'
-                          ? controller.updateKitchen({
-                              kitchenId: selected.value,
-                              changes: input,
-                            })
-                          : controller()
+          ? controller.updatePortfolio({
+              portfolioId: selected.value,
+              changes: { identity: { name: input.name } },
+            })
+          : kind === 'settings'
+            ? controller.updateSocialLinks(input.social)
+            : kind === 'membership'
+              ? controller({
+                  action: input.action,
+                  userId: input.userId,
+                  role: input.role,
+                })
+              : kind === 'profile'
+                ? controller.update(input)
+                : kind === 'handle'
+                  ? controller('actor', 'ada', input)
+                  : kind === 'avatar'
+                    ? controller(
+                        'actor',
+                        new Blob(['image'], { type: 'image/png' })
+                      )
+                    : kind === 'media'
+                      ? controller(input.kinds)
+                      : kind === 'kitchen'
+                        ? controller.updateKitchen({
+                            kitchenId: selected.value,
+                            changes: input,
+                          })
+                        : controller()
   // Profile validation accepts only genuine profile fields, and mutations below change that same submitted object.
   if (kind === 'profile')
     for (const key of Object.keys(input))
@@ -323,9 +323,9 @@ for (const spec of specs)
       if (spec[3] === 'profile') assert.equal(body.display_name, 'Before')
       if (spec[3] === 'handle') assert.equal(body.create.display_name, 'Before')
       if (spec[3] === 'media') assert.deepEqual(body.kinds, ['logo'])
-      if (spec[3] === 'kitchen')
-        assert.equal(body.patch.name, 'Before')
-      if (spec[3] === 'portfolio') assert.equal(body.changes.identity.name, 'Before')
+      if (spec[3] === 'kitchen') assert.equal(body.patch.name, 'Before')
+      if (spec[3] === 'portfolio')
+        assert.equal(body.changes.identity.name, 'Before')
       if (spec[3] === 'public-settings') assert.deepEqual(body.values, ['logo'])
       h.scope.stop()
     })
@@ -429,6 +429,7 @@ for (const changed of [
         useCommandScope,
         useAuth: () => ({ currentUser }),
         useKitchenWorkspace: () => workspace,
+        useKitchenUpdate: () => ({ updateKitchen: workspace.crud.update }),
         defineProps: () => props,
         defineEmits:
           () =>
@@ -477,25 +478,45 @@ for (const changed of [
         assert.equal(state.saving.value, false)
       }
       assert.deepEqual(calls[0], {
-        'identity.slug': 'before',
-        'identity.status': 'active',
-        'identity.visibility': false,
+        kitchenId: 'k1',
+        changes: {
+          'identity.slug': 'before',
+          'identity.status': 'active',
+          'identity.visibility': false,
+        },
       })
       scope.stop()
     })
 
 for (const kind of ['public-settings', 'portfolio']) {
-  const changes = kind === 'public-settings' ? ['membership', 'disposal'] : ['membership', 'selection', 'route', 'disposal']
-  for (const change of changes) test(`${kind} rejects obsolete ${change}`, async () => {
-    const h = harness(specs.find(s => s[3] === kind)), flight = h.invoke()
-    await h.reached.promise
-    if (change === 'membership') { const old = h.appUser.value; h.appUser.value = { created: { at: 'next' } }; h.appUser.value = old }
-    if (change === 'selection') { h.selected.value = 'other'; h.selected.value = 'k1' }
-    if (change === 'route') { const old = { ...h.route }; h.route.path = '/other'; h.route.fullPath = '/other'; Object.assign(h.route, old) }
-    if (change === 'disposal') h.scope.stop()
-    h.release()
-    await assert.rejects(flight, /changed/)
-    assert.equal(h.calls.length, 0)
-    h.scope.stop()
-  })
+  const changes =
+    kind === 'public-settings'
+      ? ['membership', 'disposal']
+      : ['membership', 'selection', 'route', 'disposal']
+  for (const change of changes)
+    test(`${kind} rejects obsolete ${change}`, async () => {
+      const h = harness(specs.find((s) => s[3] === kind)),
+        flight = h.invoke()
+      await h.reached.promise
+      if (change === 'membership') {
+        const old = h.appUser.value
+        h.appUser.value = { created: { at: 'next' } }
+        h.appUser.value = old
+      }
+      if (change === 'selection') {
+        h.selected.value = 'other'
+        h.selected.value = 'k1'
+      }
+      if (change === 'route') {
+        const old = { ...h.route }
+        h.route.path = '/other'
+        h.route.fullPath = '/other'
+        Object.assign(h.route, old)
+      }
+      if (change === 'disposal') h.scope.stop()
+      h.release()
+      await assert.rejects(flight, /changed/)
+      assert.equal(h.calls.length, 0)
+      h.scope.stop()
+    })
 }

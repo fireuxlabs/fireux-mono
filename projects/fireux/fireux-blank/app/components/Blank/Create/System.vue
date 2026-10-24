@@ -8,11 +8,7 @@
   >
     <form class="space-y-4" @submit.prevent="handleCreate">
       <UFormField label="Name">
-        <UInput
-          v-model="name"
-          placeholder="Blank target"
-          autocomplete="off"
-        />
+        <UInput v-model="name" placeholder="Blank target" autocomplete="off" />
       </UFormField>
 
       <UAlert
@@ -34,13 +30,7 @@
           Create Blank
         </UButton>
 
-        <UButton
-          to="/"
-          variant="ghost"
-          color="neutral"
-        >
-          Cancel
-        </UButton>
+        <UButton to="/" variant="ghost" color="neutral"> Cancel </UButton>
       </div>
     </form>
   </UPageCard>
@@ -56,14 +46,14 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { useBlankWorkspace } from '../../../composables/fireux/workspace/blank/core/useBlankWorkspace'
+import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 import { useBlankWorkspaceIndex } from '../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
 
 const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
 const canCreate = computed(() => true)
-const workspace = useBlankWorkspace()
+const { createBlank } = useBlankCreate()
 const workspaceIndex = useBlankWorkspaceIndex()
 
 async function handleCreate() {
@@ -73,7 +63,7 @@ async function handleCreate() {
   error.value = ''
 
   try {
-    const result = await workspace.crud.create({ name: name.value })
+    const result = await createBlank({ name: name.value })
     workspaceIndex.select(result.id)
     await navigateTo('/')
   } catch (cause) {

@@ -37,8 +37,7 @@ export function useKitchenWorkspaceIngredient() {
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const permitted = computed(
     () =>
-      workspace.accountReady.value &&
-      workspace.hasAccount.value &&
+      workspace.outcome.value === 'ready' &&
       workspace.outcome.value === 'ready' &&
       selectedKitchen.value?.id === kitchenId.value &&
       access.ids.value.includes(kitchenId.value)

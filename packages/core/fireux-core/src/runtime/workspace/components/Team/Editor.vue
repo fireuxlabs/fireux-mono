@@ -14,40 +14,13 @@
   </WorkspaceTeamSingle>
   <WorkspaceCapability v-else :key="workspaceId" collection-label="Team">
     <template #collection-panel>
-      <WorkspaceTeamCollection ref="collection" :team="team" :title="title">
-        <slot name="collection">
-          <UAlert
-            v-if="derived.status === 'error'"
-            title="Team could not be loaded"
-            color="error"
-            :description="error || 'Check your connection and try again.'"
-          >
-            <template #actions>
-              <MoleculesCopyError
-                :message="
-                  error ||
-                  'Team could not be loaded. Check your connection and try again.'
-                "
-              />
-            </template>
-          </UAlert>
-          <WorkspaceTeamPeople
-            v-else
-            :members="state.team.members"
-            :role-labels="roleLabels"
-            :selected-id="memberId || state.team.selectedTeamMemberId"
-            :pending="derived.status === 'loading'"
-            @select="team.natives.select"
-          />
-          <p
-            v-if="derived.status === 'ready' && !state.team.members.length"
-            class="text-sm text-muted"
-            role="status"
-          >
-            No team members yet. Add the first person to begin.
-          </p>
-        </slot>
-      </WorkspaceTeamCollection>
+      <WorkspaceTeamCollection
+        ref="collection"
+        :team="team"
+        :title="title"
+        :error="error"
+        :role-labels="roleLabels"
+      />
     </template>
     <template #single-panel>
       <WorkspaceTeamSingle
@@ -68,7 +41,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import WorkspaceTeamSingle from './Single.vue'
-import WorkspaceTeamPeople from './People.vue'
 import WorkspaceTeamCollection from './Collection.vue'
 import WorkspaceCapability from '../Capability.vue'
 import type {

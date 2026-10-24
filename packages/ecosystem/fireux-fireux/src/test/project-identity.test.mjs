@@ -44,7 +44,6 @@ function harness(publication = null) {
       },
     }),
     outcome: ref('ready'),
-    crud: { update: async (fields) => writes.push(fields) },
   }
   const useIdentity = compileFunction(
     `${stripTypeScriptTypes(source)}; return useProjectIdentity`,
@@ -56,6 +55,7 @@ function harness(publication = null) {
       'watchEffect',
       'normalizeString',
       'useProjectWorkspace',
+      'useProjectUpdate',
       'useProjectAccess',
       'useWorkspacePageState',
     ]
@@ -67,6 +67,7 @@ function harness(publication = null) {
     (fn) => fn(),
     (value) => String(value || '').trim(),
     () => workspace,
+    () => ({ updateProject: async ({ changes }) => writes.push(changes) }),
     () => ({ ids: computed(() => (access.canWrite.value ? ['p'] : [])) }),
     () => ({ publish: (value) => published.push(value) })
   )

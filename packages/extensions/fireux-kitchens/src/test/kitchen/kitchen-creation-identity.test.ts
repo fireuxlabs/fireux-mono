@@ -26,7 +26,7 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
   }
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
+      '../../runtime/kitchen/composables/useKitchenCreationAllowance.ts',
       import.meta.url
     ),
     'utf8'
@@ -54,11 +54,11 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
     }),
     resolveWorkspaceCanCreate: () => true,
   }
-  const useKitchenWorkspace = compileFunction(
-    `${stripTypeScriptTypes(source)}\nreturn useKitchenWorkspace`,
+  const useKitchenCreationAllowance = compileFunction(
+    `${stripTypeScriptTypes(source)}\nreturn useKitchenCreationAllowance`,
     Object.keys(dependencies)
   )(...Object.values(dependencies))
-  const workspace = useKitchenWorkspace()
+  const workspace = useKitchenCreationAllowance()
   assert.equal(workspace.allowance.value.used, 4)
   assert.equal(workspace.canCreate.value, false)
   assert.equal(workspace.canAdd.value, false)
@@ -191,22 +191,32 @@ test('onboarding rejects a Kitchen beyond the supported domain limit', () => {
 test('Kitchen access is bound to the exact App membership lifetime', () => {
   const created = { seconds: 10, nanoseconds: 20 }
   const membership = { created: { at: created }, kitchens: ['legacy'] }
-  const access = { apps: { app: { ids: ['kitchen'], membership_created_at: created } } }
+  const access = {
+    apps: { app: { ids: ['kitchen'], membership_created_at: created } },
+  }
   assert.deepEqual(readKitchenAccessIds(access, membership, 'app'), ['kitchen'])
   assert.deepEqual(readKitchenAccessIds(undefined, membership, 'app'), [])
   assert.deepEqual(
-    readKitchenAccessIds(access, {
-      created: { at: { seconds: 10, nanoseconds: 21 } },
-    }, 'app'),
+    readKitchenAccessIds(
+      access,
+      {
+        created: { at: { seconds: 10, nanoseconds: 21 } },
+      },
+      'app'
+    ),
     []
   )
   assert.throws(
     () =>
       readKitchenAccessIds(
         { apps: { app: { ...access.apps.app, ids: ['kitchen', 'kitchen'] } } },
-        membership, 'app'
+        membership,
+        'app'
       ),
     /invalid stored ids/
   )
-  assert.throws(() => readKitchenAccessIds(access, null, 'app'), /creation timestamp/)
+  assert.throws(
+    () => readKitchenAccessIds(access, null, 'app'),
+    /creation timestamp/
+  )
 })

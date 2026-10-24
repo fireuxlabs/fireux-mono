@@ -45,7 +45,7 @@ export function useKitchenWorkspaceIdentity(
           ? 'error'
           : source!.outcome.value
     )
-  const updater = workspace ? undefined : useKitchenUpdate([id])
+  const updater = useKitchenUpdate()
   const record = computed(() => data.value as Record<string, unknown> | null)
   const identity = computed(
     () => record.value?.presentation as Record<string, unknown> | undefined
@@ -70,13 +70,11 @@ export function useKitchenWorkspaceIdentity(
         Boolean(currentUser.value && access.ids.value.includes(id.value)) &&
         outcome.value === 'ready'
     ),
-    update:
-      workspace?.crud.update ||
-      ((
-        changes: Parameters<
-          ReturnType<typeof useKitchenUpdate>['updateKitchen']
-        >[0]['changes']
-      ) => updater!.updateKitchen({ kitchenId: id.value, changes })),
+    update: (
+      changes: Parameters<
+        ReturnType<typeof useKitchenUpdate>['updateKitchen']
+      >[0]['changes']
+    ) => updater.updateKitchen({ kitchenId: id.value, changes }),
     name,
     tagline,
     imageUrl,

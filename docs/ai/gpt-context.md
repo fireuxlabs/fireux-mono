@@ -180,6 +180,10 @@ renamed alias is not proof.
   Team actions do not need selection-epoch cancellation or waits for a different
   user to sign in. Other multi-step preparation workflows retain their own
   lifetime rules. See `docs/concepts/family-workspace-entity.md` for adoption.
+- Selected-record `useXWorkspace` projections expose `{ id, data, outcome }`;
+  creation policy and mutation commands remain separate domain capabilities.
+  Home collections reuse `WorkspaceEntityCollection`; shared Team collection
+  presentation reuses `useCollectionSearch`, with domain-supplied roles and commands.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty

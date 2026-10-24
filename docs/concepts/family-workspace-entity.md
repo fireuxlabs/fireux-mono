@@ -134,7 +134,7 @@ selection, enabled families or permissions. Authentication remains origin-scoped
 ## Landing creation allowance
 
 Kitchen exposes allowance, used count, `canAdd`, `canCreate` and `showUpgrade`
-through its domain-owned `useKitchenWorkspace`. Its pure
+through its domain-owned `useKitchenCreationAllowance`. Its pure
 `kitchen/utils/kitchen-capacity.ts` is also consumed by trusted onboarding:
 Free and Premium allow one associated Kitchen; Business has no subscription
 count limit. The existing relationship storage ceiling is separate. Counts use
@@ -831,7 +831,7 @@ Current evidence and confidence:
 | Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                     |
 | -------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                              |
-| Named `useWorkspaceTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project and Kitchen tool entrypoints now accept associated AppUsers regardless of Team role during development; the complete sibling comparison is not yet proved |
+| Named `useWorkspaceTeam`                                             | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project and Kitchen tool entrypoints now accept associated AppUsers regardless of Team role during development; the complete sibling comparison is not yet proved |
 | `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                       |
 | Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                        |
 
@@ -1041,7 +1041,6 @@ the existing status projection; it adds no reader or command authority.
 Verify `team-editor-composition.test.mjs` in Core and Kitchen's
 `team-workspace-composition.test.mjs`, plus the existing Team selection,
 command-scope and domain tests.
-
 
 Kitchen, Project, Supplier, Property, Portfolio and Blank retain named Team
 routes, components and `useXTeam` composables. Every domain controller calls
@@ -1533,3 +1532,19 @@ beside the brand names its next action in its tooltip and accessible label.
 Changing mode remounts accordion defaults without changing the active destination
 or domain readers. `navigation/workspace-sidebar-mode.ts` owns the small cycle;
 verify `workspace-sidebar-mode.test.mjs` and `workspace-active-destination.test.mjs`.
+
+## Shared Home and Team composition
+
+Project, Kitchen, Supplier, Portfolio and Property Home collections reuse Core
+`WorkspaceEntityCollection` for loading, error, empty and ready presentation.
+Entity rows, creation policy and navigation remain with their domain.
+
+Selected-record `useXWorkspace` projections return `{ id, data, outcome }`;
+they do not acquire creation or mutation commands. Kitchen creation policy lives
+in `useKitchenCreationAllowance`, and adoption is explicitly composed at entry.
+Identity editors acquire their domain commands and submit an explicit Entity ID.
+
+Core `WorkspaceTeamCollection` owns member collection presentation and reuses
+`useCollectionSearch` for names, User IDs and domain-supplied role labels.
+Domains supply membership, permissions, role meanings and commands. There is no
+separate Team People component or filter owner.
