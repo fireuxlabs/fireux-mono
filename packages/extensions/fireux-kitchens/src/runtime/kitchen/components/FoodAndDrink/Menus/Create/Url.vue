@@ -32,14 +32,12 @@
 import { computed, ref } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 
 const { activeKitchenAppId, canWrite, currencyCode, kitchenId } =
   useKitchenMenusContextSource()
 const { currentUser } = useAuth()
-const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const sourceUrl = ref('')
 const pending = ref(false)
 const error = ref('')
@@ -79,10 +77,8 @@ async function save() {
   error.value = ''
 
   try {
-    requireWritableData()
     const token = await user.getIdToken()
     if (!isCurrent() || currentUser.value?.uid !== user.uid) return
-    requireWritableData()
     // Creation stage 1: save a source only. The real kitchen menu is created after AI review + confirm.
     await $fetch('/api/workspace/kitchen/menus/source-url', {
       method: 'POST',

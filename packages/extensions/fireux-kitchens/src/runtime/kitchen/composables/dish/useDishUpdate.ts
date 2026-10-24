@@ -7,15 +7,10 @@ export function useDishUpdate(ownerSources: WatchSource[] = []) {
   const updateDish = (
     dishId: string,
     changes: Partial<DishUpdateInput> & Record<string, unknown>,
-    overrides: { kitchenId?: string; isCurrent?: () => boolean } = {}
+    target: { kitchenId: string; isCurrent?: () => boolean }
   ) =>
-    overrides.isCurrent
-      ? mutate(
-          'PATCH',
-          { dishId, changes },
-          overrides.kitchenId,
-          overrides.isCurrent
-        )
-      : mutate('PATCH', { dishId, changes }, overrides.kitchenId)
+    target.isCurrent
+      ? mutate('PATCH', { dishId, changes }, target.kitchenId, target.isCurrent)
+      : mutate('PATCH', { dishId, changes }, target.kitchenId)
   return { updateDish }
 }

@@ -7,7 +7,6 @@ import {
 } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useOptionalKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 import { useKitchenMenusContextSource } from './useKitchenMenusContext'
@@ -23,7 +22,6 @@ export function useMenuSourceUpload(
   const { kitchenId, activeKitchenAppId, canWrite, currencyCode } =
     useOptionalKitchenMenuRecordContext() ?? useKitchenMenusContextSource()
   const { currentUser } = useAuth()
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const route = useRoute()
   const pending = ref(false)
   const error = ref('')
@@ -80,7 +78,6 @@ export function useMenuSourceUpload(
           throw new Error(
             'The account or Kitchen changed. Choose your file again.'
           )
-        requireWritableData()
       }
       assertCurrent()
       if (!currencyCode.value)

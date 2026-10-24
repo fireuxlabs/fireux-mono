@@ -73,7 +73,7 @@
         label="Open notifications"
         color="neutral"
         variant="soft"
-        @click="notificationPanel.open()"
+        @click="notifications.open()"
       />
     </Summary>
   </section>
@@ -85,12 +85,10 @@ import { useSupplierWorkspaceHome } from '../../../composables/workspace/useSupp
 import { useSupplierWorkspaceIdentity } from '../../../composables/workspace/useSupplierWorkspaceIdentity'
 import { useSupplierWorkspace } from '../../../composables/workspace/useSupplierWorkspace'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
-import { useWorkspaceNotifications } from 'fireux-core/runtime/workspace/composables/useWorkspaceNotifications'
 const team = useSupplierWorkspaceHome().team
 const identity = useSupplierWorkspaceIdentity()
 const workspace = useSupplierWorkspace()
 const notifications = useUserNotifications()
-const notificationPanel = useWorkspaceNotifications()
 const fields = computed(() => Object.values(identity.fields.value))
 const filled = computed(
   () => fields.value.filter((value) => String(value || '').trim()).length

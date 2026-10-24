@@ -1,8 +1,6 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 15:29 CEST — Customer order notification pass: render live owner notifications with read controls.
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useWorkspaceNotifications } from '../../../workspace/composables/useWorkspaceNotifications'
 import { useUserNotifications } from '../../../user/composables/notifications/useUserNotifications'
 import { useUserNotificationMarkRead } from '../../../user/composables/notifications/useUserNotificationMarkRead'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
@@ -11,7 +9,6 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import NotificationItem from '../../../user/components/Notifications/Item.vue'
 
 const open = defineModel<boolean>('open', { default: false })
-const router = useRouter()
 const {
   notifications,
   unreadCount: liveUnreadCount,
@@ -19,7 +16,6 @@ const {
   error,
 } = useUserNotifications()
 const { markRead } = useUserNotificationMarkRead()
-const { setUnreadCount } = useWorkspaceNotifications()
 const markingId = ref('')
 const mutationError = ref('')
 const { currentUser } = useAuth(),
@@ -45,6 +41,9 @@ const visibleNotifications = computed(() =>
       filter.value !== 'unread' || !item.read
   )
 )
+const visibleUnreadCount = computed(
+  () => notifications.value.filter((item) => !item.read).length
+)
 const intro = {
   title: 'Notifications',
   purpose: 'Review updates sent to you and mark them read.',
@@ -53,11 +52,6 @@ const intro = {
     'Marking read changes your read state. This feed is not limited to the selected workspace.',
   ai: 'No AI actions are connected to this feed.',
 }
-const myOrdersAvailable = computed(
-  () => router.resolve('/dashboard/customer/profile').matched.length > 0
-)
-
-watch(liveUnreadCount, setUnreadCount, { immediate: true })
 
 async function markNotificationRead(notificationId: string) {
   if (markingId.value) return
@@ -87,13 +81,17 @@ async function markNotificationRead(notificationId: string) {
           v-model="filter"
           :items="[
             { label: `All (${notifications.length})`, value: 'all' },
-            { label: `Unread (${liveUnreadCount})`, value: 'unread' },
+            { label: `Unread (${visibleUnreadCount})`, value: 'unread' },
           ]"
           :content="false"
           aria-label="Filter notifications"
         />
         <WorkspaceIntroInfo :intro="intro" />
       </div>
+      <p v-if="notifications.length === 50" class="mb-4 text-sm text-muted">
+        Showing your latest 50 notifications. {{ liveUnreadCount }} unread in
+        total.
+      </p>
       <div v-if="pending" class="space-y-3">
         <USkeleton v-for="index in 3" :key="index" class="h-24" />
       </div>
@@ -116,7 +114,9 @@ async function markNotificationRead(notificationId: string) {
         />
         {{
           filter === 'unread'
-            ? 'You’re all caught up.'
+            ? liveUnreadCount > 0
+              ? 'No unread notifications in the latest updates.'
+              : 'You’re all caught up.'
             : 'No notifications yet.'
         }}
       </div>
@@ -139,17 +139,6 @@ async function markNotificationRead(notificationId: string) {
           @read="markNotificationRead(notification.id)"
         />
       </div>
-    </template>
-
-    <template #footer>
-      <UButton
-        v-if="myOrdersAvailable"
-        to="/dashboard/customer/profile"
-        label="My orders"
-        icon="i-lucide-receipt-text"
-        block
-        @click="open = false"
-      />
     </template>
   </USlideover>
 </template>

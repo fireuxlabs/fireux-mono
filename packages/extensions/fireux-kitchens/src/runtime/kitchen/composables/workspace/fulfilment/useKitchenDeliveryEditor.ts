@@ -1,3 +1,4 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
 import type {
   KitchenFulfilment,
@@ -39,8 +40,17 @@ export function useKitchenDeliveryEditor(props: {
     { label: 'Polygon', value: 'polygon' },
   ] satisfies RadioGroupItem[]
 
-  const { updateKitchenFulfilment, captureIntent } =
+  const { updateKitchenFulfilment, captureIntent: captureCommand } =
     useKitchenFulfilmentUpdate()
+  const captureSurface = useCommandScope([
+    () => props.kitchenId,
+    () => props.canWrite,
+  ])
+  const captureIntent = () => {
+    const command = captureCommand(),
+      surface = captureSurface()
+    return () => command() && surface()
+  }
 
   const { place, currencyCode } = useKitchenWorkspaceIdentity()
 

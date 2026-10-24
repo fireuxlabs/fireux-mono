@@ -1,34 +1,23 @@
 import type { WatchSource } from 'vue'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import { useRoute } from '#imports'
 import { useRecipeScope } from './useRecipeScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 
 /** Shared credential and stale-intent boundary for the three Recipe commands. */
 export function useRecipeMutation(ownerSources: WatchSource[] = []) {
-  const route = useRoute()
   const { currentUser } = useAuth()
-  const { selectedId } = useWorkspace('kitchen')
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const captureScope = useRecipeScope([
-    selectedId,
-    () => route.fullPath,
-    ...ownerSources,
-  ])
+  const captureScope = useRecipeScope(ownerSources)
   async function mutate(
     method: 'POST' | 'PATCH' | 'DELETE',
     input: Record<string, unknown>,
-    override?: string,
+    targetKitchenId: string,
     prepare?: (
       body: Record<string, unknown>,
       assertCurrent: () => void
     ) => Promise<Record<string, unknown>>
   ) {
-    requireWritableData()
-    const kitchenId = String(override || selectedId.value || '').trim()
+    const kitchenId = String(targetKitchenId || '').trim()
     if (!kitchenId) throw new Error('Kitchen id is required')
     const isCurrent = captureScope(),
       uid = currentUser.value?.uid
@@ -50,7 +39,6 @@ export function useRecipeMutation(ownerSources: WatchSource[] = []) {
       throw new Error('The account changed. Reopen the Recipe editor.')
     const token = await user.getIdToken()
     assertScope()
-    requireWritableData()
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/recipes',
       {

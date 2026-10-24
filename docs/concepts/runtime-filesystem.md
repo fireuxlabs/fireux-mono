@@ -105,7 +105,7 @@ Portfolio proves this cross-package form. `fireux-properties` owns Portfolio
 identity, presentation, Workspace authority, reads, writes, and server policy.
 `fireux-compliance`, `fireux-documents`, and `fireux-tasks` contribute named
 Portfolio-scoped operations and child-record models. They consume
-`fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio`
+`fireux-properties/runtime/portfolio/composables/usePortfolioScope` with an explicit Portfolio ID
 and must not declare a competing Portfolio model, authority seam, component
 family, or server policy. Verify that boundary through current imports and
 consumers, including removal of the retired nested authority path.

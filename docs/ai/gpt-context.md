@@ -856,6 +856,14 @@ or implies automatic AI context injection.
 
 ### Workspace Entity spine
 
+User notifications have one User-owned feed and server-derived total unread count;
+Workspace and dashboard shells consume its shared panel visibility. Product-specific
+links do not belong in the shared notification panel. Workspace page publications
+are scoped by App, account, selected Entity and destination; their publishing
+component releases its own publication on disposal. Explicit-target domain commands
+do not acquire Workspace selection or route state; editors supply their own lifetime.
+The temporary selection-only `useWorkspaceWriteGuard` is retired.
+
 `useXWorkspace()` is the single Entity Workspace owner for available records,
 selection actions and the authorised selected-record projection. There is no
 separate Index composable. `collectionOutcome` describes available records;

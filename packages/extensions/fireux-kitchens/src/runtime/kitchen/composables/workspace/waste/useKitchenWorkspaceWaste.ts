@@ -6,7 +6,6 @@ import { useRoute } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
@@ -30,7 +29,6 @@ const text = (value: unknown) => String(value ?? '').trim()
 export function useKitchenWorkspaceWaste() {
   const { hasIdentity, currentUser } = useAuth()
   const workspace = useKitchenWorkspace()
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const canWrite = computed(() => Boolean(workspace.data.value))
@@ -59,7 +57,6 @@ export function useKitchenWorkspaceWaste() {
     () => route.fullPath,
   ])
   async function recordWaste(draft: KitchenWasteDraft) {
-    requireWritableData()
     const id = text(kitchenId.value),
       uid = currentUser.value?.uid,
       isCurrent = captureIntent()
@@ -75,7 +72,6 @@ export function useKitchenWorkspaceWaste() {
       throw new Error('The account changed. Reopen Record Waste.')
     const token = await user.getIdToken()
     assertScope()
-    requireWritableData()
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/waste',
       {

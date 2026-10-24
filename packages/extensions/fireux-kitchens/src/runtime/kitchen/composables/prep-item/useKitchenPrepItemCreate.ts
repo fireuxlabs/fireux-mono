@@ -4,12 +4,9 @@ import { useKitchenAccess } from '../useKitchenAccess'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type {
   KitchenPrepItemInput,
   KitchenPrepItemUnit,
@@ -34,16 +31,12 @@ type KitchenPrepItemCreateOptions = {
 }
 
 export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { currentUser } = useAuth()
-  const { selectedId } = useWorkspace('kitchen')
-  const route = useRoute()
   const { seedTranslations } = useTranslationSeed()
   const config = useFireUXConfig()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
   const access = useKitchenAccess()
   const captureIntent = useCommandScope([
-    selectedId,
     () => currentUser.value?.uid,
     () => config.appId,
     () => JSON.stringify(appUser.value),
@@ -52,18 +45,14 @@ export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
     appOutcome,
     () => JSON.stringify(access.ids.value),
     () => access.outcome.value,
-    () => route.fullPath,
     ...ownerSources,
   ])
   const createPrepItem = async (
     draft: KitchenPrepItemCreateDraft,
-    overrides: { kitchenId?: string } = {},
+    target: { kitchenId: string },
     createOptions: KitchenPrepItemCreateOptions = {}
   ) => {
-    requireWritableData()
-    const kitchenId = String(
-      overrides.kitchenId || selectedId.value || ''
-    ).trim()
+    const kitchenId = String(target.kitchenId || '').trim()
     if (!kitchenId) throw new Error('Kitchen id is required')
     const captured = JSON.parse(
       JSON.stringify(draft)
@@ -114,7 +103,6 @@ export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
       throw new Error('The account changed. Reopen the Prep Item editor.')
     const token = await user.getIdToken()
     assertScope()
-    requireWritableData()
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/prep-items',
       {

@@ -4,7 +4,6 @@ import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type {
@@ -42,9 +41,7 @@ export function useKitchenWorkspacePromotions() {
       `${kitchenId.value}:${session.uid.value}:${config.appId}:${JSON.stringify(session.appUser.value)}:${canWrite.value}`
   )
   const captureIntent = useCommandScope([scopeKey])
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   async function command(body: Record<string, unknown>) {
-    requireWritableData()
     if (!canWrite.value || !kitchenId.value)
       throw new Error('Choose a Kitchen you can manage.')
     const input = JSON.parse(
@@ -61,7 +58,6 @@ export function useKitchenWorkspacePromotions() {
     if (user.uid !== uid) throw new Error('The account changed. Try again.')
     const token = await user.getIdToken()
     assertCurrent()
-    requireWritableData()
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/promotions',
       {

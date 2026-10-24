@@ -51,7 +51,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 
 const props = defineProps<{
   existingMenuName?: string
@@ -68,7 +67,6 @@ const emit = defineEmits<{
 }>()
 
 const pending = ref(false)
-const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const error = ref('')
 const confirmResult = ref<Record<string, unknown> | null>(null)
 const text = (value: unknown) => String(value ?? '').trim()
@@ -155,7 +153,6 @@ async function confirmDraft() {
   pending.value = true
 
   try {
-    requireWritableData()
     // Creation stage 3: apply the reviewed draft into dishes, sections, items, and the public root menu row.
     const response = await fetch('/api/workspace/kitchen/menus/confirm', {
       method: 'POST',

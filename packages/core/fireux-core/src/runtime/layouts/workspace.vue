@@ -98,9 +98,7 @@
         <template #error="{ error: pageError, clearError: clearPageError }">
           <UDashboardPanel id="workspace-page-unavailable">
             <template #header>
-              <WorkspaceNavbar
-                :title="`${workspaceLabel} unavailable`"
-              />
+              <WorkspaceNavbar :title="`${workspaceLabel} unavailable`" />
             </template>
 
             <template #body>
@@ -148,7 +146,10 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
 import { useNuxtApp, useRoute } from '#imports'
 import { computed, ref } from 'vue'
-import { workspaceSidebarNext, type WorkspaceSidebarMode } from '../workspace/utils/sidebar-mode'
+import {
+  workspaceSidebarNext,
+  type WorkspaceSidebarMode,
+} from '../workspace/utils/sidebar-mode'
 import type { NavigationMenuItem } from '@nuxt/ui'
 import {
   workspaceFamilyFromRouteContext,
@@ -156,7 +157,7 @@ import {
 } from '../workspace/utils/routes'
 import { useWorkspaceNav } from '../workspace/composables/useWorkspaceNav'
 import { workspaceActiveDestination } from '../workspace/utils/active-destination'
-import { useWorkspaceNotifications } from '../workspace/composables/useWorkspaceNotifications'
+import { useUserNotifications } from '../user/composables/notifications/useUserNotifications'
 import { useWorkspace } from '../workspace/composables/useWorkspace'
 import { useWorkspaceEntryCta } from '../workspace/composables/useWorkspaceEntryCta'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
@@ -167,12 +168,14 @@ const sidebarMode = ref<WorkspaceSidebarMode>('expanded')
 const sidebarNext = computed(() => workspaceSidebarNext(sidebarMode.value))
 const sidebarCollapsed = computed({
   get: () => sidebarMode.value === 'compact',
-  set: (value: boolean) => { sidebarMode.value = value ? 'compact' : 'expanded' },
+  set: (value: boolean) => {
+    sidebarMode.value = value ? 'compact' : 'expanded'
+  },
 })
 // Remount the accordion defaults when revisiting an already-active group index.
 const groupVisit = ref(0)
 const isDevelopment = import.meta.dev
-const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
+const { isOpen: isNotificationsSlideoverOpen } = useUserNotifications()
 const workspaceNav = useWorkspaceNav()
 const route = useRoute()
 const { workspaceEntryPath } = useWorkspaceEntryCta()
@@ -237,7 +240,8 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
             }
           : undefined,
         active: activeNavGroup.value === item.label,
-        defaultOpen: sidebarMode.value === 'all' || activeNavGroup.value === item.label,
+        defaultOpen:
+          sidebarMode.value === 'all' || activeNavGroup.value === item.label,
         children: item.children.map((child) => ({
           ...child,
           active: destinationActive(child.to),
@@ -276,7 +280,8 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
         value: `group:${label}`,
         type: 'trigger',
         active: label === activeNavGroup.value,
-        defaultOpen: sidebarMode.value === 'all' || label === activeNavGroup.value,
+        defaultOpen:
+          sidebarMode.value === 'all' || label === activeNavGroup.value,
         children: [],
       }
       groups.set(label, group)
@@ -309,7 +314,9 @@ const middleNav = computed(() =>
 // Entity selection belongs to the active Workspace, independently of nav placement.
 const workspaceNavigation = computed(() =>
   workspace.value
-    ? nuxtApp.vueApp.component(`Workspace${toWorkspaceFamilyLabel(workspace.value)}Navigation`)
+    ? nuxtApp.vueApp.component(
+        `Workspace${toWorkspaceFamilyLabel(workspace.value)}Navigation`
+      )
     : undefined
 )
 

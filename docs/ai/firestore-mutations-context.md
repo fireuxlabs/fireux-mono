@@ -500,8 +500,8 @@ account's feed.
 
 App public featured-slug curation captures its App, account, admin/membership
 context and submitted values, then verifies the returned App and field. Portfolio
-Identity updates accept nested `changes.identity`, capture original inputs and relevant live
-account/App/membership/record/route/disposal context; results identify the exact
+Identity updates accept nested `changes.identity` and an explicit Portfolio ID, capture original inputs and live
+account/App/membership/disposal context; their editor owns record and route lifetime; results identify the exact
 updated root. The server remains authoritative after client dispatch. Current
 proof includes Core `foundation-command-intent.test.mjs` and
 `foundation-additional-surfaces.test.mjs`, and Properties'
@@ -562,8 +562,8 @@ has no network/apply/delete mode. Proof lives in Properties'
 `portfolio-model-shape.test.mjs`, `portfolio-identity.test.mjs` and
 `portfolio-public-identity.test.mjs`, plus Core's onboarding command-scope tests.
 
-The Supplier and Property client adapters capture account/App/membership, route, owning Entity,
-write availability and disposal before credentials. Supplier additionally binds
+The Supplier and Property client commands receive explicit target IDs and capture account/App/membership
+and disposal before credentials. Their editors own route, selected Entity, write availability and draft lifetime. Supplier additionally binds
 the linked Place. Validated committed results remain truthful; obsolete UI
 completion is suppressed. Place editors may receive Supplier's explicit update
 adapter through their local composition provider; that adapter changes client

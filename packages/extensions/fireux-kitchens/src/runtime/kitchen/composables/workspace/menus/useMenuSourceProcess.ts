@@ -1,5 +1,4 @@
 import { computed, ref, watch } from 'vue'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 import {
@@ -21,7 +20,6 @@ export function useMenuSourceProcess(context?: MenuSourceProcessContext) {
   const { menu, source, menuId, kitchenId, activeKitchenAppId, canWrite } =
     context ?? useKitchenMenuRecordContext()
   const { currentUser } = useAuth()
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const authToken = ref('')
   const pendingMode = ref<'standard' | 'strong' | ''>('')
   const error = ref('')
@@ -238,7 +236,6 @@ export function useMenuSourceProcess(context?: MenuSourceProcessContext) {
     pendingMode.value = mode
 
     try {
-      requireWritableData()
       const response = await fetch('/api/workspace/kitchen/menus/process', {
         method: 'POST',
         headers: {

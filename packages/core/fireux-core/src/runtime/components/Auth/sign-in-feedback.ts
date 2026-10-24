@@ -29,6 +29,22 @@ export function googleSignInFeedback(error: unknown): SignInFeedback {
       color: 'warning',
     }
   }
+  if (code === 'auth/unauthorized-domain') {
+    return {
+      title: 'Google sign-in is not configured for this address',
+      description:
+        'This address is not enabled for Google sign-in. Open the App using its usual address, or sign in with email below.',
+      color: 'error',
+    }
+  }
+  if (code === 'auth/operation-not-allowed') {
+    return {
+      title: 'Google sign-in is not enabled',
+      description:
+        'Google sign-in needs to be enabled for this App. You can sign in with email below.',
+      color: 'error',
+    }
+  }
   if (code === 'auth/network-request-failed') {
     return {
       title: 'Couldn’t connect to Google',

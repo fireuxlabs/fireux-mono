@@ -7,7 +7,7 @@ export function useRecipeUpdate(ownerSources: WatchSource[] = []) {
   const updateRecipe = (
     recipeId: string,
     changes: Partial<RecipeUpdateInput> & Record<string, unknown>,
-    overrides: { kitchenId?: string } = {}
-  ) => mutate('PATCH', { recipeId, changes }, overrides.kitchenId)
+    target: { kitchenId: string }
+  ) => mutate('PATCH', { recipeId, changes }, target.kitchenId)
   return { updateRecipe }
 }

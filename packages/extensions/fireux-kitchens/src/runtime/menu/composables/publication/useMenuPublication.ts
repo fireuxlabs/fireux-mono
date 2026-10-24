@@ -1,15 +1,9 @@
-import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useMenuEditorScope } from '../useMenuEditorScope'
 
 export function useMenuPublication() {
   const { currentUser } = useAuth()
-  const { selectedId } = useWorkspace('kitchen')
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const route = useRoute()
-  const captureScope = useMenuEditorScope([selectedId, () => route.fullPath])
+  const captureScope = useMenuEditorScope([])
 
   async function run(
     action: 'publish' | 'unpublish' | 'archive' | 'restore',
@@ -27,14 +21,12 @@ export function useMenuPublication() {
               ? 'Sign in before archiving this Menu.'
               : 'Sign in before restoring this Menu.'
       )
-    requireWritableData()
-    if (!kitchenId || !menuId || kitchenId !== selectedId.value)
-      throw new Error('The selected Kitchen does not match this Menu command.')
+    if (!kitchenId || !menuId)
+      throw new Error('Kitchen and Menu targets are required.')
     const isCurrent = captureScope()
     const token = await user.getIdToken()
     if (!token || !isCurrent() || currentUser.value?.uid !== user.uid)
       throw new Error('The account or Menu changed. Reopen the Menu editor.')
-    requireWritableData()
     const result = await $fetch<{ ok: boolean; menu_id?: string }>(
       `/api/workspace/kitchen/menus/${action}`,
       {

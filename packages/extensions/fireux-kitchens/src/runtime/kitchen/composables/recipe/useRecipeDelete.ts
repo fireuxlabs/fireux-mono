@@ -3,9 +3,7 @@ import { useRecipeMutation } from './useRecipeMutation'
 
 export function useRecipeDelete(ownerSources: WatchSource[] = []) {
   const { mutate } = useRecipeMutation(ownerSources)
-  const deleteRecipe = (
-    recipeId: string,
-    overrides: { kitchenId?: string } = {}
-  ) => mutate('DELETE', { recipeId }, overrides.kitchenId)
+  const deleteRecipe = (recipeId: string, target: { kitchenId: string }) =>
+    mutate('DELETE', { recipeId }, target.kitchenId)
   return { deleteRecipe }
 }

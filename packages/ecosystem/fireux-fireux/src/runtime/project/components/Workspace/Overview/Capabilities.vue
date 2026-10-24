@@ -114,7 +114,7 @@
         label="Open notifications"
         color="neutral"
         variant="soft"
-        @click="notificationPanel.open()"
+        @click="notifications.open()"
       />
     </Summary>
   </section>
@@ -128,7 +128,6 @@ import { useProjectWorkspaceHome } from '../../../composables/workspace/useProje
 import { useProjectTestRecords } from '../../../composables/useProjectTestRecords'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
-import { useWorkspaceNotifications } from 'fireux-core/runtime/workspace/composables/useWorkspaceNotifications'
 
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
@@ -153,7 +152,6 @@ const workspace = useProjectWorkspace()
 const team = useProjectWorkspaceHome().team
 const tests = useProjectTestRecords(workspace.id)
 const notifications = useUserNotifications()
-const notificationPanel = useWorkspaceNotifications()
 const identityReady = computed(
   () =>
     workspace.outcome.value === 'ready' &&

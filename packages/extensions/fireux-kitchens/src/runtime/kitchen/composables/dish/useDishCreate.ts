@@ -14,7 +14,7 @@ export function useDishCreate(ownerSources: WatchSource[] = []) {
   const { mutate } = useDishMutation(ownerSources)
   const createDish = (
     draft: DishCreateDraft,
-    overrides: { kitchenId?: string } = {}
-  ): Promise<DishCreateResult> => mutate('POST', { draft }, overrides.kitchenId)
+    target: { kitchenId: string }
+  ): Promise<DishCreateResult> => mutate('POST', { draft }, target.kitchenId)
   return { createDish }
 }

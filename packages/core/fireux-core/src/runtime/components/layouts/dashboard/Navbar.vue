@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceNotifications } from '../../../workspace/composables/useWorkspaceNotifications'
+import { useUserNotifications } from '../../../user/composables/notifications/useUserNotifications'
 
 withDefaults(
   defineProps<{
@@ -59,7 +59,7 @@ withDefaults(
   { showSubscription: true, showNotifications: true, showTitle: true }
 )
 
-const { open: openNotifications, unreadCount } = useWorkspaceNotifications()
+const { open: openNotifications, unreadCount } = useUserNotifications()
 const unreadLabel = computed(() =>
   unreadCount.value > 99 ? '99+' : unreadCount.value
 )

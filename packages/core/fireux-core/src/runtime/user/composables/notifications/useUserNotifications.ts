@@ -1,4 +1,5 @@
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useState } from '#imports'
 import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
 import { type UserNotification } from '../../models/user-notification.model.ts'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
@@ -10,10 +11,22 @@ const MAX_VISIBLE_NOTIFICATIONS = 50
 type UserNotificationsResponse = {
   ok: true
   notifications: UserNotificationRecord[]
+  unreadCount: number
 }
 
 export function useUserNotifications() {
   const { currentUser, hasAuthState } = useAuth()
+  const isOpen = useState<boolean>(
+    'fireux:user:notifications-open',
+    () => false
+  )
+  watch(
+    () => currentUser.value?.uid,
+    () => {
+      isOpen.value = false
+    },
+    { flush: 'sync' }
+  )
   const active = computed(() =>
     Boolean(
       hasAuthState.value && currentUser.value && !currentUser.value.isAnonymous
@@ -28,7 +41,7 @@ export function useUserNotifications() {
     async (liveFetch) => {
       const user = currentUser.value
       if (!active.value || !user)
-        return { ok: true, notifications: [], ownerId: '' }
+        return { ok: true, notifications: [], unreadCount: 0, ownerId: '' }
       const response = await liveFetch<UserNotificationsResponse>(
         '/api/internal/user/notifications',
         {
@@ -39,20 +52,27 @@ export function useUserNotifications() {
     },
     { server: false }
   )
-  const notifications = computed(() =>
+  const current = computed(() =>
     active.value &&
     !state.error.value &&
     state.data.value &&
     state.data.value.ownerId === currentUser.value?.uid
-      ? state.data.value.notifications.slice(0, MAX_VISIBLE_NOTIFICATIONS)
-      : []
+      ? state.data.value
+      : null
+  )
+  const notifications = computed(
+    () => current.value?.notifications.slice(0, MAX_VISIBLE_NOTIFICATIONS) ?? []
   )
   return {
+    isOpen,
+    open: () => {
+      isOpen.value = true
+    },
+    close: () => {
+      isOpen.value = false
+    },
     notifications,
-    unreadCount: computed(
-      () =>
-        notifications.value.filter((notification) => !notification.read).length
-    ),
+    unreadCount: computed(() => current.value?.unreadCount ?? 0),
     pending: state.pending,
     error: state.error,
     outcome: computed(() =>

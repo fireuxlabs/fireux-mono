@@ -99,7 +99,6 @@
 
 <script setup lang="ts">
 import { computed, ref, toRef, watch } from 'vue'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const props = defineProps<{
@@ -120,7 +119,6 @@ const kitchenId = toRef(props, 'kitchenId')
 const activeKitchenAppId = toRef(props, 'appId')
 const canWrite = toRef(props, 'canWrite')
 const { currentUser } = useAuth()
-const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const estimate = ref<Record<string, unknown> | null>(null)
 const pending = ref(false)
 const error = ref('')
@@ -205,7 +203,6 @@ async function refreshEstimate() {
     const selectedMenuId = menuId.value
     const selectedUploadId = uploadId.value
     const token = await currentUser.value.getIdToken()
-    requireWritableData()
     if (
       !canWrite.value ||
       activeKitchenAppId.value !== appId ||

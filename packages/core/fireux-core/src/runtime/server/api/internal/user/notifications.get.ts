@@ -1,44 +1,4 @@
 import { defineLiveReadHandler } from '../../../utils/http/defineLiveReadHandler'
-import { setResponseHeaders, type H3Event } from 'h3'
-import { UserNotificationStorage } from '../../../../user/models/user-notification.model.ts'
-import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
-import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
+import { readUserNotifications } from '../../../../user/server/notifications/read'
 
-const MAX_VISIBLE_NOTIFICATIONS = 50
-
-export default defineLiveReadHandler(async (event: H3Event) => {
-  const { uid } = await requireFirebaseBearerUser(event)
-  const snapshot = await getRuntimeFirestore()
-    .collection('users')
-    .doc(uid)
-    .collection(UserNotificationStorage.collection)
-    .orderBy('created.at', 'desc')
-    .limit(MAX_VISIBLE_NOTIFICATIONS)
-    .get()
-
-  setResponseHeaders(event, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'private, no-store',
-  })
-
-  return {
-    ok: true,
-    notifications: snapshot.docs.map((document) => {
-      const data = document.data()
-      const createdAt = data.created?.at
-      return {
-        id: document.id,
-        message: String(data.message ?? ''),
-        scope: data.scope === 'ecosystem' ? 'ecosystem' : 'app',
-        created: {
-          at: {
-            seconds: Number(createdAt?.seconds ?? 0),
-            nanoseconds: Number(createdAt?.nanoseconds ?? 0),
-          },
-          app_id: String(data.created?.app_id ?? ''),
-        },
-        read: data.read === true,
-      }
-    }),
-  }
-})
+export default defineLiveReadHandler(readUserNotifications)

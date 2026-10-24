@@ -91,6 +91,8 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: route identity edits through the fixed root mutation.
+import { useRoute } from '#imports'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { PortfolioWorkspaceIdentityState } from '../../../../composables/workspace/usePortfolioWorkspaceIdentity'
 import { usePortfolioUpdate } from '../../../../composables/firestore/mutations/usePortfolioUpdate'
@@ -111,7 +113,18 @@ const {
   strategyLabel,
   regionLabel,
 } = props.identity
-const { updatePortfolio, captureIntent } = usePortfolioUpdate()
+const { updatePortfolio, captureIntent: captureCommand } = usePortfolioUpdate()
+const route = useRoute()
+const captureSurface = useCommandScope([
+  portfolioId,
+  canWrite,
+  () => route.fullPath,
+])
+const captureIntent = () => {
+  const command = captureCommand(),
+    surface = captureSurface()
+  return () => command() && surface()
+}
 const toast = useToastify()
 
 const updateIdentityField = async (

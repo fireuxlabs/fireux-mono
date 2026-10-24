@@ -27,7 +27,7 @@ export function useRecipeCreate(ownerSources: WatchSource[] = []) {
   const { mutate } = useRecipeMutation(ownerSources)
   const createRecipe = async (
     draft: RecipeCreateDraft,
-    overrides: { kitchenId?: string } = {},
+    target: { kitchenId: string },
     createOptions: RecipeCreateOptions = {}
   ): Promise<RecipeCreateResult> => {
     const options = JSON.parse(
@@ -37,7 +37,7 @@ export function useRecipeCreate(ownerSources: WatchSource[] = []) {
     const result = await mutate(
       'POST',
       { draft },
-      overrides.kitchenId,
+      target.kitchenId,
       async (body, assertCurrent) => {
         const captured = body.draft as RecipeCreateDraft
         const name = String(captured.name ?? '').trim()

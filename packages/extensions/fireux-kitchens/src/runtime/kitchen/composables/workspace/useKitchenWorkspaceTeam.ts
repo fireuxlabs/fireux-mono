@@ -1,5 +1,4 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
 import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -141,7 +140,6 @@ export function useKitchenWorkspaceTeam() {
     memberLimit: teamMemberLimit,
   })
   const pageState = useWorkspacePageState('kitchen')
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
   const members = computed<WorkspaceTeamMember[]>(() =>
     selectableTeamMembers.value.map((member) => ({
@@ -169,7 +167,6 @@ export function useKitchenWorkspaceTeam() {
     input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
-    requireWritableData()
     const targetId = kitchenId.value
     if (!targetId)
       throw new Error('Select a record before changing Team members.')
@@ -202,7 +199,6 @@ export function useKitchenWorkspaceTeam() {
   async function updateTeamMember(input: { memberId: string; name: string }) {
     const targetId = kitchenId.value
     input = { ...input }
-    requireWritableData()
     if (!targetId)
       throw new Error('Select a record before changing Team members.')
     const user = currentUser.value
@@ -228,7 +224,6 @@ export function useKitchenWorkspaceTeam() {
   }
 
   async function removeTeamMember(memberId: string) {
-    requireWritableData()
     const targetId = kitchenId.value
     if (!targetId)
       throw new Error('Select a record before changing Team members.')

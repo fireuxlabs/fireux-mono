@@ -3,7 +3,7 @@ import { useDishMutation } from './useDishMutation'
 
 export function useDishDelete(ownerSources: WatchSource[] = []) {
   const { mutate } = useDishMutation(ownerSources)
-  const deleteDish = (dishId: string, overrides: { kitchenId?: string } = {}) =>
-    mutate('DELETE', { dishId }, overrides.kitchenId)
+  const deleteDish = (dishId: string, target: { kitchenId: string }) =>
+    mutate('DELETE', { dishId }, target.kitchenId)
   return { deleteDish }
 }

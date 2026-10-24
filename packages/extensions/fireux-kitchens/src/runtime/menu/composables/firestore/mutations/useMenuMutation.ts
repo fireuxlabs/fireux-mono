@@ -1,27 +1,21 @@
-import { $fetch, useRoute } from '#imports'
+import { $fetch } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/workspace/composables/useWorkspaceWriteGuard'
-import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useMenuEditorScope } from '../../useMenuEditorScope'
 
 /** Capture one Menu command before credentials; never retarget pending intent. */
 export function useMenuMutation() {
-  const route = useRoute()
   const { currentUser } = useAuth()
-  const { selectedId } = useWorkspace('kitchen')
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const captureScope = useMenuEditorScope([selectedId, () => route.fullPath])
+  const captureScope = useMenuEditorScope([])
   async function mutate<T>(
     endpoint: string,
     method: 'POST' | 'PATCH' | 'DELETE',
     input: Record<string, unknown>,
     intentCurrent: () => boolean = () => true
   ) {
-    requireWritableData()
     const body = JSON.parse(JSON.stringify(input))
-    if (!selectedId.value || body.kitchenId !== selectedId.value)
-      throw new Error('The selected Kitchen does not match this Menu command.')
+    if (!String(body.kitchenId || '').trim())
+      throw new Error('Kitchen and Menu targets are required.')
     const uid = currentUser.value?.uid,
       isCurrent = captureScope()
     const assertScope = () => {
@@ -39,7 +33,6 @@ export function useMenuMutation() {
       throw new Error('The account changed. Reopen the Menu editor.')
     const token = await user.getIdToken()
     assertScope()
-    requireWritableData()
     const result = await $fetch<
       T & { kitchenId: string; menuId: string; id?: string; ok?: boolean },
       string,

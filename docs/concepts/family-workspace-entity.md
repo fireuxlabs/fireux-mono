@@ -1627,3 +1627,18 @@ under `composables/workspace`. Named child folders are reserved for genuinely
 domain-specific capability implementation. Home retains its summary composition;
 it is not a second selector. Retired Index files and one-file common capability
 folders are removed without compatibility exports.
+
+## Core shell and account notifications
+
+The Workspace shell consumes App configuration, account state, navigation and Core
+selection. User notifications remain under `runtime/user`: `useUserNotifications`
+owns the feed, total unread count and shared panel visibility consumed by dashboard
+and Workspace. The list is bounded to the latest 50 records; the server separately
+counts unread records. The shared panel contains no customer-specific navigation.
+
+`useWorkspacePageState` admits only publications matching the current App, account,
+selected Entity and full destination. Publishers release their own current value
+on disposal; read-only consumers cannot clear another publisher. Domain commands
+receive explicit targets and retain account/App authority checks; editor route and
+draft lifetime stays with the consuming surface. The selection-only write guard
+is removed rather than treated as mutation authority.
