@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-waste-report-search-demand">
-      <template #header>
-        <WorkspaceNavbar title="Waste Report search demand" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchEvidence
-          capability="Waste Report"
-          base-path="/workspace/kitchen/reports/waste-report/search-demand"
-          :demand="demand"
-        />
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchEvidence
+      capability="Waste Report"
+      base-path="/workspace/kitchen/reports/waste-report/search-demand"
+      :demand="demand"
+    />
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { kitchenWasteReportSearchDemand } from '../../../../../../kitchen/models
 const demand = kitchenWasteReportSearchDemand
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

@@ -1,17 +1,9 @@
-<template>
-  <WorkspaceGroupPage
-    workspace="kitchen"
-    nav-key="workspace-kitchen-appearance"
-    title="Appearance"
-    parent-nav-key="workspace-kitchen-identity"
-  >
-    <KitchenAppearance />
-  </WorkspaceGroupPage>
-</template>
+<template><KitchenAppearance /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   requiresAuth: true,
   requiresSelection: true,
   workspaceSurface: 'browse',

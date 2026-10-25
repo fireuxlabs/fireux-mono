@@ -12,7 +12,8 @@ const { openView } = useMenuRecordNavigation()
 onMounted(() => openView(slug.value, 'publishing', true))
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
   requiresSelection: true,

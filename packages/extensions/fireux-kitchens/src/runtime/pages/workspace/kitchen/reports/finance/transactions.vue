@@ -1,19 +1,6 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-finance-transactions">
-      <template #header>
-        <WorkspaceNavbar title="Finance Transactions" />
-      </template>
-
-      <template #body>
-        <KitchenFinanceNav />
-        <WorkspaceKitchenOverviewFinance
-          :from-date="fromDate"
-          :to-date="toDate"
-        />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <KitchenFinanceNav />
+  <WorkspaceKitchenOverviewFinance :from-date="fromDate" :to-date="toDate" />
 </template>
 
 <script setup lang="ts">
@@ -27,7 +14,8 @@ const fromDate = computed(() => {
 })
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: { hidden: true, desktop: false, mobile: false, layouts: ['workspace'] },

@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-menus-search-demand-analysis">
-      <template #header>
-        <WorkspaceNavbar title="Menus demand analysis" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchAnalysis
-          capability="Menus"
-          base-path="/workspace/kitchen/food-and-drink/menus/search-demand"
-          :demand="demand"
-        />
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchAnalysis
+      capability="Menus"
+      base-path="/workspace/kitchen/food-and-drink/menus/search-demand"
+      :demand="demand"
+    />
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { kitchenMenusSearchDemand } from '../../../../../../kitchen/models/menus
 const demand = kitchenMenusSearchDemand
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

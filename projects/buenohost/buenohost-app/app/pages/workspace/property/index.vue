@@ -1,22 +1,14 @@
 <template>
-  <UDashboardPanel id="buenohost-property-home">
-    <template #header>
-      <WorkspaceNavbar title="Property Workspace" />
-      <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
-        ><WorkspacePropertySelector
-      /></UDashboardToolbar>
-    </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        title="Build your Property Workspace"
-        description="Manage reservations, guest information and property operations."
-      />
-      <WorkspaceGuestWelcome />
-      <WorkspaceProperty />
-      <WorkspacePropertyHomeTools />
-    </template>
-  </UDashboardPanel>
+  <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+    ><WorkspacePropertySelector /> </UDashboardToolbar
+  ><WorkspaceHero
+    compact
+    title="Build your Property Workspace"
+    description="Manage reservations, guest information and property operations."
+  />
+  <WorkspaceGuestWelcome />
+  <WorkspaceProperty />
+  <WorkspacePropertyHomeTools />
 </template>
 
 <script setup lang="ts">
@@ -26,7 +18,8 @@ import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/Gues
 import { useSeoMeta } from '#imports'
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'property',
   workspaceSurface: 'browse',

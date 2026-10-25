@@ -1,50 +1,38 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-purchasing">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Purchasing">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="purchasing"
-          /></template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <UPageHeader title="Purchase orders" />
-          <UAlert
-            title="Not connected yet"
-            description="Purchase order creation, approval and supplier transmission are not connected yet."
-            color="warning"
-            variant="subtle"
-          />
-          <MoleculesDisclosurePanel
-            title="Capability reference"
-            :default-open="false"
-          >
-            <WorkspaceKitchenToolsToolbar capability="purchasing" />
-            <WorkspaceKitchenAICapability
-              capability="purchasing"
-              :show-suggestion-cards="false"
-            />
-            <WorkspaceKitchenResearchCapabilitySummary
-              capability="purchasing"
-            />
-            <WorkspaceKitchenResearchGuide capability="purchasing" />
-            <WorkspaceKitchenResearchSegue
-              capability="Purchasing"
-              base-path="/workspace/kitchen/stock/purchasing/search-demand"
-            />
-          </MoleculesDisclosurePanel>
-        </section>
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenAICapabilityInfo capability="purchasing" />
+    <section class="workspace-surface">
+      <UPageHeader title="Purchase orders" />
+      <UAlert
+        title="Not connected yet"
+        description="Purchase order creation, approval and supplier transmission are not connected yet."
+        color="warning"
+        variant="subtle"
+      />
+      <MoleculesDisclosurePanel
+        title="Capability reference"
+        :default-open="false"
+      >
+        <WorkspaceKitchenToolsToolbar capability="purchasing" />
+        <WorkspaceKitchenAICapability
+          capability="purchasing"
+          :show-suggestion-cards="false"
+        />
+        <WorkspaceKitchenResearchCapabilitySummary capability="purchasing" />
+        <WorkspaceKitchenResearchGuide capability="purchasing" />
+        <WorkspaceKitchenResearchSegue
+          capability="Purchasing"
+          base-path="/workspace/kitchen/stock/purchasing/search-demand"
+        />
+      </MoleculesDisclosurePanel>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

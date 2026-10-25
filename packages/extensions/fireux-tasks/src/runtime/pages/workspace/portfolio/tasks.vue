@@ -1,17 +1,13 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-portfolio-tasks">
-      <template #header><WorkspaceNavbar title="Tasks" /></template>
-      <template #body><PortfolioTasks /></template>
-    </UDashboardPanel>
-  </div>
+  <PortfolioTasks />
 </template>
 
 <script setup lang="ts">
 import PortfolioTasks from '../../../portfolio/components/Workspace/Tasks/Index.vue'
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-tasks'] },
   nav: {

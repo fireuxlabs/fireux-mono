@@ -1,21 +1,12 @@
 <!-- Ignition is FireUX App intake with a private app-admin delivery workflow; it is not a Project Operation. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-project-ignitions">
-      <template #header>
-        <WorkspaceNavbar title="Ignition Requests" />
-      </template>
-
-      <template #body>
-        <IgnitionQueue />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <IgnitionQueue />
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { ecosystems: ['fireux'] },
   nav: {

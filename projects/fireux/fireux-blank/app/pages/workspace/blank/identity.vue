@@ -1,12 +1,9 @@
-<template>
-  <WorkspaceGroupPage workspace="blank" nav-key="workspace-blank-identity">
-    <WorkspaceBlankIdentity />
-  </WorkspaceGroupPage>
-</template>
+<template><WorkspaceBlankIdentity /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-blank-identity',

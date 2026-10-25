@@ -1,56 +1,49 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-index">
-    <template #header>
-      <WorkspaceNavbar :title="workspaceTitle" />
-      <UDashboardToolbar
-        v-if="!fireux.isTenant || ready"
-        :ui="{ root: 'border-b-0' }"
-      >
-        <WorkspaceKitchenSelector />
-      </UDashboardToolbar>
-    </template>
-    <template #body>
-      <div class="flex items-center gap-3">
-        <div v-if="fireux.isTenant" class="shrink-0 rounded-lg bg-white p-2">
-          <AppBrandLogo size="small" />
-        </div>
-        <WorkspaceHero compact :title="workspaceTitle" />
-      </div>
-      <WorkspaceKitchenHomeAI
-        v-if="!fireux.isTenant || ready"
-        :perform-action="performLandingAction"
-      />
-      <nav
-        v-if="fireux.isTenant && ready"
-        class="flex flex-wrap gap-2"
-        aria-label="Kitchen actions"
-      >
-        <UButton
-          to="/workspace/kitchen/food-and-drink/menus"
-          label="Menus"
-          icon="i-lucide-notebook-text"
-        />
-        <UButton
-          to="/workspace/kitchen/team"
-          label="Team"
-          icon="i-lucide-users"
-          color="neutral"
-          variant="soft"
-        />
-        <UButton
-          to="/workspace/kitchen/food-and-drink/services"
-          label="Services"
-          icon="i-lucide-layout-dashboard"
-          color="neutral"
-          variant="ghost"
-        />
-      </nav>
-      <WorkspaceKitchen
-        ref="workspaceSurface"
-        :dedicated-app-name="fireux.isTenant ? fireux.appName : undefined"
-      />
-    </template>
-  </UDashboardPanel>
+  <UDashboardToolbar
+    v-if="!fireux.isTenant || ready"
+    :ui="{ root: 'border-b-0' }"
+  >
+    <WorkspaceKitchenSelector />
+  </UDashboardToolbar>
+  <div class="flex items-center gap-3">
+    <div v-if="fireux.isTenant" class="shrink-0 rounded-lg bg-white p-2">
+      <AppBrandLogo size="small" />
+    </div>
+    <WorkspaceHero compact :title="workspaceTitle" />
+  </div>
+  <WorkspaceKitchenHomeAI
+    v-if="!fireux.isTenant || ready"
+    :perform-action="performLandingAction"
+  />
+  <nav
+    v-if="fireux.isTenant && ready"
+    class="flex flex-wrap gap-2"
+    aria-label="Kitchen actions"
+  >
+    <UButton
+      to="/workspace/kitchen/food-and-drink/menus"
+      label="Menus"
+      icon="i-lucide-notebook-text"
+    />
+    <UButton
+      to="/workspace/kitchen/team"
+      label="Team"
+      icon="i-lucide-users"
+      color="neutral"
+      variant="soft"
+    />
+    <UButton
+      to="/workspace/kitchen/food-and-drink/services"
+      label="Services"
+      icon="i-lucide-layout-dashboard"
+      color="neutral"
+      variant="ghost"
+    />
+  </nav>
+  <WorkspaceKitchen
+    ref="workspaceSurface"
+    :dedicated-app-name="fireux.isTenant ? fireux.appName : undefined"
+  />
 </template>
 
 <script setup lang="ts">
@@ -69,7 +62,8 @@ import type { KitchenLandingIntent } from '../../../kitchen/models/landing-inten
 const performLandingAction = (intent: KitchenLandingIntent) =>
   workspaceSurface.value?.performAction(intent) ?? false
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',

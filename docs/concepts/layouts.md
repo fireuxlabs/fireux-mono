@@ -1,128 +1,82 @@
 # Layouts spine map
 
-Updated: 2026-08-27
-Ref: 796952bf0
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
-## Purpose
+## Purpose and authority
 
-Map who renders route content and who owns shared chrome. FireUX currently has
-two layout composition shapes; this map makes that delta visible rather than
-declaring either one universal without render evidence.
+Map Nuxt route rendering and shared chrome ownership. Nuxt owns the layout and
+`NuxtPage` APIs; see the [Nuxt integration map](nuxt4.md) for upstream docs.
+Current source establishes implementation. FireUX's accepted Workspace route
+composition is recorded here; this map does not make another route-rendering
+layout pattern universal.
 
 ## Links
 
-- Parent: nuxt4.md
-- Sibling: pages.md
-- Sibling: components.md
-- Sibling: app-config.md
-- Related family: family-menu.md
-- Related family: family-tenant-global.md
+- Parent: [Nuxt integration](nuxt4.md)
+- Siblings: [pages](pages.md), [components](components.md),
+  [App configuration](app-config.md)
+- Workspace family: [Workspace and Entity](family-workspace-entity.md)
 
-## Ownership spine
+## Workspace composition
 
-- `AppShell` owns the outer app composition and currently renders
-  `<NuxtLayout><NuxtPage /></NuxtLayout>`.
-- A layout owns recurring chrome: header, footer, navigation, shell background,
-  sidebar, close control, or tenant frame.
-- A page owns route metadata, route outcome, and high-level domain composition.
-- A route-family layout may derive shared chrome from route scope, as Menu does
-  for its exit control; it must not become the domain data-fetching owner.
-- Core's native Nuxt page transition changes only route-page presentation.
-  Layout transitions remain disabled by default, so a header, footer,
-  background, sidebar, or other layout chrome stays mounted while navigation
-  remains inside the same layout.
-- Core owns the floating Developer/Admin role badge and its role-derived
-  dashboard destination. Ordinary layouts render it passively; naked public
-  surfaces may opt into its interactive mode without repeating AppUser or
-  configured-developer checks.
+[AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
+selects the named `Workspace` composition when the current route has
+`workspacePage` metadata. Workspace routes disable the separate Nuxt layout.
+Other routes continue through `<NuxtLayout><NuxtPage /></NuxtLayout>`.
+Apps with a custom root shell use the same route metadata and named Workspace
+composition; see the [Find My SEO app root](../../projects/fireux/find-my-seo-app/app/app.vue).
 
-## Current composition lanes
+Core [Workspace](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
+composes the dashboard group, sidebar and one
+[WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue).
+WorkspacePage owns the panel, shared
+[Navbar](../../packages/core/fireux-core/src/runtime/workspace/components/Navbar.vue),
+[breadcrumbs](../../packages/core/fireux-core/src/runtime/workspace/components/Breadcrumbs.vue),
+route error boundary and the Workspace `<NuxtPage />` outlet. The navigation
+composable derives the page title, description and breadcrumb ancestors from
+route metadata and registered Workspace navigation. Group index links use the
+ordinary [WorkspacePageLinks component](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue).
+Core disables page transitions for Workspace routes through
+[pages-config.ts](../../packages/core/fireux-core/src/config/module/pages-config.ts)
+so the shared frame remains mounted while its page outlet changes.
 
-### Slot-rendering layouts
+Workspace pages supply their domain content and route metadata. Shared chrome
+does not acquire domain data or mutation authority. Prefer named components
+with typed props and events; use Nuxt UI's supported named slots when extending
+its native components. Do not add another custom slot shell around each route.
+Nested Nuxt pages remain valid where the route tree has a real parent/child
+relationship.
 
-These layouts consume the page content supplied by the outer Nuxt layout
-composition:
+## Other route composition lanes
 
-- `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
-- `packages/core/fireux-core/src/runtime/layouts/workspace.vue`
+- AppShell's non-Workspace branch composes the selected Nuxt layout and page.
+- The Kitchen [Menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue)
+  uses Nuxt's layout slot for route-family chrome.
+- Core [default](../../packages/core/fireux-core/src/runtime/layouts/default.vue)
+  and [dashboard](../../packages/core/fireux-core/src/runtime/layouts/dashboard.vue)
+  plus [La Tap Berne](../../projects/misebox/la-tap-berne/app/layouts/latap-default.vue)
+  retain direct `NuxtPage` rendering. Inspect their route, parent and transition
+  ownership before changing them; the Workspace contract does not generalize to
+  these separate lanes.
+- App-local layouts remain appropriate for real product chrome. Compare the
+  nearest package or Ecosystem owner and keep the App-specific delta explicit.
 
-Their content boundary is `<slot />`. The Menu layout is the clearest package
-example: it owns route-family close chrome while the page remains the content
-owner. Workspace follows the same route-rendering contract: `AppShell` renders
-the route once, while Workspace owns the selected-target guard and sidebar chrome.
+## Accepted boundaries
 
-### Route-rendering shell layouts
-
-Several Core and tenant/app layouts currently render `<NuxtPage />`
-directly:
-
-- `packages/core/fireux-core/src/runtime/layouts/default.vue`
-- `packages/core/fireux-core/src/runtime/layouts/dashboard.vue`
-- `projects/misebox/la-tap-berne/app/layouts/latap-default.vue`
-
-This is established source, but its relationship with the outer `AppShell`
-composition has not been reduced to one documented render contract. Preserve
-working routes; do not copy this lane into a new layout merely because Core
-currently uses it.
-
-## Inspected duplication
-
-Kitchen uses one active `menu.vue` layout for its public Menu route family.
-The unused `kitchen-menu.vue` wrapper is retired; `kitchen-orders` was already
-retired. Neither name represents an additional Menu or Order model.
-
-Core's duplicate `design.vue` and Misebox's unused `misebox-tenant.vue` are
-retired. Useful Core design specimens live in `components/Library/Design` and
-FireUX App's `/packages/fireux-core/design/*` routes use `default`. The retired
-image specimen had no owning API. Branded Misebox App layouts retain the actively
-used ecosystem Header and Footer components.
-
-## App-local layouts
-
-- App-local layouts are allowed for real app chrome that is not package truth.
-- Compare the nearest package or ecosystem layout first.
-- Keep the delta small and name why the chrome cannot be shared.
-- Promote it only after another app proves the same contract.
-
-## Delta register
-
-| Difference | State | Reason or alignment trigger |
+| Boundary | State | Reason |
 | --- | --- | --- |
-| Package Menu layouts render `<slot />` | `accepted` | The outer shell supplies page content; the package layout adds route-family chrome without rendering another route tree |
-| Core Workspace consumes `<slot />` | `confirmed` | `AppShell` owns the route renderer; a nested Workspace `NuxtPage` duplicated the transition boundary and could leave stale or blank panels during client navigation |
-| Several Core and tenant layouts render `<NuxtPage />` | `to-confirm` | It is current source outside Workspace, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
-| Menu layout derives close behavior from route scope | `accepted` | Exit chrome is shared by the entire Menu route family and remains separate from Menu data fetching |
-| App-local branded layouts exist | `accepted` | Brand/navigation chrome can be app-owned; unexplained copies of package chrome remain drift |
-| Naked public surfaces may mount the interactive Core role badge | `accepted` | Role resolution and dashboard routing remain Core-owned even when an ordinary layout is intentionally absent |
-| Mechanically replacing every `<slot />` or `<NuxtPage />` | `drift` | Renderer choice depends on which layer already owns page rendering |
+| Workspace route metadata selects one named shared composition | `accepted` | Sidebar, page frame, Navbar and breadcrumbs have one owner. |
+| WorkspacePage owns one shared route outlet | `accepted` | Route pages provide content without repeating the Workspace frame. |
+| Native Nuxt UI slots extend native components | `accepted` | They are supported library composition APIs, not replacement page shells. |
+| Other layouts render pages directly | `to-confirm` | Their route and transition owners must be proved independently. |
 
-## Change checklist
+## Verification and refresh
 
-- Name the family: core, dashboard, workspace, tenant, microsite, Menu, or
-  app-local.
-- Inspect `AppShell`, the nearest layout sibling, and the route smoke behavior.
-- Confirm that route content renders exactly once.
-- Keep the Core page transition at the Nuxt config boundary; do not attach a
-  duplicate transition prop to a layout's or app shell's `NuxtPage`.
-- Keep domain fetches and route-specific business decisions out of the layout.
-- Keep shared route-family chrome out of individual pages.
-
-## Alignment roadmap
-
-### Now
-
-- Preserve the proven renderer for a touched working layout.
-- Require every new layout to name its composition owner and sibling.
-
-### Next
-
-- Add focused route smoke specimens for one slot-rendering package layout and
-  one route-rendering Core layout.
-- Verify nested routes, hydration, and single-render behavior under `AppShell`.
-
-### Later
-
-- Choose and guard one renderer per proven layout lane.
-- Align existing layouts only after the render contract is demonstrated, not
-  as a cosmetic syntax sweep.
+Inspect AppShell, route metadata and generated routes, the nearest non-Workspace
+layout, and actual parent/child routes. Confirm each page renders once at its
+intended boundary; retain sidebar, session, transition, error and nested-route
+behavior. Refresh this map when the shell owner or route metadata contract
+changes. See [components](components.md) for shared component responsibilities
+and [Workspace composition](workspace.md) for domain boundaries.

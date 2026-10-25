@@ -12,6 +12,7 @@ export function configureWorkspacePageTransitions(nuxt: Nuxt) {
     const disableWorkspaceTransitions = (items: any[]) => {
       for (const page of items) {
         if (
+          page?.meta?.workspacePage === true ||
           String(page?.path ?? '').startsWith('/workspace') ||
           String(page?.file ?? '').includes('/pages/workspace/')
         ) {

@@ -1,12 +1,8 @@
-<template>
-  <UDashboardPanel id="kitchen-integrations"
-    ><template #header><WorkspaceNavbar title="Integrations" /></template
-    ><template #body><KitchenIntegrations /></template
-  ></UDashboardPanel>
-</template>
+<template><KitchenIntegrations /></template>
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'kitchen',
   requiresAuth: true,
   requiresSelection: true,

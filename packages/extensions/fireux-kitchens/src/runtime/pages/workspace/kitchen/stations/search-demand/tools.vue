@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-stations-search-demand-tools">
-      <template #header>
-        <WorkspaceNavbar title="Stations Tool specifications" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchToolSpecifications
-          capability="Stations"
-          base-path="/workspace/kitchen/stations/search-demand"
-          :demand="demand"
-        />
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchToolSpecifications
+      capability="Stations"
+      base-path="/workspace/kitchen/stations/search-demand"
+      :demand="demand"
+    />
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { kitchenStationsSearchDemand } from '../../../../../kitchen/models/stati
 const demand = kitchenStationsSearchDemand
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

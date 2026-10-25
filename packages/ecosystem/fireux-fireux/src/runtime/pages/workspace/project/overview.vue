@@ -1,37 +1,26 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: adopt route-level workspace metadata. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-project-overview">
-      <template #header>
-        <WorkspaceNavbar title="Project Overview"
-          ><template #right><WorkspaceIntroInfo :intro="intro" /></template
-        ></WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceFreemium
-          family="project"
-          capability="overview"
-          page-label="Overview"
-          placement="top"
-        />
-        <section class="space-y-4">
-          <WorkspaceProjectOverview :publication="published.publication.value">
-            <WorkspaceProjectOverviewAppContext
-              v-if="published.connected.value"
-              @state="appContext = $event"
-            />
-          </WorkspaceProjectOverview>
-        </section>
-        <WorkspaceFreemium
-          family="project"
-          capability="overview"
-          page-label="Overview"
-          placement="bottom"
-        />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceIntroInfo :intro="intro" />
+  <WorkspaceFreemium
+    family="project"
+    capability="overview"
+    page-label="Overview"
+    placement="top"
+  />
+  <section class="space-y-4">
+    <WorkspaceProjectOverview :publication="published.publication.value">
+      <WorkspaceProjectOverviewAppContext
+        v-if="published.connected.value"
+        @state="appContext = $event"
+      />
+    </WorkspaceProjectOverview>
+  </section>
+  <WorkspaceFreemium
+    family="project"
+    capability="overview"
+    page-label="Overview"
+    placement="bottom"
+  />
 </template>
 
 <script setup lang="ts">
@@ -75,7 +64,8 @@ const intro = {
 }
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-project-overview',

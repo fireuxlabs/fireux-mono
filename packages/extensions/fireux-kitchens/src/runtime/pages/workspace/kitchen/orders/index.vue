@@ -1,10 +1,10 @@
 <template>
-  <WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-orders">
-  </WorkspaceGroupPage>
+  <WorkspacePageLinks />
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

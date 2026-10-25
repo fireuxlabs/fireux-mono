@@ -1,26 +1,16 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-property-reservations">
-      <template #header>
-        <WorkspaceNavbar title="Reservations">
-          <template #right>
-            <WorkspaceAICapabilityPlaceholder capability="Property Reservations" />
-          </template>
-        </WorkspaceNavbar>
-      </template>
-      <template #body
-        ><UAlert
-          title="Reservations"
-          description="Property reservation tools are coming next."
-          variant="soft"
-      /></template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceAICapabilityPlaceholder capability="Property Reservations" />
+  <UAlert
+    title="Reservations"
+    description="Property reservation tools are coming next."
+    variant="soft"
+  />
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },
   nav: {

@@ -1,47 +1,31 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-team">
-    <template #header>
-      <WorkspaceNavbar :title="intro.title">
-        <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
-      </WorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
-        ><UTabs
-          v-if="team.state.value.team.members.length"
-          :model-value="team.state.value.team.selectedTeamMemberId"
-          :items="
-            team.state.value.team.members.map((member) => ({
-              label: member.name,
-              value: member.id,
-            }))
-          "
-          :content="false"
-          variant="link"
-          size="sm"
-          aria-label="Select Team member"
-          @update:model-value="team.natives.select(String($event))"
-      /></UDashboardToolbar>
-    </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        :title="intro.title"
-        :description="intro.purpose"
-      />
-      <KitchenTeamAI :team="team" @action="teamView?.openAction($event)" />
-      <KitchenTeam
-        :key="team.state.value.kitchen.id"
-        ref="teamView"
-        :team="team"
-      />
-      <WorkspaceFreemium
-        family="kitchen"
-        capability="team"
-        :used-count="team.state.value.team.members.length"
-        page-label="Team"
-        placement="bottom"
-      />
-    </template>
-  </UDashboardPanel>
+  <WorkspaceIntroInfo :intro="liveIntro" />
+  <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+    ><UTabs
+      v-if="team.state.value.team.members.length"
+      :model-value="team.state.value.team.selectedTeamMemberId"
+      :items="
+        team.state.value.team.members.map((member) => ({
+          label: member.name,
+          value: member.id,
+        }))
+      "
+      :content="false"
+      variant="link"
+      size="sm"
+      aria-label="Select Team member"
+      @update:model-value="team.natives.select(String($event))"
+    /> </UDashboardToolbar
+  ><WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+  <KitchenTeamAI :team="team" @action="teamView?.openAction($event)" />
+  <KitchenTeam :key="team.state.value.kitchen.id" ref="teamView" :team="team" />
+  <WorkspaceFreemium
+    family="kitchen"
+    capability="team"
+    :used-count="team.state.value.team.members.length"
+    page-label="Team"
+    placement="bottom"
+  />
 </template>
 
 <script setup lang="ts">
@@ -99,7 +83,8 @@ const liveIntro = computed(() => ({
 const { appName } = useFireUXConfig()
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',

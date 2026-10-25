@@ -1,23 +1,14 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-supplier-catalogue">
-      <template #header>
-        <WorkspaceNavbar title="Supplier Catalogue" />
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <KitchenSuppliersCatalogue />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <section class="space-y-4">
+    <KitchenSuppliersCatalogue />
+  </section>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,

@@ -14,7 +14,8 @@ const isWorkspaceHost =
   useRequestURL().origin === useFireUXConfig().workspaceConfig.kitchen?.origin
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
@@ -36,7 +37,10 @@ definePageMeta({
 })
 
 if (isWorkspaceHost) {
-  useSeoMeta({ title: 'Kitchen Workspace | Misebox', robots: 'noindex, nofollow' })
+  useSeoMeta({
+    title: 'Kitchen Workspace | Misebox',
+    robots: 'noindex, nofollow',
+  })
 } else {
   useAppLandingSeo({
     title: 'Kitchens and Menus | Misebox',

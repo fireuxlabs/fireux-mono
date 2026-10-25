@@ -1,12 +1,11 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <NuxtPage />
-  </div>
+  <NuxtPage />
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   requiresAuth: true,
   requiresSelection: true,
 })

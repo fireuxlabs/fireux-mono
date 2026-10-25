@@ -1,43 +1,29 @@
 <template>
-  <UDashboardPanel id="workspace-project-index">
-    <template #header>
-      <WorkspaceNavbar :title="intro.title"
-        ><template #right
-          ><WorkspaceIntroInfo
-            :intro="intro"
-            workspace="project"
-            :show-structured-details="false" /></template
-      ></WorkspaceNavbar>
-      <ClientOnly>
-        <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
-          ><WorkspaceProjectSelector
-            :publication="appContext.publication.value"
-        /></UDashboardToolbar>
-      </ClientOnly>
+  <WorkspaceIntroInfo
+    :intro="intro"
+    workspace="project"
+    :show-structured-details="false"
+  />
+  <ClientOnly>
+    <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+      ><WorkspaceProjectSelector :publication="appContext.publication.value" />
+    </UDashboardToolbar> </ClientOnly
+  ><WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+  <ClientOnly>
+    <WorkspaceGuestWelcome />
+    <WorkspaceProjectHomeAI
+      :perform-action="performLandingAction"
+      :can-prepare-app="canPrepareApp"
+    />
+    <WorkspaceProject
+      ref="surface"
+      :publication="appContext.publication.value"
+    />
+    <WorkspaceProjectHomeExploreProjects />
+    <template #fallback>
+      <p role="status" class="py-6 text-muted">Loading your Workspace…</p>
     </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        :title="intro.title"
-        :description="intro.purpose"
-      />
-      <ClientOnly>
-        <WorkspaceGuestWelcome />
-        <WorkspaceProjectHomeAI
-          :perform-action="performLandingAction"
-          :can-prepare-app="canPrepareApp"
-        />
-        <WorkspaceProject
-          ref="surface"
-          :publication="appContext.publication.value"
-        />
-        <WorkspaceProjectHomeExploreProjects />
-        <template #fallback>
-          <p role="status" class="py-6 text-muted">Loading your Workspace…</p>
-        </template>
-      </ClientOnly>
-    </template>
-  </UDashboardPanel>
+  </ClientOnly>
 </template>
 <script setup lang="ts">
 import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
@@ -76,7 +62,8 @@ const intro = computed(
     projectWorkspaceIntro()
 )
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'browse',

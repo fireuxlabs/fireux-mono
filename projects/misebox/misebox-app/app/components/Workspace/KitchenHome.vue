@@ -1,33 +1,24 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-index">
-    <template #header>
-      <WorkspaceNavbar :title="intro.title"
-        ><template #right
-          ><WorkspaceIntroInfo
-            :intro="intro"
-            workspace="kitchen"
-            :show-structured-details="false" /></template
-      ></WorkspaceNavbar>
-      <UDashboardToolbar
-        :ui="{ root: 'border-b-0' }"
-        v-if="
-          workspace.multipleKitchenView.value &&
-          workspace.collection.value.length > 1
-        "
-      >
-        <WorkspaceKitchenSelectorChoices
-          :collection="workspace.collection.value"
-          :selected-id="workspace.id.value"
-          @select="workspace.select"
-        />
-      </UDashboardToolbar>
-    </template>
-    <template #body>
-      <WorkspaceGuestWelcome />
-      <WorkspaceKitchenHomeAI :perform-action="performLandingAction" />
-      <WorkspaceKitchen ref="workspaceSurface" />
-    </template>
-  </UDashboardPanel>
+  <WorkspaceIntroInfo
+    :intro="intro"
+    workspace="kitchen"
+    :show-structured-details="false"
+  />
+  <UDashboardToolbar
+    :ui="{ root: 'border-b-0' }"
+    v-if="
+      workspace.multipleKitchenView.value &&
+      workspace.collection.value.length > 1
+    "
+  >
+    <WorkspaceKitchenSelectorChoices
+      :collection="workspace.collection.value"
+      :selected-id="workspace.id.value"
+      @select="workspace.select"
+    /> </UDashboardToolbar
+  ><WorkspaceGuestWelcome />
+  <WorkspaceKitchenHomeAI :perform-action="performLandingAction" />
+  <WorkspaceKitchen ref="workspaceSurface" />
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'

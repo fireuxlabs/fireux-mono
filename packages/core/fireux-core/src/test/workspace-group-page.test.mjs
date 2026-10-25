@@ -4,20 +4,13 @@ import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { computed, ref } from 'vue'
-const source = readFileSync(new URL('../runtime/workspace/components/GroupPage.vue', import.meta.url), 'utf8')
+const source = readFileSync(new URL('../runtime/workspace/composables/useWorkspacePageNavigation.ts', import.meta.url), 'utf8')
 function group(workspace, entry, items, navKey) {
-  const props = { workspace, navKey }
-  const script = source.split('<script setup lang="ts">')[1].split('</script>')[0]
-    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
-  let requestedFamily
-  const state = compileFunction(`${stripTypeScriptTypes(script)}; return {breadcrumbs, children}`, [
-    'computed', 'defineProps', 'useNav', 'useWorkspaceEntryCta', 'toWorkspaceFamilyLabel',
-  ])(computed, () => props, () => ({items:ref(items)}), family => {
-    requestedFamily = family
-    return {workspaceEntryPath: ref(entry)}
-  }, value => value[0].toUpperCase() + value.slice(1))
-  assert.equal(requestedFamily, workspace)
-  return state
+  const current = items.find(item => item.key === navKey)
+  const script = source.replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '').replace('export function', 'function')
+  return compileFunction(`${stripTypeScriptTypes(script)}; return useWorkspacePageNavigation()`, [
+    'computed', 'useRoute', 'useWorkspaceNav', 'useWorkspaceEntryCta', 'toWorkspaceFamilyLabel',
+  ])(computed, () => ({path: current.to, meta: {nav: current}}), () => ({items:ref(items),currentWorkspace:ref(workspace)}), () => ({workspaceEntryPath: ref(entry)}), value => value[0].toUpperCase() + value.slice(1))
 }
 test('Kitchen group framing resolves its own Home, Overview and navigation children', () => {
   const children = [{key:'items',label:'Items',to:'/workspace/kitchen/food-and-drink/items'}]
@@ -35,5 +28,5 @@ test('another Workspace keeps its own entry and omits an undeclared Overview', (
   assert.deepEqual(state.breadcrumbs.value,[{label:'Home',to:'/workspace/project'},{label:'Delivery'}])
   assert.deepEqual(state.children.value,[])
   assert.ok(!source.includes('/workspace/kitchen'))
-  assert.match(source, /<slot>/)
+  assert.ok(!source.includes('<slot'))
 })

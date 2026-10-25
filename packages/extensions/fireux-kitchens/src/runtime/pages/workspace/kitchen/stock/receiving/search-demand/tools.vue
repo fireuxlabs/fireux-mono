@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-receiving-search-demand-tools">
-      <template #header>
-        <WorkspaceNavbar title="Receiving Tool specifications" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchToolSpecifications
-          capability="Receiving"
-          base-path="/workspace/kitchen/stock/receiving/search-demand"
-          :demand="demand"
-        />
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchToolSpecifications
+      capability="Receiving"
+      base-path="/workspace/kitchen/stock/receiving/search-demand"
+      :demand="demand"
+    />
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { kitchenReceivingSearchDemand } from '../../../../../../kitchen/models/r
 const demand = kitchenReceivingSearchDemand
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

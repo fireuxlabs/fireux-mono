@@ -7,7 +7,8 @@
     </ClientOnly>
     <!-- App content -->
     <UMain>
-      <NuxtLayout>
+      <Workspace v-if="route.meta.workspacePage" />
+      <NuxtLayout v-else>
         <NuxtPage />
       </NuxtLayout>
     </UMain>

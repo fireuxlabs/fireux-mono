@@ -1,33 +1,24 @@
 <template>
-  <UDashboardPanel id="workspace-portfolio-team">
-    <template #header>
-      <WorkspaceNavbar title="Portfolio Team">
-        <template #right><WorkspaceIntroInfo :intro="intro" /></template>
-      </WorkspaceNavbar>
-    </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        title="Portfolio Team"
-        description="Portfolio workspace team."
-      />
-      <WorkspacePortfolioSelector />
-      <WorkspaceAI compact aria-label="Portfolio Team AI"
-        ><UAlert title="Team AI is not connected yet" color="neutral"
-      /></WorkspaceAI>
-      <WorkspacePortfolioTeam
-        :key="team.state.value.portfolio.id"
-        :team="team"
-      />
-      <WorkspaceFreemium
-        family="portfolio"
-        capability="team"
-        :used-count="team.state.value.team.members.length"
-        page-label="Team"
-        placement="bottom"
-      />
-    </template>
-  </UDashboardPanel>
+  <WorkspaceIntroInfo :intro="intro" />
+  <WorkspaceHero
+    compact
+    title="Portfolio Team"
+    description="Portfolio workspace team."
+  />
+  <WorkspacePortfolioSelector />
+  <WorkspaceAI compact aria-label="Portfolio Team AI"
+    ><UAlert
+      title="Team AI is not connected yet"
+      color="neutral"
+    /> </WorkspaceAI
+  ><WorkspacePortfolioTeam :key="team.state.value.portfolio.id" :team="team" />
+  <WorkspaceFreemium
+    family="portfolio"
+    capability="team"
+    :used-count="team.state.value.team.members.length"
+    page-label="Team"
+    placement="bottom"
+  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
@@ -59,7 +50,8 @@ useAppLandingSeo({
 })
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'portfolio',
   pageTransition: false,
   workspaceSurface: 'browse',

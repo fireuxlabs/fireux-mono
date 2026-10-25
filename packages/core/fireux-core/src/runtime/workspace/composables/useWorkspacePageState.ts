@@ -1,5 +1,5 @@
 import { useRoute, useState } from '#imports'
-import { computed, onScopeDispose, watch, type ComputedRef } from 'vue'
+import { computed, onScopeDispose, toRaw, watch, type ComputedRef } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeWorkspace, useWorkspace } from './useWorkspace'
@@ -52,7 +52,7 @@ export function useWorkspacePageState(workspace: string): {
   )
   onScopeDispose(() => {
     disposed = true
-    if (owned && publication.value === owned) publication.value = null
+    if (owned && toRaw(publication.value) === owned) publication.value = null
   })
 
   return {
@@ -73,9 +73,10 @@ export function useWorkspacePageState(workspace: string): {
     },
     publish: (value) => {
       if (disposed || route.path !== path) return
-      publication.value = { scope: scope.value, value }
-      // Keep the reactive identity so an old publisher cannot clear a newer one.
-      owned = publication.value
+      // Do not read the shared publication inside a publishing watchEffect.
+      // That would make multiple publishers react to each other's writes.
+      owned = { scope: scope.value, value }
+      publication.value = owned
     },
   }
 }

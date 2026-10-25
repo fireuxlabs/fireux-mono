@@ -600,7 +600,7 @@ test('a Kitchen selected in another tab replaces stale state and survives later 
 
 test('Workspace footer composes the active family switcher independently of bottom navigation entries', () => {
   const source = readFileSync(
-    new URL('../runtime/layouts/workspace.vue', import.meta.url),
+    new URL('../runtime/workspace/components/Sidebar.vue', import.meta.url),
     'utf8'
   )
   assert.match(source, /:is="workspaceNavigation"/)

@@ -1,878 +1,234 @@
 # FireUX GPT Context
 
-Updated: 2026-10-24
-Ref: d05ded3fd
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: living context
 Scope: repository-wide
 
-## Purpose
+## Purpose and authority
 
-Own durable repo-wide working rules and the reasoning behind them. This file
-inherits the mandatory entry and sole scope router in `AGENTS.md`; scoped
-contexts add only their domain-specific guidance. Use current source and
-available checks to verify behavior rather than treating prose as an
-implementation inventory.
+Keep durable repo-wide working rules here. [AGENTS.md](../../AGENTS.md) is the
+sole scope router. Detailed product and package guidance belongs in the
+corresponding context or concept map.
 
-## Repository law
+Use current source to establish implementation, and available tests or guards to
+establish only the contracts they exercise. A documented decision records intent;
+it does not make existing implementation desirable or complete.
 
-```text
-App → Ecosystem → Extension → Core
-```
+## FireUX ownership
 
-- Apps own deployment, routes/adapters, configuration, brand, SEO, and genuinely
-  App-specific presentation.
-- Ecosystems own genuine cross-extension product composition reused by Apps in
-  that ecosystem.
-- Extensions own reusable domains, Entities, capabilities, authority, models,
-  UI, and trusted behavior.
+FireUX is an industry SaaS framework built by composing shared SaaS foundations
+with industry libraries. Its technical foundation is Nuxt, Nuxt UI, Vue and
+Firebase. Start with the [platform map](../concepts/fireux.md); use official
+upstream docs for framework behavior and FireUX maps for FireUX-owned choices.
+
+Implementation follows this dependency direction:
+
+- Apps own deployment, routes and adapters, configuration, brand, SEO and
+  genuinely App-specific presentation.
+- Ecosystems own real cross-extension composition reused by their Apps.
+- Extensions own reusable domains, Entities, capabilities, data authority and
+  trusted behavior.
 - Core owns proved product-neutral FireUX and Nuxt mechanics.
 
-Apps may consume Extensions or Core directly; Ecosystems may consume Core,
-and Extensions may consume lower Extensions. Core never depends on product
-packages. Dependencies travel only toward lower owners. Keep implementation
-with the lowest layer that owns its complete meaning and authority. Upper layers compose
-or adapt it; they do not copy it.
+An App may consume Core or an Extension directly. Ecosystems may consume Core
+and lower Extensions; Extensions may consume Core and lower Extensions. Core
+does not depend on product packages. Keep implementation with the lowest owner
+that has its complete meaning and authority. See
+[repository ownership](../concepts/fireux-mono.md),
+[runtime placement](../concepts/runtime-filesystem.md), and
+[package contracts](../concepts/runtime-package.md).
 
-Repository and runtime placement are defined by `docs/concepts/fireux-mono.md`,
-`docs/concepts/runtime-filesystem.md`, `docs/concepts/runtime-package.md`, and
-`docs/concepts/lasagne.md`.
+Packages keep authored implementation in src, identity and commands in
+package.json, typing in tsconfig.json, and entrypoint explanations in README.
+Use the package manifest as the source for dependencies and version pins; do not
+copy a version inventory into living context.
 
-## Package roots
+## New work and composition
 
-Packages keep authored implementation in `src/`, package identity, exports and
-commands in `package.json`, package typing in `tsconfig.json`, and entrypoint
-explanations in `README.md`. Add root build files only for an actual package build
-responsibility; Core's `build/config.mjs` and `build.config.ts` compile production
-configuration exports. Package metadata has one owner in `package.json`.
-Generated `.nuxt/`, `dist/` and installed `node_modules/` stay ignored. Existing
-scope-owned `docs/` and required ecosystem deployment bindings retain their
-separate responsibilities. See `docs/concepts/runtime-package.md`.
+Before editing:
 
-## New work
+1. Name the owner and the nearest working sibling.
+2. Map user responsibilities to the parent composition, state and lifecycle
+   owner, and focused children.
+3. Name the supported lower components, readers and commands to reuse.
+4. Preserve data scope, permissions, mutation and navigation contracts.
+5. Choose checks that prove the changed responsibility.
 
-Before editing, answer:
-
-1. Which layer and package own the behavior?
-2. Which existing family and working sibling does it belong to?
-3. Which lower capabilities does it reuse?
-4. What must match, and what product difference may remain?
-5. Can it be implemented without a registry, compatibility layer, pass-through
-   wrapper, duplicate owner, or generic framework?
-
-If ownership is ambiguous, stop and report it. Do not place work conveniently
-and later describe that placement as architecture.
-
-For a new family, follow `docs/concepts/spine.md`: build one useful member,
-materially differentiate a second real sibling, compare them, and extract only
-the contract that remains shared. Similar appearance, copied structure, or a
-renamed alias is not proof.
-
-## Entity and Workspace
-
-- Firestore root collections are canonical Entity families when current models,
-  authority, routes, and behavior prove them.
-- Entity implementation lives under `src/runtime/<entity>/<technical-role>`.
-- Root runtime roles are reserved for cross-entity mechanics and Nuxt entrypoints.
-  Distinguish generic lower mechanisms from upper cross-Entity composition: the
-  former must not depend on domains, while the latter may consume named domain
-  capabilities. Nested Entity roles require explicit registration or imports;
-  folder names alone establish neither framework discovery nor server isolation.
-- Workspace is a product surface and route family, not an Entity owner.
-  An Entity may expose public/detail and Workspace management surfaces over
-  the same domain-owned readers and commands. Having a Workspace does not
-  create another Entity model, storage owner, or compulsory composable layer.
-  An Entity without its own Workspace may be managed inside another Entity’s
-  Workspace through its supported capabilities. Preserve its actual root or
-  parent-scoped identity; UI placement does not decide storage ownership.
-- Core's runtime spine combines Nuxt technical entrypoints with the named
-  `app`, `ecosystem`, `user` and `workspace` owners. Shared Workspace components,
-  composables, models, server helpers and tools live under `runtime/workspace`
-  by technical role. Entity-specific Workspace behavior stays beneath its owning
-  Entity runtime. Conventional Nuxt pages, layouts, middleware and API adapters
-  delegate inward; root technical folders are not alternative concept owners.
-  See `docs/concepts/runtime-filesystem.md`.
-- Workspace ownership has three levels: Core owns FireUX-wide mechanics;
-  an Ecosystem or Extension may own `runtime/workspace/<technical-role>` for
-  actual package-wide composition; Entity-specific surfaces remain under that
-  Entity. A package Workspace consumes Core selection and supported domain
-  capabilities rather than defining another selection or authority system.
-  Granite's Workspace overview composes Properties, Documents, Tasks and
-  Compliance at the Ecosystem level. Project-specific UI stays under Project.
-- Name Entity capability readers for their domain responsibility, such as
-  `useProjectApps`; do not insert `Workspace` merely because the capability is
-  displayed there. A controller that acquires the current selection is an actual
-  Workspace adapter: `useXWorkspaceIdentity()`, `useXWorkspaceTeam()` or
-  `useXWorkspaceCalendar()`. These accept no Entity ID. Explicit-ID domain
-  readers remain outside the Workspace owner. Optional presentation inputs do
-  not change that distinction.
-- Workspace availability does not change Entity ownership. A capability composes
-  the domains it manages; an independently identified child retains its own
-  domain, while a parent-owned record stays with its proved parent. UI children
-  express composition, not storage ownership. Organize each owner by technical
-  role, then a meaningful capability where needed; do not preserve forwarding
-  files or duplicate paths after a completed move.
-- Shared Workspace primitives stay Core-owned only when two materially different
-  Entity families prove the same contract. Universal capability means a shared
-  responsibility and interaction contract, not a universal set of domain fields
-  or roles. Domains own Identity fields, linked records, role definitions and
-  permission policy; Core presentation receives those choices explicitly.
-  Project domain implementation, canonical reads, authority and protected commands
-  belong to the FireUX ecosystem. App-owned routes adapt those commands; approved
-  cross-project discovery and the remote product-context bridge remain App policy.
-  Core retains generic App event transport and
-  shared Workspace primitives. Stored Team-role fragments still in Core remain
-  separate migration debt, not templates for new industries.
-  Core `useIdentity` owns identity read outcomes and content scope;
-  `useWorkspaceIdentity` composes that state with management action availability.
-  Selected-Entity Identity controllers reuse this management owner. Domain sections,
-  linked sources, field editors and mutation authority stay local. The shared
-  content scope key is not a command or account-switch guard. Focused Identity
-  editors reuse existing domain commands; unfinished editing remains explicit.
-  Generic `useCalendar` owns date selection; `useWorkspaceCalendar` resets it
-  when the selected Entity changes. Event sources and policy remain domain-owned.
-  `useXWorkspaceHome()` owns actual selected-Entity summaries and chooser
-  composition, using shared presentation components. Do not add forwarding-only
-  composables or manufacture four layers for every capability.
-  See `docs/concepts/family-workspace-entity.md` for the inspected scope.
-- The inspected Main Apps use Directory ↔ Workspace entrances. Misebox renders
-  public discovery at the public host's `/` and Kitchen Workspace at the Workspace
-  host's `/`, with one registered Home and no `/workspace/kitchen` Home alias.
-  BuenoHost and Granite keep `/workspace/property` and `/workspace/portfolio`.
-  FireUX
-  presents its industry SaaS framework offering at public `/`, with developer
-  resources for Docs, Components, Theme, Templates and the public App Showcase.
-  Its separate Project Workspace entrance
-  remains `/workspace/project`; the Workspace host still redirects its root
-  there. Tenant Apps keep their branded customer root and a Workspace
-  entrance. Core header and sidebar reuse route-owned Workspace entry resolution;
-  Workspace sidebars omit a separate Directory row; the existing brand and
-  account navigation remain available.
-  Sign-in from public navigation retains the current internal destination.
-  Workspace manifests name the surface and start at enabled Workspace Home.
-  An App may declare `workspaceConfig.<family>.origin`; Core distinguishes its
-  internal Home path from an external entrance link. A declared Workspace origin
-  may install at `/`; private records cannot become its installation destination.
-  Offline behavior and cross-origin sign-in handoff remain separate verification.
-- Global and standalone Workspace entry actions resolve the App route with the
-  matching `workspace-<family>` navigation key; this may be `/` or an explicit
-  `/workspace/<family>` entry when `/` is a public landing. Tenant Apps retain
-  their customer landing at `/`; Core `/workspace` resolves their first enabled
-  `/workspace/<family>` entrance on both server and client. The accepted route
-  target is Workspace Home → capability → record: navigation groups may have
-  sibling overview entrances, but do not own capability URL segments or data.
-  Perspectives within one record use local view state, not child routes or
-  query-string tabs. Sidebar labels do not determine stable route segments.
-  Adoption is bounded: Kitchen Menu record perspectives now share
-  `/workspace/kitchen/food-and-drink/menus/<slug>`; section and source-upload records remain
-  separate destinations. Existing grouped capability and perspective routes
-  elsewhere remain migration debt, not a claim of completed repository adoption.
-  Kitchen selection, identity and management return links consume the named
-  Kitchen entry from that resolver. Other domain-specific identity links remain
-  outside this inspected cutover.
-- The Workspace surface exists from arrival, including for guests and when
-  there are no saved Entity records. Describe this as getting started or an
-  empty Workspace, never “no workspace yet”. Distinguish the available surface
-  from persistence: saving or creating a domain record still uses its existing
-  command, allowance and authority. Progress copy refers to information added;
-  it must not imply that selection proves onboarding completion. Internal read
-  outcomes such as `empty` remain technical data states, not user-facing claims
-  that the Workspace does not exist. AppUser has no onboarding completion flag;
-  membership is separate from each domain’s creation and capability requirements.
-  Review sign-in requirements tool by tool on each capability page, requesting
-  sign-in at the point of use where required. Do not add a global onboarding gate.
-- Workspace edits take the selected Entity ID and submitted values once, before
-  asynchronous credentials or requests. The command keeps that explicit target;
-  later selection changes do not retarget an already submitted edit. No selection
-  means no edit. The server validates the actor's permission on that exact target.
-  Team editors are keyed to the selected Entity so switching starts a fresh editor;
-  disposed editors cannot publish completion feedback into their replacements.
-  Team actions do not need selection-epoch cancellation or waits for a different
-  user to sign in. Other multi-step preparation workflows retain their own
-  lifetime rules. See `docs/concepts/family-workspace-entity.md` for adoption.
-- The single `useXWorkspace()` owner exposes selected `{ id, data, outcome }`
-  plus `{ collection, collectionOutcome, select }`;
-  creation policy and mutation commands remain separate domain capabilities.
-  Kitchen creation availability is part of `useKitchenCreate`, reusing Core
-  `useWorkspaceCreation` with the domain capacity table. Explicit-ID Portfolio
-  and Property scopes do not acquire Workspace selection; domain commands and
-  collection readers receive those scopes from their consuming surface.
-  Home collections reuse `WorkspaceEntityCollection`; shared Team collection
-  presentation reuses `useCollectionSearch`, with domain-supplied roles and commands.
-- One active Entity id is the ordinary Workspace selection contract; collections
-  and permissions remain domain-owned.
-  A settled non-empty Workspace must retain a valid selection; an empty
-  relationship alone permits no active Entity. Project, Kitchen, Supplier, Portfolio and Property consume this
-  rule and the persistent selected-Entity navigation control. Their private
-  current-Entity projections read only an exact settled membership-granted ID;
-  a saved selection alone does not authorize a root read. Selection persists for
-  one year in an App/family cookie on the current host; it remembers the last
-  selection. Cookie changes received from another tab update the shared active
-  selection, so an older tab cannot restore its stale selection on disposal.
-  There is no separate Primary Kitchen preference or account setting.
-  A valid last selection is retained; fallback waits for settled access. Blank demonstrates
-  the selection rule without adding another domain navigation owner. Source-owned
-  tests protect selection and page-state disposal; live browser verification is separate. See `docs/concepts/family-workspace-entity.md`.
-- Optional cross-ecosystem account connections retain each owning Auth UID and
-  local User/AppUser access. Login authority belongs in a separate server-only
-  store, never ordinary development-open databases. Apps own activation and exact
-  origins; the hub and participant retain explicit ownership proof and one-use
-  browser-bound handoffs. See `docs/ai/account-connections-context.md`.
-- In FireUX, `tenant` is an App role, not an Entity family. A tenant App still
-  uses `AppUser` and the same package-owned Entity and Workspace contracts as a
-  global App. Never infer or introduce `Tenant`, `TenantUser`, tenant CRUD, or a
-  tenant collection from generic SaaS terminology. Read
-  `docs/concepts/family-tenant-global.md` for the accepted runtime differences.
-- FireUX's cross-ecosystem directory reads identity from each approved owning
-  database. It does not edit that identity through Project membership or broader
-  service-account permissions. App/Ecosystem ignition and owning-system identity
-  management are deferred; collecting initial identity does not authorize a
-  cross-ecosystem editor. Project-owned data stays separate from displayed
-  App/Ecosystem identity.
-- Every App belongs to one canonical Ecosystem and declares its `ecosystemId`,
-  including Apps whose role is `standalone`. Infrastructure binding and an
-  App-owned database remain separate from that Entity relationship.
-
-Read `docs/concepts/family-workspace-entity.md`, `docs/concepts/entities.md`, and
-the named Entity map before changing these boundaries.
-
-## Components, pages, and composables
-
-**Composition is the default from the first implementation, not a later cleanup.**
-Before building or extending a surface, identify its named user responsibilities,
-state/lifecycle owner and domain authority. Make the parent readable as a
-composition of those responsibilities. When a new responsibility appears, place
-it with its named owner rather than accumulating it in the current component.
-Do not wait for the human to request decomposition. Keep small, cohesive controls
-local; this rule does not require one component per field, forwarding wrappers,
-empty controllers or premature universal abstractions. Use readable formatting;
-compressed templates or scripts must not obscure ownership and data flow.
-
-For short multiple-selection lists that should expose every choice, prefer Core's
-`MoleculesMultiSelect`: visible toggle badges with highlighted selected values.
-Domains supply choices and retain eligibility and persistence. See
-`docs/concepts/components.md#multiple-selection` for its current consumer and
-adoption boundary; searchable lists and single selection remain separate.
+Composition is the default from the first implementation. Keep parents readable
+as named responsibilities. Add a child only when it owns real behavior; small
+cohesive controls may stay local. Do not add forwarding wrappers, empty
+controllers or universal abstractions to make file trees look symmetrical.
 
 ### Mandatory composition checks
 
-These are start and finish gates for every implementation or structural change,
-including new features. Scale the check to the work; record the short findings in
-progress/final communication rather than creating permanent task checklists.
-For non-UI work, apply the same owner, coordination and reuse checks to its actual
-functions and entrypoints; do not invent presentation layers.
+These start and finish gates apply to implementation and structural changes.
+Scale them to the work and report the findings; do not create a permanent task
+checklist.
 
 **Before editing:**
 
-1. Identify the owning layer, entity/capability and nearest working sibling.
-2. Map user responsibilities to the parent composition, coordination/lifecycle
-   owner and focused controls. Name the existing Nuxt UI/Core/domain primitives
-   and commands to reuse, with real consumer evidence.
-3. State the boundaries that must remain: acquisition count, authority, scope,
-   mutations, navigation and data contracts. Resolve unclear ownership before
-   implementation; do not use a new folder or generic wrapper to hide it.
-4. Select the meaningful checks and required live verification for this slice.
+1. Identify the owner and nearest working sibling.
+2. Map the user responsibilities, state and lifecycle owner, reusable controls,
+   readers and commands.
+3. Preserve scope, authority, reads, mutations and navigation. Resolve unclear
+   ownership before implementation.
+4. Select checks and any live verification needed for this slice.
 
 **Before reporting completion:**
 
-1. Inspect the implemented route → composition → controls → coordinator →
-   commands, across template, script and style. A move, rename, shorter parent or
-   green typecheck alone does not establish composition.
-2. Trace all affected consumers, including Nuxt registration, indirect variant
-   values/filters, CSS and print boundaries, tests and durable documentation.
-   Remove obsolete aliases, unused components and forwarding layers within scope.
-3. Confirm controls do not add duplicate reads, command ownership or authority;
-   preserve scoped cleanup, stale-response handling, accessibility and interactions.
-   Keep domain differences where their meaning is proved, without parity scaffolds.
-4. Run the selected checks. Fix concrete gaps exposed by the audit in the same
-   change and rerun the affected checks. Report unresolved decisions and live
-   verification limits explicitly; never label a blocked or unverified flow as done.
-5. Confirm the applicable living context still points to current owners and evidence.
+1. Inspect the affected route, composition, registration, consumers and
+   route-to-command path.
+2. Confirm there is no duplicate read, command owner or authority; preserve
+   cleanup, accessibility, error and stale-completion behavior.
+3. Run the selected checks, fix concrete gaps within scope, and report what was
+   and was not verified.
+4. Confirm the applicable living context still points to current owners and
+   evidence.
 
+The detailed UI and Entity conventions live in [components](../concepts/components.md),
+[pages](../concepts/pages.md), [layouts](../concepts/layouts.md),
+[composables](../concepts/composables.md),
+[Lasagne](../concepts/lasagne.md) and the applicable family map.
 
+## UI and design system
 
-- Entity components group stable domain responsibilities beneath their technical
-  role. Kitchen uses `FoodAndDrink/{Items,Menus,Promotions,Services}` and
-  `PrepAndProduction/{Recipes,Ingredients,Stations,PrepItems}`; its `Workspace`
-  folder retains Home, selection, navigation, overview and cross-page helpers.
-  Other existing families retain their named Workspace capability folders until
-  separately inspected. Navigation labels alone do not establish folder ownership.
-  Do not introduce `Operations`, `Capabilities`, `Supporting` or `Sundries` containers. `Index`,
-  `Navigation`, `Selector` and `Dashboard` may be root components when consumed;
-  entry-only collection/single controls and creation dialogs belong in `Home`.
-  Cross-page domain helpers use their specific responsibility (for example
-  `Navigation`, `AI`, `Research` or `Tools`), not a miscellaneous bucket.
-  App-owned Home framing uses distinct names so it cannot shadow domain Home
-  components. Shared mechanics remain Core-owned; domain tools and authority
-  remain domain-owned. Follow `docs/concepts/components.md` for the source map.
-- Collection-based Workspace capabilities use `Collection` and `Single` for
-  structural component names and slots. Visible labels remain domain-owned:
-  My Kitchens, the selected Kitchen’s Menus or Team, and the selected record’s
-  name. Workspace entry presentation lives under `Workspace/Home`; `Landing`
-  names public entry presentation. Selection state may still be named `selected`.
+Nuxt UI owns its component API, accessibility behavior and theming API.
+FireUX Core adds only proved shared visual or interaction responsibilities;
+domains keep their business meaning and Apps keep deliberate product framing.
+Use the current stable Nuxt UI API and inspect real consumers before retiring a
+FireUX mechanism. See the [Nuxt UI integration map](../concepts/nuxt-ui.md).
 
-- Workspace sidebar sign-in uses settled Auth guest state, including a null
-  signed-out account as well as an anonymous account. Pending Auth must not be
-  treated as signed out. Workspace Navbar supplies the page's primary heading;
-  the shared Workspace Hero uses a secondary heading.
-- The inspected FireUX, Misebox, BuenoHost and Granite Workspace Home pages
-  compose Core's `Workspace/GuestWelcome.vue`
-  for settled guests, preserving their exact sign-in destination and leaving
-  domain-owned guest tools available. Shared Hero and AI framing use compact
-  working-page spacing. Subscription chrome renders only a resolved membership
-  or settled guest view; it does not show unavailable or placeholder controls.
-  Home pages omit AI composers until they have working actions. Domain actions
-  and creation authority remain with their existing owners.
-- Informational collection cards without a destination remain noninteractive;
-  hover motion and link focus treatment apply only to actual links.
+Authored Tailwind utility classes are banned in FireUX templates, bound class
+expressions, script-generated strings, per-instance ui overrides and new theme
+recipes. Do not hide utility recipes in helpers, constants or @apply. Consume
+supported component props and slots, semantic classes and design tokens. Nuxt
+UI may use Tailwind internally. Existing authored utilities are migration debt,
+not permission to add more. There is no implicit local-layout or final-polish
+exception; a unique final-element adjustment requires explicit human approval
+for that adjustment.
 
-- Package component/state examples live in `components/Library` and App package-library
-  routes. Shared runtime inspection mechanics remain Core-owned. Entity JSON views live
-  in the main component spine only when they add domain fetching or projection;
-  otherwise use the shared Core viewer directly. Name real inspection tools for
-  their purpose (for example `ModelInspection.vue`), without entity `Diagnostics`
-  folders. Preserve diagnostic route authorization and development-build restrictions.
-  Delete retired diagnostic placeholders.
-- Nuxt pages are thin route entrypoints. Follow the **Capability Surface Spine**
-  in `docs/concepts/family-workspace-capability-tool.md#capability-surface-spine`:
-  named compositions and focused controls consume domain-owned readers and
-  protected commands. This is a composition discipline, not a mandatory scaffold
-  or universal capability renderer.
-- Route checks wait for settled Firebase Auth; a slow restoration is not proof of
-  sign-out. Each client check disposes its listener on route changes and ignores
-  obsolete continuations. Auth failures remain failures, not guest state.
-- Core Auth System owns post-auth navigation after the live User read settles.
-  Provider/email controls perform authentication only. Missing User goes directly
-  to User setup, retaining a validated internal destination; existing User returns
-  to that destination. Dashboard remains the default without a destination. Auth and User setup share the
-  minimal auth layout, avoiding a transient Dashboard or public-navigation shell.
-- Core owns the single dashboard route. Each App may register a global
-  `DashboardWorkspace` component; Dashboard Home renders it in the Overview
-  Workspace slot. These App adapters compose domain-owned components that reuse landing collections
-  and live selection readers. Core does not resolve domain navigation components
-  to compose dashboard content.
-- Apply the repo-wide **Entity–Capability–Service Spine** in
-  `docs/concepts/family-workspace-capability-tool.md#entitycapabilityservice-spine`.
-  Distinguish owner, capability, trusted use-case coordination and surface.
-  Service is a responsibility, not a mandatory `services/` folder or forwarding
-  layer; keep technical roles first, introduce capability sections only for real
-  responsibilities, and follow existing dependency direction. The Menu
-  publication/Ordering comparison proves this bounded discipline, not full
-  repository adoption or a universal implementation.
-- Capability is a business responsibility, not a compulsory storage container. Small stable configuration may be nested on its owning Entity; independently managed or growing records retain their root or parent-scoped identity. Capability pages expose owned fields/records, rules and Tools, and may compose supported lower-domain editors. The trusted service layer coordinates use cases using that domain behaviour. Service-driven gaps belong with the lowest owner of their meaning; workflow-specific execution state remains with the workflow. See `docs/concepts/family-workspace-capability-tool.md` for the Kitchen/Place/Menu proving boundary.
-- A completed Workspace capability includes its page, tools and Overview summary.
-  Extend the named domain Overview when a capability is implemented; reuse its
-  read-only source, preserve independent loading/error states, and distinguish
-  an unconnected source from a loaded empty collection.
-- Capability Index components compose named UI responsibilities that a human can
-  read without tracing control implementation. Collection and Single children
-  own their local tools; compact and open presentations reuse the same forms and
-  commands. Universal, optional shared, and domain capabilities use this same
-  composition discipline, with different availability and ownership. Do not add
-  empty composables, forwarding components, or a generic composition engine.
-- Component paths must predict generated names and owners. Consume registered
-  Vue components through their Nuxt filesystem-generated names by default; do
-  not add local imports/aliases for already-discovered components. An explicit
-  import needs a concrete registration gap or name collision, inspected and
-  explained at that consumer.
-- Apps use responsibility-first roots such as `Landing` and `Workspace`; do not
-  repeat the App name beneath its own boundary.
-- Package Entity UI belongs beneath `runtime/<entity>/components`.
-- FireUX's UI/UX library is a native extension of the current stable Nuxt UI.
-  Maintain one current upstream API contract. Check the current stable release
-  before Nuxt UI work and keep the framework dependency slice and real consumers
-  current together. Migrate changed APIs and retire replaced code in the same
-  bounded change; do not build legacy-version adapters, compatibility matrices,
-  parallel primitives or permanent fallbacks around older FireUX assumptions.
-  Reproducible version pins do not establish a frozen design baseline. A temporary
-  upstream-defect constraint needs concrete evidence and a removal condition;
-  it must not become another UI contract. When Nuxt UI supplies a previously
-  missing responsibility, compare real consumers and retire the duplicated
-  FireUX mechanism while preserving domain authority and lifecycle protections.
-  Extend through shared atoms, molecules and organisms. Reuse Nuxt UI controls,
-  semantic tokens and theme APIs, then compose
-  FireUX-owned interaction and layout contracts. Domain libraries retain their
-  business meaning and may catalogue lower-owned components without moving them.
-  Use the existing shared systems for ordinary layout, spacing, typography,
-  surfaces and states. Inline utilities and per-instance theme overrides are for
-  specific final adjustments; copying a utility recipe into scoped CSS does not
-  establish composition. Dynamic theme values flow through named tokens.
-  Add shared CSS/components for missing semantics or proved repeated contracts,
-  with explicit public inputs and runtime prerequisites. Inspect real consumers
-  and lifecycle/accessibility before claiming reuse; prop counts, registration
-  and catalogue entries are not reuse evidence. See `docs/concepts/nuxt-ui.md`
-  and `docs/concepts/components.md#design-system-vocabulary-and-reuse`.
-- Apply the Entity file admission contract in
-  `docs/concepts/composables.md#entity-file-contract` before adding or retaining
-  Entity adapters: one responsibility, one owner, a real consumer, and a proved
-  delta where needed. Its role list is not a mandatory scaffold. Read and Detail
-  do not both exist unless their responsibilities differ; extra App or Workspace
-  consumers do not justify forwarding wrappers. Verify behavior, not file counts.
-- A composable owns one coherent concern. Do not turn `useX` into a bag of reads,
-  writes, SEO, formatting, and page state.
-- Domain workflow controllers stay domain-owned. Use props for small presentation
-  inputs and provided context only for one visible shared workflow.
-- Internal file shape follows the responsibility: composables read as inputs, scoped
-  state, derived state, actions, cleanup and an explicit returned interface; trusted
-  actions read as validation, actor/scope, record reads, authority/invariants, writes
-  and result. Omit stages that have no work. File length is a review prompt, not a
-  hard limit. Extract substantial normalization or change calculation from I/O,
-  and share only concerns whose meaning, input/output and lifecycle actually match.
-  Keep atomic transactions intact and all transactional reads before writes.
+Use Nuxt's generated component names when package registration provides them.
+Do not add an explicit import or alias without an inspected registration gap or
+name collision. See [component ownership and reuse](../concepts/components.md).
 
-Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
-`docs/concepts/composables.md`, and `docs/concepts/lasagne.md`.
+## Entities, Workspace and data authority
 
-## Data and mutations
+A root Firestore collection can establish an Entity family when its model,
+authority, routes and behavior prove that contract. The Entity owns its data,
+readers, validation, permissions and protected commands. Workspace is a product
+surface over an Entity, not a storage owner. UI placement and navigation groups
+do not change data ownership.
 
-- Mutable on-screen collections and documents must follow stored changes through
-  live bindings, including additions, edits, unpublication and deletion. Reactive
-  parameters around a one-shot read do not satisfy this contract. Core owns the
-  shared document/query mechanics; domain-owned public projections retain their
-  authorization and subscribe to every record they depend on. SSR supplies initial
-  content. Polling and manual refresh are not substitutes for live data.
-  Core `firestore/operations/read-outcome.ts` owns shared read-state precedence
-  for direct bindings and server detail projections: inactive is idle, an obsolete
-  source is pending, then failure, loading and settled data. Document 404 is
-  missing and retains its live dependency subscription so the record can reappear;
-  denied access closes the stream. A collection failure is never an empty result. Domain projections
-  supply identity and presence, and must hide stale or failed detail data.
-  One-shot command validation, explicit searches, external-provider lookups and
-  local edit buffers remain distinct. Mutable server readers use Core
-  `useLiveAsyncData`/`useLiveFetch` with `defineLiveReadHandler`; paged readers
-  use `readLivePages` so every loaded page remains subscribed. Core runtime
-  Firestore resolvers observe document/query/getAll dependencies only inside an
-  explicit live request; other server database resolvers must reuse
-  `observeRuntimeFirestore`. Domain handlers continue to own authorization and
-  projection. Live reads cannot execute Firestore writes. Reconnect retries
-  repair failed connections; they are not periodic data polling. See
-  `docs/concepts/server-api.md` and Core's live-client/live-server read tests.
+User is the person; AppUser is membership in one App. A tenant App remains an
+App role and uses the same Entity contracts. Every App declares its canonical
+Ecosystem relationship, including standalone Apps. Preserve exact owner,
+scope and lifecycle in cross-domain and account-connection flows.
 
-- Do not keep Entity metadata declarations or locator models solely to satisfy
-  a structural check. A retained declaration must have a real source consumer;
-  record models and runtime readers/writers remain the domain implementation.
-- Entity model files require a distinct domain contract; being stored in a
-  collection does not justify an extra collection model. Use arrays for records
-  and shared transport types for common pagination metadata. Keep child records,
-  API responses, UI state, and configuration distinguishable from Entity models.
-- Models express domain truth; storage paths and document identity stay outside
-  models unless they are genuine domain fields.
-- Protected writes use named trusted commands and exact authority.
-- Within an Entity-owned server capability, action filenames describe their work
-  (`preview.ts`, `create-shell.ts`, `connect-guest.ts`); shared helpers name their
-  responsibility. Split broad `commands.ts` collections when actions have separate
-  consumers. Route adapters import the action owner directly, without a forwarding
-  barrel. Folder context supplies the Entity and capability names.
-- App self-service membership uses the stored App `self_join_enabled` policy
-  in User onboarding, bootstrap, and the trusted join command. The authored
-  `selfJoinEnabled` config only seeds newly initialized Apps.
-- App creation uses a trusted Project command or configured-App initialization because its Ecosystem
-  relationship and initial membership are required. Do not add a primitive App
-  Create solely for CRUD symmetry; see `docs/ai/firestore-mutations-context.md`.
-- Kitchen Landing has a bounded anonymous creation/handoff path owned by Kitchen.
-  Project Landing has a bounded anonymous create/resume path at the current UID;
-  it does not yet adopt that record into an account. Neither path fabricates User
-  or AppUser membership. Other
-  Kitchen, Project, Supplier, Property, Portfolio and Blank development access requires a signed-in account with current
-  App membership and a domain-owned access record bound to that membership’s
-  `created.at`. AppUser stores no Entity arrays or primary selections. Team labels
-  do not gate access. Subscription limits remain enforced; every Team member counts
-  toward capacity. Individual role restrictions are deferred.
-- Browser Firestore access is allowed only where Rules and product authority
-  explicitly prove it.
-- The eight ecosystem development templates retain the explicitly accepted
-  Core open-development Rules policy, which permits public CRUD.
-  Misebox (`misebox-78f9c` / `misebox`) remains in development; the user-selected
-  policy is the same open-development template. A previously deployed restricted
-  policy must not be confused with shipping authorization. Verify live policy
-  independently; restoring the selected policy requires an authorized Rules-only rollout.
-  See `docs/ai/firestore-mutations-context.md` for exact scope and the required
-  replacement before shipping. Other database and Storage targets are separate.
-  Keep the accepted development templates separate from production Rules. Restricted Rules are release
-  work, not a prerequisite for accepting each Entity or capability development
-  pass; retain the application-level command and access contracts meanwhile.
-- Parent-owned records and capabilities live beneath the parent Entity when
-  proved; do not invent generic settings/config registries.
-- Migrations are audited, create-only where possible, preserve preimages, and use
-  separate deletion gates.
-- Public/detail projections never include protected operational records merely
-  because Vue can hide them.
-- Operator-authored AI background is one optional `context?: string` on its
-  owning document, not a registry or structured question system. App, Ecosystem,
-  Project, Kitchen, Place, Supplier, Property, Portfolio, Menu, Dish and Recipe
-  models support it. User background stays in `users/{uid}/private/context`;
-  do not add personal memory to the public User root or copy profile data there.
-  Core `components/Context/Record.vue` and `composables/shared/useRecordContext.ts`
-  own the proved text-editor transport/lifetime; domain endpoints own exact scope,
-  transactional authority and compare-before-save conflicts. Existing product
-  context records retain their separate published product purpose. Ecosystem
-  editing remains unconnected; cross-ecosystem discovery grants no write authority.
-  Configured Apps declare an initial `context` in `defineFireuxConfig`; it is
-  carried in server-only `runtimeConfig.fireux.initialAppContext` and written by
-  Core initialization only when creating the root. Project App creation accepts
-  the reviewed string directly. Existing roots and operator edits are never
-  reseeded on initialization. FireUX AI and Ignite guide preparation and review;
-  the owning App commands retain persistence authority.
-  Context stays out of public projections and is background rather than instructions,
-  measured evidence or approved settings. Access indexes, tokens, counters, caches,
-  prices and immutable operational transactions gain no narrative field by default.
-  See Core's `record-context.test.mjs` and Kitchen's same-named regression test.
+The Workspace surface exists on arrival, even with no saved Entity. An `empty`
+read is not a missing Workspace or onboarding flag; creating a record still
+uses its owning command and authority. See
+[Workspace and Entity composition](../concepts/family-workspace-entity.md).
 
+Optional cross-ecosystem account connections preserve each Auth realm and UID
+and do not create local User, AppUser or Workspace grants. Login authority stays
+in a separate server-only store. Follow the
+[account connections context](account-connections-context.md).
 
-Read `docs/ai/firestore-mutations-context.md`,
-`docs/concepts/firestore-entity.md`, and `docs/concepts/server-api.md`. Use the
-Firestore skill whenever Firestore is accessed or changed.
+For mutable on-screen data, use the owning live reader. A reactive parameter
+around a one-shot read or periodic polling does not establish a live view.
+Public projections omit protected children; hiding data in Vue is not
+authorization. Routes and UI availability do not grant mutation authority.
+Protected writes use a named trusted command that validates the exact target.
 
-## Product language and presentation
+See [Entity ownership](../concepts/entities.md),
+[Workspace and Entity composition](../concepts/family-workspace-entity.md),
+[Firestore data ownership](../concepts/firestore-entity.md),
+[server APIs](../concepts/server-api.md), and
+[Firestore mutation authority](firestore-mutations-context.md).
 
-Core `runtime/utils/platform-context.ts` owns public platform meaning, separate
-from this repository guidance. FireUX App publishes it at
-`/api/fireux/context/platform` and renders the same source on `/product`.
-Lower context scopes add specific meaning rather than copying this block;
-publication does not automatically inject it into AI requests or grant authority.
+## Firebase security boundary
 
-FireUX's product category is an industry SaaS framework for industry founders
-and the teams building their software. Shared SaaS foundations and industry
-libraries compose Apps and Workspaces; Nuxt and Nuxt UI are its technical and
-interface foundation. FireUX App's `app/content/meta/source.ts` owns the public
-offer paths and their presentation. Framework resources, scoped industry SaaS
-work and branded App requests retain distinct destinations and terms. Ignition
-scoping and delivery do not establish automatic generation or provisioning.
+Firebase behavior is documented upstream; FireUX owns its product data,
+authorization and release decisions. Firestore Security Rules protect client SDK
+requests. Trusted Admin/server SDKs use server IAM and must enforce the domain
+command's authority independently; do not treat Rules as filters or as server
+authorization.
 
-- Derive literature bottom-up from current fields, states, commands, and pages.
-- Keep product discovery traceable from sourced evidence through operator jobs,
-  bounded Tool hypotheses, capability decisions, and implemented pages. A Tool
-  hypothesis is not an implemented Tool, and a capability decision is not a
-  release claim.
-- Core's `src/config/app/search-demand.ts` owns the reusable research contract,
-  while each App owns its sources, operator interpretation and capability choices.
-  Direct evidence carries source identity, geography, language, observation date,
-  findings and limitations. Need confidence remains separate from implementation
-  readiness; neither vendor pricing nor a capability decision proves adoption or
-  release. Evidence links are validated by `defineAppSearchDemand`.
-- Keep the Workspace hierarchy explicit: Workspace → Capability → Tool →
-  authorized command. There is no separate Workspace Operation layer. Use
-  “operation” only for an executed action or operational data, not as a second
-  name for a Capability. CRUD is the record-mechanics floor.
-- Keep UX copy short and specific. Omit copy that adds no needed information;
-  do not fill optional descriptions, repeat headings, or explain obvious controls.
-  Existing placeholder text is not product authority. Keep help for meaningful
-  choices, limitations, errors and next actions.
-- User-visible API errors must provide a copy action for their displayed,
-  sanitized message. Do not copy credentials, request headers or raw server
-  internals. Core `MoleculesCopyError` supplies the action; shared StateCard
-  errors and App-context surfaces consume it. Other bespoke error surfaces
-  still need adoption when touched.
-- Access vocabulary must reflect actual runtime authority and subscriptions.
-- Across Workspaces, feature entitlement belongs to the acting User, separately
-  from their permission to edit the selected Entity. Free/Plus is the feature
-  vocabulary: Professional and Business both provide Plus features; Business
-  adds capacity rather than another feature level for now. A teammate's paid
-  subscription never grants the actor paid actions. Downgrade preserves saved
-  results and limits future actions. Each capability must explicitly define and
-  enforce its own Free/Plus actions; this policy is not evidence of implemented
-  gates. Existing subscription storage remains unchanged by this vocabulary.
-- Brand, media, design-pack, and SEO ownership remain separate from Entity data.
+The currently accepted open-development Rules policy is explicitly scoped in
+the [Firestore mutation context](firestore-mutations-context.md). It is not a
+privacy guarantee or shipping authorization. Stored data, authored Rules and
+deployed Rules are separate evidence; live policy requires an authorized
+readback.
 
-Read `docs/concepts/product-language.md`, `docs/concepts/brand-assets.md`,
-`docs/concepts/theming.md`, and the relevant product context.
+Migrations require an exact read-only plan, retained preimages, target
+verification and separate copy and retirement authority. Consult the owning
+Firestore and App/Ecosystem context before any connected operation. No
+documentation audit authorizes live data changes or deployment.
 
-## Task execution
+## Product language
 
-- This shared checkout is worked on `main`. Do not switch its branch or create a
-  worktree unless the user explicitly requests it. Check the active branch and
-  any user-specified saved commit before editing; report a mismatch first.
+FireUX describes an industry SaaS framework for founders and teams building
+industry software. Public product copy, scoped App work and branded App
+requests retain their distinct owners and routes. Use current fields, states,
+commands and pages as evidence; a proposal or connected source is not a shipped
+capability. Feature entitlement belongs to the acting User, separately from
+permission to edit the selected Entity. See
+[product language](../concepts/product-language.md) and the routed product
+contexts.
 
-- Development architecture migrations target the chosen contract, rather than treating existing records or paths as a requirement to preserve undesirable shapes. Migrate models, adapters, registration, consumers and checks together and retire the replaced paths. Do not add compatibility aliases, dual readers or permanent legacy fallbacks merely because an older shape exists. Stored-data conversion remains an explicit audited cutover with its own apply authority; removing runtime compatibility does not authorize unrelated data deletion.
-- Make one bounded vertical responsibility change at a time. Move implementation,
-  registration, consumers, docs and relevant checks together for an ownership
-  cutover; remove retired paths and empty directories in the same slice.
-- If a small request creates a suspiciously broad diff, stop and identify the
-  missing seam, mixed ownership, coupling or unproved abstraction. Establish the
-  owner, affected consumers and verification boundary before extending it.
-- A pipeline proof uses one temporary field, one writer, one reader and one plain
-  visible result. Do not turn it into a catalogue or framework; remove proof code
-  when it has served its purpose.
-- Preserve unrelated uncommitted work, including concurrent changes. Never revert
-  another task's work to make a check pass.
-- `pnpm gitsave` stages shared work: run it only for a user-requested save, with a
-  stable shared tree and no other active task.
-- For parallel work, use separate branches/worktrees and one integration lead
-  responsible for compatibility and final verification.
-- When historical output dominates the context, checkpoint useful state and
-  continue in a fresh task with explicit acceptance criteria.
+## Working and verification rules
 
-### Human–AI partnership
-
-The human owns product intent, lived context and final product trade-offs. The
-agent owns technical judgment, evidence gathering, implementation and
-verification. Recommend a concrete next move, explain material disagreements
-and consequences, and challenge avoidable complexity or unclear ownership.
-Stop when authority, safety or repository integrity is at risk. After explaining
-the evidence and trade-offs, respect the human's informed product decision
-unless a higher-priority boundary forbids it.
-
-Do not invent intent, manufacture agreement or hide uncertainty. State what is
-known, inferred and unproved without requiring the human to supervise every
-implementation detail.
-
-When the user asks to open source in VS Code, use `code -r`. For comparison,
-open both files and use the smallest VS Code split command needed; do not use
-computer control for ordinary file opening or arrangement.
-
-For `canon`, `spine`, `align`, `family` or `drift` work, state before editing:
-the scope, owner and reference sibling, what must match, what may differ, exact
-files in scope, and what remains unaudited. Be direct about drift; do not
-reassure beyond the evidence.
-
-## Development and verification
-
-The manually run Workspace migration checks `workspace-team-command-scope.test.mjs`, `project-identity.test.mjs`, `project-landing-client.test.mjs`, `project-team-client.test.mjs`, `identity-state.test.mjs`, `kitchen-identity-internals.test.mjs`, `offering-website-client-internals.test.mjs`, `ordering-setup.test.mjs`, `team-controller.test.mjs`, `workspace-readiness.test.mjs`, `identity-surface.test.mjs`, `property-team-composition.test.mjs`, `supplier-identity-scope.test.mjs` have been removed.
-References to these names in older maps and reviews are historical evidence,
-not available checks or instructions to recreate them. Existing package test
-commands and CI remain unchanged; CI currently runs types, lint and builds.
-
-- The desktop App picker lives in `tools/fireux-launcher`; it discovers Apps and
-  ports from their package-owned dev commands. `pnpm launcher` opens the picker.
-  Root shortcuts and VS Code launch entries are maintained directly; there is
-  no authored App registry or projection generator.
-
-- FireUX Core config exports default to authored TypeScript, so ordinary local
-  Nuxt commands do not depend on disposable `dist` output.
-- Core’s `defineFireuxConfig` includes its native runtime layer at config time.
-  Core module setup owns explicit registration and one Workspace page-transition
-  hook. All maintained Apps declare their conventional runtime layers before
-  module setup. Core preserves explicitly authored Core precedence and otherwise
-  appends it; missing owning layers fail through the public native-layer assertion.
-  Modules must not insert runtimes into Nuxt’s private resolved-layer list.
-- Core owns production config compilation in `packages/core/fireux-core/build/config.mjs`;
-  its package build hook and root build/typecheck commands reuse that helper.
-  Core prepack also runs that compiler and includes the production config outputs
-  and their runtime dependencies in its artifact. Core registers its public runtime
-  types through Nuxt prepare:types, so consumers do not need repository aliases.
-  Its Nitro configuration compiles authored Core/bridge TypeScript inside node_modules;
-  consumer-defined compiler exclusions remain explicit consumer policy.
-- App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
-  The retired smoke wrapper and its `--checked` option are no longer available.
-- Reuse healthy servers. Do not kill or restart them without a concrete need.
-- Choose checks for the changed responsibility: focused package typechecks and
-  relevant source-owned tests for code; representative App prepare/typecheck/build
-  checks when runtime contracts change. For prose-only changes, verify references
-  and claims. Finish with `git diff --check`.
-- Broaden or repeat checks only for changed contracts, failures or unresolved
-  concerns. The former `scripts/` guard suite is removed; do not restore it or
-  claim its checks ran. Use current package commands and source-owned tests.
-- Report exact existing or concurrent failures and the resulting verification
-  limits. A green check does not excuse a failing typecheck or prove an
-  uninspected responsibility.
-
-App-specific navigation presentation belongs in the existing `app/app.config.ts`.
-Core navigation consumes it directly; deployment runtime config does not carry
-navigation overrides or hidden route keys. Shared route defaults remain with
-the route owner.
-
-Core owns PWA identity, installation/offline controls and worker/cache policy for
-every FireUX App. Consume AppShell and Core `/install`; do not add App-local
-registration or caching. Native/manual installation is separate from explicit
-offline opt-in. A fresh visit creates no PWA registration or cache; a saved
-App-specific choice may resume it. Offline support caches only self-contained
-reconnect HTML, excluding App pages/data, API/auth responses and queued writes.
-Keep owned removal controls and deliberate update/reload behavior. Source and
-verification live in Core `src/config/app/pwa.ts`,
-`src/runtime/utils/pwa-controller.ts`, `src/runtime/components/Pwa`,
-`src/runtime/pages/install.vue` and `src/test/pwa.test.mjs`; Apps retain their
-identity and brand assets.
-
-### Framework typing boundary
-
-Core's Tailwind stylesheet explicitly scans its shared and App Entity component
-roots as well as layouts, so shared presentation does not depend on classes
-incidentally present in a consuming App.
-
-Core Vite configuration deduplicates Vue and Vue Router through the App root.
-Linked domain packages and Nuxt must share framework instances and router
-injection keys; direct imports must not create a second router runtime.
-Root workspace overrides and App/package manifests keep Vue and Vue Router
-consistent with the installed Nuxt requirements. Verify the resolved dependency
-graph after changing framework versions. An already-running development server
-retains its previous framework graph and can regenerate obsolete declarations;
-restart that affected server before accepting generated checks. Native Nuxt
-release builds require the same App's development server to be stopped; do not
-bypass that lock and let both processes write the same build directory.
-
-Standalone package checks use `types/nuxt-shims.d.ts` as an imports bridge.
-That bridge loads Core’s runtime-config declarations and the matching native
-Nitro adapter types so dependent package checks share the runtime configuration
-and server-event contract. Framework augmentations target `@nuxt/schema`;
-Nuxt bridges that canonical module into `nuxt/schema`. The bridge exports the
-public Nuxt fetch signature for explicit `#imports` consumers.
-Standard Vue and Nuxt helpers must retain their framework signatures, never
-loose `any` overloads. Core declares its own runtime-config additions in
-`packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
-configuration types. A generated Nuxt App check must use generated imports
-rather than also loading the standalone bridge; clear inherited `files` entries
-as well as excluding the bridge from `include`. FireUX App, Misebox App, Bringli App, Bären Ringgenberg,
-Interlaken Essen, both Werkbox Apps, FireUX Tenant and FireUX Blank are the
-inspected configurations for this separation. Other App
-configurations require their own verification before this is claimed
-repository-wide.
-
-## App ignition
-
-`fireux-ignite` owns the explicitly consumed build-brief, assembly/evidence contracts and reusable reconciliation method. Apps own industry reference cases and existing intake/delivery workflows. Domain packages retain data and execution authority. Misebox is a reference build; only an independently assembled and accepted sibling can prove the generation promise. The current package checks declared coverage and dependency integrity, not semantic equivalence or automatic generation. Follow its scoped context through `AGENTS.md`.
-
-## Industry and Capability Research
-
-Apps own their sourced research in `app/search-demand.ts`; Core owns its shared
-contract and four review stages at `/search-demand`. A related brief may describe
-a different Workspace entity without enabling that entity's runtime in the App.
-Misebox's Supplier brief proves this distinction alongside Kitchen research.
-Market confidence, validation priority and implementation readiness are independent.
-Optional capability definitions describe target purpose, managed and referenced
-information, tool designs and responsibility boundaries. Their separate service
-examples do not establish storage schemas, shipped tools or released workflows.
-Reconciliation records keep/improve/validate/defer decisions with current source
-paths and evidence references. First delivery briefs name the purpose, pages,
-tools, trusted service owners, acceptance criteria and gaps of one bounded
-journey. They are App-owned planning data, not execution or live-proof records. Optional
-configuration maps identify reused settings, capability owners and editing tools;
-they do not establish a runtime configuration store. A connected source is not live acceptance, and a
-proposal is not a released capability catalogue. Keep original observation dates;
-refresh sources and owning code when revising an assessment. The contract,
-`app-research.test.mjs` and App-owned briefs are the current entrypoints.
-FireUX AI owns the reusable runtime research method; FireUX App explicitly
-publishes it at `/context/research` and `/api/fireux/context/research`. The public
-page and JSON share one source. This publication is explicit context reuse,
-not automatic injection, browsing, research generation or saving. The package
-research context is routed through root `AGENTS.md`.
-
-## Live browser transport
-
-Core `sharedLiveResponse.ts` shares projections within each page. Hidden pages
-release the live transport and use an initial JSON snapshot; returning to the
-page reconnects its live projections. On plain HTTP, projections use shared JSON snapshots refreshed every four
-seconds, with bounded requests and scope disposal, rather than opening streams. This preserves browser HTTP connection slots for navigation
-and commands across multiple tabs. HTTPS keeps a continuous live stream. Domain
-readers retain loading/error/disposal and authority boundaries. Verify transport
-changes with `shared-live-response.test.mjs` and `live-client-read.test.mjs`, then
-check real multi-tab reads and commands in the consuming App.
+- Preserve unrelated and concurrent work. Inspect the shared checkout before
+  editing; do not switch its branch or create a worktree unless requested.
+- Never stage, commit, push, deploy or modify live data without user
+  authorization for that action. gitsave stages shared work and requires an
+  explicit save request.
+- Use focused package checks and source-owned tests for code changes. For
+  prose-only changes, verify claims, local paths and anchors, then run
+  git diff --check.
+- A typecheck proves compilation. A guard proves only its encoded contract.
+  Neither proves ownership, live behavior or repository-wide alignment.
 
 ## Evidence claims
 
-`Aligned`, `canonical`, `fixed`, `complete` and `done` are evidence claims.
-Qualify them as local, family or repository scope using these levels:
+Qualify aligned, canonical, fixed, complete and done by inspected scope:
 
-- **Locally aligned**: edited source, direct registration, and immediate consumers
-  were inspected and verified.
-- **Family aligned**: every maintained family member, owner, route, registration,
-  authority, guard, and proving sibling was compared.
-- **Repository aligned**: the complete maintained ownership/dependency inventory
-  was audited and every difference classified.
+- Locally aligned: owner, registration and immediate consumers were inspected.
+- Family aligned: every maintained member, owner, route, authority and relevant
+  check in that family was compared.
+- Repository aligned: the maintained ownership and dependency inventory was
+  audited and every difference classified.
 
-A green build proves compilation. A green guard proves encoded contracts.
-Neither alone proves ownership, runtime behavior, or repository-wide canon.
-Always state the inspected boundary and what remains unaudited or `to-confirm`.
-Never present a bounded repair as completion of its parent task.
+State the inspected boundary and remaining uncertainty. Do not label a bounded
+repair as completion of its parent task.
 
-## Authority
+## Authority and rule review
 
-Use this order:
+Use this evidence order: current source; available guards and tests; scoped
+contexts at their owner; concept maps; then README placeholders and historical
+material. Human decisions, requirements and acceptance criteria are product
+authority for their stated scope. Source establishes behavior, not whether that
+behavior is desirable.
 
-1. current source;
-2. executable guards and tests;
-3. Scoped contexts at their owning package/App `docs/ai` location, or central cross-owner `docs/ai`, as routed by `AGENTS.md`;
-4. `docs/concepts/*.md`;
-5. README placeholders and historical material.
-
-User decisions, corrections, requirements and acceptance criteria are product
-authority for their stated scope. Requests to try, preview or compare are
-experiments: keep them reversible and do not turn them into durable context or
-checks before acceptance and source evidence. Source proves behavior, not that
-an implementation is desirable.
-
-## Rule review
-
-A documented or guarded rule is evidence of deliberate enforcement, not proof
-that the rule is still useful or correctly scoped. Review established rules
-against current source, real consumers, recurring failures, and the cost of the
-constraint. Ask what problem the rule prevents, whether that problem still
-exists, whether an experienced reader could infer the boundary from the system,
-and whether the rule introduces ceremony, duplication, or avoidable indirection.
-Current source proves how the repository behaves; it does not by itself prove
-that the behavior or architecture is desirable.
-
-Ordinary work follows established rules. Reopen a rule when current source
-contradicts it, real consumers repeatedly work around it, exceptions or
-duplication accumulate, enforcement causes recurring failures, or the user asks
-for an architectural review. Age and inconvenience alone are not evidence that
-a rule is stale or wrong.
-
-Classify the result explicitly:
-
-- **Keep**: current evidence supports the rule and its scope.
-- **Simplify**: the intent is sound but the mechanism is needlessly elaborate.
-- **Narrow**: the rule is useful only within a smaller proved scope.
-- **Replace**: the problem is real but the present rule solves it poorly.
-- **Remove**: no current evidence justifies the constraint.
-- **Unproved**: the rule is plausible but needs comparison or an experiment.
-
-Do not weaken a safety or authority boundary merely because it is inconvenient.
-Do not preserve a hierarchy merely because documentation and guards agree. Keep
-changes reversible until the replacement is accepted and independently proved.
-Any proposal to simplify, narrow, replace, or remove a rule must name the exact
-scope, current evidence, affected consumers, safety and authority consequences,
-replacement or removal path, and verification that would prove the outcome.
+Reopen a rule when source contradicts it, consumers repeatedly work around it,
+exceptions or duplication accumulate, enforcement repeatedly fails, or the
+human requests an architecture review. Classify the result as keep, simplify,
+narrow, replace, remove or unproved. Before weakening a safety or authority
+boundary, name the evidence, affected consumers, consequences, transition and
+verification.
 
 ## Living-context maintenance
 
-Update this file when a stable repo-wide boundary changes, and a scoped context
-when its recurring product/package boundary changes. Update both only when both
-layers change. Before finishing, verify that applicable guidance still matches
-source; if edits are not authorized, report the exact stale instruction and
-contradicting source.
+Update this file only when a stable repo-wide boundary changes. Update a scoped
+context when its package or product boundary changes; update both only when both
+layers change. Keep scope routing only in [AGENTS.md](../../AGENTS.md).
 
-Follow `docs/concepts/documentation.md` before creating, renaming or changing the
-role of durable documentation. Prefer an existing owner. Create a scoped context
-only for recurring guidance that does not belong in the global file; it must
-inherit `AGENTS.md` and this file, define purpose, scope, ownership, authority,
-refresh and verification expectations, and living maintenance. Point to current
-source, tests and maps; exclude task state, chat history, speculative plans and
-stale snapshots.
+Prefer an existing owner. Create a scoped context only for recurring guidance
+that has no better owner. It must inherit this file and AGENTS.md, define its
+scope, ownership, authority, refresh and verification expectations, and link to
+current source and checks. Keep task status, chat history, speculative plans,
+duplicate inventories and stale test claims out of living context.
 
-Keep the scope router only in `AGENTS.md`. Add a nested `AGENTS.md` only for
-subtree-wide operational instructions that cannot live in source, available
-checks or an existing context. Do not copy repository architecture into it.
-Documentation records proved decisions; it must not turn a plausible
-implementation into canon.
-
-### Scoped context placement
-
-Global and cross-owner contexts stay central. Domain guidance belongs beside its
-package; ecosystem composition beside its ecosystem; distinct App guidance beside
-its App. Root `AGENTS.md` remains the sole router. Retire old paths and update
-consumers in the same move; do not add forwarding guides or per-folder scaffolds.
-Internal working guidance is distinct from curated public runtime explanations.
-Neither reading a context nor publishing an explanation grants command authority
-or implies automatic AI context injection.
-
-### Workspace Entity spine
-
-User notifications have one User-owned feed and server-derived total unread count;
-Workspace and dashboard shells consume its shared panel visibility. Product-specific
-links do not belong in the shared notification panel. Workspace page publications
-are scoped by App, account, selected Entity and destination; their publishing
-component releases its own publication on disposal. Explicit-target domain commands
-do not acquire Workspace selection or route state; editors supply their own lifetime.
-The temporary selection-only `useWorkspaceWriteGuard` is retired.
-
-`useXWorkspace()` is the single Entity Workspace owner for available records,
-selection actions and the authorised selected-record projection. There is no
-separate Index composable. `collectionOutcome` describes available records;
-`outcome` describes the selected record. Do not conflate them or add a
-`selectedId` alias to the Entity owner; its canonical selection field is `id`.
-Core `defineWorkspace` shares one instance per Nuxt App, including separate
-instances for SSR requests, and releases its effects after the last consumer.
-
-Common Home, Identity, Team and supported Calendar adapters sit directly under
-`composables/workspace`. Home exists only for actual summary composition.
-Domain-specific capabilities may use named child folders. UI consumers reuse
-the owner rather than creating another selection or Index adapter.
+Follow the [documentation map](../concepts/documentation.md) for durable-doc
+roles, links, metadata and maintenance.

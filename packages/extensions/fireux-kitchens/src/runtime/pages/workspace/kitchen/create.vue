@@ -3,32 +3,21 @@
 <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: use the shared Place-backed funnel and explicit activation review. -->
 <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Workspace Kitchen creation through its named funnel. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-create">
-      <template #header>
-        <WorkspaceNavbar title="Add Kitchen" />
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <KitchenOnboarding
-            v-if="canEnterCreate"
-            mode="workspace"
-            :existing-root-id="existingRootId"
-            :return-to="workspaceEntryPath"
-            :cancel-to="workspaceEntryPath"
-          />
-
-          <UPageCard
-            v-else
-            title="Kitchen creation is not enabled here"
-            description="This app uses an existing Kitchen workspace target."
-            variant="subtle"
-          />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <section class="space-y-4">
+    <KitchenOnboarding
+      v-if="canEnterCreate"
+      mode="workspace"
+      :existing-root-id="existingRootId"
+      :return-to="workspaceEntryPath"
+      :cancel-to="workspaceEntryPath"
+    />
+    <UPageCard
+      v-else
+      title="Kitchen creation is not enabled here"
+      description="This app uses an existing Kitchen workspace target."
+      variant="subtle"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -48,7 +37,8 @@ const canEnterCreate = computed(
 )
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'create',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {

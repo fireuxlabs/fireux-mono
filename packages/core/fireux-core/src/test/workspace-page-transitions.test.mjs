@@ -14,12 +14,12 @@ test('Workspace transitions are disabled recursively without changing other rout
   assert.equal(hooks.length, 1)
   assert.equal(hooks[0].name, 'pages:extend')
   const pages = [
-    { path: '/workspace/project', meta: { layout: 'workspace', pageTransition: true } },
+    { path: '/workspace/project', meta: { layout: false, workspacePage: true, pageTransition: true } },
     { path: '/', children: [{ path: 'identity', file: '/runtime/pages/workspace/identity.vue', meta: { auth: true } }] },
     { path: '/product', meta: { pageTransition: { name: 'product' } } },
   ]
   hooks[0].callback(pages)
-  assert.deepEqual(pages[0].meta, { layout: 'workspace', pageTransition: false })
+  assert.deepEqual(pages[0].meta, { layout: false, workspacePage: true, pageTransition: false })
   assert.deepEqual(pages[1].children[0].meta, { auth: true, pageTransition: false })
   assert.deepEqual(pages[2].meta, { pageTransition: { name: 'product' } })
 })

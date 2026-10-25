@@ -1,15 +1,9 @@
-<template>
-  <WorkspaceGroupPage
-    workspace="property"
-    nav-key="workspace-property-identity"
-  >
-    <WorkspacePropertyIdentity />
-  </WorkspaceGroupPage>
-</template>
+<template><WorkspacePropertyIdentity /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },
   nav: {

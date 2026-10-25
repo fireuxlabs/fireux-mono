@@ -1,13 +1,9 @@
-<template>
-  <UDashboardPanel id="workspace-kitchen-menu-detail">
-    <template #header><WorkspaceNavbar title="Menu" /></template>
-    <template #body><KitchenFoodAndDrinkMenusDetail /></template>
-  </UDashboardPanel>
-</template>
+<template><KitchenFoodAndDrinkMenusDetail /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'detail',
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,

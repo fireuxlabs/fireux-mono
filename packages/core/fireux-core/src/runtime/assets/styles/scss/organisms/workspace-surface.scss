@@ -59,3 +59,128 @@
     top: calc(var(--spacing) * 4);
   }
 }
+
+/* Page geometry belongs to the shared frame, not its domain content. */
+.workspace-page {
+  width: 100%;
+  max-width: var(--container-6xl);
+  margin-inline: auto;
+}
+
+.workspace-page__breadcrumbs [data-slot='list'] {
+  flex-wrap: wrap;
+}
+
+/* The Workspace identity backdrop and controls share one stacking boundary. */
+.workspace-navbar {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--ui-bg);
+}
+
+.workspace-navbar__bar {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+.workspace-navbar__identity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: calc(var(--spacing) * 3);
+}
+
+.workspace-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+
+.workspace-navbar__page-title {
+  display: none;
+  max-width: calc(var(--spacing) * 64);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .workspace-navbar__page-title {
+    display: inline;
+  }
+}
+
+.workspace-sidebar {
+  height: 100svh;
+  max-height: 100svh;
+  border-inline-end-width: 0;
+}
+.workspace-sidebar__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.workspace-sidebar__body::-webkit-scrollbar {
+  display: none;
+}
+.workspace-sidebar__brand {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--spacing) * 11);
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+}
+.workspace-sidebar__home {
+  display: inline-flex;
+  min-width: 0;
+}
+.workspace-sidebar__toggle {
+  margin-inline-start: auto;
+}
+.workspace-sidebar__toggle--compact {
+  margin-inline: auto;
+}
+.workspace-sidebar__navigation,
+.workspace-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 3);
+}
+.workspace-sidebar__navigation {
+  height: 100%;
+  min-height: 0;
+}
+.workspace-sidebar__account {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+}
+.workspace-sidebar__loading {
+  display: flex;
+  align-items: center;
+  height: calc(var(--spacing) * 8);
+  gap: calc(var(--spacing) * 2);
+  padding-inline: calc(var(--spacing) * 2);
+}
+.workspace-sidebar__loading-icon {
+  width: calc(var(--spacing) * 5);
+  height: calc(var(--spacing) * 5);
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.workspace-sidebar__loading-label {
+  height: calc(var(--spacing) * 4);
+  flex: 1;
+}
+.workspace-navbar__notification-icon {
+  width: calc(var(--spacing) * 5);
+  height: calc(var(--spacing) * 5);
+  flex-shrink: 0;
+}
+@media (min-width: 1024px) {
+  .workspace-navbar__sidebar-toggle {
+    display: none;
+  }
+}

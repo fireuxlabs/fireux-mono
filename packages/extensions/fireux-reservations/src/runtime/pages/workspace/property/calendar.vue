@@ -1,35 +1,29 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-property-calendar">
-      <template #header>
-        <WorkspaceNavbar title="Calendar">
-          <template #right>
-            <UButton
-              to="/workspace/property/reservations/create"
-              icon="i-lucide-calendar-plus-2"
-              size="sm"
-            >
-              Add booking
-            </UButton>
-          </template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="space-y-5">
-          <WorkspaceHero compact title="Property Calendar" description="View reservations and property availability." />
-          <WorkspacePropertySelector />
-          <WorkspaceAI compact aria-label="Property Calendar AI"><UAlert title="Calendar AI is not connected yet" color="neutral" /></WorkspaceAI>
-          <WorkspacePropertyCalendar />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <UButton
+    to="/workspace/property/reservations/create"
+    icon="i-lucide-calendar-plus-2"
+    size="sm"
+  >
+    Add booking
+  </UButton>
+  <section class="space-y-5">
+    <WorkspaceHero
+      compact
+      title="Property Calendar"
+      description="View reservations and property availability."
+    />
+    <WorkspacePropertySelector />
+    <WorkspaceAI compact aria-label="Property Calendar AI"
+      ><UAlert title="Calendar AI is not connected yet" color="neutral" />
+    </WorkspaceAI>
+    <WorkspacePropertyCalendar />
+  </section>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-reservations'] },
   nav: {

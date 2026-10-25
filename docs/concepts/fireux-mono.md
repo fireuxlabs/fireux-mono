@@ -1,175 +1,88 @@
-# FireUX Mono concept map
+# FireUX Mono repository map
 
-Updated: 2026-10-12
-Ref: 53fa40ee6
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
-## Purpose
+## Purpose and navigation
 
-Explain the repo as a workspace so agents do not rediscover the skeleton.
+Map the repository's package lanes and the shortest path from an App entrypoint
+to its owning package. For the platform stack, start at
+[FireUX](fireux.md). For Nuxt, Nuxt UI and Firebase behavior, use the official
+upstream docs linked there and the focused FireUX maps.
 
-## Scope
+- [Repository ownership](lasagne.md)
+- [Runtime filesystem](runtime-filesystem.md)
+- [Package contracts](runtime-package.md)
+- [Workspace commands](pnpm.md)
+- [App configuration](app-config.md)
+- [Documentation roles](documentation.md)
 
-- Root pnpm workspace.
-- Package lanes.
-- Project app lanes.
-- Development and verification entrypoints.
+## Workspace lanes
 
-## Vertical links
+| Lane | Owner |
+| --- | --- |
+| packages/core | Shared FireUX and Nuxt foundations. |
+| packages/ecosystem | Real cross-extension product composition and Ecosystem bindings. |
+| packages/extensions | Reusable domains and capabilities. |
+| `projects/*/*` | Concrete Nuxt Apps and the project starter. |
+| tools | Local development and operational tools outside reusable runtime packages. |
 
-- Parent: ../../AGENTS.md
-- Child: fireux.md
-- Child: pnpm.md
-- Child: runtime-package.md
-- Child: app-config.md
-- Child: [Ignition process](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md)
-- Child: sharer.md
+A directory is a package only when it has its own package.json and is included
+by pnpm-workspace.yaml. That workspace file owns the package globs. The
+no-FireUX embed harness is a static project exception, not a reusable package.
 
-## Horizontal links
-
-- spine.md
-- pages.md
-- components.md
-- composables.md
-- demo-data.md
-
-## Current shape
-
-- `packages/core/*`: shared foundations.
-- `packages/ecosystem/*`: ecosystem identity/config packages.
-- `packages/extensions/*`: reusable domain packages.
-- `projects/*/*`: concrete Nuxt Apps and the project template; the
-  explicit no-FireUX embed harness is a static project exception, not a
-  workspace package.
-- `tools/*`: local tools, including `tools/misebox-migrations` for explicit
-  Misebox operational cutovers; these are outside reusable extension runtime.
-- `packages/*/*/src/runtime/<entity>/demo`: entity-owned reusable Workspace Demo
-  Data. Root `runtime/demo` is reserved for genuine cross-entity composition
-  or package-owned record families without a declared Entity.
-- `projects/*/*/app/demo`: app-owned workspace Demo Data.
-- `temp/*`: ignored temporary work only, never authored source.
-- `figma-export`: optional ignored local directory or symlink, never tracked.
-- `mirror`: optional local comparison output, never source. Its former
-  generation scripts have been removed.
-
-## Repository ownership spine
-
-Read composition from the product inward and dependencies toward lower owners:
-
-```text
-Concrete Apps
-├── Ecosystem composition
-├── Entity and parent-domain extensions
-├── Shared domain primitives
-└── Core foundations
-
-Allowed dependency direction:
-
-App ───────────────→ Ecosystem / Extension / Core
-Ecosystem ─────────→ Extension / Core
-Extension ─────────→ lower Extension / Core
-Core ──────────────→ external libraries only
-```
-
-Not every dependency passes through every row. An App may consume an Extension
-directly, and an Extension may consume a lower domain primitive. The invariant
-is that a lower owner never imports its upper composer: Core does not import a
-product package, an Extension does not import an Ecosystem or App, and an
-Ecosystem does not import an App.
+## Dependency direction
 
 Implementation remains with the lowest layer that owns its complete meaning
-and authority. Upper layers compose, configure, frame, or adapt it. They do not
-copy the implementation merely because they expose the final route.
+and authority:
 
-For a proved Workspace family, the App declares that product surface and its
-App policy, the ecosystem installs the owning extension and owns only genuine
-cross-extension entry composition, and the extension owns the Entity runtime,
-authority, and capability routes. A thin App route or presentation may frame
-that surface without becoming its reusable owner. An ecosystem with no proved
-Workspace installs none; repository hierarchy does not require placeholder
-Workspace symmetry.
+- An App may consume an Ecosystem, Extension or Core directly.
+- An Ecosystem may consume Extensions and Core.
+- An Extension may consume lower Extensions and Core.
+- Core depends on external libraries, not product packages.
 
-This is the repository comprehension spine, not a replacement for the three
-package lanes. `packages/extensions` contains both shared domain primitives
-and entity/parent-domain packages; the owning package and its dependencies
-determine its position. A primitive may still own an Entity: Place is a
-canonical Entity and also supplies lower Place capabilities to several domain
-packages.
-
-The current package classification is:
-
-| Repository role | Current packages |
-| --- | --- |
-| Core foundations | `fireux-core`, `fireux-docs`, `fireux-nuxtfire` |
-| Shared domain primitives | `fireux-ai`, `fireux-ignite`, `fireux-demo`, `fireux-finance`, `fireux-go-qr`, `fireux-places`, `fireux-sproochli`, `fireux-translation` |
-| Entity and parent-domain packages | `fireux-blogs`, `fireux-companies`, `fireux-compliance`, `fireux-documents`, `fireux-jobs`, `fireux-kitchens`, `fireux-marketplace`, `fireux-products`, `fireux-properties`, `fireux-reservations`, `fireux-suppliers`, `fireux-tasks` |
-| Ecosystem composition | `fireux-bringli`, `fireux-buenohost`, `fireux-fireux`, `fireux-granite`, `fireux-misebox`, `fireux-sharer`, `fireux-slap`, `fireux-werkbox` |
-| Concrete Apps | packages under `projects/<ecosystem>/<app>`; `projects/templates/fireux-template` is the project template |
-
-Package role describes the primary dependency and ownership job. It does not
-authorize an upper layer to absorb a lower owner's implementation, and it
-does not require a package split merely because one package owns multiple
-related Entities.
+An upper layer composes, configures, frames or adapts lower-owned behavior; it
+does not copy it for a route. An Ecosystem does not need a placeholder
+Workspace when no owned product surface proves one.
 
 ## Cold-reading path
 
-A human or agent entering an unfamiliar scope follows this bounded path:
+1. Read AGENTS.md, global context and the smallest relevant scoped context.
+2. Read the owning package manifest and Nuxt module entrypoint to establish
+   dependencies and registration.
+3. Start at the App route, layout, middleware or server adapter.
+4. Follow the adapter into its package runtime and domain owner.
+5. Follow imports downward. Compare the nearest real sibling and its available
+   source-owned checks.
 
-1. Read `AGENTS.md`, `docs/ai/gpt-context.md`, and the smallest applicable
-   scoped context.
-2. Read the owning package's `package.json` and `src/module.ts` to establish
-   dependencies and Nuxt registration.
-3. Start from the relevant Nuxt entrypoint under `pages`, `layouts`,
-   `middleware`, `plugins`, or `server/api`.
-4. Follow that adapter into `runtime/<entity>/<technical-role>` when one Entity
-   owns the behavior, or the root technical spine when it is genuinely shared.
-5. Follow imports toward lower owners using the allowed dependency direction
-   above; never infer ownership from the final route or visible brand.
-6. Verify the claim against the nearest working sibling and relevant source-owned tests.
+Use [runtime-filesystem](runtime-filesystem.md) to distinguish Nuxt discovery
+entrypoints from domain owners. Do not infer authority from the route, visible
+brand or folder name alone.
 
-If that path requires searching unrelated component, composable, or server
-trees to discover the owner, classify the placement as drift or migration;
-do not normalize the ambiguity in documentation.
+## Current repository sources
 
-## Working notes
+- package.json owns package identity, dependencies, exports and commands.
+- pnpm-workspace.yaml owns workspace package globs and install-script policy.
+- tsconfig.base.json owns package path mapping; project App TypeScript
+  configuration is shared through projects/tsconfig.projects.json.
+- tools/fireux-launcher/apps.mjs discovers Apps and their development ports from
+  App-owned manifests and commands. It is a launcher, not a package registry or
+  projection generator.
+- Generated Nuxt output, dist and node_modules are not authored source.
 
-- Root `package.json` owns workspace scripts.
-- `pnpm-workspace.yaml` solely owns workspace package globs; do not duplicate
-  them in `package.json#workspaces`.
-- The five workspace lanes are exactly `packages/core/*`,
-  `packages/extensions/*`, `packages/ecosystem/*`, `projects/*/*`, and
-  `tools/*`. A directory does not become a package without its own manifest.
-- `pnpm-workspace.yaml#allowBuilds` is the narrow install-script policy and
-  every entry uses an explicit boolean.
-- `tsconfig.base.json` is the root package-path authority. Each package keeps
-  its leaf config, every Nuxt App extends `projects/tsconfig.projects.json`,
-  and hand-maintained aggregate configs under package lanes or `projects/` are
-  retired.
-- Root `demo/` is rejected; Demo stays with its package or app owner and loads
-  only when an owning workspace selects it.
-- Test, simulation, dev, and public prototype content are separate from Demo.
-- `tools/fireux-launcher/apps.mjs` discovers launchable Apps from their own
-  package manifests and dev ports. `pnpm launcher` opens the desktop picker.
-- Root dev shortcuts invoke App-owned commands directly. VS Code tasks,
-  launch configurations, and `tools/vscode-fireux-toolbar/apps.js` are optional
-  maintained shortcuts; no registry generator owns them.
-- The former `scripts/` tooling and guard suite were removed. Do not restore
-  them to satisfy old documentation. Run current package checks and tests.
-- Project apps should not own shared package truth. Packages and apps declare
-  their own runtime dependencies.
+Use [pnpm](pnpm.md) for current commands and workspace checks. Root scripts and
+package-specific commands are source; do not duplicate their inventory here.
 
 ## Adding an App
 
-Start with the nearest working App in the same ecosystem and inspect its
-manifest, Nuxt config, runtime layers, routes, and deployment configuration.
-Give the new App a package-owned dev command and an unused port. The desktop
-launcher discovers it from that manifest; add editor shortcuts only when useful.
+Start from the nearest working App in the same Ecosystem. Inspect its manifest,
+Nuxt configuration, runtime layers, routes and deployment configuration.
+Declare its App and canonical Ecosystem identities, Firebase binding and App
+brand through their existing owners. Reuse existing trusted initialization and
+domain commands.
 
-Resolve ecosystem and database ownership before implementing data access.
-Reuse the current trusted initialization and domain commands. App brand and
-configuration stay App-owned. Follow `app-config.md`, `brand-assets.md`, and
-the relevant scoped context for those responsibilities.
-
-Verify the affected App with prepare/typecheck/build and relevant behavior
-checks. A folder copy, editor shortcut, or green build alone does not prove
-that its product behavior and authority are correct.
+Follow [App configuration](app-config.md),
+[brand assets](brand-assets.md), the relevant Ecosystem context and the
+[platform map](fireux.md). Verify the changed App and its actual behavior; a
+folder copy or green build alone does not prove ownership or authority.

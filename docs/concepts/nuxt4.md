@@ -1,77 +1,66 @@
-# Nuxt 4 and Vue 3 concept map
+# Nuxt 4 integration map
 
-Updated: 2026-10-21
-Ref: add6006b3
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
-## Purpose
+## Purpose and authority
 
-Explain the app framework context for agents.
+Use official [Nuxt documentation](https://nuxt.com/docs/4.x/getting-started/introduction)
+for framework behavior. This map records how FireUX packages extend Nuxt and
+where the local integration lives. Current manifests and source take precedence
+over a copied framework manual.
 
-## Vertical links
+## Upstream references
 
-- Parent: AGENTS.md
-- Child: layouts.md
-- Child: pages.md
-- Child: components.md
-- Child: composables.md
-- Child: server-api.md
-- Child: runtime-filesystem.md
+- [Nuxt 4 documentation](https://nuxt.com/docs/4.x/getting-started/introduction)
+- [Nuxt modules](https://nuxt.com/docs/guide/concepts/modules)
+- [Nuxt layers](https://nuxt.com/docs/4.x/guide/going-further/layers)
+- [Auto-imports](https://nuxt.com/docs/4.x/guide/concepts/auto-imports)
+- [App directory](https://nuxt.com/docs/4.x/directory-structure/app)
+- [Routing](https://nuxt.com/docs/4.x/getting-started/routing)
+- [NuxtPage](https://nuxt.com/docs/4.x/api/components/nuxt-page)
 
-## Horizontal links
+## FireUX integration
 
-- nuxt-ui.md
-- runtime-package.md
-- app-config.md
+Core's [defineFireuxConfig](../../packages/core/fireux-core/src/config/app/fireux.config.ts)
+adds the Core layer and configures the shared Nuxt baseline. That baseline
+registers Nuxt UI, FireUX Core, the Ecosystem module, the configured Firebase
+runtime and common App modules. Each App declares its product layers and
+enabled package modules in its own configuration.
 
-## Framework
+A package owns its Nuxt module and runtime layer. Its module registers that
+package's components, composables, assets, pages or server handlers through
+Nuxt's supported module APIs. Apps and packages use conventional Nuxt
+entrypoints and package-owned runtime paths; see
+[runtime placement](runtime-filesystem.md) and
+[package contracts](runtime-package.md).
 
-- FireUX apps are Nuxt 4 apps. The coordinated version and verification
-  baseline lives in [nuxt-ui.md](nuxt-ui.md); root manifests, workspace overrides
-  and the lockfile establish the installed graph.
-- FireUX apps run Nuxt 4 with `future.compatibilityVersion: 5` supplied by the
-  Core App-config baseline so Nuxt 5 defaults are exercised before the major
-  upgrade.
-- Core temporarily keeps `experimental.nitroAutoImports` enabled because
-  registered server runtimes, including `@nuxt/icon`, still import Nitro's
-  virtual `#imports` module. Remove this bridge only after every registered
-  module and FireUX server runtime builds without it.
-- Runtime UI is Vue 3.
-- Server routes use Nitro/h3 conventions.
-- Nuxt modules register package runtime surfaces.
+Use Nuxt's public module and layer APIs. Do not insert package runtimes into
+private resolved-layer internals. The current source entrypoints are
+[Core configuration](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts),
+[Core module](../../packages/core/fireux-core/src/module.ts), and the relevant
+App or package's nuxt.config.ts.
 
-## Common Nuxt surfaces
+## Current compatibility bridge
 
-- App shell: usually owns `<NuxtLayout><NuxtPage /></NuxtLayout>`.
-- Layouts: see `layouts.md`; current FireUX layouts have both slot-rendering
-  and route-rendering lanes. Do not assume one universal renderer until that
-  map's single-render checks settle the boundary.
-- App pages: `app/pages`.
-- App components: `app/components`.
-- App composables: `app/composables`.
-- App server routes: `server/api`.
-- Package pages: `src/runtime/pages`.
-- Shared package components: `src/runtime/components`.
-- Entity package components: `src/runtime/<entity>/components`, registered by
-  the package module.
-- Shared package composables: `src/runtime/composables`.
-- Entity package composables: `src/runtime/<entity>/composables`, registered by
-  the package module.
-- Package server routes: `src/runtime/server/api`.
-- Entity server behaviour: `src/runtime/<entity>/server`, imported by thin
-  route handlers.
+Core currently sets Nuxt's future compatibility version to 5 and keeps
+experimental Nitro auto-imports enabled. The bridge remains because registered
+package server code still uses Nuxt's #imports alias. The source comment names
+the Nitro migration as its removal boundary. Treat this as existing integration
+work, not as a second Nuxt version or a permanent framework contract. See
+[nuxt-baseline.ts](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts).
 
-## Conventions
+Exact Nuxt, Vue, Nuxt UI and integration package versions live in the root,
+Core and App manifests plus pnpm-lock.yaml. Check those sources before a
+framework change; do not keep a second version matrix here.
 
-- Prefer Nuxt auto-registered components where package registration supports it.
-- Prefer package runtime surfaces for reusable domain behavior.
-- Keep Nuxt discovery entrypoints conventional while expressing product
-  ownership under the entity scope described in `runtime-filesystem.md`.
-- App-local pages/components are for composition and app-specific deltas.
-- Use `definePageMeta`, `useHead`, `useSeoMeta`, and Nuxt imports consistently with nearby siblings.
+## Related FireUX maps
 
-## Do not
-
-- Introduce React patterns.
-- Add another router.
-- Add unrelated state frameworks.
+- [Platform composition](fireux.md)
+- [Runtime filesystem](runtime-filesystem.md)
+- [Runtime package contract](runtime-package.md)
+- [App configuration](app-config.md)
+- [Pages](pages.md)
+- [Layouts](layouts.md)
+- [Nuxt UI](nuxt-ui.md)

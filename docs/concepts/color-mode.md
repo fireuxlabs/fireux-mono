@@ -8,7 +8,7 @@ Role: map, not canon
 
 Map the native Nuxt UI light/dark owner and the remaining FireUX duplication.
 Inherit [global context](../ai/gpt-context.md) and the
-[native extension contract](nuxt-ui.md#native-extension-contract). Current source
+[Nuxt UI integration map](nuxt-ui.md#fireux-integration). Current source
 and generated Nuxt imports establish implementation; this map does not claim the
 duplicate implementation is already retired.
 

@@ -1,17 +1,13 @@
 <template>
-  <WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-identity">
-    <template #header-right>
-      <WorkspaceIntroInfo :intro="identity.intro.value" />
-    </template>
-    <WorkspaceFreemium
-      family="kitchen"
-      capability="identity"
-      page-label="Identity"
-      hide-description
-      placement="top"
-    />
-    <KitchenIdentity :identity="identity" />
-  </WorkspaceGroupPage>
+  <WorkspaceIntroInfo :intro="identity.intro.value" />
+  <WorkspaceFreemium
+    family="kitchen"
+    capability="identity"
+    page-label="Identity"
+    hide-description
+    placement="top"
+  />
+  <KitchenIdentity :identity="identity" />
 </template>
 
 <script setup lang="ts">
@@ -19,7 +15,8 @@ import { useKitchenWorkspaceIdentity } from '../../../../kitchen/composables/wor
 const identity = useKitchenWorkspaceIdentity()
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {

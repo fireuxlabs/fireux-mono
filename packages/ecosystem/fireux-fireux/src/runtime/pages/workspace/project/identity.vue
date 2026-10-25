@@ -1,26 +1,22 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: adopt route-level workspace metadata. -->
 <template>
-  <WorkspaceGroupPage workspace="project" nav-key="workspace-project-identity">
-    <template #header-right>
-      <WorkspaceIntroInfo
-        :intro="{
-          ...identity.intro.value,
-          ai: 'Use the Identity editor to review and save changes.',
-        }"
-      />
-    </template>
-    <WorkspaceFreemium
-      family="project"
-      capability="identity"
-      page-label="Identity"
-      hide-description
-      placement="top"
-    />
-    <WorkspaceProjectIdentity
-      :key="identity.projectId.value"
-      :identity="identity"
-    />
-  </WorkspaceGroupPage>
+  <WorkspaceIntroInfo
+    :intro="{
+      ...identity.intro.value,
+      ai: 'Use the Identity editor to review and save changes.',
+    }"
+  />
+  <WorkspaceFreemium
+    family="project"
+    capability="identity"
+    page-label="Identity"
+    hide-description
+    placement="top"
+  />
+  <WorkspaceProjectIdentity
+    :key="identity.projectId.value"
+    :identity="identity"
+  />
 </template>
 
 <script setup lang="ts">
@@ -52,7 +48,8 @@ watchEffect(() =>
 )
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-project-identity',

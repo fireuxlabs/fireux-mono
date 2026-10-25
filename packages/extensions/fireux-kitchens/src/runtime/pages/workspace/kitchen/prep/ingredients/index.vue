@@ -1,18 +1,8 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-ingredients">
-    <template #header>
-      <WorkspaceNavbar title="Ingredients">
-        <template #right>
-          <WorkspaceKitchenAICapabilityInfo capability="ingredients" />
-        </template>
-      </WorkspaceNavbar>
-    </template>
-    <template #body>
-      <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
-        <KitchenPrepAndProductionIngredients />
-      </div>
-    </template>
-  </UDashboardPanel>
+  <WorkspaceKitchenAICapabilityInfo capability="ingredients" />
+  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+    <KitchenPrepAndProductionIngredients />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +11,8 @@ import { provideKitchenIngredientsContext } from '../../../../../kitchen/composa
 provideKitchenIngredientsContext()
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

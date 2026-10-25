@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-waste-report-search-demand-tools">
-      <template #header>
-        <WorkspaceNavbar title="Waste Report Tool specifications" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchToolSpecifications
-          capability="Waste Report"
-          base-path="/workspace/kitchen/reports/waste-report/search-demand"
-          :demand="demand"
-        />
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchToolSpecifications
+      capability="Waste Report"
+      base-path="/workspace/kitchen/reports/waste-report/search-demand"
+      :demand="demand"
+    />
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { kitchenWasteReportSearchDemand } from '../../../../../../kitchen/models
 const demand = kitchenWasteReportSearchDemand
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

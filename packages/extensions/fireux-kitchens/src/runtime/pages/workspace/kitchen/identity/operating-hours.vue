@@ -1,17 +1,9 @@
-<template>
-  <WorkspaceGroupPage
-    workspace="kitchen"
-    nav-key="workspace-kitchen-operating-hours"
-    title="Operating hours"
-    parent-nav-key="workspace-kitchen-identity"
-  >
-    <KitchenOperatingHours />
-  </WorkspaceGroupPage>
-</template>
+<template><KitchenOperatingHours /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   requiresAuth: true,
   requiresSelection: true,
   workspaceSurface: 'browse',

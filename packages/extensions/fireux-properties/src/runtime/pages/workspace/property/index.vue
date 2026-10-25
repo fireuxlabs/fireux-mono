@@ -1,26 +1,16 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-property-home">
-      <template #header>
-        <WorkspaceNavbar title="Property Workspace" />
-      </template>
-      <template #body>
-        <WorkspaceHero
-          title="Build your Property Workspace"
-          description="Manage reservations, guest information and property operations."
-        />
-        <WorkspaceProperty />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceHero
+    title="Build your Property Workspace"
+    description="Manage reservations, guest information and property operations."
+  />
+  <WorkspaceProperty />
 </template>
 
 <script setup lang="ts">
-
-
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'property',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },

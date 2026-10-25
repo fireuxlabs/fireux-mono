@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-stations">
-      <template #header>
-        <WorkspaceNavbar title="Stations" />
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <UPageHeader title="Stations" />
-          <WorkspaceKitchenToolsToolbar capability="stations" />
-          <KitchenPrepAndProductionStations />
-        </section>
-      </template>
-    </UDashboardPanel>
+    <section class="workspace-surface">
+      <UPageHeader title="Stations" />
+      <WorkspaceKitchenToolsToolbar capability="stations" />
+      <KitchenPrepAndProductionStations />
+    </section>
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables
 provideKitchenWorkspaceStations()
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

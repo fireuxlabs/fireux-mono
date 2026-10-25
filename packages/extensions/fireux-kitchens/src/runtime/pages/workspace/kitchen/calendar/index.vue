@@ -1,31 +1,24 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-calendar">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Calendar"
-          ><template #right><WorkspaceIntroInfo :intro="intro" /></template
-        ></WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceHero compact title="Kitchen Calendar" description="A clear view of the days ahead." />
-        <WorkspaceKitchenSelector />
-        <WorkspaceFreemium
-          family="kitchen"
-          capability="calendar"
-          page-label="Calendar"
-          placement="top"
-        />
-        <KitchenCalendar />
-        <WorkspaceFreemium
-          family="kitchen"
-          capability="calendar"
-          page-label="Calendar"
-          placement="bottom"
-        />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceIntroInfo :intro="intro" />
+  <WorkspaceHero
+    compact
+    title="Kitchen Calendar"
+    description="A clear view of the days ahead."
+  />
+  <WorkspaceKitchenSelector />
+  <WorkspaceFreemium
+    family="kitchen"
+    capability="calendar"
+    page-label="Calendar"
+    placement="top"
+  />
+  <KitchenCalendar />
+  <WorkspaceFreemium
+    family="kitchen"
+    capability="calendar"
+    page-label="Calendar"
+    placement="bottom"
+  />
 </template>
 
 <script setup lang="ts">
@@ -40,7 +33,8 @@ const intro = {
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import KitchenCalendar from '../../../../kitchen/components/Calendar/Index.vue'
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'authenticated',
   visibility: { modules: ['fireux-kitchens'] },

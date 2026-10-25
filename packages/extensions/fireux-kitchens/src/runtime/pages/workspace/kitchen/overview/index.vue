@@ -1,26 +1,15 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-overview">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Overview"
-          ><template #right><WorkspaceIntroInfo :intro="intro" /></template
-        ></WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceFreemium
-          family="kitchen"
-          capability="overview"
-          page-label="Overview"
-          placement="top"
-          hide-description
-        />
-        <section class="space-y-4">
-          <WorkspaceKitchenOverview @state="pageState.publish" />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceIntroInfo :intro="intro" />
+  <WorkspaceFreemium
+    family="kitchen"
+    capability="overview"
+    page-label="Overview"
+    placement="top"
+    hide-description
+  />
+  <section class="space-y-4">
+    <WorkspaceKitchenOverview @state="pageState.publish" />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -37,7 +26,8 @@ const intro = {
 }
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {

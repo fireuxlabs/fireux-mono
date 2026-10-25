@@ -1,18 +1,8 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-dishes">
-    <template #header>
-      <WorkspaceNavbar title="Items">
-        <template #right>
-          <WorkspaceKitchenAICapabilityInfo capability="dishes" />
-        </template>
-      </WorkspaceNavbar>
-    </template>
-    <template #body>
-      <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
-        <KitchenFoodAndDrinkItems />
-      </div>
-    </template>
-  </UDashboardPanel>
+  <WorkspaceKitchenAICapabilityInfo capability="dishes" />
+  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+    <KitchenFoodAndDrinkItems />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +10,8 @@ import { provideKitchenDishesContext } from '../../../../../kitchen/composables/
 provideKitchenDishesContext('all')
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

@@ -1,25 +1,16 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: keep the create route thin. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-blank-create">
-      <template #header>
-        <WorkspaceNavbar title="Create Blank" />
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <BlankCreateSystem />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <section class="space-y-4">
+    <BlankCreateSystem />
+  </section>
 </template>
 
 <script setup lang="ts">
 import BlankCreateSystem from '../../../components/Blank/Create/System.vue'
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'create',
   name: 'BlankWorkspaceCreatePage',
   nav: {

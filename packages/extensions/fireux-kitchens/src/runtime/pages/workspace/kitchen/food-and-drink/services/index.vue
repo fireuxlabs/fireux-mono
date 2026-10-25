@@ -1,12 +1,8 @@
-<template>
-  <UDashboardPanel id="kitchen-offerings"
-    ><template #header><WorkspaceNavbar title="Services" /></template
-    ><template #body><KitchenFoodAndDrinkServices /></template
-  ></UDashboardPanel>
-</template>
+<template><KitchenFoodAndDrinkServices /></template>
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   requiresAuth: true,
   requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },

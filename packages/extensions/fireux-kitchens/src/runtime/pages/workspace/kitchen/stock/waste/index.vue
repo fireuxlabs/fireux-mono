@@ -1,27 +1,16 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-waste">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Waste">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="waste"
-          /></template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <KitchenWasteTools />
-          <KitchenWasteAI />
-          <KitchenWaste />
-          <WorkspaceKitchenResearchSegue
-            capability="Waste"
-            base-path="/workspace/kitchen/stock/waste/search-demand"
-          />
-          <KitchenWasteInspection v-if="isDevelopment" />
-        </section>
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenAICapabilityInfo capability="waste" />
+    <section class="workspace-surface">
+      <KitchenWasteTools />
+      <KitchenWasteAI />
+      <KitchenWaste />
+      <WorkspaceKitchenResearchSegue
+        capability="Waste"
+        base-path="/workspace/kitchen/stock/waste/search-demand"
+      />
+      <KitchenWasteInspection v-if="isDevelopment" />
+    </section>
   </div>
 </template>
 
@@ -29,7 +18,8 @@
 const isDevelopment = import.meta.dev
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

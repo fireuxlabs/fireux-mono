@@ -1,18 +1,10 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-ingredients-search-demand-tools">
-      <template #header>
-        <WorkspaceNavbar title="Ingredients Tool specifications" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchToolSpecifications
-          capability="Ingredients"
-          base-path="/workspace/kitchen/prep/ingredients/search-demand"
-          :demand="demand"
-        />
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchToolSpecifications
+      capability="Ingredients"
+      base-path="/workspace/kitchen/prep/ingredients/search-demand"
+      :demand="demand"
+    />
   </div>
 </template>
 
@@ -22,7 +14,8 @@ import { kitchenIngredientsSearchDemand } from '../../../../../../kitchen/models
 const demand = kitchenIngredientsSearchDemand
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

@@ -21,9 +21,8 @@ Current source and executable checks establish behavior; documentation routes
 into that evidence. The human retains product authority. Resolve unclear
 ownership before placing code, preserve unrelated work, and report verification
 limits. Detailed working rules live in the global context:
-[new work](docs/ai/gpt-context.md#new-work),
-[task execution](docs/ai/gpt-context.md#task-execution),
-[verification](docs/ai/gpt-context.md#development-and-verification),
+[new work and composition](docs/ai/gpt-context.md#new-work-and-composition),
+[working and verification](docs/ai/gpt-context.md#working-and-verification-rules),
 [evidence claims](docs/ai/gpt-context.md#evidence-claims), and
 [living-context maintenance](docs/ai/gpt-context.md#living-context-maintenance).
 
@@ -34,8 +33,11 @@ inspection of source, consumers, siblings, and available tests.
 
 | Working scope | Required context or map |
 | --- | --- |
+| FireUX platform or upstream framework integration | `docs/concepts/fireux.md`, then the relevant Nuxt, Nuxt UI, or Firebase map |
 | Repository or package ownership | `docs/concepts/fireux-mono.md`, `docs/concepts/lasagne.md` |
+| App configuration or tenant/global/standalone roles | `docs/concepts/app-config.md`, `docs/concepts/family-tenant-global.md` |
 | Runtime file placement or Nuxt registration | `docs/concepts/runtime-filesystem.md`, `docs/concepts/runtime-package.md` |
+| Nuxt page, layout or route rendering | `docs/concepts/pages.md`, `docs/concepts/layouts.md` |
 | Components or composition | `docs/concepts/components.md`, `docs/concepts/lasagne.md` |
 | Family, canon, spine, alignment, or extraction | `docs/concepts/spine.md`, then the named family map |
 | Workspace and Entity surfaces | `docs/concepts/family-workspace-entity.md` |

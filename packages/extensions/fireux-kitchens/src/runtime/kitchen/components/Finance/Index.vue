@@ -1,69 +1,56 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-finance">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Finance">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="finance"
-          /></template>
-        </WorkspaceNavbar>
-
-        <UDashboardToolbar>
-          <template #left>
-            <UFieldGroup size="sm" aria-label="Finance report period">
-              <UButton
-                v-for="option in presetOptions"
-                :key="option.value"
-                :label="option.label"
-                color="neutral"
-                :variant="selectedPreset === option.value ? 'solid' : 'ghost'"
-                :aria-pressed="selectedPreset === option.value"
-                @click="selectPreset(option.value)"
-              />
-            </UFieldGroup>
-          </template>
-
-          <template #right>
-            <UPopover>
-              <UButton
-                :label="selectedPeriodLabel"
-                icon="i-lucide-calendar-range"
-                color="neutral"
-                variant="outline"
-              />
-
-              <template #content>
-                <UCalendar
-                  :model-value="calendarRange"
-                  :max-value="todayDate"
-                  class="p-2"
-                  range
-                  @update:model-value="selectCalendarRange"
-                />
-              </template>
-            </UPopover>
-          </template>
-        </UDashboardToolbar>
+    <WorkspaceKitchenAICapabilityInfo capability="finance" />
+    <UDashboardToolbar>
+      <template #left>
+        <UFieldGroup size="sm" aria-label="Finance report period">
+          <UButton
+            v-for="option in presetOptions"
+            :key="option.value"
+            :label="option.label"
+            color="neutral"
+            :variant="selectedPreset === option.value ? 'solid' : 'ghost'"
+            :aria-pressed="selectedPreset === option.value"
+            @click="selectPreset(option.value)"
+          />
+        </UFieldGroup>
       </template>
 
-      <template #body>
-        <section class="workspace-surface">
-          <WorkspaceKitchenToolsToolbar capability="finance" />
-          <WorkspaceKitchenAICapability capability="finance" />
-          <WorkspaceKitchenResearchCapabilitySummary capability="finance" />
-          <KitchenFinanceNav />
-          <KitchenFinanceOverview
-            :from-date="calendarRange.start.toString()"
-            :to-date="calendarRange.end.toString()"
+      <template #right>
+        <UPopover>
+          <UButton
+            :label="selectedPeriodLabel"
+            icon="i-lucide-calendar-range"
+            color="neutral"
+            variant="outline"
           />
-          <WorkspaceKitchenResearchGuide capability="finance" />
-          <WorkspaceKitchenResearchSegue
-            capability="Sales"
-            base-path="/workspace/kitchen/reports/finance/search-demand"
-          />
-        </section>
+          <template #content>
+            <UCalendar
+              :model-value="calendarRange"
+              :max-value="todayDate"
+              class="p-2"
+              range
+              @update:model-value="selectCalendarRange"
+            />
+          </template>
+        </UPopover>
       </template>
-    </UDashboardPanel>
+    </UDashboardToolbar>
+    <section class="workspace-surface">
+      <WorkspaceKitchenToolsToolbar capability="finance" />
+      <WorkspaceKitchenAICapability capability="finance" />
+      <WorkspaceKitchenResearchCapabilitySummary capability="finance" />
+      <KitchenFinanceNav />
+      <KitchenFinanceOverview
+        :from-date="calendarRange.start.toString()"
+        :to-date="calendarRange.end.toString()"
+      />
+      <WorkspaceKitchenResearchGuide capability="finance" />
+      <WorkspaceKitchenResearchSegue
+        capability="Sales"
+        base-path="/workspace/kitchen/reports/finance/search-demand"
+      />
+    </section>
   </div>
 </template>
 
@@ -154,6 +141,4 @@ function selectCalendarRange(value: unknown) {
   }
   selectedPreset.value = 'custom'
 }
-
-
 </script>

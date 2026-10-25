@@ -1,45 +1,39 @@
 <template>
-  <div class="relative isolate overflow-hidden bg-default">
+  <div class="workspace-navbar">
     <component :is="identityComponent" v-if="identityComponent" backdrop-only />
-    <LayoutsDashboardNavbar
-      class="relative z-10 bg-transparent"
-      :title="title"
-      :ui="ui"
-      :show-title="identityComponent ? true : showTitle"
-      :show-subscription="false"
-      show-notifications
-    >
+    <UDashboardNavbar class="workspace-navbar__bar" :title="title">
+      <template #leading>
+        <UDashboardSidebarCollapse class="workspace-navbar__sidebar-toggle" />
+      </template>
       <template #title>
-        <div class="flex min-w-0 items-center gap-3">
+        <div class="workspace-navbar__identity">
           <component
             :is="identityComponent"
             v-if="identityComponent"
             identity-only
           />
           <span v-if="!identityComponent">
-            <slot name="title">{{ title }}</slot>
+            {{ title }}
           </span>
         </div>
       </template>
 
       <template #right>
-        <div class="flex items-center gap-2">
+        <div class="workspace-navbar__actions">
           <span
             v-if="identityComponent"
-            class="hidden max-w-64 truncate text-sm text-muted md:inline"
+            class="workspace-navbar__page-title fx-type-caption"
           >
-            <slot name="title">{{ title }}</slot>
+            {{ title }}
           </span>
           <UserSubscriptionControl always-visible />
-          <slot name="right">
-            <UButton
-              icon="i-lucide-info"
-              color="neutral"
-              variant="ghost"
-              aria-label="About this page"
-              @click="infoOpen = true"
-            />
-          </slot>
+          <UButton
+            icon="i-lucide-info"
+            color="neutral"
+            variant="ghost"
+            aria-label="About this page"
+            @click="infoOpen = true"
+          />
           <UButton
             icon="i-lucide-braces"
             color="neutral"
@@ -57,9 +51,29 @@
             variant="ghost"
             aria-label="Open Calendar"
           />
+          <UTooltip :text="notificationLabel">
+            <UButton
+              :aria-label="notificationLabel"
+              color="neutral"
+              variant="ghost"
+              @click="openNotifications()"
+            >
+              <UChip
+                color="error"
+                inset
+                :show="unreadCount > 0"
+                :text="unreadCount > 99 ? '99+' : unreadCount"
+              >
+                <UIcon
+                  name="i-lucide-bell"
+                  class="workspace-navbar__notification-icon"
+                />
+              </UChip>
+            </UButton>
+          </UTooltip>
         </div>
       </template>
-    </LayoutsDashboardNavbar>
+    </UDashboardNavbar>
   </div>
 
   <UModal
@@ -68,8 +82,8 @@
     description="About this Workspace page."
   >
     <template #body>
-      <div class="grid gap-5">
-        <p class="m-0 text-sm text-toned">
+      <div class="workspace-surface workspace-surface--compact">
+        <p class="fx-type-caption">
           This page works with the active Workspace and its selected Entity.
           Available information and actions still follow that Entity's access
           and capability authority.
@@ -86,13 +100,18 @@ import { useNuxtApp, useToast } from '#imports'
 import { toWorkspaceFamilyLabel } from '../utils/routes'
 import { useWorkspaceNav } from '../composables/useWorkspaceNav'
 import { useWorkspacePageState } from '../composables/useWorkspacePageState'
+import { useUserNotifications } from '../../user/composables/notifications/useUserNotifications'
 
 defineProps<{
   title: string
-  ui?: any
-  showTitle?: boolean
 }>()
 
+const { unreadCount, open: openNotifications } = useUserNotifications()
+const notificationLabel = computed(() =>
+  unreadCount.value
+    ? `${unreadCount.value} unread notification${unreadCount.value === 1 ? '' : 's'}`
+    : 'Notifications'
+)
 const workspaceNav = useWorkspaceNav()
 const nuxtApp = useNuxtApp()
 const identityComponent = computed(() =>

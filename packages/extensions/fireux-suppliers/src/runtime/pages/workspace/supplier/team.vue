@@ -1,30 +1,24 @@
 <template>
-  <UDashboardPanel id="workspace-supplier-team">
-    <template #header>
-      <WorkspaceNavbar title="Supplier Team">
-        <template #right><WorkspaceIntroInfo :intro="intro" /></template>
-      </WorkspaceNavbar>
-    </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        title="Supplier Team"
-        description="Supplier workspace team."
-      />
-      <WorkspaceSupplierSelector />
-      <WorkspaceAI compact aria-label="Supplier Team AI"
-        ><UAlert title="Team AI is not connected yet" color="neutral"
-      /></WorkspaceAI>
-      <WorkspaceSupplierTeam :key="team.state.value.supplier.id" :team="team" />
-      <WorkspaceFreemium
-        family="supplier"
-        capability="team"
-        :used-count="team.state.value.team.members.length"
-        page-label="Team"
-        placement="bottom"
-      />
-    </template>
-  </UDashboardPanel>
+  <WorkspaceIntroInfo :intro="intro" />
+  <WorkspaceHero
+    compact
+    title="Supplier Team"
+    description="Supplier workspace team."
+  />
+  <WorkspaceSupplierSelector />
+  <WorkspaceAI compact aria-label="Supplier Team AI"
+    ><UAlert
+      title="Team AI is not connected yet"
+      color="neutral"
+    /> </WorkspaceAI
+  ><WorkspaceSupplierTeam :key="team.state.value.supplier.id" :team="team" />
+  <WorkspaceFreemium
+    family="supplier"
+    capability="team"
+    :used-count="team.state.value.team.members.length"
+    page-label="Team"
+    placement="bottom"
+  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
@@ -56,7 +50,8 @@ useAppLandingSeo({
 })
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'supplier',
   pageTransition: false,
   workspaceSurface: 'browse',

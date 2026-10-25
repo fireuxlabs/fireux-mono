@@ -1,33 +1,24 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-blank-team">
-      <template #header>
-        <WorkspaceNavbar title="Blank Team" />
-      </template>
-
-      <template #body>
-        <WorkspaceHero
-          compact
-          title="Blank Team"
-          description="Blank workspace team."
-        />
-        <WorkspaceBlankSelector />
-        <WorkspaceAI compact aria-label="Blank Team AI"
-          ><UAlert title="Team AI is not connected yet" color="neutral"
-        /></WorkspaceAI>
-        <section class="space-y-4">
-          <WorkspaceBlankTeam :team="team" />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceHero
+    compact
+    title="Blank Team"
+    description="Blank workspace team."
+  />
+  <WorkspaceBlankSelector />
+  <WorkspaceAI compact aria-label="Blank Team AI"
+    ><UAlert title="Team AI is not connected yet" color="neutral" />
+  </WorkspaceAI>
+  <section class="space-y-4">
+    <WorkspaceBlankTeam :team="team" />
+  </section>
 </template>
 
 <script setup lang="ts">
 import { useBlankWorkspaceTeam } from '../../../composables/workspace/useBlankWorkspaceTeam'
 const team = useBlankWorkspaceTeam()
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-blank-team',

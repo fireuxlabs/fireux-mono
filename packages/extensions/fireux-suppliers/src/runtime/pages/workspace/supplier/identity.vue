@@ -1,16 +1,10 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
-<template>
-  <WorkspaceGroupPage
-    workspace="supplier"
-    nav-key="workspace-supplier-identity"
-  >
-    <WorkspaceSupplierIdentity />
-  </WorkspaceGroupPage>
-</template>
+<template><WorkspaceSupplierIdentity /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-suppliers'] },
   nav: {

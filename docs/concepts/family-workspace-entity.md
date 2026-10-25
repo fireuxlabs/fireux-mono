@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-10-24
-Ref: d05ded3fd
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
 ## Purpose
@@ -668,8 +668,10 @@ Connected Team compositions remain separate: `Workspace/Team/Crud/Create.vue`
 owns the Add person modal over `CreatePerson.vue`, while Team Single/Settings
 own the selected person's editing interaction. They preserve active-dialog
 intent, domain-supplied commands and availability. Entity and Capability owners
-retain records, forms, validation, authority and non-CRUD Tools. See the focused
-[Core duplication audit](nuxt-ui.md#focused-duplicate-and-styling-review).
+retain records, forms, validation, authority and non-CRUD Tools. See the
+[component map](components.md#design-system-ownership) and
+[Nuxt UI integration](nuxt-ui.md#fireux-integration) for current shared UI
+ownership.
 
 ## Migration and drift register
 
@@ -1526,12 +1528,13 @@ reactive state or I/O; manual parsing and UI mapping remain separate.
 
 ## Workspace sidebar density
 
-Core `layouts/workspace.vue` cycles compact icons, expanded labels with normal
-group behaviour, and expanded labels with every group initially open. The control
-beside the brand names its next action in its tooltip and accessible label.
-Changing mode remounts accordion defaults without changing the active destination
-or domain readers. `navigation/workspace-sidebar-mode.ts` owns the small cycle;
-verify `workspace-sidebar-mode.test.mjs` and `workspace-active-destination.test.mjs`.
+Core `runtime/workspace/components/Sidebar.vue` cycles compact icons, expanded
+labels with normal group behaviour, and expanded labels with every group initially
+open. The control beside the brand names its next action in its tooltip and
+accessible label. Changing mode remounts accordion defaults without changing the
+active destination or domain readers. `runtime/workspace/utils/sidebar-mode.ts`
+owns the small cycle; verify `workspace-sidebar-mode.test.mjs` and
+`workspace-active-destination.test.mjs`.
 
 ## Shared Home and Team composition
 
@@ -1567,10 +1570,10 @@ adds selected-Entity date-state disposal. Home uses existing shared collection, 
 `useXWorkspaceHome()`, which owns the real chooser and summary composition.
 
 Kitchen Identity composes venue profile sections, listing controls and domain
-context at `/workspace/kitchen/identity`, using `WorkspaceGroupPage` and shared
-Identity read-state presentation. The separate profile route is retired; Hours
-and Appearance remain domain child pages. Place editors and Kitchen publication
-commands retain their separate authority.
+context at `/workspace/kitchen/identity` inside Core's named Workspace route
+composition and shared Identity read-state presentation. The separate profile
+route is retired; Hours and Appearance remain domain child pages. Place editors
+and Kitchen publication commands retain their separate authority.
 
 Kitchen keeps `useKitchenIdentity(kitchenId)` for explicit-ID setup workflows.
 `useKitchenIdentityProjection` maps supplied Kitchen and linked Place records
@@ -1650,8 +1653,9 @@ receive explicit targets and retain account/App authority checks; editor route a
 draft lifetime stays with the consuming surface. The selection-only write guard
 is removed rather than treated as mutation authority.
 
-Identity page framing is Core-owned through `WorkspaceGroupPage`: Project,
-Kitchen, Supplier, Portfolio, Property and Blank reuse its navbar, breadcrumbs,
-width and spacing. Domain compositions own their sections and editors, not
-another dashboard panel or outer page-width wrapper. Kitchen Identity child
-pages reuse the frame with their parent navigation key.
+Identity page framing is Core-owned by the shared Workspace route composition:
+Project, Kitchen, Supplier, Portfolio, Property and Blank use the shared page,
+Navbar and Breadcrumbs. Workspace routes provide domain content through Nuxt's
+page tree; they do not repeat the dashboard panel or add a custom shell.
+Domain compositions own their sections and editors. Kitchen Identity child
+pages remain child routes in that page tree.

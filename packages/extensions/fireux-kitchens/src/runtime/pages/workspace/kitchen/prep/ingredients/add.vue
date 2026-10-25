@@ -1,18 +1,7 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-ingredient-add">
-      <template #header>
-        <WorkspaceNavbar title="Create Kitchen Ingredient" />
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <UBreadcrumb :items="breadcrumbItems" />
-          <KitchenPrepAndProductionIngredientsAdd />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <section class="space-y-4">
+    <KitchenPrepAndProductionIngredientsAdd />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -29,7 +18,8 @@ const breadcrumbItems = [
 ]
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'create',
   visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,

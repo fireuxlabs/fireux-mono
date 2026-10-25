@@ -78,7 +78,7 @@ test('path boundaries prevent similarly named capabilities matching each other',
 // Exercise the actual shared sidebar projection for both supported group shapes.
 function sidebar(items, route, mode = 'expanded') {
   const layout = readFileSync(
-    new URL('../runtime/layouts/workspace.vue', import.meta.url),
+    new URL('../runtime/workspace/components/Sidebar.vue', import.meta.url),
     'utf8'
   )
   const start = layout.indexOf('const activeDestination = computed(')

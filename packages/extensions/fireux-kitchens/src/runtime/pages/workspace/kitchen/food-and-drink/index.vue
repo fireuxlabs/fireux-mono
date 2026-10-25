@@ -5,7 +5,8 @@
 <script setup lang="ts">
 import KitchenFoodAndDrink from '../../../../kitchen/components/FoodAndDrink/Index.vue'
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',

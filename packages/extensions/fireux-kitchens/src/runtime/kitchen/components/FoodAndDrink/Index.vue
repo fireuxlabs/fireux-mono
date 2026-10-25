@@ -1,11 +1,9 @@
 <template>
-  <WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-food">
-    <KitchenFoodAndDrinkAI />
-    <KitchenFoodAndDrinkItemsOverview />
-    <KitchenFoodAndDrinkMenusOverview />
-    <KitchenFoodAndDrinkPromotionsOverview />
-    <KitchenFoodAndDrinkServicesOverview />
-  </WorkspaceGroupPage>
+  <KitchenFoodAndDrinkAI />
+  <KitchenFoodAndDrinkItemsOverview />
+  <KitchenFoodAndDrinkMenusOverview />
+  <KitchenFoodAndDrinkPromotionsOverview />
+  <KitchenFoodAndDrinkServicesOverview />
 </template>
 <script setup lang="ts">
 import { provideFoodAndDrinkIndex } from '../../composables/workspace/food/useFoodAndDrinkIndexContext'

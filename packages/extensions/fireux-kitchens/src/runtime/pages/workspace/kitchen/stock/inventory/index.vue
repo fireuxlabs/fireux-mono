@@ -1,48 +1,38 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-inventory">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Inventory">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="inventory"
-          /></template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <UPageHeader title="Stock" />
-          <UAlert
-            title="Not connected yet"
-            description="Stock balances and movements are not connected yet. No quantities on hand can be reported from this screen."
-            color="warning"
-            variant="subtle"
-          />
-          <MoleculesDisclosurePanel
-            title="Capability reference"
-            :default-open="false"
-          >
-            <WorkspaceKitchenToolsToolbar capability="inventory" />
-            <WorkspaceKitchenAICapability
-              capability="inventory"
-              :show-suggestion-cards="false"
-            />
-            <WorkspaceKitchenResearchCapabilitySummary capability="inventory" />
-            <WorkspaceKitchenResearchGuide capability="inventory" />
-            <WorkspaceKitchenResearchSegue
-              capability="Inventory"
-              base-path="/workspace/kitchen/stock/inventory/search-demand"
-            />
-          </MoleculesDisclosurePanel>
-        </section>
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenAICapabilityInfo capability="inventory" />
+    <section class="workspace-surface">
+      <UPageHeader title="Stock" />
+      <UAlert
+        title="Not connected yet"
+        description="Stock balances and movements are not connected yet. No quantities on hand can be reported from this screen."
+        color="warning"
+        variant="subtle"
+      />
+      <MoleculesDisclosurePanel
+        title="Capability reference"
+        :default-open="false"
+      >
+        <WorkspaceKitchenToolsToolbar capability="inventory" />
+        <WorkspaceKitchenAICapability
+          capability="inventory"
+          :show-suggestion-cards="false"
+        />
+        <WorkspaceKitchenResearchCapabilitySummary capability="inventory" />
+        <WorkspaceKitchenResearchGuide capability="inventory" />
+        <WorkspaceKitchenResearchSegue
+          capability="Inventory"
+          base-path="/workspace/kitchen/stock/inventory/search-demand"
+        />
+      </MoleculesDisclosurePanel>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

@@ -1,7 +1,7 @@
 # Pages
 
-Updated: 2026-08-27
-Ref: 1813a2f9e
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
 ## Purpose
@@ -26,13 +26,20 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Current convention
 
-- Page owns route shell, metadata, layout, and high-level composition.
-- Layout owns shared chrome; see `layouts.md` before changing layout behavior.
-- Core supplies the app-wide Nuxt page transition without changing route
-  ownership or URLs. Use `definePageMeta({ pageTransition: false })` only for a
-  genuine route-level exception; do not rebuild the shared transition in a
-  page.
-- A rendered page must compile to one real root node for Nuxt transitions.
+- A page owns route metadata, route outcome and high-level domain composition.
+  Shared chrome belongs to a Nuxt layout or a named family composition; see
+  [layouts](layouts.md) before changing route framing.
+- Workspace route pages set `layout: false` and `workspacePage: true`.
+  [AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
+  selects Core's Workspace composition, whose page frame owns the nested
+  `<NuxtPage />` outlet. Workspace pages provide route content.
+- Core supplies the app-wide Nuxt page transition and disables it for Workspace
+  routes through
+  [pages-config.ts](../../packages/core/fireux-core/src/config/module/pages-config.ts)
+  so the shared frame remains mounted. Do not re-enable per-page transitions
+  without a proved route contract.
+- A rendered page must compile to one real root node when Nuxt page transitions
+  are active.
   Keep authored comments outside `<template>` and wrap true sibling roots;
   redirect-only routes opt out because they have no visible page to animate.
 - Page should delegate domain display to named components.
@@ -113,7 +120,8 @@ Map how route pages should be built and where consensus is still forming.
 - Root Entity Collection Page pages should use `XCollectionManager`.
 - `XCollectionManager` should fetch its bounded entity collection itself.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
-- Workspace indexes render `WorkspaceXIndex`.
+- Workspace indexes render their domain `WorkspaceXIndex` as content inside the
+  shared Core frame; group navigation uses `WorkspacePageLinks`.
 - Internal dev previews and component labs live under `/dev`.
 - `/demo` is reserved for a project's public Product Demo index and its guided
   child demonstrations. These pages are project-owned, remain thin, and use

@@ -1,22 +1,13 @@
 <template>
-  <UDashboardPanel id="granite-portfolio-home">
-    <template #header>
-      <WorkspaceNavbar title="Portfolio Workspace">
-        <template #right><WorkspacePortfolioHomeInfo /></template>
-      </WorkspaceNavbar>
-      <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
-        ><WorkspacePortfolioSelector
-      /></UDashboardToolbar>
-    </template>
-    <template #body>
-      <WorkspacePortfolioHomeHero />
-      <WorkspaceGuestWelcome />
-      <WorkspacePortfolio />
-      <WorkspacePortfolioHomeCapabilityLinks />
-      <WorkspacePortfolioHomeTools />
-      <WorkspacePortfolioHomeDiscoveryLinks />
-    </template>
-  </UDashboardPanel>
+  <WorkspacePortfolioHomeInfo />
+  <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+    ><WorkspacePortfolioSelector /> </UDashboardToolbar
+  ><WorkspacePortfolioHomeHero />
+  <WorkspaceGuestWelcome />
+  <WorkspacePortfolio />
+  <WorkspacePortfolioHomeCapabilityLinks />
+  <WorkspacePortfolioHomeTools />
+  <WorkspacePortfolioHomeDiscoveryLinks />
 </template>
 
 <script setup lang="ts">
@@ -26,7 +17,8 @@ import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/Gues
 import { useSeoMeta } from '#imports'
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'portfolio',
   workspaceSurface: 'browse',

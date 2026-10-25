@@ -1,29 +1,18 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-suppliers">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Suppliers">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="suppliers"
-          /></template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <KitchenSuppliersSelector />
-          <WorkspaceKitchenToolsToolbar capability="suppliers" />
-          <WorkspaceKitchenAICapability capability="suppliers" />
-          <WorkspaceKitchenResearchCapabilitySummary capability="suppliers" />
-          <KitchenSuppliers />
-          <WorkspaceKitchenResearchGuide capability="suppliers" />
-          <WorkspaceKitchenResearchSegue
-            capability="Suppliers"
-            base-path="/workspace/kitchen/stock/suppliers/search-demand"
-          />
-        </section>
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenAICapabilityInfo capability="suppliers" />
+    <section class="workspace-surface">
+      <KitchenSuppliersSelector />
+      <WorkspaceKitchenToolsToolbar capability="suppliers" />
+      <WorkspaceKitchenAICapability capability="suppliers" />
+      <WorkspaceKitchenResearchCapabilitySummary capability="suppliers" />
+      <KitchenSuppliers />
+      <WorkspaceKitchenResearchGuide capability="suppliers" />
+      <WorkspaceKitchenResearchSegue
+        capability="Suppliers"
+        base-path="/workspace/kitchen/stock/suppliers/search-demand"
+      />
+    </section>
   </div>
 </template>
 
@@ -33,7 +22,8 @@ import { provideKitchenWorkspaceSuppliers } from '../../../../../kitchen/composa
 provideKitchenWorkspaceSuppliers()
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

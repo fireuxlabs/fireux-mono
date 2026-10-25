@@ -348,7 +348,7 @@ Overview presents one entrance per visible Kitchen area, using route-owned names
 descriptions and destinations; it does not flatten child pages or show placeholder
 summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
-Core `WorkspaceGroupPage` framing with explicit route-owned children.
+Core named Workspace composition with route-owned content and one NuxtPage outlet.
 Their indexes are mini overviews; the child pages remain the working surfaces.
 Food & drink has its own group index at `/workspace/kitchen/food-and-drink`,
 composing the existing Group component. Items, Menus, Promotions and Services
@@ -459,7 +459,7 @@ Verify this projection with `kitchen-identity-shape.test.mjs`.
 
 Kitchen Identity at `/workspace/kitchen/identity` composes the five focused venue
 edit sections, Kitchen listing controls, and separate Kitchen and Venue context.
-It reuses Core WorkspaceGroupPage framing and shared Identity read states.
+It reuses Core WorkspacePage framing and shared Identity read states.
 The separate `/identity/profile` page is retired without an alias;
 `/workspace/kitchen/identity/operating-hours` owns venue and Kitchen schedules;
 `/workspace/kitchen/identity/appearance` owns Kitchen menu palette editing.
@@ -1184,29 +1184,12 @@ Missing or cleared titles display “Food & drinks”. Public food portal cards 
 this title rather than concatenating Menu names; service configurations remain
 separate Kitchen-owned records.
 
-All declared Kitchen group indexes, including Identity & brand, reuse Core `Workspace/GroupPage.vue` (`WorkspaceGroupPage`) for shared panel framing, headings and breadcrumbs. The shell receives its
-Workspace family and navigation key; it contains no Kitchen paths. Its default
-content lists navigation children, while domain compositions supply their own
-child surfaces. Group AI precedes the child surfaces;
-explicit navigation child keys (`items`, `menus`, `promotions`, `services`)
-identify each surface independently of its URL. Food & drink composes its named
-children directly; each child uses `Navigation/Child.vue` to own the standard
-card and its summary, without a second
-heading or entrance. Food & drink merges its Services summary into that child
-card; Items, Menus and Promotions retain the same card framing. Services flags
-missing menu selection, unavailable selections, missing publication and unknown
-effective hours directly from readiness data, independently of AI. Closed-now
-status alone is not a setup issue. Service names and missing-data flags link to
-the matching `#service-<key>` configuration section. Sections focus and scroll
-after asynchronous loading, without changing their settings. Items, Menus and Promotions use the read-only
-`food-catalogue-summary.ts` projections in the same child surfaces. The focused
-`useFoodCatalogueSummary` reuses the authorized selected-Kitchen id, existing Menu
-collection and one existing child reader each for Dishes and Promotions; summaries
-clear behind loading/error states. Photos and descriptions are optional; zero is
-a valid price, Daily specials stay separate and no Promotions is a normal state.
-Menu content publication readiness stays in its section-aware editor, rather
-than claiming to inspect sections from Menu metadata. The obsolete unlinked Menu setup route is removed. Other group
-indexes reuse this framing without inventing AI or summary data.
+Kitchen pages declare `workspacePage: true` and `layout: false`. Core AppShell
+selects `workspace/components/Index.vue`, composing Sidebar and Page. Page owns
+Navbar, Breadcrumbs and the root NuxtPage outlet. Domain routes supply named
+content components; group indexes use PageLinks when they need navigation cards.
+The old Workspace layout and GroupPage shell are retired. Native Nuxt UI slots
+remain component API details, not custom FireUX page-composition contracts.
 
 The Food & drink overview composes `FoodAndDrink/Index.vue` with one shared
 Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.

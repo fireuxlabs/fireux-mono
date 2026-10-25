@@ -1,17 +1,9 @@
-<template>
-  <WorkspaceGroupPage
-    workspace="kitchen"
-    nav-key="workspace-kitchen-payments"
-    title="Payments"
-    parent-nav-key="workspace-kitchen-settings"
-  >
-    <KitchenIdentityPayments />
-  </WorkspaceGroupPage>
-</template>
+<template><KitchenIdentityPayments /></template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   requiresAuth: true,
   requiresSelection: true,
   visibility: { modules: ['fireux-kitchens'] },

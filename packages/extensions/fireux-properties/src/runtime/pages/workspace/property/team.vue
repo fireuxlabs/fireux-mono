@@ -1,30 +1,24 @@
 <template>
-  <UDashboardPanel id="workspace-property-team">
-    <template #header>
-      <WorkspaceNavbar title="Property Team">
-        <template #right><WorkspaceIntroInfo :intro="intro" /></template>
-      </WorkspaceNavbar>
-    </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        title="Property Team"
-        description="Property workspace team."
-      />
-      <WorkspacePropertySelector />
-      <WorkspaceAI compact aria-label="Property Team AI"
-        ><UAlert title="Team AI is not connected yet" color="neutral"
-      /></WorkspaceAI>
-      <PropertyTeam :key="team.state.value.property.id" :team="team" />
-      <WorkspaceFreemium
-        family="property"
-        capability="team"
-        :used-count="team.state.value.team.members.length"
-        page-label="Team"
-        placement="bottom"
-      />
-    </template>
-  </UDashboardPanel>
+  <WorkspaceIntroInfo :intro="intro" />
+  <WorkspaceHero
+    compact
+    title="Property Team"
+    description="Property workspace team."
+  />
+  <WorkspacePropertySelector />
+  <WorkspaceAI compact aria-label="Property Team AI"
+    ><UAlert
+      title="Team AI is not connected yet"
+      color="neutral"
+    /> </WorkspaceAI
+  ><PropertyTeam :key="team.state.value.property.id" :team="team" />
+  <WorkspaceFreemium
+    family="property"
+    capability="team"
+    :used-count="team.state.value.team.members.length"
+    page-label="Team"
+    placement="bottom"
+  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
@@ -55,7 +49,8 @@ useAppLandingSeo({
 })
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'property',
   pageTransition: false,
   workspaceSurface: 'browse',

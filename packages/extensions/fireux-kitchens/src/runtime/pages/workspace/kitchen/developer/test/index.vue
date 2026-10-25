@@ -1,40 +1,34 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-test">
-    <template #header>
-      <WorkspaceNavbar title="Test" />
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
-        ><UTabs
-          v-if="test.records.value.length"
-          :model-value="test.selected.value?.id"
-          :items="
-            test.records.value.map((record) => ({
-              label: record.value,
-              value: record.id,
-            }))
-          "
-          :content="false"
-          variant="link"
-          size="sm"
-          aria-label="Select Test"
-          @update:model-value="test.select(String($event))"
-      /></UDashboardToolbar>
-    </template>
-    <template #body>
-      <WorkspaceHero
-        compact
-        title="Kitchen Test"
-        description="Save a string and read it back."
-      />
-      <WorkspaceKitchenTestAI :test="test" />
-      <WorkspaceKitchenTest :key="test.id.value" :test="test" />
-    </template>
-  </UDashboardPanel>
+  <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+    ><UTabs
+      v-if="test.records.value.length"
+      :model-value="test.selected.value?.id"
+      :items="
+        test.records.value.map((record) => ({
+          label: record.value,
+          value: record.id,
+        }))
+      "
+      :content="false"
+      variant="link"
+      size="sm"
+      aria-label="Select Test"
+      @update:model-value="test.select(String($event))"
+    /> </UDashboardToolbar
+  ><WorkspaceHero
+    compact
+    title="Kitchen Test"
+    description="Save a string and read it back."
+  />
+  <WorkspaceKitchenTestAI :test="test" />
+  <WorkspaceKitchenTest :key="test.id.value" :test="test" />
 </template>
 <script setup lang="ts">
 import { useKitchenWorkspaceTest } from '../../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
 const test = useKitchenWorkspaceTest()
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',

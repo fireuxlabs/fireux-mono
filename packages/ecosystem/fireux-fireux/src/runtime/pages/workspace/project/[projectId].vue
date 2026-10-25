@@ -1,52 +1,46 @@
 <template>
-  <UDashboardPanel id="workspace-project-detail">
-    <template #header>
-      <WorkspaceProjectHomeHeader />
+  <WorkspaceProjectHomeHeader />
+  <section class="workspace-surface workspace-surface--compact">
+    <UButton
+      to="/"
+      label="Back to Projects"
+      icon="i-lucide-arrow-left"
+      color="neutral"
+      variant="soft"
+      class="w-fit"
+    />
+    <template v-if="project">
+      <UAvatar
+        :src="project.identity.image_url || undefined"
+        :alt="project.identity.name"
+        icon="i-lucide-briefcase-business"
+        size="3xl"
+      />
+      <div>
+        <h1 class="text-2xl font-semibold text-highlighted">
+          {{ project.identity.name }}
+        </h1>
+        <p v-if="project.identity.description" class="mt-1 text-muted">
+          {{ project.identity.description }}
+        </p>
+      </div>
     </template>
-    <template #body>
-      <section class="workspace-surface workspace-surface--compact">
-        <UButton
-          to="/"
-          label="Back to Projects"
-          icon="i-lucide-arrow-left"
-          color="neutral"
-          variant="soft"
-          class="w-fit"
-        />
-        <template v-if="project">
-          <UAvatar
-            :src="project.identity.image_url || undefined"
-            :alt="project.identity.name"
-            icon="i-lucide-briefcase-business"
-            size="3xl"
-          />
-          <div>
-            <h1 class="text-2xl font-semibold text-highlighted">
-              {{ project.identity.name }}
-            </h1>
-            <p v-if="project.identity.description" class="mt-1 text-muted">
-              {{ project.identity.description }}
-            </p>
-          </div>
-        </template>
-        <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
-        <MoleculesStateCard
-          v-else-if="source.outcome.value === 'error'"
-          state="error"
-          title="Project could not be loaded"
-          description="Please try again."
-        />
-        <UAlert
-          v-else
-          color="neutral"
-          variant="subtle"
-          icon="i-lucide-file-question"
-          title="Project not found"
-          description="Return to Projects and choose an available record."
-        />
-      </section>
-    </template>
-  </UDashboardPanel>
+    <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
+    <MoleculesStateCard
+      v-else-if="source.outcome.value === 'error'"
+      state="error"
+      title="Project could not be loaded"
+      description="Please try again."
+    />
+    <UAlert
+      v-else
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-file-question"
+      title="Project not found"
+      description="Return to Projects and choose an available record."
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -64,7 +58,8 @@ const project = computed(() =>
 const loading = source.pending
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'detail',

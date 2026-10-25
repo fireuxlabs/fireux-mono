@@ -12,15 +12,24 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   const requestUrl = useRequestURL()
   const hostname = requestUrl.hostname.toLowerCase()
   if (to.path === '/') {
-    const workspaceOrigin = useRuntimeConfig().public.fireux.workspaceConfig?.kitchen?.origin
+    const workspaceOrigin =
+      useRuntimeConfig().public.fireux.workspaceConfig?.kitchen?.origin
     const workspaceHost = requestUrl.origin === workspaceOrigin
-    to.meta.layout = workspaceHost ? 'workspace' : 'landing'
+    to.meta.layout = workspaceHost ? false : 'landing'
+    to.meta.workspacePage = workspaceHost
     to.meta.workspace = workspaceHost ? 'kitchen' : undefined
     to.meta.workspaceSurface = workspaceHost ? 'browse' : undefined
     return
   }
   // Retired homes are absent from the route table, without compatibility redirects.
-  if (['/workspace', '/workspace/', '/workspace/kitchen', '/workspace/kitchen/'].includes(to.path)) {
+  if (
+    [
+      '/workspace',
+      '/workspace/',
+      '/workspace/kitchen',
+      '/workspace/kitchen/',
+    ].includes(to.path)
+  ) {
     throw createError({ statusCode: 404, statusMessage: 'Page not found' })
   }
   if (!to.path.startsWith('/workspace/')) return
@@ -35,7 +44,9 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   if (!localPublicHost && !mainPublicHost) return
 
   const destination = new URL(to.fullPath, requestUrl)
-  destination.hostname = localPublicHost ? 'workspace.localhost' : 'workspace.misebox.app'
+  destination.hostname = localPublicHost
+    ? 'workspace.localhost'
+    : 'workspace.misebox.app'
   if (mainPublicHost) {
     destination.protocol = 'https:'
     destination.port = ''

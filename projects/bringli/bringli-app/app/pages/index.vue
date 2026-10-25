@@ -1,26 +1,25 @@
 <template>
-  <UDashboardPanel id="bringli-supplier-home">
-    <WorkspaceNavbar title="Supplier Workspace" />
-    <WorkspaceHero
-      title="Build your Supplier Workspace"
-      description="Manage catalogues, ingredients and supply operations."
-    />
-    <WorkspaceSupplierSelector />
-    <WorkspaceAI compact aria-label="Supplier Landing AI">
-      <UAlert title="Landing AI is not connected yet" color="neutral" />
-    </WorkspaceAI>
-    <WorkspaceSupplier />
-    <WorkspaceSupplierHomeTools />
-  </UDashboardPanel>
+  <WorkspaceHero
+    title="Build your Supplier Workspace"
+    description="Manage catalogues, ingredients and supply operations."
+  />
+  <WorkspaceSupplierSelector />
+  <WorkspaceAI compact aria-label="Supplier Landing AI">
+    <UAlert
+      title="Landing AI is not connected yet"
+      color="neutral"
+    /> </WorkspaceAI
+  ><WorkspaceSupplier />
+  <WorkspaceSupplierHomeTools />
 </template>
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 
-
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'supplier',
   workspaceSurface: 'browse',

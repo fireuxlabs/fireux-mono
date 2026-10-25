@@ -1,27 +1,15 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-supplier-ingredients">
-      <template #header>
-        <WorkspaceNavbar title="Supplier Ingredients">
-          <template #right>
-            <WorkspaceAICapabilityPlaceholder capability="Supplier Ingredients" />
-          </template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <WorkspaceSupplierIngredients />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceAICapabilityPlaceholder capability="Supplier Ingredients" />
+  <section class="space-y-4">
+    <WorkspaceSupplierIngredients />
+  </section>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-suppliers'] },
   nav: {

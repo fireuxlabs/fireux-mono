@@ -1,12 +1,10 @@
 <template>
-  <WorkspaceGroupPage
-    workspace="kitchen"
-    nav-key="workspace-kitchen-settings"
-  />
+  <WorkspacePageLinks />
 </template>
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   requiresAuth: true,

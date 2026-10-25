@@ -1,7 +1,8 @@
 <template><KitchenFoodSafetyPage view="checks" /></template>
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   requiresAuth: false,

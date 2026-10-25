@@ -543,7 +543,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
   const components = new URL('../runtime/kitchen/components/', import.meta.url)
   const group = readFileSync(
     new URL(
-      '../../../../core/fireux-core/src/runtime/workspace/components/GroupPage.vue',
+      '../../../../core/fireux-core/src/runtime/workspace/components/PageLinks.vue',
       import.meta.url
     ),
     'utf8'
@@ -557,16 +557,13 @@ test('group child surfaces retain every entrance and compose summaries inside th
     'utf8'
   )
   assert.match(group, /v-for="item in children"/)
-  assert.match(group, /<slot>/)
+  assert.ok(!group.includes('<slot'))
   assert.ok(!group.includes('excludePages'))
   assert.ok(
     food.indexOf('<KitchenFoodAndDrinkAI') <
       food.indexOf('<KitchenFoodAndDrinkItemsOverview')
   )
-  assert.match(
-    food,
-    /<WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-food"/
-  )
+  assert.ok(!food.includes('WorkspaceGroupPage'))
   assert.match(food, /<KitchenFoodAndDrinkServicesOverview/)
   const keys = navigation(join(root, 'food-and-drink/index.vue')).children.map(
     (child) => child.key
@@ -587,7 +584,7 @@ test('group child surfaces retain every entrance and compose summaries inside th
   assert.ok(!services.includes('<section'))
 })
 
-test('every declared Kitchen group index composes the shared group shell', () => {
+test('every declared Kitchen group index is content under the Workspace page owner', () => {
   const groups = files(root).filter(
     (file) => file.endsWith('.vue') && navigation(file)?.groupIndex
   )
@@ -611,7 +608,8 @@ test('every declared Kitchen group index composes the shared group shell', () =>
             'utf8'
           )
         : source
-    assert.match(composition, /<WorkspaceGroupPage\b/, relative(root, file))
+    assert.ok(!composition.includes('WorkspaceGroupPage'), relative(root, file))
+    assert.match(source, /workspacePage: true/, relative(root, file))
     assert.ok(!composition.includes('<UDashboardPanel'), relative(root, file))
   }
   assert.equal(existsSync(join(root, 'menu-setup.vue')), false)

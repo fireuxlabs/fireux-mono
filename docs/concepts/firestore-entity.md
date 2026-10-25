@@ -1,265 +1,79 @@
-# Firestore Entity stack family
+# Firestore Entity map
 
-Updated: 2026-10-12
-Ref: 2807ceca9
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
-## Purpose
+## Purpose and authority
 
-Map where FireUX stores an Entity and the records it owns. Current source,
-Security Rules, guards, and verified live data remain authority while the
-owner-first migration described here is completed.
+Map FireUX's data ownership and authority boundaries on Cloud Firestore. Use
+Firebase's [data model guide](https://firebase.google.com/docs/firestore/data-model)
+and [security overview](https://firebase.google.com/docs/firestore/security/overview)
+for upstream behavior. This map records only FireUX's product contract.
 
-The rule is intentionally simple:
+Current models, readers, commands and Rules establish implementation. They do
+not prove that stored records or deployed Rules have completed a migration.
+Inspect the owning sources and target environment before making a live claim.
 
-> A root Entity lives at its named root collection. Everything whose lifecycle
-> belongs to that Entity lives beneath it. A surface never becomes a storage
-> owner.
+## FireUX ownership contract
 
-## Links
+A canonical Entity belongs to its domain owner. Records whose lifecycle belongs
+to that Entity live beneath it; an independently identified Entity keeps its own
+identity. A route, Workspace, Dashboard, App or Ecosystem is not a storage
+owner merely because it presents the record.
 
-- Parent: [entities.md](entities.md)
-- Parent: [composables.md](composables.md)
-- Child: [family-workspace-entity.md](family-workspace-entity.md)
-- Child: [family-menu.md](family-menu.md)
-- Horizontal: [workspace.md](workspace.md)
-- Horizontal: [server-api.md](server-api.md)
-- Horizontal: [runtime-filesystem.md](runtime-filesystem.md)
-- Rules: [firestore-rules.md](firestore-rules.md)
+User is a person. AppUser is membership in one App. Profiles, memberships,
+cross-App links and domain records retain their distinct owners and authority.
+See [core models](core-models.md) and [Entities](entities.md) for canonical
+relationships and current models.
 
-## Owner-first storage
+Domain packages own their canonical paths, projections, access policy,
+validation and protected commands. Core owns shared Firestore transport and
+typed lower-level mechanics. Apps adapt their product routes; Ecosystems bind
+Firebase projects and compose extensions.
 
-```text
-(default)/
-├── project/{projectId}       local ProjectMeta projection
-├── ecosystem/{ecosystemId}   local EcosystemMeta projection
+Public and private records remain separate when their access differs.
+Firestore cannot redact selected nested fields from a document read. A public
+projection must omit protected children; hiding a field in Vue does not protect
+it. Team membership, App membership and a displayed role label grant only the
+authority defined by the owning domain.
 
-<named database>/
-├── apps/{appId}              canonical App
-│   ├── users/{uid}           AppUser membership and governance
-│   ├── join-requests/{uid}
-│   ├── membership-blocks/{uid}
-│   ├── events/{eventId}
-│   ├── conversations/{conversationId}
-│   │   ├── messages/{messageId}
-│   │   └── private/session
-│   └── financial-facts/{factId}
-│
-├── users/{uid}               canonical User
-│   ├── private/account
-│   ├── private/context
-│   ├── notifications/{notificationId}
-│   ├── profiles/{profileKind}
-│   │   └── app-state/{appId} only when that profile has real App-specific state
-│   └── orders/{orderId}      User-owned link to an operational Order
-│
-├── projects/{projectId}
-│   ├── team/{uid}
-│   └── team-requests/{uid}
-│
-├── kitchens/{kitchenId}
-│   ├── team/{uid}
-│   ├── team-requests/{uid}
-│   ├── private/{recordId}
-│   └── <Kitchen operations>/...
-│
-├── suppliers/{supplierId}
-│   ├── team/{uid}
-│   ├── team-requests/{uid}
-│   └── <Supplier operations>/...
-│
-├── portfolios/{portfolioId}
-│   ├── team/{uid}
-│   ├── team-requests/{uid}
-│   └── <Portfolio operations>/...
-│
-├── properties/{propertyId}
-│   ├── team/{uid}
-│   ├── team-requests/{uid}
-│   ├── private/manual
-│   └── <Property operations>/...
-│
-└── marketplace-stores/{storeId}
-    ├── team/{uid}
-    ├── team-requests/{uid}
-    └── <Marketplace Store operations>/...
-```
+## Reads, writes and security
 
-The examples name ownership, not required empty symmetry. An Entity receives
-only records and operations it genuinely owns.
+Mutable on-screen collections and records use the owning live reader. A
+reactive parameter around a one-shot read or periodic polling is not a live
+binding. Shared transport and read-state behavior belong in Core; authorization
+and projections remain with the domain. See [server API](server-api.md) for
+read and transport contracts.
 
-An inactive empty Project shell initially owns only its canonical root and
-owner Team record in the `fireux` named database. The `(default)/project`
-ProjectMeta is a routing projection added by the provisioning lane only when a
-named product database exists; empty-shell creation must not invent one.
+Protected writes use named domain commands with an exact target and validated
+actor authority. Client SDK access is separately governed by Firestore Security
+Rules. Admin/server SDKs use server IAM and bypass Firestore Rules; trusted
+commands still need their own domain checks. Rules are not query filters.
 
-## Workspace Entity contract
+See the [Firestore mutation context](../ai/firestore-mutations-context.md) for
+current command lanes, development policy and connected-operation boundaries,
+and [Rules source map](firestore-rules.md) for template ownership. The accepted
+open-development Rules policy is intentionally scoped there. It does not imply
+privacy or authorize shipping.
 
-Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are root
-Workspace Entities.
+## Migration and evidence
 
-- The root document owns only the fields declared by its canonical entity
-  model. Kitchen uses the same document id as its Place; other domains retain their explicit supported relationships. Place owns the shared venue profile and currency. Kitchen has root `id` and
-  `identity.{slug,status,visibility,source?}`; it must not copy Place profile or
-  currency or store `place_id`. Proved capability configuration retains its
-  current Kitchen owner. `identity.source` records whether onboarding began
-  from a user shell or a Place when known; it never classifies Place as physical
-  or non-physical and historical absence is not guessed.
-- `management` selects the hosting product relationship: `root`, `workspace`,
-  or a dedicated `app`. It never relocates the Entity.
-- Team records are organizational roster entries, with their own document identity and optional linked User id. They do not grant Workspace access merely because a User or role label appears on the roster. Core's supported member mechanics create independent member ids; each domain retains its roster and role meaning.
-- Team requests and invitations are workflows, not access authority before their supported acceptance command completes.
-- Protected records live beneath their owning Entity, even when a Workspace or Dashboard presents them.
-- Current application-level Workspace authority requires signed-in identity, settled App membership and the owning domain's explicit App-bound Entity association. Inspect each domain's access reader and trusted commands for exact overrides and write policy. Team role restrictions are deferred; development-open Rules do not establish privacy.
-- Current App-bound access records are active runtime authority, not merely historical preimages. An architecture migration must cut over the reader, trusted grant and command checks together before retiring them; storage preference alone cannot change who has access.
+Owner-first storage is the intended contract. Existing source or stored records
+may still reflect an older path; classify that as migration work rather than
+extending it as a new pattern. Do not claim a family cutover from a model or
+build alone. Source, deployed Rules and live data are separate evidence.
 
-This replaces the former root-plus-App-support pattern. During migration,
-existing `apps/{appId}/{workspaceCollection}/{entityId}` documents are source
-preimages only; new features must not extend them.
+Before a data migration, the owning context defines exact target validation,
+read-only planning, retained preimages, authorization, verification and a
+separate retirement decision. This documentation map does not authorize a live
+Firestore operation.
 
-## User, profiles, and AppUser
+## Related owners
 
-`User` is the person at `users/{uid}`. `AppUser` is membership in one App at
-`apps/{appId}/users/{uid}`.
-
-- AppUser owns App role, entitlement and App-scoped profile state. Domain creation and capability requirements are separate; AppUser has no generic onboarding-completion flag.
-- A registered customer is an AppUser; Customer is not a second person
-  identity.
-- A profile is a User-owned Record at `users/{uid}/profiles/{profileKind}`.
-- Chef, Driver, and Professional are profile kinds, not root peer collections.
-- A profile may add `app-state/{appId}` only for genuine App-specific state.
-- Customer ordering preferences are optional App-specific Customer profile
-  state. Guest contact and delivery data remain on the Order.
-- A User's cross-App order doorway is `users/{uid}/orders/{orderId}`. The link
-  identifies its App and owning operation without copying mutable Order state.
-- A profile or order link never grants App or Workspace access.
-
-## App boundary
-
-An App owns only App lifecycle and genuinely App-wide records. Normal App
-children include membership, join requests, membership blocks, events,
-conversations, and FinancialFacts. Other App-owned records must justify an App
-lifecycle independently; an App is not a bucket for every feature it renders.
-
-Workspace Entities, their Team, and their operations never live beneath App.
-Product is root commercial truth. An Ignition request is a Conversation with
-`kind: 'ignition'`, not a parallel App collection. A Marketplace Store is a
-root Workspace Entity even when one App is its current management host.
-
-## Root and parent-owned records
-
-- A root Entity document is the canonical readable Entity. Firestore cannot
-  redact nested fields, so protected material lives in a separately authorized
-  child record under its honest owner.
-- A persisted Place is already FireUX-owned by its `places/{placeId}` path and
-  therefore stores no discovery `source`. Place search results may transiently
-  identify `fireux` or `google`; merged results deduplicate by Place id and
-  prefer the persisted FireUX Place.
-- A parent-owned Entity or Record uses a path beneath its parent. KitchenMenu,
-  Recipe, KitchenPrepItem, Dish, KitchenOrder, MenuSection, MenuItem,
-  KitchenStation, SupplierItem, and similar children follow this rule.
-- A root doorway such as Menu may reference a parent-owned operational Entity;
-  it does not duplicate that Entity's content tree.
-- Directory entries, detail responses, cards, and joined views are transport
-  Shapes. They do not replace or rename the canonical Entity.
-- A public Entity route is a server-owned read boundary, not permission for the
-  page to fetch protected records and hide them visually. It may return a
-  canonical readable root, named related canonical Entities, and a bounded
-  presentation Shape. Protected children are absent from that response and
-  require their own authorization. Kitchen detail proves this contract with
-  one canonical Kitchen, its required same-id Place, and a joined presentation;
-  Kitchen Team and operational children remain outside the Entity route.
-
-## Firestore composable stack
-
-Entity-owned Firestore adapters live under
-`runtime/<entity>/composables/firestore` and use only the capabilities they
-actually support:
-
-- `fetch` for one record or a bounded collection;
-- `mutations` for typed Create, Update, and Delete commands;
-- `seo` for entity search presentation;
-- `utils` for storage normalization and exact path helpers.
-
-Entity-facing state such as `useXDetail`, `useXCollection`, permissions, and
-interface projection belongs one layer above under
-`runtime/<entity>/composables`. Shared reactive reads and typed mutation lanes
-remain in the root FireUX spine.
-
-## Read-state contract
-
-- `useFirestoreRead` is the shared reactive read authority.
-- An inactive source is `idle`; an unresolved active source is `pending`; a
-  failed source is `error`; only a settled successful source is `ready`,
-  `empty`, or `missing`.
-- Reactive source changes clear stale rows and dispose the previous listener.
-- Exact-id batches expose the same outcome vocabulary.
-- One-shot existence checks use `firestoreGetDoc`; live reads use the shared
-  reactive seam once during setup.
-- A server projection may supply SSR, joins, or authorization, while an exact
-  permitted document listener keeps the already-open surface current. That is
-  a transport choice, not a different Entity.
-
-## Mutation lanes
-
-Firestore has exactly three mutation lanes: Client, Server, and MCP/Skill.
-Each exposes only typed Create, Update, and Delete targets. Pages, Workspaces,
-Dashboards, scripts, and agents are consumers of those lanes, never extra
-storage authorities.
-
-An ordinary update accepts one named input containing identity and `changes`.
-Transitions, media, membership, relationships, and compound writes retain
-their narrower domain commands.
-
-## Current migration state
-
-The 2026-08-20 live inventory confirms the destination is not yet fully
-implemented:
-
-- FireUX still has App-nested Project access and duplicated App-nested Product
-  records.
-- Misebox still has App-nested Workspace roots/support, Kitchen operations,
-  profiles, Marketplace Stores, and Customer records, plus some older root
-  Kitchen child duplicates.
-- Granite Portfolio and BuenoHost Property still use root-plus-App-support.
-- current models, readers, writers, Rules, demos, and guards still encode the
-  former support-record contract.
-
-Migration must move one complete family at a time: model, paths, readers,
-writers, Rules, indexes, guards, Demo adapters, retained preimage, live data,
-and post-write verification. No family is complete while either the source or
-stored data still requires the old path.
-
-## Do not
-
-- Nest a Workspace Entity, its Team, or its operations beneath App.
-- Use Dashboard, Workspace, Console, Directory, Detail, or Admin as a storage
-  owner.
-- Keep App support arrays, User target arrays, and Team as competing access
-  authorities.
-- Create `PublicX`, `publicRead`, `/api/public/*`, or a second filtered Entity
-  merely to make the root readable.
-- Put protected fields in a readable root and expect Rules to redact them.
-- Add compatibility aliases, dual writes, fallback reads, or generic migration
-  registries as the permanent design.
-- Infer Entity status from a collection or folder.
-
-## Verification
-
-Before a family cutover:
-
-1. verify the concrete Firebase project, database, edition, Rules, indexes,
-   source readers/writers, and live path counts;
-2. produce a deterministic dry-run plan and retained protected preimage;
-3. freeze or reject concurrent writes for the affected family;
-4. migrate with version preconditions and typed mutation targets;
-5. verify counts, ids, relationships, access outcomes, and representative live
-   surfaces;
-6. remove old readers/writers and deploy reviewed Rules before old data is
-   retired; and
-7. run current source-owned tests and affected package/App checks.
-
-The former executable matrix and repository guards were removed. Current
-evidence is the owning models, readers, writers, available source-owned tests
-and ecosystem Rules artifacts; retained Rules source does not prove deployment. The temporary migration ledger must shrink to zero rather than
-becoming another accepted system.
+- [Entity families](entities.md) and [core models](core-models.md)
+- [Workspace and Entity composition](family-workspace-entity.md)
+- [Firestore Rules](firestore-rules.md)
+- [Server APIs](server-api.md)
+- [Mutation authority](../ai/firestore-mutations-context.md)
+- [FireUX platform map](fireux.md)

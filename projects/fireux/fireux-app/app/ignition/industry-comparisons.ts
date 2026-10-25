@@ -31,7 +31,7 @@ export const miseboxIndustry: IgnitionIndustryCase = {
       'source-reviewed',
       [
         'projects/misebox/misebox-app/nuxt.config.ts',
-        core + 'layouts/workspace.vue',
+        core + 'workspace/components/Index.vue',
         kitchens + 'kitchen/models/kitchen.model.ts',
       ],
       'Architecture mapped from the current App and domain source; this is not complete journey acceptance.'
@@ -214,7 +214,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
           'The structural responsibilities match, while the business objects and service composition differ. New grooming components must be supplied where no current owner exists.',
         reuse: 'partial-source',
         references: [
-          core + 'layouts/workspace.vue',
+          core + 'workspace/components/Index.vue',
           kitchens + 'kitchen/components/Workspace/Navigation/Index.vue',
           properties + 'property/models/property.model.ts',
         ],

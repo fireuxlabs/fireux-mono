@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-10-21
-Ref: d05ded3fd
+Updated: 2026-10-25
+Ref: ce2861c77
 Role: map, not canon
 
 ## Purpose and authority
@@ -32,8 +32,9 @@ Domain Entity runtime   Identity, capabilities, authority, records and commands
 Ecosystem / App         Product composition, enabled surfaces and App policy
 ```
 
-- Core owns selection mechanics, entry resolution, navigation framing,
-  `WorkspaceGroupPage`, and shared Identity and Team interaction primitives.
+- Core owns selection mechanics, entry resolution, the named Workspace
+  composition and its shared page frame, plus Identity and Team interaction
+  primitives.
 - Domains supply accessible Entity collections, canonical readers, fields,
   roles, invitations, capability rules and trusted commands. Sharing a control
   does not transfer its authority to Core.
@@ -48,7 +49,11 @@ Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 - `workspace/composables/useWorkspace.ts`: active Entity selection.
 - `workspace/composables/useWorkspaceEntryCta.ts`: App-aware entry links.
 - `workspace/components/EntitySwitcher.vue`: selected-Entity switching control.
-- `workspace/components/GroupPage.vue`: group framing and breadcrumbs.
+- `app/components/Shell.vue`: selects Workspace from route metadata.
+- `workspace/components/Index.vue`: sidebar, Workspace page and shared controls.
+- `workspace/components/Page.vue`: dashboard panel and one Workspace page outlet.
+- `workspace/components/Navbar.vue` and `Breadcrumbs.vue`: shared page framing.
+- `workspace/components/PageLinks.vue`: group navigation as page content.
 - `composables/fireux/useIdentity.ts` and `useWorkspaceTeam.ts`: shared interaction state.
 - `workspace/components/Team/`: Editor, People, Assignment and Roles controls.
 
@@ -70,10 +75,16 @@ the persistent selected-Kitchen control rather than another normal sidebar row.
 Other families retain their own declared navigation; this is not a claim that
 all have adopted Kitchen's grouping or need the same number of groups.
 
-`WorkspaceGroupPage` owns the common panel, navbar, width and breadcrumbs. Its
-slot can compose group AI followed by one domain-owned surface per child; its
-default content can link declared children. Child surfaces behave consistently
-without sharing identical markup, fields or controllers.
+AppShell selects Core's named Workspace composition for routes marked by
+`workspacePage` metadata. Workspace composes the persistent sidebar, one page
+frame and shared Navbar/Breadcrumbs; the frame owns the route outlet and error
+boundary. Group indexes use `WorkspacePageLinks` as ordinary content. Route
+pages provide their domain surface without repeating the outer panel or header.
+The retired GroupPage shell is not the target for new routes. Use native Nuxt UI
+slots where their documented controls call for them; do not add a custom slot
+shell around each page. See the
+[layouts map](layouts.md#workspace-composition) and
+[component map](components.md#workspace-composition).
 
 Kitchen's `FoodAndDrink/Index.vue` demonstrates the composed form: group AI,
 Items, Menus, Promotions and Services overview components. Children own local
@@ -161,10 +172,14 @@ family path, for shared entry actions.
 
 ## Composition and authority
 
-Routes remain thin adapters. Ordinary leaf pages own their explicit page shell;
-group indexes may delegate that framing to `WorkspaceGroupPage`. Preserve the
-real flex root and existing Workspace transition policy. Inspect the registered
-route and generated App output rather than inferring behaviour from a filename.
+Routes remain thin adapters. Workspace route metadata selects the shared Core
+frame; pages provide domain content and may use nested Nuxt outlets only for a
+real parent/child route. Named components, typed props and events define the
+composition. Native Nuxt UI slots remain supported; custom route-shell slots
+do not become another rendering owner. Shared page geometry belongs to the
+semantic Workspace styles, not authored utility overrides. Inspect the
+registered route and generated App output rather than inferring behaviour from
+a filename. See [layout ownership](layouts.md) for the renderer boundary.
 
 A capability mounts its stateful graph once. Focused descendants consume that
 context when shared, while owning their local editing responsibilities. Do not

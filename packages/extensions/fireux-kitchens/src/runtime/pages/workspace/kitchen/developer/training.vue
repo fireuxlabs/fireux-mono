@@ -1,27 +1,18 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-training">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Training" />
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <UAlert
-            color="neutral"
-            variant="soft"
-            title="Kitchen training is parked"
-            description="This kitchen workspace route is intentionally hidden until the training workspace is wired."
-          />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <section class="space-y-4">
+    <UAlert
+      color="neutral"
+      variant="soft"
+      title="Kitchen training is parked"
+      description="This kitchen workspace route is intentionally hidden until the training workspace is wired."
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {

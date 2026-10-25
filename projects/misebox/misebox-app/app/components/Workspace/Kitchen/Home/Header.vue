@@ -1,7 +1,1 @@
-<template>
-  <WorkspaceNavbar title="Kitchen Workspace">
-    <template #right>
-      <WorkspaceKitchenHomeInfo />
-    </template>
-  </WorkspaceNavbar>
-</template>
+<template><WorkspaceKitchenHomeInfo /></template>

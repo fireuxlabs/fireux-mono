@@ -1,12 +1,8 @@
-<template>
-  <UDashboardPanel id="workspace-kitchen-prep-plan"
-    ><template #header><WorkspaceNavbar title="Prep plan" /></template
-    ><template #body><KitchenPrepAndProductionPlanning /></template
-  ></UDashboardPanel>
-</template>
+<template><KitchenPrepAndProductionPlanning /></template>
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   requiresAuth: true,

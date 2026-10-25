@@ -1,25 +1,17 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-identity-search-demand">
-      <template #header>
-        <WorkspaceNavbar title="Identity search demand" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenResearchEvidence
-          capability="Identity"
-          base-path="/workspace/kitchen/identity/search-demand"
-          :demand="demand"
-        />
-        <ClientOnly>
-          <DiagnosticsDebugPanel
-            v-bind="debug"
-            title="Identity research debug"
-            class="mt-6"
-          />
-        </ClientOnly>
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenResearchEvidence
+      capability="Identity"
+      base-path="/workspace/kitchen/identity/search-demand"
+      :demand="demand"
+    />
+    <ClientOnly>
+      <DiagnosticsDebugPanel
+        v-bind="debug"
+        title="Identity research debug"
+        class="mt-6"
+      />
+    </ClientOnly>
   </div>
 </template>
 
@@ -48,7 +40,8 @@ const debug = computed(() =>
 )
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

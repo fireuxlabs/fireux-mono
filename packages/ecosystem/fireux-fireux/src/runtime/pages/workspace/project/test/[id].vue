@@ -1,22 +1,17 @@
 <template>
-  <UDashboardPanel id="workspace-project-test-detail">
-    <template #header><WorkspaceNavbar title="Test" /></template>
-    <template #body>
-      <UButton
-        to="/workspace/project/test"
-        label="Back to Tests"
-        icon="i-lucide-arrow-left"
-        color="neutral"
-        variant="ghost"
-        class="w-fit"
-      />
-      <WorkspaceTestDetail
-        :key="`${test.id.value}:${recordId}`"
-        :test="test"
-        :record-id="recordId"
-      />
-    </template>
-  </UDashboardPanel>
+  <UButton
+    to="/workspace/project/test"
+    label="Back to Tests"
+    icon="i-lucide-arrow-left"
+    color="neutral"
+    variant="ghost"
+    class="w-fit"
+  />
+  <WorkspaceTestDetail
+    :key="`${test.id.value}:${recordId}`"
+    :test="test"
+    :record-id="recordId"
+  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
@@ -26,7 +21,8 @@ const route = useRoute()
 const test = useProjectWorkspaceTest()
 const recordId = computed(() => String(route.params.id || ''))
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'detail',

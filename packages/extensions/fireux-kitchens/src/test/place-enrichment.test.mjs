@@ -213,7 +213,8 @@ test('Misebox Workspace root renders in place and preserves query intent', () =>
       'the root must render without a redirect'
     )
     assert.deepEqual(root.meta, {
-      layout: 'workspace',
+      layout: false,
+      workspacePage: true,
       workspace: 'kitchen',
       workspaceSurface: 'browse',
     })
@@ -231,6 +232,7 @@ test('Misebox Workspace root renders in place and preserves query intent', () =>
     assert.equal(middleware(root), undefined)
     assert.deepEqual(root.meta, {
       layout: 'landing',
+      workspacePage: false,
       workspace: undefined,
       workspaceSurface: undefined,
     })

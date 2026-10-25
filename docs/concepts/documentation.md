@@ -87,7 +87,7 @@ enforcement as architectural proof.
 For a rule review, identify the concrete problem, current source evidence, real
 consumers, failure history, enforcement mechanism, and ongoing complexity cost.
 Use the repository-wide result vocabulary in
-`../ai/gpt-context.md#rule-review`: keep, simplify, narrow, replace, remove, or
+`../ai/gpt-context.md#authority-and-rule-review`: keep, simplify, narrow, replace, remove, or
 unproved. Preserve safety and authority boundaries until a proposed change is
 accepted and independently verified.
 

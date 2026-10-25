@@ -1,47 +1,40 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-detail">
-    <template #header>
-      <WorkspaceNavbar title="Kitchen" />
+  <section class="workspace-surface workspace-surface--compact">
+    <UButton
+      :to="workspaceEntryPath"
+      label="Back to Kitchens"
+      icon="i-lucide-arrow-left"
+      color="neutral"
+      variant="soft"
+      class="w-fit"
+    />
+    <template v-if="kitchen && !loading && !error">
+      <UAvatar
+        :src="kitchen.presentation?.image_url || undefined"
+        :alt="kitchen.presentation?.display_name"
+        icon="i-lucide-chef-hat"
+        size="3xl"
+      />
+      <div>
+        <h1 class="text-2xl font-semibold text-highlighted">
+          {{ kitchen.presentation?.display_name }}
+        </h1>
+        <p v-if="kitchen.presentation?.tagline" class="mt-1 text-muted">
+          {{ kitchen.presentation?.tagline }}
+        </p>
+      </div>
     </template>
-    <template #body>
-      <section class="workspace-surface workspace-surface--compact">
-        <UButton
-          :to="workspaceEntryPath"
-          label="Back to Kitchens"
-          icon="i-lucide-arrow-left"
-          color="neutral"
-          variant="soft"
-          class="w-fit"
-        />
-        <template v-if="kitchen && !loading && !error">
-          <UAvatar
-            :src="kitchen.presentation?.image_url || undefined"
-            :alt="kitchen.presentation?.display_name"
-            icon="i-lucide-chef-hat"
-            size="3xl"
-          />
-          <div>
-            <h1 class="text-2xl font-semibold text-highlighted">
-              {{ kitchen.presentation?.display_name }}
-            </h1>
-            <p v-if="kitchen.presentation?.tagline" class="mt-1 text-muted">
-              {{ kitchen.presentation?.tagline }}
-            </p>
-          </div>
-        </template>
-        <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
-        <MoleculesCopyError v-else-if="error" :message="errorMessage" />
-        <UAlert
-          v-else
-          color="neutral"
-          variant="subtle"
-          icon="i-lucide-file-question"
-          title="Kitchen not found"
-          description="Return to Kitchens and choose an available record."
-        />
-      </section>
-    </template>
-  </UDashboardPanel>
+    <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
+    <MoleculesCopyError v-else-if="error" :message="errorMessage" />
+    <UAlert
+      v-else
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-file-question"
+      title="Kitchen not found"
+      description="Return to Kitchens and choose an available record."
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -83,7 +76,8 @@ const errorMessage = computed(() =>
 )
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'detail',

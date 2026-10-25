@@ -1,18 +1,8 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-menus">
-    <template #header>
-      <WorkspaceNavbar title="Menus">
-        <template #right>
-          <WorkspaceKitchenAICapabilityInfo capability="menus" />
-        </template>
-      </WorkspaceNavbar>
-    </template>
-    <template #body>
-      <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
-        <KitchenFoodAndDrinkMenus />
-      </div>
-    </template>
-  </UDashboardPanel>
+  <WorkspaceKitchenAICapabilityInfo capability="menus" />
+  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+    <KitchenFoodAndDrinkMenus />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +11,8 @@ import { provideKitchenMenusContext } from '../../../../../kitchen/composables/w
 provideKitchenMenusContext()
 
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   pageTransition: false,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',

@@ -1,23 +1,14 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: adopt route-level workspace metadata. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-project-ecosystem">
-      <template #header>
-        <WorkspaceNavbar title="Project Ecosystem" />
-      </template>
-
-      <template #body>
-        <section class="space-y-6">
-          <WorkspaceProjectEcosystem />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <section class="space-y-6">
+    <WorkspaceProjectEcosystem />
+  </section>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'workspace',
+  layout: false,
+  workspacePage: true,
   workspaceSurface: 'browse',
   visibility: { ecosystems: ['fireux'] },
   nav: {

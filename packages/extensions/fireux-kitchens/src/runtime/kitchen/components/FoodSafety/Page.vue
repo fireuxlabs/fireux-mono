@@ -1,38 +1,25 @@
 <template>
   <div>
-    <UDashboardPanel id="workspace-kitchen-food-safety">
-      <template #header>
-        <WorkspaceNavbar title="Kitchen Food Safety">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="food-safety"
-          /></template>
-        </WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <KitchenFoodSafety :view="view" />
-          <MoleculesDisclosurePanel
-            title="Food safety reference"
-            :default-open="false"
-          >
-            <WorkspaceKitchenToolsToolbar capability="food-safety" />
-            <WorkspaceKitchenAICapability
-              capability="food-safety"
-              :show-suggestion-cards="false"
-            />
-            <WorkspaceKitchenResearchCapabilitySummary
-              capability="food-safety"
-            />
-            <WorkspaceKitchenResearchGuide capability="food-safety" />
-            <WorkspaceKitchenResearchSegue
-              capability="Food Safety"
-              base-path="/workspace/kitchen/food-safety/search-demand"
-            />
-          </MoleculesDisclosurePanel>
-        </section>
-      </template>
-    </UDashboardPanel>
+    <WorkspaceKitchenAICapabilityInfo capability="food-safety" />
+    <section class="workspace-surface">
+      <KitchenFoodSafety :view="view" />
+      <MoleculesDisclosurePanel
+        title="Food safety reference"
+        :default-open="false"
+      >
+        <WorkspaceKitchenToolsToolbar capability="food-safety" />
+        <WorkspaceKitchenAICapability
+          capability="food-safety"
+          :show-suggestion-cards="false"
+        />
+        <WorkspaceKitchenResearchCapabilitySummary capability="food-safety" />
+        <WorkspaceKitchenResearchGuide capability="food-safety" />
+        <WorkspaceKitchenResearchSegue
+          capability="Food Safety"
+          base-path="/workspace/kitchen/food-safety/search-demand"
+        />
+      </MoleculesDisclosurePanel>
+    </section>
   </div>
 </template>
 
