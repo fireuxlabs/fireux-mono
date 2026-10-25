@@ -440,7 +440,9 @@ it does not establish that a fixed Core profile catalogue is the extension model
 for future industries. Optional cross-ecosystem account linking is a separate hub/participant service
 with its own UX and private authority store. It does not become another
 responsibility of these local readers or AppUser access.
-See [identity roadmap](../roadmaps/identity-and-workspaces.md#optional-cross-ecosystem-identity).
+See the [account-connection context](../ai/account-connections-context.md) for
+current boundaries and the [archived identity roadmap](../archive/2026-10-workspace-cleanup/roadmaps/identity-and-workspaces.md#optional-cross-ecosystem-identity)
+for earlier planning.
 
 ## Kitchen presentation placement
 

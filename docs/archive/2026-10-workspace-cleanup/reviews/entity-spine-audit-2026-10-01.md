@@ -1,5 +1,7 @@
 # FireUX Entity spine audit
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Date: 2026-10-01. Baseline: `2807ceca9`, branch `main`, clean at entry.
 Scope: all 58 workspace manifests in the five maintained pnpm lanes; authored
 TS/Vue/JS/MJS imports, runtime roots, module/config registrations, native layers,
@@ -933,75 +935,75 @@ consumer are identified. Source links below locate current route composition.
 
 | Family / capability | Disposition | Actual action / limit | Source anchor |
 | --- | --- | --- | --- |
-| Kitchen · Home | Implemented | Select/manage Kitchen; creation through existing onboarding | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/index.vue) |
-| Kitchen · Overview | Implemented / unproved in use | Read operational summaries; not every child source is connected | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/overview/index.vue) |
-| Kitchen · Identity | Implemented | Edit Kitchen identity through domain-owned controls | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue) |
-| Kitchen · Appearance | Implemented / unproved in use | Configure presentation | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/appearance.vue) |
-| Kitchen · Operating hours | Implemented | Configure venue windows; separate from service availability | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/operating-hours.vue) |
-| Kitchen · Menus | Implemented | Browse/create/edit/publish; Delete not certified; record perspectives canonical | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue) |
-| Kitchen · Dishes | Implemented | Browse/create/update/delete specification; selected-record actions | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/dishes/index.vue) |
-| Kitchen · Drinks | Implemented | Same dish family with drink context; not an independent storage owner | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/drinks/index.vue) |
-| Kitchen · Recipes | Implemented | Browse/create/update/delete; downstream usage incomplete | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/recipes/index.vue) |
-| Kitchen · Ingredients | Implemented / partial | Browse/connect/edit/remove Kitchen-scoped links; canonical identity separate | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/ingredients/index.vue) |
-| Kitchen · Orders | Implemented | Incoming/accept/prepare/ready/complete and payment/order state; no live journey proof here | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue) |
-| Kitchen · Pass / Queue | Implemented / unproved in use | Operate selected working orders; station preparation requirements domain-owned | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/pass.vue) |
-| Kitchen · Pre-orders | Unproved | Destination exists; scheduled-order behaviour not re-proved by this pass | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/pre-orders.vue) |
-| Kitchen · Services | Implemented | Configure named context, schedule and fulfilment eligibility | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/services/index.vue) |
-| Kitchen · Tables | Partial / unproved | Read-only table presentation; full service workflow not certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/tables/index.vue) |
-| Kitchen · Stations | Implemented | Browse/select/create station; broader catalogue hypotheses remain proposals | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stations/index.vue) |
-| Kitchen · Fulfilment | Implemented / unproved in use | Existing working surface; no new lifecycle proof here | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/fulfilment.vue) |
-| Kitchen · Calendar | Partial | Date selection/presentation; not a claim of connected planning events | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/calendar/index.vue) |
-| Kitchen · Prep | Incomplete | Planning and batch records explicitly not connected | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/prep/index.vue) |
-| Kitchen · Food safety | Incomplete | Checks/issues/procedures explicitly not connected | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-safety/index.vue) |
-| Kitchen · Suppliers | Partial / unproved | Browse linked supplier/catalogue/supply-option destinations; procurement not certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/suppliers/index.vue) |
-| Kitchen · Inventory | Proposed / incomplete | Literature/research entrance; no working stock command certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/inventory/index.vue) |
-| Kitchen · Purchasing | Proposed / incomplete | Literature/research entrance; no purchase workflow certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/purchasing/index.vue) |
-| Kitchen · Receiving | Proposed / incomplete | Literature/research entrance; no receiving workflow certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/receiving/index.vue) |
-| Kitchen · Waste | Implemented | Record/read Waste event; other research tools not implemented by inference | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/waste/index.vue) |
-| Kitchen · Finance / Sales | Implemented / partial | Read completed sales/transactions; not full accounting | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) |
-| Kitchen · Costs | Proposed / incomplete | Literature/research entrance; no cost pipeline certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/costs/index.vue) |
-| Kitchen · Performance | Proposed / incomplete | Literature/research entrance; metrics pipeline unproved | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/performance/index.vue) |
-| Kitchen · Waste report | Proposed / incomplete | Research/report entrance distinct from actual Waste event recording | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/waste-report/index.vue) |
-| Kitchen · Integrations | Implemented / unproved in use | Configure ordering integration/snippet; no deployment proof here | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/integrations.vue) |
-| Kitchen · Kiosks | Unproved | Existing destination; not proof of complete kiosk/payment hardware flow | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue) |
-| Kitchen · Team | Implemented | Create/update/remove selected members; shared human/agent authority boundary | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue) |
-| Kitchen · Test / Developer | Partial / development only | Existing development surfaces; not customer deliverables | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/developer/test/index.vue) |
-| Project · Home | Implemented | Create/resume anonymous Project or account-owned Project | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue) |
-| Project · Identity | Implemented | Domain identity editing; existing type failure retained | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/identity.vue) |
-| Project · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue) |
-| Project · Apps | Implemented | Project-authorized App creation; exact identity replay | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/apps.vue) |
-| Project · Ecosystem | Implemented / unproved in use | Existing management/read surface; cross-database identity editing not inferred | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/ecosystem.vue) |
-| Project · Overview | Implemented | Read summaries | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue) |
-| Project · Calendar | Partial / unproved | Presentation not proof of event persistence | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/calendar.vue) |
-| Project · Test | Development / unproved | No production parity claim | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/index.vue) |
-| Supplier · Home / Create | Implemented | Canonical Company-backed onboarding | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/create.vue) |
-| Supplier · Identity | Incomplete | Editing not connected | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/identity.vue) |
-| Supplier · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/team.vue) |
-| Supplier · Items | Implemented / unproved in use | Supplier item management surface | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/items.vue) |
-| Supplier · Ingredients | Partial / unproved | Ingredient relationship surface; no full procurement proof | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/ingredients.vue) |
-| Supplier · Catalogue | Implemented / unproved in use | Catalogue presentation/management | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/catalogue.vue) |
-| Supplier · Overview | Implemented | Read summaries | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/overview.vue) |
-| Supplier · Calendar | Partial / unproved | Presentation | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/calendar.vue) |
-| Supplier · Test | Incomplete | Canonical test producer absent | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/test.vue) |
-| Portfolio · Home / Create | Implemented | Trusted root/Team/access onboarding via rendered form | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/create.vue) |
-| Portfolio · Identity | Implemented | Domain identity update | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/identity.vue) |
-| Portfolio · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/team.vue) |
-| Portfolio · Properties | Implemented / unproved in use | Browse managed properties; not proof of Property creation doorway | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/properties.vue) |
-| Portfolio · Overview | Implemented | Read summaries | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/overview.vue) |
-| Portfolio · Calendar | Partial / unproved | Presentation | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/calendar.vue) |
-| Portfolio · Finance | Proposed / parked | Explicit placeholder | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/finance.vue) |
-| Portfolio · Test | Incomplete | Canonical test producer absent | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/test.vue) |
-| Property · Home | Implemented selection; creation incomplete | Collection selection only; /workspace/property/create target has no source page | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/index.vue) |
-| Property · Identity | Incomplete | Editing not connected | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/identity.vue) |
-| Property · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/team.vue) |
-| Property · Overview | Implemented | Read summaries | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/overview.vue) |
-| Property · Calendar | Extension-dependent | Reservations extension contributes actual calendar | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/calendar.vue) |
-| Property · Reservations | Placeholder in Properties; implemented contribution | Use fireux-reservations routes/commands when enabled | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/reservations.vue) |
-| Property · Test | Incomplete | Canonical test producer absent | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/test.vue) |
+| Kitchen · Home | Implemented | Select/manage Kitchen; creation through existing onboarding | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/index.vue) |
+| Kitchen · Overview | Implemented / unproved in use | Read operational summaries; not every child source is connected | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/overview/index.vue) |
+| Kitchen · Identity | Implemented | Edit Kitchen identity through domain-owned controls | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue) |
+| Kitchen · Appearance | Implemented / unproved in use | Configure presentation | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/appearance.vue) |
+| Kitchen · Operating hours | Implemented | Configure venue windows; separate from service availability | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/operating-hours.vue) |
+| Kitchen · Menus | Implemented | Browse/create/edit/publish; Delete not certified; record perspectives canonical | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue) |
+| Kitchen · Dishes | Implemented | Browse/create/update/delete specification; selected-record actions | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/dishes/index.vue) |
+| Kitchen · Drinks | Implemented | Same dish family with drink context; not an independent storage owner | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/drinks/index.vue) |
+| Kitchen · Recipes | Implemented | Browse/create/update/delete; downstream usage incomplete | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/recipes/index.vue) |
+| Kitchen · Ingredients | Implemented / partial | Browse/connect/edit/remove Kitchen-scoped links; canonical identity separate | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/ingredients/index.vue) |
+| Kitchen · Orders | Implemented | Incoming/accept/prepare/ready/complete and payment/order state; no live journey proof here | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue) |
+| Kitchen · Pass / Queue | Implemented / unproved in use | Operate selected working orders; station preparation requirements domain-owned | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/pass.vue) |
+| Kitchen · Pre-orders | Unproved | Destination exists; scheduled-order behaviour not re-proved by this pass | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/pre-orders.vue) |
+| Kitchen · Services | Implemented | Configure named context, schedule and fulfilment eligibility | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/services/index.vue) |
+| Kitchen · Tables | Partial / unproved | Read-only table presentation; full service workflow not certified | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/tables/index.vue) |
+| Kitchen · Stations | Implemented | Browse/select/create station; broader catalogue hypotheses remain proposals | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stations/index.vue) |
+| Kitchen · Fulfilment | Implemented / unproved in use | Existing working surface; no new lifecycle proof here | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/fulfilment.vue) |
+| Kitchen · Calendar | Partial | Date selection/presentation; not a claim of connected planning events | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/calendar/index.vue) |
+| Kitchen · Prep | Incomplete | Planning and batch records explicitly not connected | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/prep/index.vue) |
+| Kitchen · Food safety | Incomplete | Checks/issues/procedures explicitly not connected | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-safety/index.vue) |
+| Kitchen · Suppliers | Partial / unproved | Browse linked supplier/catalogue/supply-option destinations; procurement not certified | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/suppliers/index.vue) |
+| Kitchen · Inventory | Proposed / incomplete | Literature/research entrance; no working stock command certified | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/inventory/index.vue) |
+| Kitchen · Purchasing | Proposed / incomplete | Literature/research entrance; no purchase workflow certified | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/purchasing/index.vue) |
+| Kitchen · Receiving | Proposed / incomplete | Literature/research entrance; no receiving workflow certified | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/receiving/index.vue) |
+| Kitchen · Waste | Implemented | Record/read Waste event; other research tools not implemented by inference | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/waste/index.vue) |
+| Kitchen · Finance / Sales | Implemented / partial | Read completed sales/transactions; not full accounting | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) |
+| Kitchen · Costs | Proposed / incomplete | Literature/research entrance; no cost pipeline certified | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/costs/index.vue) |
+| Kitchen · Performance | Proposed / incomplete | Literature/research entrance; metrics pipeline unproved | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/performance/index.vue) |
+| Kitchen · Waste report | Proposed / incomplete | Research/report entrance distinct from actual Waste event recording | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/waste-report/index.vue) |
+| Kitchen · Integrations | Implemented / unproved in use | Configure ordering integration/snippet; no deployment proof here | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/integrations.vue) |
+| Kitchen · Kiosks | Unproved | Existing destination; not proof of complete kiosk/payment hardware flow | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue) |
+| Kitchen · Team | Implemented | Create/update/remove selected members; shared human/agent authority boundary | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue) |
+| Kitchen · Test / Developer | Partial / development only | Existing development surfaces; not customer deliverables | [source](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/developer/test/index.vue) |
+| Project · Home | Implemented | Create/resume anonymous Project or account-owned Project | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue) |
+| Project · Identity | Implemented | Domain identity editing; existing type failure retained | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/identity.vue) |
+| Project · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue) |
+| Project · Apps | Implemented | Project-authorized App creation; exact identity replay | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/apps.vue) |
+| Project · Ecosystem | Implemented / unproved in use | Existing management/read surface; cross-database identity editing not inferred | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/ecosystem.vue) |
+| Project · Overview | Implemented | Read summaries | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue) |
+| Project · Calendar | Partial / unproved | Presentation not proof of event persistence | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/calendar.vue) |
+| Project · Test | Development / unproved | No production parity claim | [source](../../../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/index.vue) |
+| Supplier · Home / Create | Implemented | Canonical Company-backed onboarding | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/create.vue) |
+| Supplier · Identity | Incomplete | Editing not connected | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/identity.vue) |
+| Supplier · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/team.vue) |
+| Supplier · Items | Implemented / unproved in use | Supplier item management surface | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/items.vue) |
+| Supplier · Ingredients | Partial / unproved | Ingredient relationship surface; no full procurement proof | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/ingredients.vue) |
+| Supplier · Catalogue | Implemented / unproved in use | Catalogue presentation/management | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/catalogue.vue) |
+| Supplier · Overview | Implemented | Read summaries | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/overview.vue) |
+| Supplier · Calendar | Partial / unproved | Presentation | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/calendar.vue) |
+| Supplier · Test | Incomplete | Canonical test producer absent | [source](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/test.vue) |
+| Portfolio · Home / Create | Implemented | Trusted root/Team/access onboarding via rendered form | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/create.vue) |
+| Portfolio · Identity | Implemented | Domain identity update | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/identity.vue) |
+| Portfolio · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/team.vue) |
+| Portfolio · Properties | Implemented / unproved in use | Browse managed properties; not proof of Property creation doorway | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/properties.vue) |
+| Portfolio · Overview | Implemented | Read summaries | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/overview.vue) |
+| Portfolio · Calendar | Partial / unproved | Presentation | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/calendar.vue) |
+| Portfolio · Finance | Proposed / parked | Explicit placeholder | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/finance.vue) |
+| Portfolio · Test | Incomplete | Canonical test producer absent | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/test.vue) |
+| Property · Home | Implemented selection; creation incomplete | Collection selection only; /workspace/property/create target has no source page | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/index.vue) |
+| Property · Identity | Incomplete | Editing not connected | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/identity.vue) |
+| Property · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/team.vue) |
+| Property · Overview | Implemented | Read summaries | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/overview.vue) |
+| Property · Calendar | Extension-dependent | Reservations extension contributes actual calendar | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/calendar.vue) |
+| Property · Reservations | Placeholder in Properties; implemented contribution | Use fireux-reservations routes/commands when enabled | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/reservations.vue) |
+| Property · Test | Incomplete | Canonical test producer absent | [source](../../../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/test.vue) |
 
 ### Tool catalogue versus executable actions
 
-The [Kitchen catalogue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-tools.ts)
+The [Kitchen catalogue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-tools.ts)
 contains Identity, Dishes, Drinks, Ingredients, Food safety, Menus, Orders,
 Inventory, Purchasing, Receiving, Waste, Recipes, Stations, Team, Suppliers,
 Finance/Sales, Costs, Waste report and Performance entries. Most are generated
@@ -1009,7 +1011,7 @@ from `toolHypotheses`: `requested`/`available` labels are authored catalogue
 claims, not evidence that an action executes. The matrix above deliberately
 keeps those areas partial/proposed/unproved where appropriate.
 
-The [human action handler map](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenCapabilityTools.ts)
+The [human action handler map](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenCapabilityTools.ts)
 actually registers Menu create/update; Dish and Drink create/update/delete;
 Ingredient add/delete; Recipe create/update/delete; Station create; Waste event
 recording. Target-route handlers require a selected record. A route handler is
@@ -1021,23 +1023,23 @@ other catalogue claims into an agent contract.
 
 | Contribution / retained export | Disposition | Actual action and source |
 | --- | --- | --- |
-| Portfolio Compliance | Implemented read/status and selected-record Task projection; broader CRUD UI incomplete/unproved | [Compliance page](../../packages/extensions/fireux-compliance/src/runtime/pages/workspace/portfolio/compliance.vue) reads records and calls Task projection/create. |
-| Portfolio Documents | Implemented commands; production use unproved | [Documents page](../../packages/extensions/fireux-documents/src/runtime/pages/workspace/portfolio/documents.vue), upload/link handlers and command tests. |
-| Portfolio Tasks | Implemented create/update; production use unproved | [Tasks page](../../packages/extensions/fireux-tasks/src/runtime/pages/workspace/portfolio/tasks.vue) and command tests. |
-| Property Reservations | Implemented contributed collection/create/focus/calendar; production use unproved | [Reservation collection](../../packages/extensions/fireux-reservations/src/runtime/pages/workspace/property/reservations/index.vue) and [command](../../packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/command.ts). |
-| Portfolio Clients / Units | Unused in the inspected active-surface inventory; not deleted | [Clients create](../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/clients/useClientCreate.ts) and [Units create](../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/units/useUnitCreate.ts) have no observed rendered invocation here. |
-| Property creation | Trusted implementation retained; rendered journey unavailable | [Onboarding](../../packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts) and [root planner](../../packages/extensions/fireux-properties/src/runtime/property/utils/property-create.ts) remain. The unused browser root/manual/onboarding adapter and dangling public Create CTA are retired. Home Collection/Index select existing records; no `/workspace/property/create` route or working rendered creation flow is claimed. |
+| Portfolio Compliance | Implemented read/status and selected-record Task projection; broader CRUD UI incomplete/unproved | [Compliance page](../../../../packages/extensions/fireux-compliance/src/runtime/pages/workspace/portfolio/compliance.vue) reads records and calls Task projection/create. |
+| Portfolio Documents | Implemented commands; production use unproved | [Documents page](../../../../packages/extensions/fireux-documents/src/runtime/pages/workspace/portfolio/documents.vue), upload/link handlers and command tests. |
+| Portfolio Tasks | Implemented create/update; production use unproved | [Tasks page](../../../../packages/extensions/fireux-tasks/src/runtime/pages/workspace/portfolio/tasks.vue) and command tests. |
+| Property Reservations | Implemented contributed collection/create/focus/calendar; production use unproved | [Reservation collection](../../../../packages/extensions/fireux-reservations/src/runtime/pages/workspace/property/reservations/index.vue) and [command](../../../../packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/command.ts). |
+| Portfolio Clients / Units | Unused in the inspected active-surface inventory; not deleted | [Clients create](../../../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/clients/useClientCreate.ts) and [Units create](../../../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/units/useUnitCreate.ts) have no observed rendered invocation here. |
+| Property creation | Trusted implementation retained; rendered journey unavailable | [Onboarding](../../../../packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts) and [root planner](../../../../packages/extensions/fireux-properties/src/runtime/property/utils/property-create.ts) remain. The unused browser root/manual/onboarding adapter and dangling public Create CTA are retired. Home Collection/Index select existing records; no `/workspace/property/create` route or working rendered creation flow is claimed. |
 
 ### Retry semantics are not universal
 
-- [Supplier onboarding](../../packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts)
+- [Supplier onboarding](../../../../packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts)
   rejects a repeated new-root request when the generated organization identity
   already exists (409). Explicit existing-root attachment is a different branch.
-- [Portfolio onboarding](../../packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts)
-  and [Property onboarding](../../packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts)
+- [Portfolio onboarding](../../../../packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts)
+  and [Property onboarding](../../../../packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts)
   likewise conflict when a new-root request resolves to an existing ID. The
   `idempotent` client plan label does not prove transparent new-root replay.
-- [Project-owned App creation](../../projects/fireux/fireux-app/server/project/apps/create.ts)
+- [Project-owned App creation](../../../../projects/fireux/fireux-app/server/project/apps/create.ts)
   resumes only when existing App identity/configuration, creator and initial
   admin membership match. Root App + membership creation is transactional;
   Ecosystem/User reference reconciliation follows afterward and is non-atomic.
@@ -1063,10 +1065,10 @@ A closed source checklist does not certify deployment or complete product CRUD.
 
 | Entity | Owner / canonical contract | Read and real consumers | Actual lifecycle / accepted difference | A–E disposition |
 | --- | --- | --- | --- | --- |
-| App | Core `runtime/app`; [App model](../../packages/core/fireux-core/src/runtime/app/models/app.model.ts), document ID and `ecosystem_id`; App database | `useAppRead`, `useAppCollection`, `useAppDetail`; App session/Shell, public detail and directory. Native read and public HTTP visibility are distinct. | [Initialization](../../packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts), configured-App client and Project-owned App create; trusted settings/media/membership commands. No ordinary root Delete consumer. | A/B/C/D closed; E checked by explicit Core registration and generated consumers. |
-| Ecosystem | Core `runtime/ecosystem`; [model](../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts), document ID and `project_id`; owning identity database | `useEcosystemRead`, `useEcosystemCollection`, `useEcosystemDetail`, directory/card/route and App relationship readers | No active generic root mutation consumer found. Owning-system provisioning/identity authority is preserved; cross-database directory does not become an editor. | A/B/C/D closed; no parity writes retained. E checked through Core registration. |
-| User | Core `runtime/user`; [User model](../../packages/core/fireux-core/src/runtime/user/models/user.model.ts), UID identity; private account separate; AppUser owned by App | `useUserRead`, `useUserCollection`, `useUserDirectoryDetail`; User session/profile/directory with membership visibility | [Account provisioning](../../packages/core/fireux-core/src/runtime/user/server/user-account/provision.ts), bootstrap, trusted profile/handle/avatar. No root Delete consumer; no Auth/account cascade invented. | A/B/C/D closed; E checked through Core registration. |
-| Project | FireUX ecosystem `runtime/project`; [Project model](../../packages/ecosystem/fireux-fireux/src/runtime/project/models/project.model.ts); current App-owned protected commands remain justified | `useProjects` public collection, `useProjectCollection` membership-bounded collection, `useProjectRead`, `useProjectDetail`; public routes, guest Home and Workspace | Trusted account/guest create/resume and narrower Identity updater retained. No rendered caller of primitive Workspace create/delete existed; no duplicate Core Project owner. | A/B/C/D closed; E checked through ecosystem registration and direct consumers. |
+| App | Core `runtime/app`; [App model](../../../../packages/core/fireux-core/src/runtime/app/models/app.model.ts), document ID and `ecosystem_id`; App database | `useAppRead`, `useAppCollection`, `useAppDetail`; App session/Shell, public detail and directory. Native read and public HTTP visibility are distinct. | [Initialization](../../../../packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts), configured-App client and Project-owned App create; trusted settings/media/membership commands. No ordinary root Delete consumer. | A/B/C/D closed; E checked by explicit Core registration and generated consumers. |
+| Ecosystem | Core `runtime/ecosystem`; [model](../../../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts), document ID and `project_id`; owning identity database | `useEcosystemRead`, `useEcosystemCollection`, `useEcosystemDetail`, directory/card/route and App relationship readers | No active generic root mutation consumer found. Owning-system provisioning/identity authority is preserved; cross-database directory does not become an editor. | A/B/C/D closed; no parity writes retained. E checked through Core registration. |
+| User | Core `runtime/user`; [User model](../../../../packages/core/fireux-core/src/runtime/user/models/user.model.ts), UID identity; private account separate; AppUser owned by App | `useUserRead`, `useUserCollection`, `useUserDirectoryDetail`; User session/profile/directory with membership visibility | [Account provisioning](../../../../packages/core/fireux-core/src/runtime/user/server/user-account/provision.ts), bootstrap, trusted profile/handle/avatar. No root Delete consumer; no Auth/account cascade invented. | A/B/C/D closed; E checked through Core registration. |
+| Project | FireUX ecosystem `runtime/project`; [Project model](../../../../packages/ecosystem/fireux-fireux/src/runtime/project/models/project.model.ts); current App-owned protected commands remain justified | `useProjects` public collection, `useProjectCollection` membership-bounded collection, `useProjectRead`, `useProjectDetail`; public routes, guest Home and Workspace | Trusted account/guest create/resume and narrower Identity updater retained. No rendered caller of primitive Workspace create/delete existed; no duplicate Core Project owner. | A/B/C/D closed; E checked through ecosystem registration and direct consumers. |
 
 Exact source cutover: retired the unconsumed App client Update/Delete and server
 Update/Delete; Ecosystem and User client/server Create/Update/Delete parity files;
@@ -1101,11 +1103,11 @@ Capability internals are deliberately excluded.
 
 | Family | Base source anchor | S/R/A/N/O | Actual repair / accepted difference |
 | --- | --- | --- | --- |
-| Project | [Workspace base](../../packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspace.ts) | Closed locally | Root projection now waits for exact access; public/anonymous guest reader remains separate. Project stays FireUX-owned; trusted App commands remain App-owned. |
-| Kitchen | [Workspace base](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts) | Closed locally | Root + Place hydration now starts only for an exact access-granted selection. Adoption/allowance remain Kitchen-owned; no Menu/capability edits. |
-| Supplier | [Workspace base](../../packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspace.ts) | Closed locally | Exact access gates current Supplier root; Company/Place identity hydration stays with its existing domain reader. |
-| Portfolio | [Workspace base](../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace.ts) | Closed locally, unchanged | Existing access-bound projection was the working reference; no manufactured source change. |
-| Property | [Workspace base](../../packages/extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspace.ts) | Closed locally | Exact access gates current Property root. Reservation route-safe switching remains unchanged. Missing creation UI is a separate feature gap. |
+| Project | [Workspace base](../../../../packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspace.ts) | Closed locally | Root projection now waits for exact access; public/anonymous guest reader remains separate. Project stays FireUX-owned; trusted App commands remain App-owned. |
+| Kitchen | [Workspace base](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts) | Closed locally | Root + Place hydration now starts only for an exact access-granted selection. Adoption/allowance remain Kitchen-owned; no Menu/capability edits. |
+| Supplier | [Workspace base](../../../../packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspace.ts) | Closed locally | Exact access gates current Supplier root; Company/Place identity hydration stays with its existing domain reader. |
+| Portfolio | [Workspace base](../../../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace.ts) | Closed locally, unchanged | Existing access-bound projection was the working reference; no manufactured source change. |
+| Property | [Workspace base](../../../../packages/extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspace.ts) | Closed locally | Exact access gates current Property root. Reservation route-safe switching remains unchanged. Missing creation UI is a separate feature gap. |
 
 All five actual access readers consume Core `useMembershipAccess` and validate
 membership creation timestamps. Core persistence owns only active IDs. Domain
@@ -1162,67 +1164,67 @@ proof is claimed. Both source stages stop here, before any capability work.
 
 | Owning check | Existing diagnostic file | Codes / count |
 | --- | --- | --- |
-| Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue](../../packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue) | TS6133 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue](../../packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue) | TS6133 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/app/components/Shell.vue](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue) | TS2339 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/app/components/UserProfile.vue](../../packages/core/fireux-core/src/runtime/app/components/UserProfile.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue](../../packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue) | TS2305 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue](../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue) | TS2304, TS2305 / 2 |
-| Core | [packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue](../../packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ArrayOfStrings.vue](../../packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ArrayOfStrings.vue) | TS6133 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/pages/chat.vue](../../packages/core/fireux-core/src/runtime/pages/chat.vue) | TS2305 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/pages/search-demand/index.vue](../../packages/core/fireux-core/src/runtime/pages/search-demand/index.vue) | TS2307, TS7006, TS7053 / 3 |
-| Core | [packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue](../../packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue) | TS2307, TS7006, TS7053 / 3 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue](../../../../packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue](../../../../packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/Shell.vue](../../../../packages/core/fireux-core/src/runtime/app/components/Shell.vue) | TS2339 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/UserProfile.vue](../../../../packages/core/fireux-core/src/runtime/app/components/UserProfile.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue](../../../../packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue) | TS2305 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue](../../../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue) | TS2304, TS2305 / 2 |
+| Core | [packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue](../../../../packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ArrayOfStrings.vue](../../../../packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ArrayOfStrings.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/pages/chat.vue](../../../../packages/core/fireux-core/src/runtime/pages/chat.vue) | TS2305 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/pages/search-demand/index.vue](../../../../packages/core/fireux-core/src/runtime/pages/search-demand/index.vue) | TS2307, TS7006, TS7053 / 3 |
+| Core | [packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue](../../../../packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue) | TS2307, TS7006, TS7053 / 3 |
 | Core | [packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue](../../packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/pages/users/index.vue](../../packages/core/fireux-core/src/runtime/pages/users/index.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/user/components/AppMembership/Index.vue](../../packages/core/fireux-core/src/runtime/user/components/AppMembership/Index.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/user/components/Profile/Index.vue](../../packages/core/fireux-core/src/runtime/user/components/Profile/Index.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue](../../packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue) | TS2305 / 1 |
-| Kitchen | [packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts](../../packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts) | TS2769 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/dev/System.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/dev/System.vue) | TS2322 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Image/Batch.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Image/Batch.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Provision.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Provision.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue) | TS6133 / 22 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue) | TS6133 / 22 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Sections/Sproochli.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Sections/Sproochli.vue) | TS2339, TS2554 / 2 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue) | TS2554 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue) | TS2554 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Cost.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Cost.vue) | TS2554 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Index.vue) | TS2554 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue) | TS6133 / 10 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Menus.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Menus.vue) | TS2352 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Team/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Team/Index.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts) | TS2339 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions.ts) | TS2339 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts) | TS2322, TS2339 / 2 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/Kiosk/Item.vue](../../packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/Kiosk/Item.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/pages/users/index.vue](../../../../packages/core/fireux-core/src/runtime/pages/users/index.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/AppMembership/Index.vue](../../../../packages/core/fireux-core/src/runtime/user/components/AppMembership/Index.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/Profile/Index.vue](../../../../packages/core/fireux-core/src/runtime/user/components/Profile/Index.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue](../../../../packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue) | TS2305 / 1 |
+| Kitchen | [packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts](../../../../packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts) | TS2769 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/dev/System.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/dev/System.vue) | TS2322 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Image/Batch.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Image/Batch.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Provision.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Provision.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue) | TS6133 / 22 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue) | TS6133 / 22 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Sections/Sproochli.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Sections/Sproochli.vue) | TS2339, TS2554 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Cost.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Cost.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Process/Index.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue) | TS6133 / 10 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Menus.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Menus.vue) | TS2352 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Team/Index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Team/Index.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions.ts) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts) | TS2322, TS2339 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/Kiosk/Item.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/Kiosk/Item.vue) | TS6133 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/chefs/[handle].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/chefs/[handle].vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue) | TS2339 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/customer/profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/customer/profile.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/customer/profile.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/customer/profile.vue) | TS2339 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/drivers/[handle].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/drivers/[handle].vue) | TS2304 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/[id].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/[id].vue) | TS2304 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/kitchen/member-invitation/[token].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/kitchen/member-invitation/[token].vue) | TS2339 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) | TS6133 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) | TS6133 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[kitchen].get.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[kitchen].get.ts) | TS2322 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts) | TS2307 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Profile/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Profile/Index.vue) | TS2339 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue) | TS2339 / 2 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity/Index.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue) | TS2322 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/customer/useCustomer.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/customer/useCustomer.ts) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/driver/useDriver.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/driver/useDriver.ts) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/test/kitchen/menu-website-snippet.test.ts](../../packages/extensions/fireux-kitchens/src/test/kitchen/menu-website-snippet.test.ts) | TS2739 / 1 |
-| Kitchen | [packages/extensions/fireux-places/src/runtime/place/composables/usePlaceOnboarding.ts](../../packages/extensions/fireux-places/src/runtime/place/composables/usePlaceOnboarding.ts) | TS2339 / 1 |
-| Supplier | [packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-drop.vue](../../packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-drop.vue) | TS2345 / 2 |
-| Supplier | [packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/System.vue](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/System.vue) | TS2367 / 1 |
-| Supplier | [packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/Write.vue](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/Write.vue) | TS2367 / 1 |
-| Properties | [packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts](../../packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts) | TS2344 / 1 |
-| FireUX | [packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Identity/Write.vue](../../packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Identity/Write.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts) | TS2307 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Profile/Index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Profile/Index.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue) | TS2339 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity/Index.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity/Index.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue) | TS2322 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue](../../../../packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/customer/useCustomer.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/user/composables/customer/useCustomer.ts) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/driver/useDriver.ts](../../../../packages/extensions/fireux-kitchens/src/runtime/user/composables/driver/useDriver.ts) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/test/kitchen/menu-website-snippet.test.ts](../../../../packages/extensions/fireux-kitchens/src/test/kitchen/menu-website-snippet.test.ts) | TS2739 / 1 |
+| Kitchen | [packages/extensions/fireux-places/src/runtime/place/composables/usePlaceOnboarding.ts](../../../../packages/extensions/fireux-places/src/runtime/place/composables/usePlaceOnboarding.ts) | TS2339 / 1 |
+| Supplier | [packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-drop.vue](../../../../packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-drop.vue) | TS2345 / 2 |
+| Supplier | [packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/System.vue](../../../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/System.vue) | TS2367 / 1 |
+| Supplier | [packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/Write.vue](../../../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/Write.vue) | TS2367 / 1 |
+| Properties | [packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts](../../../../packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts) | TS2344 / 1 |
+| FireUX | [packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Identity/Write.vue](../../../../packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Identity/Write.vue) | TS2304 / 1 |
 
 
 ## Fixed foundation action closure — 2026-10-03

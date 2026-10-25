@@ -54,5 +54,5 @@ extensionless; Node-only tests may use an extension resolver. Finish with
 `git diff --check`. The old `scripts/` guards and `pnpm guard` are retired.
 
 See `docs/concepts/family-workspace-entity.md` and
-`docs/reviews/entity-spine-audit-2026-10-01.md` for the audited foundation boundary.
+`docs/archive/2026-10-workspace-cleanup/reviews/entity-spine-audit-2026-10-01.md` for the audited foundation boundary.
 Capability internals are a separate stage, not certified by this landing map.

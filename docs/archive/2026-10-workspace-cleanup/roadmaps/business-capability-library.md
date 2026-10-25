@@ -1,5 +1,7 @@
 # Business capability library and neutral reference
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Reviewed: 2026-10-23
 Role: delivery plan, not a release or reuse claim
 
@@ -54,11 +56,11 @@ the neutral reference and independent industry builds.
 - This slice adds no data acquisition, command, entitlement, installation service
   or deployment. It does not claim to complete the runtime business loop.
 
-Sources: [catalogue](../../projects/fireux/fireux-app/app/components/Framework/Capabilities.vue),
-[page](../../projects/fireux/fireux-app/app/pages/capabilities.vue),
-[Blank Team](../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceTeam.ts),
-[Blank Identity](../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceIdentity.ts),
-[Blank Calendar](../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceCalendar.ts).
+Sources: [catalogue](../../../../projects/fireux/fireux-app/app/components/Framework/Capabilities.vue),
+[page](../../../../projects/fireux/fireux-app/app/pages/capabilities.vue),
+[Blank Team](../../../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceTeam.ts),
+[Blank Identity](../../../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceIdentity.ts),
+[Blank Calendar](../../../../projects/fireux/fireux-blank/app/composables/useBlankWorkspaceCalendar.ts).
 
 ## Next: deliver one bounded reference loop
 

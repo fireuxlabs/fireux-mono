@@ -1,5 +1,7 @@
 # Misebox transparent-media backdrop audit
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Date: 2026-07-29
 Scope: read-only Live `misebox` Place/Kitchen audit plus current Demo fixtures
 

@@ -1,5 +1,7 @@
 # Kitchen product architecture review
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Date: 2026-09-08
 Status: recommendation for review, not an accepted capability reclassification or migration
 Scope: Kitchen capability organisation, operator experience and existing source evidence. No records, routes or ownership moved in this review.

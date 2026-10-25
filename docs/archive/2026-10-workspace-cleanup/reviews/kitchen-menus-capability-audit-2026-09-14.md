@@ -1,5 +1,7 @@
 # Kitchen Menus capability audit
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Reviewed: 2026-09-14
 Role: evidence and recommendations, not implementation authority
 Scope: `/workspace/kitchen/menus`, using La Tapberne as the browse-only client.

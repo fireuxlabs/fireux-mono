@@ -1,5 +1,7 @@
 # Record lookup audit and repair queue
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Date: 2026-09-29
 Baseline: `5b20445c3`; the six-item implementation batch below remains uncommitted.
 Owner: Misebox / FireUX Coordinator.

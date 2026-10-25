@@ -1,5 +1,7 @@
 # Industry capability model: bakery and plumbing
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Reviewed: 2026-10-23
 Role: hypothetical journey and source stress test, not live acceptance
 
@@ -39,10 +41,10 @@ price and capacity → team prepares → mark ready → collect → record payme
    Do not apply that rule blindly after preparation has begun.
 5. Changing tomorrow's prices does not rewrite an accepted order's agreement.
 
-Existing [Kitchen order submission](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/submission.ts)
+Existing [Kitchen order submission](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/submission.ts)
 is a source candidate for strict input, snapshots, transactional authority and
-retry handling. [Operating hours](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/operating-hours.ts)
-validates schedule shape; [Stations](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts)
+retry handling. [Operating hours](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/operating-hours.ts)
+validates schedule shape; [Stations](../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts)
 defines named work areas. None of those files proves bakery stock, daily batch
 capacity or timed oven allocation. Those remain explicit implementation gaps.
 
@@ -63,12 +65,12 @@ accepts → assign available plumber → visit and record work → approve any c
 5. Completion is retried. One completion and one intended financial fact; a
    recorded payment does not imply an external payment was processed.
 
-The existing [Job model](../../packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts)
+The existing [Job model](../../../../packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts)
 has employer, openings, contract type and compensation: it describes hiring,
 not a plumbing work order. Do not rename it to manufacture reuse.
-[Property reservations](../../packages/extensions/fireux-reservations/src/runtime/property/server/reservations/command.ts)
+[Property reservations](../../../../packages/extensions/fireux-reservations/src/runtime/property/server/reservations/command.ts)
 offer an atomic allocation pattern, but their Property-night units do not model
-mobile staff visits. [Finance facts](../../packages/extensions/fireux-finance/src/runtime/models/financial-fact.model.ts)
+mobile staff visits. [Finance facts](../../../../packages/extensions/fireux-finance/src/runtime/models/financial-fact.model.ts)
 provide a neutral building block; quote approval, work-order lifecycle and
 invoicing require their own supported owners.
 
@@ -142,12 +144,12 @@ Team opinion and is separate from the meaning of a hiring Job or work order.
 
 ### Current executable boundary
 
-The [Ignition page](../../projects/fireux/fireux-app/app/pages/ignite.vue)
+The [Ignition page](../../../../projects/fireux/fireux-app/app/pages/ignite.vue)
 prepares an in-memory brief and an email draft. It has no infrastructure
 connection, provisioning executor, managed preview or deployment state machine.
-[Ignition contracts](../../packages/extensions/fireux-ignite/src/runtime/models/ignition.ts)
+[Ignition contracts](../../../../packages/extensions/fireux-ignite/src/runtime/models/ignition.ts)
 cover requirements, assembly, evidence and search policy; they do not establish
-an executable infrastructure plan. The [FireUX Hosting configuration](../../projects/fireux/fireux-app/firebase.json)
+an executable infrastructure plan. The [FireUX Hosting configuration](../../../../projects/fireux/fireux-app/firebase.json)
 demonstrates one configured Hosting/SSR deployment, not a self-service provisioner.
 
 ### Ordered response

@@ -1,7 +1,17 @@
 # Interlaken bike client notes
 
-Updated: 2026-10-22
+Updated: 2026-10-25
 Status: discussion notes, not implementation specification.
+
+## Current pointer
+
+The current checkout contains the dedicated App at
+[`projects/slap/interlaken-bike-tours`](../../projects/slap/interlaken-bike-tours/package.json)
+and its [Ignition brief](../../projects/slap/interlaken-bike-tours/app/ignition/brief.ts).
+The older absence observation below is historical and has been superseded.
+Further delivery and launch work is parked under the
+[single priority list](../roadmaps/fireux-priorities.md); this note preserves
+client distinctions, not another active backlog.
 
 ## Distinct businesses
 
@@ -23,5 +33,5 @@ Status: discussion notes, not implementation specification.
 
 ## Next time
 
-- Reconcile this note with any local Codex work once available.
+- Recheck the current App and brief before taking further client work.
 - Ask for or record actual scope, deliverables and relationship between the two clients when discussed.

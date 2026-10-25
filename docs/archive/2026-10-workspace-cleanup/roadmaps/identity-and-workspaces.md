@@ -1,5 +1,7 @@
 # Identity and Workspace reconciliation
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Updated: 2026-10-04
 Role: roadmap, not implementation authority
 Baseline: 997624d71

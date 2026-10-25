@@ -538,8 +538,9 @@ factories also use Core's live server transport, including missing-profile
 reappearance and cleanup. Current evidence is Core's
 `user-directory-collection.test.mjs` and `live-server-read.test.mjs`.
 
-The active reconciliation scope and deferred optional profiles are tracked in
-[Identity and Workspace roadmap](../roadmaps/identity-and-workspaces.md).
+Current work is tracked in [FireUX priorities](../roadmaps/fireux-priorities.md).
+Earlier reconciliation evidence and deferred optional profiles remain in the
+[archived Identity and Workspace roadmap](../archive/2026-10-workspace-cleanup/roadmaps/identity-and-workspaces.md).
 Profiles are not a prerequisite for ordinary Workspace access; domain-specific
 capabilities retain their own explicit requirements.
 
@@ -558,4 +559,5 @@ and an entry action. For the configured App, entry uses its runtime home path.
 Other Apps require their stored HTTP(S) website address; missing addresses do
 not justify deriving a hostname from the App id. Management and creation use
 their own existing routes and authorities, not duplicate App identities.
-See `docs/roadmaps/identity-and-workspaces.md` for current journey acceptance.
+See [FireUX priorities](../roadmaps/fireux-priorities.md) for the current acceptance
+scope; the archived roadmap retains dated journey evidence.

@@ -1,5 +1,7 @@
 # Capability, action and reuse audit
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Date: 2026-09-30
 Baseline: b3f81af15 plus preserved uncommitted Ordering repairs.
 Role: source audit and proposed repair sequence, not new architecture authority.

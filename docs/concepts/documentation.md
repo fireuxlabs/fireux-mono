@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-25
+Ref: 4a06df9ef
 Role: map, not canon
 
 ## Purpose
@@ -33,6 +33,8 @@ update the map in the same change when the corrected rule is durable.
 | `docs/ai/gpt-context.md` | Durable repo-wide agent context                   | A copy of every concept map                     |
 | Owning package/App `docs/ai/*-context.md`, or central cross-owner context | Durable scope-specific agent context              | Task status, chat history, or speculative plans |
 | `docs/concepts/*.md`     | Navigable concept and family maps                 | An implementation substitute                    |
+| `docs/roadmaps/fireux-priorities.md` | One current priority queue with promotion criteria | A competing architecture or release authority |
+| `docs/archive/`          | Parked plans, dated audits and recovered drafts    | An automatically active task queue              |
 | README files             | Package landing map or concise placeholder | Architectural authority                         |
 
 ## Metadata
@@ -164,6 +166,13 @@ invariants and classified deltas. Initial equivalence records construction
 provenance only; it cannot be cited as evidence that a contract is shared.
 
 ## Roadmaps
+
+Use [FireUX priorities](../roadmaps/fireux-priorities.md) as the single current
+queue. Park superseded plans and dated execution boards under `docs/archive/`,
+preserving useful detail, provenance and incoming links. Refresh archived
+claims against current source before promoting work; an unchecked historical
+item does not establish a current defect or priority. Task state stays out of
+living context files.
 
 Roadmaps are bounded recommendations, not promises. Use this order:
 

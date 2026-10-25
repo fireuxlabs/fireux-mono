@@ -1,6 +1,8 @@
 # FireUX App search relationship matrix
 
-Date: 2026-08-04  
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
+Date: 2026-08-04
 Role: source-grounded review, not canon
 
 ## Relationship rule

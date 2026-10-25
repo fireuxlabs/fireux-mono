@@ -1,5 +1,7 @@
 # Nuxt entrypoints and FireUX Entity ownership
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Status: reviewed replacement draft; not published.
 Target: https://fireux.app/blog/ai-friendly-nuxt-architecture-with-an-entity-spine
 Preserve the existing slug, canonical URL, author and publication identity.

@@ -1,5 +1,7 @@
 # Codex task consolidation
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Date: 2026-07-29
 Status: completed inventory and documentation handoff
 Scope: FireUX-related Codex tasks visible in the Codex app

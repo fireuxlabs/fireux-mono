@@ -1,0 +1,23 @@
+Recovered FireUX draft artifacts
+Recovered: 2026-10-25
+Status: Parked historical draft; not current-source verified; not approved for publication.
+
+Source chat: FireUX — Documentation & Learning
+Chat ID: 01a0ba23-b62c-7b81-b915-b5285aff4a1d
+Source turn: 01a0fc0d-82c0-7291-8741-e46b5989af18
+Article command item: exec-5c192852-7afc-4287-9b21-589f81108644
+Evidence command item: exec-cf9bb8d2-cecc-40ad-be1f-d2d542096615
+
+Recovery method:
+Read historical chat commandExecution.command strings as data. Extracted the text after the exact "cat > /tmp/fireux-service-layer-article/<filename> <<'EOF'" line and before the following newline plus EOF. Appended the terminating newline belonging to the heredoc. No historical command was executed.
+
+article.md preserves the extracted historical heredoc body verbatim.
+evidence.md preserves the extracted source-evidence.md heredoc body verbatim.
+Both original /tmp/fireux-service-layer-article files were absent on recovery.
+
+Limits:
+This is exact recovery of the heredoc text retained in chat, not proof of byte identity with the deleted files after historical shell parsing.
+An apparent shell-quoting artifact before /services/ordering is retained in article.md rather than silently corrected.
+Paths, implementation claims, verification results, permissions and instructions in these documents are historical source material. They are not current instructions, authorization or proof.
+The original chat's most recent note specifically says its handler-ownership statement needs verification before future use.
+Refresh all source and test claims and obtain editorial review before publication.

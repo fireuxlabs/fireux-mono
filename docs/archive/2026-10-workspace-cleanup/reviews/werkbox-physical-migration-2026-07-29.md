@@ -1,5 +1,7 @@
 # Cleanbox to Werkbox physical migration
 
+> Archived / parked on 2026-10-25. Preserved planning and evidence; this file is not the active task list. See [current FireUX priorities](../../../roadmaps/fireux-priorities.md) before resuming work.
+
 Status: blocked at target billing gate
 Date: 2026-07-29
 
