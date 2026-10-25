@@ -214,7 +214,7 @@ function formatDebugError(value: unknown) {
   }
 }
 const coreIsMissing = computed(
-  () => coreOutcome.value === 'missing' || coreUser.value === null
+  () => coreOutcome.value === 'empty' || coreUser.value === null
 )
 const userCard = computed(() => userToCard(coreUser.value ?? null))
 const appCard = computed(() => appToCard(app.value ?? null))

@@ -134,7 +134,7 @@ test('one bounded link query supports document id or canonical reference and hyd
 test('missing canonical root remains a linked missing-root record; failures are not missing', () => {
   const f = fixture()
   f.canonical.ingredient.value = null
-  f.canonical.outcome.value = 'missing'
+  f.canonical.outcome.value = 'empty'
   assert.equal(f.state.ingredient.value.missing_root_ingredient, true)
   f.canonical.outcome.value = 'error'
   f.canonical.error.value = new Error('Catalogue failed')

@@ -49,10 +49,10 @@
           />
 
           <FireStateCard
-            v-else-if="appOutcome === 'missing' || !appSnapshot"
+            v-else-if="appOutcome === 'empty' || !appSnapshot"
             entity="app"
             kind="document"
-            state="missing"
+            state="empty"
           />
 
           <div v-else>
@@ -76,11 +76,9 @@ const { app, outcome: appOutcome } = useAppRead(fireux.appId)
 const { isAdmin } = useUserSession()
 
 const appSnapshot = computed(() =>
-  appOutcome.value === 'ready' ? app.value ?? null : null
+  appOutcome.value === 'ready' ? (app.value ?? null) : null
 )
-const appDisplayName = computed(
-  () => appSnapshot.value?.name || fireux.appName
-)
+const appDisplayName = computed(() => appSnapshot.value?.name || fireux.appName)
 const isLocalDev = import.meta.dev
 
 definePageMeta({

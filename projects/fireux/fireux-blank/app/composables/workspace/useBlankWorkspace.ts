@@ -31,7 +31,7 @@ export const useBlankWorkspace = defineWorkspace(() => {
     if (!id.value) return 'idle' as const
     if (blanks.outcome.value === 'pending' || blanks.outcome.value === 'error')
       return blanks.outcome.value
-    return data.value ? ('ready' as const) : ('missing' as const)
+    return data.value ? ('ready' as const) : ('empty' as const)
   })
 
   return {

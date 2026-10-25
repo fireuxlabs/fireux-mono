@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -15,7 +16,7 @@ import {
   watchEffect,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, result, dependencies) {
   const source = readFileSync(new URL(path, runtime), 'utf8')
@@ -40,7 +41,7 @@ const { MenuStorage } = load(
 const { useFirestoreCollectionState } = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
   '({ useFirestoreCollectionState })',
-  { computed, resolveReadOutcome, toValue: unref }
+  { computed, resolveReadOutcome, resolveHttpDocumentOutcome, toValue: unref }
 )
 async function render(path, state) {
   const source = readFileSync(new URL(path, runtime), 'utf8')
@@ -274,10 +275,9 @@ function collectionFixture() {
     const active = computed(() => Boolean(path.value))
     const outcome = computed(() =>
       resolveReadOutcome({
-        active: active.value,
-        kind: 'collection',
+        enabled: active.value,
         pending: pending.value,
-        error: error.value,
+        failed: Boolean(error.value),
         present: rows.value.length > 0,
       })
     )
@@ -367,7 +367,7 @@ function collectionFixture() {
     },
   }
 }
-for (const outcome of ['pending', 'error', 'missing', 'empty', 'idle'])
+for (const outcome of ['pending', 'error', 'empty', 'idle'])
   test(`Menu and upload storage stop when the owning Kitchen is ${outcome}`, () => {
     const f = collectionFixture()
     assert.equal(f.api.menus.value.length, 1)
@@ -437,14 +437,17 @@ test('an independent source-upload failure does not hide a loaded Menu', () => {
   assert.deepEqual(Object.keys(f.createOptions), ['kitchenId'])
   f.owner.stop()
 })
-for (const outcome of ['pending', 'error', 'missing'])
+for (const outcome of ['pending', 'error', 'empty'])
   test(`Menus entry shows the owning Kitchen ${outcome} before collection tools`, async () => {
-    const html = await render('kitchen/components/FoodAndDrink/Menus/Index.vue', {
-      storageKitchenId: '',
-      outcome,
-      error: outcome === 'error' ? new Error('Kitchen failed') : null,
-      workspaceEntryPath: '/workspace/kitchen',
-    })
+    const html = await render(
+      'kitchen/components/FoodAndDrink/Menus/Index.vue',
+      {
+        storageKitchenId: '',
+        outcome,
+        error: outcome === 'error' ? new Error('Kitchen failed') : null,
+        workspaceEntryPath: '/workspace/kitchen',
+      }
+    )
     assert.ok(
       outcome === 'pending'
         ? /loading/i.test(html)

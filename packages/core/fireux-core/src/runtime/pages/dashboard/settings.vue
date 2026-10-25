@@ -43,10 +43,10 @@
           />
 
           <FireStateCard
-            v-else-if="accountOutcome === 'missing'"
+            v-else-if="accountOutcome === 'empty'"
             entity="private account"
             kind="document"
-            state="missing"
+            state="empty"
             title="Private account record missing"
             description="The private account record must be restored before account details can be shown."
           />

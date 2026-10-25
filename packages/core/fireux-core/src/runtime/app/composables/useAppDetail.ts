@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
+import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
+
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import type { App } from '../models/app.model'
@@ -17,16 +18,17 @@ export function useAppDetail(endpoint: MaybeRefOrGetter<string>) {
   const error = state.error
   const pending = computed(() => outcome.value === 'pending')
   const app = computed(() =>
-    !error.value && !state.pending.value && state.data.value?.endpoint === url.value
+    !error.value &&
+    !state.pending.value &&
+    state.data.value?.endpoint === url.value
       ? (state.data.value.response?.item ?? null)
       : null
   )
   const outcome = computed(() =>
-    resolveReadOutcome({
-      active: Boolean(url.value),
+    resolveHttpDocumentOutcome({
+      enabled: Boolean(url.value),
       pending: state.pending.value,
       error: error.value,
-      kind: 'document',
       present: Boolean(app.value),
     })
   )

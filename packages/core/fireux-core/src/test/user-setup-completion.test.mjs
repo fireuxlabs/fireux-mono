@@ -71,10 +71,10 @@ function setupHarness(kind = 'user') {
           appPolicyPending: ref(false),
           appPolicyError: ref(null),
           appError: ref(null),
-          appOutcome: ref('missing'),
+          appOutcome: ref('empty'),
           appUser: ref(null),
           coreError: ref(null),
-          coreOutcome: ref(kind === 'user' ? 'missing' : 'ready'),
+          coreOutcome: ref(kind === 'user' ? 'empty' : 'ready'),
           coreUser: ref(kind === 'user' ? null : { id: 'actor' }),
         }),
         useUserAccount: () => ({
@@ -84,7 +84,7 @@ function setupHarness(kind = 'user') {
               : { terms: { version: 'current', accepted_at: 1 } }
           ),
           error: ref(null),
-          outcome: ref(kind === 'user' ? 'missing' : 'ready'),
+          outcome: ref(kind === 'user' ? 'empty' : 'ready'),
         }),
         useUserBootstrap: () => ({
           bootstrapUser: () => {

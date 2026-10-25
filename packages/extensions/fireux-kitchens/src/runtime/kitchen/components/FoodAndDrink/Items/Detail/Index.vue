@@ -102,7 +102,7 @@
     </template>
     <DishSpec
       v-if="
-        view === 'spec' && storageKitchenId && dishId && outcome !== 'missing'
+        view === 'spec' && storageKitchenId && dishId && outcome !== 'empty'
       "
     />
     <FireContextRecord

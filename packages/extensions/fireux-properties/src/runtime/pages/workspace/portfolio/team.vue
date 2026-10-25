@@ -1,10 +1,6 @@
 <template>
   <WorkspaceIntroInfo :intro="intro" />
-  <WorkspaceHero
-    compact
-    title="Portfolio Team"
-    description="Portfolio workspace team."
-  />
+  <UPageHeader title="Portfolio Team" description="Portfolio workspace team." />
   <WorkspacePortfolioSelector />
   <WorkspaceAI compact aria-label="Portfolio Team AI"
     ><UAlert

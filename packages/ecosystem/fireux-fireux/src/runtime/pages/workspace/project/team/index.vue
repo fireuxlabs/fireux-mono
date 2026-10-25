@@ -16,7 +16,7 @@
       aria-label="Select Team member"
       @update:model-value="team.natives.select(String($event))"
     /> </UDashboardToolbar
-  ><WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+  ><UPageHeader :title="intro.title" :description="intro.purpose" />
   <WorkspaceProjectTeamAI :team="team" @action="teamView?.openAction($event)" />
   <WorkspaceProjectTeam
     :key="team.state.value.project.id"

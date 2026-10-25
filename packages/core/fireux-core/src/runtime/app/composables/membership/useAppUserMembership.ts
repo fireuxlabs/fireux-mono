@@ -77,8 +77,8 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
   const resolved = computed(() => {
     if (!canInspect.value) return false
     if (membership.value) return true
-    if (isOwnProfile.value) return appOutcome.value === 'missing'
-    return adminOutcome.value === 'missing'
+    if (isOwnProfile.value) return appOutcome.value === 'empty'
+    return adminOutcome.value === 'empty'
   })
   const visible = computed(() => canInspect.value && resolved.value)
 

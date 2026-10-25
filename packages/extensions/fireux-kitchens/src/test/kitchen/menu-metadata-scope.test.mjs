@@ -284,7 +284,7 @@ test('Surviving Record context completes own live rename/delete but rejects exte
           ? api.renameMenu('k', 'm', 'Dinner')
           : api.deleteMenu('k', 'm')
       recordMenu.value = null
-      recordOutcome.value = 'missing'
+      recordOutcome.value = 'empty'
       assert.equal(api.menu.value, null)
       assert.equal(api.menuId.value, '')
       if (change === 'route') {

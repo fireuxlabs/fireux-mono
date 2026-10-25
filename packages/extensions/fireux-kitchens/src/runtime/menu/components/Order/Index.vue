@@ -18,7 +18,7 @@
       v-else-if="!flow.manifest"
       entity="Menu"
       kind="document"
-      state="missing"
+      state="empty"
       title="Menu unavailable"
       description="This menu is unavailable for ordering."
     />
@@ -86,9 +86,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
-import {
-  useMenuOrderFlow,
-} from '../../composables/useMenuOrderFlow'
+import { useMenuOrderFlow } from '../../composables/useMenuOrderFlow'
 import type { MenuOrderInput } from '../../models/menu-order-flow.model'
 const props = defineProps<MenuOrderInput>()
 const cartRegion = ref<HTMLElement | null>(null)

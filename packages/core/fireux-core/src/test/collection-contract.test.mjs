@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -19,7 +20,7 @@ function load(file, name, dependencies) {
 const useFirestoreCollectionState = load(
   'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
   'useFirestoreCollectionState',
-  { resolveReadOutcome, computed, isRef, toValue }
+  { resolveReadOutcome, resolveHttpDocumentOutcome, computed, isRef, toValue }
 )
 const common = {
   computed,
@@ -152,21 +153,55 @@ test('User reader explicitly selects identity database and exposes read state', 
   assert.equal(state.outcome.value, 'pending')
 })
 
-
 test('Kitchen menu paths distinguish default scope from explicitly disabled reads', () => {
-  const resolveKitchenChildCollectionPath = load('packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-collection-path.ts', 'resolveKitchenChildCollectionPath', {})
-  assert.equal(resolveKitchenChildCollectionPath({ kitchenId: 'kitchen-a', collectionName: 'menus' }), 'kitchens/kitchen-a/menus')
-  assert.equal(resolveKitchenChildCollectionPath({ kitchenCollectionPath: '', kitchenId: 'kitchen-a', collectionName: 'menus' }), '')
-  assert.equal(resolveKitchenChildCollectionPath({ kitchenId: '', collectionName: 'menus' }), '')
+  const resolveKitchenChildCollectionPath = load(
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-collection-path.ts',
+    'resolveKitchenChildCollectionPath',
+    {}
+  )
+  assert.equal(
+    resolveKitchenChildCollectionPath({
+      kitchenId: 'kitchen-a',
+      collectionName: 'menus',
+    }),
+    'kitchens/kitchen-a/menus'
+  )
+  assert.equal(
+    resolveKitchenChildCollectionPath({
+      kitchenCollectionPath: '',
+      kitchenId: 'kitchen-a',
+      collectionName: 'menus',
+    }),
+    ''
+  )
+  assert.equal(
+    resolveKitchenChildCollectionPath({
+      kitchenId: '',
+      collectionName: 'menus',
+    }),
+    ''
+  )
   let path
-  const factory = load('packages/extensions/fireux-kitchens/src/runtime/menu/composables/useKitchenMenuCollection.ts', 'useKitchenMenuCollection', {
-    ...common, resolveKitchenChildCollectionPath, MenuStorage: { scopeCollection: 'menus' },
-    useFireUXConfig: () => ({ appId: 'app-a' }),
-    useFirestoreRead: () => ({ firestoreFetchCollection: value => {
-      path = value
-      return Object.assign(ref([]), { pending: ref(false), error: ref(undefined), outcome: ref('empty') })
-    } }),
-  })
+  const factory = load(
+    'packages/extensions/fireux-kitchens/src/runtime/menu/composables/useKitchenMenuCollection.ts',
+    'useKitchenMenuCollection',
+    {
+      ...common,
+      resolveKitchenChildCollectionPath,
+      MenuStorage: { scopeCollection: 'menus' },
+      useFireUXConfig: () => ({ appId: 'app-a' }),
+      useFirestoreRead: () => ({
+        firestoreFetchCollection: (value) => {
+          path = value
+          return Object.assign(ref([]), {
+            pending: ref(false),
+            error: ref(undefined),
+            outcome: ref('empty'),
+          })
+        },
+      }),
+    }
+  )
   factory('kitchen-a')
   assert.equal(path.value, 'kitchens/kitchen-a/menus')
   factory('kitchen-a', { kitchenCollectionPath: '' })
@@ -174,20 +209,57 @@ test('Kitchen menu paths distinguish default scope from explicitly disabled read
 })
 
 test('App parsing projects obsolete fields and rejects invalid identity', () => {
-  const parse = load('packages/core/fireux-core/src/runtime/app/utils/readApp.ts', 'readAppDocument', {})
+  const parse = load(
+    'packages/core/fireux-core/src/runtime/app/utils/readApp.ts',
+    'readAppDocument',
+    {}
+  )
   const stamp = { at: { seconds: 1, nanoseconds: 0 } }
-  const valid = { id: 'app-a', ecosystem_id: 'eco-a', name: 'Example', role: 'tenant', status: 'active', created: stamp, updated: stamp }
-  assert.deepEqual(parse({ ...valid, project_id: 'obsolete-project' }, 'app-a'), valid)
+  const valid = {
+    id: 'app-a',
+    ecosystem_id: 'eco-a',
+    name: 'Example',
+    role: 'tenant',
+    status: 'active',
+    created: stamp,
+    updated: stamp,
+  }
+  assert.deepEqual(
+    parse({ ...valid, project_id: 'obsolete-project' }, 'app-a'),
+    valid
+  )
   assert.equal(parse({ ...valid, ecosystem_id: '' }, 'bad'), null)
 })
 
 test('User collection normalizes presentation just like User detail', () => {
-  const normalizeUser = load('packages/core/fireux-core/src/runtime/user/utils/normalize-user.ts', 'normalizeUser', { resolveUserAvatarSource: value => value ?? '' })
-  const source = Object.assign(ref([{ id: 'user-a', display_name: '  Daniel  ', handle: 'DANIEL', bio: ' Hello ' }]), { pending: ref(false), error: ref(undefined), outcome: ref('ready') })
-  const factory = load('packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts', 'useUserCollection', {
-    ...common, normalizeUser, readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
-    useFirestoreRead: () => ({ firestoreCollectionPage: () => ({ ...source, data: source }) }),
-  })
+  const normalizeUser = load(
+    'packages/core/fireux-core/src/runtime/user/utils/normalize-user.ts',
+    'normalizeUser',
+    { resolveUserAvatarSource: (value) => value ?? '' }
+  )
+  const source = Object.assign(
+    ref([
+      {
+        id: 'user-a',
+        display_name: '  Daniel  ',
+        handle: 'DANIEL',
+        bio: ' Hello ',
+      },
+    ]),
+    { pending: ref(false), error: ref(undefined), outcome: ref('ready') }
+  )
+  const factory = load(
+    'packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts',
+    'useUserCollection',
+    {
+      ...common,
+      normalizeUser,
+      readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
+      useFirestoreRead: () => ({
+        firestoreCollectionPage: () => ({ ...source, data: source }),
+      }),
+    }
+  )
   const result = factory()
   assert.equal(result.users.value[0].display_name, 'Daniel')
   assert.equal(result.users.value[0].handle, 'daniel')

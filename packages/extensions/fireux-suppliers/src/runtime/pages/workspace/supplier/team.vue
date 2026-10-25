@@ -1,10 +1,6 @@
 <template>
   <WorkspaceIntroInfo :intro="intro" />
-  <WorkspaceHero
-    compact
-    title="Supplier Team"
-    description="Supplier workspace team."
-  />
+  <UPageHeader title="Supplier Team" description="Supplier workspace team." />
   <WorkspaceSupplierSelector />
   <WorkspaceAI compact aria-label="Supplier Team AI"
     ><UAlert

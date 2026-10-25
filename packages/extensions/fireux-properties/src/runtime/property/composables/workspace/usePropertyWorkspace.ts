@@ -67,7 +67,7 @@ export const usePropertyWorkspace = defineWorkspace(() => {
   const outcome = computed<WorkspaceTargetOutcome>(() => {
     if (access.outcome.value !== 'ready') return access.outcome.value
     if (!id.value) return 'idle'
-    if (!readId.value) return 'missing'
+    if (!readId.value) return 'empty'
     if (
       source.outcome.value === 'ready' &&
       source.property.value?.id !== readId.value

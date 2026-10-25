@@ -14,7 +14,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useAppUserRead } from 'fireux-core/runtime/app/composables/membership/useAppUserRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import {
   ProductStorage,
   ProductPriceStorage,
@@ -90,9 +90,8 @@ export function useProductRecord(
   )
   const outcome = computed(() =>
     resolveReadOutcome({
-      active: Boolean(id.value),
-      kind: 'document',
-      error: error.value,
+      enabled: Boolean(id.value),
+      failed: Boolean(error.value),
       pending:
         membership.pending.value ||
         source.pending.value ||

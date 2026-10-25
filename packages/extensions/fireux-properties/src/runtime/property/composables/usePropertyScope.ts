@@ -66,7 +66,7 @@ export function usePropertyScope(
         : !requested.value
           ? 'idle'
           : !readId.value
-            ? 'missing'
+            ? 'empty'
             : source.outcome.value
     ),
   }
@@ -91,9 +91,9 @@ export function usePropertyScope(
       access.outcome.value !== 'ready'
         ? access.outcome.value
         : !access.ids.value.includes(id.value)
-          ? 'missing'
+          ? 'empty'
           : workspace.outcome.value === 'ready' && !canRead.value
-            ? 'missing'
+            ? 'empty'
             : workspace.outcome.value
     ),
     canRead,

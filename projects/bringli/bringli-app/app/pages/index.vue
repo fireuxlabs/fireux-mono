@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceHero
+  <UPageHeader
     title="Build your Supplier Workspace"
     description="Manage catalogues, ingredients and supply operations."
   />

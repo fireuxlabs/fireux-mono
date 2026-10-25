@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
@@ -16,7 +17,7 @@ import {
   effectScope,
   nextTick,
 } from 'vue'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import {
   offeringContract,
   loadOfferingContract,
@@ -214,6 +215,7 @@ function readerHarness() {
     unref,
     watch,
     resolveReadOutcome,
+    resolveHttpDocumentOutcome,
     useFirestoreResolver: () => () => ({}),
     collection: (_db, path) => ({ path }),
     fsq: (collection, ...constraints) => ({ collection, constraints }),

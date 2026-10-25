@@ -25,7 +25,7 @@
     v-else-if="!hasKitchen"
     entity="kitchen"
     kind="document"
-    state="missing"
+    state="empty"
     title="Kitchen not found"
     description="We couldn’t find the kitchen you’re looking for. It may have been removed or the link is incorrect."
   >

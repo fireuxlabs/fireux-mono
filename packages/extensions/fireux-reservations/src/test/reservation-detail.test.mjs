@@ -1,10 +1,11 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, toValue } from 'vue'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 const load = (file, names, deps) => {
   const code = readFileSync(
     new URL(`../runtime/${file}`, import.meta.url),
@@ -41,6 +42,7 @@ function fixture() {
       computed,
       toValue,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       useAuth: () => ({ currentUser }),
       useRequireUser: async () => currentUser.value,
       useFireUXConfig: () => ({ appId: 'buenohost' }),
@@ -51,7 +53,7 @@ function fixture() {
       },
     }
   )
-  const detail = usePropertyReservation(id)
+  const detail = usePropertyReservation(id, runtime)
   const fetch = async () => {
     state.data.value = await handler(async (url, options) => {
       requests.push({ url, options })
@@ -99,10 +101,7 @@ test('missing, denial, failure and access revocation hide detail and block edits
   await f.fetch()
   for (const statusCode of [404, 403, 503]) {
     f.state.error.value = { statusCode }
-    assert.equal(
-      f.detail.outcome.value,
-      statusCode === 404 ? 'missing' : 'error'
-    )
+    assert.equal(f.detail.outcome.value, statusCode === 404 ? 'empty' : 'error')
     assert.equal(f.detail.reservation.value, null)
     assert.equal(f.detail.canWrite.value, false)
   }

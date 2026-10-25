@@ -61,13 +61,13 @@ Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 
 These are separate responsibilities:
 
-| Surface | Job |
-| --- | --- |
-| Home | Resolve the selected Entity, offer switching or permitted creation, and provide the product's working entrance. |
-| Overview | Summarise the selected Entity across its implemented capabilities. |
-| Group index | Introduce a related set of child capabilities, with one useful surface per child. |
-| Capability page | Do the named domain work with its own controls and authority. |
-| Record page | Inspect or edit a record when the journey needs a separate destination. |
+| Surface         | Job                                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| Home            | Resolve the selected Entity, offer switching or permitted creation, and provide the product's working entrance. |
+| Overview        | Summarise the selected Entity across its implemented capabilities.                                              |
+| Group index     | Introduce a related set of child capabilities, with one useful surface per child.                               |
+| Capability page | Do the named domain work with its own controls and authority.                                                   |
+| Record page     | Inspect or edit a record when the journey needs a separate destination.                                         |
 
 Kitchen's inspected navigation places shared Identity & brand and Team before
 Misebox domain groups, with Settings after domain work. Home is reached through
@@ -176,8 +176,9 @@ Routes remain thin adapters. Workspace route metadata selects the shared Core
 frame; pages provide domain content and may use nested Nuxt outlets only for a
 real parent/child route. Named components, typed props and events define the
 composition. Native Nuxt UI slots remain supported; custom route-shell slots
-do not become another rendering owner. Shared page geometry belongs to the
-semantic Workspace styles, not authored utility overrides. Inspect the
+do not become another rendering owner. Shared page geometry belongs to native Nuxt UI and the
+semantic Workspace styles, not authored utility overrides. Workspace introductions directly
+use UPageHeader; the persistent frame still owns Navbar and breadcrumbs. Inspect the
 registered route and generated App output rather than inferring behaviour from
 a filename. See [layout ownership](layouts.md) for the renderer boundary.
 
@@ -195,14 +196,14 @@ system. Notifications remain User-owned shared presentation.
 
 ## Adoption and future industries
 
-| Family | Current boundary |
-| --- | --- |
-| Kitchen | Shared foundation plus capability-first component arrangement and composed group indexes. |
+| Family               | Current boundary                                                                                                            |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Kitchen              | Shared foundation plus capability-first component arrangement and composed group indexes.                                   |
 | Property / Portfolio | Shared foundation with domain-owned accommodation/property capabilities; capability placement still uses Workspace folders. |
-| Project | Shared foundation with FireUX control-plane capabilities; capability placement still uses Workspace folders. |
-| Supplier | Shared foundation with Supplier-owned catalogue work; capability placement still uses Workspace folders. |
-| Blank | App-local development harness, not a complete industry product. |
-| Marketplace Store | Workspace root ownership declared; working Workspace surface remains future work. |
+| Project              | Shared foundation with FireUX control-plane capabilities; capability placement still uses Workspace folders.                |
+| Supplier             | Shared foundation with Supplier-owned catalogue work; capability placement still uses Workspace folders.                    |
+| Blank                | App-local development harness, not a complete industry product.                                                             |
+| Marketplace Store    | Workspace root ownership declared; working Workspace surface remains future work.                                           |
 
 Use [the family map](family-workspace-entity.md) for exact accepted differences,
 authority boundaries and proving checks. A shared foundation does not establish

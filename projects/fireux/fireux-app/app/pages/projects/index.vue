@@ -1,34 +1,20 @@
 <template>
   <UPage>
+    <ProjectHero />
     <UPageBody>
-      <ProjectHero />
       <ProjectCreate />
-      <ProjectCollection v-if="outcome === 'ready'" :projects="projects" />
-      <FireStateCard
-        v-else
-        entity="projects"
-        kind="collection"
-        :loading="outcome === 'pending'"
-        :state="outcome === 'error' ? 'error' : 'empty'"
+      <FireState v-bind="page.state" />
+      <ProjectCollection
+        v-if="page.state.outcome === 'ready'"
+        :projects="page.projects"
       />
-      <FireDiagnosticsDebugPanel
-        title="Projects index acquisition"
-        context="Canonical Projects passed into the FL index surface."
-        object-origin="fetched"
-        :objects="{ projects }"
-        :derived="{ count: projects.length }"
-        include-route
-        launcher
-      />
+      <FireDiagnosticsDebugPanel v-bind="page.diagnostics" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
-
-const { projects, outcome } = useProjects()
+import { useProjectCollectionPage } from 'fireux-fireux/runtime/project/composables/useProjectCollectionPage'
 
 definePageMeta({
   tag: 'projects',
@@ -47,10 +33,5 @@ definePageMeta({
   name: 'FireuxProjectsIndexPage',
 })
 
-useSeo({
-  title: 'FireUX Projects',
-  description: 'Browse FireUX Projects and the Apps connected to each one.',
-  path: '/projects',
-  image: '/img/app/cover.png',
-})
+const page = useProjectCollectionPage()
 </script>

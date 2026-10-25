@@ -1,7 +1,6 @@
 <template>
   <WorkspaceIntroInfo :intro="intro" />
-  <WorkspaceHero
-    compact
+  <UPageHeader
     title="Kitchen Calendar"
     description="A clear view of the days ahead."
   />

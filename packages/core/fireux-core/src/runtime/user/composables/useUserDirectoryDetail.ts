@@ -1,6 +1,7 @@
+import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
-import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
+
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeUserHandle } from '../utils/user-handle'
 import type { DetailResponse } from '../../models/utils/directory'
@@ -36,16 +37,16 @@ export function useUserDirectoryDetail(handle: MaybeRefOrGetter<string>) {
     },
     { watch: [normalized] }
   )
-  const outcome = computed(() =>
-    resolveReadOutcome({
-      active: Boolean(normalized.value),
-      kind: 'document',
-      current: !state.data.value || state.data.value.key === key.value,
+  const outcome = computed(() => {
+    if (!normalized.value) return 'idle'
+    if (state.data.value && state.data.value.key !== key.value) return 'pending'
+    return resolveHttpDocumentOutcome({
+      enabled: Boolean(normalized.value),
       pending: state.pending.value,
       error: state.error.value,
       present: state.data.value?.user.handle === normalized.value,
     })
-  )
+  })
   return {
     user: computed(() =>
       outcome.value === 'ready' ? (state.data.value?.user ?? null) : null

@@ -244,33 +244,6 @@ export const fireuxDocsCatalogue = [
     props: 2,
     children: ['UCard', 'UProgress', 'UAlert'],
   }),
-  {
-    category: 'Page',
-    componentName: 'FireCollectionPage',
-    name: 'CollectionPage',
-    slug: 'entity-collection-page',
-    description: 'The shared shell for an ordinary Entity Collection Page.',
-    owner: 'Entity Collection Page',
-    responsibility: 'Compose the shared Entity Collection Page shell.',
-    scope: 'cross-industry',
-    source: core('Collection/Page'),
-    usedBy: [
-      page('packages/core/fireux-core/src/runtime/pages/apps/index.vue'),
-      page('packages/core/fireux-core/src/runtime/pages/users/index.vue'),
-    ],
-    objects: {
-      fetched: [],
-      passed: ['title', 'description', 'eyebrow', 'icon', 'secondaryLabel'],
-    },
-    derived: ['whether background, actions, hero, and secondary slots render'],
-    inputs: {
-      propCount: 5,
-      booleanCount: 0,
-      genericNames: [],
-      ownershipGroups: ['Entity Collection Page'],
-    },
-    nuxtUiChildren: ['UPage', 'UPageBody', 'UIcon'],
-  },
 ] as const satisfies readonly FireuxDocsCatalogueEntry[]
 
 export type FireuxDocsReview = {

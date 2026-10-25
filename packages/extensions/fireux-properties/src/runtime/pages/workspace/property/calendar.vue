@@ -1,7 +1,6 @@
 <template>
   <WorkspaceAICapabilityPlaceholder capability="Property Calendar" />
-  <WorkspaceHero
-    compact
+  <UPageHeader
     title="Property Calendar"
     description="View scheduled property activity."
   />

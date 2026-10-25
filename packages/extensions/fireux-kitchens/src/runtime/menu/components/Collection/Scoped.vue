@@ -112,23 +112,21 @@
       </UPage>
     </template>
 
-    <FireCollectionPage
+    <UPage
       v-else
       data-menu-projection="index"
       data-menu-index-kind="collection"
       :data-menu-index-state="outcome.kind"
-      eyebrow="Discover"
-      title="Menus"
-      description="Browse live Misebox kitchen menus and discover what is being served."
-      icon="i-lucide-book-open-check"
-      secondary-label="Menu tools"
     >
-      <MenuCollection id="live-menus" :index="index" />
-
-      <template #secondary>
+      <UPageHeader
+        title="Menus"
+        description="Browse live Misebox kitchen menus and discover what is being served."
+      />
+      <UPageBody>
+        <MenuCollection id="live-menus" :index="index" />
         <MenuCollectionPromotion />
-      </template>
-    </FireCollectionPage>
+      </UPageBody>
+    </UPage>
   </div>
 </template>
 

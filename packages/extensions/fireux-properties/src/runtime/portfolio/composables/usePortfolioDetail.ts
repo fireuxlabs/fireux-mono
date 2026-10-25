@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
+
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { PortfolioDetailResponse } from '../models/portfolio-read.model.ts'
 import { computed, type Ref } from 'vue'
@@ -13,18 +14,20 @@ export function usePortfolioDetail(id: Ref<string>) {
         : null,
     { default: () => null, watch: [portfolioId] }
   )
-  const outcome = computed(() =>
-    resolveReadOutcome({
-      active: Boolean(portfolioId.value),
-      current:
-        !state.data.value ||
-        state.data.value.portfolio?.id === portfolioId.value,
+  const outcome = computed(() => {
+    if (!portfolioId.value) return 'idle'
+    if (
+      state.data.value &&
+      state.data.value.portfolio?.id !== portfolioId.value
+    )
+      return 'pending'
+    return resolveHttpDocumentOutcome({
+      enabled: Boolean(portfolioId.value),
       pending: state.pending.value,
       error: state.error.value,
-      kind: 'document',
       present: state.data.value?.portfolio?.id === portfolioId.value,
     })
-  )
+  })
   return {
     portfolio: computed(() =>
       outcome.value === 'ready' ? (state.data.value?.portfolio ?? null) : null

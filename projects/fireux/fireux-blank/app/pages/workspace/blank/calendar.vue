@@ -1,6 +1,5 @@
 <template>
-  <WorkspaceHero
-    compact
+  <UPageHeader
     title="Blank Calendar"
     description="Explore dates and scheduled work."
   />

@@ -161,7 +161,7 @@ watch(
   [recipe, outcome],
   () => {
     if (!editing.value) return
-    if (outcome.value === 'missing') {
+    if (outcome.value === 'empty') {
       closeEditor()
       return
     }

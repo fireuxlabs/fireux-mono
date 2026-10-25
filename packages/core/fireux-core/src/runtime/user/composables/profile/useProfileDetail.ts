@@ -6,7 +6,7 @@ import type { ProfileDirectoryEntry } from '../../models/user-directory.model.ts
 
 export type ProfileCollection = 'agents' | 'chefs' | 'drivers' | 'professionals'
 
-export type ProfileDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+export type ProfileDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
 
 type ProfileDetailOptions =
   | { collection: 'agents'; kind: 'agent' }
@@ -25,7 +25,7 @@ export type UseProfileDetailReturn<TProfile extends Record<string, unknown>> =
     profile: ComputedRef<(TProfile & { id: string }) | null>
     user: ComputedRef<ProfileDirectoryEntry<TProfile>['user'] | null>
     statusCode: ComputedRef<number>
-    missing: ComputedRef<boolean>
+    empty: ComputedRef<boolean>
     failed: ComputedRef<boolean>
     outcome: ComputedRef<ProfileDetailOutcome>
   }
@@ -86,7 +86,7 @@ export async function useProfileDetail<
   })
   const user = computed(() => entry.value?.user ?? null)
   const statusCode = computed(() => readStatusCode(error.value))
-  const missing = computed(
+  const empty = computed(
     () =>
       statusCode.value === 404 ||
       (!pending.value && !error.value && !entry.value)
@@ -97,7 +97,7 @@ export async function useProfileDetail<
   const outcome = computed<ProfileDetailOutcome>(() => {
     if (pending.value) return 'pending'
     if (failed.value) return 'error'
-    if (missing.value) return 'missing'
+    if (empty.value) return 'empty'
     return 'ready'
   })
 
@@ -108,7 +108,7 @@ export async function useProfileDetail<
     pending,
     error,
     statusCode,
-    missing,
+    empty,
     failed,
     outcome,
     refresh,

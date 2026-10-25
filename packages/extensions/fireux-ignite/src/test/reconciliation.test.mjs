@@ -83,7 +83,7 @@ test('invalid references, duplicate identities and dependency cycles fail before
     () =>
       reconcileIgnition(brief, null, {
         ...reference,
-        elements: [{ ...element, uses: ['missing'] }],
+        elements: [{ ...element, uses: ['empty'] }],
       }),
     /Unknown assembly/
   )

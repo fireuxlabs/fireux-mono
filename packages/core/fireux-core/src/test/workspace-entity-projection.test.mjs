@@ -144,7 +144,7 @@ for (const [family, path] of Object.entries(paths))
     selectedId.value = 'forged'
     assert.equal(readId.value, '')
     assert.equal(workspace.data.value, null)
-    assert.equal(workspace.outcome.value, 'missing')
+    assert.equal(workspace.outcome.value, 'empty')
     selectedId.value = 'b'
     assert.equal(readId.value, 'b')
     assert.equal(workspace.outcome.value, 'pending')

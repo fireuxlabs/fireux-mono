@@ -18,19 +18,28 @@ function load(path, bindings, result) {
     Object.keys(bindings)
   )(...Object.values(bindings))
 }
-const readProjectDocument = load('../runtime/project/utils/readProject.ts', {isFirestoreDocumentId}, 'readProjectDocument')
+const readProjectDocument = load(
+  '../runtime/project/utils/readProject.ts',
+  { isFirestoreDocumentId },
+  'readProjectDocument'
+)
 const isGuestProject = load(
   '../runtime/project/utils/guest-project.ts',
-  {readProjectDocument},
+  { readProjectDocument },
   'isGuestProject'
 )
 const createError = ({ statusCode, statusMessage }) =>
   Object.assign(new Error(statusMessage), { statusCode })
 const owned = (uid = 'guest', appId = 'app') => ({
-  identity: {name: 'Existing work', description:'', image_url:'', status:'inactive'},
+  identity: {
+    name: 'Existing work',
+    description: '',
+    image_url: '',
+    status: 'inactive',
+  },
   guest_owner_uid: uid,
-  created: { by: uid, app_id: appId, at:{seconds:123,nanoseconds:0} },
-  updated: {by:uid, at:{seconds:123,nanoseconds:0}},
+  created: { by: uid, app_id: appId, at: { seconds: 123, nanoseconds: 0 } },
+  updated: { by: uid, at: { seconds: 123, nanoseconds: 0 } },
 })
 
 function harness({ root, appExists = true, canCreate = true } = {}) {
@@ -59,7 +68,7 @@ function harness({ root, appExists = true, canCreate = true } = {}) {
       serverAuditStamp: ({ by, appId }) => ({
         by,
         ...(appId ? { app_id: appId } : {}),
-        at: {seconds:123,nanoseconds:0},
+        at: { seconds: 123, nanoseconds: 0 },
       }),
       fireuxProjectsTarget: 'projects',
       FIRESTORE_MUTATION_TARGETS: {
@@ -123,7 +132,10 @@ test('anonymous creation persists one minimal Project and concurrent retries res
   )
   assert.ok(results.every((result) => result.project_id === 'guest'))
   assert.equal(h.writes.length, 1)
-  assert.equal(readProjectDocument(h.records.get('guest'),'guest')?.identity.name,'First idea')
+  assert.equal(
+    readProjectDocument(h.records.get('guest'), 'guest')?.identity.name,
+    'First idea'
+  )
   assert.equal(h.records.size, 1)
   assert.equal(h.records.get('guest').identity.name, 'First idea')
   assert.equal(h.records.get('guest').identity.status, 'inactive')
@@ -162,7 +174,7 @@ test('guest creation retains App availability, configuration and bounded-input c
     {},
     { name: 'x'.repeat(121) },
     { name: ['not text'] },
-    { name: {value:'not text'} },
+    { name: { value: 'not text' } },
     { name: 'Valid', project_id: 'other' },
   ]) {
     await assert.rejects(h.run(input), { statusCode: 400 })
@@ -195,7 +207,7 @@ test('guest Home resumes from live persisted state and hides stale roots on iden
   )
   assert.equal(boundId.value, 'guest')
   assert.equal(state.pending.value, true)
-  source.outcome.value = 'missing'
+  source.outcome.value = 'empty'
   assert.equal(state.pending.value, false)
   assert.equal(state.project.value, null)
   source.data.value = { id: 'guest', ...owned() }

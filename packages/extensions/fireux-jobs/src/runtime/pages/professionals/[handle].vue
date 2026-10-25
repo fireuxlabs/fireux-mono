@@ -6,7 +6,7 @@
     icon="i-lucide-briefcase-business"
     :pending="pending"
     :failed="failed"
-    :missing="missing"
+    :empty="empty"
   >
     <div
       v-if="professionalProfile && profileUser"
@@ -48,7 +48,7 @@ const {
   user: profileUser,
   pending,
   statusCode,
-  missing,
+  empty,
   failed,
   outcome,
 } = await useProfileDetail<ProfessionalProfilePayload>(
@@ -76,7 +76,7 @@ if (
 
 const displayName = computed(() => profileUser.value?.display_name ?? '')
 if (import.meta.server) {
-  if (missing.value) {
+  if (empty.value) {
     setResponseStatus(404)
   } else if (failed.value) {
     setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)

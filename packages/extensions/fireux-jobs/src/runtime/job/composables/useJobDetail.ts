@@ -13,7 +13,7 @@ import type {
 } from '../models/job-collection.model.ts'
 import type { Job } from '../models/job.model.ts'
 
-export type JobDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+export type JobDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
 
 type JobDetailControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
@@ -28,7 +28,7 @@ export type UseJobDetailReturn = JobDetailControls & {
   applicationDoorway: ComputedRef<JobApplicationDoorway | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
+  empty: ComputedRef<boolean>
   failed: ComputedRef<boolean>
   outcome: ComputedRef<JobDetailOutcome>
 }
@@ -81,7 +81,7 @@ export function useJobDetail(
     () => response.value?.applicationDoorway ?? null
   )
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
+  const empty = computed(
     () =>
       statusCode.value === 404 ||
       (!state.pending.value && !state.error.value && !job.value)
@@ -92,7 +92,7 @@ export function useJobDetail(
   const outcome = computed<JobDetailOutcome>(() => {
     if (state.pending.value) return 'pending'
     if (failed.value) return 'error'
-    if (missing.value) return 'missing'
+    if (empty.value) return 'empty'
     return 'ready'
   })
 
@@ -107,7 +107,7 @@ export function useJobDetail(
     error: state.error,
     refresh: state.refresh,
     statusCode,
-    missing,
+    empty,
     failed,
     outcome,
   }

@@ -18,10 +18,10 @@ export function useSupplierWorkspaceHome() {
   )
   const outcome = computed<WorkspaceTargetOutcome>(() => {
     if (workspace.outcome.value !== 'ready') return workspace.outcome.value
-    if (workspace.collectionOutcome.value === 'empty') return 'missing'
+    if (workspace.collectionOutcome.value === 'empty') return 'empty'
     if (workspace.collectionOutcome.value !== 'ready')
       return workspace.collectionOutcome.value
-    return selectedSupplier.value ? 'ready' : 'missing'
+    return selectedSupplier.value ? 'ready' : 'empty'
   })
   const { focus } = useOverview({
     entity: selectedSupplier,

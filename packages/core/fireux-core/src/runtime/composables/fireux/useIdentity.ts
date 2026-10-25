@@ -6,16 +6,13 @@ export function useIdentity<Fields>(options: {
   fields: Ref<Fields>
   status: Ref<string>
 }) {
-  const readState = computed<'loading' | 'empty' | 'missing' | 'error' | null>(
-    () => {
-      const status = options.status.value
-      if (status === 'ready') return null
-      if (status === 'pending') return 'loading'
-      if (status === 'error') return 'error'
-      if (status === 'missing') return 'missing'
-      return 'empty'
-    }
-  )
+  const readState = computed<'loading' | 'empty' | 'error' | null>(() => {
+    const status = options.status.value
+    if (status === 'ready') return null
+    if (status === 'pending') return 'loading'
+    if (status === 'error') return 'error'
+    return 'empty'
+  })
   const scopeKey = computed(() =>
     JSON.stringify([options.id.value, options.fields.value])
   )

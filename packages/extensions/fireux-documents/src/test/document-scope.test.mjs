@@ -276,6 +276,6 @@ test('An empty document vault preserves separately loaded links, and hides them 
     assert.deepEqual(api.links.value, [])
   }
   links.outcome.value = 'ready'
-  h.portfolio.targetOutcome.value = 'missing'
+  h.portfolio.targetOutcome.value = 'empty'
   assert.deepEqual(api.links.value, [])
 })

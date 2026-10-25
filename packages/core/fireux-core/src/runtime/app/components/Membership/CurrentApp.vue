@@ -1,11 +1,6 @@
 <template>
   <section class="space-y-5" aria-label="Current app">
-    <FireStateCard
-      v-if="appPending"
-      entity="app"
-      kind="document"
-      loading
-    />
+    <FireStateCard v-if="appPending" entity="app" kind="document" loading />
     <FireStateCard
       v-else-if="appError"
       entity="app"
@@ -16,7 +11,7 @@
       v-else-if="!appCard"
       entity="app"
       kind="document"
-      state="missing"
+      state="empty"
     />
     <UPageCard v-else title="Current App" icon="i-lucide-box" variant="subtle">
       <AppCardsCell v-bind="appCard" link />

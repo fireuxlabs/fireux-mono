@@ -15,10 +15,10 @@
   />
 
   <FireStateCard
-    v-else-if="appOutcome === 'missing' || !appSnapshot"
+    v-else-if="appOutcome === 'empty' || !appSnapshot"
     entity="app"
     kind="document"
-    state="missing"
+    state="empty"
   />
 
   <div v-else class="space-y-6">

@@ -1,13 +1,14 @@
+import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Company } from 'fireux-companies/runtime/place/models/company.model'
 import type { Supplier } from '../models/Supplier.model.ts'
 
-export type SupplierDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+export type SupplierDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
 
 type SupplierDetailControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
@@ -20,7 +21,7 @@ export type UseSupplierDetailReturn = SupplierDetailControls & {
   place: ComputedRef<Place | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
+  empty: ComputedRef<boolean>
   failed: ComputedRef<boolean>
   outcome: ComputedRef<SupplierDetailOutcome>
 }
@@ -66,15 +67,15 @@ export function useSupplierDetail(
   )
   const statusCode = computed(() => readStatusCode(state.error.value))
   const outcome = computed<SupplierDetailOutcome>(() => {
-    const result = resolveReadOutcome({
-      active: Boolean(id.value),
-      current: !state.data.value || state.data.value.key === key.value,
-      kind: 'document',
+    if (!id.value) return 'empty'
+    if (state.data.value && state.data.value.key !== key.value) return 'pending'
+    const result = resolveHttpDocumentOutcome({
+      enabled: Boolean(id.value),
       pending: state.pending.value,
       error: state.error.value,
       present: state.data.value?.supplier?.id === id.value,
     })
-    return result === 'idle' ? 'missing' : result
+    return result === 'idle' ? 'empty' : result
   })
   // The server projection already follows Supplier, Company and Place live.
   // Never retain an old identity or add raw browser listeners beside it.
@@ -87,7 +88,7 @@ export function useSupplierDetail(
   const place = computed(() =>
     outcome.value === 'ready' ? (state.data.value?.place ?? null) : null
   )
-  const missing = computed(() => outcome.value === 'missing')
+  const empty = computed(() => outcome.value === 'empty')
   const failed = computed(() => outcome.value === 'error')
 
   return {
@@ -99,7 +100,7 @@ export function useSupplierDetail(
     error: state.error,
     refresh: state.refresh,
     statusCode,
-    missing,
+    empty,
     failed,
     outcome,
   }

@@ -1,13 +1,11 @@
-import { resolveReadOutcome } from './read-outcome'
+import {
+  resolveReadOutcome,
+  type ReadOutcome,
+} from '../../../../utils/read-outcome'
 import { computed, isRef, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 
 export type FirestoreCollectionSource = 'live' | 'test' | 'demo'
-export type FirestoreCollectionOutcome =
-  | 'idle'
-  | 'pending'
-  | 'error'
-  | 'empty'
-  | 'ready'
+export type FirestoreCollectionOutcome = ReadOutcome
 export type FirestoreCollectionFilterValue = string | number | null | undefined
 type FirestoreCollectionFilterInput =
   | FirestoreCollectionFilterValue[]
@@ -38,11 +36,10 @@ export function useFirestoreCollectionState(
   const outcome = computed<FirestoreCollectionOutcome>(
     () =>
       resolveReadOutcome({
-        active:
+        enabled:
           options.active === undefined || Boolean(toValue(options.active)),
         pending: Boolean(toValue(options.pending)),
-        error: toValue(options.error),
-        kind: 'collection',
+        failed: Boolean(toValue(options.error)),
         present: toValue(options.count) > 0,
       }) as FirestoreCollectionOutcome
   )

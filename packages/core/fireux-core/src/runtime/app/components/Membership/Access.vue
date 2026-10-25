@@ -12,10 +12,10 @@
     state="error"
   />
   <FireStateCard
-    v-else-if="appUserOutcome === 'missing' || !appUser"
+    v-else-if="appUserOutcome === 'empty' || !appUser"
     entity="app user"
     kind="document"
-    state="missing"
+    state="empty"
   />
   <UPageCard
     v-else

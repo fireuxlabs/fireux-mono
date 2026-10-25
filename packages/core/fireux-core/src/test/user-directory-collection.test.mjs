@@ -1,10 +1,11 @@
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref } from 'vue'
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 
 function load(file, names, deps) {
   const source = readFileSync(new URL(file, import.meta.url), 'utf8')
@@ -35,6 +36,7 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
       {
         computed,
         resolveReadOutcome,
+        resolveHttpDocumentOutcome,
         useFireUXConfig: () => ({ appId: 'tenant-a', isTenant }),
         useUserDirectoryCollection: (appId) => {
           assert.equal(appId, 'tenant-a')
@@ -48,7 +50,7 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
         useUserSession: () => ({
           user: ref({ id: 'self', handle: 'self' }),
           appUser: ref(null),
-          appOutcome: ref('missing'),
+          appOutcome: ref('empty'),
         }),
         isUserDirectoryEligible: (user) => Boolean(user.handle),
       }
@@ -286,6 +288,7 @@ test('Tenant collection preserves live pages, honest failures and bounded load-m
       computed,
       ref,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       readLivePages: h.readLivePages,
       useLiveAsyncData: (key, handler) => {
         assert.equal(key, 'user-directory:tenant-a')

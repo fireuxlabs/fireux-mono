@@ -1,10 +1,11 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, shallowRef, toValue, reactive } from 'vue'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import {
   normalizeProduct,
   normalizeProductPrice,
@@ -69,6 +70,7 @@ function fixture() {
     computed,
     toValue,
     resolveReadOutcome,
+    resolveHttpDocumentOutcome,
     normalizeProduct,
     normalizeProductPrice,
     joinProductRead,
@@ -156,7 +158,7 @@ test('module lookup reads one matching ID or slug and only its prices, with live
   assert.equal(f.pricePath, 'products/other/prices')
   f.id.value = 'not-module'
   f.settle()
-  assert.equal(f.state.outcome.value, 'missing')
+  assert.equal(f.state.outcome.value, 'empty')
   assert.equal(f.pricePath, '')
 })
 test('existing public, tenant/standalone and admin-owned Product scope is preserved', () => {
@@ -169,14 +171,14 @@ test('existing public, tenant/standalone and admin-owned Product scope is preser
   assert.equal(f.state.read.value.product.id, 'hidden')
   f.config.appId = 'app-b'
   f.settle()
-  assert.equal(f.state.outcome.value, 'missing')
+  assert.equal(f.state.outcome.value, 'empty')
   f.membership.appUser.value.role = 'user'
   f.id.value = 'chosen'
   f.settle()
   assert.equal(f.state.outcome.value, 'ready')
   f.config.role = 'standalone'
   f.settle()
-  assert.equal(f.state.outcome.value, 'missing')
+  assert.equal(f.state.outcome.value, 'empty')
   f.config.appId = 'app-a'
   f.config.role = 'tenant'
   f.config.isTenant = true
@@ -199,5 +201,5 @@ test('ambiguous locators, deletion and Product/price failures do not show stale 
   assert.equal(f.state.read.value, null)
   f.priceFailure.value = null
   f.rows.value = []
-  assert.equal(f.state.outcome.value, 'missing')
+  assert.equal(f.state.outcome.value, 'empty')
 })

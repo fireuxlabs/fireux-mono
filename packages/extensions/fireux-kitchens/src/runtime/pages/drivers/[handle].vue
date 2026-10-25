@@ -6,7 +6,7 @@
     icon="i-lucide-truck"
     :pending="pending"
     :failed="failed"
-    :missing="missing"
+    :empty="empty"
   >
     <div v-if="profile" data-public-profile="driver">
       <DriverDetail v-if="profileUser" :profile="profile" :user="profileUser" />
@@ -45,7 +45,7 @@ const {
   user: profileUser,
   pending,
   statusCode,
-  missing,
+  empty,
   failed,
   outcome,
 } = await useProfileDetail<DriverProfilePayload>(
@@ -75,7 +75,7 @@ const displayName = computed(
   () => profileUser.value?.display_name || profile.value?.title || ''
 )
 if (import.meta.server) {
-  if (missing.value) {
+  if (empty.value) {
     setResponseStatus(404)
   } else if (failed.value) {
     setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)

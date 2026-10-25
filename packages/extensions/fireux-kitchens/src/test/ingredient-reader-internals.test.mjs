@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -16,7 +17,7 @@ import {
   watch,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, result, dependencies) {
   let source = readFileSync(new URL(path, runtime), 'utf8')
@@ -33,7 +34,7 @@ function load(path, result, dependencies) {
 const { useFirestoreCollectionState } = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
   '({ useFirestoreCollectionState })',
-  { computed, toValue, resolveReadOutcome }
+  { computed, toValue, resolveReadOutcome, resolveHttpDocumentOutcome }
 )
 const { useKitchenWorkspaceReadPage } = load(
   'kitchen/composables/workspace/useKitchenWorkspaceReadPage.ts',
@@ -93,7 +94,7 @@ test('Kitchen collection uses only the exact ready owner and suppresses retained
   const f = workspaceFixture()
   assert.equal(f.requestedId, 'mine')
   assert.equal(f.state.ingredients.value[0].name, 'Carrot')
-  for (const outcome of ['pending', 'error', 'missing', 'empty', 'idle']) {
+  for (const outcome of ['pending', 'error', 'empty', 'idle']) {
     f.workspace.outcome.value = outcome
     assert.equal(f.requestedId, '')
     assert.deepEqual(f.state.ingredients.value, [])
@@ -256,7 +257,13 @@ test('Ingredient detail hides retained identity on pending/error, with error tak
   const use = load(
     'ingredient/composables/useIngredientDetail.ts',
     'useIngredientDetail',
-    { computed, unref, resolveReadOutcome, useLiveAsyncData: () => raw }
+    {
+      computed,
+      unref,
+      resolveReadOutcome,
+      resolveHttpDocumentOutcome,
+      useLiveAsyncData: () => raw,
+    }
   )
   const state = use(id)
   assert.equal(state.ingredient.value.name, 'Carrot')
@@ -272,7 +279,7 @@ test('Ingredient detail hides retained identity on pending/error, with error tak
   assert.equal(state.outcome.value, 'pending')
   raw.data.value = null
   raw.error.value = { statusCode: 404 }
-  assert.equal(state.outcome.value, 'missing')
+  assert.equal(state.outcome.value, 'empty')
   id.value = ''
   assert.equal(state.outcome.value, 'idle')
 })
@@ -367,7 +374,7 @@ test('actual Ingredients index distinguishes unready owner from a ready empty li
   for (const [outcome, expected] of [
     ['pending', 'Loading Kitchen'],
     ['error', 'Kitchen unavailable'],
-    ['missing', 'Kitchen not found'],
+    ['empty', 'Kitchen not found'],
     ['idle', 'Select a kitchen'],
   ]) {
     const html = await render(
@@ -427,9 +434,9 @@ test('public Ingredient page reader follows reused route params and closes the p
 
 test('public Ingredient page renders failure before loading and missing separately', async () => {
   for (const [outcome, expected] of [
-    ['error', 'error'],
+    ['error'],
     ['pending', 'Loading ingredient'],
-    ['missing', 'Ingredient Not Found'],
+    ['empty', 'Ingredient Not Found'],
   ]) {
     const html = await render('pages/ingredients/[id].vue', {
       pageTitle: 'Ingredient',
@@ -445,32 +452,69 @@ test('public Ingredient page renders failure before loading and missing separate
 test('explicit empty Kitchen parent disables link reads and retained-ID hydration', async () => {
   const parent = ref('')
   let readPath, handler
-  const use = load('kitchen/composables/ingredients/useKitchenIngredients.ts', 'useKitchenIngredients', {
-    computed, unref,
-    useFireUXConfig: () => ({ appId: 'app' }),
-    resolveKitchenChildCollectionBasePath: ({ kitchenCollectionPath }) => kitchenCollectionPath === undefined ? 'kitchens' : kitchenCollectionPath,
-    KitchenIngredientStorage: { collection: 'ingredients' },
-    useFirestoreRead: () => ({ firestoreFetchCollection: (path) => { readPath = path; return { data: ref([{ id: 'carrot', ingredient_id: 'carrot' }]), pending: ref(false), error: ref(null) } } }),
-    useLiveAsyncData: (_key, read) => { handler = read; return { data: ref({ items: [] }), pending: ref(false), error: ref(null) } },
-    useCollectionById: () => ({ byId: () => undefined }),
-  })
+  const use = load(
+    'kitchen/composables/ingredients/useKitchenIngredients.ts',
+    'useKitchenIngredients',
+    {
+      computed,
+      unref,
+      useFireUXConfig: () => ({ appId: 'app' }),
+      resolveKitchenChildCollectionBasePath: ({ kitchenCollectionPath }) =>
+        kitchenCollectionPath === undefined
+          ? 'kitchens'
+          : kitchenCollectionPath,
+      KitchenIngredientStorage: { collection: 'ingredients' },
+      useFirestoreRead: () => ({
+        firestoreFetchCollection: (path) => {
+          readPath = path
+          return {
+            data: ref([{ id: 'carrot', ingredient_id: 'carrot' }]),
+            pending: ref(false),
+            error: ref(null),
+          }
+        },
+      }),
+      useLiveAsyncData: (_key, read) => {
+        handler = read
+        return {
+          data: ref({ items: [] }),
+          pending: ref(false),
+          error: ref(null),
+        }
+      },
+      useCollectionById: () => ({ byId: () => undefined }),
+    }
+  )
   use(ref('mine'), { kitchenCollectionPath: parent })
   assert.equal(readPath.value, '')
   const requests = []
-  assert.deepEqual(await handler(async (url) => { requests.push(url); return { items: [] } }), { items: [] })
+  assert.deepEqual(
+    await handler(async (url) => {
+      requests.push(url)
+      return { items: [] }
+    }),
+    { items: [] }
+  )
   assert.deepEqual(requests, [])
   parent.value = 'kitchens'
   assert.equal(readPath.value, 'kitchens/mine/ingredients')
 })
 
 test('passed Ingredient detail closes its editor when the record identity changes', () => {
- const props=reactive({ingredient:{id:'carrot'}}),scope=effectScope()
- const state=scope.run(()=>load('ingredient/components/Detail/Index.vue','({showAdmin})',{
-  computed,ref,watch,defineProps:()=>props,
-  useUserSession:()=>({isAdmin:ref(true)}),useIngredientInterface:()=>({profile:()=>null})
- }))
- state.showAdmin.value=true
- props.ingredient={id:'onion'}
- assert.equal(state.showAdmin.value,false)
- scope.stop()
+  const props = reactive({ ingredient: { id: 'carrot' } }),
+    scope = effectScope()
+  const state = scope.run(() =>
+    load('ingredient/components/Detail/Index.vue', '({showAdmin})', {
+      computed,
+      ref,
+      watch,
+      defineProps: () => props,
+      useUserSession: () => ({ isAdmin: ref(true) }),
+      useIngredientInterface: () => ({ profile: () => null }),
+    })
+  )
+  state.showAdmin.value = true
+  props.ingredient = { id: 'onion' }
+  assert.equal(state.showAdmin.value, false)
+  scope.stop()
 })

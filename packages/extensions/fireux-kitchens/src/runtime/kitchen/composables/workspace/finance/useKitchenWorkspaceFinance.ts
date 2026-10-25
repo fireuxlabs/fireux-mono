@@ -1,6 +1,6 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, onScopeDispose, ref, watch } from 'vue'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -143,12 +143,12 @@ export function useKitchenWorkspaceFinance() {
       return 'pending' as const
     if (workspace.outcome.value !== 'ready') return workspace.outcome.value
     if (validationError.value) return 'error' as const
+    if (!canLoad.value) return 'idle'
+    if (settledEpoch.value !== epoch.value) return 'pending'
     return resolveReadOutcome({
-      active: canLoad.value,
-      current: settledEpoch.value === epoch.value,
+      enabled: canLoad.value,
       pending: state.pending.value,
-      error: state.error.value,
-      kind: 'collection',
+      failed: Boolean(state.error.value),
       present: Boolean(state.data.value?.sale_count),
     })
   })

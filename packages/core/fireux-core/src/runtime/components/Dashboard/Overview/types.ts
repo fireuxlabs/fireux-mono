@@ -4,7 +4,7 @@ export type DashboardOverviewOutcome =
   | 'idle'
   | 'pending'
   | 'ready'
-  | 'missing'
+  | 'empty'
   | 'error'
 
 export type DashboardOverviewProfileEntry = {

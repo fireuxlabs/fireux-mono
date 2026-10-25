@@ -13,17 +13,17 @@ export type ActiveUserOutcome =
   | 'loading'
   | 'error'
   | 'unauthenticated'
-  | 'missing'
+  | 'empty'
   | 'ready'
 
 export function useUserSessionState(user: {
   coreUser: Ref<User | null | undefined>
   appUser: Ref<AppUserWithId | null | undefined>
-  coreOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+  coreOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
   coreError: Ref<unknown>
   appError: Ref<unknown>
   appPending: Ref<boolean>
-  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
 }) {
   const coreUser = user.coreUser
 
@@ -68,7 +68,7 @@ export function useUserSessionState(user: {
     ) {
       return 'loading'
     }
-    if (coreOutcome.value === 'missing') return 'missing'
+    if (coreOutcome.value === 'empty') return 'empty'
     return 'ready'
   })
   const pending = computed(() => outcome.value === 'loading')

@@ -97,12 +97,12 @@ export function useKitchenIngredientDetail(
     if (!kitchenId.value) return 'idle'
     if (access.error.value) return 'error'
     if (access.pending.value) return 'pending'
-    if (!access.ids.value.includes(kitchenId.value)) return 'missing'
+    if (!access.ids.value.includes(kitchenId.value)) return 'empty'
     if (!permitted.value) return 'pending'
     if (loadError.value) return 'error'
     if (source.pending.value || (canonicalId.value && canonical.pending.value))
       return 'pending'
-    return link.value ? 'ready' : 'missing'
+    return link.value ? 'ready' : 'empty'
   })
   const pending = computed(() => outcome.value === 'pending')
   const ingredient = computed<IngredientInterfaceItem | null>(() => {

@@ -842,7 +842,7 @@ test('adopted Kitchen becomes selected only after the live collection contains i
 })
 
 test('auth waits for the User read and navigates directly to the required destination once', async () => {
-  for (const outcome of ['missing', 'ready']) {
+  for (const outcome of ['empty', 'ready']) {
     const coreOutcome = ref('pending')
     const authState = ref('AUTHENTICATED')
     const route = { path: '/auth', query: {} }
@@ -881,7 +881,7 @@ test('auth waits for the User read and navigates directly to the required destin
     coreOutcome.value = outcome
     await nextTick()
     assert.deepEqual(destinations, [
-      outcome === 'missing'
+      outcome === 'empty'
         ? '/users/create?redirect=%2Fdashboard'
         : '/dashboard',
     ])
@@ -969,7 +969,7 @@ test('Kitchen records and linked Place edits agree on current App authority for 
   const grant = { ids: ['one'], membership_created_at: created }
   const fixtures = [
     ['current', { apps: { 'misebox-app': grant } }, true],
-    ['missing', null, false],
+    ['empty', null, false],
     ['old shape', grant, false],
     ['another App', { apps: { other: grant } }, false],
     [

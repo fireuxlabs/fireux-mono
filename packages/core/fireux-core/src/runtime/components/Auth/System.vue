@@ -205,7 +205,7 @@ const authMode = computed(() =>
 )
 const resolvedPostAuthPath = computed(() => {
   const destination = resolvePostAuthDestination(route.query.redirect)
-  if (coreOutcome.value === 'missing') return userOnboardingPath(destination)
+  if (coreOutcome.value === 'empty') return userOnboardingPath(destination)
   if (coreOutcome.value === 'ready') return destination
   return ''
 })

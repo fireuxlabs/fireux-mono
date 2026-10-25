@@ -102,7 +102,7 @@ function harness({ authenticated = true } = {}) {
             staged.push([`${t}/${id}`, data])
           },
           update: (t, id, data) => {
-            if (!records.has(`${t}/${id}`)) throw Error('missing')
+            if (!records.has(`${t}/${id}`)) throw Error('empty')
             staged.push([
               `${t}/${id}`,
               { ...records.get(`${t}/${id}`), ...data },

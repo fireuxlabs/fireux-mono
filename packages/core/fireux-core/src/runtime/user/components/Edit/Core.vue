@@ -69,7 +69,7 @@
         entity="User"
         kind="document"
         :loading="outcome === 'pending' || outcome === 'idle'"
-        :state="outcome === 'error' ? 'error' : 'missing'"
+        :state="outcome === 'error' ? 'error' : 'empty'"
       />
     </ClientOnly>
   </section>

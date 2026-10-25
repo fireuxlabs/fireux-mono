@@ -167,7 +167,7 @@ function reader() {
   const source = Object.assign(ref(null), {
     pending: ref(false),
     error: ref(undefined),
-    outcome: ref('missing'),
+    outcome: ref('empty'),
   })
   let reads = 0
   let path, target

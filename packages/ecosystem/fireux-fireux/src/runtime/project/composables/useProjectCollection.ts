@@ -1,4 +1,4 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { useProjectAccess } from './useProjectAccess'
 import type { FirestoreCollectionOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
@@ -52,14 +52,18 @@ export function useProjectCollection(
       .map((id) => String(id || '').trim())
       .filter((id) => id && allowed.has(id))
   })
-  const source = firestoreLoadDocsByIds<Record<string, unknown> & { id: string }>({
+  const source = firestoreLoadDocsByIds<
+    Record<string, unknown> & { id: string }
+  >({
     collectionPath: computed(() =>
       sourceMode.value === 'live' ? 'projects' : ''
     ),
     ids: projectIds,
   })
   const parsed = computed(() => {
-    const allowed = new Set(projectIds.value), items: Project[] = [], invalidIds: string[] = []
+    const allowed = new Set(projectIds.value),
+      items: Project[] = [],
+      invalidIds: string[] = []
     for (const record of source.docs.value ?? []) {
       if (!allowed.has(record.id)) continue
       const project = readProjectDocument(record, record.id)
@@ -68,16 +72,28 @@ export function useProjectCollection(
     }
     return { items, invalidIds }
   })
-  const pending = computed(() => access.pending.value || source.outcome.value === 'pending')
-  const error = computed(() => access.error.value ?? source.error.value ?? (
-    source.outcome.value === 'ready' && parsed.value.invalidIds.length
-      ? new Error('Project source is invalid.') : undefined
-  ))
-  const outcome = computed(() => resolveReadOutcome({
-    kind: 'collection', active: sourceMode.value === 'live',
-    pending: pending.value, error: error.value, present: parsed.value.items.length > 0,
-  }))
-  const projects = computed(() => outcome.value === 'ready' ? parsed.value.items : [])
+  const pending = computed(
+    () => access.pending.value || source.outcome.value === 'pending'
+  )
+  const error = computed(
+    () =>
+      access.error.value ??
+      source.error.value ??
+      (source.outcome.value === 'ready' && parsed.value.invalidIds.length
+        ? new Error('Project source is invalid.')
+        : undefined)
+  )
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      enabled: sourceMode.value === 'live',
+      pending: pending.value,
+      failed: Boolean(error.value),
+      present: parsed.value.items.length > 0,
+    })
+  )
+  const projects = computed(() =>
+    outcome.value === 'ready' ? parsed.value.items : []
+  )
 
   return {
     projects,

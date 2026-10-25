@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { usePropertyScope } from 'fireux-properties/runtime/property/composables/usePropertyScope'
 import type {
@@ -72,18 +72,19 @@ export function usePropertyReservations(
     },
     { server: false }
   )
-  const outcome = computed(() =>
-    runtimeProperty.targetOutcome.value !== 'ready'
-      ? runtimeProperty.targetOutcome.value
-      : resolveReadOutcome({
-          active: runtimeProperty.canRead.value,
-          current: settledKey.value === readKey.value,
-          pending: state.pending.value,
-          error: state.error.value,
-          kind: 'collection',
-          present: Boolean(state.data.value?.items.length),
-        })
-  )
+  const outcome = computed(() => {
+    if (runtimeProperty.targetOutcome.value !== 'ready') {
+      return runtimeProperty.targetOutcome.value
+    }
+    if (!runtimeProperty.canRead.value) return 'idle'
+    if (settledKey.value !== readKey.value) return 'pending'
+    return resolveReadOutcome({
+      enabled: runtimeProperty.canRead.value,
+      pending: state.pending.value,
+      failed: Boolean(state.error.value),
+      present: Boolean(state.data.value?.items.length),
+    })
+  })
   const collection = computed<Reservation[]>(() =>
     outcome.value === 'ready'
       ? [...(state.data.value?.items ?? [])].sort((first, second) =>

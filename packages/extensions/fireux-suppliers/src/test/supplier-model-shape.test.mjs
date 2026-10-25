@@ -8,7 +8,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref } from 'vue'
 import { normalizeSupplier } from '../runtime/supplier/utils/normalize-supplier.ts'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 function load(file, result, deps = {}) {
   const source = readFileSync(new URL(file, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -151,7 +151,7 @@ test('Directory uses nested eligibility, rejects malformed roots, and exact deta
     false
   )
   await assert.rejects(
-    readers.readSupplier('missing'),
+    readers.readSupplier('empty'),
     (error) => error.statusCode === 404
   )
   rows = [{ ...root(), catalogue: { mode: 'invalid' } }]
@@ -198,10 +198,9 @@ test('Malformed granted Supplier roots produce a failed collection without parti
       useFirestoreCollectionState: (options) => ({
         outcome: computed(() =>
           resolveReadOutcome({
-            active: options.active.value,
+            enabled: options.active.value,
             pending: options.pending.value,
-            error: options.error.value,
-            kind: 'collection',
+            failed: Boolean(options.error.value),
             present: options.count.value > 0,
           })
         ),

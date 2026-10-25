@@ -43,6 +43,15 @@ Sandbox comparisons may evaluate page grouping, meaningful index configuration, 
 
 A FireUX App assembled through Ignition uses the actual framework: `defineFireuxConfig`, its owning native runtime layers, and Core `AppShell`. Prototype scope limits delivered domain journeys; it does not replace FireUX with standalone Nuxt. A brief, assembly type or unused package dependency alone is not runtime integration. Verify registered owners and the running shell before describing the result as built on FireUX. The baseline includes visible shared platform attribution and legal/account entrances, Core SEO metadata with coherent canonical/robots/sitemap policy, and the Core manifest populated from App identity and assets. A branded layout composes these owners; it does not silently omit them. A noindex preview can still prove the complete technical SEO contract. See Core `layouts/shared/PlatformFooter.vue`, `composables/fireux/seo/useSeo.ts`, and `server/manifest.webmanifest.get.ts` beneath `src/runtime`.
 
+The runtime composition references are the native Apps index routes using
+`useAppCollectionPage`, Core `workspace/components/Index.vue` and `Page.vue`,
+and Kitchen `components/FoodAndDrink/Index.vue`. Public collections visibly
+compose native page structure and shared feedback; Workspace capabilities use
+the existing persistent Core frame. Domain contexts own reads and commands.
+Do not generate FirePage/FireCollectionPage wrappers or clone a domain's page
+shell. These references establish source structure, not automatic generation
+or independent generated-App acceptance.
+
 Build and reconcile bounded journeys. The method’s build and verify steps apply the global mandatory composition checks: named responsibilities, readable parent composition, explicit state/lifecycle ownership, reused controls and commands, and no duplicate reads or authority. Composition is required from the first implementation; shorter files alone do not prove it. Record where a reusable mechanism was sufficient, where a domain decision was needed, and which service revealed a missing capability. Put the correction with its lowest owning package. A reference implementation is evidence for a decision, not a universal industry blueprint. Publication and release remain explicit App-owned work with their own accepted authority and checks.
 
 The [FireUX App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md) owns concrete requests and delivery tracking. Request acceptance does not itself create an App, an assembly or a proved product.
@@ -93,7 +102,6 @@ research, crawl sites, generate pages or certify rankings automatically.
 Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
 
 Run the package tests and typecheck, and the consuming App check when contracts change. External consumer proofs install versioned artifacts in an independent directory without monorepo aliases or workspace links. Local tarball acceptance is distinct from public publication, authenticated domain behaviour and release. Keep source-reviewed, checks-passed and journey-proved evidence separate. Generation, automated implementation, independent sibling acceptance and release are separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
-
 
 ## App context at creation
 

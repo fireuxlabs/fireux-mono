@@ -1,10 +1,11 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { test } from 'node:test'
 import { computed, ref } from 'vue'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 for (const [folder, suffix] of [
   ['catalogue', 'Catalogue'],
@@ -46,6 +47,7 @@ for (const [folder, suffix] of [
       `${stripTypeScriptTypes(source)}; return useSupplierWorkspace${suffix}()`,
       [
         'resolveReadOutcome',
+        'resolveHttpDocumentOutcome',
         'computed',
         'SupplierStorage',
         'useSupplierWorkspace',
@@ -57,6 +59,7 @@ for (const [folder, suffix] of [
       ]
     )(
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       computed,
       { collection: 'suppliers' },
       () => workspace,

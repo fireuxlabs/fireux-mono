@@ -188,7 +188,7 @@ test('Malformed granted Property roots fail the selector without clearing its se
   source.error = ref(null)
   const ids = ref(new Set(['p', 'other']))
   const resolveReadOutcome = load(
-    '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts',
+    '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts',
     'resolveReadOutcome'
   )
   const collection = load(
@@ -218,10 +218,9 @@ test('Malformed granted Property roots fail the selector without clearing its se
       useFirestoreCollectionState: (options) => ({
         outcome: computed(() =>
           resolveReadOutcome({
-            active: true,
+            enabled: true,
             pending: toValue(options.pending),
-            error: toValue(options.error),
-            kind: 'collection',
+            failed: Boolean(toValue(options.error)),
             present: toValue(options.count) > 0,
           })
         ),

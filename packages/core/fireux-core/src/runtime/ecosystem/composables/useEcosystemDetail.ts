@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
+import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
+
 import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Ecosystem } from '../models/ecosystem.model'
@@ -15,11 +16,10 @@ export function useEcosystemDetail(id: MaybeRefOrGetter<string>) {
   )
 
   const outcome = computed(() =>
-    resolveReadOutcome({
-      active: Boolean(ecosystemId.value),
+    resolveHttpDocumentOutcome({
+      enabled: Boolean(ecosystemId.value),
       pending: state.pending.value,
       error: state.error.value,
-      kind: 'document',
       present: state.data.value?.ecosystem?.id === ecosystemId.value,
     })
   )

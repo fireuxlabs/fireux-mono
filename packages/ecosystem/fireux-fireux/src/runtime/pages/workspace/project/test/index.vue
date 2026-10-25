@@ -15,8 +15,7 @@
       aria-label="Select Test"
       @update:model-value="test.select(String($event))"
     /> </UDashboardToolbar
-  ><WorkspaceHero
-    compact
+  ><UPageHeader
     title="Project Test"
     description="Save a string and read it back."
   />

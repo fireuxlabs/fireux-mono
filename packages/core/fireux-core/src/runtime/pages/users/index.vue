@@ -1,58 +1,29 @@
 <template>
   <UPage>
+    <UserHero :title="page.title" />
     <UPageBody>
-      <UserHero :title="pageTitle" />
       <ClientOnly>
-        <UserCurrent v-if="currentUser" :current-user="currentUser" />
+        <UserCurrent v-if="page.currentUser" :current-user="page.currentUser" />
         <UserCreate v-else />
       </ClientOnly>
-      <FireStateCard
-        v-if="outcome === 'pending'"
-        entity="users"
-        kind="collection"
-        loading
-      />
-      <FireStateCard
-        v-else-if="outcome === 'error'"
-        entity="users"
-        kind="collection"
-        state="error"
-      />
-      <FireStateCard
-        v-else-if="outcome === 'empty'"
-        entity="users"
-        kind="collection"
-        state="empty"
-      />
+      <FireState v-bind="page.state" />
       <UserCollection
-        v-show="outcome === 'ready'"
-        :users="users"
-        :has-more="hasMore"
+        v-show="page.state.outcome === 'ready'"
+        :users="page.users"
+        :has-more="page.pagination?.hasMore ?? false"
       />
-      <UButton v-if="hasMore" class="mt-4" @click="loadMore"
-        >Load more users</UButton
-      >
-      <FireDiagnosticsDebugPanel
-        title="Users index acquisition"
-        context="Canonical Users and current identity inputs used by the FL index surface."
-        object-origin="fetched"
-        :objects="{ users, currentUser, appUser }"
-        :derived="{
-          count: users.length,
-          currentSurface: currentUser ? 'current' : 'create',
-        }"
-        include-route
-        launcher
+      <FireCollectionPagination
+        v-if="page.pagination"
+        v-bind="page.pagination"
+        @load-more="page.loadMore"
       />
+      <FireDiagnosticsDebugPanel v-bind="page.diagnostics" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../../user/composables/session/useUserSession'
-import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useSeo } from '../../composables/fireux/seo/useSeo'
-import { useUserDirectory } from '../../user/composables/directory/useUserDirectory'
+import { useUserCollectionPage } from '../../user/composables/useUserCollectionPage'
 
 definePageMeta({
   nav: {
@@ -70,16 +41,5 @@ definePageMeta({
   name: 'UsersIndexPage',
 })
 
-const { appName } = useFireUXConfig()
-const { users, outcome, hasMore, loadMore } = useUserDirectory()
-const { user: currentUser, appUser } = useUserSession()
-
-const pageTitle = 'Users'
-const pageDescription = 'Browse user profiles.'
-useSeo({
-  title: `${appName} | ${pageTitle}`,
-  description: pageDescription,
-  path: '/users',
-  robots: 'index, follow',
-})
+const page = useUserCollectionPage()
 </script>

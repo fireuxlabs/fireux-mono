@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { commandScopeDeps } from './command-scope-fixture.mjs'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import assert from 'node:assert/strict'
@@ -18,7 +19,7 @@ import {
   watch,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, result, deps) {
   let source = readFileSync(new URL(path, runtime), 'utf8')
@@ -57,7 +58,7 @@ const { resolveKitchenChildCollectionBasePath } = load(
 const { useFirestoreCollectionState } = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
   '({ useFirestoreCollectionState })',
-  { computed, resolveReadOutcome, toValue }
+  { computed, resolveReadOutcome, resolveHttpDocumentOutcome, toValue }
 )
 const { useKitchenWorkspaceReadPage } = load(
   'kitchen/composables/workspace/useKitchenWorkspaceReadPage.ts',
@@ -67,7 +68,15 @@ const { useKitchenWorkspaceReadPage } = load(
 const enhanceFirestoreRead = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
   'enhanceFirestoreRead',
-  { computed, ref, shallowRef, unref, watch, resolveReadOutcome }
+  {
+    computed,
+    ref,
+    shallowRef,
+    unref,
+    watch,
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+  }
 )
 function bindingFixture() {
   const scope = effectScope(),
@@ -164,7 +173,7 @@ test('Recipe collection targets only exact ready Kitchen and hides prior rows fo
   const f = workspaceFixture()
   assert.equal(f.path, 'kitchens/mine/recipes')
   assert.equal(f.state.recipes.value[0].name, 'Dough')
-  for (const outcome of ['pending', 'error', 'missing', 'empty', 'idle']) {
+  for (const outcome of ['pending', 'error', 'empty', 'idle']) {
     f.workspace.outcome.value = outcome
     assert.equal(f.path, '')
     assert.deepEqual(f.state.recipes.value, [])
@@ -239,8 +248,8 @@ test('Recipe record distinguishes unavailable owner, unavailable source and miss
   )
   const record = use()
   assert.equal(record.outcome.value, 'ready')
-  id.value = 'missing'
-  assert.equal(record.outcome.value, 'missing')
+  id.value = 'empty'
+  assert.equal(record.outcome.value, 'empty')
   f.raw.pending.value = true
   assert.equal(record.outcome.value, 'pending')
   assert.equal(record.recipe.value, null)
@@ -416,7 +425,7 @@ test('actual Recipe index distinguishes owner states before collection', async (
   for (const [outcome, expected] of [
     ['pending', 'Loading Kitchen'],
     ['error', 'Kitchen unavailable'],
-    ['missing', 'Kitchen not found'],
+    ['empty', 'Kitchen not found'],
     ['idle', 'Select a kitchen'],
   ])
     assert.match(
@@ -641,7 +650,7 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
   record.recipe.value = { id: 'dough', name: 'Updated Dough' }
   record.outcome.value = 'ready'
   assert.equal(state.editorRecipe.value.name, 'Updated Dough')
-  record.outcome.value = 'missing'
+  record.outcome.value = 'empty'
   assert.equal(state.editing.value, false)
   assert.equal(state.editorRecipe.value, null)
   record.outcome.value = 'ready'
@@ -653,29 +662,32 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
 })
 
 test('actual Detail template keeps a locked local editor mounted through its own live refresh', async () => {
-  const html = await render('kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue', {
-    outcome: 'pending',
-    closeEditor: () => {},
-    recipe: null,
-    editorRecipe: { id: 'dough', name: 'Dough' },
-    error: null,
-    pending: true,
-    canWrite: true,
-    editing: true,
-    deleting: false,
-    kitchenId: 'mine',
-    recipeId: 'dough',
-    rootCollection: 'kitchens',
-    databaseId: 'misebox',
-    debug: {},
-    ingredientNames: {},
-    prepItemNames: {},
-    prepItems: [],
-    ingredientsPending: false,
-    ingredientsError: null,
-    prepPending: false,
-    prepError: null,
-  })
+  const html = await render(
+    'kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue',
+    {
+      outcome: 'pending',
+      closeEditor: () => {},
+      recipe: null,
+      editorRecipe: { id: 'dough', name: 'Dough' },
+      error: null,
+      pending: true,
+      canWrite: true,
+      editing: true,
+      deleting: false,
+      kitchenId: 'mine',
+      recipeId: 'dough',
+      rootCollection: 'kitchens',
+      databaseId: 'misebox',
+      debug: {},
+      ingredientNames: {},
+      prepItemNames: {},
+      prepItems: [],
+      ingredientsPending: false,
+      ingredientsError: null,
+      prepPending: false,
+      prepError: null,
+    }
+  )
   assert.match(html, /Editor: dough/)
   assert.match(html, /data-can-write="false"/)
   assert.doesNotMatch(html, /Recipe not found/)

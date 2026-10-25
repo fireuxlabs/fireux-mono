@@ -101,7 +101,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
   const outcome = computed<WorkspaceTargetOutcome>(() => {
     if (access.outcome.value !== 'ready') return access.outcome.value
     if (!id.value) return 'idle'
-    if (!readId.value) return 'missing'
+    if (!readId.value) return 'empty'
     if (source.outcome.value === 'ready' && kitchen.value?.id !== readId.value)
       return 'pending'
     return source.outcome.value

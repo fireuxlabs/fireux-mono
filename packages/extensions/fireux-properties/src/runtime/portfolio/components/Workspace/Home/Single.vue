@@ -3,7 +3,7 @@
   <FireStateCard
     v-if="outcome === 'pending' || outcome === 'error'"
     :loading="outcome === 'pending'"
-    :state="outcome === 'error' ? 'error' : 'missing'"
+    :state="outcome === 'error' ? 'error' : 'empty'"
     entity="Portfolio"
     kind="document"
   />

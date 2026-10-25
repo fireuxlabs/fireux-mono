@@ -1,6 +1,5 @@
 <template>
-  <WorkspaceHero
-    compact
+  <UPageHeader
     title="Portfolio Test"
     description="Save and manage simple strings."
   />

@@ -71,12 +71,83 @@ File count alone proves neither alignment nor complexity.
 
 Core owns transport and read-state behavior. Entity tests prove database/path
 selection, identity, domain normalization and authority differences. UI checks
-prove pending, failure, empty/missing and live changes in the actual surface.
+prove pending, failure, empty and live changes in the actual surface.
 Do not add tests that merely demand every Entity has the same filenames.
 
 Current focused evidence lives in Core `src/test/foundation-read-contract.test.mjs`,
 `read-outcome.test.mjs`, `collection-contract.test.mjs`, and the live client/server
 read tests. These prove their named scope, not repository-wide conformance.
+
+## Shared read outcomes
+
+Core `runtime/utils/read-outcome.ts` owns the storage-neutral `ReadOutcome`
+contract and its pure `resolveReadOutcome` precedence. Its inputs are boolean
+`enabled`, `pending`, `failed` and `present` facts. Successful absence is `empty`
+for both documents and collections; there is no read-kind input or missing alias.
+Reader identity/epoch checks happen in the owning reader before classification.
+`runtime/utils/http-document-outcome.ts` translates HTTP document errors,
+including 404 absence, into those facts. Enabled means the read is running; it
+never grants permission. Generic read classification does not
+inspect transport errors or own stale-result detection. It has no Vue, Nuxt or
+Firebase runtime dependency. UI and domain readers consume that owner directly;
+Firestore adapters consume it too, rather than owning the shared vocabulary.
+The Firestore operation outcome types derive from that contract. The former
+`composables/fireux/firestore/operations/read-outcome.ts` path is retired.
+
+### Decisions supported by the outcome contract
+
+The shared contract has exactly five outcomes. Consumers select copy and actions
+within these meanings; existing terminology does not add status options.
+
+| Outcome | Decision                                                                                                                                | Owning evidence                                                  |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| idle    | No read is running. Hide inactive content and leave selection alone.                                                                    | Core Workspace EntityCollection, Overview Focus and useWorkspace |
+| pending | A read is running. Show loading and retain selection.                                                                                   | Core State and Workspace selection                               |
+| error   | A read failed. Present failure/retry without treating it as successful absence.                                                         | Core State and Workspace selection                               |
+| empty   | A read succeeded without content. Present contextual absence; reconcile an empty accessible collection or expose confirmed App absence. | Entity collections, useWorkspace and useAppRead                  |
+| ready   | A read succeeded with content. Present records and confirm existence.                                                                   | Entity collections and useAppRead                                |
+
+"App not found", "No Kitchens yet" and "Choose a Kitchen" are contextual copy,
+not different read outcomes. Association counts, identity fields and permissions
+remain separate domain facts. Domain policy determines creation or mutation
+availability; an empty read does not grant authority.
+
+The classifier earns its place by deriving these distinctions from read facts;
+it is not a replacement for Nuxt's request status or a universal workflow state
+machine. `useAppRead` also normalizes App identity and exposes confirmed existence;
+its wrapper has a real domain job. The unused standalone AppReadOutcome union is
+retired rather than becoming another vocabulary owner.
+
+Place's `place/composables/firestore/fetch/usePlaceFetch.ts` retains a specialized
+cached-preview reader: it can expose a local Place during a pending server read,
+and its outcome prioritizes pending before failure. This is a source-observed
+lifecycle difference, not proof of a universal rule or a second shared standard.
+Its precedence remains to-confirm through focused cached-refresh/scope tests
+before changing it; do not mechanically substitute the generic classifier.
+
+Focused evidence: Core `read-outcome.test.mjs`, `collection-page.test.mjs`,
+`workspace-selection.test.mjs`, `app-native-auth-scope.test.mjs` and the named
+detail-reader tests. Source consumers establish the decision mapping; passing
+classifier tests alone do not prove every page's behavior.
+
+## Collection-page coordination
+
+Core `runtime/composables/shared/useCollectionPage.ts` owns common reactive
+page presentation over an explicit existing collection source: title,
+description, ready/state, optional pagination feedback and acquisition
+diagnostics. It owns no fetch, SEO, permissions or persistence command.
+Non-paginated sources expose neither pagination feedback nor a load-more operation.
+Ready and visible state derive from the same presentation outcome. A next-page failure is
+presented by pagination while retained records stay available.
+
+Main Entity indexes consume a domain `useXCollectionPage` that composes its
+existing reader, domain SEO and the shared presentation. The domain maps its
+named records into the explicit source contract and returns those same records
+under its plural name. Preserve refs when composing the reactive contexts;
+spreading unwrapped values must not freeze title, outcome or diagnostics.
+Routes retain metadata and visible named-component composition. The FireUX
+App-owned Ecosystem coordinator retains platform publication and structured
+SEO policy. Menu retains service/search state and contextual result feedback.
 
 ## Common buckets
 

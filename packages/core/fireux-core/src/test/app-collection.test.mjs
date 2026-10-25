@@ -1,13 +1,19 @@
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
+import { useCollectionPage } from '../runtime/composables/shared/useCollectionPage.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, reactive, ref, toValue, watch } from 'vue'
+import { computed, reactive, ref, toRefs, toValue, watch } from 'vue'
 
 function load(path, name, dependencies) {
-  dependencies = { resolveReadOutcome, ...dependencies }
+  dependencies = {
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+    ...dependencies,
+  }
   const code = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
@@ -211,6 +217,8 @@ for (const scope of ['ecosystem', 'platform']) {
         computed,
         reactive,
         toValue,
+        useCollectionPage,
+        toRefs,
         useAppCollection: (value) => {
           reads++
           endpoint = value

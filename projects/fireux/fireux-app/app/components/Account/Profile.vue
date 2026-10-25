@@ -13,10 +13,10 @@
       state="error"
     />
     <FireStateCard
-      v-else-if="coreOutcome === 'missing'"
+      v-else-if="coreOutcome === 'empty'"
       entity="account"
       kind="document"
-      state="missing"
+      state="empty"
     >
       <template #actions>
         <UButton

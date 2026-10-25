@@ -330,7 +330,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
     })
     return renderToString(app)
   }
-  for (const status of ['missing', 'error', 'pending']) {
+  for (const status of ['empty', 'error', 'pending']) {
     const html = await render(status, true)
     assert.match(html, /Show in directory/)
     assert.doesNotMatch(

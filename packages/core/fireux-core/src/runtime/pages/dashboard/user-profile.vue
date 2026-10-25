@@ -61,25 +61,17 @@
             />
 
             <FireStateCard
-              v-else-if="isMissing"
+              v-else-if="isEmpty"
               entity="profile"
               kind="document"
-              state="missing"
+              state="empty"
             />
 
             <ClientOnly v-else-if="resolvedUser">
-              <UserEditCore
-                :user="resolvedUser"
-                :outcome="coreOutcome"
-              />
+              <UserEditCore :user="resolvedUser" :outcome="coreOutcome" />
             </ClientOnly>
 
-            <FireStateCard
-              v-else
-              entity="profile"
-              kind="document"
-              loading
-            />
+            <FireStateCard v-else entity="profile" kind="document" loading />
           </section>
 
           <AppMembership />
@@ -125,10 +117,10 @@
             />
 
             <FireStateCard
-              v-else-if="accountOutcome === 'missing'"
+              v-else-if="accountOutcome === 'empty'"
               entity="private account"
               kind="document"
-              state="missing"
+              state="empty"
               title="Private account record missing"
               description="Your profile still works, but the private account record needs to be restored."
             />
@@ -232,7 +224,7 @@ const isLoading = computed(
 const userError = computed(
   () => coreOutcome.value === 'error' || Boolean(coreError.value)
 )
-const isMissing = computed(() => coreOutcome.value === 'missing')
+const isEmpty = computed(() => coreOutcome.value === 'empty')
 const resolvedUser = computed(() => coreUser.value ?? null)
 const userCard = computed(() => userInterface(resolvedUser.value))
 const termsAcceptedLabel = computed(() =>

@@ -25,7 +25,7 @@
     v-else-if="!hasSupplier"
     entity="supplier"
     kind="document"
-    state="missing"
+    state="empty"
     title="Supplier not found"
     description="We couldn’t find the supplier you’re looking for. It may have been removed or the link is incorrect."
   >
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'SupplierDetailState' })
 defineProps<{
-  outcome: 'pending' | 'error' | 'missing' | 'ready'
+  outcome: 'pending' | 'error' | 'empty' | 'ready'
   hasSupplier: boolean
 }>()
 const emit = defineEmits<{ refresh: [] }>()

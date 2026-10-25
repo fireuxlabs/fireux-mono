@@ -1,10 +1,11 @@
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, toValue, reactive } from 'vue'
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 function load(file, names, deps) {
   const code = readFileSync(new URL(file, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
@@ -34,6 +35,7 @@ test('public User detail follows API scope, normalized handles and honest read o
       computed,
       toValue,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       normalizeUserHandle: (s) => s.toLowerCase(),
       useFireUXConfig: () => config,
       useLiveAsyncData: (_key, handler) => {
@@ -68,7 +70,7 @@ test('public User detail follows API scope, normalized handles and honest read o
   for (const statusCode of [404, 403, 503, 500]) {
     state.error.value = { statusCode }
     assert.equal(detail.user.value, null)
-    assert.equal(detail.outcome.value, statusCode === 404 ? 'missing' : 'error')
+    assert.equal(detail.outcome.value, statusCode === 404 ? 'empty' : 'error')
   }
   state.error.value = null
   state.data.value.user.display_name = 'Live name'

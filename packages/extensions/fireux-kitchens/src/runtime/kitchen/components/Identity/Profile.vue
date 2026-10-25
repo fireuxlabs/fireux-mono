@@ -354,8 +354,7 @@ watch(
 watch(
   props.identity.status,
   (status) => {
-    if (status === 'error' || status === 'missing' || status === 'empty')
-      section.value = null
+    if (status === 'error' || status === 'empty') section.value = null
   },
   { flush: 'sync' }
 )

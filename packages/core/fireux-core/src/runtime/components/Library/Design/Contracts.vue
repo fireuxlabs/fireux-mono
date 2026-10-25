@@ -124,7 +124,7 @@ const contractSolutions = [
       <div class="contract-grid contract-grid--states">
         <FireStateCard entity="projects" state="loading" />
         <FireStateCard entity="projects" state="empty" />
-        <FireStateCard entity="project" state="missing" />
+        <FireStateCard entity="project" state="empty" />
         <FireStateCard entity="projects" state="error" />
       </div>
     </section>
@@ -422,5 +422,4 @@ const contractSolutions = [
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-
 </style>

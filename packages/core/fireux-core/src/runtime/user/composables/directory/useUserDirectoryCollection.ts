@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
 import { readLivePages } from '../../../composables/fireux/firestore/readLivePages'
-import { resolveReadOutcome } from '../../../composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from '../../../utils/read-outcome'
 import type { CollectionPage } from '../../../models/utils/directory'
 import type { User } from '../../models/user.model'
 
@@ -18,10 +18,9 @@ export function useUserDirectoryCollection(appId: string) {
   )
   const outcome = computed(() =>
     resolveReadOutcome({
-      active: Boolean(appId),
-      kind: 'collection',
+      enabled: Boolean(appId),
       pending: state.pending.value,
-      error: state.error.value,
+      failed: Boolean(state.error.value),
       present: users.value.length > 0,
     })
   )

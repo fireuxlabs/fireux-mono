@@ -1,33 +1,20 @@
 <template>
   <UPage>
+    <SupplierHero />
     <UPageBody>
-      <SupplierHero />
       <SupplierCreate />
-      <SupplierCollection v-if="outcome === 'ready'" :suppliers="suppliers" />
-      <FireStateCard
-        v-else
-        entity="suppliers"
-        kind="collection"
-        :loading="outcome === 'pending' || outcome === 'idle'"
-        :state="outcome === 'error' ? 'error' : 'empty'"
+      <FireState v-bind="page.state" />
+      <SupplierCollection
+        v-if="page.state.outcome === 'ready'"
+        :suppliers="page.suppliers"
       />
-      <FireDiagnosticsDebugPanel
-        title="Suppliers index acquisition"
-        context="Canonical Suppliers passed into the FL index surface."
-        object-origin="fetched"
-        :objects="{ suppliers }"
-        :derived="{ count: suppliers.length }"
-        include-route
-        launcher
-      />
+      <FireDiagnosticsDebugPanel v-bind="page.diagnostics" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useSupplierCollection } from '../../supplier/composables/useSupplierCollection'
+import { useSupplierCollectionPage } from '../../supplier/composables/useSupplierCollectionPage'
 
 definePageMeta({
   tag: 'suppliers',
@@ -46,14 +33,5 @@ definePageMeta({
   description: 'Browse supplier identities, catalogues and delivery areas.',
 })
 
-const pageTitle = 'Suppliers'
-const pageDescription =
-  'Browse supplier identities, catalogues and delivery areas.'
-const { appName } = useFireUXConfig()
-const { suppliers, outcome } = useSupplierCollection()
-useSeo({
-  title: `${appName} | ${pageTitle}`,
-  description: pageDescription,
-  path: '/suppliers',
-})
+const page = useSupplierCollectionPage()
 </script>

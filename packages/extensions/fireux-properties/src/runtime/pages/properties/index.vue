@@ -1,20 +1,23 @@
 <template>
-  <UPage
-    ><UPageBody>
-      <PropertyHero />
-      <PropertyCollection :properties="properties" />
+  <UPage>
+    <PropertyHero />
+    <UPageBody>
+      <FireState v-bind="page.state" />
+      <PropertyCollection
+        v-show="page.state.outcome === 'ready' || page.properties.length > 0"
+        :properties="page.properties"
+      />
       <FireCollectionPagination
-        :has-more="hasMore"
-        :loading="loadingMore"
-        @load-more="loadMore"
-      /> </UPageBody
-  ></UPage>
+        v-if="page.pagination"
+        v-bind="page.pagination"
+        @load-more="page.loadMore"
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePropertyDirectory } from '../../property/composables/usePropertyDirectory'
+import { usePropertyCollectionPage } from '../../property/composables/usePropertyCollectionPage'
 
 definePageMeta({
   tag: 'properties',
@@ -38,13 +41,5 @@ definePageMeta({
   description: 'Browse published properties available through this app.',
 })
 
-const pageTitle = 'Properties'
-const pageDescription = 'Browse properties available through this app.'
-const { appName } = useFireUXConfig()
-const { properties, hasMore, loadingMore, loadMore } = usePropertyDirectory()
-useSeo({
-  title: `${appName} | ${pageTitle}`,
-  description: pageDescription,
-  path: '/properties',
-})
+const page = usePropertyCollectionPage()
 </script>

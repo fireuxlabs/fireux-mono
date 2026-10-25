@@ -62,7 +62,7 @@
                 <div class="text-sm font-semibold">{{ item.title }}</div>
                 <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
                 <div class="text-xs text-dimmed">
-                  Expiry: {{ item.expiryDate || 'missing' }}
+                  Expiry: {{ item.expiryDate || 'empty' }}
                 </div>
               </div>
 

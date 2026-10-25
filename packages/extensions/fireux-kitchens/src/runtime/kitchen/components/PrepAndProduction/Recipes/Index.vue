@@ -8,7 +8,7 @@
   />
   <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
   <UAlert
-    v-else-if="outcome === 'missing'"
+    v-else-if="outcome === 'empty'"
     color="neutral"
     title="Kitchen not found"
     description="Choose an available Kitchen to manage its Recipes."

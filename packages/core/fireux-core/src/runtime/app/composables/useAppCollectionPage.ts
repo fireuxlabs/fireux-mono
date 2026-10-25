@@ -1,4 +1,5 @@
-import { computed, reactive, toValue, type MaybeRefOrGetter } from 'vue'
+import { reactive, toRefs, type MaybeRefOrGetter } from 'vue'
+import { useCollectionPage } from '../../composables/shared/useCollectionPage'
 import { useAppCollection } from './useAppCollection'
 import { useFireUXConfig } from './config/FireUXConfig'
 import {
@@ -25,10 +26,6 @@ export function useAppCollectionPage(options: {
   description?: MaybeRefOrGetter<string>
   seo?: AppCollectionPageSeo
 }) {
-  const title = computed(() => toValue(options.title) ?? 'Apps')
-  const description = computed(
-    () => toValue(options.description) ?? 'Find an app and see what it offers.'
-  )
   const { appName } = useFireUXConfig()
   const {
     apps,
@@ -44,39 +41,28 @@ export function useAppCollectionPage(options: {
       : '/api/apps?limit=24'
   )
 
+  const page = useCollectionPage({
+    entity: 'apps',
+    title: options.title ?? 'Apps',
+    description: options.description ?? 'Find an app and see what it offers.',
+    collection: { records: apps, outcome, error },
+    pagination: {
+      hasMore,
+      loading: loadingMore,
+      error: loadMoreError,
+      loadMore,
+    },
+    diagnostics: { derived: () => ({ scope: options.scope }) },
+  })
+
   useSeo({
     ...options.seo,
-    title: options.seo?.title ?? (() => `${appName} | ${title.value}`),
-    description: options.seo?.description ?? description,
+    title: options.seo?.title ?? (() => `${appName} | ${page.title}`),
+    description: options.seo?.description ?? (() => page.description),
     path: options.seo?.path ?? '/apps',
     jsonLdBuilder: (context) =>
       options.seo?.jsonLdBuilder?.(context, apps.value),
   })
 
-  return reactive({
-    title,
-    description,
-    apps,
-    ready: computed(() => outcome.value === 'ready'),
-    state: computed(() => ({
-      outcome: outcome.value,
-      entity: 'apps',
-      error: error.value,
-    })),
-    pagination: computed(() => ({
-      hasMore: hasMore.value,
-      loading: loadingMore.value,
-      error: loadMoreError.value,
-    })),
-    diagnostics: computed(() => ({
-      title: 'Apps index acquisition',
-      context: 'App records and acquisition state supplied by the page reader.',
-      objectOrigin: 'fetched' as const,
-      objects: { apps: apps.value },
-      derived: { count: apps.value.length, scope: options.scope },
-      includeRoute: true,
-      launcher: true,
-    })),
-    loadMore,
-  })
+  return reactive({ ...toRefs(page), apps, loadMore })
 }

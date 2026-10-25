@@ -83,9 +83,9 @@ export function useUserByHandle(
     if (pending.value) return 'pending' as const
     return refs.user.value && uid.value
       ? ('ready' as const)
-      : ('missing' as const)
+      : ('empty' as const)
   })
-  const missing = computed(() => outcome.value === 'missing')
+  const empty = computed(() => outcome.value === 'empty')
 
   return {
     ...refs,
@@ -95,6 +95,6 @@ export function useUserByHandle(
     uid,
     handle: normalizedHandle,
     resolving,
-    missing,
+    empty,
   }
 }

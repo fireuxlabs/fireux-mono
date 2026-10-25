@@ -110,7 +110,7 @@ for that adjustment.
 
 Core shared UI uses the `Fire` library prefix. Atomic Design folders such as
 atoms, molecules and organisms are internal organisation and are omitted from
-public names: `FireState`, `FirePage`, `FireCollectionPagination`. Domain and
+public names: `FireState`, `FireCollectionPagination`. Domain and
 Workspace registrations retain their named prefixes. App-local overrides of a
 shared component retain its canonical Fire name. The native Core runtime layer
 owns shared-library registration.
@@ -153,6 +153,14 @@ See [Entity ownership](../concepts/entities.md),
 [Firestore data ownership](../concepts/firestore-entity.md),
 [server APIs](../concepts/server-api.md), and
 [Firestore mutation authority](firestore-mutations-context.md).
+
+Shared read outcomes are exactly `idle`, `pending`, `error`, `empty` and `ready`.
+A successful read without content is `empty` for documents and collections.
+Consumers own contextual copy and domain policy; they do not add synonyms to
+this read contract. Core `runtime/utils/read-outcome.ts` classifies normalized
+boolean facts without document/collection kind. HTTP absence and reader identity
+checks remain at their adapter/reader owners. There is no missing compatibility
+status or adapter. See [composables](../concepts/composables.md).
 
 ## Firebase security boundary
 

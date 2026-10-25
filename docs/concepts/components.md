@@ -24,12 +24,12 @@ behavior; accepted product decisions define the intended contract.
 
 FireUX uses one design system built on Nuxt UI:
 
-| Owner | Responsibility |
-| --- | --- |
-| Nuxt UI | Native controls, accessibility and supported props, slots and events. |
+| Owner              | Responsibility                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Nuxt UI            | Native controls, accessibility and supported props, slots and events.                  |
 | Core design system | Shared tokens, semantic styles, typography and proved interaction or layout contracts. |
-| Domain composition | Domain sections, copy, workflows, readers and commands. |
-| App | Product framing, branding, routes and deliberate App policy. |
+| Domain composition | Domain sections, copy, workflows, readers and commands.                                |
+| App                | Product framing, branding, routes and deliberate App policy.                           |
 
 Use the repository-wide authored-utility rule in
 [global context](../ai/gpt-context.md#ui-and-design-system). This map owns
@@ -63,13 +63,12 @@ the applicable family map before introducing a new shared seam.
 
 Core's native [runtime layer](../../packages/core/fireux-core/src/runtime/nuxt.config.ts)
 registers the shared library with `Fire`. Atomic Design folders are scanned as
-internal roots, so molecules/State.vue exposes FireState and organisms/Page.vue
-exposes FirePage. Other responsibility folders remain meaningful, for example
+internal roots: `molecules/State.vue` exposes `FireState`. Public names omit
+the Atomic Design category. Other responsibility folders remain meaningful; for example
 Collection/Pagination.vue exposes FireCollectionPagination. `Fire` is not a
 physical responsibility folder. No old-name compatibility registrations remain.
 App-local overrides use the same Fire name; Entity and Workspace registrations
 keep their existing names. Nuxt UI keeps `U`.
-
 
 - Core owns proved domain-neutral components and connected Core platform UI.
 - Entity UI belongs beneath the owning package's
@@ -121,37 +120,39 @@ Workspace grouping, routes, selection and domain capability placement belong in
 [family-workspace-entity.md](family-workspace-entity.md). A navigation group
 does not create a data owner or require matching page anatomy across families.
 
-## FirePage and visible domain content
+## Visible page composition
 
-Core [FirePage](../../packages/core/fireux-core/src/runtime/components/organisms/Page.vue)
-composes native UPage/UPageHeader/UPageBody, optional State, Pagination and
-diagnostics. It exposes one default content slot so the consuming route visibly
-names its domain content. It accepts title/description and the existing state,
-pagination and diagnostics prop groups, and emits load-more. This is the
-explicitly accepted single-slot boundary for shared page framing and feedback;
-it does not introduce named content slots, dynamic Entity components or readers.
+Public Entity indexes compose native `UPage`, their named introduction or
+`UPageHeader`, and `UPageBody` directly. The body visibly names creation/current
+identity, `FireState`, the Entity Collection, `FireCollectionPagination` and
+development diagnostics when applicable. `FirePage` and the older multi-slot
+`FireCollectionPage` are retired; there are no compatibility registrations.
 
-Both Apps routes place AppCollection directly inside FirePage. Shared logic
-remains in
-[useAppCollectionPage](../../packages/core/fireux-core/src/runtime/app/composables/useAppCollectionPage.ts),
-which acquires once and coordinates reactive title, description, apps, ready,
-state, pagination, diagnostics and loadMore. SEO uses those same records.
-Routes retain metadata, layout/container, scope and genuine copy/search policy.
-Core uses ecosystem scope; FireUX uses platform scope. FirePage knows neither.
-FirePage adds no container or container-selection API. Existing layouts retain
-their framing responsibilities.
-FireUX's [usePlatformAppsPage](../../projects/fireux/fireux-app/app/composables/usePlatformAppsPage.ts)
-owns its Showcase copy, platform scope and indexable-App structured search data.
-The route retains navigation and layout metadata and visibly names AppCollection.
-The former AppCollectionPage and FireCollectionPage renderers remain removed.
+The domain `useXCollectionPage` acquires once through its reader and composes
+Core `useCollectionPage` for state, pagination and diagnostics. Collection children own
+filtering and presentation without repeating acquisition. Both Apps routes use
+`useAppCollectionPage`; FireUX's `usePlatformAppsPage` supplies platform scope,
+Showcase copy and structured SEO using those same records. Routes retain their
+metadata and visible composition. The default layout supplies the container;
+a full-width App layout may require explicit route framing, as FireUX's Apps
+route does. Never nest a second implicit container.
+
+Workspace keeps its existing Core frame and route outlet. Capability pages
+compose named domain controls beneath it; they do not use a public index shell.
+Workspace introductions consume native `UPageHeader` directly; the forwarding
+WorkspaceHero wrapper is retired.
+Info, selection, AI and availability sections are included for real domain
+responsibilities rather than a mandatory universal page scaffold. Their domain
+controllers retain lifecycle, scope and trusted commands.
 
 ## State presentation
 
 Core [State.vue](../../packages/core/fireux-core/src/runtime/components/molecules/State.vue)
-(`FireState`) accepts a `ReadOutcome`, an optional Entity label and optional
-error details for the existing copy-error control. It presents pending, empty,
-missing and error messages with accessible status/alert semantics; ready and
-idle render nothing. It owns no reader, command, card shell or content slot.
+(`FireState`) accepts a `ReadOutcome`, an optional Entity label, retry affordance and optional
+error details for the existing copy-error control. It presents pending, empty
+and error messages with accessible status/alert semantics; ready and
+idle render nothing. It emits `retry` when an enabled retry action is chosen. It owns no reader,
+command, card shell or content slot.
 Both Core and FireUX App Apps indexes consume it. Existing `FireStateCard`
 consumers remain separate and are not migrated by this page change.
 

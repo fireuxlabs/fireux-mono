@@ -1,31 +1,25 @@
 <template>
   <UPage>
+    <PortfolioHero />
     <UPageBody>
-      <PortfolioHero />
       <PortfolioCreate />
-      <PortfolioCollection :portfolios="portfolios" />
+      <FireState v-bind="page.state" />
+      <PortfolioCollection
+        v-if="page.state.outcome === 'ready'"
+        :portfolios="page.portfolios"
+      />
       <FireCollectionPagination
-        :has-more="hasMore"
-        :loading="loadingMore"
-        @load-more="loadMore"
+        v-if="page.pagination"
+        v-bind="page.pagination"
+        @load-more="page.loadMore"
       />
-      <FireDiagnosticsDebugPanel
-        title="Portfolios index acquisition"
-        context="Canonical Portfolios and pagination inputs used by the FL index surface."
-        object-origin="fetched"
-        :objects="{ portfolios }"
-        :derived="{ count: portfolios.length, hasMore, loadingMore }"
-        include-route
-        launcher
-      />
+      <FireDiagnosticsDebugPanel v-bind="page.diagnostics" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePortfolioDirectory } from '../../portfolio/composables/usePortfolioDirectory'
+import { usePortfolioCollectionPage } from '../../portfolio/composables/usePortfolioCollectionPage'
 
 definePageMeta({
   tag: 'portfolios',
@@ -48,14 +42,5 @@ definePageMeta({
     'Find and join portfolios, or create your own Portfolio Workspace.',
 })
 
-const pageTitle = 'Portfolios'
-const pageDescription =
-  'Browse property portfolios and open the tools for managing one.'
-const { appName } = useFireUXConfig()
-const { portfolios, hasMore, loadingMore, loadMore } = usePortfolioDirectory()
-useSeo({
-  title: `${appName} | ${pageTitle}`,
-  description: pageDescription,
-  path: '/portfolios',
-})
+const page = usePortfolioCollectionPage()
 </script>

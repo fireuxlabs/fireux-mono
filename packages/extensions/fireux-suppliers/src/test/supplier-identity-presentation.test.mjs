@@ -51,7 +51,7 @@ test('Supplier Overview presents the exact settled joined business identity, cle
   assert.equal(state.focus.value.entity, null)
   index.outcome.value = 'ready'
   workspace.id.value = 'other'
-  assert.equal(state.focus.value.outcome, 'missing')
+  assert.equal(state.focus.value.outcome, 'empty')
   assert.equal(state.focus.value.entity, null)
   workspace.outcome.value = 'pending'
   assert.equal(state.focus.value.outcome, 'pending')

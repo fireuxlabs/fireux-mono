@@ -5,7 +5,10 @@
       Loading your Projects…
     </p>
     <UAlert
-      v-else-if="landingState === 'error' || landingState === 'missing'"
+      v-else-if="
+        landingState === 'error' ||
+        (landingState === 'empty' && workspace.access.ids.value.length > 0)
+      "
       color="error"
       title="Your Projects could not be shown"
       description="Your account has not been changed. Try again before creating another Project."

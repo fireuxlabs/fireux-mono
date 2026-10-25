@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -15,7 +16,7 @@ import {
   watch,
 } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 function load(path, name, dependencies, client = false) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -213,7 +214,13 @@ test('Kitchen directory hides retained rows during failure/loading and recovers 
   const collection = load(
     '../runtime/kitchen/composables/useKitchenCollection.ts',
     'useKitchenCollection',
-    { computed, toValue, resolveReadOutcome, useLiveAsyncData: () => state }
+    {
+      computed,
+      toValue,
+      resolveReadOutcome,
+      resolveHttpDocumentOutcome,
+      useLiveAsyncData: () => state,
+    }
   )()
   assert.equal(collection.outcome.value, 'ready')
   assert.equal(collection.count.value, 1)
@@ -282,7 +289,8 @@ function selection() {
       useKitchenWorkspaceKitchens: () => source,
       useAppSession: () => session,
       resolveAppUserAccess: () => ({}),
-      kitchenWorkspaceSwitchPath: () => '/workspace/kitchen/food-and-drink/menus',
+      kitchenWorkspaceSwitchPath: () =>
+        '/workspace/kitchen/food-and-drink/menus',
       navigateTo: () => {
         const wait = navigations.length ? deferred() : navigation
         navigations.push(wait)

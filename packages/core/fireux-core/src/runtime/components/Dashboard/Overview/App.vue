@@ -17,7 +17,7 @@
         description="Your public profile is still available. Current app details could not be read."
       />
       <UAlert
-        v-else-if="appOutcome === 'missing'"
+        v-else-if="appOutcome === 'empty'"
         color="warning"
         variant="soft"
         icon="i-lucide-file-warning"
@@ -56,7 +56,7 @@
       />
 
       <UAlert
-        v-else-if="membershipOutcome === 'missing'"
+        v-else-if="membershipOutcome === 'empty'"
         color="warning"
         variant="soft"
         icon="i-lucide-user-round-x"
@@ -78,7 +78,7 @@
       </div>
 
       <UButton
-        v-if="membershipOutcome === 'missing' && canSelfJoin"
+        v-if="membershipOutcome === 'empty' && canSelfJoin"
         class="mt-4"
         to="/users/create"
         label="Set up app access"

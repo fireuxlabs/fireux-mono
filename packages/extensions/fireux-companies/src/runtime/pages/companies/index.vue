@@ -1,17 +1,11 @@
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-building-2"
-    secondary-label="Company tools"
-  >
-    <CompanyCollectionManager />
-
-    <template #secondary>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <CompanyCollectionManager />
       <CompanyCTA />
-    </template>
-  </FireCollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

@@ -6,7 +6,10 @@ import { compileFunction } from 'node:vm'
 import * as vue from 'vue'
 import { parse } from 'vue/compiler-sfc'
 import { renderToString } from 'vue/server-renderer'
-import { offeringOverviewPolicy, serviceMenuPolicy } from './offering-test-helpers.mjs'
+import {
+  offeringOverviewPolicy,
+  serviceMenuPolicy,
+} from './offering-test-helpers.mjs'
 const source = readFileSync(
   new URL(
     '../runtime/kitchen/components/FoodAndDrink/Services/Service.vue',
@@ -136,24 +139,64 @@ test('all services show a switch, hide configuration while off and reveal it whi
   }
 })
 
-
 test('saved incompatible menus show visible replacement warnings and remain selectable for removal', async () => {
-  const source = readFileSync(new URL('../runtime/kitchen/components/FoodAndDrink/Services/Setup/Menus.vue', import.meta.url), 'utf8')
+  const source = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/FoodAndDrink/Services/Setup/Menus.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
   const { descriptor } = parse(source)
-  const script = descriptor.scriptSetup.content.replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
-  for (const audience of ['private_link', 'protected_group', 'missing']) {
+  const script = descriptor.scriptSetup.content.replace(
+    /^import[\s\S]*?from ['"][^'"]+['"]\n/gm,
+    ''
+  )
+  for (const audience of ['private_link', 'protected_group', 'empty']) {
     const props = {
-      menuIds: ['old'], outcome: 'ready', disabled: false,
-      menus: audience === 'missing' ? [] : [{ id: 'old', name: 'Group menu', status: 'published', audience }],
+      menuIds: ['old'],
+      outcome: 'ready',
+      disabled: false,
+      menus:
+        audience === 'empty'
+          ? []
+          : [{ id: 'old', name: 'Group menu', status: 'published', audience }],
     }
-    const api = compileFunction(stripTypeScriptTypes(script) + ';return {props,options,unavailable,emit}',
-      ['computed','defineProps','defineEmits','serviceMenuOptions','isServiceMenu']
-    )(vue.computed, () => props, () => () => {}, serviceMenuPolicy.serviceMenuOptions, serviceMenuPolicy.isServiceMenu)
+    const api = compileFunction(
+      stripTypeScriptTypes(script) + ';return {props,options,unavailable,emit}',
+      [
+        'computed',
+        'defineProps',
+        'defineEmits',
+        'serviceMenuOptions',
+        'isServiceMenu',
+      ]
+    )(
+      vue.computed,
+      () => props,
+      () => () => {},
+      serviceMenuPolicy.serviceMenuOptions,
+      serviceMenuPolicy.isServiceMenu
+    )
     let choices
-    const app = vue.createSSRApp({setup: () => ({...props,...api}), render: vue.compile(descriptor.template.content)})
-    app.component('UFormField', {setup: (_, {slots}) => () => vue.h('section', slots.default?.())})
-    app.component('FireMultiSelect', {props:['items','modelValue'], setup: p => {choices=p; return () => vue.h('div')}})
-    app.component('FireStateCard', {render: () => null})
+    const app = vue.createSSRApp({
+      setup: () => ({ ...props, ...api }),
+      render: vue.compile(descriptor.template.content),
+    })
+    app.component('UFormField', {
+      setup:
+        (_, { slots }) =>
+        () =>
+          vue.h('section', slots.default?.()),
+    })
+    app.component('FireMultiSelect', {
+      props: ['items', 'modelValue'],
+      setup: (p) => {
+        choices = p
+        return () => vue.h('div')
+      },
+    })
+    app.component('FireStateCard', { render: () => null })
     const html = await renderToString(app)
     assert.match(html, /role="status"/)
     assert.match(html, /remove from selection/)

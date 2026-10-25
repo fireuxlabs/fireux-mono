@@ -116,7 +116,7 @@ function session(policy, outcome = 'ready') {
     coreError: ref(null),
     appError: ref(null),
     appPending: ref(false),
-    appOutcome: ref('missing'),
+    appOutcome: ref('empty'),
   }
   const state = make(user)
   return { state, app, user, auth }
@@ -164,7 +164,7 @@ test('Policy loading and errors remain visible in session state', () => {
 })
 
 test('An uninitialized App does not require membership before developer setup', () => {
-  const { state, app } = session(false, 'missing')
+  const { state, app } = session(false, 'empty')
   app.app.value = null
   assert.equal(state.outcome.value, 'ready')
   assert.equal(state.pending.value, false)
@@ -211,9 +211,9 @@ test('Session pending follows auth and User resolution rather than one source al
   assert.equal(state.pending.value, false)
   assert.equal(state.error.value, user.coreError.value)
   user.coreError.value = null
-  user.coreOutcome.value = 'missing'
+  user.coreOutcome.value = 'empty'
   user.coreUser.value = null
-  assert.equal(state.outcome.value, 'missing')
+  assert.equal(state.outcome.value, 'empty')
   assert.equal(state.pending.value, false)
   user.coreUser.value = { id: 'user' }
   user.coreOutcome.value = 'ready'

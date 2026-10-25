@@ -1,8 +1,7 @@
 <template>
   <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
     ><WorkspacePropertySelector /> </UDashboardToolbar
-  ><WorkspaceHero
-    compact
+  ><UPageHeader
     title="Build your Property Workspace"
     description="Manage reservations, guest information and property operations."
   />

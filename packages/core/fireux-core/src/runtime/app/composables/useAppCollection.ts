@@ -1,4 +1,4 @@
-import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from '../../utils/read-outcome'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import { readLivePages } from '../../composables/fireux/firestore/readLivePages'
@@ -71,11 +71,10 @@ export function useAppCollection(
   )
   const outcome = computed(() =>
     resolveReadOutcome({
-      kind: 'collection',
-      active:
+      enabled:
         Boolean(options.authenticated && !hasAuthState.value) || active.value,
       pending: pending.value,
-      error: error.value,
+      failed: Boolean(error.value),
       present: count.value > 0,
     })
   )

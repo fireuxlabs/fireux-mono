@@ -1,7 +1,7 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 
 /** Authorized Project relationship with live owning-system dependencies. */
@@ -57,16 +57,16 @@ export function useProjectEcosystems(
       : []
   )
   const count = computed(() => ecosystems.value.length)
-  const outcome = computed(() =>
-    resolveReadOutcome({
-      kind: 'collection',
-      active: active.value,
-      current: current.value || !active.value || Boolean(source.error.value),
+  const outcome = computed(() => {
+    if (!active.value) return 'idle'
+    if (!current.value && !source.error.value) return 'pending'
+    return resolveReadOutcome({
+      enabled: active.value,
       pending: source.pending.value,
-      error: source.error.value,
+      failed: Boolean(source.error.value),
       present: count.value > 0,
     })
-  )
+  })
   return {
     projectId,
     ecosystems,

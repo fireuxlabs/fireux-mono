@@ -1,18 +1,12 @@
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-truck"
-    secondary-label="For drivers"
-  >
-    <DriverDirectory />
-
-    <template #secondary>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <DriverDirectory />
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
       <DriverCurrent />
-    </template>
-  </FireCollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

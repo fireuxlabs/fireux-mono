@@ -302,7 +302,7 @@ const requiresApp = computed(
     Boolean(coreUser.value) &&
     hasCurrentAccount.value &&
     canSelfJoin.value &&
-    appOutcome.value === 'missing'
+    appOutcome.value === 'empty'
 )
 const appLabel = computed(() => appName || 'this App')
 const authEmail = computed(() => authUser.value?.email || 'Signed-in account')

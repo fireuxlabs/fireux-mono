@@ -10,11 +10,17 @@
       </div>
     </template>
 
-    <p v-if="focus.outcome === 'idle'" class="workspace-card-header__description">
+    <p
+      v-if="focus.outcome === 'idle'"
+      class="workspace-card-header__description"
+    >
       No {{ entityLower }} source is active.
     </p>
 
-    <p v-else-if="focus.outcome === 'pending'" class="workspace-card-header__description">
+    <p
+      v-else-if="focus.outcome === 'pending'"
+      class="workspace-card-header__description"
+    >
       Loading selected {{ entityLower }}…
     </p>
 
@@ -27,16 +33,15 @@
       description="Please try again."
     />
 
-    <p v-else-if="focus.outcome === 'missing'" class="workspace-card-header__description">
+    <p
+      v-else-if="focus.outcome === 'empty'"
+      class="workspace-card-header__description"
+    >
       The selected {{ entityLower }} no longer exists.
     </p>
 
     <div v-else-if="focus.hasSelection" class="space-y-4">
-      <WorkspaceTargetCard
-        v-if="card"
-        :card="card"
-        :show-badges="showBadges"
-      />
+      <WorkspaceTargetCard v-if="card" :card="card" :show-badges="showBadges" />
 
       <div class="workspace-summary-grid">
         <div class="workspace-summary-field">

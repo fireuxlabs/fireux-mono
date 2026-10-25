@@ -1,9 +1,5 @@
 <template>
-  <WorkspaceHero
-    compact
-    title="Blank Team"
-    description="Blank workspace team."
-  />
+  <UPageHeader title="Blank Team" description="Blank workspace team." />
   <WorkspaceBlankSelector />
   <WorkspaceAI compact aria-label="Blank Team AI"
     ><UAlert title="Team AI is not connected yet" color="neutral" />

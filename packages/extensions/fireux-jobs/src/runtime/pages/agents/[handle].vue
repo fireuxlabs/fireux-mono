@@ -6,7 +6,7 @@
     icon="i-lucide-handshake"
     :pending="pending"
     :failed="failed"
-    :missing="missing"
+    :empty="empty"
   >
     <div v-if="agentProfile && profileUser" data-public-profile="agent">
       <AgentDetail :profile="agentProfile" :user="profileUser" />
@@ -45,7 +45,7 @@ const {
   user: profileUser,
   pending,
   statusCode,
-  missing,
+  empty,
   failed,
   outcome,
 } = await useProfileDetail<AgentProfilePayload>(
@@ -75,7 +75,7 @@ const displayName = computed(
   () => profileUser.value?.display_name || agentProfile.value?.title || ''
 )
 if (import.meta.server) {
-  if (missing.value) {
+  if (empty.value) {
     setResponseStatus(404)
   } else if (failed.value) {
     setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)

@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceHero
+  <UPageHeader
     title="Blank Workspace"
     description="Choose a record and explore its capabilities."
   />

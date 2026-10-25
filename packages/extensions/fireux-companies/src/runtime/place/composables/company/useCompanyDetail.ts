@@ -5,7 +5,7 @@ import type { CompanyDetailResponse } from '../../models/company-collection.mode
 import type { Company } from '../../models/company.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
-export type CompanyDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+export type CompanyDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
 
 type CompanyDetailControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
@@ -17,7 +17,7 @@ export type UseCompanyDetailReturn = CompanyDetailControls & {
   place: ComputedRef<Place | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
+  empty: ComputedRef<boolean>
   failed: ComputedRef<boolean>
   outcome: ComputedRef<CompanyDetailOutcome>
 }
@@ -57,7 +57,7 @@ export function useCompanyDetail(
     return item && item.id === id.value && !state.pending.value ? item : null
   })
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
+  const empty = computed(
     () =>
       statusCode.value === 404 ||
       (!state.pending.value &&
@@ -70,7 +70,7 @@ export function useCompanyDetail(
   const outcome = computed<CompanyDetailOutcome>(() => {
     if (state.pending.value) return 'pending'
     if (failed.value) return 'error'
-    if (missing.value) return 'missing'
+    if (empty.value) return 'empty'
     return 'ready'
   })
 
@@ -82,7 +82,7 @@ export function useCompanyDetail(
     error: state.error,
     refresh: state.refresh,
     statusCode,
-    missing,
+    empty,
     failed,
     outcome,
   }

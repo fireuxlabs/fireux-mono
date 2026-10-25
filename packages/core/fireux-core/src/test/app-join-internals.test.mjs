@@ -67,7 +67,7 @@ function requestHarness() {
   const settle = () => {
     hasAuthState.value = true
     isAuthenticated.value = true
-    request.outcome.value = 'missing'
+    request.outcome.value = 'empty'
   }
   return {
     scope,
@@ -121,7 +121,7 @@ test('App join request uses one live reader and waits for restored identity and 
     )
     assert.equal(h.state.canRequest.value, false)
     h.request.pending.value = false
-    h.request.outcome.value = 'missing'
+    h.request.outcome.value = 'empty'
     assert.equal(h.state.canRequest.value, true)
     h.isAuthenticated.value = false
     assert.equal(h.path, '')
@@ -143,7 +143,7 @@ test('App join request failures and membership prevent an uninformed command', a
     await assert.rejects(h.state.requestJoinApp(), /loaded/)
     assert.equal(h.commands.length, 0)
     h.request.error.value = null
-    h.request.outcome.value = 'missing'
+    h.request.outcome.value = 'empty'
     h.userError.value = new Error('membership denied')
     assert.equal(h.state.canRequest.value, false)
     h.userError.value = null

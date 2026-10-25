@@ -33,7 +33,7 @@ export function useKitchenDishDetail(
     if (!kitchenId.value || !dishId.value) return 'idle'
     if (access.outcome.value === 'pending' || access.outcome.value === 'error')
       return access.outcome.value
-    if (!storageKitchenId.value) return 'missing'
+    if (!storageKitchenId.value) return 'empty'
     return source.outcome.value
   })
   const dish = computed(() =>

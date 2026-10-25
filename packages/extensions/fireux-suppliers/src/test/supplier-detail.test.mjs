@@ -1,10 +1,11 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, unref, reactive } from 'vue'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 function fixture() {
   const id = ref('supplier-a'),
@@ -35,6 +36,7 @@ function fixture() {
       'useFireUXConfig',
       'useLiveAsyncData',
       'resolveReadOutcome',
+      'resolveHttpDocumentOutcome',
     ]
   )(
     computed,
@@ -45,7 +47,8 @@ function fixture() {
       calls++
       return state
     },
-    resolveReadOutcome
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome
   )
   const detail = useSupplierDetail(id)
   const load = async (payload) => {
@@ -98,17 +101,14 @@ test('deletion, denied and failed reads never retain last-good Supplier or Place
   for (const statusCode of [404, 403, 503]) {
     f.state.error.value = { statusCode }
     f.state.pending.value = false
-    assert.equal(
-      f.detail.outcome.value,
-      statusCode === 404 ? 'missing' : 'error'
-    )
+    assert.equal(f.detail.outcome.value, statusCode === 404 ? 'empty' : 'error')
     for (const name of ['supplier', 'company', 'place'])
       assert.equal(f.detail[name].value, null)
     f.state.error.value = null
     assert.equal(f.detail.outcome.value, 'ready')
   }
   f.state.data.value = null
-  assert.equal(f.detail.outcome.value, 'missing')
+  assert.equal(f.detail.outcome.value, 'empty')
   await f.load(payload('supplier-a'))
   assert.equal(f.detail.outcome.value, 'ready')
 })
@@ -127,7 +127,7 @@ test('detail preserves case-sensitive document identity and rejects a differentl
   assert.equal(f.detail.outcome.value, 'ready')
   assert.equal(f.detail.supplier.value.id, 'Supplier-A')
   await f.load(payload('supplier-a'))
-  assert.equal(f.detail.outcome.value, 'missing')
+  assert.equal(f.detail.outcome.value, 'empty')
   for (const name of ['supplier', 'company', 'place'])
     assert.equal(f.detail[name].value, null)
 })

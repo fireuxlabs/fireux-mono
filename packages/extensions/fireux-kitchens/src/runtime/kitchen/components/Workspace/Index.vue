@@ -6,9 +6,7 @@
     :title="adoption.error.value"
   >
     <template #actions
-      ><UButton
-        label="Try again"
-        @click="adoption.adopt()" /><FireCopyError
+      ><UButton label="Try again" @click="adoption.adopt()" /><FireCopyError
         :message="adoption.error.value"
     /></template>
   </UAlert>
@@ -23,7 +21,10 @@
     Loading your Kitchens…
   </p>
   <UAlert
-    v-else-if="landingState === 'error' || landingState === 'missing'"
+    v-else-if="
+      landingState === 'error' ||
+      (landingState === 'empty' && creation.allowance.value.used > 0)
+    "
     color="error"
     title="Your Kitchens could not be shown"
     description="Your account has not been changed. Try again before adding another Kitchen."

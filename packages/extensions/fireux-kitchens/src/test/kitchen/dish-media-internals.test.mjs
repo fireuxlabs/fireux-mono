@@ -237,12 +237,12 @@ test('image attachment accepts canonical path identity without a duplicated stor
 
 test('media and flagship reject missing or foreign Kitchen documents', async () => {
   for (const action of ['image', 'flagship'])
-    for (const state of ['missing', 'foreign']) {
+    for (const state of ['empty', 'foreign']) {
       const h = harness()
-      if (state === 'missing') h.records.delete(h.dishPath)
+      if (state === 'empty') h.records.delete(h.dishPath)
       else h.records.get(h.dishPath).kitchen_id = 'other'
       await assert.rejects(h[action]({ body: { is_flagship: true } }), {
-        statusCode: state === 'missing' ? 404 : 409,
+        statusCode: state === 'empty' ? 404 : 409,
       })
       assert.equal(h.writes.length, 0)
       assert.equal(h.uploaded, 0)

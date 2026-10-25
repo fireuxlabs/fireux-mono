@@ -219,10 +219,10 @@ for (const family of [
     assert.equal(index.id.value, 'first')
 
     source.projectIds.value = ['retained']
-    outcome.value = family === 'project' ? 'empty' : 'missing'
+    outcome.value = 'empty'
     await nextTick()
-    assert.equal(index.collectionOutcome.value, 'missing')
-    assert.equal(index.id.value, 'first')
+    assert.equal(index.collectionOutcome.value, 'empty')
+    assert.equal(index.id.value, '')
     source.projectIds.value = []
 
     records.value = [{ id: 'replacement' }]
@@ -408,7 +408,7 @@ test('workspace creation uses only the supplied domain count and waits for acces
   session.appUser.value.subscription = 'business'
   assert.equal(creation.canCreate.value, true)
   assert.equal(creation.showUpgrade.value, false)
-  for (const outcome of ['idle', 'pending', 'error', 'missing']) {
+  for (const outcome of ['idle', 'pending', 'error']) {
     usage.value.outcome = outcome
     assert.equal(creation.canCreate.value, false, outcome)
     assert.equal(creation.showUpgrade.value, false, outcome)
@@ -496,7 +496,7 @@ test('last selected Kitchen uses a persistent root-path cookie and survives a fr
   assert.equal(options.maxAge, 60 * 60 * 24 * 365)
   harness.states.clear()
   const restored = harness.useWorkspace('kitchen')
-  for (const outcome of ['idle', 'pending', 'error', 'missing']) {
+  for (const outcome of ['idle', 'pending', 'error']) {
     restored.reconcile(['la-tap'], outcome)
     assert.equal(restored.selectedId.value, 'baeren')
   }
@@ -543,7 +543,7 @@ test('component-local cookie refs all retain the last shared selection on dispos
 test('last selection survives reconciliation; first available is used only after access settles', () => {
   const harness = createWorkspace(),
     workspace = harness.useWorkspace('kitchen')
-  for (const outcome of ['idle', 'pending', 'error', 'missing']) {
+  for (const outcome of ['idle', 'pending', 'error']) {
     workspace.reconcile(['first', 'baeren'], outcome)
     assert.equal(workspace.selectedId.value, '')
   }

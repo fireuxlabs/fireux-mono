@@ -15,7 +15,7 @@ import {
   unref,
 } from 'vue'
 import { normalizeSupplier } from '../runtime/supplier/utils/normalize-supplier.ts'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/string.ts'
 
@@ -154,10 +154,9 @@ test('granted collection follows exact linked Place identity, rebinding, removal
         useFirestoreCollectionState: (options) => ({
           outcome: computed(() =>
             resolveReadOutcome({
-              active: options.active.value,
-              kind: 'collection',
+              enabled: options.active.value,
               pending: options.pending.value,
-              error: options.error.value,
+              failed: Boolean(options.error.value),
               present: options.count.value > 0,
             })
           ),

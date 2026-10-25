@@ -1,18 +1,12 @@
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-handshake"
-    secondary-label="For hiring teams"
-  >
-    <AgentDirectory />
-
-    <template #secondary>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <AgentDirectory />
       <!-- Profile CTA family: Agent is a profile layer attached to a User. -->
       <AgentCurrent />
-    </template>
-  </FireCollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

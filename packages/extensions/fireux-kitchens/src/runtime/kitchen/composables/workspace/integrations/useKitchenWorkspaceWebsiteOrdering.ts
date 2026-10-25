@@ -1,7 +1,8 @@
+import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
@@ -126,22 +127,24 @@ export function useKitchenWorkspaceWebsiteOrdering() {
     },
     { server: false, watch: [ownerScope] }
   )
-  const outcome = computed(() =>
-    ownerOutcome.value !== 'ready'
-      ? ownerOutcome.value
-      : resolveReadOutcome({
-          active: Boolean(storageKitchenId.value),
-          kind: 'document',
-          current:
-            source.status.value === 'error'
-              ? requestEpoch.value === ownerEpoch.value
-              : source.data.value?.scope === ownerEpoch.value &&
-                source.data.value?.kitchenId === storageKitchenId.value,
-          pending: source.pending.value || source.status.value !== 'success',
-          error: source.error.value,
-          present: Boolean(source.data.value),
-        })
-  )
+  const outcome = computed(() => {
+    if (ownerOutcome.value !== 'ready') {
+      return ownerOutcome.value
+    }
+    if (!storageKitchenId.value) return 'idle'
+    const responseCurrent =
+      source.status.value === 'error'
+        ? requestEpoch.value === ownerEpoch.value
+        : source.data.value?.scope === ownerEpoch.value &&
+          source.data.value?.kitchenId === storageKitchenId.value
+    if (!responseCurrent) return 'pending'
+    return resolveHttpDocumentOutcome({
+      enabled: Boolean(storageKitchenId.value),
+      pending: source.pending.value || source.status.value !== 'success',
+      error: source.error.value,
+      present: Boolean(source.data.value),
+    })
+  })
   const error = computed(() =>
     outcome.value === 'error'
       ? 'Website settings could not be loaded. Please try again.'

@@ -4,8 +4,6 @@ import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import type { App } from '../models/app.model'
 import { readAppDocument } from '../utils/readApp'
 
-export type AppReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
-
 /** Live read of one App through the shared Firestore reader. */
 export function useAppRead(
   id: MaybeRef<string | null | undefined>,
@@ -24,7 +22,7 @@ export function useAppRead(
   const source = firestoreFetchDoc<App>(path, targetId)
   // Initialization depends on document existence, even if its fields need repair.
   const exists = computed(() => {
-    if (source.outcome.value === 'missing') return false
+    if (source.outcome.value === 'empty') return false
     if (source.outcome.value === 'ready') return true
     return undefined
   })
@@ -37,7 +35,7 @@ export function useAppRead(
   })
   const outcome = computed(() =>
     source.outcome.value === 'ready' && !app.value
-      ? 'missing'
+      ? 'empty'
       : source.outcome.value
   )
   return { app, exists, pending: source.pending, error: source.error, outcome }

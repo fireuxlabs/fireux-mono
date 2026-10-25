@@ -1,4 +1,4 @@
-import { resolveReadOutcome } from '../../../composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from '../../../utils/read-outcome'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useUserSession } from '../session/useUserSession'
@@ -32,10 +32,9 @@ export function useUserDirectory() {
   })
   const outcome = computed(() =>
     resolveReadOutcome({
-      kind: 'collection',
-      active: source.outcome.value !== 'idle',
+      enabled: source.outcome.value !== 'idle',
       pending: source.pending.value,
-      error: source.error.value,
+      failed: Boolean(source.error.value),
       present: users.value.length > 0,
     })
   )

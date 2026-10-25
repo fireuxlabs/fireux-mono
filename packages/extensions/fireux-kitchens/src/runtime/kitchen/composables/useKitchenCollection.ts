@@ -1,10 +1,14 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model.ts'
 
-export type KitchenCollectionRecord = Kitchen & { place: Place; service_labels?: string[]; has_published_menu?: boolean }
+export type KitchenCollectionRecord = Kitchen & {
+  place: Place
+  service_labels?: string[]
+  has_published_menu?: boolean
+}
 
 export type UseKitchenCollectionReturn = {
   collection: ComputedRef<KitchenCollectionRecord[]>
@@ -49,10 +53,9 @@ export function useKitchenCollection(
   })
   const outcome = computed(() =>
     resolveReadOutcome({
-      kind: 'collection',
-      active: active.value,
+      enabled: active.value,
       pending: state.pending.value,
-      error: state.error.value,
+      failed: Boolean(state.error.value),
       present: collection.value.length > 0,
     })
   )

@@ -1,4 +1,4 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed } from 'vue'
 import { SupplierStorage } from '../../../models/Supplier.model'
 import { useSupplierCatalogueCollection } from '../../useSupplierCatalogueCollection'
@@ -56,12 +56,11 @@ export function useSupplierWorkspaceCatalogues() {
     workspace.outcome.value !== 'ready'
       ? workspace.outcome.value
       : resolveReadOutcome({
-          active: supplierCataloguesEnabled.value,
+          enabled: supplierCataloguesEnabled.value,
           pending:
             catalogueOutcome.value === 'pending' ||
             itemsOutcome.value === 'pending',
-          error: readError.value,
-          kind: 'collection',
+          failed: Boolean(readError.value),
           present: supplierCatalogues.value.length > 0,
         })
   )

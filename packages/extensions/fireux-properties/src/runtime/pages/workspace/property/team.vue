@@ -1,10 +1,6 @@
 <template>
   <WorkspaceIntroInfo :intro="intro" />
-  <WorkspaceHero
-    compact
-    title="Property Team"
-    description="Property workspace team."
-  />
+  <UPageHeader title="Property Team" description="Property workspace team." />
   <WorkspacePropertySelector />
   <WorkspaceAI compact aria-label="Property Team AI"
     ><UAlert

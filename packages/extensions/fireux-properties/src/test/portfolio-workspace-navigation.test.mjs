@@ -8,26 +8,55 @@ import { computed, ref } from 'vue'
 const runtime = new URL('../runtime/', import.meta.url)
 
 test('Portfolio navigation uses current authorized choices and suppresses failed or loading choices', () => {
-  const source = readFileSync(new URL('portfolio/components/Workspace/Navigation.vue', runtime), 'utf8')
+  const source = readFileSync(
+    new URL('portfolio/components/Workspace/Navigation.vue', runtime),
+    'utf8'
+  )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
     .replace(/^import .* from .+\n/gm, '')
   const selections = []
   const index = {
-    collection: ref([{ id: 'a', name: 'Alpha' }, { id: 'b', name: 'Beta' }]),
-    selectedId: ref('a'), outcome: ref('ready'),
-    select: id => { selections.push(id); index.selectedId.value = id },
+    collection: ref([
+      { id: 'a', name: 'Alpha' },
+      { id: 'b', name: 'Beta' },
+    ]),
+    selectedId: ref('a'),
+    outcome: ref('ready'),
+    select: (id) => {
+      selections.push(id)
+      index.selectedId.value = id
+    },
   }
   const navigation = compileFunction(
     `${stripTypeScriptTypes(source)}; return { item }`,
-    ['computed', 'withDefaults', 'defineProps', 'useWorkspaceEntryCta', 'usePortfolioWorkspaceIndex', 'usePortfolioInterface']
-  )(computed, () => ({}), () => ({}), () => ({ workspaceEntryPath: ref('/workspace/portfolio') }),
-    () => index, () => ({ pill: value => value ? { id: value.id, title: value.name, imageUrl: '' } : null }))
+    [
+      'computed',
+      'withDefaults',
+      'defineProps',
+      'useWorkspaceEntryCta',
+      'usePortfolioWorkspaceIndex',
+      'usePortfolioInterface',
+    ]
+  )(
+    computed,
+    () => ({}),
+    () => ({}),
+    () => ({ workspaceEntryPath: ref('/workspace/portfolio') }),
+    () => index,
+    () => ({
+      pill: (value) =>
+        value ? { id: value.id, title: value.name, imageUrl: '' } : null,
+    })
+  )
   assert.equal(navigation.item.value.label, 'Alpha')
-  assert.deepEqual(navigation.item.value.choices.map(choice => choice.label), ['Alpha', 'Beta'])
+  assert.deepEqual(
+    navigation.item.value.choices.map((choice) => choice.label),
+    ['Alpha', 'Beta']
+  )
   navigation.item.value.choices[1].onSelect()
   assert.deepEqual(selections, ['b'])
   assert.equal(navigation.item.value.label, 'Beta')
-  for (const outcome of ['pending', 'error', 'missing', 'empty']) {
+  for (const outcome of ['pending', 'error', 'empty']) {
     index.outcome.value = outcome
     assert.equal(navigation.item.value.choices.length, 0, outcome)
     assert.equal(index.selectedId.value, 'b', outcome)
@@ -36,16 +65,34 @@ test('Portfolio navigation uses current authorized choices and suppresses failed
 })
 
 test('Portfolio registers one global navigation name for the Core layout resolver', () => {
-  const source = readFileSync(new URL('../config/module/components-config.ts', runtime), 'utf8')
-    .replace(/^import .* from .+\n/gm, '').replace(/^export /gm, '')
-  const directories = [], components = []
-  const configure = compileFunction(`${stripTypeScriptTypes(source)}; return configureComponents`,
-    ['registerComponentsDir', 'addComponent'])(
+  const source = readFileSync(
+    new URL('../config/module/components-config.ts', runtime),
+    'utf8'
+  )
+    .replace(/^import .* from .+\n/gm, '')
+    .replace(/^export /gm, '')
+  const directories = [],
+    components = []
+  const configure = compileFunction(
+    `${stripTypeScriptTypes(source)}; return configureComponents`,
+    ['registerComponentsDir', 'addComponent']
+  )(
     (_resolver, path, options) => directories.push({ path, options }),
-    component => components.push(component))
-  configure({ resolve: path => path })
-  assert.deepEqual(components.filter(component => component.name === 'WorkspacePortfolioNavigation'), [{ name: 'WorkspacePortfolioNavigation',
-    filePath: './runtime/portfolio/components/Workspace/Navigation.vue', global: true }])
+    (component) => components.push(component)
+  )
+  configure({ resolve: (path) => path })
+  assert.deepEqual(
+    components.filter(
+      (component) => component.name === 'WorkspacePortfolioNavigation'
+    ),
+    [
+      {
+        name: 'WorkspacePortfolioNavigation',
+        filePath: './runtime/portfolio/components/Workspace/Navigation.vue',
+        global: true,
+      },
+    ]
+  )
   assert.equal(components.length, 2)
   assert.deepEqual(directories[0].options.ignore, ['Navigation.vue'])
 })

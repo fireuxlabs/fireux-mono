@@ -26,7 +26,12 @@ const docId = (value) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid id' })
   return value
 }
-const empty = () => ({ ...ordering.createOrderDraft({ id: 'draft-a', number: '' }, 'pos', { channels: ['pos'] }), placed_by: { kind: 'person', id: 'operator', name: 'Alex' } })
+const empty = () => ({
+  ...ordering.createOrderDraft({ id: 'draft-a', number: '' }, 'pos', {
+    channels: ['pos'],
+  }),
+  placed_by: { kind: 'person', id: 'operator', name: 'Alex' },
+})
 function server() {
   const records = new Map(),
     writes = [],
@@ -60,7 +65,10 @@ function server() {
         run({
           read: async (target, id) => ({
             exists: target.collectionPath === 'users' || records.has(id),
-            data: target.collectionPath === 'users' ? { display_name: 'Alex' } : records.get(id),
+            data:
+              target.collectionPath === 'users'
+                ? { display_name: 'Alex' }
+                : records.get(id),
           }),
           create: (target, id, data) => {
             assert.equal(
@@ -132,7 +140,7 @@ test('stale revisions, missing records, malformed saved records and revoked auth
   await assert.rejects(() => x.save({ ...empty(), channel: 'website' }, 1), {
     statusCode: 409,
   })
-  await assert.rejects(() => x.save({ ...empty(), id: 'missing' }, 1), {
+  await assert.rejects(() => x.save({ ...empty(), id: 'empty' }, 1), {
     statusCode: 409,
   })
   x.records.set('draft-a', { ...x.records.get('draft-a'), schema_version: 0 })
@@ -390,7 +398,9 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
     ...ordering,
     crypto: { randomUUID: () => `generated-${++nextId}` },
     useRuntimeConfig: () => ({ public: { ordering: { channels: ['pos'] } } }),
-    useAuth: () => ({ currentUser: Vue.ref({ uid: 'operator', isAnonymous: false }) }),
+    useAuth: () => ({
+      currentUser: Vue.ref({ uid: 'operator', isAnonymous: false }),
+    }),
     useUserRead: () => ({ user: staffProfile, outcome: Vue.ref('ready') }),
     useKitchenWorkspace: () => ({
       id: Vue.ref('kitchen-a'),
@@ -433,7 +443,11 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
   assert.equal(state.order.value, null)
   staffProfile.value.display_name = 'Alex'
   state.resetDraft()
-  assert.deepEqual(state.order.value.placed_by, { kind: 'person', id: 'operator', name: 'Alex' })
+  assert.deepEqual(state.order.value.placed_by, {
+    kind: 'person',
+    id: 'operator',
+    name: 'Alex',
+  })
   assert.deepEqual(state.order.value.lines, [])
   state.itemName.value = 'Soup'
   state.quantity.value = 2
@@ -471,17 +485,38 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
   scope.stop()
 })
 
- test('save/reopen preserves optional context and explicitly clears it on update', async () => {
+test('save/reopen preserves optional context and explicitly clears it on update', async () => {
   const x = server()
-  const order = { ...empty(), fulfilment: 'on_site', customer: { name: 'Jamie', phone: '0123456' }, delivery_address: 'Example address', requested_at: '2026-10-20T12:30:00.000Z', placed_by: { kind: 'person', id: 'operator', name: 'Alex' }, location: { id: 'table-12', name: 'Table 12' } }
+  const order = {
+    ...empty(),
+    fulfilment: 'on_site',
+    customer: { name: 'Jamie', phone: '0123456' },
+    delivery_address: 'Example address',
+    requested_at: '2026-10-20T12:30:00.000Z',
+    placed_by: { kind: 'person', id: 'operator', name: 'Alex' },
+    location: { id: 'table-12', name: 'Table 12' },
+  }
   await x.save(order, 0)
-  assert.deepEqual(ordering.readSavedOrderDraft(order.id, x.records.get(order.id), 'kitchen-a').order, order)
+  assert.deepEqual(
+    ordering.readSavedOrderDraft(order.id, x.records.get(order.id), 'kitchen-a')
+      .order,
+    order
+  )
   await x.save(empty(), 1)
-  assert.deepEqual(ordering.readSavedOrderDraft(order.id, x.records.get(order.id), 'kitchen-a').order, empty())
+  assert.deepEqual(
+    ordering.readSavedOrderDraft(order.id, x.records.get(order.id), 'kitchen-a')
+      .order,
+    empty()
+  )
 })
 
 test('POS initiation cannot save a missing or impersonated staff identity', async () => {
-  for (const placed_by of [undefined, { kind: 'person', id: 'another', name: 'Alex' }, { kind: 'person', id: 'operator', name: 'Fake' }, { kind: 'system', id: 'operator', name: 'Alex' }]) {
+  for (const placed_by of [
+    undefined,
+    { kind: 'person', id: 'another', name: 'Alex' },
+    { kind: 'person', id: 'operator', name: 'Fake' },
+    { kind: 'system', id: 'operator', name: 'Alex' },
+  ]) {
     const x = server()
     const order = empty()
     if (placed_by) order.placed_by = placed_by
@@ -491,17 +526,47 @@ test('POS initiation cannot save a missing or impersonated staff identity', asyn
   }
   const x = server()
   await x.save(empty(), 0)
-  await assert.rejects(() => x.save({ ...empty(), placed_by: { kind: 'person', id: 'other', name: 'Other' } }, 1), { statusCode: 409 })
+  await assert.rejects(
+    () =>
+      x.save(
+        {
+          ...empty(),
+          placed_by: { kind: 'person', id: 'other', name: 'Other' },
+        },
+        1
+      ),
+    { statusCode: 409 }
+  )
   assert.equal(x.writes.length, 1)
 })
 
 test('actual library channel switches show correct empty entry context without retaining prior data', () => {
   const scope = Vue.effectScope()
-  const source = readFileSync(new URL('../../runtime/kitchen/components/Orders/Examples/Index.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-  const validation = load('../../runtime/kitchen/utils/order-submission.ts', 'orderSubmissionIssues')
- const deps = { ...Vue, ...ordering, ...model, ...validation }
-  const state = scope.run(() => compileFunction(`${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,tableName,tableId,order,itemsAdded,channels,postLocation,customerName,phone,address,requestedTime,needsName,needsLocation,initOrder,preOrder,itemsOrder }`, Object.keys(deps))(...Object.values(deps)))
-  const check = () => { assert.equal(state.order.value.number, ''); assert.deepEqual(state.order.value.lines, []); return state.order.value }
+  const source = readFileSync(
+    new URL(
+      '../../runtime/kitchen/components/Orders/Examples/Index.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const validation = load(
+    '../../runtime/kitchen/utils/order-submission.ts',
+    'orderSubmissionIssues'
+  )
+  const deps = { ...Vue, ...ordering, ...model, ...validation }
+  const state = scope.run(() =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,tableName,tableId,order,itemsAdded,channels,postLocation,customerName,phone,address,requestedTime,needsName,needsLocation,initOrder,preOrder,itemsOrder }`,
+      Object.keys(deps)
+    )(...Object.values(deps))
+  )
+  const check = () => {
+    assert.equal(state.order.value.number, '')
+    assert.deepEqual(state.order.value.lines, [])
+    return state.order.value
+  }
   assert.equal(check().placed_by.id, 'example-staff')
   state.channel.value = 'kiosk'
   assert.equal(check().fulfilment, '')
@@ -527,7 +592,10 @@ test('actual library channel switches show correct empty entry context without r
   assert.equal(check().fulfilment, 'on_site')
   state.identity.value = 'identified'
   assert.equal(check().placed_by.name, 'Sam')
-  assert.deepEqual(state.channels.map((item) => item.value), ['pos', 'kiosk', 'website'])
+  assert.deepEqual(
+    state.channels.map((item) => item.value),
+    ['pos', 'kiosk', 'website']
+  )
   state.channel.value = 'pos'
   assert.equal(check().placed_by.name, 'Alex')
   assert.equal(check().location, undefined)
@@ -554,7 +622,10 @@ test('actual library channel switches show correct empty entry context without r
   state.phone.value = '0123456789'
   state.address.value = '10 Example Street'
   state.requestedTime.value = '2026-10-20T12:30:00Z'
-  assert.deepEqual(state.order.value.customer, { name: 'Taylor', phone: '0123456789' })
+  assert.deepEqual(state.order.value.customer, {
+    name: 'Taylor',
+    phone: '0123456789',
+  })
   assert.equal(state.order.value.delivery_address, '10 Example Street')
   assert.equal(state.order.value.requested_at, '2026-10-20T12:30:00.000Z')
   assert.deepEqual(state.initOrder.value.lines, [])
@@ -562,7 +633,11 @@ test('actual library channel switches show correct empty entry context without r
   assert.equal(state.preOrder.value.fulfilment, 'delivery')
   assert.deepEqual(state.preOrder.value.lines, [])
   assert.equal(state.itemsOrder.value.lines.length, 2)
-  for (const snapshot of [state.initOrder.value, state.preOrder.value, state.itemsOrder.value]) {
+  for (const snapshot of [
+    state.initOrder.value,
+    state.preOrder.value,
+    state.itemsOrder.value,
+  ]) {
     assert.equal(snapshot.customer, undefined)
     assert.equal(snapshot.delivery_address, undefined)
     assert.equal(snapshot.requested_at, undefined)
@@ -582,83 +657,142 @@ test('actual library channel switches show correct empty entry context without r
 })
 
 test('library review blocks incomplete orders and captures valid local examples for each channel', () => {
- const scope = Vue.effectScope()
- const source = readFileSync(new URL('../../runtime/kitchen/components/Orders/Examples/Index.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
- const validation = load('../../runtime/kitchen/utils/order-submission.ts', 'orderSubmissionIssues')
- const deps = { ...Vue, ...ordering, ...model, ...validation }
- const state = scope.run(() => compileFunction(`${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,itemsAdded,customerName,phone,address,tableName,postLocation,requestedTime,order,reviewIssues,submittedOrder,submitExample,successOutcome,successView }`, Object.keys(deps))(...Object.values(deps)))
- assert.equal(state.reviewIssues.value.length, 2)
- state.submitExample()
- assert.equal(state.submittedOrder.value, null)
- state.kioskChoice.value = 'takeaway'
- state.itemsAdded.value = true
- assert.deepEqual(state.reviewIssues.value, [])
- state.submitExample()
- assert.deepEqual(state.submittedOrder.value, state.order.value)
- state.channel.value = 'kiosk'
- assert.equal(state.submittedOrder.value, null)
- state.kioskChoice.value = 'on_site'
- assert.deepEqual(state.reviewIssues.value, [])
- state.submitExample()
- assert.equal(state.submittedOrder.value.channel, 'kiosk')
- assert.ok(state.successView.value.message.includes('counter'))
- state.channel.value = 'website'
- state.websiteEntry.value = 'collection'
- assert.equal(state.reviewIssues.value.length, 2)
- state.identity.value = 'identified'
- assert.equal(state.reviewIssues.value.length, 1)
- state.phone.value = '0000000000'
- state.submitExample()
- assert.equal(state.submittedOrder.value.fulfilment, 'collection')
- assert.equal(state.successView.value.action, 'View collection details')
- state.websiteEntry.value = 'delivery'
- assert.equal(state.submittedOrder.value, null)
- state.phone.value = '0000000000'
- assert.ok(state.reviewIssues.value.includes('Delivery address is required.'))
- state.address.value = 'Example Street'
- state.requestedTime.value = 'invalid'
- state.submitExample()
- assert.equal(state.submittedOrder.value, null)
- state.requestedTime.value = ''
- state.submitExample()
- assert.equal(state.submittedOrder.value.delivery_address, 'Example Street')
- assert.equal(state.successView.value.action, 'Track delivery')
- state.requestedTime.value = '2026-10-20T12:30:00Z'
- state.submitExample()
- assert.equal(state.successView.value.title, 'Order scheduled')
- state.successOutcome.value = 'deposit'
- assert.equal(state.successView.value.action, 'Pay deposit')
- state.websiteEntry.value = 'table'
- assert.ok(state.reviewIssues.value.includes('Table or location is required.'))
- state.tableName.value = 'Table 3'
- state.submitExample()
- assert.equal(state.submittedOrder.value.location.name, 'Table 3')
- assert.ok(state.successView.value.message.includes('Table 3'))
- state.itemsAdded.value = false
- assert.equal(state.submittedOrder.value, null)
- assert.ok(state.reviewIssues.value.includes('Add at least one item.'))
- scope.stop()
+  const scope = Vue.effectScope()
+  const source = readFileSync(
+    new URL(
+      '../../runtime/kitchen/components/Orders/Examples/Index.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const validation = load(
+    '../../runtime/kitchen/utils/order-submission.ts',
+    'orderSubmissionIssues'
+  )
+  const deps = { ...Vue, ...ordering, ...model, ...validation }
+  const state = scope.run(() =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,itemsAdded,customerName,phone,address,tableName,postLocation,requestedTime,order,reviewIssues,submittedOrder,submitExample,successOutcome,successView }`,
+      Object.keys(deps)
+    )(...Object.values(deps))
+  )
+  assert.equal(state.reviewIssues.value.length, 2)
+  state.submitExample()
+  assert.equal(state.submittedOrder.value, null)
+  state.kioskChoice.value = 'takeaway'
+  state.itemsAdded.value = true
+  assert.deepEqual(state.reviewIssues.value, [])
+  state.submitExample()
+  assert.deepEqual(state.submittedOrder.value, state.order.value)
+  state.channel.value = 'kiosk'
+  assert.equal(state.submittedOrder.value, null)
+  state.kioskChoice.value = 'on_site'
+  assert.deepEqual(state.reviewIssues.value, [])
+  state.submitExample()
+  assert.equal(state.submittedOrder.value.channel, 'kiosk')
+  assert.ok(state.successView.value.message.includes('counter'))
+  state.channel.value = 'website'
+  state.websiteEntry.value = 'collection'
+  assert.equal(state.reviewIssues.value.length, 2)
+  state.identity.value = 'identified'
+  assert.equal(state.reviewIssues.value.length, 1)
+  state.phone.value = '0000000000'
+  state.submitExample()
+  assert.equal(state.submittedOrder.value.fulfilment, 'collection')
+  assert.equal(state.successView.value.action, 'View collection details')
+  state.websiteEntry.value = 'delivery'
+  assert.equal(state.submittedOrder.value, null)
+  state.phone.value = '0000000000'
+  assert.ok(state.reviewIssues.value.includes('Delivery address is required.'))
+  state.address.value = 'Example Street'
+  state.requestedTime.value = 'invalid'
+  state.submitExample()
+  assert.equal(state.submittedOrder.value, null)
+  state.requestedTime.value = ''
+  state.submitExample()
+  assert.equal(state.submittedOrder.value.delivery_address, 'Example Street')
+  assert.equal(state.successView.value.action, 'Track delivery')
+  state.requestedTime.value = '2026-10-20T12:30:00Z'
+  state.submitExample()
+  assert.equal(state.successView.value.title, 'Order scheduled')
+  state.successOutcome.value = 'deposit'
+  assert.equal(state.successView.value.action, 'Pay deposit')
+  state.websiteEntry.value = 'table'
+  assert.ok(state.reviewIssues.value.includes('Table or location is required.'))
+  state.tableName.value = 'Table 3'
+  state.submitExample()
+  assert.equal(state.submittedOrder.value.location.name, 'Table 3')
+  assert.ok(state.successView.value.message.includes('Table 3'))
+  state.itemsAdded.value = false
+  assert.equal(state.submittedOrder.value, null)
+  assert.ok(state.reviewIssues.value.includes('Add at least one item.'))
+  scope.stop()
 })
 
 test('board refresh is independent of actions and revoked access clears submitted tickets', async () => {
- const scope = Vue.effectScope()
- const source = readFileSync(new URL('../../runtime/kitchen/components/Orders/Board.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
- const access = { outcome: Vue.ref('ready'), ids: Vue.ref(['kitchen']), error: Vue.ref(null) }
- const session = { pending: Vue.ref(false), error: Vue.ref(null), appUser: Vue.ref({id:'member'}) }
- const transports = []
- let actionResult = null
- const deps = {...Vue, onMounted:()=>{}, onUnmounted:()=>{}, useKitchenWorkspace:()=>({id:Vue.ref('kitchen')}), useKitchenAccess:()=>access, useAppSession:()=>session, useKitchenOrderDraftCollection:()=>({drafts:Vue.ref([]),error:Vue.ref(null)}), useOrderExchange:(id,owner)=>{const state={pending:Vue.ref(false),error:Vue.ref(''),version:Vue.ref(0),request:async()=>transports[0] === state ? actionResult : []};Vue.watch([id,owner],()=>state.version.value++,{flush:'sync'});transports.push(state);return state}}
- delete deps.version
- const state = scope.run(()=>compileFunction(`${stripTypeScriptTypes(source)};return {orders,kitchenId,pending,refresh,respond}`,Object.keys(deps))(...Object.values(deps)))
- transports[1].pending.value=true
- assert.equal(state.pending.value,false)
- const entry={order:{id:'a'},state:'accepted',revision:1}
- state.orders.value=[entry]
- actionResult={...entry,state:'preparing',revision:2}
- await state.respond(entry,'preparing')
- assert.equal(state.orders.value[0].state,'preparing')
- access.ids.value=[]
- assert.equal(state.kitchenId.value,'')
- assert.deepEqual(state.orders.value,[])
- scope.stop()
+  const scope = Vue.effectScope()
+  const source = readFileSync(
+    new URL(
+      '../../runtime/kitchen/components/Orders/Board.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const access = {
+    outcome: Vue.ref('ready'),
+    ids: Vue.ref(['kitchen']),
+    error: Vue.ref(null),
+  }
+  const session = {
+    pending: Vue.ref(false),
+    error: Vue.ref(null),
+    appUser: Vue.ref({ id: 'member' }),
+  }
+  const transports = []
+  let actionResult = null
+  const deps = {
+    ...Vue,
+    onMounted: () => {},
+    onUnmounted: () => {},
+    useKitchenWorkspace: () => ({ id: Vue.ref('kitchen') }),
+    useKitchenAccess: () => access,
+    useAppSession: () => session,
+    useKitchenOrderDraftCollection: () => ({
+      drafts: Vue.ref([]),
+      error: Vue.ref(null),
+    }),
+    useOrderExchange: (id, owner) => {
+      const state = {
+        pending: Vue.ref(false),
+        error: Vue.ref(''),
+        version: Vue.ref(0),
+        request: async () => (transports[0] === state ? actionResult : []),
+      }
+      Vue.watch([id, owner], () => state.version.value++, { flush: 'sync' })
+      transports.push(state)
+      return state
+    },
+  }
+  delete deps.version
+  const state = scope.run(() =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)};return {orders,kitchenId,pending,refresh,respond}`,
+      Object.keys(deps)
+    )(...Object.values(deps))
+  )
+  transports[1].pending.value = true
+  assert.equal(state.pending.value, false)
+  const entry = { order: { id: 'a' }, state: 'accepted', revision: 1 }
+  state.orders.value = [entry]
+  actionResult = { ...entry, state: 'preparing', revision: 2 }
+  await state.respond(entry, 'preparing')
+  assert.equal(state.orders.value[0].state, 'preparing')
+  access.ids.value = []
+  assert.equal(state.kitchenId.value, '')
+  assert.deepEqual(state.orders.value, [])
+  scope.stop()
 })

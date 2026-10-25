@@ -40,11 +40,10 @@ export function useKitchenWorkspaceIdentity() {
     if (state.outcome.value === 'error' || state.placeOutcome.value === 'error')
       return 'error'
     if (state.outcome.value === 'pending') return 'pending'
-    if (state.outcome.value === 'missing') return 'missing'
     if (state.pending.value) return 'pending'
     return state.placeOutcome.value === 'ready' && state.place.value
       ? 'ready'
-      : 'missing'
+      : 'empty'
   })
   const { canWrite, availableActions, scopeKey, readState } =
     useWorkspaceIdentity({

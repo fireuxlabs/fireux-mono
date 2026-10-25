@@ -112,7 +112,7 @@ test('archived sections and entries are excluded before Dish pricing validation'
     status: 'archived',
   })
   f.records.set('kitchens/k/menus/m/sections/old/items/old', {
-    dish_id: 'missing',
+    dish_id: 'empty',
     status: 'active',
   })
   f.records.set('kitchens/k/menus/m/sections/s/items/old', {

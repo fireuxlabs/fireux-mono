@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -151,7 +152,7 @@ function nativeSession(initial = {}) {
   const docCalls = []
   const bindings = []
   const resolveReadOutcome = loadRuntime(
-    'composables/fireux/firestore/operations/read-outcome.ts',
+    'utils/read-outcome.ts',
     'resolveReadOutcome',
     {}
   )
@@ -165,6 +166,7 @@ function nativeSession(initial = {}) {
       unref,
       watch,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       useFirestoreResolver: (databaseId) => () => unref(databaseId) || 'app-db',
       readRuntimeFirestoreDatabaseId: () => 'app-db',
       guardFirestorePromise() {},
@@ -318,7 +320,7 @@ test('settled registered nonmember resolves own User before membership exists', 
   f.settle('apps/runtime/users', undefined)
   assert.equal(f.state.outcome.value, 'ready')
   assert.equal(f.state.currentUser.value.id, 'person')
-  assert.equal(f.state.appOutcome.value, 'missing')
+  assert.equal(f.state.appOutcome.value, 'empty')
   assert.equal(f.state.appUser.value, null)
   assert.equal(f.state.canSelfJoin.value, true)
   f.scope.stop()
@@ -328,8 +330,8 @@ test('authorized missing own User remains onboarding and failed own User remains
   await nextTick()
   f.settle('users', undefined)
   f.settle('apps/runtime/users', undefined)
-  assert.equal(f.state.coreOutcome.value, 'missing')
-  assert.equal(f.state.outcome.value, 'missing')
+  assert.equal(f.state.coreOutcome.value, 'empty')
+  assert.equal(f.state.outcome.value, 'empty')
   assert.equal(f.state.coreUser.value, null)
   const error = new Error('User read denied')
   f.settle('users', { display_name: 'Retained person' }, error)

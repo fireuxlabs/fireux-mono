@@ -30,10 +30,10 @@
         state="error"
       />
       <FireStateCard
-        v-else-if="outcome === 'missing'"
+        v-else-if="outcome === 'empty'"
         entity="User"
         kind="document"
-        state="missing"
+        state="empty"
       />
       <UPageCard
         v-if="user && canManageMembership && membershipVisible"

@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -15,7 +16,11 @@ import {
 } from 'vue'
 
 function load(path, name, dependencies) {
-  dependencies = { resolveReadOutcome, ...dependencies }
+  dependencies = {
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+    ...dependencies,
+  }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
@@ -28,7 +33,15 @@ function load(path, name, dependencies) {
 const enhance = load(
   '../runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
   'enhanceFirestoreRead',
-  { resolveReadOutcome, computed, ref, shallowRef, unref, watch }
+  {
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+    computed,
+    ref,
+    shallowRef,
+    unref,
+    watch,
+  }
 )
 
 for (const kind of ['document', 'collection']) {
@@ -69,7 +82,7 @@ for (const kind of ['document', 'collection']) {
     binding.value = changed
     assert.deepEqual(state.value, changed, 'updates flow without another read')
     binding.value = kind === 'document' ? undefined : []
-    assert.equal(state.outcome.value, kind === 'document' ? 'missing' : 'empty')
+    assert.equal(state.outcome.value, kind === 'document' ? 'empty' : 'empty')
     state.stop()
     assert.equal(state.outcome.value, 'idle')
   })
@@ -133,18 +146,27 @@ for (const kind of ['document', 'collection']) {
 
 test('User directory cannot turn a failed collection into a self-only result', () => {
   const self = { id: 'self', handle: 'me' }
-  const source = { users: ref([]), pending: ref(false), error: ref(null), outcome: ref('ready') }
-  const useUserDirectory = load('../runtime/user/composables/directory/useUserDirectory.ts', 'useUserDirectory', {
-    computed,
-    useFireUXConfig: () => ({ appId: 'app', isTenant: false }),
-    useUserCollection: () => source,
-    isUserDirectoryEligible: () => true,
-    useUserSession: () => ({
-      user: ref(self),
-      appUser: ref(null),
-      appOutcome: ref('missing'),
-    }),
-  })
+  const source = {
+    users: ref([]),
+    pending: ref(false),
+    error: ref(null),
+    outcome: ref('ready'),
+  }
+  const useUserDirectory = load(
+    '../runtime/user/composables/directory/useUserDirectory.ts',
+    'useUserDirectory',
+    {
+      computed,
+      useFireUXConfig: () => ({ appId: 'app', isTenant: false }),
+      useUserCollection: () => source,
+      isUserDirectoryEligible: () => true,
+      useUserSession: () => ({
+        user: ref(self),
+        appUser: ref(null),
+        appOutcome: ref('empty'),
+      }),
+    }
+  )
   const state = useUserDirectory()
   assert.deepEqual(state.users.value, [self])
   source.error.value = new Error('Denied')
@@ -175,6 +197,7 @@ test('live collection pages stay bounded and reconcile changes across the loaded
       unref,
       watch,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       useFirestoreResolver: () => () => 'db',
       collection: (db, path) => ({ db, path }),
       fsq: (source, ...constraints) => ({

@@ -23,7 +23,7 @@ export function useKitchenFulfilment(
     canWrite: computed(
       () =>
         identity.canWrite.value &&
-        ['ready', 'missing'].includes(source.outcome.value)
+        ['ready', 'empty'].includes(source.outcome.value)
     ),
   }
 }

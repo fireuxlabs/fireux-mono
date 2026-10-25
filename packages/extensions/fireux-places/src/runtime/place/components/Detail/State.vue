@@ -25,7 +25,7 @@
     v-else-if="!hasPlace"
     entity="place"
     kind="document"
-    state="missing"
+    state="empty"
     title="Place not found"
     description="We couldn’t find the place you’re looking for. It may have been removed or the link is incorrect."
   >
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'PlaceDetailState' })
 defineProps<{
-  outcome: 'idle' | 'pending' | 'error' | 'missing' | 'ready'
+  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
   hasPlace: boolean
 }>()
 const emit = defineEmits<{ refresh: [] }>()

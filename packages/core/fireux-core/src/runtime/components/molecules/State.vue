@@ -18,21 +18,31 @@
       v-if="outcome === 'error' && error"
       :message="String(error)"
     />
+    <UButton
+      v-if="outcome === 'error' && retryable"
+      label="Try again"
+      variant="soft"
+      color="neutral"
+      @click="$emit('retry')"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
+import type { ReadOutcome } from '../../utils/read-outcome'
 
 const props = withDefaults(
   defineProps<{
     outcome: ReadOutcome
     entity?: string
     error?: unknown
+    retryable?: boolean
   }>(),
   { entity: 'content' }
 )
+
+defineEmits<{ retry: [] }>()
 
 const message = computed(() => {
   const entity = props.entity.trim() || 'content'
@@ -43,8 +53,6 @@ const message = computed(() => {
       return `Unable to load ${entity}.`
     case 'empty':
       return `No ${entity} yet.`
-    case 'missing':
-      return `${entity.charAt(0).toUpperCase() + entity.slice(1)} not found.`
     default:
       return ''
   }

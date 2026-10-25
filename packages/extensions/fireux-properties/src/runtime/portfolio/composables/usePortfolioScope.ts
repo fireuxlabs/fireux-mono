@@ -73,7 +73,7 @@ export function usePortfolioScope(
         : !requested.value
           ? 'idle'
           : !readId.value
-            ? 'missing'
+            ? 'empty'
             : source.outcome.value
     ),
   }

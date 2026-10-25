@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -5,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import { test } from 'node:test'
 import { computed, effectScope, reactive, ref, toValue, watch } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 function load(file, name, dependencies = {}) {
   const source = readFileSync(new URL(file, import.meta.url), 'utf8')
@@ -316,6 +317,7 @@ test('Portfolio detail hides Nuxt retained data during refresh, route changes, i
     {
       computed,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       useLiveAsyncData: (nextKey, nextHandler, nextOptions) => {
         calls++
         key = nextKey
@@ -349,7 +351,7 @@ test('Portfolio detail hides Nuxt retained data during refresh, route changes, i
   assert.equal(detail.portfolio.value.id, 'b')
   state.error.value = Object.assign(Error('unpublished'), { statusCode: 404 })
   state.pending.value = true
-  assert.equal(detail.outcome.value, 'missing')
+  assert.equal(detail.outcome.value, 'empty')
   assert.equal(detail.pending.value, false)
   assert.equal(detail.portfolio.value, null)
   state.error.value = Error('denied')
@@ -368,7 +370,7 @@ test('Portfolio detail hides Nuxt retained data during refresh, route changes, i
   state.pending.value = false
   state.error.value = undefined
   state.data.value = null
-  assert.equal(detail.outcome.value, 'missing')
+  assert.equal(detail.outcome.value, 'empty')
   assert.equal(detail.portfolio.value, null)
   state.data.value = { portfolio: { id: 'b' } }
   assert.equal(detail.outcome.value, 'ready')

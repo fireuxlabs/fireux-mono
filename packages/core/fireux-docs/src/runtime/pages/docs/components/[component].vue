@@ -36,23 +36,9 @@
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Preview</h2>
-        <FireCollectionPage
-          v-if="entry.slug === 'entity-collection-page'"
-          eyebrow="Discover"
-          title="Apps"
-          description="Find apps in this ecosystem, or start your app."
-          icon="i-lucide-app-window"
-          secondary-label="Your Apps"
-        >
-          <UCard>Primary page-owned collection child</UCard>
-
-          <template #secondary>
-            <UCard>Secondary page-owned action child</UCard>
-          </template>
-        </FireCollectionPage>
 
         <FireActionSurface
-          v-else-if="entry.slug === 'action-surface'"
+          v-if="entry.slug === 'action-surface'"
           action
           class="rounded-xl border border-default bg-elevated p-6"
         >
@@ -65,7 +51,7 @@
           class="grid gap-4 md:grid-cols-2"
         >
           <FireStateCard entity="apps" state="empty" />
-          <FireStateCard entity="app" kind="document" state="missing" />
+          <FireStateCard entity="app" kind="document" state="empty" />
         </div>
 
         <FireCreateShell

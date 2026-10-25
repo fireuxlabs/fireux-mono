@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Menu } from '../../../../../menu/models/menu.model'
-import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import {
   isServiceMenu,
   serviceMenuOptions,

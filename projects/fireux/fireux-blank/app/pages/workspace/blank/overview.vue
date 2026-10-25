@@ -1,10 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: adopt route-level workspace metadata. -->
 <template>
-  <WorkspaceHero
-    compact
-    title="Blank Overview"
-    description="Blank workspace overview."
-  />
+  <UPageHeader title="Blank Overview" description="Blank workspace overview." />
   <WorkspaceBlankSelector />
   <WorkspaceAI compact aria-label="Blank Overview AI"
     ><UAlert title="Overview AI is not connected yet" color="neutral" />

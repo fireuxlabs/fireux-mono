@@ -9,7 +9,7 @@ import type { Ref } from 'vue'
 
 export function useAppUserAccess(user: {
   appUser: Ref<AppUserWithId | null | undefined>
-  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
 }) {
   const appAccess = computed(() =>
     resolveAppUserAccess(

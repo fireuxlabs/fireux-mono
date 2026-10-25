@@ -27,7 +27,7 @@ test('loading and failed accounts never appear to be new empty workspaces', () =
 test('retained memberships with missing documents cannot open the empty onboarding view', () => {
   assert.equal(
     workspaceLandingState({ ...empty, associationCount: 2 }),
-    'missing'
+    'empty'
   )
 })
 test('one and multiple records require a resolved selection before showing management', () => {

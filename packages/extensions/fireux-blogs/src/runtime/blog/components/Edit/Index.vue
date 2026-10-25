@@ -8,7 +8,7 @@
     <FireCopyError message="The post could not be loaded." />
   </div>
   <UAlert
-    v-else-if="outcome === 'missing' || (outcome === 'ready' && !post)"
+    v-else-if="outcome === 'empty' || (outcome === 'ready' && !post)"
     title="Post not found"
     color="warning"
   />

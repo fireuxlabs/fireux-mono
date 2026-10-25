@@ -77,7 +77,7 @@
       entity="Kitchen service hours"
       kind="document"
       :loading="placeOutcome === 'pending' || placeOutcome === 'idle'"
-      :state="placeOutcome === 'error' ? 'error' : 'missing'"
+      :state="placeOutcome === 'error' ? 'error' : 'empty'"
     />
     <FireDiagnosticsDebugPanel
       v-bind="debug"

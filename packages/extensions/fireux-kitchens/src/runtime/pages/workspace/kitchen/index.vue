@@ -9,7 +9,7 @@
     <div v-if="fireux.isTenant" class="shrink-0 rounded-lg bg-white p-2">
       <AppBrandLogo size="small" />
     </div>
-    <WorkspaceHero compact :title="workspaceTitle" />
+    <UPageHeader :title="workspaceTitle" />
   </div>
   <WorkspaceKitchenHomeAI
     v-if="!fireux.isTenant || ready"

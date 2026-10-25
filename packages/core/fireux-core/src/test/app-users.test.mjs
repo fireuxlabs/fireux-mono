@@ -1,5 +1,6 @@
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -31,6 +32,7 @@ test('App memberships retain missing identities and hydrate User data without fl
   })
   const dependencies = {
     resolveReadOutcome,
+    resolveHttpDocumentOutcome,
     computed,
     where: (field, operator, value) => ({ field, operator, value }),
     useFireUXConfig: () => ({ appId: 'example' }),
@@ -93,6 +95,7 @@ test('one membership uses one exact read and follows viewer authority and select
     reads = 0
   const dependencies = {
     resolveReadOutcome,
+    resolveHttpDocumentOutcome,
     computed,
     ref,
     unref,
@@ -114,7 +117,7 @@ test('one membership uses one exact read and follows viewer authority and select
           id.value ? (rows.value[id.value] ?? null) : undefined
         ),
         outcome: computed(() =>
-          !id.value ? 'idle' : rows.value[id.value] ? 'ready' : 'missing'
+          !id.value ? 'idle' : rows.value[id.value] ? 'ready' : 'empty'
         ),
       }
     },
@@ -160,6 +163,7 @@ test('administrators beyond the member page are still read and hydrated', () => 
   let hydrationIds
   const dependencies = {
     resolveReadOutcome,
+    resolveHttpDocumentOutcome,
     computed,
     where: (field, operator, values) => ({ field, operator, values }),
     useFireUXConfig: () => ({ appId: 'example' }),

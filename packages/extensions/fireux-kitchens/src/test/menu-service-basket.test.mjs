@@ -92,7 +92,7 @@ test('options replace the base price and selected extras add once, without modif
     () =>
       policy.serviceBasketLine(
         item,
-        choices({ optionId: 'large', extraIds: ['missing'] })
+        choices({ optionId: 'large', extraIds: ['empty'] })
       ),
     /extra/
   )
@@ -497,7 +497,7 @@ test('failed updates leave both original and matching selections intact', () => 
   const before = JSON.stringify(basket.lines.value)
   assert.throws(() => basket.update(key, item, choices()), /99/)
   assert.throws(
-    () => basket.update(key, item, choices({ extraIds: ['missing'] })),
+    () => basket.update(key, item, choices({ extraIds: ['empty'] })),
     /extra/
   )
   ready.value = false

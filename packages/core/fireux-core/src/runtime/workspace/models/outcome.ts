@@ -1,14 +1,8 @@
-export type WorkspaceOutcome =
-  | 'idle'
-  | 'pending'
-  | 'error'
-  | 'empty'
-  | 'missing'
-  | 'ready'
+export type WorkspaceOutcome = 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 export type WorkspaceTargetOutcome = WorkspaceOutcome
 export type WorkspaceEntityOutcome = WorkspaceOutcome
 
-/** Empty means a settled account with no associations, never an unresolved selection. */
+/** Empty means no content; association counts remain separate domain facts. */
 export function workspaceLandingState(input: {
   outcome: WorkspaceOutcome
   accountPending: boolean
@@ -24,6 +18,6 @@ export function workspaceLandingState(input: {
     input.outcome === 'idle'
   )
     return 'pending'
-  if (!input.recordCount) return input.associationCount ? 'missing' : 'empty'
+  if (!input.recordCount) return 'empty'
   return input.selectedId ? 'ready' : 'pending'
 }

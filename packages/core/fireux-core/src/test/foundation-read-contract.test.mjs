@@ -73,7 +73,7 @@ for (const [name, owner, database, collection] of [
     assert.equal(data.value, undefined)
     assert.equal(result.outcome.value, 'pending')
     source.pending.value = false
-    source.outcome.value = 'missing'
+    source.outcome.value = 'empty'
     assert.equal(data.value, null)
     if (name === 'App') assert.equal(result.exists.value, false)
     source.value = { id: 'first', name: 'Example' }
@@ -83,7 +83,7 @@ for (const [name, owner, database, collection] of [
       assert.equal(result.exists.value, true)
       source.value = { id: 'first' }
       assert.equal(data.value, null)
-      assert.equal(result.outcome.value, 'missing')
+      assert.equal(result.outcome.value, 'empty')
       assert.equal(
         result.exists.value,
         true,

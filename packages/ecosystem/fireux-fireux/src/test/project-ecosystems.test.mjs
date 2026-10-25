@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -14,7 +15,7 @@ function load(path, result, deps) {
   )(...Object.values(deps))
 }
 const resolveReadOutcome = load(
-  '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts',
+  '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts',
   'resolveReadOutcome',
   {}
 )
@@ -31,6 +32,7 @@ function harness() {
       computed,
       toValue,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       useAuth: () => ({ currentUser: user }),
       useLiveAsyncData: (k, fn, options) => {
         key = k

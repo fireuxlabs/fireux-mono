@@ -15,7 +15,7 @@ import { usePortfolioWorkspace } from '../../../../../../../fireux-properties/sr
 import { computed } from 'vue'
 import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
 import { usePortfolioScope } from 'fireux-properties/runtime/portfolio/composables/usePortfolioScope'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { usePortfolioDocuments } from '../../../composables/documents/usePortfolioDocuments'
 import { usePortfolioDocumentLinks } from '../../../composables/documents/usePortfolioDocumentLinks'
 const portfolio = usePortfolioScope(usePortfolioWorkspace().id)
@@ -25,12 +25,11 @@ const outcome = computed(() =>
   portfolio.targetOutcome.value !== 'ready'
     ? portfolio.targetOutcome.value
     : resolveReadOutcome({
-        active: portfolio.canRead.value,
+        enabled: portfolio.canRead.value,
         pending:
           documents.outcome.value === 'pending' ||
           links.outcome.value === 'pending',
-        error: documents.error.value || links.error.value,
-        kind: 'collection',
+        failed: Boolean(documents.error.value || links.error.value),
         present: documents.count.value > 0,
       })
 )

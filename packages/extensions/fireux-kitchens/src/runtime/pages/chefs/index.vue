@@ -1,18 +1,12 @@
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-chef-hat"
-    secondary-label="For chefs"
-  >
-    <ChefDirectory />
-
-    <template #secondary>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <ChefDirectory />
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
       <ChefCurrent />
-    </template>
-  </FireCollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

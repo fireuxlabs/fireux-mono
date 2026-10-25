@@ -1,29 +1,19 @@
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-box"
-    secondary-label="Product tools"
-  >
-    <FireStateCard
-      v-if="productCollection.outcome === 'pending'"
-      entity="Product"
-      kind="collection"
-      loading
-    />
-    <FireStateCard
-      v-else-if="productCollection.outcome === 'error'"
-      entity="Product"
-      kind="collection"
-      state="error"
-    />
-    <ProductCollection v-else :products="productCollection.products" />
-
-    <template #secondary>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <FireState
+        :outcome="productCollection.outcome"
+        entity="products"
+        :error="productCollection.error"
+      />
+      <ProductCollection
+        v-if="productCollection.outcome === 'ready'"
+        :products="productCollection.products"
+      />
       <ProductDirectoryActions />
-    </template>
-  </FireCollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

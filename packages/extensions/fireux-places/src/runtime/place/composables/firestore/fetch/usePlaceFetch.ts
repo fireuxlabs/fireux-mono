@@ -16,7 +16,7 @@ import { usePlaceDetailState } from '../../usePlaceDetailState'
 
 type PlaceLocatorInput = string | Ref<string | null | undefined>
 type PlaceFetchFunction = (id: string) => Ref<Place | undefined>
-type PlaceReadOutcome = 'idle' | 'pending' | 'error' | 'missing' | 'ready'
+type PlaceReadOutcome = 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 type PlaceFetchFactoryReturn = { place: PlaceFetchFunction }
 type PlaceFetchDetailReturn = {
   place: ComputedRef<Place | null>
@@ -24,7 +24,7 @@ type PlaceFetchDetailReturn = {
   error: Ref<unknown>
   outcome: ComputedRef<PlaceReadOutcome>
   statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
+  empty: ComputedRef<boolean>
   failed: ComputedRef<boolean>
   refresh: () => Promise<void>
   ready: Promise<void>
@@ -108,7 +108,7 @@ export function usePlaceFetch(
   )
   const pending = computed(() => state.pending.value)
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
+  const empty = computed(
     () =>
       statusCode.value === 404 ||
       (!state.pending.value && !state.error.value && !place.value)
@@ -120,7 +120,7 @@ export function usePlaceFetch(
     if (!locator.value) return 'idle'
     if (state.pending.value) return 'pending'
     if (failed.value) return 'error'
-    return missing.value ? 'missing' : 'ready'
+    return empty.value ? 'empty' : 'ready'
   })
 
   return {
@@ -129,7 +129,7 @@ export function usePlaceFetch(
     error: state.error as Ref<unknown>,
     outcome,
     statusCode,
-    missing,
+    empty,
     failed,
     refresh: async () => {
       await state.refresh()

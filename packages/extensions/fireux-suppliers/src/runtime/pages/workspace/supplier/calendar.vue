@@ -1,6 +1,5 @@
 <template>
-  <WorkspaceHero
-    compact
+  <UPageHeader
     title="Supplier Calendar"
     description="Explore dates and scheduled work."
   />

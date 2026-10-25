@@ -26,20 +26,17 @@
         @retry="refresh"
       />
       <FireStateCard
-        v-else-if="outcome === 'missing'"
+        v-else-if="outcome === 'empty'"
         entity="company"
         state="empty"
         title="Company not found"
         description="This company does not exist or is no longer available."
       />
       <div v-else class="space-y-4">
-        <CompanyDetailProfile
-          v-if="companyProfile"
-          :model="companyProfile"
-        />
+        <CompanyDetailProfile v-if="companyProfile" :model="companyProfile" />
 
-<FireDiagnosticsDebugPanel
-  object-origin="fetched"
+        <FireDiagnosticsDebugPanel
+          object-origin="fetched"
           launcher
           include-route
           title="Company"
@@ -71,19 +68,19 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { company, place, ready, outcome, missing, failed, statusCode, refresh } =
+const { company, place, ready, outcome, empty, failed, statusCode, refresh } =
   useCompanyDetail(docId)
 
 await ready
-if (import.meta.server && missing.value) {
+if (import.meta.server && empty.value) {
   setResponseStatus(404)
 } else if (import.meta.server && failed.value) {
   setResponseStatus(statusCode.value || 503)
 }
 
 const pageTitle = computed(() => place.value?.name || 'Company')
-const pageDescription = computed(() =>
-  place.value?.short_address || 'Review the company profile.'
+const pageDescription = computed(
+  () => place.value?.short_address || 'Review the company profile.'
 )
 
 const { profile } = useCompanyInterface()

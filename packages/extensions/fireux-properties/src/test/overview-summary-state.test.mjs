@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -155,7 +156,7 @@ function setupScript(source, dependencies, names) {
   )(...Object.values(dependencies))
 }
 const readOutcomeSource = read(
-  '../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+  '../core/fireux-core/src/runtime/utils/read-outcome.ts'
 )
 const resolveReadOutcome = compileFunction(
   `${stripTypeScriptTypes(readOutcomeSource.replace(/^export /gm, ''))}; return resolveReadOutcome`
@@ -185,6 +186,7 @@ const portfolioSummaries = [
         {
           computed: Vue.computed,
           resolveReadOutcome,
+          resolveHttpDocumentOutcome,
           useActivePortfolio: () => ({
             targetOutcome: Vue.ref(outcome === 'idle' ? 'idle' : 'ready'),
             canRead: Vue.ref(outcome !== 'idle'),
@@ -254,6 +256,7 @@ test('An empty Document vault keeps its independent links in the Overview', asyn
     {
       computed: Vue.computed,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       useActivePortfolio: () => ({
         targetOutcome: Vue.ref('ready'),
         canRead: Vue.ref(true),

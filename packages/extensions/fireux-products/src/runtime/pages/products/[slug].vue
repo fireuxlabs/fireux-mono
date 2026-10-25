@@ -49,14 +49,14 @@ const {
   defaultPrice,
   pending,
   failed,
-  missing,
+  empty,
   statusCode,
   ready,
 } = useProductDetail(slug)
 await ready
 
 if (import.meta.server) {
-  if (missing.value) setResponseStatus(404)
+  if (empty.value) setResponseStatus(404)
   else if (failed.value)
     setResponseStatus(statusCode.value >= 500 ? statusCode.value : 503)
 }

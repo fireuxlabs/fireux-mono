@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -21,21 +22,31 @@ test('App detail rejects previous scope data and distinguishes disappearance fro
   )
   const useAppDetail = compileFunction(`${source}; return useAppDetail`, [
     'resolveReadOutcome',
+    'resolveHttpDocumentOutcome',
     'computed',
     'toValue',
     'useLiveAsyncData',
-  ])(resolveReadOutcome, computed, toValue, (_key, handler) => {
-    run = async () => {
-      data.value = await handler(async () => ({ ok: true, item: { id: 'a' } }))
+  ])(
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+    computed,
+    toValue,
+    (_key, handler) => {
+      run = async () => {
+        data.value = await handler(async () => ({
+          ok: true,
+          item: { id: 'a' },
+        }))
+      }
+      return {
+        data,
+        error,
+        pending,
+        refresh: () => run(),
+        then: (fn) => Promise.resolve().then(fn),
+      }
     }
-    return {
-      data,
-      error,
-      pending,
-      refresh: () => run(),
-      then: (fn) => Promise.resolve().then(fn),
-    }
-  })
+  )
   const endpoint = ref('/api/apps/a')
   const state = useAppDetail(endpoint)
   await run()
@@ -43,7 +54,7 @@ test('App detail rejects previous scope data and distinguishes disappearance fro
   endpoint.value = '/api/apps/b'
   assert.equal(state.app.value, null)
   error.value = { statusCode: 404 }
-  assert.equal(state.outcome.value, 'missing')
+  assert.equal(state.outcome.value, 'empty')
   error.value = { statusCode: 503 }
   assert.equal(state.outcome.value, 'error')
   assert.equal(state.app.value, null)

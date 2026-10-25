@@ -24,10 +24,7 @@ function load(path, names, deps = {}) {
     Object.keys(deps)
   )(...Object.values(deps))
 }
-const outcome = load(
-  'composables/fireux/firestore/operations/read-outcome.ts',
-  'resolveReadOutcome'
-)
+const outcome = load('utils/read-outcome.ts', 'resolveReadOutcome')
 const normalization = load('app/utils/readApp.ts', 'readAppDocument')
 const appData = (patch = {}) => ({
   id: 'runtime',
@@ -192,7 +189,7 @@ test('authorized missing and failed reads remain distinct and only real missing 
   const f = fixture({ user: { uid: 'user' }, settled: true })
   await nextTick()
   f.settle(undefined)
-  assert.equal(f.app.outcome.value, 'missing')
+  assert.equal(f.app.outcome.value, 'empty')
   assert.equal(f.app.exists.value, false)
   assert.equal(f.policy.canSelfJoin.value, false)
   assert.equal(f.policy.pending.value, false)
@@ -211,7 +208,7 @@ test('raw stored join policy survives invalid App presentation and does not fabr
   await nextTick()
   f.settle(appData({ name: null, media: { logo_url: null } }))
   assert.equal(f.app.app.value, null)
-  assert.equal(f.app.outcome.value, 'missing')
+  assert.equal(f.app.outcome.value, 'empty')
   assert.equal(
     f.app.exists.value,
     true,

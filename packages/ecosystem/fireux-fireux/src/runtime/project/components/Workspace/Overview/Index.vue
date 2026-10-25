@@ -8,7 +8,7 @@
   />
   <FireStateCard
     v-else-if="!data"
-    state="missing"
+    state="empty"
     title="No Project selected"
     description="Choose a workspace to see its overview."
   />
@@ -37,10 +37,10 @@
     </div>
     <OverviewCapabilities :publication="publication" />
     <slot />
-    <template v-if="missing.length" #attention>
+    <template v-if="incompleteFields.length" #attention>
       <p class="text-sm text-muted">Complete your Project identity.</p>
       <UButton
-        v-for="field in missing"
+        v-for="field in incompleteFields"
         :key="field"
         to="/workspace/project/identity"
         :label="`Add ${field}`"
@@ -70,7 +70,7 @@ const imageUrl = computed(() =>
     ? props.publication.imageUrl
     : data.value?.identity.image_url || ''
 )
-const missing = computed(() =>
+const incompleteFields = computed(() =>
   [
     !data.value?.identity.name && 'a name',
     !props.publication && !data.value?.identity.description && 'a description',

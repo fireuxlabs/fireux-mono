@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -83,6 +84,7 @@ function finance() {
         watch,
         onScopeDispose,
         resolveReadOutcome,
+        resolveHttpDocumentOutcome,
         useAuth: () => ({ currentUser }),
         useAppSession: () => session,
         useFireUXConfig: () => config,
@@ -184,7 +186,7 @@ test('Sales exposes pending, error, empty, ready and unavailable separately and 
   x.workspace.outcome.value = 'pending'
   assert.equal(x.state.report.value, null)
   assert.equal(x.state.canLoad.value, false)
-  for (const outcome of ['error', 'missing', 'idle']) {
+  for (const outcome of ['error', 'empty', 'idle']) {
     x.workspace.outcome.value = outcome
     assert.equal(x.state.outcome.value, outcome)
     assert.equal(x.state.report.value, null)
@@ -336,7 +338,7 @@ test('Both Sales surfaces hide metrics, charts, transactions and empty claims un
       ['pending', 'Loading sales'],
       ['error', 'Sales could not be loaded'],
       ['idle', 'Select an available Kitchen'],
-      ['missing', 'Select an available Kitchen'],
+      ['empty', 'Select an available Kitchen'],
     ]) {
       const html = await render(path, {
         outcome,

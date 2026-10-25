@@ -14,12 +14,7 @@
         kind="document"
         state="error"
       />
-      <FireStateCard
-        v-else
-        entity="User"
-        kind="document"
-        state="missing"
-      />
+      <FireStateCard v-else entity="User" kind="document" state="empty" />
       <FireDiagnosticsDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the Misebox detail route."

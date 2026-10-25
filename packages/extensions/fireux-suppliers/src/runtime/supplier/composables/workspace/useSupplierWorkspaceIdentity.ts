@@ -48,7 +48,7 @@ export function useSupplierWorkspaceIdentity() {
     workspace.outcome.value === 'ready'
       ? companyId.value
         ? linkedPlace.outcome.value
-        : 'missing'
+        : 'empty'
       : workspace.outcome.value
   )
   const state = useWorkspaceIdentity({

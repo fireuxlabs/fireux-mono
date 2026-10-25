@@ -1,18 +1,12 @@
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-briefcase-business"
-    secondary-label="For professionals"
-  >
-    <ProfessionalDirectory />
-
-    <template #secondary>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <ProfessionalDirectory />
       <!-- Profile CTA family: Professional is a profile layer attached to a User. -->
       <ProfessionalCurrent />
-    </template>
-  </FireCollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

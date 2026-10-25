@@ -35,7 +35,7 @@
       </UPageCard>
 
       <UPageCard
-        v-else-if="missing"
+        v-else-if="empty"
         :title="`${entityLabel} not found`"
         :description="`This ${entityLabel.toLowerCase()} profile does not exist.`"
         :icon="icon"
@@ -64,7 +64,7 @@ defineProps<{
   entityLabel: string
   failed: boolean
   icon: string
-  missing: boolean
+  empty: boolean
   pending: boolean
   pluralLabel: string
 }>()

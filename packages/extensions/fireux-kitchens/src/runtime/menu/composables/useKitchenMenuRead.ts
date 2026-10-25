@@ -1,7 +1,7 @@
 import { computed, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 import { limit, where } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { resolveKitchenChildCollectionPath } from '../../kitchen/utils/kitchen-collection-path'
 import { MenuStorage, type Menu } from '../models/menu-storage.model'
 
@@ -42,10 +42,9 @@ export function useKitchenMenuRead(
   )
   const outcome = computed(() =>
     resolveReadOutcome({
-      active: Boolean(collectionPath.value),
-      kind: 'document',
+      enabled: Boolean(collectionPath.value),
       pending: source.pending.value,
-      error: error.value,
+      failed: Boolean(error.value),
       present: source.value?.[0]?.slug === menuSlug.value,
     })
   )

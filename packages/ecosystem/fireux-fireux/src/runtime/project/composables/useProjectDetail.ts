@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
+
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublicSummary } from '../models/project.model'
@@ -16,11 +17,10 @@ export function useProjectDetail(id: MaybeRefOrGetter<string>) {
   )
 
   const outcome = computed(() =>
-    resolveReadOutcome({
-      active: Boolean(projectId.value),
+    resolveHttpDocumentOutcome({
+      enabled: Boolean(projectId.value),
       pending: state.pending.value,
       error: state.error.value,
-      kind: 'document',
       present: state.data.value?.item?.id === projectId.value,
     })
   )

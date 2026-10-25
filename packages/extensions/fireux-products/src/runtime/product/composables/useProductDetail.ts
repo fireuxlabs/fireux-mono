@@ -3,7 +3,7 @@ import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { Product, ProductPrice, ProductRead } from '../utils/product.ts'
 
-export type ProductDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+export type ProductDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
 
 type ProductDetailControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
@@ -16,7 +16,7 @@ export type UseProductDetailReturn = ProductDetailControls & {
   defaultPrice: ComputedRef<ProductPrice | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
+  empty: ComputedRef<boolean>
   failed: ComputedRef<boolean>
   outcome: ComputedRef<ProductDetailOutcome>
 }
@@ -54,7 +54,7 @@ export function useProductDetail(
   const prices = computed(() => state.data.value?.prices ?? [])
   const defaultPrice = computed(() => state.data.value?.defaultPrice ?? null)
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
+  const empty = computed(
     () =>
       statusCode.value === 404 ||
       (!state.pending.value && !state.error.value && !product.value)
@@ -65,7 +65,7 @@ export function useProductDetail(
   const outcome = computed<ProductDetailOutcome>(() => {
     if (state.pending.value) return 'pending'
     if (failed.value) return 'error'
-    if (missing.value) return 'missing'
+    if (empty.value) return 'empty'
     return 'ready'
   })
 
@@ -78,7 +78,7 @@ export function useProductDetail(
     error: state.error,
     refresh: state.refresh,
     statusCode,
-    missing,
+    empty,
     failed,
     outcome,
   }

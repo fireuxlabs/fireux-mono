@@ -416,20 +416,29 @@ function mountForm(h, recipe = null) {
     setup: () => () =>
       vue.h(Form, { ...props, onSaved: (id) => saved.push(id) }),
   })
-  for (const section of ['Identity', 'Ingredients', 'PrepItems', 'Instructions'])
+  for (const section of [
+    'Identity',
+    'Ingredients',
+    'PrepItems',
+    'Instructions',
+  ])
     app.component(
       `KitchenPrepAndProductionRecipesForm${section}`,
-      compileComponent(new URL(
-        `../../runtime/kitchen/components/PrepAndProduction/Recipes/Form/${section}.vue`,
-        import.meta.url
-      ))
+      compileComponent(
+        new URL(
+          `../../runtime/kitchen/components/PrepAndProduction/Recipes/Form/${section}.vue`,
+          import.meta.url
+        )
+      )
     )
   app.component(
     'KitchenPrepAndProductionPrepItemsCreate',
-    compileComponent(new URL(
-      '../../runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue',
-      import.meta.url
-    ))
+    compileComponent(
+      new URL(
+        '../../runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue',
+        import.meta.url
+      )
+    )
   )
   const warnings = []
   app.config.warnHandler = (message) => warnings.push(message)
@@ -705,7 +714,7 @@ test('Recipe and Prep commands reject unsettled membership before starting prepa
       if (blocked === 'pending') member.appPending.value = true
       if (blocked === 'error')
         member.appError.value = new Error('Member read failed')
-      if (blocked === 'outcome') member.appOutcome.value = 'missing'
+      if (blocked === 'outcome') member.appOutcome.value = 'empty'
       if (blocked === 'access') access.outcome.value = 'pending'
       const api = h.scope.run(() =>
         kind === 'recipe'

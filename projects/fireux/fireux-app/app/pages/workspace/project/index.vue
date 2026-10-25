@@ -8,7 +8,7 @@
     <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
       ><WorkspaceProjectSelector :publication="appContext.publication.value" />
     </UDashboardToolbar> </ClientOnly
-  ><WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+  ><UPageHeader :title="intro.title" :description="intro.purpose" />
   <ClientOnly>
     <WorkspaceGuestWelcome />
     <WorkspaceProjectHomeAI

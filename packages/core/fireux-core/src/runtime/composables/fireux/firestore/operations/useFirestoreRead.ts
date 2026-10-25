@@ -1,4 +1,7 @@
-import { resolveReadOutcome } from './read-outcome'
+import {
+  resolveReadOutcome,
+  type ReadOutcome,
+} from '../../../../utils/read-outcome'
 import {
   collection,
   doc,
@@ -51,13 +54,7 @@ export type FirestoreFetchDocOptions = {
   ssrKey?: string
 }
 
-export type FirestoreReadOutcome =
-  | 'idle'
-  | 'pending'
-  | 'error'
-  | 'empty'
-  | 'missing'
-  | 'ready'
+export type FirestoreReadOutcome = ReadOutcome
 
 export type FirestoreReadRef<T> = Ref<T | undefined> & {
   readonly data: Ref<T | undefined>
@@ -72,7 +69,7 @@ export type FirestoreDocumentReadRef<T> = Omit<
   FirestoreReadRef<T>,
   'outcome'
 > & {
-  readonly outcome: ComputedRef<Exclude<FirestoreReadOutcome, 'empty'>>
+  readonly outcome: ComputedRef<FirestoreReadOutcome>
 }
 
 function enhanceFirestoreRead<T>(
@@ -98,19 +95,19 @@ function enhanceFirestoreRead<T>(
       )
     : undefined
   const current = computed(() => unref(options.source) === boundSource.value)
-  const outcome = computed<FirestoreReadOutcome>(() =>
-    resolveReadOutcome({
-      active: Boolean(unref(options.active)),
-      current: current.value,
-      error: binding.error.value,
+  const outcome = computed<FirestoreReadOutcome>(() => {
+    if (!unref(options.active)) return 'idle'
+    if (!current.value) return 'pending'
+    return resolveReadOutcome({
+      enabled: Boolean(unref(options.active)),
+      failed: Boolean(binding.error.value),
       pending: binding.pending.value,
-      kind: options.kind,
       present:
         options.kind === 'collection'
           ? Array.isArray(binding.value) && binding.value.length > 0
           : binding.value != null,
     })
-  )
+  })
 
   // VueFire may retain its last value after failure or while changing sources.
   // Present one read contract without modifying its subscription or cache.

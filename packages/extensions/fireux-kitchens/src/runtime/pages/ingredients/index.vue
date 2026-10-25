@@ -1,36 +1,21 @@
 <!-- Ingredient creation stays in protected management; this route is the Directory. -->
 <template>
-  <FireCollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-carrot"
-  >
-    <FireStateCard
-      v-if="ingredientCollection.outcome === 'pending'"
-      entity="Ingredient"
-      kind="collection"
-      loading
-    />
-    <FireStateCard
-      v-else-if="ingredientCollection.outcome === 'error'"
-      entity="Ingredient"
-      kind="collection"
-      state="error"
-    >
-      <template #actions>
-        <UButton
-          label="Try again"
-          variant="soft"
-          @click="ingredientCollection.refresh()"
-        />
-      </template>
-    </FireStateCard>
-    <IngredientCollection
-      v-else
-      :ingredients="ingredientCollection.ingredients"
-    />
-  </FireCollectionPage>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageBody>
+      <FireState
+        :outcome="ingredientCollection.outcome"
+        entity="ingredients"
+        :error="ingredientCollection.error"
+        retryable
+        @retry="ingredientCollection.refresh()"
+      />
+      <IngredientCollection
+        v-if="ingredientCollection.outcome === 'ready'"
+        :ingredients="ingredientCollection.ingredients"
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

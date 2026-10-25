@@ -117,8 +117,13 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Index page notes
 
-- Root Entity Collection Page pages should use `XCollectionManager`.
-- `XCollectionManager` should fetch its bounded entity collection itself.
+- Root Entity Collection Pages visibly compose native `UPage`, an introduction,
+  and `UPageBody` with named State, Entity Collection, pagination and diagnostics.
+- One owning reader or page composable acquires the collection; the Collection
+  receives canonical records and owns presentation. Existing specialized
+  Directory/manager surfaces retain their inspected lifecycle until migrated.
+- Layouts own shared framing. Workspace uses Core's existing route outlet;
+  do not introduce a custom universal page shell.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
 - Workspace indexes render their domain `WorkspaceXIndex` as content inside the
   shared Core frame; group navigation uses `WorkspacePageLinks`.

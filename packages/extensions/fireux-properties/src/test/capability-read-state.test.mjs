@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -26,17 +27,16 @@ function load(path, deps, result) {
   )(...Object.values(deps))
 }
 const resolveReadOutcome = load(
-  '../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts',
+  '../core/fireux-core/src/runtime/utils/read-outcome.ts',
   {},
   'resolveReadOutcome'
 )
 const useFirestoreCollectionState = (options) => ({
   outcome: computed(() =>
     resolveReadOutcome({
-      active: unref(options.active),
+      enabled: unref(options.active),
       pending: unref(options.pending),
-      error: unref(options.error),
-      kind: 'collection',
+      failed: Boolean(unref(options.error)),
       present: unref(options.count) > 0,
     })
   ),
@@ -120,6 +120,7 @@ test('Supplier Catalogue waits for both collections and distinguishes either fai
       {
         computed,
         resolveReadOutcome,
+        resolveHttpDocumentOutcome,
         SupplierStorage: { collection: 'suppliers' },
         useSupplierWorkspace: () => workspace,
         useSupplierDetail: () => ({ place: ref({ name: 'A' }) }),
@@ -179,6 +180,7 @@ test('Supplier Ingredients preserves association failures as well as hydration f
       {
         computed,
         resolveReadOutcome,
+        resolveHttpDocumentOutcome,
         SupplierStorage: { collection: 'suppliers' },
         useSupplierWorkspace: () => workspace,
         useSupplierDetail: () => ({ place: ref({ name: 'A' }) }),
@@ -212,8 +214,8 @@ test('Supplier Ingredients preserves association failures as well as hydration f
   assert.equal(api.outcome.value, 'error')
   assert.equal(api.loadError.value.message, 'associations failed')
   assert.deepEqual(api.ingredientItems.value, [])
-  workspace.outcome.value = 'missing'
-  assert.equal(api.outcome.value, 'missing')
+  workspace.outcome.value = 'empty'
+  assert.equal(api.outcome.value, 'empty')
   scope.stop()
 })
 function deferred() {
@@ -268,6 +270,7 @@ function reservations() {
         ref,
         watch,
         resolveReadOutcome,
+        resolveHttpDocumentOutcome,
         useCommandScope: capture,
         useAuth: () => ({ currentUser }),
         useFireUXConfig: () => config,
@@ -336,8 +339,8 @@ test('Reservation reader retains truthful outcomes and rejects obsolete or misma
   x.source.data.value = { items: [], limit: 500, truncated: false }
   assert.equal(x.api.outcome.value, 'empty')
   x.property.canRead.value = false
-  x.property.targetOutcome.value = 'missing'
-  assert.equal(x.api.outcome.value, 'missing')
+  x.property.targetOutcome.value = 'empty'
+  assert.equal(x.api.outcome.value, 'empty')
   assert.deepEqual(x.api.collection.value, [])
   x.scope.stop()
 })

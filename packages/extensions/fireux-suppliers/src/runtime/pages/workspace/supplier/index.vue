@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <WorkspaceHero
+  <UPageHeader
     title="Build your Supplier Workspace"
     description="Manage catalogues, ingredients and supply operations."
   />

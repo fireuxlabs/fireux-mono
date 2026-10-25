@@ -120,13 +120,13 @@ const {
   place,
   ready,
   pending: loading,
-  missing,
+  empty,
   failed,
   statusCode,
 } = useCompanyDetail(companyId)
 
 await ready
-if (import.meta.server && missing.value) {
+if (import.meta.server && empty.value) {
   setResponseStatus(404)
 } else if (import.meta.server && failed.value) {
   setResponseStatus(statusCode.value || 503)

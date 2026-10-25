@@ -1,5 +1,6 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -18,7 +19,12 @@ import {
 } from 'vue'
 
 function load(path, bindings, result) {
-  bindings = { resolveReadOutcome, isFirestoreDocumentId, ...bindings }
+  bindings = {
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+    isFirestoreDocumentId,
+    ...bindings,
+  }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
     .replace(/^export /gm, '')
@@ -56,8 +62,17 @@ const { serverProjectAccessTarget } = load(
   '({ serverProjectAccessTarget })'
 )
 
-const readProjectDocument = load('../runtime/project/utils/readProject.ts', {}, 'readProjectDocument')
-const canonical = (id, name = 'Project') => ({id, identity:{name,description:'',image_url:'',status:'active'},created:{at:stamps},updated:{at:stamps}})
+const readProjectDocument = load(
+  '../runtime/project/utils/readProject.ts',
+  {},
+  'readProjectDocument'
+)
+const canonical = (id, name = 'Project') => ({
+  id,
+  identity: { name, description: '', image_url: '', status: 'active' },
+  created: { at: stamps },
+  updated: { at: stamps },
+})
 
 function liveHarness(loadDocs) {
   const session = {
@@ -237,7 +252,11 @@ function createHarness(access) {
         return run(transaction)
       },
       requireFirestoreDocumentId: (x) => x,
-      serverAuditStamp: ({by,appId}) => ({at:stamps,by,...(appId?{app_id:appId}:{})}),
+      serverAuditStamp: ({ by, appId }) => ({
+        at: stamps,
+        by,
+        ...(appId ? { app_id: appId } : {}),
+      }),
       resolveWorkspaceEntityCreationId: () => 'first',
       requireWorkspaceEntityMemberRole: ({ exists, role }) => {
         if (!exists || !['user', 'admin', 'dev'].includes(role))
@@ -267,9 +286,9 @@ function createHarness(access) {
 test('Project creation writes Project, Team, and lifetime-bound access together without mutating AppUser', async () => {
   const h = createHarness(undefined)
   await h.run()
-  const created=h.state.writes.find(x=>x.path==='projects/first').data
-  assert.equal(readProjectDocument(created,'first')?.identity.name,'Example')
-  assert.equal(Object.hasOwn(created,'name'),false)
+  const created = h.state.writes.find((x) => x.path === 'projects/first').data
+  assert.equal(readProjectDocument(created, 'first')?.identity.name, 'Example')
+  assert.equal(Object.hasOwn(created, 'name'), false)
   assert.ok(h.state.reads.includes('project_access/app/users/u'))
   assert.deepEqual(
     h.state.writes.map((x) => x.path),
@@ -320,11 +339,16 @@ test('Creation after rejoining replaces stale grants and preserves current grant
 
 test('Project server projection observes domain access and returns allowed ids even when roots are missing', async () => {
   const state = {
-    access: { ids: ['p', 'missing'], membership_created_at: stamps },
+    access: { ids: ['p', 'empty'], membership_created_at: stamps },
   }
   const reads = []
   const record = {
-    identity: {status: 'active', name: 'Project', description: '', image_url: ''},
+    identity: {
+      status: 'active',
+      name: 'Project',
+      description: '',
+      image_url: '',
+    },
     created: { at: stamps },
     updated: { at: stamps },
   }
@@ -373,7 +397,7 @@ test('Project server projection observes domain access and returns allowed ids e
     'readProjectIndex'
   )
   const initial = await read({})
-  assert.deepEqual(initial.project_ids, ['p', 'missing'])
+  assert.deepEqual(initial.project_ids, ['p', 'empty'])
   assert.deepEqual(
     initial.items.map((x) => x.id),
     ['p']

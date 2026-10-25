@@ -13,7 +13,7 @@ export const useProjectWorkspace = defineWorkspace(() => {
   const targets = useProjectCollection()
   const collectionOutcome = computed<WorkspaceTargetOutcome>(() =>
     targets.outcome.value === 'empty' && targets.projectIds.value.length
-      ? 'missing'
+      ? 'empty'
       : targets.outcome.value
   )
 
@@ -40,7 +40,7 @@ export const useProjectWorkspace = defineWorkspace(() => {
   const outcome = computed<WorkspaceTargetOutcome>(() => {
     if (access.outcome.value !== 'ready') return access.outcome.value
     if (!id.value) return 'idle'
-    if (!readId.value) return 'missing'
+    if (!readId.value) return 'empty'
     if (
       source.outcome.value === 'ready' &&
       source.data.value?.id !== readId.value

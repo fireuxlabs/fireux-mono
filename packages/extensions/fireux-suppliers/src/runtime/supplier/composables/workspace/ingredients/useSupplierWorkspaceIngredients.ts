@@ -1,4 +1,4 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed } from 'vue'
 import { SupplierStorage } from '../../../models/Supplier.model'
 import { useSupplierWorkspace } from '../useSupplierWorkspace'
@@ -58,12 +58,11 @@ export function useSupplierWorkspaceIngredients() {
     workspace.outcome.value !== 'ready'
       ? workspace.outcome.value
       : resolveReadOutcome({
-          active: supplierIngredientsEnabled.value,
+          enabled: supplierIngredientsEnabled.value,
           pending:
             associationOutcome.value === 'pending' ||
             ingredientRoots.pending.value,
-          error: loadError.value,
-          kind: 'collection',
+          failed: Boolean(loadError.value),
           present: supplierIngredients.value.length > 0,
         })
   )
@@ -81,7 +80,7 @@ export function useSupplierWorkspaceIngredients() {
             root?.name || (hydrationUnavailable ? '' : 'Missing Ingredient'),
           image_url: root?.image_url || '',
           category: root?.category || '',
-          root_status: root ? 'active' : hydrationUnavailable ? '' : 'missing',
+          root_status: root ? 'active' : hydrationUnavailable ? '' : 'empty',
           missing_root_ingredient: !hydrationUnavailable && !root,
           path: workspace.id.value
             ? `suppliers/${workspace.id.value}/ingredients/${ingredientId}`

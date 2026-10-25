@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -43,6 +44,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
               : present
                 ? 'ready'
                 : 'empty',
+      resolveHttpDocumentOutcome,
     },
     'useKitchenCollection'
   )
@@ -264,6 +266,7 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
       },
       resolveReadOutcome: ({ pending, error, present }) =>
         error ? 'error' : pending ? 'pending' : present ? 'ready' : 'empty',
+      resolveHttpDocumentOutcome,
     },
     'useKitchenCollection'
   )

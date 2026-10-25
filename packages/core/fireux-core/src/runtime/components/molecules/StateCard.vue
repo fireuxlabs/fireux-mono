@@ -59,7 +59,7 @@ const props = withDefaults(
   defineProps<{
     entity?: string
     kind?: 'document' | 'collection'
-    state?: 'loading' | 'empty' | 'missing' | 'error'
+    state?: 'loading' | 'empty' | 'error'
     surface?: 'card' | 'bare' | 'collection'
     title?: string
     description?: string
@@ -89,7 +89,7 @@ const isBanner = computed(() => props.layout === 'banner')
 const resolvedState = computed(() => {
   if (props.loading) return 'loading'
   if (props.state) return props.state
-  return props.kind === 'document' ? 'missing' : 'empty'
+  return 'empty'
 })
 const showSpinner = computed(() => resolvedState.value === 'loading')
 const hasDescriptionSlot = computed(() => Boolean(slots.description))
@@ -116,14 +116,16 @@ const resolvedTitle = computed(() => {
   const name = props.entity?.trim()
   if (!name) {
     if (resolvedState.value === 'error') return 'Unable to load content'
-    if (resolvedState.value === 'missing') return 'Item not found'
+    if (resolvedState.value === 'empty' && props.kind === 'document')
+      return 'Item not found'
     return 'Nothing here yet'
   }
 
   const pretty = capitalize(name)
   if (resolvedState.value === 'error')
     return `Unable to load ${name.toLowerCase()}`
-  if (resolvedState.value === 'missing') return `${pretty} not found`
+  if (resolvedState.value === 'empty' && props.kind === 'document')
+    return `${pretty} not found`
   return `No ${name.toLowerCase()} yet`
 })
 
@@ -132,7 +134,7 @@ const resolvedDescription = computed(() => {
   if (resolvedState.value === 'error') {
     return 'Something went wrong while loading this content.'
   }
-  if (resolvedState.value === 'missing') {
+  if (resolvedState.value === 'empty' && props.kind === 'document') {
     return 'The requested record is not available.'
   }
   return 'Once records are added, they will display here.'
@@ -148,7 +150,8 @@ const resolvedIcon = computed(() => {
   if (props.icon === null) return null
   if (props.icon) return props.icon
   if (resolvedState.value === 'error') return 'i-lucide-triangle-alert'
-  if (resolvedState.value === 'missing') return 'i-lucide-file-question'
+  if (resolvedState.value === 'empty' && props.kind === 'document')
+    return 'i-lucide-file-question'
   return 'i-lucide-search-x'
 })
 

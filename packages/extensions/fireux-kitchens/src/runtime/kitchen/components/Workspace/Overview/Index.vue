@@ -8,7 +8,7 @@
   />
   <FireStateCard
     v-else-if="!selectedKitchen"
-    state="missing"
+    state="empty"
     title="No kitchen selected"
     description="Choose a kitchen to see its overview."
   />

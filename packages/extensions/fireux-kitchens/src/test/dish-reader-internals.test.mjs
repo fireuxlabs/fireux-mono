@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import {
   dishCataloguePath,
   readDishCatalogueQuery,
@@ -29,7 +30,7 @@ import {
   watchEffect,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, result, deps) {
@@ -64,7 +65,7 @@ const { resolveKitchenChildCollectionBasePath } = load(
 const { useFirestoreCollectionState } = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
   '({ useFirestoreCollectionState })',
-  { computed, resolveReadOutcome, toValue }
+  { computed, resolveReadOutcome, resolveHttpDocumentOutcome, toValue }
 )
 const { useKitchenWorkspaceReadPage } = load(
   'kitchen/composables/workspace/useKitchenWorkspaceReadPage.ts',
@@ -74,7 +75,15 @@ const { useKitchenWorkspaceReadPage } = load(
 const enhanceFirestoreRead = load(
   '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
   'enhanceFirestoreRead',
-  { computed, ref, shallowRef, unref, watch, resolveReadOutcome }
+  {
+    computed,
+    ref,
+    shallowRef,
+    unref,
+    watch,
+    resolveReadOutcome,
+    resolveHttpDocumentOutcome,
+  }
 )
 function bindingFixture() {
   const scope = effectScope(),
@@ -193,7 +202,7 @@ test('Dish collection binds only exact ready Kitchen and clears retained rows im
   const f = workspaceFixture()
   assert.equal(f.path, 'kitchens/mine/dishes')
   assert.equal(f.state.dishes.value.length, 2)
-  for (const outcome of ['pending', 'error', 'missing', 'empty', 'idle']) {
+  for (const outcome of ['pending', 'error', 'empty', 'idle']) {
     f.workspace.outcome.value = outcome
     assert.equal(f.path, '')
     assert.deepEqual(f.state.dishes.value, [])
@@ -252,11 +261,14 @@ test('No selected Kitchen preserves pending or failed account/access outcomes be
     assert.equal(f.state.pending.value, parentOutcome === 'pending')
     assert.equal(f.path, '')
     assert.deepEqual(f.state.dishes.value, [])
-    const html = await render('kitchen/components/FoodAndDrink/Items/Index.vue', {
-      storageKitchenId: f.state.storageKitchenId,
-      outcome: f.state.outcome,
-      catalogue,
-    })
+    const html = await render(
+      'kitchen/components/FoodAndDrink/Items/Index.vue',
+      {
+        storageKitchenId: f.state.storageKitchenId,
+        outcome: f.state.outcome,
+        catalogue,
+      }
+    )
     assert.match(
       html,
       parentOutcome === 'error' ? /Kitchen unavailable/ : /Loading Kitchen/
@@ -334,7 +346,7 @@ test('Dish record route stays reactive, rejects wrong-kind records and preserves
   const record = use()
   assert.equal(record.dish.value.name, 'Soup')
   id.value = 'tea'
-  assert.equal(record.outcome.value, 'missing')
+  assert.equal(record.outcome.value, 'empty')
   assert.equal(record.dish.value, null)
   f.raw.pending.value = true
   assert.equal(record.outcome.value, 'pending')
@@ -500,7 +512,7 @@ test('actual Dish index distinguishes Kitchen loading, failure, missing and inac
   for (const [outcome, expected] of [
     ['pending', 'Loading Kitchen'],
     ['error', 'Kitchen unavailable'],
-    ['missing', 'Kitchen not found'],
+    ['empty', 'Kitchen not found'],
     ['idle', 'Select a kitchen'],
   ])
     assert.match(
@@ -551,12 +563,12 @@ test('actual Dish record error does not render not-found, old read header or edi
   )
   assert.match(html, /dish unavailable/)
   assert.doesNotMatch(html, /not found|Manage dish|Soup/)
-  const missing = await render(
+  const empty = await render(
     'kitchen/components/FoodAndDrink/Items/Detail/Index.vue',
-    recordView({ dish: null, outcome: 'missing' })
+    recordView({ dish: null, outcome: 'empty' })
   )
-  assert.match(missing, /dish not found/)
-  assert.doesNotMatch(missing, /Specification editor/)
+  assert.match(empty, /dish not found/)
+  assert.doesNotMatch(empty, /Specification editor/)
 })
 test('actual Dish owner retains mounted Spec through child refresh/failure and releases it on owner invalidation', async () => {
   let mounted = 0,
@@ -594,7 +606,9 @@ test('actual Dish owner retains mounted Spec through child refresh/failure and r
     warnings = [],
     app = renderer.createApp({
       setup: () => state,
-      render: template('kitchen/components/FoodAndDrink/Items/Detail/Index.vue'),
+      render: template(
+        'kitchen/components/FoodAndDrink/Items/Detail/Index.vue'
+      ),
     })
   app.config.warnHandler = (warning) => warnings.push(warning)
   components(app, {
@@ -688,12 +702,15 @@ test('actual Dish Preparation and Menu perspectives render failed linked reads w
   )
   assert.match(prep, /Prep items unavailable/)
   assert.doesNotMatch(prep, /No mise en place linked|Loading preparations/)
-  const menus = await render('kitchen/components/FoodAndDrink/Items/Menus.vue', {
-    error: new Error('Denied'),
-    pending: true,
-    activeMenus: [],
-    kitchenId: 'mine',
-  })
+  const menus = await render(
+    'kitchen/components/FoodAndDrink/Items/Menus.vue',
+    {
+      error: new Error('Denied'),
+      pending: true,
+      activeMenus: [],
+      kitchenId: 'mine',
+    }
+  )
   assert.match(menus, /Menus unavailable/)
   assert.doesNotMatch(menus, /No menus in this kitchen|Loading menus/)
 })

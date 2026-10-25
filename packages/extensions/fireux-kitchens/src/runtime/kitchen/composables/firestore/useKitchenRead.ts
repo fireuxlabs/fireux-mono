@@ -2,7 +2,7 @@ import type { KitchenConfiguration } from '../../models/kitchen-configuration.mo
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { Kitchen } from '../../models/kitchen.model'
 
 type UseKitchenReadOptions = {
@@ -37,11 +37,10 @@ export function useKitchenRead(
   )
   const outcome = computed(() =>
     resolveReadOutcome({
-      kind: 'document',
-      active: Boolean(path.value && kitchenId.value),
+      enabled: Boolean(path.value && kitchenId.value),
       pending:
         source.pending.value || Boolean(placeId.value && related.pending.value),
-      error: error.value,
+      failed: Boolean(error.value),
       present: source.value?.id === kitchenId.value,
     })
   )

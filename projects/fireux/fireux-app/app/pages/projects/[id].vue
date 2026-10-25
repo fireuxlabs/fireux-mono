@@ -15,10 +15,10 @@
         state="error"
       />
       <FireStateCard
-        v-else-if="outcome === 'missing'"
+        v-else-if="outcome === 'empty'"
         entity="project"
         kind="document"
-        state="missing"
+        state="empty"
       />
       <FireDiagnosticsDebugPanel
         title="Project detail acquisition"

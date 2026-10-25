@@ -1,7 +1,7 @@
 <template>
   <WorkspaceKitchenHomeHeader />
   <WorkspaceKitchenSelector />
-  <WorkspaceHero
+  <UPageHeader
     title="Build your Kitchen Workspace"
     description="Build and operate your Kitchen from one Workspace."
   />

@@ -1,3 +1,4 @@
+import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -16,7 +17,7 @@ import {
   provide,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 function load(path, names, dependencies) {
   const code = readFileSync(
@@ -102,6 +103,7 @@ function fixture(realInjection = false) {
       computed,
       toValue,
       resolveReadOutcome,
+      resolveHttpDocumentOutcome,
       where: (field, operator, value) => ({ field, operator, value }),
       limit: (count) => ({ count }),
       resolveKitchenChildCollectionPath: ({
@@ -145,7 +147,11 @@ function fixture(realInjection = false) {
     readPlaceCurrencyCode: () => 'CHF',
     kitchenMenuOrdering: () => ({}),
     useKitchenMenuRead,
-    useKitchenOfferingCollection: () => ({ offerings: ref([]), outcome: ref('empty'), error: ref(null) }),
+    useKitchenOfferingCollection: () => ({
+      offerings: ref([]),
+      outcome: ref('empty'),
+      error: ref(null),
+    }),
     useFirestoreRead: () => ({
       firestoreFetchDoc: (path, id) => {
         reads.push(['source', path, id])
@@ -266,7 +272,7 @@ test('record updates, slug changes, deletion/reappearance and duplicate slugs re
   assert.equal(state.menuId.value, 'menu-b')
   assert.equal(state.source.value, null)
   f.rows.value = []
-  assert.equal(state.outcome.value, 'missing')
+  assert.equal(state.outcome.value, 'empty')
   f.rows.value = [{ id: 'menu-b', slug: 'drinks' }]
   assert.equal(state.outcome.value, 'ready')
   f.rows.value.push({ id: 'duplicate', slug: 'drinks' })
@@ -331,8 +337,8 @@ test('account membership and Kitchen changes clear the record before new reads s
   const source = f.reads.find((x) => Array.isArray(x) && x[0] === 'source')
   assert.equal(source[1].value, 'kitchens/kitchen-b/menu-uploads')
   assert.equal(source[2].value, 'menu-c')
-  f.kitchen.outcome.value = 'missing'
-  assert.equal(state.outcome.value, 'missing')
+  f.kitchen.outcome.value = 'empty'
+  assert.equal(state.outcome.value, 'empty')
   assert.equal(state.menu.value, null)
   f.kitchenId.value = ''
   assert.equal(state.outcome.value, 'idle')

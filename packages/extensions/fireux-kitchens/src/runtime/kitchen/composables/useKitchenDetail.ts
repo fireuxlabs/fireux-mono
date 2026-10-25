@@ -1,4 +1,5 @@
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
+
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-24 18:04 CEST — Kitchen public family: resolve exact detail through the server projection.
 import type { AsyncData, NuxtError } from 'nuxt/app'
@@ -16,7 +17,7 @@ export type KitchenDetailOutcome =
   | 'idle'
   | 'pending'
   | 'ready'
-  | 'missing'
+  | 'empty'
   | 'error'
 
 type KitchenDetailControls = Pick<
@@ -30,7 +31,7 @@ export type UseKitchenDetailReturn = KitchenDetailControls & {
   presentation: ComputedRef<KitchenDetailPresentation | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
+  empty: ComputedRef<boolean>
   failed: ComputedRef<boolean>
   outcome: ComputedRef<KitchenDetailOutcome>
 }
@@ -87,15 +88,14 @@ export function useKitchenDetail(
   })
   const statusCode = computed(() => readStatusCode(state.error.value))
   const outcome = computed<KitchenDetailOutcome>(() =>
-    resolveReadOutcome({
-      active: Boolean(slug.value),
+    resolveHttpDocumentOutcome({
+      enabled: Boolean(slug.value),
       pending: state.pending.value,
       error: state.error.value,
-      kind: 'document',
       present: Boolean(kitchen.value && place.value && presentation.value),
     })
   )
-  const missing = computed(() => outcome.value === 'missing')
+  const empty = computed(() => outcome.value === 'empty')
   const failed = computed(() => outcome.value === 'error')
 
   return {
@@ -107,7 +107,7 @@ export function useKitchenDetail(
     error: state.error,
     refresh: state.refresh,
     statusCode,
-    missing,
+    empty,
     failed,
     outcome,
   }

@@ -272,8 +272,8 @@ environment policy, and product-specific permissions are later concerns. Those
 differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
 
-Their Index introductions also prove the shared `WorkspaceHero` structural
-seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
+Their Index introductions consume native `UPageHeader` directly. The former
+WorkspaceHero forwarding/styling wrapper is retired; each domain or ecosystem
 surface owns its copy, actions, and state beneath its actual owner. Kitchen
 and Project also share the Core-owned `WorkspaceAI` frame and
 `WorkspaceAIComposer` interaction seam. Root and Team surfaces use the
@@ -315,7 +315,7 @@ retain only their domain collection and selection binding. Project's optional
 published App identity and Kitchen's Place identity remain domain differences.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
-shared `WorkspaceHero`, composes Kitchen Workspace at its Workspace origin's `/`
+native `UPageHeader`, composes Kitchen Workspace at its Workspace origin's `/`
 through `app/components/Workspace/KitchenHome.vue`, and adds only App-owned
 presentation. Kitchen capability execution remains in
 the extension's direct named Workspace capability components. Other Kitchen-enabled Apps receive
@@ -563,7 +563,7 @@ components use this shared vocabulary.
 | Delta                                                         | State      | Why it exists                                                                                                                                                                                                       | Evidence or owner                                                                                             |
 | ------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Place-backed Kitchen identity uses its same-id Place          | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                            | Current Kitchen and Place models plus package/entity guards                                                   |
-| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains domain-owned.                                                | `useKitchenWorkspaceTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                                  |
+| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains domain-owned.                                                | `useKitchenWorkspaceTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
 | Supplier, Portfolio, and Property Team are minimal today      | `accepted` | Their named Team controllers and components compose the same shared roster controls                                                                                                                                 | family `useXTeam` composables and shared Team Editor                                                          |
 | Blank has no domain capabilities                              | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and Blank-owned access                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
 | Project Create produces an inactive empty shell               | `accepted` | The trusted FireUX command creates only the canonical Project and caller's linked Team profile; publication and further product composition remain separate lifecycles                                              | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |

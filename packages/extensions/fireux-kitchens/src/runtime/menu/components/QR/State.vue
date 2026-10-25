@@ -5,7 +5,7 @@
     kind="document"
     surface="bare"
     :loading="pending"
-    :state="failure?.statusCode === 404 ? 'missing' : 'error'"
+    :state="failure?.statusCode === 404 ? 'empty' : 'error'"
     :title="pending ? 'Loading menu' : failure?.title || 'Menu unavailable'"
     :description="pending ? '' : failure?.description || ''"
   >

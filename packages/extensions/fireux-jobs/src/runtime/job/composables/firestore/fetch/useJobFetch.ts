@@ -28,7 +28,7 @@ export function useJobFetch(
           ? 'error'
           : job.value
             ? 'ready'
-            : 'missing'
+            : 'empty'
     ),
   }
 }

@@ -91,7 +91,7 @@ export function useKitchenTargets(
       return kitchens.value.length
         ? 'ready'
         : kitchenIds.value.length
-          ? 'missing'
+          ? 'empty'
           : 'empty'
     }),
   }

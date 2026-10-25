@@ -1,6 +1,7 @@
+import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -62,19 +63,18 @@ export function usePropertyReservation(
   const outcome = computed(() => {
     if (runtimeProperty.targetOutcome.value === 'pending') return 'pending'
     if (error.value)
-      return resolveReadOutcome({
-        active: true,
-        kind: 'document',
+      return resolveHttpDocumentOutcome({
+        enabled: true,
         pending: false,
         error: error.value,
         present: false,
       })
     if (!runtimeProperty.canRead.value || !currentUser.value) return 'denied'
-    return resolveReadOutcome({
-      active: Boolean(id.value),
-      kind: 'document',
+    if (!id.value) return 'idle'
+    if (state.data.value && state.data.value.key !== key.value) return 'pending'
+    return resolveHttpDocumentOutcome({
+      enabled: Boolean(id.value),
       pending: state.pending.value,
-      current: !state.data.value || state.data.value.key === key.value,
       present:
         state.data.value?.reservation.id === id.value &&
         state.data.value?.reservation.property_id === runtimeProperty.id.value,

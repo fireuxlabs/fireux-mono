@@ -114,7 +114,7 @@ const completionPrompt = computed(() => {
       actionIcon: 'i-lucide-settings',
     }
   }
-  if (props.accountOutcome === 'missing') {
+  if (props.accountOutcome === 'empty') {
     return {
       color: 'warning' as const,
       title: 'Repair account setup',
