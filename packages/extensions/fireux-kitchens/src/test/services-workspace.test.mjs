@@ -106,7 +106,7 @@ test('mounted service editors and local drafts survive refresh/error; actual own
   for (const name of [
     'KitchenFoodAndDrinkServicesStatus',
     'KitchenFoodAndDrinkServicesTitle',
-    'DiagnosticsDebugPanel',
+    'FireDiagnosticsDebugPanel',
   ])
     app.component(name, { render: () => null })
   app.component('KitchenFoodAndDrinkServicesService', {

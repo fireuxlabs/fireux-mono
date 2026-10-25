@@ -72,7 +72,7 @@ async function render(option, enabled) {
     app.component(name, { setup: () => setupState, render: vue.compile(child) })
   }
   app.component('UIcon', { render: () => null })
-  app.component('MoleculesCopyError', { render: () => null })
+  app.component('FireCopyError', { render: () => null })
   app.component('USwitch', {
     props: ['modelValue'],
     setup: (props) => () =>
@@ -152,8 +152,8 @@ test('saved incompatible menus show visible replacement warnings and remain sele
     let choices
     const app = vue.createSSRApp({setup: () => ({...props,...api}), render: vue.compile(descriptor.template.content)})
     app.component('UFormField', {setup: (_, {slots}) => () => vue.h('section', slots.default?.())})
-    app.component('MoleculesMultiSelect', {props:['items','modelValue'], setup: p => {choices=p; return () => vue.h('div')}})
-    app.component('MoleculesStateCard', {render: () => null})
+    app.component('FireMultiSelect', {props:['items','modelValue'], setup: p => {choices=p; return () => vue.h('div')}})
+    app.component('FireStateCard', {render: () => null})
     const html = await renderToString(app)
     assert.match(html, /role="status"/)
     assert.match(html, /remove from selection/)

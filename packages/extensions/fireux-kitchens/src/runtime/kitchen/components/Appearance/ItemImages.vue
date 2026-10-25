@@ -14,7 +14,7 @@
         @update:model-value="update"
       />
       <UAlert v-if="error" color="error" :title="error">
-        <template #actions><MoleculesCopyError :message="error" /></template>
+        <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
     </div>
   </UCard>

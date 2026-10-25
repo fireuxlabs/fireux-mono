@@ -1,10 +1,10 @@
 <template>
   <UPageGrid as="ul" class="list-none" aria-label="Users">
     <li v-for="cell in cells" :key="cell.to">
-      <CollectionCell :cell="cell" />
+      <FireCollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DiagnosticsDebugPanel
+  <FireDiagnosticsDebugPanel
     title="Users collection surface"
     context="Passed User cards and their final shared cell projection."
     object-origin="passed"
@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import CollectionCell from '../../../components/Collection/Cell.vue'
+import FireCollectionCell from '../../../components/Collection/Cell.vue'
 import type { CollectionCellData } from '../../../models/utils/collection-cell'
 import type { UserCard } from '../../composables/useUserView'
 const props = defineProps<{ cards: UserCard[] }>()

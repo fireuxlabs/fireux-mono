@@ -1,5 +1,5 @@
 <template>
-  <MoleculesDisclosurePanel title="Page architecture" icon="i-lucide-code">
+  <FireDisclosurePanel title="Page architecture" icon="i-lucide-code">
     <div class="flex flex-col gap-5">
       <p class="text-sm text-muted">
         For development: what each page does, where its data comes from, and
@@ -45,7 +45,7 @@
         </details>
       </section>
     </div>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 <script setup lang="ts">
 import type { NavItem } from 'fireux-core/runtime/composables/navigation/types'

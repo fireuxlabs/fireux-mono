@@ -15,10 +15,10 @@ async function page(changes={}) {
   const app=createSSRApp({setup:()=>api,render:compile(source.slice(10,source.lastIndexOf('</template>')))})
   for(const name of ['UPage','UPageBody']) app.component(name,{setup:(_,ctx)=>()=>h('div',ctx.slots.default?.())})
   app.component('MenuCollectionHeader',{render:()=>null})
-  app.component('DiagnosticsDebugPanel',{render:()=>null})
-  app.component('CollectionPagination',{render:()=>null})
+  app.component('FireDiagnosticsDebugPanel',{render:()=>null})
+  app.component('FireCollectionPagination',{render:()=>null})
   app.component('MenuCollectionResults',{props:['hideResults'],setup:(props,ctx)=>()=>h('section',{...ctx.attrs,style:props.hideResults ? {display:'none'} : undefined,'data-results':''},'Loaded menus')})
-  for(const name of ['MoleculesStateCard','UAlert']) app.component(name,{props:['title','description'],setup:(props,ctx)=>()=>h('div',[props.title,props.description,ctx.slots.actions?.()])})
+  for(const name of ['FireStateCard','UAlert']) app.component(name,{props:['title','description'],setup:(props,ctx)=>()=>h('div',[props.title,props.description,ctx.slots.actions?.()])})
   let retry
   app.component('UButton',{props:['label'],setup:(props,ctx)=>{retry=ctx.attrs.onClick;return()=>h('button',props.label)}})
   const html=await renderToString(app)

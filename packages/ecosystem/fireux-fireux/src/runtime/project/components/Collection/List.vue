@@ -1,10 +1,10 @@
 <template>
   <UPageGrid as="ul" class="list-none" aria-label="Projects">
     <li v-for="cell in cells" :key="cell.to">
-      <CollectionCell :cell="cell" />
+      <FireCollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DiagnosticsDebugPanel
+  <FireDiagnosticsDebugPanel
     title="Projects collection surface"
     context="Passed Project cards and their final shared cell projection."
     object-origin="passed"
@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
 export type ProjectCollectionCard = {
   to: string

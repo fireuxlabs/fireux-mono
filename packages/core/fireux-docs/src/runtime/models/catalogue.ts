@@ -61,7 +61,7 @@ const molecules = (path: string) => core(`molecules/${path}`)
 export const fireuxDocsCatalogue = [
   molecule({
     category: 'Surfaces',
-    componentName: 'MoleculesActionSurface',
+    componentName: 'FireActionSurface',
     name: 'ActionSurface',
     slug: 'action-surface',
     description:
@@ -80,7 +80,7 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Surfaces',
-    componentName: 'MoleculesStateCard',
+    componentName: 'FireStateCard',
     name: 'StateCard',
     slug: 'state-card',
     description:
@@ -113,7 +113,7 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Forms',
-    componentName: 'CreateShell',
+    componentName: 'FireCreateShell',
     name: 'CreateShell',
     slug: 'create-shell',
     description:
@@ -135,7 +135,7 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Forms',
-    componentName: 'MoleculesFormsEditableCheckbox',
+    componentName: 'FireFormsEditableCheckbox',
     name: 'EditableCheckbox',
     slug: 'editable-checkbox',
     description: 'An inline boolean value with separate read and edit modes.',
@@ -164,7 +164,7 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Forms',
-    componentName: 'MoleculesFormsEditableImagePicker',
+    componentName: 'FireFormsEditableImagePicker',
     name: 'EditableImagePicker',
     slug: 'editable-image-picker',
     description: 'An image preview with a native file-selection action.',
@@ -197,7 +197,7 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Forms',
-    componentName: 'MoleculesFormsEditableSelect',
+    componentName: 'FireFormsEditableSelect',
     name: 'EditableSelect',
     slug: 'editable-select',
     description: 'An inline option value with separate read and edit modes.',
@@ -225,7 +225,7 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Onboarding',
-    componentName: 'OnboardingShell',
+    componentName: 'FireOnboardingShell',
     name: 'OnboardingSystem',
     slug: 'onboarding-system',
     description: 'A staged onboarding shell for an owner-provided journey.',
@@ -246,7 +246,7 @@ export const fireuxDocsCatalogue = [
   }),
   {
     category: 'Page',
-    componentName: 'CollectionPage',
+    componentName: 'FireCollectionPage',
     name: 'CollectionPage',
     slug: 'entity-collection-page',
     description: 'The shared shell for an ordinary Entity Collection Page.',

@@ -6,7 +6,7 @@
     </ULink>
     <p class="text-sm text-muted">{{ project.identity.description }}</p>
   </UCard>
-  <DiagnosticsDebugPanel
+  <FireDiagnosticsDebugPanel
     title="Ecosystem Project relation"
     context="Projects fetched by this relation and the Project selected for the Ecosystem."
     object-origin="fetched"

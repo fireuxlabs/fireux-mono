@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import type { DevDebugContractFinding } from '../../types/dev-debug'
 
-defineOptions({ name: 'FireuxDebugDrift' })
+defineOptions({ name: 'FireDiagnosticsFireuxDebugDrift' })
 defineProps<{
   findings: DevDebugContractFinding[]
   missingCount: number

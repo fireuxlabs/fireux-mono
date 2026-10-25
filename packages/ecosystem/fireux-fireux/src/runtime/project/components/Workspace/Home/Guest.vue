@@ -7,7 +7,7 @@
       title="Your Project could not be opened"
       :description="error"
     >
-      <template #actions><MoleculesCopyError :message="error" /></template>
+      <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
     <UCard v-else-if="project">
       <h2 class="text-xl font-semibold">{{ project.identity.name }}</h2>

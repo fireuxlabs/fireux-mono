@@ -1,5 +1,5 @@
 <template>
-  <DashboardAdminDomainCurationPanel
+  <FireDashboardAdminDomainCurationPanel
     domain="portfolio"
     title="Portfolios"
     description="Add comma-separated portfolio slugs to feature on public portfolio surfaces."

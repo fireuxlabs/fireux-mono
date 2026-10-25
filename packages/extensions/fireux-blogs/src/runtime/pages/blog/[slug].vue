@@ -12,7 +12,7 @@
         <BlogDetail :post="post" />
       </div>
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         v-if="post"
         object-origin="fetched"
         launcher

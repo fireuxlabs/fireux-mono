@@ -52,7 +52,7 @@
       </details>
     </template>
     <UAlert v-if="error" color="error" title="Could not save menu"
-      ><template #description><MoleculesCopyError :message="error" /></template
+      ><template #description><FireCopyError :message="error" /></template
     ></UAlert>
   </div>
 </template>

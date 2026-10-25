@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize the single display-field type recipe. -->
 <template>
   <div class="flex w-full flex-col">
-    <MoleculesFormsTop
+    <FireFormsTop
       :label="label"
       :input-id="inputId"
       :is-editing="isEditing"

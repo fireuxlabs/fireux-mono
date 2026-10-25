@@ -9,12 +9,12 @@
         if you use it.
       </p>
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="outcome === 'idle' || outcome === 'pending'"
       entity="Allowed websites"
       loading
     />
-    <MoleculesCopyError v-else-if="error" :message="error" />
+    <FireCopyError v-else-if="error" :message="error" />
     <template v-else>
       <UFormField
         label="Website origins"
@@ -38,7 +38,7 @@
           >Saved</span
         >
       </div>
-      <MoleculesCopyError v-if="saveError" :message="saveError" />
+      <FireCopyError v-if="saveError" :message="saveError" />
       <p v-if="!origins.length" class="text-sm text-muted">
         No external websites are allowed yet.
       </p>

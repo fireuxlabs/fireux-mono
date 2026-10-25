@@ -3,7 +3,7 @@
 <template>
   <UDashboardPanel id="dashboard-agent-home">
     <template #header>
-      <LayoutsDashboardNavbar title="Hiring profile" />
+      <FireLayoutsDashboardNavbar title="Hiring profile" />
     </template>
 
     <template #body>

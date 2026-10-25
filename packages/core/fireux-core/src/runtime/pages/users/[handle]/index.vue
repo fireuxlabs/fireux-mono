@@ -2,25 +2,25 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'pending'"
         entity="user"
         kind="document"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="user"
         kind="document"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'missing'"
         entity="user"
         kind="document"
         state="missing"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the detail route."
         object-origin="fetched"

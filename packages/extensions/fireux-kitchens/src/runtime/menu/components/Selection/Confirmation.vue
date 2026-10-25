@@ -93,7 +93,7 @@
     </section>
     <div v-if="error" role="alert" class="space-y-2 text-sm">
       <p>Order updates are unavailable. Your order is still saved.</p>
-      <MoleculesCopyError :message="error" />
+      <FireCopyError :message="error" />
       <UButton
         label="Check for updates"
         variant="soft"

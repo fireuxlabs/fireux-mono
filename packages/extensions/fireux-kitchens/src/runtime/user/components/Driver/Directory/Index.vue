@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection driver-collection">
-    <CollectionHeader :title="title" :description="description">
+    <FireCollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -29,9 +29,9 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-if="outcome === 'pending'"
       title="Loading drivers"
@@ -41,7 +41,7 @@
       aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else-if="outcome === 'error'"
       title="Drivers unavailable"
@@ -64,7 +64,7 @@
       </template>
     </DriverCollectionList>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else
       icon="i-lucide-truck"
@@ -76,7 +76,7 @@
       "
     />
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

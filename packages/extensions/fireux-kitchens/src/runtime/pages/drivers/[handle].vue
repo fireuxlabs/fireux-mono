@@ -11,7 +11,7 @@
     <div v-if="profile" data-public-profile="driver">
       <DriverDetail v-if="profileUser" :profile="profile" :user="profileUser" />
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

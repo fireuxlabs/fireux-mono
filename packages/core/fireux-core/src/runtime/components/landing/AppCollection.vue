@@ -124,7 +124,7 @@
       </UPageCard>
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-if="outcome === 'empty' || (outcome === 'ready' && !apps.length)"
       entity="apps"
       state="empty"

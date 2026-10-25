@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <MoleculesFormsEditableSimpleField
+    <FireFormsEditableSimpleField
       :capture-intent="captureIntent"
       label="App address"
       type="url"

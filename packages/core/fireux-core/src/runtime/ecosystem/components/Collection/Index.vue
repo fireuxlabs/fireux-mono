@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection ecosystem-collection">
-    <CollectionHeader :title="title" :description="description">
+    <FireCollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -15,7 +15,7 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
     <EcosystemCollectionList
       v-if="cardsFiltered.length"

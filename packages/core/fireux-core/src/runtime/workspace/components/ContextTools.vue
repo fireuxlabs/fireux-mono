@@ -28,7 +28,7 @@
         @click="copy"
     /></template>
   </UModal>
-  <MoleculesCopyError v-if="error" :message="error" />
+  <FireCopyError v-if="error" :message="error" />
 </template>
 
 <script setup lang="ts">

@@ -63,7 +63,7 @@
       "
     />
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Kitchen supplier detail"
       scope="workspace"
       object-origin="fetched"

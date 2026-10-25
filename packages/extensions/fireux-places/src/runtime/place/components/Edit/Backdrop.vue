@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-2">
-    <MoleculesFormsEditableSimpleField
+    <FireFormsEditableSimpleField
       label="Image background colour"
       :value="storedColor"
       placeholder="#ffffff"

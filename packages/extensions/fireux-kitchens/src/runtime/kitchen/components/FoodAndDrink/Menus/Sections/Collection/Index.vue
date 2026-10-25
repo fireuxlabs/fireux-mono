@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
-    <MoleculesCopyError v-if="editor.moveError" :message="editor.moveError" />
-    <MoleculesCopyError
+    <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
+    <FireCopyError
       v-if="editor.statusError"
       :message="editor.statusError"
     />
@@ -52,7 +52,7 @@
         </div>
       </template>
 
-      <MoleculesCopyError
+      <FireCopyError
         v-if="editor.sectionsError"
         :message="String(editor.sectionsError)"
       />
@@ -124,7 +124,7 @@
       :description="`Hide ${editor.archiveCandidate?.label || 'this section'} from this Menu. Its entries and Dishes stay saved, and you can restore it later.`"
     >
       <template #body>
-        <MoleculesCopyError
+        <FireCopyError
           v-if="editor.statusError"
           :message="editor.statusError"
           class="mb-3"

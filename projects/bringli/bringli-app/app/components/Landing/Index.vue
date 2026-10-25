@@ -1,5 +1,5 @@
 <template>
-  <LandingEcosystemHome
+  <FireLandingEcosystemHome
     :content="content"
     hero-image="/img/landing/supply-operations-hero-v1.png"
     hero-alt="A local producer and delivery coordinator preparing a supply handoff"

@@ -112,7 +112,7 @@
       </UPage>
     </template>
 
-    <CollectionPage
+    <FireCollectionPage
       v-else
       data-menu-projection="index"
       data-menu-index-kind="collection"
@@ -128,7 +128,7 @@
       <template #secondary>
         <MenuCollectionPromotion />
       </template>
-    </CollectionPage>
+    </FireCollectionPage>
   </div>
 </template>
 

@@ -1,7 +1,7 @@
 <!-- packages/core/fireux-core/src/runtime/layouts/default.vue -->
 <template>
   <div class="fx-layout-shell">
-    <LayoutsDefaultHeader />
+    <FireLayoutsDefaultHeader />
 
     <main class="fx-layout-main">
       <UContainer>
@@ -9,7 +9,7 @@
       </UContainer>
     </main>
 
-    <LayoutsDefaultFooter />
+    <FireLayoutsDefaultFooter />
   </div>
 </template>
 

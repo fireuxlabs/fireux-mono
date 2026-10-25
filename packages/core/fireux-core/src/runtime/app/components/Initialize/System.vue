@@ -13,7 +13,7 @@
       </div>
 
       <template v-else-if="!coreUser && !isAuthenticated">
-        <AuthSystem />
+        <FireAuthSystem />
       </template>
       <template v-else-if="!coreUser">
         <UserCreateSystem />

@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-driver-home">
     <template #header>
-      <LayoutsDashboardNavbar title="Driver" />
+      <FireLayoutsDashboardNavbar title="Driver" />
     </template>
 
     <template #body>

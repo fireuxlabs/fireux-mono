@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     v-if="directory"
     :to="link && to ? to : undefined"
     class="kitchen-collection-card"
@@ -47,9 +47,9 @@
       </span>
     </div>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 
-  <MoleculesActionSurface
+  <FireActionSurface
     v-else
     :to="link && to ? to : undefined"
     :action="action"
@@ -102,7 +102,7 @@
         </div>
       </div>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

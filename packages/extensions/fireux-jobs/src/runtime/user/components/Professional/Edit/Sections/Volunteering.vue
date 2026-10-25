@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-20 19:17 CEST — Repo Efficiency Pass 2 of 6: enforce Professional volunteering editor capacity. -->
 <!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: remove the ineffective single-child section wrapper. -->
 <template>
-  <MoleculesFormsEditableObjectArray
+  <FireFormsEditableObjectArray
     label="Volunteering"
     :value="items"
     :update="onSave"
@@ -30,7 +30,7 @@
         Add volunteering
       </UButton>
     </template>
-  </MoleculesFormsEditableObjectArray>
+  </FireFormsEditableObjectArray>
 </template>
 
 <script setup lang="ts">

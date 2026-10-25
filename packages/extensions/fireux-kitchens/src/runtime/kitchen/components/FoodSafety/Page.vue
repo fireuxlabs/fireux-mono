@@ -3,7 +3,7 @@
     <WorkspaceKitchenAICapabilityInfo capability="food-safety" />
     <section class="workspace-surface">
       <KitchenFoodSafety :view="view" />
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Food safety reference"
         :default-open="false"
       >
@@ -18,7 +18,7 @@
           capability="Food Safety"
           base-path="/workspace/kitchen/food-safety/search-demand"
         />
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </section>
   </div>
 </template>

@@ -1,11 +1,11 @@
 <template>
   <section id="open-jobs" class="entity-collection job-collection">
-    <CollectionHeader title="Open opportunities" description="Explore roles, meet the employer, and understand the work before you apply.">
+    <FireCollectionHeader title="Open opportunities" description="Explore roles, meet the employer, and understand the work before you apply.">
       <template #controls>
         <UInput v-if="jobs.length > 15" v-model="query" placeholder="Search jobs…" aria-label="Search jobs" icon="i-lucide-search" class="entity-collection__search" />
         <span class="entity-collection__count">{{ visibleCount }} jobs</span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
     <JobCollectionList :cards="cards" />
   </section>
 </template>

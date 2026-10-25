@@ -3,7 +3,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel
+      <FireDiagnosticsModel
         :title="'Jobs · Model'"
         :model="jobModelRuntime"
       />
@@ -19,7 +19,7 @@
             <p class="text-xs text-muted">
               Inspect model drift separately from the public jobs collection manager.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="jobsDriftKind"
               :selected-field="jobsSelectedField"
               :filter-options="jobsFilterOptions"

@@ -1,6 +1,6 @@
 <template>
   <div class="menu-items-editor space-y-4">
-    <MoleculesCopyError v-if="editor.moveError" :message="editor.moveError" />
+    <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
     <div class="flex items-center justify-between gap-3">
       <UButton
         :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(editor.menuSlug)}`"
@@ -15,7 +15,7 @@
       <KitchenFoodAndDrinkMenusItemsAdd v-if="editor.section" />
     </div>
 
-    <MoleculesCopyError
+    <FireCopyError
       v-if="editor.sectionsError"
       :message="String(editor.sectionsError)"
     />
@@ -30,7 +30,7 @@
 
     <UCard v-else>
       <template #header>
-        <CollectionRow as="div" :style="{ paddingBlock: 0 }">
+        <FireCollectionRow as="div" :style="{ paddingBlock: 0 }">
           <div>
             <div class="flex items-center gap-2">
               <h2 class="text-base font-semibold text-highlighted">
@@ -65,10 +65,10 @@
           <template #actions
             ><span class="size-8" aria-hidden="true"
           /></template>
-        </CollectionRow>
+        </FireCollectionRow>
       </template>
 
-      <MoleculesCopyError
+      <FireCopyError
         v-if="editor.itemsError"
         :message="String(editor.itemsError)"
       />

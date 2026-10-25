@@ -1,5 +1,5 @@
 <template>
-  <ProviderToolIframe
+  <FireProviderToolIframe
     :src="toolUrl"
     :title="title"
     :provider-origin="providerBaseUrl"

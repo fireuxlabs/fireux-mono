@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="dashboard-professional-my-work">
     <template #header>
-      <LayoutsDashboardNavbar title="Applications & work" />
+      <FireLayoutsDashboardNavbar title="Applications & work" />
     </template>
 
     <template #body>

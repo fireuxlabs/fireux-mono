@@ -1,7 +1,7 @@
 <template>
   <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: compose one Place stage at a time through the shared shell. -->
   <!-- Concurrent edit — 2026-07-22 15:59 CEST — Place onboarding logo preview: pass staged image state into the final review. -->
-  <OnboardingShell family="place" :stage="shellStage">
+  <FireOnboardingShell family="place" :stage="shellStage">
     <template #intro>
       <slot name="intro">
         <span
@@ -120,7 +120,7 @@
         </UButton>
       </div>
     </template>
-  </OnboardingShell>
+  </FireOnboardingShell>
 </template>
 
 <script setup lang="ts">

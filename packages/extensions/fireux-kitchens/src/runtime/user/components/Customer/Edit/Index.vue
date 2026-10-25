@@ -9,7 +9,7 @@
       variant="outline"
     >
       <div class="space-y-4">
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Name"
           :value="customerName"
           placeholder="Your ordering name"
@@ -79,7 +79,7 @@
           {{ inlineState }}
         </p>
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Allergy note"
           type="textarea"
           :rows="3"
@@ -91,7 +91,7 @@
       </div>
     </UPageCard>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       entity="customer profile"
       kind="document"

@@ -3,7 +3,7 @@
     ><UPageBody>
       <PropertyHero />
       <PropertyCollection :properties="properties" />
-      <CollectionPagination
+      <FireCollectionPagination
         :has-more="hasMore"
         :loading="loadingMore"
         @load-more="loadMore"

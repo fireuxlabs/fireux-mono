@@ -22,7 +22,7 @@
         />
       </UCard>
 
-      <CreateShell
+      <FireCreateShell
         :loading="submitting"
         submit-label="Create"
         @clear="onReset"
@@ -35,7 +35,7 @@
         <template #preview>
           <JobCreatePreview :form="form" />
         </template>
-      </CreateShell>
+      </FireCreateShell>
     </ClientOnly>
   </div>
 </template>

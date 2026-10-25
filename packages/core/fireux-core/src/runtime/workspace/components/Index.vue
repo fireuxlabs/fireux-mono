@@ -3,8 +3,8 @@
     <WorkspaceSidebar />
     <WorkspacePage />
   </UDashboardGroup>
-  <LayoutsSharedRoleBadge />
-  <LayoutsSharedNotificationsSlideover v-model:open="notificationsOpen" />
+  <FireLayoutsSharedRoleBadge />
+  <FireLayoutsSharedNotificationsSlideover v-model:open="notificationsOpen" />
 </template>
 
 <script setup lang="ts">

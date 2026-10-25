@@ -420,7 +420,7 @@ function mountEdit(h) {
   })
   const warnings = []
   app.config.warnHandler = (message) => warnings.push(message)
-  for (const name of ['UCard', 'UFormField', 'MoleculesStateCard'])
+  for (const name of ['UCard', 'UFormField', 'FireStateCard'])
     app.component(name, {
       render() {
         return vue.h('div', this.$slots.default?.())
@@ -430,7 +430,7 @@ function mountEdit(h) {
     ['UInput', 'input'],
     ['USelect', 'select'],
     ['UButton', 'button'],
-    ['MoleculesFormsEditableImagePicker', 'image-picker'],
+    ['FireFormsEditableImagePicker', 'image-picker'],
   ])
     app.component(name, {
       render() {

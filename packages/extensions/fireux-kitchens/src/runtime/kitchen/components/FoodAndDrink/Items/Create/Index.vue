@@ -2,7 +2,7 @@
   <form class="space-y-4" @submit.prevent="addDish">
     <UFormField label="Image">
       <div class="flex flex-col items-start gap-2">
-        <MoleculesFormsEditableImagePicker
+        <FireFormsEditableImagePicker
           :src="imagePreviewUrl"
           :alt="name.trim() || `New ${singular}`"
           :initials="imageInitials"

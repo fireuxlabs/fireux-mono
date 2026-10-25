@@ -9,7 +9,7 @@
         color="warning"
         variant="subtle"
       />
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Capability reference"
         :default-open="false"
       >
@@ -30,7 +30,7 @@
           capability="Waste Report"
           base-path="/workspace/kitchen/reports/waste-report/search-demand"
         />
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </section>
   </div>
 </template>

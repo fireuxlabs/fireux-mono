@@ -433,7 +433,7 @@ function mountForm(h, recipe = null) {
   )
   const warnings = []
   app.config.warnHandler = (message) => warnings.push(message)
-  for (const name of ['UFormField', 'MoleculesStateCard'])
+  for (const name of ['UFormField', 'FireStateCard'])
     app.component(name, {
       render() {
         return vue.h('div', this.$slots.default?.())

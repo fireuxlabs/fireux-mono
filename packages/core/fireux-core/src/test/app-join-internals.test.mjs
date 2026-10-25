@@ -266,7 +266,7 @@ test('App join surface renders an existing failure ahead of a concurrent pending
       () =>
         h('section', slots.default?.()),
   })
-  app.component('MoleculesStateCard', {
+  app.component('FireStateCard', {
     props: ['state', 'loading'],
     setup: (props) => () =>
       h('p', props.state === 'error' ? 'Read failed' : 'Loading'),

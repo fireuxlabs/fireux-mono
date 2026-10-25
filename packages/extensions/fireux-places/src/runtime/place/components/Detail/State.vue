@@ -1,11 +1,11 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="outcome === 'pending' || outcome === 'idle'"
     entity="place"
     kind="document"
     loading
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="outcome === 'error'"
     entity="place"
     kind="document"
@@ -20,8 +20,8 @@
       size="sm"
       @click="emit('refresh')"
     />
-  </MoleculesStateCard>
-  <MoleculesStateCard
+  </FireStateCard>
+  <FireStateCard
     v-else-if="!hasPlace"
     entity="place"
     kind="document"
@@ -36,7 +36,7 @@
       color="primary"
       size="sm"
     />
-  </MoleculesStateCard>
+  </FireStateCard>
 </template>
 
 <script setup lang="ts">

@@ -5,7 +5,7 @@
 <template>
   <UDashboardPanel id="dashboard-admin-products-create">
     <template #header>
-      <LayoutsDashboardNavbar title="Admin · Create Product" />
+      <FireLayoutsDashboardNavbar title="Admin · Create Product" />
     </template>
 
     <template #body>
@@ -38,7 +38,7 @@
             description="Only app admins can create products."
           />
 
-          <CreateShell
+          <FireCreateShell
             v-else
             :loading="isCreating"
             submit-label="Create product"
@@ -51,7 +51,7 @@
             <template #preview>
               <ProductCreatePreview />
             </template>
-          </CreateShell>
+          </FireCreateShell>
 
           <UAlert
             v-if="writeError"
@@ -60,11 +60,11 @@
             :description="writeError"
           >
             <template #actions
-              ><MoleculesCopyError :message="writeError"
+              ><FireCopyError :message="writeError"
             /></template>
           </UAlert>
           <div class="mt-6">
-            <DiagnosticsDebugPanel
+            <FireDiagnosticsDebugPanel
               object-origin="fetched"
               launcher
               include-route

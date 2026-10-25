@@ -1,14 +1,14 @@
 <template>
   <UDashboardPanel :id="`dashboard-admin-${domain}`">
     <template #header>
-      <LayoutsDashboardNavbar :title="`Admin · ${title}`" />
+      <FireLayoutsDashboardNavbar :title="`Admin · ${title}`" />
     </template>
 
     <template #body>
       <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
         <UPage>
           <UPageBody class="pagebody">
-            <DashboardAdminFeaturedSlugs
+            <FireDashboardAdminFeaturedSlugs
               :field="field"
               :title="`Featured ${title.toLowerCase()} slugs`"
               :description="description"

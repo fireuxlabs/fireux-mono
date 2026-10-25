@@ -28,7 +28,7 @@ for (const destination of ['/', 'http://workspace.localhost:3001/']) {
     const app = createSSRApp({ setup: () => state, render: compile(template) })
     app.component('UPageHeader', { setup: (_, { slots }) => () => h('header', slots.links?.()) })
     app.component('UButton', { props: ['to', 'label'], setup: props => () => h('a', { href: props.to }, props.label) })
-    for (const name of ['UBadge', 'UAlert', 'UPageGrid', 'CollectionCell', 'DiagnosticsDebugPanel'])
+    for (const name of ['UBadge', 'UAlert', 'UPageGrid', 'FireCollectionCell', 'FireDiagnosticsDebugPanel'])
       app.component(name, { setup: (_, { slots }) => () => h('div', slots.default?.()) })
     const html = await renderToString(app)
     assert.ok(html.includes(`href="${destination}"`))

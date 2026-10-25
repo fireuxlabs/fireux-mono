@@ -80,7 +80,7 @@
         :description="formError"
       >
         <template #actions
-          ><MoleculesCopyError :message="formError"
+          ><FireCopyError :message="formError"
         /></template>
       </UAlert>
 

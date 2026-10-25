@@ -47,7 +47,7 @@
       title="Waste could not be loaded"
     />
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Kitchen Waste events"
       scope="workspace"
       object-origin="fetched"

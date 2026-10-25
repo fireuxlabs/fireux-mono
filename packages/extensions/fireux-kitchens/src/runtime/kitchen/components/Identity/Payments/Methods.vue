@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: edit Kitchen payment applicability by order type. -->
 <template>
-  <MoleculesDisclosurePanel
+  <FireDisclosurePanel
     title="Payments"
     description="Choose which payment methods this Kitchen accepts for each ordering doorway."
     icon="i-lucide-wallet-cards"
@@ -12,7 +12,7 @@
           {{ group.description }}
         </p>
 
-        <MoleculesFormsEditableChoiceGroup
+        <FireFormsEditableChoiceGroup
           :label="group.label"
           :value="methodsFor(group.orderTypes)"
           :options="group.options"
@@ -24,7 +24,7 @@
         />
       </UCard>
     </div>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 
 <script setup lang="ts">

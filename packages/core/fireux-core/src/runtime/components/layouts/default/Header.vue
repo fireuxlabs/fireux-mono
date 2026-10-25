@@ -92,7 +92,7 @@ import { useNav } from '../../../composables/navigation/useNav'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
-defineOptions({ name: 'LayoutsDefaultHeader' })
+defineOptions({ name: 'FireLayoutsDefaultHeader' })
 
 /** Nav (scoped to the layout Nuxt actually resolved) */
 const { appName } = useFireUXConfig()

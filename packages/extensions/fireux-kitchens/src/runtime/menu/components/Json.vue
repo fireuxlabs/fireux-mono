@@ -5,8 +5,8 @@
     :data-menu-context="query?.context || undefined"
     :data-kitchen-slug="query?.kitchenSlug || undefined"
   >
-    <MoleculesStateCard v-if="pending" entity="Menu" kind="document" loading />
-    <MoleculesStateCard
+    <FireStateCard v-if="pending" entity="Menu" kind="document" loading />
+    <FireStateCard
       v-else-if="error"
       entity="Menu"
       kind="document"
@@ -14,7 +14,7 @@
       title="Menu JSON unavailable"
       :description="error.message || 'The Menu projection could not be loaded.'"
     />
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       v-else
       title="Menu projection"
       :objects="data"

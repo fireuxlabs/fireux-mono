@@ -1,5 +1,5 @@
 <template>
-  <LandingEcosystemHome
+  <FireLandingEcosystemHome
     :content="content"
     hero-image="/img/landing/brand-commerce-hero-v1.png"
     hero-alt="A small brand team preparing products and storefront content"

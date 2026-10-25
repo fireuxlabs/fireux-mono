@@ -1,7 +1,7 @@
 <template>
   <ul class="collection-stack property-directory-grid" aria-label="Properties">
     <li v-for="card in cards" :key="card.id">
-      <CollectionCell
+      <FireCollectionCell
         :cell="{
           title: card.title,
           description: card.subtitle,
@@ -17,7 +17,7 @@
   </ul>
 </template>
 <script setup lang="ts">
-import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 type PropertyCard = {
   id: string
   to: string

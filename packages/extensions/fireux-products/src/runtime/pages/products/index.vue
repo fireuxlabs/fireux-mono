@@ -1,18 +1,18 @@
 <template>
-  <CollectionPage
+  <FireCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-box"
     secondary-label="Product tools"
   >
-    <MoleculesStateCard
+    <FireStateCard
       v-if="productCollection.outcome === 'pending'"
       entity="Product"
       kind="collection"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="productCollection.outcome === 'error'"
       entity="Product"
       kind="collection"
@@ -23,7 +23,7 @@
     <template #secondary>
       <ProductDirectoryActions />
     </template>
-  </CollectionPage>
+  </FireCollectionPage>
 </template>
 
 <script setup lang="ts">

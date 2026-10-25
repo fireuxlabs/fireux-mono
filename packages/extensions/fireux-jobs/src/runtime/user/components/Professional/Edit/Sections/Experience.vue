@@ -6,7 +6,7 @@
 <!-- Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: use idempotent server materializers without raw Company existence reads. -->
 <!-- Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich experience through bounded exact Place reads. -->
 <template>
-  <MoleculesFormsEditableObjectArray
+  <FireFormsEditableObjectArray
     :label="label"
     :value="items"
     :update="onSave"
@@ -201,7 +201,7 @@
         </UButton>
       </div>
     </template>
-  </MoleculesFormsEditableObjectArray>
+  </FireFormsEditableObjectArray>
 </template>
 
 <script setup lang="ts">

@@ -54,7 +54,7 @@
     </div>
 
     <div v-else class="misebox-power-cards__state">
-      <MoleculesStateCard
+      <FireStateCard
         entity="PowerCards"
         state="empty"
         surface="bare"

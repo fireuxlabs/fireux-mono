@@ -13,7 +13,7 @@
           : 'Withdraw this Menu from public views and keep its content for later.'
       }}
     </p>
-    <MoleculesCopyError
+    <FireCopyError
       v-if="offeringsError"
       :message="String(offeringsError)"
     />
@@ -50,7 +50,7 @@
         @click="confirm = 'delete'"
       />
     </div>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
     <UModal
       :open="Boolean(confirm)"
       :title="

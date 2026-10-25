@@ -3,7 +3,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel
+      <FireDiagnosticsModel
         :title="'Products · Model'"
         :model="productModelRuntime"
       />
@@ -20,7 +20,7 @@
               Inspect model drift separately from the public products collection
               manager.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="driftKind"
               :selected-field="selectedField"
               :filter-options="filterOptions"
@@ -33,13 +33,13 @@
         </div>
       </template>
 
-      <MoleculesStateCard
+      <FireStateCard
         v-if="productCollection.outcome === 'pending'"
         entity="Product"
         kind="collection"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="productCollection.outcome === 'error'"
         entity="Product"
         kind="collection"

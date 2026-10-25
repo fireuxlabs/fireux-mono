@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
     class="card card--cell dish-card"
@@ -31,7 +31,7 @@
         <strong v-if="priceLabel" class="fx-type-caption">{{ priceLabel }}</strong>
       </div>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

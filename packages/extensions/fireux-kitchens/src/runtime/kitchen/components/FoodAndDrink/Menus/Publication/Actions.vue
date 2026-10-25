@@ -64,7 +64,7 @@
     </div>
     <div v-if="errorMessage" class="mt-3 text-sm text-error">
       <p>{{ errorMessage }}</p>
-      <MoleculesCopyError :message="errorMessage" />
+      <FireCopyError :message="errorMessage" />
     </div>
     <UModal
       v-model:open="confirmUnpublish"

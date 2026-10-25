@@ -15,7 +15,7 @@
         class="w-full"
       />
     </UFormField>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
     <slot name="edit-fields" />
     <div class="flex justify-end gap-2">
       <UButton

@@ -2,7 +2,7 @@
   <p v-if="state.identity.outcome.value === 'pending'" role="status">
     Loading Kitchen…
   </p>
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="state.identity.outcome.value === 'error'"
     state="error"
     title="Kitchen unavailable"
@@ -12,14 +12,14 @@
     Choose a Kitchen to view its promotions.
   </p>
   <div v-else class="grid gap-4">
-    <MoleculesCopyError
+    <FireCopyError
       v-if="state.dishes.error.value"
       :message="String(state.dishes.error.value)"
     />
     <p v-else-if="state.dishes.pending.value" role="status">
       Loading food and drinks…
     </p>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="state.collection.outcome.value === 'error'"
       state="error"
       title="Promotions unavailable"

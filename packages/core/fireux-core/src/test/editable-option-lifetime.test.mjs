@@ -125,7 +125,7 @@ function fixture(kind, explicitOwner = false) {
     render,
   })
   app.config.warnHandler = (warning) => warnings.push(warning)
-  app.component('MoleculesFormsTop', {
+  app.component('FireFormsTop', {
     props: [
       'label',
       'isEditing',

@@ -38,7 +38,7 @@
                 <p class="mt-2 max-w-md text-sm leading-6 text-muted">
                   {{ readError }}
                 </p>
-                <MoleculesCopyError :message="readError" class="mt-4" />
+                <FireCopyError :message="readError" class="mt-4" />
                 <UButton
                   class="mt-6"
                   color="neutral"
@@ -119,7 +119,7 @@
                 :description="error"
               />
 
-              <MoleculesCopyError v-if="error" :message="error" class="mt-2" />
+              <FireCopyError v-if="error" :message="error" class="mt-2" />
               <UButton
                 class="mt-6"
                 size="lg"
@@ -149,7 +149,7 @@
                 title="We couldn’t connect this App"
                 :description="error"
               />
-              <MoleculesCopyError v-if="error" :message="error" class="mt-2" />
+              <FireCopyError v-if="error" :message="error" class="mt-2" />
               <UButton
                 class="mt-8"
                 size="lg"

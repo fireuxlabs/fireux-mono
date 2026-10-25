@@ -130,9 +130,9 @@ async function render(path, state) {
       (props, { slots }) =>
       () =>
         h('div', [
-          name === 'MoleculesStateCard'
+          name === 'FireStateCard'
             ? `${props.entity}: ${props.loading ? 'loading' : props.state}`
-            : name === 'MoleculesCopyError'
+            : name === 'FireCopyError'
               ? `Copy error: ${props.message}`
               : props.title || '',
           ...Object.values(slots).flatMap((slot) => slot()),

@@ -6,7 +6,7 @@
       title="Document action not confirmed"
       :description="writeError"
     >
-      <template #actions><MoleculesCopyError :message="writeError" /></template>
+      <template #actions><FireCopyError :message="writeError" /></template>
     </UAlert>
 
     <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
@@ -18,7 +18,7 @@
       title="Could not load documents"
     >
       <template #actions
-        ><MoleculesCopyError message="Could not load documents."
+        ><FireCopyError message="Could not load documents."
       /></template>
     </UAlert>
     <p
@@ -170,7 +170,7 @@
         />
       </UCard>
     </template>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio documents"
       object-origin="fetched"

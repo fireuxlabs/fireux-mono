@@ -15,7 +15,7 @@
       >
         <UInput v-model="date" type="date" />
       </UFormField>
-      <MoleculesCopyError
+      <FireCopyError
         v-if="sectionsError"
         :message="String(sectionsError)"
       />
@@ -87,7 +87,7 @@
       <p v-if="message" class="text-sm text-success" role="status">
         {{ message }}
       </p>
-      <MoleculesCopyError v-if="error" :message="error" />
+      <FireCopyError v-if="error" :message="error" />
     </div>
     <UModal
       v-model:open="confirmWithdrawal"

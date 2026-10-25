@@ -37,7 +37,7 @@ function appFor(source, setup) {
     'UIcon',
     'UButton',
     'USkeleton',
-    'MoleculesCopyError',
+    'FireCopyError',
     'UTooltip',
     'UAvatar',
     'UProgress',

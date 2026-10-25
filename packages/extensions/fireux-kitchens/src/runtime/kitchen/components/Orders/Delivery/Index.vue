@@ -1,12 +1,12 @@
 <template>
   <section class="workspace-surface">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="pending || outcome === 'pending'"
       entity="Kitchen delivery"
       kind="document"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="outcome === 'error'"
       entity="Kitchen"
       kind="document"
@@ -14,7 +14,7 @@
     />
     <UAlert v-else-if="error" title="Settings unavailable" color="error"
       ><template #description
-        ><MoleculesCopyError :message="String(error)" /></template
+        ><FireCopyError :message="String(error)" /></template
     ></UAlert>
     <UAlert
       v-else-if="!selectedKitchen"

@@ -122,10 +122,10 @@ const contractSolutions = [
       </div>
 
       <div class="contract-grid contract-grid--states">
-        <MoleculesStateCard entity="projects" state="loading" />
-        <MoleculesStateCard entity="projects" state="empty" />
-        <MoleculesStateCard entity="project" state="missing" />
-        <MoleculesStateCard entity="projects" state="error" />
+        <FireStateCard entity="projects" state="loading" />
+        <FireStateCard entity="projects" state="empty" />
+        <FireStateCard entity="project" state="missing" />
+        <FireStateCard entity="projects" state="error" />
       </div>
     </section>
 
@@ -138,7 +138,7 @@ const contractSolutions = [
       </div>
 
       <div class="contract-grid">
-        <MoleculesDisclosurePanel
+        <FireDisclosurePanel
           title="Advanced settings"
           description="Optional configuration"
           icon="i-lucide-sliders-horizontal"
@@ -150,7 +150,7 @@ const contractSolutions = [
             </p>
             <UButton color="neutral" variant="outline" label="Local action" />
           </div>
-        </MoleculesDisclosurePanel>
+        </FireDisclosurePanel>
 
         <UCard :ui="{ body: 'fx-card-body-stack' }">
           <template #header>
@@ -179,28 +179,28 @@ const contractSolutions = [
       </div>
 
       <div class="contract-grid contract-grid--actions">
-        <MoleculesActionSurface
+        <FireActionSurface
           action
           class="fx-card--cell"
           @activate="activationCount += 1"
         >
           <p class="fx-type-card-title">Action card</p>
           <p class="fx-type-caption">Activations: {{ activationCount }}</p>
-        </MoleculesActionSurface>
+        </FireActionSurface>
 
-        <MoleculesActionSurface class="fx-card--cell">
+        <FireActionSurface class="fx-card--cell">
           <p class="fx-type-card-title">Static card</p>
           <p class="fx-type-caption">Readable, but not keyboard-actionable.</p>
-        </MoleculesActionSurface>
+        </FireActionSurface>
 
-        <MoleculesActionSurface
+        <FireActionSurface
           to="/packages/fireux-core/design/contracts"
           disabled
           class="fx-card--cell"
         >
           <p class="fx-type-card-title">Disabled link card</p>
           <p class="fx-type-caption">No href and no accidental navigation.</p>
-        </MoleculesActionSurface>
+        </FireActionSurface>
       </div>
     </section>
 

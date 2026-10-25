@@ -124,7 +124,7 @@
         </UCard>
       </div>
 
-      <MoleculesCopyError v-else-if="error" :message="String(error)" />
+      <FireCopyError v-else-if="error" :message="String(error)" />
       <p v-else-if="pending" role="status">Loading Module…</p>
       <UAlert
         v-else

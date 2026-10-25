@@ -36,7 +36,7 @@
         @click="addNames"
       />
     </div>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
   </div>
 </template>
 <script setup lang="ts">

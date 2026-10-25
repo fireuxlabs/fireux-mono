@@ -9,7 +9,7 @@
         color="warning"
         variant="subtle"
       />
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Capability reference"
         :default-open="false"
       >
@@ -24,7 +24,7 @@
           capability="Purchasing"
           base-path="/workspace/kitchen/stock/purchasing/search-demand"
         />
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </section>
   </div>
 </template>

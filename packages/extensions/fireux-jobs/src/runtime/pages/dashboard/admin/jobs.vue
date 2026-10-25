@@ -1,5 +1,5 @@
 <template>
-  <DashboardAdminDomainCurationPanel
+  <FireDashboardAdminDomainCurationPanel
     domain="job"
     title="Jobs"
     description="Add comma-separated job slugs to feature on Jobs pages."

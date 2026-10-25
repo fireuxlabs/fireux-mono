@@ -1,5 +1,5 @@
 <template>
-  <LandingEcosystemHome
+  <FireLandingEcosystemHome
     :content="content"
     hero-image="/img/landing/guest-operations-hero-v1.png"
     hero-alt="A host and colleague preparing an alpine apartment for arriving guests"
@@ -10,7 +10,7 @@
     :surface-items="surfaceItems"
   >
     <UContainer class="py-16">
-      <LandingProductProofSection
+      <FireLandingProductProofSection
         section-id="buenohost-guest-guide"
         eyebrow="Guest guide"
         title="Publish the information guests need."
@@ -27,14 +27,14 @@
           icon: 'i-lucide-arrow-right',
         }"
       >
-        <LandingProductHeroImage
+        <FireLandingProductHeroImage
           src="/img/app/cover.png"
           alt="BuenoHost guest guide on a mobile device"
         />
-      </LandingProductProofSection>
+      </FireLandingProductProofSection>
 
       <div class="mt-16">
-        <LandingSolutions variant="preview" />
+        <FireLandingSolutions variant="preview" />
       </div>
 
       <section class="mt-16 space-y-6" aria-labelledby="host-workspace-title">
@@ -101,7 +101,7 @@
         </div>
       </section>
     </UContainer>
-  </LandingEcosystemHome>
+  </FireLandingEcosystemHome>
 </template>
 
 <script setup lang="ts">

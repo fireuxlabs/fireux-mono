@@ -8,7 +8,7 @@
   >
     <p class="text-sm text-muted">Management access must be reviewed separately. If you cannot continue, ask a Misebox administrator.</p>
     <UAlert v-if="error" title="Management access could not be checked" color="error">
-      <template #description><MoleculesCopyError :message="error" /></template>
+      <template #description><FireCopyError :message="error" /></template>
     </UAlert>
     <div class="flex flex-wrap gap-3">
       <UButton

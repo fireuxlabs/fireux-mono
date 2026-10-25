@@ -454,7 +454,7 @@ Both `useProjectApps(id)` and `useEcosystemApps(id)` receive an explicit parent
 and share `useAppCollection` transport state. Public relationships query that
 parent at source and expose active Apps only; management retains Project
 operator authorization and includes inactive definitions. All return App
-records with `CollectionPage` metadata, not another domain model.
+records with `FireCollectionPage` metadata, not another domain model.
 
 The general FireUX `/apps` directory uses bounded per-database queries and a
 shared document-id cursor through `readAppRecords` and `appCollectionPage`.

@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-2">
-    <MoleculesFormsTop
+    <FireFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="Boolean(effectiveValue)"

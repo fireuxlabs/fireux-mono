@@ -47,7 +47,7 @@ import { useDashboardNav } from '../../../composables/navigation/useDashboardNav
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { useUserView } from '../../../user/composables/useUserView'
 
-defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
+defineOptions({ name: 'FireLayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const { activeProfileEntries } = useDashboardNav()

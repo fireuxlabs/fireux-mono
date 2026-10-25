@@ -1,5 +1,5 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="error"
     state="error"
     :title="`${catalogue.title} unavailable`"

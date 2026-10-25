@@ -20,7 +20,7 @@
         trailing-icon="i-lucide-arrow-up-right"
       />
     </header>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="!['ready', 'empty'].includes(offeringsOutcome)"
       :state="
         offeringsOutcome === 'pending'

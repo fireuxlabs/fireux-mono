@@ -26,7 +26,7 @@
         />
       </template>
     </USlideover>
-    <ContextRecord
+    <FireContextRecord
       v-if="identity.canWrite.value"
       :key="identity.supplierId.value"
       title="Supplier AI context"

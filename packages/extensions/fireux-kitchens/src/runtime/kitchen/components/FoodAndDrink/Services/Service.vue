@@ -37,7 +37,7 @@
         >Updating…</span
       >
     </div>
-    <MoleculesCopyError
+    <FireCopyError
       v-if="editor.error"
       :message="editor.error"
       class="mt-3"

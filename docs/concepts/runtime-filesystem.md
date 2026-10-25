@@ -25,6 +25,16 @@ runtime ownership and registration guards are removed.
 - Entity layers: [lasagne.md](lasagne.md)
 - Workspace family: [family-workspace-entity.md](family-workspace-entity.md)
 
+## Shared component registration
+
+The Core native runtime layer registers shared components under the `Fire`
+library prefix. Atoms, Molecules and Organisms are internal folder categories,
+not public name segments. Role folders below them remain part of the name.
+The Core module registers its separate App, User, Ecosystem and Workspace trees
+with their existing prefixes. App-local shared-component overrides use their
+canonical Fire name. Keep one registration owner per tree and migrate consumers
+with registration; do not retain old-name aliases.
+
 ## Ownership invariant
 
 The package root contains Nuxt entrypoints, generic shared mechanisms, and

@@ -1,6 +1,6 @@
 <template>
   <div class="grid min-w-0 gap-6">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="identity.readState.value"
       :state="identity.readState.value"
       entity="Kitchen identity"

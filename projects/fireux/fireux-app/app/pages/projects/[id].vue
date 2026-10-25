@@ -2,25 +2,25 @@
   <UPage>
     <UPageBody>
       <ProjectDetail v-if="project" :project="project" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'pending'"
         entity="project"
         kind="document"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="project"
         kind="document"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'missing'"
         entity="project"
         kind="document"
         state="missing"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Project detail acquisition"
         context="Canonical Project fetched by the detail route."
         object-origin="fetched"

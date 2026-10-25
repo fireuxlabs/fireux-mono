@@ -16,7 +16,7 @@
     <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
       <UFormField label="Image">
         <div class="flex flex-col items-center gap-2">
-          <MoleculesFormsEditableImagePicker
+          <FireFormsEditableImagePicker
             v-if="canWrite"
             :src="dishImageUrl"
             :alt="dishName || catalogue.singular"
@@ -65,7 +65,7 @@
           </p>
         </UFormField>
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Name"
           :value="dishName"
           :placeholder="`${singularTitle} name`"
@@ -77,7 +77,7 @@
           :update="handleName"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Description"
           type="textarea"
           :rows="5"

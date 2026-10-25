@@ -90,7 +90,7 @@
         :description="error"
         color="error"
       >
-        <template #actions><MoleculesCopyError :message="error" /></template>
+        <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
       <footer
         class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4 text-sm text-muted"

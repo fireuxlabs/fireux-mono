@@ -17,7 +17,7 @@
     <p v-if="!hasPlus" class="text-sm text-muted">
       Plus unlocks additional Menus.
     </p>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
   </section>
 </template>
 <script setup lang="ts">

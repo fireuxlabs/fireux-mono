@@ -1,5 +1,5 @@
 <template>
-  <ProviderToolFrame
+  <FireProviderToolFrame
     provider-name="Go QR"
     provider-url="https://go-qr.web.app"
     logo-alt="Go QR"
@@ -8,7 +8,7 @@
     :endpoint="endpoint"
   >
     <slot />
-  </ProviderToolFrame>
+  </FireProviderToolFrame>
 </template>
 
 <script setup lang="ts">

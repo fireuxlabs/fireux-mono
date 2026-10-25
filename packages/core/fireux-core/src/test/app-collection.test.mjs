@@ -4,7 +4,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, toValue, watch } from 'vue'
+import { computed, reactive, ref, toValue, watch } from 'vue'
 
 function load(path, name, dependencies) {
   dependencies = { resolveReadOutcome, ...dependencies }
@@ -19,6 +19,8 @@ function load(path, name, dependencies) {
 function controller(fetch) {
   let execute
   const data = ref()
+  const pending = ref(false)
+  const error = ref(null)
   const factory = load(
     '../runtime/app/composables/useAppCollection.ts',
     'useAppCollection',
@@ -35,19 +37,27 @@ function controller(fetch) {
       ),
       useLiveAsyncData: (_key, handler) => {
         execute = async () => {
-          data.value = await handler((url, options) =>
-            fetch(
-              url +
-                (options?.query?.cursor
-                  ? `&cursor=${options.query.cursor}`
-                  : '')
+          pending.value = true
+          error.value = null
+          try {
+            data.value = await handler((url, options) =>
+              fetch(
+                url +
+                  (options?.query?.cursor
+                    ? `&cursor=${options.query.cursor}`
+                    : '')
+              )
             )
-          )
+          } catch (cause) {
+            error.value = cause
+          } finally {
+            pending.value = false
+          }
         }
         return {
           data,
-          pending: ref(false),
-          error: ref(null),
+          pending,
+          error,
           refresh: () => execute(),
         }
       },
@@ -131,3 +141,124 @@ test('Merged pages have stable cursors and reject duplicate identities', () => {
   })
   assert.throws(() => page([{ id: 'a' }, { id: 'a' }]), /Duplicate/)
 })
+
+test('A failed next page preserves ready records and can retry', async () => {
+  let fail = true
+  let release
+  const c = controller(async (url) => {
+    if (!url.includes('cursor='))
+      return { ok: true, items: [{ id: 'a' }], nextCursor: 'a' }
+    await new Promise((done) => {
+      release = done
+    })
+    if (fail) throw new Error('Next page unavailable')
+    return { ok: true, items: [{ id: 'b' }], nextCursor: null }
+  })
+  await c.execute()
+  const failed = c.state.loadMore()
+  while (!release) await new Promise((done) => setImmediate(done))
+  assert.equal(c.state.outcome.value, 'ready')
+  assert.equal(c.state.loadingMore.value, true)
+  release()
+  await failed
+  assert.equal(c.state.outcome.value, 'ready')
+  assert.equal(c.state.error.value, null)
+  assert.match(String(c.state.loadMoreError.value), /Next page unavailable/)
+  assert.deepEqual(
+    c.state.apps.value.map((x) => x.id),
+    ['a']
+  )
+  assert.equal(c.state.hasMore.value, true)
+  fail = false
+  release = undefined
+  const retry = c.state.loadMore()
+  while (!release) await new Promise((done) => setImmediate(done))
+  release()
+  await retry
+  assert.equal(c.state.loadMoreError.value, null)
+  assert.deepEqual(
+    c.state.apps.value.map((x) => x.id),
+    ['a', 'b']
+  )
+  assert.equal(c.state.hasMore.value, false)
+})
+
+for (const scope of ['ecosystem', 'platform']) {
+  test(`App page ${scope} coordination shares reactive records with presentation and SEO`, async () => {
+    let reads = 0
+    let endpoint
+    let seo
+    let more = 0
+    let seoRecords
+    const records = ref([{ id: 'first' }])
+    const outcome = ref('ready')
+    const nextError = ref(null)
+    const reader = {
+      apps: records,
+      outcome,
+      error: ref(null),
+      hasMore: ref(true),
+      loadingMore: ref(false),
+      loadMoreError: nextError,
+      loadMore: async () => {
+        more++
+      },
+    }
+    const usePage = load(
+      '../runtime/app/composables/useAppCollectionPage.ts',
+      'useAppCollectionPage',
+      {
+        computed,
+        reactive,
+        toValue,
+        useAppCollection: (value) => {
+          reads++
+          endpoint = value
+          return reader
+        },
+        useFireUXConfig: () => ({ appName: 'Example' }),
+        useSeo: (value) => {
+          seo = value
+        },
+      }
+    )
+    const title = ref('Apps')
+    const page = usePage({
+      scope,
+      title,
+      seo: {
+        jsonLdBuilder: (_context, apps) => {
+          seoRecords = apps
+          return { ids: apps.map((app) => app.id) }
+        },
+      },
+    })
+    assert.equal(
+      endpoint,
+      scope === 'platform'
+        ? '/api/platform/apps?limit=24'
+        : '/api/apps?limit=24'
+    )
+    assert.equal(reads, 1)
+    assert.equal(page.apps, records.value)
+    assert.deepEqual(seo.jsonLdBuilder({}).ids, ['first'])
+    assert.equal(seoRecords, page.apps)
+    records.value = [{ id: 'second' }]
+    assert.deepEqual(seo.jsonLdBuilder({}).ids, ['second'])
+    assert.equal(page.diagnostics.objects.apps, page.apps)
+    assert.equal(page.diagnostics.derived.count, 1)
+    title.value = 'Updated'
+    assert.equal(page.title, 'Updated')
+    assert.equal(toValue(seo.title), 'Example | Updated')
+    outcome.value = 'pending'
+    assert.equal(page.ready, false)
+    assert.equal(page.state.outcome, 'pending')
+    outcome.value = 'ready'
+    nextError.value = new Error('Next page unavailable')
+    assert.equal(page.ready, true)
+    assert.equal(page.pagination.error, nextError.value)
+    await page.loadMore()
+    assert.equal(more, 1)
+    assert.equal(reads, 1)
+  })
+}

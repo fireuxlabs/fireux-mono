@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-23 15:48 CEST — Keep the Jobs doorway candidate-first while reusing shared Misebox identity and auth chrome. -->
 <template>
   <div class="fx-layout-shell" data-misebox-jobs-layout>
-    <LayoutsDefaultHeader />
+    <FireLayoutsDefaultHeader />
 
     <div class="border-b border-default bg-default/80 backdrop-blur">
       <UContainer
@@ -57,7 +57,7 @@
       </UContainer>
     </main>
 
-    <LayoutsDefaultFooter />
+    <FireLayoutsDefaultFooter />
   </div>
 </template>
 

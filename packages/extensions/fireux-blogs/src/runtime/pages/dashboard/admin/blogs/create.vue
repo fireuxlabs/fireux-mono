@@ -3,7 +3,7 @@
 <template>
   <UDashboardPanel id="dashboard-admin-blogs-create">
     <template #header>
-      <LayoutsDashboardNavbar title="Admin · Create Blog Post" />
+      <FireLayoutsDashboardNavbar title="Admin · Create Blog Post" />
     </template>
 
     <template #body>
@@ -36,7 +36,7 @@
             description="Only app admins can publish blog posts."
           />
 
-          <CreateShell
+          <FireCreateShell
             v-else
             :loading="isCreating"
             submit-label="Publish"
@@ -49,7 +49,7 @@
             <template #preview>
               <BlogCreatePreview />
             </template>
-          </CreateShell>
+          </FireCreateShell>
         </UPageBody>
       </UPage>
     </template>

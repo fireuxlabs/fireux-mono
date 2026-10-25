@@ -11,7 +11,7 @@
           <AppBrandWordmark size="large" class="tenant-brand__wordmark" />
         </div>
       </section>
-      <AuthSystem />
+      <FireAuthSystem />
     </UContainer>
   </div>
 </template>

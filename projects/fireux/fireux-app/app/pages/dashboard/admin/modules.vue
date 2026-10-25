@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-admin-modules">
     <template #header>
-      <LayoutsDashboardNavbar title="Featured modules" />
+      <FireLayoutsDashboardNavbar title="Featured modules" />
     </template>
 
     <template #body>
@@ -25,7 +25,7 @@
                 variant="subtle"
               >
                 <div class="grid gap-3 sm:grid-cols-2">
-                  <MoleculesActionSurface
+                  <FireActionSurface
                     v-for="module in modules"
                     :key="module.id"
                     action
@@ -72,7 +72,7 @@
                           : 'Feature'
                       }}
                     </UBadge>
-                  </MoleculesActionSurface>
+                  </FireActionSurface>
                 </div>
               </UPageCard>
             </template>

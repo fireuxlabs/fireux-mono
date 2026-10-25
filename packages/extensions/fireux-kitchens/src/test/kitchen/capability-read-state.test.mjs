@@ -347,7 +347,7 @@ test('Both Sales surfaces hide metrics, charts, transactions and empty claims un
         html,
         /Gross sales|No completed sales|Best sellers|Financial insight|UModal/
       )
-      if (outcome === 'error') assert.match(html, /MoleculesCopyError/)
+      if (outcome === 'error') assert.match(html, /FireCopyError/)
     }
   }
 })

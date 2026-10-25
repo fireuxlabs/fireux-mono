@@ -328,7 +328,7 @@ async function render(path, state) {
     })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'DiagnosticsDebugPanel',
+    'FireDiagnosticsDebugPanel',
     'UButton',
     'UIcon',
     'KitchenPrepAndProductionRecipesCollection',
@@ -340,7 +340,7 @@ async function render(path, state) {
           ? h('p', 'Recipe method remains')
           : null,
     })
-  for (const name of ['UAlert', 'MoleculesStateCard'])
+  for (const name of ['UAlert', 'FireStateCard'])
     app.component(name, {
       props: ['title'],
       setup: (props) => () => h('p', props.title),

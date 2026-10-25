@@ -70,7 +70,7 @@ async function render(path, state) {
     'KitchenFoodAndDrinkMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',
-    'DiagnosticsDebugPanel',
+    'FireDiagnosticsDebugPanel',
     'UFormField',
     'KitchenFoodAndDrinkMenusSectionsDishes',
     'KitchenFoodAndDrinkMenusSectionsCollectionSchedule',
@@ -80,8 +80,8 @@ async function render(path, state) {
     'USwitch',
     'KitchenFoodAndDrinkMenusItemsSharedTerms',
     'KitchenFoodAndDrinkMenusItemsAdoptSharedTerms',
-    'MoleculesFormsEditableSimpleField',
-    'MoleculesDisclosurePanel',
+    'FireFormsEditableSimpleField',
+    'FireDisclosurePanel',
     'KitchenFoodAndDrinkMenusItemsOptions',
     'KitchenFoodAndDrinkMenusCollection',
     'KitchenFoodAndDrinkMenusAi',
@@ -109,11 +109,11 @@ async function render(path, state) {
     props: ['title'],
     setup: (props) => () => h('p', props.title),
   })
-  app.component('MoleculesCopyError', {
+  app.component('FireCopyError', {
     props: ['message'],
     setup: (props) => () => h('p', props.message),
   })
-  app.component('MoleculesStateCard', {
+  app.component('FireStateCard', {
     props: ['title'],
     setup: (props) => () => h('p', props.title),
   })
@@ -128,7 +128,7 @@ async function render(path, state) {
     rowSource.indexOf('<template>') + 10,
     rowSource.lastIndexOf('</template>')
   )
-  app.component('CollectionRow', {
+  app.component('FireCollectionRow', {
     props: { as: { default: 'article' } },
     render: compile(rowTemplate),
   })

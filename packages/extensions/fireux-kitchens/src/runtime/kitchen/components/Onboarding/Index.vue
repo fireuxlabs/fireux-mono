@@ -12,7 +12,7 @@
       @associate="associateContribution"
       @back="directoryResult = null; associating = false; clearSelection()"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="initialSelectionPending || selectionPending"
       entity="kitchen"
       kind="document"
@@ -68,7 +68,7 @@
       />
     </div>
 
-    <OnboardingShell v-else-if="preview" family="kitchen" :stage="shellStage">
+    <FireOnboardingShell v-else-if="preview" family="kitchen" :stage="shellStage">
       <template #intro>
         <h1
           class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
@@ -139,7 +139,7 @@
           </UButton>
         </div>
       </template>
-    </OnboardingShell>
+    </FireOnboardingShell>
   </section>
 </template>
 

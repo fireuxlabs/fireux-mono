@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="link && props.to ? props.to : undefined"
     :action="action"
     :disabled="disabled"
@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

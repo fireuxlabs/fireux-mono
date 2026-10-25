@@ -26,7 +26,7 @@
         @click="stopRequested = true"
       />
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="error"
       state="error"
       :title="`Image unavailable: ${currentName}`"

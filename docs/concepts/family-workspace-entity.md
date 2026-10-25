@@ -1220,7 +1220,7 @@ media URLs remain supported. No saved object is overwritten or deleted by this
 upload path.
 
 The four older routes omit redundant Hero, selection and unavailable AI framing,
-and reuse `MoleculesStateCard` for non-ready Identity outcomes. Supplier's profile
+and reuse `FireStateCard` for non-ready Identity outcomes. Supplier's profile
 does not fabricate categories or repeat its tagline as a second headline.
 Domain sections, linked sources, fields and commands remain local; there is no
 universal Identity document or field registry. Supplier now nests publication

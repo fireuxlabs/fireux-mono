@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection menu-collection">
-    <CollectionHeader :title="props.title" :description="props.description">
+    <FireCollectionHeader :title="props.title" :description="props.description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -29,11 +29,11 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
     <MenuCollectionPicks v-model="selectedPicks" />
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-if="isLoading"
       title="Loading menus"
@@ -43,7 +43,7 @@
       aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else-if="outcome.kind === 'unavailable'"
       title="Menus unavailable"
@@ -61,7 +61,7 @@
           @click="index.refresh()"
         />
       </template>
-    </MoleculesStateCard>
+    </FireStateCard>
 
     <div
       v-else-if="visibleItems.length"
@@ -89,7 +89,7 @@
       </template>
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else
       icon="i-lucide-book-open-check"
@@ -124,7 +124,7 @@
       More menus could not be loaded. Please try again.
     </p>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

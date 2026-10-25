@@ -4,7 +4,7 @@
     <AppEditSectionsAbout :app="app" />
 
     <AppEditSectionsSocial :app="app" />
-    <ContextRecord
+    <FireContextRecord
       :key="app.id"
       title="App AI context"
       endpoint="/api/internal/app/context"
@@ -42,14 +42,14 @@
         </div>
       </div>
 
-      <MoleculesStateCard
+      <FireStateCard
         v-if="appUsersOutcome === 'idle' || appUsersOutcome === 'pending'"
         entity="AppUsers"
         kind="collection"
         loading
       />
 
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="appUsersOutcome === 'error'"
         entity="AppUsers"
         kind="collection"

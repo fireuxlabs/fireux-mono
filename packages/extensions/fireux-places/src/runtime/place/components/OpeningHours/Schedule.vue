@@ -98,7 +98,7 @@
             color="error"
           >
             <template #actions
-              ><MoleculesCopyError :message="error"
+              ><FireCopyError :message="error"
             /></template>
           </UAlert>
           <div class="flex justify-end gap-2">

@@ -37,7 +37,7 @@
             color="error"
             title="Shared sign-in could not finish"
             :description="error || connectionFeedback(readError)"
-          /><MoleculesCopyError
+          /><FireCopyError
             :message="error || connectionFeedback(readError)"
           /><UButton :to="startPath" label="Start again" variant="outline" />
         </div>

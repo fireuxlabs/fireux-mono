@@ -21,13 +21,13 @@
         trailing-icon="i-lucide-arrow-right"
       />
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="pending"
       state="loading"
       entity="projects"
       surface="bare"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="error"
       state="error"
       title="Projects could not be loaded"
@@ -37,7 +37,7 @@
       <template #actions
         ><UButton label="Try again" variant="soft" @click="refresh()"
       /></template>
-    </MoleculesStateCard>
+    </FireStateCard>
     <div
       v-else-if="projects.length"
       class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"

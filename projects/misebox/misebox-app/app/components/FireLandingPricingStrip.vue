@@ -1,5 +1,5 @@
 <template>
-  <LandingProductPricingStrip :app-name="appName" :plans="landingTiers" />
+  <FireLandingProductPricingStrip :app-name="appName" :plans="landingTiers" />
 </template>
 
 <script setup lang="ts">

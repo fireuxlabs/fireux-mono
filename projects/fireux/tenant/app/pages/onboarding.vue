@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6 py-12">
-    <LandingMissingBrandAssetsFlag />
+    <FireLandingMissingBrandAssetsFlag />
     <AppInitializeSystem />
   </div>
 </template>

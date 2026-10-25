@@ -4,12 +4,12 @@
       title="Integrations"
       description="Connect your kitchen to the places customers find you."
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-if="outcome === 'pending' || outcome === 'idle'"
       entity="Kitchen"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="outcome === 'error'"
       entity="Kitchen"
       state="error"

@@ -5,7 +5,7 @@
         <KitchenCreate />
       </KitchenHero>
       <KitchenCollection :kitchens="kitchens" />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Kitchens index acquisition"
         context="Canonical Kitchens passed into the FL index surface."
         object-origin="fetched"

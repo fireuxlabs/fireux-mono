@@ -1,6 +1,6 @@
 <!-- app/components/Blog/Create/Advanced.vue -->
 <template>
-  <MoleculesDisclosurePanel
+  <FireDisclosurePanel
     title="Advanced Settings"
     color="primary"
     variant="solid"
@@ -111,7 +111,7 @@
         />
       </UFormField>
     </div>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 
 <script setup lang="ts">

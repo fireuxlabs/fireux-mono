@@ -12,7 +12,7 @@
         :has-supplier="false"
         @refresh="refresh()"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Supplier detail acquisition"
         context="Canonical Supplier fetched by the detail route."
         object-origin="fetched"

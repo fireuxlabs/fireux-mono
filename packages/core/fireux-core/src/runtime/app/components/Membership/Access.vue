@@ -1,17 +1,17 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="appUserOutcome === 'idle' || appUserOutcome === 'pending'"
     entity="app user"
     kind="document"
     loading
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="appUserOutcome === 'error'"
     entity="app user"
     kind="document"
     state="error"
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="appUserOutcome === 'missing' || !appUser"
     entity="app user"
     kind="document"

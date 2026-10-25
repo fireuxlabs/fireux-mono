@@ -45,7 +45,7 @@
         <slot name="actions" />
       </div>
     </div>
-    <MoleculesCopyError
+    <FireCopyError
       v-if="resolvedState === 'error'"
       :message="[resolvedTitle, resolvedDescription].filter(Boolean).join('\n')"
     />

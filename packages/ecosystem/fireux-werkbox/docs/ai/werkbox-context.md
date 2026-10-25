@@ -61,7 +61,7 @@ remembered implementations are not authority.
   visually check the affected routes. The product-landing guard is removed.
   Do not restore a project-local landing framework or move Werkbox artwork
   into Core.
-- Werkbox hero photography consumes Core `LandingProductHeroImage`; Werkbox
+- Werkbox hero photography consumes Core `FireLandingProductHeroImage`; Werkbox
   owns its reviewed asset, alternative text, and focal position but does not
   duplicate the shared sharp image frame.
 - Werkbox follows the shared ecosystem pricing literature: Free is a functional

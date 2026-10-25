@@ -8,7 +8,7 @@
 
     <LaTapBerneNav v-if="!chromeHidden" />
     <LayoutsMiseboxTenantFooter v-if="!chromeHidden" />
-    <LayoutsSharedRoleBadge />
+    <FireLayoutsSharedRoleBadge />
   </main>
 </template>
 

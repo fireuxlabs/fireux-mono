@@ -11,7 +11,7 @@
       </template>
     </WorkspaceProjectIdentityRead>
     <WorkspaceProjectIdentityWrite ref="editor" :identity="identity" />
-    <ContextRecord
+    <FireContextRecord
       v-if="identity.canWrite.value"
       :key="identity.projectId.value"
       title="Project AI context"

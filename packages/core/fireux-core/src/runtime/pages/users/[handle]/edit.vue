@@ -17,19 +17,19 @@
     </UPageHeader>
 
     <UPageBody>
-      <MoleculesStateCard
+      <FireStateCard
         v-if="outcome === 'pending' || outcome === 'idle'"
         entity="User"
         kind="document"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="User"
         kind="document"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'missing'"
         entity="User"
         kind="document"

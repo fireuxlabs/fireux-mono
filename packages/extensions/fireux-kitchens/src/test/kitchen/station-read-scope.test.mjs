@@ -202,7 +202,7 @@ async function render(outcome, rows = []) {
         h('b', { 'data-count': '' }, slots.default?.()),
   })
   app.component('UIcon', { render: () => null })
-  app.component('MoleculesCopyError', {
+  app.component('FireCopyError', {
     props: ['message'],
     setup: (props) => () => h('button', props.message),
   })

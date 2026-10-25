@@ -11,7 +11,7 @@
         :update-member="updateMember"
       />
       <slot />
-      <MoleculesCopyError v-if="error" :message="error" />
+      <FireCopyError v-if="error" :message="error" />
       <UButton
         label="Remove member"
         color="error"

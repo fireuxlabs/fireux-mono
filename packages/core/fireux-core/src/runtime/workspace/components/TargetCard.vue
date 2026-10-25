@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="targetTo"
     :action="action && !targetTo"
     :disabled="disabled"
@@ -71,7 +71,7 @@
         />
       </span>
     </slot>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

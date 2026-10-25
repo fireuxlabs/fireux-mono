@@ -25,7 +25,7 @@
             color="error"
             title="Connection could not continue"
             :description="error || connectionFeedback(readError)"
-          /><MoleculesCopyError
+          /><FireCopyError
             :message="error || connectionFeedback(readError)"
           />
         </div>

@@ -47,7 +47,7 @@
           </p>
           <template v-else-if="identity.publication.value.message">
             <p role="status">{{ identity.publication.value.message }}</p>
-            <MoleculesCopyError :message="identity.publication.value.message" />
+            <FireCopyError :message="identity.publication.value.message" />
           </template>
           <template v-else>
             <UAvatar
@@ -76,7 +76,7 @@
           title="Identity could not be saved"
           :description="error"
         />
-        <MoleculesCopyError v-if="error" :message="error" />
+        <FireCopyError v-if="error" :message="error" />
         <p v-if="!sameProject" role="status" class="text-sm text-warning">
           The selected Project changed. Close this editor and reopen it.
         </p>

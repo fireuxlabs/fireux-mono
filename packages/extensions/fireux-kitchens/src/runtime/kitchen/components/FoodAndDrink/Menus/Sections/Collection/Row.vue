@@ -1,7 +1,7 @@
 <template>
-  <CollectionRow>
+  <FireCollectionRow>
     <div class="min-w-0 flex-1">
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         class="menu-section-name-field"
         :label="editor.displaySectionLabel(section)"
         :value="section.label"
@@ -42,7 +42,7 @@
         />
       </UDropdownMenu>
     </template>
-  </CollectionRow>
+  </FireCollectionRow>
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'

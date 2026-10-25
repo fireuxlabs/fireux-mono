@@ -20,7 +20,7 @@
       </p>
       <div v-else-if="outcome === 'error'" role="alert">
         <p class="text-sm text-dimmed">Stations could not be loaded.</p>
-        <MoleculesCopyError message="Stations could not be loaded." />
+        <FireCopyError message="Stations could not be loaded." />
       </div>
       <div v-else-if="outcome === 'ready'" class="flex flex-wrap gap-2">
         <div

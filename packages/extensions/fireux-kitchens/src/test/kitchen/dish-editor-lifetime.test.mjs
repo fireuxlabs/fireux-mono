@@ -320,9 +320,9 @@ function mount(h, component, exposed, extra = {}) {
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
     'UFormField',
-    'MoleculesStateCard',
+    'FireStateCard',
     'UCard',
-    'MoleculesCopyError',
+    'FireCopyError',
     'KitchenFoodAndDrinkItemsDescriptionAssistant',
   ])
     app.component(name, {
@@ -337,8 +337,8 @@ function mount(h, component, exposed, extra = {}) {
     ['UButton', 'button'],
     ['USwitch', 'input'],
     ['UAvatar', 'img'],
-    ['MoleculesFormsEditableImagePicker', 'button'],
-    ['MoleculesFormsEditableSimpleField', 'input'],
+    ['FireFormsEditableImagePicker', 'button'],
+    ['FireFormsEditableSimpleField', 'input'],
     ['NuxtLink', 'a'],
   ])
     app.component(name, {

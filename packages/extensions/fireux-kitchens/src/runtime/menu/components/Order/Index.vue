@@ -1,12 +1,12 @@
 <template>
   <UContainer class="py-8">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="flow.menu.pending"
       entity="Menu"
       kind="document"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="flow.menu.failure"
       entity="Menu"
       kind="document"
@@ -14,7 +14,7 @@
       title="Menu unavailable"
       description="This menu could not be loaded. Please try again."
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="!flow.manifest"
       entity="Menu"
       kind="document"

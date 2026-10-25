@@ -5,7 +5,7 @@
   <p v-else-if="!process.hasDraft" class="text-sm text-dimmed">
     {{ process.sourceDescription }}
   </p>
-  <MoleculesDisclosurePanel
+  <FireDisclosurePanel
     v-if="process.source"
     :title="process.hasDraft ? 'Process again' : 'Process source'"
     :default-open="!process.hasDraft"
@@ -24,12 +24,12 @@
       <p v-if="process.statusMessage" class="text-sm text-dimmed">
         {{ process.statusMessage }}
       </p>
-      <MoleculesCopyError
+      <FireCopyError
         v-if="process.displayError"
         :message="process.displayError"
       />
     </div>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 <script setup lang="ts">
 import type { UnwrapNestedRefs } from 'vue'

@@ -21,7 +21,7 @@
     title="Menus could not be loaded"
   >
     <template #description
-      ><MoleculesCopyError
+      ><FireCopyError
         :message="String(error || 'Menus could not be loaded.')"
     /></template>
   </UAlert>

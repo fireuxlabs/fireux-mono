@@ -4,7 +4,7 @@
       <KitchenPrepAndProductionIngredientsCollection />
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="outcome === 'error'"
       state="error"
       title="Kitchen unavailable"

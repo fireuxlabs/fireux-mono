@@ -21,7 +21,7 @@
         title="Properties could not be loaded"
       >
         <template #actions
-          ><MoleculesCopyError message="Properties could not be loaded."
+          ><FireCopyError message="Properties could not be loaded."
         /></template>
       </UAlert>
       <ul v-else-if="outcome === 'ready'" class="divide-y divide-default">
@@ -54,7 +54,7 @@
         Select an available Portfolio to view properties.
       </p>
     </UCard>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio properties"
       scope="workspace"

@@ -2,25 +2,25 @@
   <UPage>
     <UPageBody>
       <AppDetail v-if="app" :app="app" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'pending'"
         entity="app"
         kind="document"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="app"
         kind="document"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'missing'"
         entity="app"
         kind="document"
         state="missing"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="App detail acquisition"
         context="Canonical App fetched by the detail route."
         object-origin="fetched"

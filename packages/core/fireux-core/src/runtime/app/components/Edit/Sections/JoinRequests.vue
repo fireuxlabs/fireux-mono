@@ -10,7 +10,7 @@
     </template>
 
     <div v-if="items.length" class="section__item">
-      <MoleculesFormsEditableListActions
+      <FireFormsEditableListActions
         :items="items"
         :action-approve="onApprove"
         :action-reject="onRemove"

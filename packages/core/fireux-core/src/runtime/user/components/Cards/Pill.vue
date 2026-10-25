@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
     class="pill"
@@ -11,7 +11,7 @@
       :avatar="avatar"
       size="sm"
     />
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

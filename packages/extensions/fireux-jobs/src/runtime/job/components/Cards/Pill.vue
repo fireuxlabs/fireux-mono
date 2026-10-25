@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 12:26 CEST — Neutral Jobs migration seam: replace the domain-specific subtitle prop. -->
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
     class="pill"
@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-</MoleculesActionSurface>
+</FireActionSurface>
 </template>
 
 <script setup lang="ts">

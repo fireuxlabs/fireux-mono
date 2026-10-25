@@ -57,7 +57,7 @@
           />
         </div>
 
-        <DiagnosticsDebugPanel
+        <FireDiagnosticsDebugPanel
           object-origin="fetched"
           launcher
           include-route

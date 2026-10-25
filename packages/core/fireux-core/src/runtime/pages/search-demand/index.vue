@@ -13,13 +13,13 @@
       <AppSearchDemandBriefNav :briefs="briefs" /><AppSearchDemandStageNav
         current="domain"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-if="pending"
         surface="collection"
         title="Loading research"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="error || !demand"
         surface="collection"
         :state="error ? 'error' : 'empty'"

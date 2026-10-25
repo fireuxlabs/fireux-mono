@@ -56,7 +56,7 @@
         title="Account confirmation failed"
         :description="error"
       />
-      <MoleculesCopyError :message="error" />
+      <FireCopyError :message="error" />
     </div>
     <UButton
       v-if="cancelable"

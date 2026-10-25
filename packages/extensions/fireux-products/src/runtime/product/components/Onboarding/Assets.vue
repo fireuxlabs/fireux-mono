@@ -11,7 +11,7 @@
         class="asset-card"
       >
         <p class="asset-label">{{ spec.label }}</p>
-        <MoleculesFormsStateImagePicker label="" :state-key="spec.key" />
+        <FireFormsStateImagePicker label="" :state-key="spec.key" />
         <p class="asset-meta">{{ spec.note }}</p>
       </div>
     </div>

@@ -3,7 +3,7 @@
 <template>
   <UDashboardPanel id="dashboard-developer">
     <template #header>
-      <LayoutsDashboardNavbar title="Developer" />
+      <FireLayoutsDashboardNavbar title="Developer" />
     </template>
 
     <template #body>
@@ -34,21 +34,21 @@
             </template>
           </UPageHeader>
 
-          <MoleculesStateCard
+          <FireStateCard
             v-if="appOutcome === 'idle' || appOutcome === 'pending'"
             entity="developer workspace"
             kind="document"
             loading
           />
 
-          <MoleculesStateCard
+          <FireStateCard
             v-else-if="appOutcome === 'error'"
             entity="developer workspace"
             kind="document"
             state="error"
           />
 
-          <MoleculesStateCard
+          <FireStateCard
             v-else-if="appOutcome === 'missing' || !appSnapshot"
             entity="app"
             kind="document"

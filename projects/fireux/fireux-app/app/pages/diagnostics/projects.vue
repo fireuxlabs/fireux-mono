@@ -24,7 +24,7 @@
         </div>
       </UCard>
 
-      <DiagnosticsModel :title="'Projects · Model'" :model="projectModelRuntime" />
+      <FireDiagnosticsModel :title="'Projects · Model'" :model="projectModelRuntime" />
 
       <UCard>
         <template #header>
@@ -63,7 +63,7 @@
             description="This inspector reads the FireUX control-plane Project only. Apps and Ecosystems point to it through project_id."
           />
 
-<DiagnosticsDebugPanel
+<FireDiagnosticsDebugPanel
   object-origin="fetched"
             launcher
             include-route

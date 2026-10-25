@@ -16,7 +16,7 @@
         </div>
       </template>
 
-      <DiagnosticsModel :title="'Suppliers · Model'" :model="supplierModelRuntime" />
+      <FireDiagnosticsModel :title="'Suppliers · Model'" :model="supplierModelRuntime" />
     </UCard>
 
     <UCard>
@@ -66,7 +66,7 @@
         No suppliers found for this source.
       </p>
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route
@@ -216,7 +216,7 @@
         source.
       </p>
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route
@@ -279,7 +279,7 @@
         Select a supplier above to inspect its linked ingredients.
       </p>
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

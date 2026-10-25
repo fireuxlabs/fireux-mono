@@ -13,7 +13,7 @@
       </template>
     </WorkspaceKitchenCollectionHeader>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-if="loadError"
       state="error"
       title="Ingredients unavailable"
@@ -194,7 +194,7 @@
         ><KitchenPrepAndProductionIngredientsAdd v-if="addOpen && canWrite"
       /></template>
     </USlideover>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Kitchen ingredients"
       scope="workspace"
       object-origin="fetched"

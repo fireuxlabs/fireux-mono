@@ -3,7 +3,7 @@
 <template>
   <UDashboardPanel id="dashboard-customer-profile">
     <template #header>
-      <LayoutsDashboardNavbar title="Customer" />
+      <FireLayoutsDashboardNavbar title="Customer" />
     </template>
 
     <template #body>

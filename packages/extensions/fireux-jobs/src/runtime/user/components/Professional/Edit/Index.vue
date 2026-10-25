@@ -5,7 +5,7 @@
     <div v-if="professional" class="space-y-6">
       <UPageCard title="Identity" icon="i-lucide-id-card" variant="outline">
         <div class="space-y-4">
-          <MoleculesFormsEditableSimpleField
+          <FireFormsEditableSimpleField
             label="Job title"
             :value="headline"
             placeholder="Ex: Freelance Chef"
@@ -13,7 +13,7 @@
             :update="handleHeadline"
           />
 
-          <MoleculesFormsEditableSimpleField
+          <FireFormsEditableSimpleField
             label="Summary"
             type="textarea"
             :rows="3"
@@ -23,7 +23,7 @@
             :update="handleSummary"
           />
 
-          <MoleculesFormsEditableSimpleField
+          <FireFormsEditableSimpleField
             label="Bio"
             type="textarea"
             :rows="6"
@@ -34,7 +34,7 @@
           />
 
           <div class="flex flex-col items-center gap-2">
-            <MoleculesFormsEditableImagePicker
+            <FireFormsEditableImagePicker
               :src="imageUrl"
               :alt="headline || 'Professional'"
               :initials="imageInitials"
@@ -45,7 +45,7 @@
             </p>
           </div>
 
-          <MoleculesFormsEditableArrayOfStrings
+          <FireFormsEditableArrayOfStrings
             label="Positions"
             :value="positions"
             item-placeholder="Position"
@@ -103,7 +103,7 @@
       />
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       entity="professional profile"
       kind="document"

@@ -611,6 +611,6 @@ test('Workspace footer composes the active family switcher independently of bott
   assert.ok(!source.includes('familyRootNav'))
   assert.ok(
     source.indexOf(':is="workspaceNavigation"') <
-      source.indexOf('<LayoutsSharedSideBarFooter')
+      source.indexOf('<FireLayoutsSharedSideBarFooter')
   )
 })

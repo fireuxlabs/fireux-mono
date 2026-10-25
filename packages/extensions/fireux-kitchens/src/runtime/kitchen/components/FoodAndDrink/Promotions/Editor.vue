@@ -20,7 +20,7 @@
       <UFormField label="Name"
         ><UInput v-model="name" class="w-full" :disabled="disabled"
       /></UFormField>
-      <MoleculesCopyError v-if="readError" :message="String(readError)" />
+      <FireCopyError v-if="readError" :message="String(readError)" />
       <p v-else-if="editorPending" role="status">
         Refreshing promotion data… Your changes are kept.
       </p>
@@ -46,7 +46,7 @@
         :disabled="disabled"
       />
       <UFormField label="Days">
-        <MoleculesMultiSelect
+        <FireMultiSelect
           v-model="days"
           label="Promotion days"
           :items="dayOptions"
@@ -80,7 +80,7 @@
       </div>
       <div v-if="error" role="alert">
         <p>{{ error }}</p>
-        <MoleculesCopyError :message="error" />
+        <FireCopyError :message="error" />
       </div>
     </form>
   </UCard>

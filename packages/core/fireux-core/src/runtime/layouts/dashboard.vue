@@ -13,7 +13,7 @@
     >
       <template #header="{ collapsed }">
         <div class="flex min-h-11 items-center gap-2 px-3 py-2">
-          <LayoutsDashboardProfilesMenu
+          <FireLayoutsDashboardProfilesMenu
             v-if="!collapsed"
             :collapsed="false"
             class="min-w-0 flex-1"
@@ -59,7 +59,7 @@
             />
 
             <div class="pt-3">
-              <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
+              <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@
 
       <template #footer="{ collapsed }">
         <div class="hidden lg:flex">
-          <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
+          <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
         </div>
       </template>
     </UDashboardSidebar>
@@ -80,9 +80,9 @@
     </main>
   </UDashboardGroup>
 
-  <LayoutsSharedRoleBadge />
+  <FireLayoutsSharedRoleBadge />
 
-  <LayoutsSharedNotificationsSlideover
+  <FireLayoutsSharedNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
   />
 </template>

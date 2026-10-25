@@ -4,12 +4,12 @@
       <PortfolioHero />
       <PortfolioCreate />
       <PortfolioCollection :portfolios="portfolios" />
-      <CollectionPagination
+      <FireCollectionPagination
         :has-more="hasMore"
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Portfolios index acquisition"
         context="Canonical Portfolios and pagination inputs used by the FL index surface."
         object-origin="fetched"

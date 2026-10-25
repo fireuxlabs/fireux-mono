@@ -1,5 +1,5 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     class="menu-qr__failure"
     entity="Menu"
     kind="document"
@@ -30,7 +30,7 @@
         >Back to menus</UButton
       >
     </template>
-  </MoleculesStateCard>
+  </FireStateCard>
 </template>
 <script setup lang="ts">
 import type { MenuLoadFailure } from '../../composables/useMenu'

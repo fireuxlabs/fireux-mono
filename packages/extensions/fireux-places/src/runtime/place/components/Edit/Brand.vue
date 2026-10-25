@@ -69,7 +69,7 @@
       />
       <div v-if="error" role="alert" class="text-sm text-error">
         {{ error }}
-        <MoleculesCopyError :message="error" />
+        <FireCopyError :message="error" />
       </div>
     </div>
   </UCard>

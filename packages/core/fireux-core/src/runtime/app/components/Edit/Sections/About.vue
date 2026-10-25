@@ -10,7 +10,7 @@
     </template>
 
     <div class="space-y-5">
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         :capture-intent="captureIntent"
         label="Name"
         :maxlength="60"
@@ -19,7 +19,7 @@
         :update="updateAppName"
         @updated="toast.success('App name updated')"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         :capture-intent="captureIntent"
         label="Tagline"
         :maxlength="160"
@@ -28,7 +28,7 @@
         :update="updateTagline"
         @updated="toast.success('Tagline updated')"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         :capture-intent="captureIntent"
         label="Description"
         type="textarea"

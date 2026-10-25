@@ -32,7 +32,7 @@
       description="Choose a Kitchen before viewing its recipes."
       color="neutral"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="error"
       state="error"
       title="Recipe unavailable"
@@ -41,7 +41,7 @@
     <template v-else-if="recipe">
       <template v-if="!editing">
         <h1>{{ recipe.name }}</h1>
-        <MoleculesStateCard
+        <FireStateCard
           v-if="ingredientsError"
           state="error"
           title="Ingredient details unavailable"
@@ -49,7 +49,7 @@
         <p v-else-if="ingredientsPending" role="status">
           Loading ingredient details…
         </p>
-        <MoleculesStateCard
+        <FireStateCard
           v-if="prepError"
           state="error"
           title="Prep items unavailable"
@@ -74,14 +74,14 @@
     </template>
     <USkeleton v-else-if="pending" class="h-64" />
     <UAlert v-else title="Recipe not found" color="neutral" variant="soft" />
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       launcher
       title="Kitchen recipe"
       object-origin="fetched"
       :objects="{ recipe }"
       :derived="debug"
     />
-    <ContextRecord
+    <FireContextRecord
       v-if="recipe && canWrite"
       :key="`${kitchenId}/${recipeId}`"
       title="Recipe AI context"

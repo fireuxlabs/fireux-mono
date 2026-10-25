@@ -1,5 +1,5 @@
 <template>
-  <LibraryDesignTokens />
+  <FireLibraryDesignTokens />
 </template>
 
 <script setup lang="ts">

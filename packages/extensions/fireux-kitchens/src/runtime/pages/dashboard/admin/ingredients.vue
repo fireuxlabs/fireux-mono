@@ -12,13 +12,13 @@
     </UPageHeader>
 
     <UPageBody>
-      <MoleculesStateCard
+      <FireStateCard
         v-if="ingredientCollection.outcome === 'pending'"
         entity="Ingredient"
         kind="collection"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="ingredientCollection.outcome === 'error'"
         entity="Ingredient"
         kind="collection"
@@ -31,7 +31,7 @@
             @click="ingredientCollection.refresh()"
           />
         </template>
-      </MoleculesStateCard>
+      </FireStateCard>
       <IngredientCollection
         v-else
         :ingredients="ingredientCollection.ingredients"

@@ -13,7 +13,7 @@
       </UBadge>
     </div>
 
-    <ProviderToolIframe
+    <FireProviderToolIframe
       v-if="toolUrl"
       :src="toolUrl"
       :title="toolTitle"

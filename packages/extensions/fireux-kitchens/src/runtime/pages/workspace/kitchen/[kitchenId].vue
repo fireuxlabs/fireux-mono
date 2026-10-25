@@ -25,7 +25,7 @@
       </div>
     </template>
     <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
-    <MoleculesCopyError v-else-if="error" :message="errorMessage" />
+    <FireCopyError v-else-if="error" :message="errorMessage" />
     <UAlert
       v-else
       color="neutral"

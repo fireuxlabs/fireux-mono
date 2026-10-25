@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection product-collection">
-    <CollectionHeader :title="title" :description="description">
+    <FireCollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -29,7 +29,7 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
     <ProductCollectionList
       v-if="cardsFiltered.length"
@@ -44,7 +44,7 @@
       </template>
     </ProductCollectionList>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else
       icon="i-lucide-box"
@@ -57,7 +57,7 @@
     />
 
     <div>
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

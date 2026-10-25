@@ -26,7 +26,7 @@
     </p>
     <div v-if="error" class="text-sm text-error">
       <p>{{ error }}</p>
-      <MoleculesCopyError :message="error" />
+      <FireCopyError :message="error" />
     </div>
     <UButton
       type="submit"

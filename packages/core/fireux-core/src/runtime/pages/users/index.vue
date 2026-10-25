@@ -6,19 +6,19 @@
         <UserCurrent v-if="currentUser" :current-user="currentUser" />
         <UserCreate v-else />
       </ClientOnly>
-      <MoleculesStateCard
+      <FireStateCard
         v-if="outcome === 'pending'"
         entity="users"
         kind="collection"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="users"
         kind="collection"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'empty'"
         entity="users"
         kind="collection"
@@ -32,7 +32,7 @@
       <UButton v-if="hasMore" class="mt-4" @click="loadMore"
         >Load more users</UButton
       >
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Users index acquisition"
         context="Canonical Users and current identity inputs used by the FL index surface."
         object-origin="fetched"

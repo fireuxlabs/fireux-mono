@@ -1,20 +1,20 @@
 <!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: shape the shared app control room around real App and AppUser authority. -->
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="appOutcome === 'pending'"
     entity="app administration"
     kind="document"
     loading
   />
 
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="appOutcome === 'error'"
     entity="app administration"
     kind="document"
     state="error"
   />
 
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="appOutcome === 'missing' || !appSnapshot"
     entity="app"
     kind="document"

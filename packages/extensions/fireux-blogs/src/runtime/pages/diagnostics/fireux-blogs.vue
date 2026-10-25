@@ -15,7 +15,7 @@
             </UButton>
           </div>
           <div v-show="openSections.model" class="mt-4">
-            <DiagnosticsModel
+            <FireDiagnosticsModel
               :title="'Blogs · Model'"
               :model="blogPostModelRuntime"
             />
@@ -44,7 +44,7 @@
                     Inspect model drift separately from the Blog directory
                     manager.
                   </p>
-                  <DiagnosticsDriftToolbar
+                  <FireDiagnosticsDriftToolbar
                     :drift-kind="blogsDriftKind"
                     :selected-field="blogsSelectedField"
                     :filter-options="blogsFilterOptions"
@@ -57,13 +57,13 @@
               </template>
             </UCard>
 
-            <MoleculesStateCard
+            <FireStateCard
               v-if="blogCollection.outcome === 'pending'"
               entity="Blog"
               kind="collection"
               loading
             />
-            <MoleculesStateCard
+            <FireStateCard
               v-else-if="blogCollection.outcome === 'error'"
               entity="Blog"
               kind="collection"

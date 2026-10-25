@@ -1,7 +1,7 @@
 <template>
   <div class="grid gap-4">
     <h2 class="text-xl font-semibold">Menu placements</h2>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="error"
       state="error"
       title="Menus unavailable"

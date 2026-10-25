@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="preview ? undefined : to"
     :action="preview"
     @activate="emit('open')"
@@ -57,7 +57,7 @@
         aria-hidden="true"
       />
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

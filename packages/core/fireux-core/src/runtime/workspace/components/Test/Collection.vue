@@ -16,7 +16,7 @@
   <p v-if="pending" role="status" class="text-muted">Loading…</p>
   <UAlert v-else-if="readError" color="error" title="Tests could not be loaded">
     <template #description
-      ><MoleculesCopyError message="Tests could not be loaded"
+      ><FireCopyError message="Tests could not be loaded"
     /></template>
   </UAlert>
   <p v-else-if="!records.length" class="text-muted">No Tests yet.</p>

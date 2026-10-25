@@ -37,7 +37,7 @@
       <p v-if="message" role="status" class="text-sm text-success">
         {{ message }}
       </p>
-      <MoleculesCopyError v-if="error" :message="error" />
+      <FireCopyError v-if="error" :message="error" />
     </div>
   </UCard>
 </template>

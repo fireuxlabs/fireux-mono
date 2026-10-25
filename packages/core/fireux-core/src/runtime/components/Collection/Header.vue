@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'CollectionHeader' })
+defineOptions({ name: 'FireCollectionHeader' })
 
 withDefaults(
   defineProps<{

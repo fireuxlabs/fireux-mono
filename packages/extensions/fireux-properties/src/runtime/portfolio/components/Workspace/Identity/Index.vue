@@ -36,7 +36,7 @@
         />
       </template>
     </USlideover>
-    <ContextRecord
+    <FireContextRecord
       v-if="identity.canWrite.value"
       :key="identity.portfolioId.value"
       title="Portfolio AI context"

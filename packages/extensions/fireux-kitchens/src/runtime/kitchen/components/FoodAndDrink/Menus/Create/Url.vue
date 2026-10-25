@@ -25,7 +25,7 @@
     <p v-if="!currencyCode" class="text-sm text-warning">
       Set the Place currency before importing a menu.
     </p>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
   </div>
 </template>
 <script setup lang="ts">

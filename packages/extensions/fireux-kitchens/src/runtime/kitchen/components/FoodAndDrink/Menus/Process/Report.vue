@@ -6,7 +6,7 @@
     title="Check before creating the Menu"
     :description="attentionFlags.map((flag) => flag.message).join(' ')"
   />
-  <MoleculesDisclosurePanel title="Import details">
+  <FireDisclosurePanel title="Import details">
     <dl
       v-if="process.showStats"
       class="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm"
@@ -16,7 +16,7 @@
         <dd class="font-medium">{{ stat.value }}</dd>
       </div>
     </dl>
-    <MoleculesDisclosurePanel
+    <FireDisclosurePanel
       v-if="process.fileResults.length || process.writeMessage"
       title="Uploaded document"
     >
@@ -41,8 +41,8 @@
           {{ process.writeMessage }}
         </p>
       </div>
-    </MoleculesDisclosurePanel>
-    <MoleculesDisclosurePanel v-if="process.flags.length" title="Review flags">
+    </FireDisclosurePanel>
+    <FireDisclosurePanel v-if="process.flags.length" title="Review flags">
       <ul class="mt-3 space-y-2">
         <li
           v-for="flag in process.flags"
@@ -66,8 +66,8 @@
           </div>
         </li>
       </ul>
-    </MoleculesDisclosurePanel>
-  </MoleculesDisclosurePanel>
+    </FireDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'

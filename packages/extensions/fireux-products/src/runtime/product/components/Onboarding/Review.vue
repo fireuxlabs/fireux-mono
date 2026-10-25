@@ -2,7 +2,7 @@
   <div class="step-content">
     <p>We assemble the app, then you review and request changes.</p>
     <div class="review-json">
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

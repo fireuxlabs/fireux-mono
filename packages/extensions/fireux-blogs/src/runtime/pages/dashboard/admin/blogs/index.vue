@@ -3,7 +3,7 @@
 <template>
   <UDashboardPanel id="dashboard-admin-blogs">
     <template #header>
-      <LayoutsDashboardNavbar :title="`Admin · ${pageTitle}`" />
+      <FireLayoutsDashboardNavbar :title="`Admin · ${pageTitle}`" />
     </template>
 
     <template #body>
@@ -23,13 +23,13 @@
             </template>
           </UPageHeader>
 
-          <MoleculesStateCard
+          <FireStateCard
             v-if="blogCollection.outcome === 'pending'"
             entity="Blog"
             kind="collection"
             loading
           />
-          <MoleculesStateCard
+          <FireStateCard
             v-else-if="blogCollection.outcome === 'error'"
             entity="Blog"
             kind="collection"

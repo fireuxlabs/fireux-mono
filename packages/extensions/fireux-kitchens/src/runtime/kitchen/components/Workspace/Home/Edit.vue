@@ -17,7 +17,7 @@
         <UFormField label="Show in directory">
           <USwitch v-model="visibility" />
         </UFormField>
-        <MoleculesCopyError v-if="updateError" :message="updateError" />
+        <FireCopyError v-if="updateError" :message="updateError" />
         <div class="flex justify-end gap-2">
           <UButton
             label="Cancel"

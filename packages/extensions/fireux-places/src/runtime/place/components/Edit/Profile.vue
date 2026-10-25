@@ -3,27 +3,27 @@
     <template #header><h2 class="font-semibold">Profile</h2></template>
     <div class="space-y-5">
       <div class="grid gap-5 sm:grid-cols-2">
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Name"
           :value="place.name"
           :maxlength="120"
           :update="saveName"
         />
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Short name"
           :value="place.short_name"
           :maxlength="80"
           :update="saveShortName"
         />
       </div>
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Tagline"
         :value="place.tagline"
         placeholder="A short introduction"
         :maxlength="140"
         :update="saveTagline"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="About"
         type="textarea"
         :rows="6"

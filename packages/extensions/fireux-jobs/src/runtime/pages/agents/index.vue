@@ -1,5 +1,5 @@
 <template>
-  <CollectionPage
+  <FireCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Agent is a profile layer attached to a User. -->
       <AgentCurrent />
     </template>
-  </CollectionPage>
+  </FireCollectionPage>
 </template>
 
 <script setup lang="ts">

@@ -15,7 +15,7 @@
             </UButton>
           </div>
           <div v-show="openSections.model" class="mt-4">
-            <DiagnosticsModel
+            <FireDiagnosticsModel
               :title="'Suppliers · Model'"
               :model="supplierModelRuntime"
             />
@@ -44,7 +44,7 @@
                     Filter suppliers by model drift (extra fields) before
                     browsing records.
                   </p>
-                  <DiagnosticsDriftToolbar
+                  <FireDiagnosticsDriftToolbar
                     :drift-kind="suppliersDriftKind"
                     :selected-field="suppliersSelectedField"
                     :filter-options="suppliersFilterOptions"
@@ -57,7 +57,7 @@
               </template>
             </UCard>
 
-            <DiagnosticsDebugPanel
+            <FireDiagnosticsDebugPanel
               object-origin="fetched"
               launcher
               include-route
@@ -112,7 +112,7 @@
               description="Team, catalogue, ingredients, and items live beneath the canonical Supplier root. Apps do not own Supplier records."
             />
 
-            <DiagnosticsDebugPanel
+            <FireDiagnosticsDebugPanel
               object-origin="fetched"
               launcher
               include-route

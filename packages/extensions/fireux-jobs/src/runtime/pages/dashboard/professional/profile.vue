@@ -5,7 +5,7 @@
     :ui="{ body: 'flex flex-col gap-4 flex-1 overflow-y-auto p-2 sm:p-4' }"
   >
     <template #header>
-      <LayoutsDashboardNavbar :title="navTitle">
+      <FireLayoutsDashboardNavbar :title="navTitle">
         <template #right>
           <div class="inline-flex items-center gap-1">
             <UButton
@@ -27,7 +27,7 @@
             />
           </div>
         </template>
-      </LayoutsDashboardNavbar>
+      </FireLayoutsDashboardNavbar>
     </template>
 
     <template #body>

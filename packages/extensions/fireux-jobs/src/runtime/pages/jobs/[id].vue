@@ -2,7 +2,7 @@
   <UPage>
     <UPageBody>
       <JobDetail v-if="job" :job="job" />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Job detail acquisition"
         context="Canonical Job fetched by the detail route."
         object-origin="fetched"

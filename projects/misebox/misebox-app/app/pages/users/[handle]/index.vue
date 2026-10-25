@@ -2,25 +2,25 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'pending' || outcome === 'idle'"
         entity="User"
         kind="document"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="User"
         kind="document"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else
         entity="User"
         kind="document"
         state="missing"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the Misebox detail route."
         object-origin="fetched"

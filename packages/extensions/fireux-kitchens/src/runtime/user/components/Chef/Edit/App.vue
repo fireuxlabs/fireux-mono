@@ -17,7 +17,7 @@
       </UCard>
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       entity="chef app profile"
       kind="document"

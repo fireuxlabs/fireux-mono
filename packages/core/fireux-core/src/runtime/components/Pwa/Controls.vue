@@ -92,7 +92,7 @@
 
     <div v-if="error" class="space-y-2" role="alert">
       <p class="break-words text-sm text-error">{{ error }}</p>
-      <MoleculesCopyError :message="error" />
+      <FireCopyError :message="error" />
     </div>
   </div>
 </template>

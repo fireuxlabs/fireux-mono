@@ -13,7 +13,7 @@
         "
       />
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="error"
       state="error"
       title="Ingredients unavailable"

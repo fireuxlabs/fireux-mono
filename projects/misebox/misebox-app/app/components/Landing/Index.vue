@@ -1,12 +1,12 @@
 <!-- Concurrent edit — 2026-07-28 — Align the FireUX and Misebox Main App landing family. -->
 <template>
   <div>
-    <LandingOperationRail
+    <FireLandingOperationRail
       ariaLabel="Kitchen operations"
       :operations="operationRailItems"
     />
 
-    <LandingProductIndex
+    <FireLandingProductIndex
       :content="content"
       hero-layout="proof-wide"
       presentation="immersive"
@@ -17,7 +17,7 @@
       </template>
 
       <template #onboarding>
-        <LandingPricingStrip />
+        <FireLandingPricingStrip />
         <section
           aria-labelledby="team-access-heading"
           class="mx-auto max-w-4xl space-y-4 px-6 py-12"
@@ -26,9 +26,9 @@
             Your team, your way
           </h2>
           <p class="text-muted">
-            Shared Misebox gives team members broad access, with limits based
-            on their subscription. Your own managed App lets us configure
-            who can view and change each area.
+            Shared Misebox gives team members broad access, with limits based on
+            their subscription. Your own managed App lets us configure who can
+            view and change each area.
           </p>
           <p class="text-sm text-muted">
             Subscription limits control usage. They do not replace access
@@ -44,12 +44,10 @@
         </section>
       </template>
 
-      <template #surfaces>
-
-      </template>
+      <template #surfaces> </template>
 
       <template #specifics>
-        <LandingProductProofSection
+        <FireLandingProductProofSection
           section-id="misebox-workspace"
           copy-emphasis
           :eyebrow="selectedWorkspaceCopy.eyebrow"
@@ -66,11 +64,11 @@
           <LandingWorkspacePreview
             v-model:surface-id="selectedWorkspaceSurfaceId"
           />
-        </LandingProductProofSection>
+        </FireLandingProductProofSection>
       </template>
 
       <template #apps>
-        <LandingAppCollection
+        <FireLandingAppCollection
           :controller="appsController"
           title="Misebox's Apps"
           action-label="Explore all Misebox apps"
@@ -84,17 +82,17 @@
       </template>
 
       <template #tools>
-        <LandingProductCatalogue :content="toolsCatalogue" />
+        <FireLandingProductCatalogue :content="toolsCatalogue" />
       </template>
 
       <template #solutions>
-        <LandingProductCatalogue :content="solutionsCatalogue" />
+        <FireLandingProductCatalogue :content="solutionsCatalogue" />
       </template>
 
       <template #operations>
-        <LandingProductCatalogue :content="operationsCatalogue" />
+        <FireLandingProductCatalogue :content="operationsCatalogue" />
       </template>
-    </LandingProductIndex>
+    </FireLandingProductIndex>
   </div>
 </template>
 
@@ -110,7 +108,7 @@ import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppColl
 import { metaContent } from '../../meta'
 import LandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import LandingHeroImage from './HeroImage.vue'
-import LandingPricingStrip from './PricingStrip.vue'
+import FireLandingPricingStrip from '../FireLandingPricingStrip.vue'
 import {
   workspaceSurfaceCopy,
   content as landingContent,
@@ -125,7 +123,10 @@ const content = computed(() => ({
   ...landingContent,
   hero: {
     ...landingContent.hero,
-    secondaryAction: { ...landingContent.hero.secondaryAction, to: workspaceEntryHref.value },
+    secondaryAction: {
+      ...landingContent.hero.secondaryAction,
+      to: workspaceEntryHref.value,
+    },
   },
 }))
 const appsController = useAppCollection('/api/apps?limit=24')

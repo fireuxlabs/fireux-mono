@@ -1,5 +1,5 @@
 <template>
-  <MoleculesDisclosurePanel
+  <FireDisclosurePanel
     v-if="deliveryZones.length"
     title="Delivery area"
     description="Minimum order and delivery fee by zone."
@@ -15,7 +15,7 @@
         />
       </ClientOnly>
     </UCard>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 
 <script setup lang="ts">

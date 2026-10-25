@@ -36,8 +36,8 @@ async function render(relative, props) {
     'UBadge',
     'USwitch',
     'UDropdownMenu',
-    'MoleculesFormsEditableSimpleField',
-    'MoleculesDisclosurePanel',
+    'FireFormsEditableSimpleField',
+    'FireDisclosurePanel',
     'KitchenFoodAndDrinkMenusItemsSharedTerms',
     'KitchenFoodAndDrinkMenusItemsAdoptSharedTerms',
     'KitchenFoodAndDrinkMenusItemsOptions',
@@ -62,7 +62,7 @@ async function render(relative, props) {
     rowSource.indexOf('<template>') + 10,
     rowSource.lastIndexOf('</template>')
   )
-  app.component('CollectionRow', {
+  app.component('FireCollectionRow', {
     props: { as: { default: 'article' } },
     render: compile(rowTemplate),
   })
@@ -114,7 +114,7 @@ test('section row preserves scoped save promises, disabled state and record navi
     editor,
   })
   assert.match(html, /Small plates/)
-  const field = seen.MoleculesFormsEditableSimpleField[0]
+  const field = seen.FireFormsEditableSimpleField[0]
   assert.equal(field.disabled, true)
   assert.equal(field.update('Mains'), saved)
   assert.deepEqual(calls, [['section one', 'Mains']])
@@ -177,7 +177,7 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   assert.deepEqual(calls, [[row]])
   assert.equal(seen.USwitch, undefined)
   assert.doesNotMatch(html, /rounded-lg|On menu/)
-  assert.equal(seen.MoleculesFormsEditableSimpleField, undefined)
+  assert.equal(seen.FireFormsEditableSimpleField, undefined)
   assert.equal(seen.KitchenFoodAndDrinkMenusItemsSharedTerms, undefined)
   assert.equal(seen.KitchenFoodAndDrinkMenusItemsOptions, undefined)
 })

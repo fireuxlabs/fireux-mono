@@ -8,14 +8,14 @@
     </template>
 
     <div class="grid gap-4">
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Phone"
         :value="place?.phone"
         placeholder="+41 ..."
         :maxlength="80"
         :update="handlePhone"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Email"
         type="email"
         :value="place?.email"
@@ -23,7 +23,7 @@
         :maxlength="160"
         :update="handleEmail"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Website"
         type="url"
         :value="place?.website"

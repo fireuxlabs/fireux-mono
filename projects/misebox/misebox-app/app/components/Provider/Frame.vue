@@ -1,5 +1,5 @@
 <template>
-  <ProviderToolFrame
+  <FireProviderToolFrame
     provider-name="Misebox"
     provider-url="https://misebox.app"
     logo-alt="Misebox"
@@ -8,7 +8,7 @@
     :endpoint="endpoint"
   >
     <slot />
-  </ProviderToolFrame>
+  </FireProviderToolFrame>
 </template>
 
 <script setup lang="ts">

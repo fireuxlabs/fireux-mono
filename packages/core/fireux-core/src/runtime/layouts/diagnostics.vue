@@ -8,7 +8,7 @@
         class="bg-elevated/25"
       >
         <template #default="{ collapsed }">
-          <LayoutsDiagnosticsNav :collapsed="collapsed ?? false" />
+          <FireLayoutsDiagnosticsNav :collapsed="collapsed ?? false" />
         </template>
       </UDashboardSidebar>
 

@@ -14,7 +14,7 @@
     >
       <ProfessionalDetail :profile="professionalProfile" :user="profileUser" />
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

@@ -33,7 +33,7 @@ const ULink = Vue.defineComponent({
 })
 async function render(Card, props) {
   const app = Vue.createSSRApp({ render: () => Vue.h(Card, props) })
-  app.component('MoleculesActionSurface', ActionSurface)
+  app.component('FireActionSurface', ActionSurface)
   app.component('ULink', ULink)
   for (const name of ['UAvatar', 'UBadge', 'UIcon']) app.component(name, { render: () => null })
   return renderToString(app)

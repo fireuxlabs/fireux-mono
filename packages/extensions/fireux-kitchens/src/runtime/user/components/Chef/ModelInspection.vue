@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel
+      <FireDiagnosticsModel
         :title="'Chefs · Core Model'"
         :model="chefCoreModelRuntime"
       />
@@ -18,7 +18,7 @@
               Inspect model drift separately from the public chefs collection
               manager.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="driftKind"
               :selected-field="selectedField"
               :filter-options="filterOptions"

@@ -60,7 +60,7 @@ test('Process composition forwards model selection, draft comparison and review 
       },
       render: compile(template(name)),
     })
-  app.component('MoleculesDisclosurePanel', {
+  app.component('FireDisclosurePanel', {
     setup:
       (_, { slots }) =>
       () =>
@@ -70,10 +70,10 @@ test('Process composition forwards model selection, draft comparison and review 
     'KitchenFoodAndDrinkMenusProcessCost',
     'KitchenFoodAndDrinkMenusProcessSections',
     'KitchenFoodAndDrinkMenusProcessReview',
-    'DiagnosticsDebugPanel',
+    'FireDiagnosticsDebugPanel',
     'UPageCard',
     'UBadge',
-    'MoleculesCopyError',
+    'FireCopyError',
     'UAlert',
   ])
     app.component(name, {

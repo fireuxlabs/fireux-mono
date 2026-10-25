@@ -2,18 +2,18 @@
   <UPage>
     <UPageBody class="space-y-6">
       <MenuCollectionHeader />
-      <MoleculesStateCard v-if="pending && !loadingMore" surface="collection" title="Loading menus" loading />
-      <MoleculesStateCard v-else-if="error" surface="collection" title="Menus unavailable" description="Menus could not be loaded. Please try again." state="error">
+      <FireStateCard v-if="pending && !loadingMore" surface="collection" title="Loading menus" loading />
+      <FireStateCard v-else-if="error" surface="collection" title="Menus unavailable" description="Menus could not be loaded. Please try again." state="error">
         <template #actions><UButton label="Try again" @click="refresh()" /></template>
-      </MoleculesStateCard>
+      </FireStateCard>
       <MenuCollectionResults :hide-results="(pending && !loadingMore) || Boolean(error)" :menus="menus" @service-change="service = $event" @search-change="search = $event" />
       <UAlert v-if="loadMoreError && !error" title="More menus could not be loaded" description="Try loading more again." color="error" />
-      <CollectionPagination
+      <FireCollectionPagination
         :has-more="hasMore && !error"
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Menus index acquisition"
         context="Canonical Menu directory records and pagination inputs used by the FL index surface."
         object-origin="fetched"

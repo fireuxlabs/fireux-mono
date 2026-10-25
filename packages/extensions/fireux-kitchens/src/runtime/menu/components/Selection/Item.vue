@@ -21,7 +21,7 @@
       <URadioGroup v-model="choices.optionId" :items="options" />
     </UFormField>
     <UFormField v-if="offer.item.addOns.length" label="Extras">
-      <MoleculesMultiSelect
+      <FireMultiSelect
         v-model="choices.extraIds"
         label="Extras"
         :items="extras"
@@ -33,7 +33,7 @@
       :label="`${group.name} · choose ${group.choose}`"
       required
     >
-      <MoleculesMultiSelect
+      <FireMultiSelect
         :model-value="choices.groups[group.id] || []"
         :label="group.name"
         :items="

@@ -14,18 +14,18 @@
       </template>
     </UPageHeader>
     <UPageBody class="pagebody">
-      <MoleculesStateCard
+      <FireStateCard
         v-if="outcome === 'pending'"
         entity="company"
         state="loading"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="company"
         state="error"
         @retry="refresh"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'missing'"
         entity="company"
         state="empty"
@@ -38,7 +38,7 @@
           :model="companyProfile"
         />
 
-<DiagnosticsDebugPanel
+<FireDiagnosticsDebugPanel
   object-origin="fetched"
           launcher
           include-route

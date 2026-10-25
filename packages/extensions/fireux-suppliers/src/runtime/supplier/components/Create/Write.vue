@@ -75,7 +75,7 @@
           Cancel
         </UButton>
       </div>
-      <MoleculesCopyError v-if="errorMessage" :message="errorMessage" />
+      <FireCopyError v-if="errorMessage" :message="errorMessage" />
     </div>
   </div>
 </template>

@@ -2,11 +2,7 @@ import { type Resolver } from '@nuxt/kit'
 import { registerComponentsDir } from './module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components', {
-    global: false,
-    pathPrefix: true,
-  })
-
+  // Shared Fire components are registered by the native runtime layer.
   registerComponentsDir(resolver, './runtime/workspace/components', {
     global: false,
     pathPrefix: true,

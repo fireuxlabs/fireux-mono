@@ -194,7 +194,7 @@
               <div v-if="errorKey" class="market-profile__error" role="alert">
                 <strong>{{ copy('profile_error_heading') }}</strong>
                 <span>{{ copy(errorKey) }}</span>
-                <MoleculesCopyError :message="copy(errorKey)" />
+                <FireCopyError :message="copy(errorKey)" />
               </div>
 
               <div class="market-profile__actions">

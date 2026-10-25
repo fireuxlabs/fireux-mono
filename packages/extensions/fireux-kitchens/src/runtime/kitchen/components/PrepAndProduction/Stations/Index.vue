@@ -5,7 +5,7 @@
       color="error"
       :title="defaultStationError"
     />
-    <MoleculesCopyError
+    <FireCopyError
       v-if="defaultStationError"
       :message="defaultStationError"
     />

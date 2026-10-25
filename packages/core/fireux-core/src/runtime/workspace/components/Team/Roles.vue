@@ -108,7 +108,7 @@
       </div>
     </div>
     <div v-if="error && !manageOpen" role="alert" class="text-sm text-error">
-      {{ error }} <MoleculesCopyError :message="error" />
+      {{ error }} <FireCopyError :message="error" />
       <UButton label="Retry" variant="link" size="sm" @click="load()" />
     </div>
     <p v-if="notice && !manageOpen" role="status" class="text-sm text-muted">
@@ -145,7 +145,7 @@
       <template #body>
         <div class="space-y-6">
           <div v-if="error" role="alert" class="text-sm text-error">
-            {{ error }} <MoleculesCopyError :message="error" />
+            {{ error }} <FireCopyError :message="error" />
           </div>
           <form class="flex gap-2" @submit.prevent="addRole">
             <UInput

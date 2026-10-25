@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="link && record.to ? record.to : undefined"
     class="block w-full"
     :action="action"
@@ -77,7 +77,7 @@
         </div>
       </div>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

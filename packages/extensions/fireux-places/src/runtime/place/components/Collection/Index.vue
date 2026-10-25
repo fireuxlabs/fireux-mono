@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection place-collection">
-    <CollectionHeader :title="title" :description="description" compact>
+    <FireCollectionHeader :title="title" :description="description" compact>
       <template #controls>
         <UFieldGroup v-if="showFilters" size="sm">
           <UButton
@@ -34,7 +34,7 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
     <div v-if="cardsFiltered.length" class="place-collection__results">
       <PlaceCollectionList :cards="cardsFiltered" />

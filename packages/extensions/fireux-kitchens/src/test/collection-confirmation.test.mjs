@@ -96,7 +96,7 @@ async function render(changes = {}) {
     setup: (p) => () =>
       h('button', { disabled: p.disabled || p.loading }, p.label),
   })
-  app.component('MoleculesCopyError', {
+  app.component('FireCopyError', {
     props: ['message'],
     setup: (p) => () => h('button', 'Copy error: ' + p.message),
   })

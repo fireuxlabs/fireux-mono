@@ -50,7 +50,7 @@
       </template>
     </BlogCollectionList>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       entity="posts"
       state="empty"
@@ -64,7 +64,7 @@
     />
 
     <div>
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

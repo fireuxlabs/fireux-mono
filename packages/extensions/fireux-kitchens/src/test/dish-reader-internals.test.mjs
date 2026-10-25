@@ -366,7 +366,7 @@ function template(path) {
 }
 function components(app, spec) {
   const empty = [
-    'DiagnosticsDebugPanel',
+    'FireDiagnosticsDebugPanel',
     'UIcon',
     'UAvatar',
     'UBadge',
@@ -382,8 +382,8 @@ function components(app, spec) {
     'DishMenus',
     'DishMenu',
     'DishMenuSection',
-    'MoleculesCopyError',
-    'ContextRecord',
+    'FireCopyError',
+    'FireContextRecord',
     'KitchenFoodAndDrinkItemsCreate',
   ]
   for (const name of empty)
@@ -399,7 +399,7 @@ function components(app, spec) {
     props: ['label'],
     setup: (props) => () => h('button', props.label),
   })
-  for (const name of ['UAlert', 'MoleculesStateCard'])
+  for (const name of ['UAlert', 'FireStateCard'])
     app.component(name, {
       props: ['title'],
       setup: (props) => () => h('p', props.title),

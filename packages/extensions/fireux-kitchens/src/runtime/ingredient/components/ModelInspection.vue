@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel
+      <FireDiagnosticsModel
         :title="'Ingredients · Model'"
         :model="ingredientModelRuntime"
       />
@@ -18,7 +18,7 @@
               Browse ingredients resolved for this runtime and filter by model
               drift.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="driftKind"
               :selected-field="selectedField"
               :filter-options="filterOptions"
@@ -31,7 +31,7 @@
         </div>
       </template>
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

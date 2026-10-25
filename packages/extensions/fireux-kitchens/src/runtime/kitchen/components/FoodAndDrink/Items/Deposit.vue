@@ -1,6 +1,6 @@
 <template>
   <section class="mt-5 space-y-2 border-t border-default pt-5">
-    <MoleculesFormsEditableSimpleField
+    <FireFormsEditableSimpleField
       :key="value || 0"
       :label="`Bottle deposit (${currency})`"
       type="number"

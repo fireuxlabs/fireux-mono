@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection portfolio-collection">
-    <CollectionHeader
+    <FireCollectionHeader
       title="Portfolios"
       description="Browse property portfolios available through this app."
     >
@@ -17,7 +17,7 @@
           >{{ visibleCount }} portfolios</span
         >
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
     <PortfolioCollectionList :cards="cards" />
   </section>
 </template>

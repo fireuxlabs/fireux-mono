@@ -12,14 +12,14 @@
     </template>
   </UPageHeader>
 
-  <MoleculesStateCard
+  <FireStateCard
     v-if="settingsOutcome === 'idle' || settingsOutcome === 'pending'"
     entity="featured selection"
     kind="document"
     loading
   />
 
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="settingsOutcome === 'error'"
     entity="featured selection"
     kind="document"

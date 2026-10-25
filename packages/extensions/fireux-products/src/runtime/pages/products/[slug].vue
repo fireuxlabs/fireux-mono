@@ -20,7 +20,7 @@
         description="This product does not exist or is not published here."
         icon="i-lucide-package-x"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

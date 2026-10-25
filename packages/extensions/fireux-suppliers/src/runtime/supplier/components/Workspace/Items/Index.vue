@@ -38,7 +38,7 @@
         title="Could not load supplier items"
       >
         <template #actions
-          ><MoleculesCopyError message="Could not load supplier items."
+          ><FireCopyError message="Could not load supplier items."
         /></template>
       </UAlert>
       <p
@@ -65,7 +65,7 @@
       </div>
     </UPageCard>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Supplier items"
       scope="workspace"
       object-origin="fetched"

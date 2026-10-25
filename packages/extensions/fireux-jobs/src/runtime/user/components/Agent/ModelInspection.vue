@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel :title="'Agents · Model'" :model="agentModelRuntime" />
+      <FireDiagnosticsModel :title="'Agents · Model'" :model="agentModelRuntime" />
     </UCard>
 
     <UCard>
@@ -15,7 +15,7 @@
               Inspect model drift separately from the public agents collection
               manager.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="agentsDriftKind"
               :selected-field="agentsSelectedField"
               :filter-options="agentsFilterOptions"

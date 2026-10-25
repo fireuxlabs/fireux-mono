@@ -19,7 +19,7 @@
         :description="paymentMessage"
       />
 
-<DiagnosticsDebugPanel
+<FireDiagnosticsDebugPanel
   object-origin="fetched"
         launcher
         include-route

@@ -25,7 +25,7 @@
     </UPageHeader>
 
     <UPageBody>
-      <LandingSolutions variant="preview" />
+      <FireLandingSolutions variant="preview" />
     </UPageBody>
   </UPage>
 </template>

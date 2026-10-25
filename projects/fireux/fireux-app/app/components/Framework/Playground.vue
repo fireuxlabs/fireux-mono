@@ -19,7 +19,7 @@
       description="FireUX adds a shared interaction around native controls."
       variant="outline"
     >
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Explore the interaction"
         description="A shared disclosure pattern"
         icon="i-lucide-panel-top-open"
@@ -28,7 +28,7 @@
           The labelled trigger and content compose Nuxt UI's accessible
           collapsible behaviour.
         </p>
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
       <UButton
         label="Run local action"
         variant="soft"
@@ -49,7 +49,7 @@
       description="Shared loading, empty, missing and error presentation."
       variant="outline"
     >
-      <MoleculesStateCard
+      <FireStateCard
         state="empty"
         surface="bare"
         title="Ready for your content"

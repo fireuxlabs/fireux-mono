@@ -14,7 +14,7 @@ function load(path, name, dependencies) {
   )(...Object.values(dependencies))
 }
 
-function harness({ failedSource = '' } = {}) {
+function harness({ failedSource = '', standalone = false } = {}) {
   const queries = []
   const records = {
     first: [
@@ -27,6 +27,7 @@ function harness({ failedSource = '' } = {}) {
       { id: 'd', status: 'inactive', ecosystem_id: 'two' },
       { id: 'f', status: 'active', ecosystem_id: 'two' },
     ],
+    standalone: [{ id: 'g', status: 'active', ecosystem_id: 'one' }],
     identity: [
       { id: 'one', project_id: 'selected' },
       { id: 'two', project_id: 'other' },
@@ -79,9 +80,18 @@ function harness({ failedSource = '' } = {}) {
     readAppRecords: load(path, 'readAppRecords', dependencies),
     readAppPageInput: load(path, 'readAppPageInput', dependencies),
     appCollectionPage: load(path, 'appCollectionPage', dependencies),
-    PLATFORM_DIRECTORY_TARGETS: [
+    PLATFORM_APP_TARGETS: [
       { ecosystemId: 'one', projectId: 'firebase-one', databaseId: 'first' },
       { ecosystemId: 'two', projectId: 'firebase-two', databaseId: 'second' },
+      ...(standalone
+        ? [
+            {
+              ecosystemId: 'one',
+              projectId: 'firebase-one',
+              databaseId: 'standalone',
+            },
+          ]
+        : []),
     ],
     readPlatformEcosystems: async () => records.identity,
     getFirestoreProjectDb: async (_project, name) => database(name),
@@ -178,7 +188,7 @@ test('Ambiguous and malformed parents fail before querying', async () => {
 test('Public App detail excludes inactive and archived definitions', async () => {
   for (const status of ['active', 'inactive', 'archived']) {
     const read = load('../../server/utils/apps.ts', 'readPlatformApp', {
-      PLATFORM_DIRECTORY_TARGETS: [{ projectId: 'host', databaseId: 'apps' }],
+      PLATFORM_APP_TARGETS: [{ projectId: 'host', databaseId: 'apps' }],
       getFirestoreProjectDb: async () => ({
         collection: () => ({
           doc: (id) => ({
@@ -202,7 +212,7 @@ test('Complete App reads report the correct failed source while retaining availa
     projectId: key,
   }))
   const read = load('../../server/utils/apps.ts', 'readPlatformApps', {
-    PLATFORM_DIRECTORY_TARGETS: targets,
+    PLATFORM_APP_TARGETS: targets,
     getFirestoreProjectDb: async (project) => ({
       collection: () => ({
         get: async () => {
@@ -225,7 +235,7 @@ test('Complete App reads report the correct failed source while retaining availa
 
 test('Complete App reads fail when every configured source is unavailable', async () => {
   const read = load('../../server/utils/apps.ts', 'readPlatformApps', {
-    PLATFORM_DIRECTORY_TARGETS: [{ key: 'first', projectId: 'first' }],
+    PLATFORM_APP_TARGETS: [{ key: 'first', projectId: 'first' }],
     getFirestoreProjectDb: async () => {
       throw new Error('Unavailable')
     },
@@ -236,17 +246,60 @@ test('Complete App reads fail when every configured source is unavailable', asyn
   )
 })
 
-
 test('Platform Ecosystem detail selects the owning named database and rejects unknown targets', async () => {
   const calls = []
-  const read = load('../../server/utils/ecosystems.ts', 'readPlatformEcosystem', {
-    createError: input => Object.assign(new Error(input.statusMessage), input),
-    PLATFORM_DIRECTORY_TARGETS: [{ ecosystemId: 'misebox', projectId: 'misebox-project', databaseId: 'misebox' }],
-    getFirestoreProjectDb: async (...args) => { calls.push(args); return 'owner-db' },
-    readEcosystem: async (id, db) => { assert.equal(db, 'owner-db'); return { id, project_id: 'misebox' } },
-  })
+  const read = load(
+    '../../server/utils/ecosystems.ts',
+    'readPlatformEcosystem',
+    {
+      createError: (input) =>
+        Object.assign(new Error(input.statusMessage), input),
+      PLATFORM_DIRECTORY_TARGETS: [
+        {
+          ecosystemId: 'misebox',
+          projectId: 'misebox-project',
+          databaseId: 'misebox',
+        },
+      ],
+      getFirestoreProjectDb: async (...args) => {
+        calls.push(args)
+        return 'owner-db'
+      },
+      readEcosystem: async (id, db) => {
+        assert.equal(db, 'owner-db')
+        return { id, project_id: 'misebox' }
+      },
+    }
+  )
   assert.equal((await read('misebox')).id, 'misebox')
   assert.deepEqual(calls, [['misebox-project', 'misebox']])
-  await assert.rejects(read('arbitrary-db'), error => error.statusCode === 404)
+  await assert.rejects(
+    read('arbitrary-db'),
+    (error) => error.statusCode === 404
+  )
   assert.equal(calls.length, 1)
+})
+
+test('Platform and Ecosystem directories include standalone App databases without leaking another Ecosystem', async () => {
+  const { read, queries } = harness({ standalone: true })
+  const platform = await read({ limit: 24 })
+  assert.deepEqual(
+    platform.items.map((x) => x.id),
+    ['a', 'b', 'c', 'e', 'f', 'g']
+  )
+  queries.length = 0
+  const selected = await read({ ecosystemId: 'one' })
+  assert.deepEqual(
+    selected.items.map((x) => x.id),
+    ['a', 'c', 'e', 'g']
+  )
+  assert.deepEqual(
+    queries.map((x) => x[0]),
+    ['first', 'standalone']
+  )
+  const other = await read({ ecosystemId: 'two' })
+  assert.deepEqual(
+    other.items.map((x) => x.id),
+    ['b', 'f']
+  )
 })

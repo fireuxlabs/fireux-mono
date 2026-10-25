@@ -4,7 +4,7 @@
     <UContainer class="py-8">
       <div class="flex w-full flex-col items-center gap-6">
         <ClientOnly>
-          <LayoutsDefaultFooterAdmins
+          <FireLayoutsDefaultFooterAdmins
             class="w-full max-w-4xl"
             :show-badges="false"
           />
@@ -50,7 +50,7 @@
             </a>
           </div>
         </div>
-        <LayoutsSharedPlatformFooter class="w-full" />
+        <FireLayoutsSharedPlatformFooter class="w-full" />
       </div>
     </UContainer>
   </footer>

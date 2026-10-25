@@ -5,7 +5,7 @@
     title="Test could not be loaded"
     color="error"
   >
-    <template #description><MoleculesCopyError message="Test could not be loaded" /></template>
+    <template #description><FireCopyError message="Test could not be loaded" /></template>
   </UAlert>
   <UCard v-else-if="record">
     <div class="space-y-5">
@@ -17,7 +17,7 @@
         :submit="update"
         :capture-intent="test.captureIntent"
       />
-      <MoleculesCopyError v-if="error" :message="error" />
+      <FireCopyError v-if="error" :message="error" />
       <UButton
         label="Delete Test"
         color="error"

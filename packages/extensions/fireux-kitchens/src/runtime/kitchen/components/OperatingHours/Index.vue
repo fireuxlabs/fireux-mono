@@ -43,7 +43,7 @@
           :can-write="canWrite"
         />
       </div>
-      <MoleculesStateCard
+      <FireStateCard
         v-if="!['ready', 'empty'].includes(offeringsOutcome)"
         :state="
           offeringsOutcome === 'pending'
@@ -72,14 +72,14 @@
       description="Editing operating hours requires access to this Kitchen."
       color="neutral"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       entity="Kitchen service hours"
       kind="document"
       :loading="placeOutcome === 'pending' || placeOutcome === 'idle'"
       :state="placeOutcome === 'error' ? 'error' : 'missing'"
     />
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       v-bind="debug"
       title="Operating hours debug"
       context="Place → Kitchen → Service → Menu availability"

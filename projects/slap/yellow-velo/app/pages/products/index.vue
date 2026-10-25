@@ -69,7 +69,7 @@
         <USkeleton v-for="index in 8" :key="index" class="h-[28rem] rounded-none" />
       </div>
 
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="error"
         entity="products"
         state="error"
@@ -107,7 +107,7 @@
         </NuxtLink>
       </section>
 
-      <MoleculesStateCard
+      <FireStateCard
         v-else
         entity="products"
         state="empty"

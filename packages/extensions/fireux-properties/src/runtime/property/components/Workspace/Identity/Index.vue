@@ -1,6 +1,6 @@
 <template>
   <section class="grid min-w-0 gap-6">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="readState"
       :state="readState"
       entity="Property identity"
@@ -62,7 +62,7 @@
           @close="open = false"
       /></template>
     </USlideover>
-    <ContextRecord
+    <FireContextRecord
       v-if="identity.canWrite.value"
       :key="identity.propertyId.value"
       title="Property AI context"

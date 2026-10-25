@@ -6,7 +6,7 @@
       title="Menu access unavailable"
       description="Sign in with access to this Kitchen to open its menus."
     />
-    <MoleculesCopyError v-else-if="error" :message="String(error)" />
+    <FireCopyError v-else-if="error" :message="String(error)" />
     <p v-else-if="pending" role="status">Loading Menu…</p>
     <UAlert
       v-else-if="outcome === 'idle'"

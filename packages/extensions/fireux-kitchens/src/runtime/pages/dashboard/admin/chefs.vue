@@ -1,5 +1,5 @@
 <template>
-  <DashboardAdminDomainCurationPanel
+  <FireDashboardAdminDomainCurationPanel
     domain="chef"
     title="Chefs"
     description="Add comma-separated chef slugs to feature on public chef surfaces."

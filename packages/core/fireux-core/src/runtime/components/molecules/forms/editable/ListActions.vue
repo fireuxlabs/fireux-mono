@@ -212,7 +212,7 @@ const handleReject = (id: string) => runAction(actionReject, id)
 const handleToggle = (id: string, next: boolean) =>
   runToggle(actionToggle, id, next)
 
-defineOptions({ name: 'MoleculesFormsEditableListActions' })
+defineOptions({ name: 'FireFormsEditableListActions' })
 </script>
 
 <style scoped>

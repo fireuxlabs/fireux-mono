@@ -1,6 +1,6 @@
 <template>
   <section aria-label="Publication readiness" class="mb-4 space-y-3">
-    <MoleculesCopyError v-if="error" :message="String(error)" />
+    <FireCopyError v-if="error" :message="String(error)" />
     <p v-else-if="pending" role="status" class="text-sm text-muted">
       Checking Menu content…
     </p>

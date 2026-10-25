@@ -15,7 +15,7 @@
         </div>
       </UCard>
 
-      <DiagnosticsModel :title="'Users · Model'" :model="userModelRuntime" />
+      <FireDiagnosticsModel :title="'Users · Model'" :model="userModelRuntime" />
 
       <UCard v-if="signedInUserPreview || signedInUserSummary" variant="subtle">
         <template #header>
@@ -42,7 +42,7 @@
             </div>
           </div>
 
-          <DiagnosticsDebugPanel
+          <FireDiagnosticsDebugPanel
             object-origin="fetched"
             launcher
             include-route
@@ -74,7 +74,7 @@
               Inspect model drift separately from the public users collection
               manager.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="usersDriftKind"
               :selected-field="usersSelectedField"
               :filter-options="usersFilterOptions"

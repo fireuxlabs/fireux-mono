@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="misebox-app-context">
-    <template #header><LayoutsDashboardNavbar title="AI context" /></template>
+    <template #header><FireLayoutsDashboardNavbar title="AI context" /></template>
     <template #body>
       <div class="space-y-5 max-w-3xl">
         <p class="text-muted">
@@ -20,7 +20,7 @@
           :description="error"
           title="Context unavailable"
         />
-        <MoleculesCopyError v-if="error" :message="error" />
+        <FireCopyError v-if="error" :message="error" />
         <UCard v-if="data">
           <template #header
             ><div class="flex justify-between gap-3">

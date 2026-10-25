@@ -1,5 +1,5 @@
 <template>
-  <LandingCardGrid
+  <FireLandingCardGrid
     :title="title"
     :subtitle="subtitle"
     :items="items"

@@ -1,5 +1,5 @@
 <template>
-  <CollectionPage
+  <FireCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Professional is a profile layer attached to a User. -->
       <ProfessionalCurrent />
     </template>
-  </CollectionPage>
+  </FireCollectionPage>
 </template>
 
 <script setup lang="ts">

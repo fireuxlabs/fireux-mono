@@ -341,7 +341,7 @@ test('the Appearance control saves only its boolean preference and retains the f
         return Vue.h('div', this.$slots.default?.())
       },
     })
-    app.component('MoleculesFormsEditableCheckbox', {
+    app.component('FireFormsEditableCheckbox', {
       props: ['value', 'update'],
       setup(props) {
         field = props

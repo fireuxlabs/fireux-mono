@@ -3,7 +3,7 @@
     <template #header
       ><h2 class="text-base font-semibold">Add a meal deal</h2></template
     >
-    <MoleculesCopyError
+    <FireCopyError
       v-if="promotions.error.value"
       :message="String(promotions.error.value)"
     />

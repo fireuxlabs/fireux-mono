@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="dashboard-agent-hiring">
     <template #header>
-      <LayoutsDashboardNavbar title="Hiring" />
+      <FireLayoutsDashboardNavbar title="Hiring" />
     </template>
 
     <template #body>

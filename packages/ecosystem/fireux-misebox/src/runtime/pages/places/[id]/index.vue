@@ -31,7 +31,7 @@
                 variant="soft"
                 @click="kitchens.refresh()"
               />
-              <MoleculesCopyError
+              <FireCopyError
                 message="Kitchen information is unavailable"
               />
             </template>

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <LandingOperationRail
+    <FireLandingOperationRail
       v-if="railItems.length"
       :ariaLabel="railLabel"
       :operations="railItems"
     />
 
-    <LandingProductIndex
+    <FireLandingProductIndex
       :content="content"
       hero-layout="proof-wide"
       presentation="immersive"
@@ -15,7 +15,7 @@
     >
       <template #hero-preview>
         <slot name="hero-preview">
-          <LandingProductHeroImage
+          <FireLandingProductHeroImage
             :src="heroImage"
             :alt="heroAlt"
             :position="heroPosition"
@@ -24,7 +24,7 @@
       </template>
 
       <template #onboarding>
-        <LandingProductPricingStrip
+        <FireLandingProductPricingStrip
           :app-name="appName"
           :plans="props.pricingPlans"
         />
@@ -32,12 +32,12 @@
 
       <template v-if="surfaceItems.length" #surfaces>
         <slot name="surfaces">
-          <LandingProductSurfaceShowcase :items="surfaceItems" />
+          <FireLandingProductSurfaceShowcase :items="surfaceItems" />
         </slot>
       </template>
 
       <template v-if="showApps" #apps>
-        <LandingAppCollection
+        <FireLandingAppCollection
           :controller="appsController"
           :title="`${appName}'s Apps`"
           action-label="Explore all apps"
@@ -46,7 +46,7 @@
           :minimum-items="2"
         />
       </template>
-    </LandingProductIndex>
+    </FireLandingProductIndex>
 
     <slot />
   </div>

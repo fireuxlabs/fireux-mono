@@ -54,7 +54,7 @@
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: keep model-drift copy diagnostic-only.
 import { useDiagnosticsClipboard } from '../../composables/diagnostics/useDiagnosticsClipboard'
 
-defineOptions({ name: 'DriftToolbar' })
+defineOptions({ name: 'FireDiagnosticsDriftToolbar' })
 
 type DriftKind = 'missing' | 'extra'
 

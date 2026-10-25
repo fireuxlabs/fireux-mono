@@ -5,7 +5,7 @@
       color="error"
       title="Task could not be created"
       :description="writeError"
-      ><template #actions><MoleculesCopyError :message="writeError" /></template
+      ><template #actions><FireCopyError :message="writeError" /></template
     ></UAlert>
 
     <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
@@ -17,7 +17,7 @@
       title="Could not load compliance"
     >
       <template #actions
-        ><MoleculesCopyError message="Could not load compliance."
+        ><FireCopyError message="Could not load compliance."
       /></template>
     </UAlert>
     <p
@@ -94,7 +94,7 @@
         />
       </UCard>
     </template>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio compliance"
       object-origin="fetched"

@@ -1,5 +1,5 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="pending"
     entity="App identity"
     kind="document"

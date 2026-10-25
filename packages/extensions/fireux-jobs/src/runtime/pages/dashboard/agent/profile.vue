@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-agent-profile">
     <template #header>
-      <LayoutsDashboardNavbar :title="navTitle">
+      <FireLayoutsDashboardNavbar :title="navTitle">
         <template #right>
           <div class="inline-flex items-center gap-1">
             <UButton
@@ -33,7 +33,7 @@
             />
           </div>
         </template>
-      </LayoutsDashboardNavbar>
+      </FireLayoutsDashboardNavbar>
     </template>
 
     <template #body>

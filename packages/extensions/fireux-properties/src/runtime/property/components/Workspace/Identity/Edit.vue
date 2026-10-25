@@ -63,7 +63,7 @@
       :description="error"
       color="error"
     >
-      <template #actions><MoleculesCopyError :message="error" /></template>
+      <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
     <div class="flex justify-end gap-2">
       <UButton

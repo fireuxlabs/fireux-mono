@@ -15,7 +15,7 @@
         @click="emit('remove')"
       />
     </div>
-    <MoleculesMultiSelect
+    <FireMultiSelect
       label="Serving days"
       :items="days"
       :model-value="value.days"

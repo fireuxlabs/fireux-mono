@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LandingProductIndex
+    <FireLandingProductIndex
       :content="content"
       hero-layout="proof-wide"
       presentation="immersive"
@@ -11,18 +11,18 @@
       </template>
 
       <template #onboarding>
-        <LandingProductPricingStrip
+        <FireLandingProductPricingStrip
           :app-name="pricingAppName"
           :plans="landingTiers"
         />
       </template>
 
       <template #surfaces>
-        <LandingProductSurfaceShowcase :items="surfaceItems" />
+        <FireLandingProductSurfaceShowcase :items="surfaceItems" />
       </template>
 
       <template #specifics>
-        <LandingProductProofSection
+        <FireLandingProductProofSection
           section-id="werkbox-direct-hiring"
           eyebrow="For small businesses"
           title="Pay for the platform, not a percentage of your team."
@@ -41,9 +41,9 @@
           }"
         >
           <EmployerValue />
-        </LandingProductProofSection>
+        </FireLandingProductProofSection>
 
-        <LandingProductProofSection
+        <FireLandingProductProofSection
           section-id="werkbox-cleaning"
           eyebrow="Cleaning"
           title="Start with work that keeps places ready."
@@ -69,15 +69,15 @@
               height="916"
             />
           </figure>
-        </LandingProductProofSection>
+        </FireLandingProductProofSection>
       </template>
 
       <template #solutions>
-        <LandingProductCatalogue :content="networkCatalogue" />
+        <FireLandingProductCatalogue :content="networkCatalogue" />
       </template>
 
       <template #apps>
-        <LandingAppCollection
+        <FireLandingAppCollection
           :controller="appsController"
           title="Werkbox's Apps"
           action-label="Explore all Werkbox apps"
@@ -86,7 +86,7 @@
           :minimum-items="2"
         />
       </template>
-    </LandingProductIndex>
+    </FireLandingProductIndex>
   </div>
 </template>
 

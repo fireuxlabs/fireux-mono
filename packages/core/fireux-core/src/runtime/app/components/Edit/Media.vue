@@ -103,7 +103,7 @@
           Sync App media from a development build.
         </p>
 
-        <MoleculesDisclosurePanel
+        <FireDisclosurePanel
           title="Install assets"
           :description="`${requiredOnlyItems.length} browser and PWA files stay in the repository.`"
           icon="i-lucide-monitor-down"
@@ -149,7 +149,7 @@
               </div>
             </div>
           </div>
-        </MoleculesDisclosurePanel>
+        </FireDisclosurePanel>
 
         <p class="text-xs leading-5 text-dimmed">
           Source files live in <span class="font-mono">/public/img/app</span>.

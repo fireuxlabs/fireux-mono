@@ -59,7 +59,7 @@
 
     <!-- Main Product Image -->
     <div class="image-section">
-      <MoleculesFormsStateImagePicker
+      <FireFormsStateImagePicker
         label="Main Product Image"
         state-key="createProductMainImage"
       />

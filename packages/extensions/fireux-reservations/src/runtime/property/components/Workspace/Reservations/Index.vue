@@ -9,7 +9,7 @@
       title="Reservations unavailable"
       :description="error"
     >
-      <template #actions><MoleculesCopyError :message="error" /></template>
+      <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
     <p
       v-else-if="outcome !== 'ready' && outcome !== 'empty'"

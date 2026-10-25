@@ -1,5 +1,5 @@
 <template>
-  <MoleculesCopyError
+  <FireCopyError
     v-if="error"
     :message="`${section.label}: ${String(error)}`"
   />

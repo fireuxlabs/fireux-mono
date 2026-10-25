@@ -23,7 +23,7 @@
       :description="error || 'Try again in a moment.'"
     >
       <template #actions
-        ><MoleculesCopyError
+        ><FireCopyError
           :message="error || 'Your Kitchen could not be opened.'"
       /></template>
     </UAlert>

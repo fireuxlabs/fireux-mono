@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="dashboard-admin-ecosystems">
     <template #header>
-      <LayoutsDashboardNavbar title="Featured ecosystems" />
+      <FireLayoutsDashboardNavbar title="Featured ecosystems" />
     </template>
 
     <template #body>
@@ -24,21 +24,21 @@
                 icon="i-lucide-orbit"
                 variant="subtle"
               >
-                <MoleculesStateCard
+                <FireStateCard
                   v-if="directoryOutcome === 'pending'"
                   entity="ecosystems"
                   state="loading"
                   surface="bare"
                 />
 
-                <MoleculesStateCard
+                <FireStateCard
                   v-else-if="directoryOutcome === 'error'"
                   entity="ecosystems"
                   state="error"
                   surface="bare"
                 />
 
-                <MoleculesStateCard
+                <FireStateCard
                   v-else-if="directoryOutcome === 'empty'"
                   entity="ecosystems"
                   state="empty"
@@ -46,7 +46,7 @@
                 />
 
                 <div v-else class="grid gap-3 sm:grid-cols-2">
-                  <MoleculesActionSurface
+                  <FireActionSurface
                     v-for="row in selectableRows"
                     :key="row.slug"
                     action
@@ -78,7 +78,7 @@
                           : 'Feature'
                       }}
                     </UBadge>
-                  </MoleculesActionSurface>
+                  </FireActionSurface>
                 </div>
               </UPageCard>
             </template>

@@ -14,7 +14,7 @@
     <p v-if="pending" class="text-muted">Loading public context…</p>
     <div v-else-if="message">
       <p class="text-muted select-text">{{ message }}</p>
-      <MoleculesCopyError :message="message" />
+      <FireCopyError :message="message" />
     </div>
     <div v-else-if="data" class="space-y-3">
       <div class="flex gap-3 items-center">

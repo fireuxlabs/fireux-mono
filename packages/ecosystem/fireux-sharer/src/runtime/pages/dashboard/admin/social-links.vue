@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="dashboard-admin-social-links">
     <template #header>
-      <LayoutsDashboardNavbar title="Admin · Social links" />
+      <FireLayoutsDashboardNavbar title="Admin · Social links" />
     </template>
     <template #body>
       <UPage>

@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection project-collection">
-    <CollectionHeader
+    <FireCollectionHeader
       title="Active Projects"
       description="See the Apps connected to each Project."
     />

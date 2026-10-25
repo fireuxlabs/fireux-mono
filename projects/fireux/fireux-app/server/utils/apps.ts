@@ -7,7 +7,7 @@ import {
   readAppRecords,
 } from 'fireux-core/runtime/app/server/collection/read'
 import { readAppDocument } from 'fireux-core/runtime/app/utils/readApp'
-import { PLATFORM_DIRECTORY_TARGETS } from '../config/platform-directory-targets'
+import { PLATFORM_APP_TARGETS } from '../config/platform-directory-targets'
 import { getFirestoreProjectDb } from './firebase-admin'
 
 /** Public directory pages and complete parent-scoped App relationships. */
@@ -41,23 +41,26 @@ export async function readPlatformAppCollection(
   let ecosystemIds: string[] | undefined
   if (projectId) {
     const ecosystems = await readPlatformEcosystems()
-    ecosystemIds = ecosystems.filter(value => value.project_id === projectId).map(value => value.id)
+    ecosystemIds = ecosystems
+      .filter((value) => value.project_id === projectId)
+      .map((value) => value.id)
   } else if (ecosystemId) {
     ecosystemIds = [ecosystemId]
   }
   const targets = ecosystemIds
-    ? ecosystemIds.map((id) => {
-        const target = PLATFORM_DIRECTORY_TARGETS.find(
-          (entry) => entry.ecosystemId === id
-        )
-        if (!target)
-          throw createError({
-            statusCode: 409,
-            statusMessage: 'An Ecosystem has no configured App database.',
-          })
-        return target
-      })
-    : PLATFORM_DIRECTORY_TARGETS
+    ? PLATFORM_APP_TARGETS.filter((target) =>
+        ecosystemIds.includes(target.ecosystemId)
+      )
+    : PLATFORM_APP_TARGETS
+  if (
+    ecosystemIds?.some(
+      (id) => !targets.some((target) => target.ecosystemId === id)
+    )
+  )
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'An Ecosystem has no configured App database.',
+    })
   // A failed page cannot safely advance a shared cursor past an unavailable source.
   const groups = await Promise.all(
     targets.map(async (target) => {
@@ -79,7 +82,7 @@ export async function readPlatformAppCollection(
 /** Fetch every canonical App document across configured ecosystem databases. */
 export async function readPlatformApps(): Promise<App[]> {
   const outcomes = await Promise.allSettled(
-    PLATFORM_DIRECTORY_TARGETS.map(async (target) => {
+    PLATFORM_APP_TARGETS.map(async (target) => {
       const db = await getFirestoreProjectDb(
         target.projectId,
         target.databaseId
@@ -94,7 +97,7 @@ export async function readPlatformApps(): Promise<App[]> {
   const collections = outcomes.flatMap((outcome) =>
     outcome.status === 'fulfilled' ? [outcome.value] : []
   )
-  const failures = PLATFORM_DIRECTORY_TARGETS.flatMap((target, index) => {
+  const failures = PLATFORM_APP_TARGETS.flatMap((target, index) => {
     const outcome = outcomes[index]
     return outcome?.status === 'rejected'
       ? [
@@ -135,7 +138,7 @@ export async function readPlatformApp(appId: string): Promise<App | null> {
   const id = String(appId || '').trim()
   if (!id || id.includes('/')) return null
   const matches = await Promise.all(
-    PLATFORM_DIRECTORY_TARGETS.map(async (target) => {
+    PLATFORM_APP_TARGETS.map(async (target) => {
       const db = await getFirestoreProjectDb(
         target.projectId,
         target.databaseId

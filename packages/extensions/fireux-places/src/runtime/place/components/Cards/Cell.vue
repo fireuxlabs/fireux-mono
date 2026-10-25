@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     v-if="directory"
     :to="surfaceTo"
     :action="action"
@@ -26,9 +26,9 @@
       </span>
       <p v-if="showTagline && prop" class="place-cell__tagline">{{ prop }}</p>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 
-  <MoleculesActionSurface
+  <FireActionSurface
     v-else
     :to="surfaceTo"
     :action="action"
@@ -74,7 +74,7 @@
         <span v-else class="italic">missing</span>
       </div>
     </div>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

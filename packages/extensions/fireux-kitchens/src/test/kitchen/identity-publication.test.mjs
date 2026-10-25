@@ -281,9 +281,9 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       'UAvatar',
       'UBadge',
       'UIcon',
-      'MoleculesCopyError',
+      'FireCopyError',
       'PlaceEdit',
-      'DiagnosticsDebugPanel',
+      'FireDiagnosticsDebugPanel',
     ])
       app.component(name, { render: () => null })
     const listingSource = readFileSync(
@@ -308,7 +308,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       ),
     })
     app.component('USkeleton', { render: () => h('p', 'Loading identity') })
-    app.component('MoleculesStateCard', {
+    app.component('FireStateCard', {
       props: ['state'],
       setup: (p) => () => h('p', p.state),
     })

@@ -8,7 +8,7 @@
     </template>
 
     <div class="grid gap-4">
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Instagram"
         type="url"
         :value="socialLinks.instagram"
@@ -16,7 +16,7 @@
         :maxlength="240"
         :update="(value: string) => handleSocialLink('instagram', value)"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Facebook"
         type="url"
         :value="socialLinks.facebook"
@@ -24,7 +24,7 @@
         :maxlength="240"
         :update="(value: string) => handleSocialLink('facebook', value)"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="TikTok"
         type="url"
         :value="socialLinks.tiktok"
@@ -32,7 +32,7 @@
         :maxlength="240"
         :update="(value: string) => handleSocialLink('tiktok', value)"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="LinkedIn"
         type="url"
         :value="socialLinks.linkedin"
@@ -40,7 +40,7 @@
         :maxlength="240"
         :update="(value: string) => handleSocialLink('linkedin', value)"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="YouTube"
         type="url"
         :value="socialLinks.youtube"

@@ -12,7 +12,7 @@
       </div>
     </template>
     <div v-if="showTimezone" class="mb-6 max-w-sm">
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Timezone"
         :value="timezone"
         placeholder="Europe/Zurich"

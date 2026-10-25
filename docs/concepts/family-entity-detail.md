@@ -40,7 +40,7 @@ Real App overrides retain their ownership; explicit lower-layer imports are
 valid when needed to compose beneath an override. Read/outcome adapters such
 as App `Detail/Page.vue` remain separate responsibilities.
 
-`Diagnostics` is an optional inspection responsibility across entities, not a
+`FireDiagnostics` is an optional inspection responsibility across entities, not a
 Menu-specific section or required scaffold. Keep real consumers and existing
 developer restrictions; visual examples belong in the package library.
 
@@ -121,7 +121,7 @@ route acquires canonical Entity
 └── UPage
     └── UPageBody
         ├── EntityDetail v-if="entity" :entity="entity"
-        └── DiagnosticsDebugPanel # dev-only canonical fetch and route locator
+        └── FireDiagnosticsDebugPanel # dev-only canonical fetch and route locator
 ```
 
 The route owns identity resolution, the canonical Entity read, and the single

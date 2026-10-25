@@ -18,7 +18,7 @@
           color="warning"
           title="Connections are unavailable"
           description="Your usual account sign-ins still work. Try again shortly."
-        /><MoleculesCopyError :message="connectionFeedback(readError)" />
+        /><FireCopyError :message="connectionFeedback(readError)" />
       </div>
       <div v-else-if="connection" class="space-y-4">
         <div class="flex items-center justify-between gap-4">
@@ -85,7 +85,7 @@
         color="error"
         title="Connection could not be updated"
         :description="error"
-      /><MoleculesCopyError :message="error" />
+      /><FireCopyError :message="error" />
     </div>
     <p v-if="removed" role="status" class="text-sm text-success">
       Misebox disconnected. You can still use your usual Misebox sign-in.

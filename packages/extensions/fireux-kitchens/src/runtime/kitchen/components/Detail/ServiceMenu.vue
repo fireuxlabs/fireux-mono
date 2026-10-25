@@ -58,7 +58,7 @@
       </p>
       <div v-else-if="menus.error.value" role="alert" class="space-y-2">
         <p>Food and drinks could not be loaded. Please try again.</p>
-        <MoleculesCopyError :message="String(menus.error.value)" />
+        <FireCopyError :message="String(menus.error.value)" />
         <UButton
           label="Try again"
           color="neutral"

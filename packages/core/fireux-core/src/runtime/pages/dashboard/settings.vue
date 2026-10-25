@@ -4,7 +4,7 @@
 <template>
   <UDashboardPanel id="account-settings">
     <template #header>
-      <LayoutsDashboardNavbar title="Settings" />
+      <FireLayoutsDashboardNavbar title="Settings" />
     </template>
 
     <template #body>
@@ -26,14 +26,14 @@
             </template>
           </UPageHeader>
 
-          <MoleculesStateCard
+          <FireStateCard
             v-if="accountOutcome === 'idle' || accountOutcome === 'pending'"
             entity="private account"
             kind="document"
             loading
           />
 
-          <MoleculesStateCard
+          <FireStateCard
             v-else-if="accountOutcome === 'error'"
             entity="private account"
             kind="document"
@@ -42,7 +42,7 @@
             description="Your public profile still works, but private account details could not be loaded."
           />
 
-          <MoleculesStateCard
+          <FireStateCard
             v-else-if="accountOutcome === 'missing'"
             entity="private account"
             kind="document"
@@ -112,7 +112,7 @@
                 />
               </div>
             </UPageCard>
-            <ContextRecord
+            <FireContextRecord
               title="Private AI context"
               endpoint="/api/internal/user/context"
               :scope="{}"
@@ -120,7 +120,7 @@
             />
           </div>
 
-          <MoleculesStateCard
+          <FireStateCard
             v-else
             entity="private account"
             kind="document"

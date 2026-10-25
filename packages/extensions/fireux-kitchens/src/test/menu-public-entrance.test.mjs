@@ -51,7 +51,7 @@ test('real homepage Kitchen cards link to singular public Menu entrances', async
   app.component('UBadge', {
     setup: (_, ctx) => () => h('span', ctx.slots.default?.()),
   })
-  app.component('DiagnosticsDebugPanel', { render: () => null })
+  app.component('FireDiagnosticsDebugPanel', { render: () => null })
   const html = await renderToString(app)
   for (const card of cards)
     assert.ok(html.includes(`href="${card.to}/menu"`), html)

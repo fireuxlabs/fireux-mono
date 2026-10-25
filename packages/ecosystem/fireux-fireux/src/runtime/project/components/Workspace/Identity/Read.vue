@@ -1,5 +1,5 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="identity.readState.value"
     :state="identity.readState.value"
     entity="Project identity"
@@ -124,7 +124,7 @@
           <p role="status" class="text-sm">
             {{ identity.publication.value.message }}
           </p>
-          <MoleculesCopyError :message="identity.publication.value.message" />
+          <FireCopyError :message="identity.publication.value.message" />
         </div>
         <UButton
           class="mt-5"

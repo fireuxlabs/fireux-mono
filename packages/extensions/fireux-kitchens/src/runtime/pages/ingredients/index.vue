@@ -1,18 +1,18 @@
 <!-- Ingredient creation stays in protected management; this route is the Directory. -->
 <template>
-  <CollectionPage
+  <FireCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-carrot"
   >
-    <MoleculesStateCard
+    <FireStateCard
       v-if="ingredientCollection.outcome === 'pending'"
       entity="Ingredient"
       kind="collection"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="ingredientCollection.outcome === 'error'"
       entity="Ingredient"
       kind="collection"
@@ -25,12 +25,12 @@
           @click="ingredientCollection.refresh()"
         />
       </template>
-    </MoleculesStateCard>
+    </FireStateCard>
     <IngredientCollection
       v-else
       :ingredients="ingredientCollection.ingredients"
     />
-  </CollectionPage>
+  </FireCollectionPage>
 </template>
 
 <script setup lang="ts">

@@ -36,7 +36,7 @@
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Preview</h2>
-        <CollectionPage
+        <FireCollectionPage
           v-if="entry.slug === 'entity-collection-page'"
           eyebrow="Discover"
           title="Apps"
@@ -49,26 +49,26 @@
           <template #secondary>
             <UCard>Secondary page-owned action child</UCard>
           </template>
-        </CollectionPage>
+        </FireCollectionPage>
 
-        <MoleculesActionSurface
+        <FireActionSurface
           v-else-if="entry.slug === 'action-surface'"
           action
           class="rounded-xl border border-default bg-elevated p-6"
         >
           <p class="font-semibold">Action surface</p>
           <p class="text-sm text-dimmed">This whole surface is one action.</p>
-        </MoleculesActionSurface>
+        </FireActionSurface>
 
         <div
           v-else-if="entry.slug === 'state-card'"
           class="grid gap-4 md:grid-cols-2"
         >
-          <MoleculesStateCard entity="apps" state="empty" />
-          <MoleculesStateCard entity="app" kind="document" state="missing" />
+          <FireStateCard entity="apps" state="empty" />
+          <FireStateCard entity="app" kind="document" state="missing" />
         </div>
 
-        <CreateShell
+        <FireCreateShell
           v-else-if="entry.slug === 'create-shell'"
           submit-label="Create record"
         >
@@ -78,23 +78,23 @@
           <template #preview
             ><p class="text-sm text-dimmed">Record preview</p></template
           >
-        </CreateShell>
+        </FireCreateShell>
 
-        <MoleculesFormsEditableCheckbox
+        <FireFormsEditableCheckbox
           v-else-if="entry.slug === 'editable-checkbox'"
           label="Public profile"
           :value="checkboxValue"
           :update="updateCheckbox"
         />
 
-        <MoleculesFormsEditableImagePicker
+        <FireFormsEditableImagePicker
           v-else-if="entry.slug === 'editable-image-picker'"
           initials="FX"
           alt="Example App"
           button-label="Choose image"
         />
 
-        <MoleculesFormsEditableSelect
+        <FireFormsEditableSelect
           v-else-if="entry.slug === 'editable-select'"
           label="Status"
           value="active"
@@ -102,7 +102,7 @@
           :update="updateSelect"
         />
 
-        <OnboardingShell
+        <FireOnboardingShell
           v-else-if="entry.slug === 'onboarding-system'"
           family="example"
           :stage="onboardingStage"
@@ -116,7 +116,7 @@
           <p class="text-sm text-dimmed">
             The owner supplies the current step.
           </p>
-        </OnboardingShell>
+        </FireOnboardingShell>
       </section>
 
       <section class="grid gap-4 lg:grid-cols-2">

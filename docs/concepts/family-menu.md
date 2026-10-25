@@ -296,7 +296,7 @@ headers, entry actions, passed results and controller-backed collections.
 presentation, section navigation and service links. `Order` composes item
 selection, Checkout and Response; `Create` links to Kitchen-owned Menu creation;
 `QR` owns QR output; `Cards` owns collection representations and their entrance
-actions; `Diagnostics` owns JSON inspection. Components use Menu-prefixed Nuxt
+actions; `FireDiagnostics` owns JSON inspection. Components use Menu-prefixed Nuxt
 registration, with real consumers updated together. `RouteSurface` is Menu-specific
 URL dispatch, not a required section or component for every Entity. Collection,
 Detail, Cards and Create keep the shared Entity vocabulary.
@@ -523,7 +523,7 @@ Item removal is a labelled Remove from section action inside the vertical menu,
 reusing the existing confirmation and preserving catalogue Dishes.
 
 Menu items, their column header and editable section rows reuse Core
-`CollectionRow` for the plain content/value/actions layout. Their actions,
+`FireCollectionRow` for the plain content/value/actions layout. Their actions,
 permissions and commands remain Menu-owned; the shared primitive adds no reads.
 See the plain collection-row contract in `docs/concepts/components.md`.
 

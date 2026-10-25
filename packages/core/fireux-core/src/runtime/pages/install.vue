@@ -6,7 +6,7 @@
     />
     <UPageBody class="pagebody">
       <ClientOnly>
-        <PwaControls />
+        <FirePwaControls />
         <template #fallback>
           <p class="text-sm text-muted">
             Open this page in a browser to manage installation and offline

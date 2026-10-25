@@ -3,7 +3,7 @@
     class="grid gap-4"
     :class="{ 'xl:grid-cols-2': process.currentSections.length }"
   >
-    <MoleculesDisclosurePanel
+    <FireDisclosurePanel
       v-if="process.currentSections.length"
       title="Existing menu"
     >
@@ -13,15 +13,15 @@
           empty-label="No existing sections found."
         />
       </div>
-    </MoleculesDisclosurePanel>
-    <MoleculesDisclosurePanel title="Menu items" :default-open="true">
+    </FireDisclosurePanel>
+    <FireDisclosurePanel title="Menu items" :default-open="true">
       <div class="mt-3 space-y-3">
         <KitchenFoodAndDrinkMenusProcessSections
           :sections="process.draftSections"
           empty-label="No draft sections returned."
         />
       </div>
-    </MoleculesDisclosurePanel>
+    </FireDisclosurePanel>
   </div>
 </template>
 <script setup lang="ts">

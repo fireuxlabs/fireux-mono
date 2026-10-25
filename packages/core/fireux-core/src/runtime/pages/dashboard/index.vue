@@ -1,8 +1,8 @@
-<template><DashboardHome /></template>
+<template><FireDashboardHome /></template>
 
 <script setup lang="ts">
 import { definePageMeta, useHead } from '#imports'
-import DashboardHome from '../../components/Dashboard/Home.vue'
+import FireDashboardHome from '../../components/Dashboard/Home.vue'
 
 definePageMeta({
   nav: {

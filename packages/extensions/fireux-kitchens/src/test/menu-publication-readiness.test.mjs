@@ -52,7 +52,7 @@ async function render(api) {
   app.component('KitchenFoodAndDrinkMenusPublicationReadinessSection', {
     render: () => null,
   })
-  app.component('MoleculesCopyError', {
+  app.component('FireCopyError', {
     props: ['message'],
     setup: (props) => () => h('p', props.message),
   })

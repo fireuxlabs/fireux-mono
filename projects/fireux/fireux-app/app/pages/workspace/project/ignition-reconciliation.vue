@@ -59,7 +59,7 @@
             : 'complete journey unproved'
         }}
       </p>
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Reference implementation"
         :default-open="false"
       >
@@ -74,7 +74,7 @@
             </ul>
           </li>
         </ul>
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </UCard>
     <UCard
       ><h2 class="text-lg font-semibold">What the build taught us</h2>

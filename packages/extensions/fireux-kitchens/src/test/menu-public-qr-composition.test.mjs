@@ -108,7 +108,7 @@ test('public QR composes truthful states and a printable view with a gated print
       load(new URL('menu/components/QR/PrintAction.vue', runtime))
     )
     app.component(
-      'MoleculesStateCard',
+      'FireStateCard',
       load(
         new URL(
           '../../../../core/fireux-core/src/runtime/components/molecules/StateCard.vue',
@@ -140,7 +140,7 @@ test('public QR composes truthful states and a printable view with a gated print
         () =>
           Vue.h('a', { href: p.to }, slots.default?.()),
     })
-    for (const name of ['UIcon', 'MoleculesCopyError'])
+    for (const name of ['UIcon', 'FireCopyError'])
       app.component(name, { render: () => null })
     const html = await renderToString(app)
     assert.equal(readers, 1)

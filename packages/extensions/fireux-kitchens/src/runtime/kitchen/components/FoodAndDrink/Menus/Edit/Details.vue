@@ -1,7 +1,7 @@
 <template>
   <section v-if="menu" :key="menu.id" class="menu-editor" aria-label="Menu details">
     <div class="menu-settings-fields">
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Name"
         :value="menu.name"
         :maxlength="120"
@@ -11,7 +11,7 @@
         :update="rename"
       />
       <UButton v-if="canWrite && !canRename" to="/pricing" label="Upgrade to rename" color="neutral" variant="link" class="menu-settings-fields__upgrade" />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Internal name (optional)"
         :value="menu.internal_name || ''"
         :maxlength="160"
@@ -20,7 +20,7 @@
         :update="updateInternalName"
       />
       <p class="fx-type-caption">Only shown in Workspace.</p>
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Description"
         :value="menu.description"
         type="textarea"
@@ -30,7 +30,7 @@
         disabled-message="This Menu is read-only."
         :update="updateDescription"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Display order"
         :value="menu.sort_order"
         type="number"

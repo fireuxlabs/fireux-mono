@@ -1,11 +1,11 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="outcome === 'pending'"
     state="loading"
     entity="properties"
     surface="collection"
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="outcome === 'error'"
     state="error"
     title="Properties could not be loaded"
@@ -15,10 +15,10 @@
     <template #actions
       ><UButton label="Try again" variant="soft" @click="refresh()"
     /></template>
-  </MoleculesStateCard>
+  </FireStateCard>
   <template v-else>
     <PropertyCollection v-if="properties.length" :properties="properties" />
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       state="empty"
       title="No published properties here yet"
@@ -38,7 +38,7 @@
         @click="loadMore()"
       />
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="loadMoreError"
       state="error"
       title="More properties could not be loaded"

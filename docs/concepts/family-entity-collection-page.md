@@ -17,6 +17,24 @@ domain capability, and intentionally App-owned branded presentation.
 - Horizontal: `collection-manager.md`, `components.md`, `composables.md`,
   `entities.md`, `runtime-filesystem.md`
 
+## Apps page coordination
+
+Both Apps routes keep the page anatomy visible and consume
+[useAppCollectionPage](../../packages/core/fireux-core/src/runtime/app/composables/useAppCollectionPage.ts)
+for one acquisition, state/pagination/diagnostics grouping and SEO. The optional
+route-owned `seo.jsonLdBuilder(context, apps)` receives the same records.
+Core uses ecosystem scope; FireUX uses platform scope with its own copy, layout
+and search policy. The composable returns a reactive page context rather than
+rendering components or choosing their placement.
+
+The route visibly places AppCollection inside Core FirePage. FirePage owns
+native framing and optional State/Pagination/diagnostics through one explicitly
+accepted default content slot. It does not select domain components or acquire
+records. AppCollectionPage and FireCollectionPage renderers remain retired.
+The consumer examples live at `/components/page` and in [components.md](components.md).
+Other Entity indexes retain their inspected owners; this App composition does
+not establish that every existing family member has been migrated.
+
 ## FireUX composed lasagne
 
 The accepted flat index-page arrangement is **fireux-composed-lasagne**:
@@ -31,8 +49,8 @@ route
         ├── EntityCurrent      # only when a real current Entity exists
         ├── EntityCreate
         ├── EntityCollection   # receives the named plural Entity prop
-        ├── CollectionPagination? # route-owned acquisition control
-        └── DiagnosticsDebugPanel      # dev-only acquisition diagnostics
+        ├── FireCollectionPagination? # route-owned acquisition control
+        └── FireDiagnosticsDebugPanel      # dev-only acquisition diagnostics
 ```
 
 The route owns metadata, SEO, route policy, acquisition, and visible
@@ -62,7 +80,7 @@ Inside an audited Entity, the physical presentation chain is
 `XCollection → XCollectionList → presentation cell`. Collection derives search,
 filters, counts, and interface projection; List owns responsive layout and
 passes one resolved object to its presentation cell. Core's
-`CollectionCellData` and `<CollectionCell :cell="cell" />` are the ordinary shared
+`CollectionCellData` and `<FireCollectionCell :cell="cell" />` are the ordinary shared
 boundary. Kitchen browsing retains the same List-owned projection but uses Nuxt UI
 `UPageCard` directly. Menu groups reuse `KitchenCollectionList`; standalone
 Menu records use compact Nuxt UI cards. Its stable semantic fields are title, description, image, meta,
@@ -100,13 +118,14 @@ the acquired records. Hero, Create, and Collection are required in the audited
 FL index family. Current is optional. User deliberately renders Current or
 Create because one User identity is allowed; every other audited member renders
 Create directly. Pagination follows Collection and remains route-owned. The
-shared `CollectionPagination` is an acquisition control, not an Entity
+shared `FireCollectionPagination` is an acquisition control, not an Entity
 Collection child or page shell; it is rendered only where the reader currently
 supports pagination.
 
-This arrangement has no generic Entity shell, `CollectionPage`, page slots,
-configuration object, `CollectionManager`, outcome framework, bespoke debug
-framework, or HTTP-status contract. It reuses Core's one `DiagnosticsDebugPanel`.
+The retired `FireCollectionPage` slot shell and `CollectionManager` are not this
+composition. Apps use the visible route composition above; other inspected route compositions
+below retain native UPage/UPageBody. There is no bespoke debug framework or
+new HTTP-status contract. It reuses Core's one `FireDiagnosticsDebugPanel`.
 Deeper `Collection/List` and `Cards/*` components may remain because they are
 implementation owned by the Collection layer, not page composition layers.
 
@@ -167,7 +186,7 @@ They inherit lower contracts where sensible:
 - accessibility and responsive fundamentals;
 - Core semantic tokens and Nuxt UI primitives.
 
-Do not route these branded surfaces through `CollectionPage` merely to make
+Do not route these branded surfaces through `FireCollectionPage` merely to make
 their templates resemble ordinary Entity Collection Pages. Do not move their aesthetic
 into Core. Their branded presentation is an accepted product-family boundary,
 not drift.
@@ -179,11 +198,11 @@ not drift.
 - The App owns the route and visibly composes the available layers in that order.
 - `XCollection` receives its canonical collection from the route.
 - `XCollectionList` remains Entity-owned and passes one resolved interface
-  object into either Core's neutral `CollectionCell` or a proved Entity-owned
+  object into either Core's neutral `FireCollectionCell` or a proved Entity-owned
   Collection Cell. The latter owns presentation only; it does not fetch or
   change collection authority.
 - The route owns fetched-object/acquisition debug. `XCollectionList` owns the
-  passed-interface/final-cell debug. Both use launcher-backed `DiagnosticsDebugPanel`
+  passed-interface/final-cell debug. Both use launcher-backed `FireDiagnosticsDebugPanel`
   and render only in development.
 - `XCreate` is required in the audited FL index family and owns the real
   creation doorway. Generic `XCTA` does not name an index-page responsibility.
@@ -216,7 +235,7 @@ When this family changes:
   Portfolio, and Property prove
   fireux-composed-lasagne in current source and the executable family guard.
 - These eleven declared root Entity index families use visible flat composition
-  rather than a shared `CollectionPage` shell. Marketplace Store is the one
+  rather than a shared `FireCollectionPage` shell. Marketplace Store is the one
   declared root Entity without a comparable root index; this pass does not
   invent one.
 - Company, Ingredient, Product, profile directories, Blog, parent-scoped

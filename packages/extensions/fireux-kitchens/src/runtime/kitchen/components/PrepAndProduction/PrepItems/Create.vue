@@ -3,7 +3,7 @@
     <summary class="cursor-pointer text-sm font-medium">
       Create prep item
     </summary>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="message"
       state="error"
       title="Prep item not created"

@@ -2,7 +2,7 @@
   <main class="min-h-screen bg-default text-default">
     <UContainer class="py-10 sm:py-14">
       <div class="mx-auto max-w-5xl space-y-8">
-        <LandingSolutions variant="hub" />
+        <FireLandingSolutions variant="hub" />
       </div>
     </UContainer>
   </main>

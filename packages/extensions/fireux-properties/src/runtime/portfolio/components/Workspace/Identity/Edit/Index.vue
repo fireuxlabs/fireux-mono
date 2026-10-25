@@ -23,7 +23,7 @@
 
     <UCard v-else :key="portfolioId">
       <div class="space-y-4">
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'profile'"
           label="Name"
@@ -33,7 +33,7 @@
           :update="handleName"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'profile'"
           label="Tagline"
@@ -43,7 +43,7 @@
           :update="handleTagline"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'context'"
           label="Owner label"
@@ -53,7 +53,7 @@
           :update="handleOwnerLabel"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'context'"
           label="Strategy"
@@ -63,7 +63,7 @@
           :update="handleStrategyLabel"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'profile'"
           label="Region"
@@ -73,7 +73,7 @@
           :update="handleRegionLabel"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'context'"
           label="Notes"

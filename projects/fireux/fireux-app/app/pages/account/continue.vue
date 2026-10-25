@@ -37,7 +37,7 @@
             color="error"
             title="Shared sign-in could not continue"
             :description="error || connectionFeedback(readError)"
-          /><MoleculesCopyError
+          /><FireCopyError
             :message="error || connectionFeedback(readError)"
           />
         </div>

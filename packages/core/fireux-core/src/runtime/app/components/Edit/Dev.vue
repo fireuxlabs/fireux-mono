@@ -37,7 +37,7 @@
         </UPageCard>
       </div>
 
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Technical details"
         description="Field ownership and the canonical App model."
         icon="i-lucide-git-branch"
@@ -73,7 +73,7 @@
             </div>
           </UPageCard>
 
-          <DiagnosticsDebugPanel
+          <FireDiagnosticsDebugPanel
             object-origin="fetched"
             launcher
             include-route
@@ -84,11 +84,11 @@
             :default-open="false"
           />
         </div>
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </div>
 
     <template #fallback>
-      <MoleculesStateCard
+      <FireStateCard
         entity="developer workspace"
         kind="document"
         loading

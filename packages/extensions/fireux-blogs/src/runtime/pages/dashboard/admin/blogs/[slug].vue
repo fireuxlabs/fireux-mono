@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="dashboard-admin-blog-edit">
-    <template #header><LayoutsDashboardNavbar title="Admin · Edit blog post" /></template>
+    <template #header><FireLayoutsDashboardNavbar title="Admin · Edit blog post" /></template>
     <template #body><UPage><UPageBody class="pagebody"><BlogEdit :key="slug" :slug="slug" /></UPageBody></UPage></template>
   </UDashboardPanel>
 </template>

@@ -145,3 +145,19 @@ accepted while only one mature tenant proves the shape.
   proves the same contract.
 - Extend multi-target tenant behavior only when a real product requires it;
   configured count alone must not silently change route grammar.
+
+## App directory source boundaries
+
+The FireUX platform directory consumes
+[PLATFORM_APP_TARGETS](../../projects/fireux/fireux-app/server/config/platform-directory-targets.ts),
+including Ecosystem databases and declared standalone App databases. Its App
+list, detail and Project-scoped readers use those App sources. Ecosystem identity
+readers continue to use PLATFORM_DIRECTORY_TARGETS; adding an App source does
+not create another Ecosystem identity.
+
+The shared Core `/api/apps` directory reads the configured runtime database's
+root `apps` collection and filters the canonical `ecosystem_id`. App ownership
+remains in its existing database; the platform does not maintain duplicate root
+App records. The named Ecosystem reverse locator identifies the App's database
+without granting membership. Both directory implementations currently select
+active records. Route presentation does not change these acquisition boundaries.

@@ -7,7 +7,7 @@
       color="neutral"
       variant="ghost"
     />
-    <LayoutsSharedRoleBadge interactive />
+    <FireLayoutsSharedRoleBadge interactive />
   </ClientOnly>
 </template>
 

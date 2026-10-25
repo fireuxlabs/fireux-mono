@@ -2,25 +2,25 @@
   <UPage>
     <UPageBody>
       <EcosystemDetail v-if="ecosystem" :ecosystem="ecosystem" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'pending'"
         entity="ecosystem"
         kind="document"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="ecosystem"
         kind="document"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'missing'"
         entity="ecosystem"
         kind="document"
         state="missing"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Ecosystem detail acquisition"
         context="Canonical Ecosystem fetched by the detail route."
         object-origin="fetched"

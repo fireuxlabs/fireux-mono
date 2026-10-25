@@ -4,14 +4,14 @@
       <ProjectHero />
       <ProjectCreate />
       <ProjectCollection v-if="outcome === 'ready'" :projects="projects" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else
         entity="projects"
         kind="collection"
         :loading="outcome === 'pending'"
         :state="outcome === 'error' ? 'error' : 'empty'"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Projects index acquisition"
         context="Canonical Projects passed into the FL index surface."
         object-origin="fetched"

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <section class="space-y-6 py-12">
-    <LandingMissingBrandAssetsFlag />
+    <FireLandingMissingBrandAssetsFlag />
 
     <header>
       <h1 class="text-3xl font-semibold">Join This Tenant</h1>

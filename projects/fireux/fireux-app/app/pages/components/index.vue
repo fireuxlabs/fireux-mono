@@ -20,6 +20,12 @@
         <FrameworkPlayground />
         <UPageGrid>
           <UPageCard
+            title="Page composition"
+            description="The shared page foundation: Nuxt structure, named FireUX composition and domain-owned data."
+            icon="i-lucide-panels-top-left"
+            to="/components/page"
+          />
+          <UPageCard
             title="Disclosure"
             description="A labelled trigger, optional description and collapsible content, using Nuxt UI's state and accessibility."
             icon="i-lucide-panel-top-open"

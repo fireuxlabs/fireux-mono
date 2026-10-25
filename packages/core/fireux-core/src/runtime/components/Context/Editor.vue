@@ -21,7 +21,7 @@
     />
     <p v-if="saving" role="status" class="text-sm text-muted">Updating…</p>
     <div v-if="error" class="grid gap-2">
-      <MoleculesCopyError :message="error" />
+      <FireCopyError :message="error" />
       <div class="flex gap-2">
         <UButton
           v-if="ready"

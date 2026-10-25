@@ -60,7 +60,7 @@
           </tbody>
         </table>
       </div>
-      <MoleculesDisclosurePanel title="Evidence and limits"
+      <FireDisclosurePanel title="Evidence and limits"
         ><ul class="mt-3 space-y-3 text-sm">
           <li v-for="row in report.shared" :key="row.key">
             <strong>{{ row.label }}</strong>
@@ -69,7 +69,7 @@
               {{ report.candidate.name }}: {{ row.candidate.note }}
             </p>
           </li>
-        </ul></MoleculesDisclosurePanel
+        </ul></FireDisclosurePanel
       >
     </section>
     <section class="space-y-3">
@@ -120,14 +120,14 @@
         <p class="mt-2 text-sm text-muted">
           Acceptance: {{ delta.acceptance }}
         </p>
-        <MoleculesDisclosurePanel
+        <FireDisclosurePanel
           v-if="delta.references.length"
           title="Source references"
           ><ul class="mt-2 space-y-1 text-sm text-muted">
             <li v-for="reference in delta.references" :key="reference">
               {{ reference }}
             </li>
-          </ul></MoleculesDisclosurePanel
+          </ul></FireDisclosurePanel
         ></UCard
       >
     </section>

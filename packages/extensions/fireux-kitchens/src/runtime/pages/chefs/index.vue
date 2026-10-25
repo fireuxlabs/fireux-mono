@@ -1,5 +1,5 @@
 <template>
-  <CollectionPage
+  <FireCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
       <ChefCurrent />
     </template>
-  </CollectionPage>
+  </FireCollectionPage>
 </template>
 
 <script setup lang="ts">

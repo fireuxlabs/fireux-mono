@@ -22,7 +22,7 @@
         :description="error"
         color="error"
       >
-        <template #actions><MoleculesCopyError :message="error" /></template>
+        <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
       <div v-else-if="review" class="space-y-5">
         <p class="text-sm text-muted">{{ place.name }}</p>

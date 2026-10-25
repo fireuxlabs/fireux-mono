@@ -1,5 +1,5 @@
 <template>
-  <LibraryDesignTypography />
+  <FireLibraryDesignTypography />
 </template>
 
 <script setup lang="ts">

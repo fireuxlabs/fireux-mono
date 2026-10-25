@@ -13,7 +13,7 @@
       </div>
     </template>
 
-    <MoleculesCopyError v-if="usageError" :message="String(usageError)" />
+    <FireCopyError v-if="usageError" :message="String(usageError)" />
     <p v-else-if="!usageReady" class="text-sm text-muted" role="status">
       Checking where this is used…
     </p>

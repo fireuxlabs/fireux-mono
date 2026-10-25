@@ -161,7 +161,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
   permission, and other read failures must not collapse into empty copy.
 - Counts are shown only for settled `ready` or `empty` outcomes. Search-empty
   copy is local presentation and remains distinct from an empty source.
-- Use `MoleculesStateCard` for conventional manager states. Ordinary Entity
+- Use `FireStateCard` for conventional manager states. Ordinary Entity
   Collection managers select its `collection` surface for the established
   dashed directory treatment. Domain-branded presentation may choose another
   surface while keeping the same ordering and live-region semantics.
@@ -184,9 +184,9 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 
 - The Kitchen directory established the warmer, clearer root-manager
   hierarchy now shared with Menu and User through core
-  `CollectionHeader`, `MoleculesStateCard`, and the small
+  `FireCollectionHeader`, `FireStateCard`, and the small
   `entity-collection*` layout contract.
-- Root/global discovery pages may share Core `CollectionPage`; this is page
+- Root/global discovery pages may share Core `FireCollectionPage`; this is page
   presentation only and does not move domain collection ownership into core.
 - Domain card content, actions, data source, and genuine scoped behavior remain
   accepted deltas; visual convergence must not flatten domain meaning.
@@ -199,7 +199,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - `objects` means fetched/API collection rows as the manager receives them.
 - `derived` means interface cards, filters, counts, selected variant, links, and other UI state.
 - Do not mix stored/directory surface fields with `useXInterface()` card output in one flat JSON array.
-- A manager using `useDiagnosticsCollectionJson` loads its snapshot only when `DiagnosticsDebugPanel`
+- A manager using `useDiagnosticsCollectionJson` loads its snapshot only when `FireDiagnosticsDebugPanel`
   opens and unloads it when the panel closes; closed debug panels do no work.
 
 ## Current source-mode snapshot

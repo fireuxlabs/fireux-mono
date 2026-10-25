@@ -8,7 +8,7 @@
         }}. These are requirements, not available stock.
       </p>
     </header>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="error"
       state="error"
       title="Prep items unavailable"

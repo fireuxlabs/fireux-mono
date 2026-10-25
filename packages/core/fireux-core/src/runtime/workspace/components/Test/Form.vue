@@ -8,7 +8,7 @@
         class="w-full"
       />
     </UFormField>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
     <UButton
       type="submit"
       :label="label"

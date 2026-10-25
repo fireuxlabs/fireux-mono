@@ -108,6 +108,13 @@ not permission to add more. There is no implicit local-layout or final-polish
 exception; a unique final-element adjustment requires explicit human approval
 for that adjustment.
 
+Core shared UI uses the `Fire` library prefix. Atomic Design folders such as
+atoms, molecules and organisms are internal organisation and are omitted from
+public names: `FireState`, `FirePage`, `FireCollectionPagination`. Domain and
+Workspace registrations retain their named prefixes. App-local overrides of a
+shared component retain its canonical Fire name. The native Core runtime layer
+owns shared-library registration.
+
 Use Nuxt's generated component names when package registration provides them.
 Do not add an explicit import or alias without an inspected registration gap or
 name collision. See [component ownership and reuse](../concepts/components.md).

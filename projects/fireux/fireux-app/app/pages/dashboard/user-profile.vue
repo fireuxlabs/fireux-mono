@@ -1,6 +1,6 @@
 <template>
   <UDashboardPanel id="user-profile">
-    <template #header><LayoutsDashboardNavbar title="Account" /></template>
+    <template #header><FireLayoutsDashboardNavbar title="Account" /></template>
     <template #body><AccountProfile /></template>
   </UDashboardPanel>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="surfaceTo"
     :action="action && !surfaceTo"
     class="public-profile-directory-card group"
@@ -92,7 +92,7 @@
       name="i-lucide-arrow-up-right"
       class="public-profile-directory-card__arrow size-4 shrink-0 text-dimmed transition"
     />
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

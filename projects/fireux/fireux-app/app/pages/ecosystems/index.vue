@@ -2,26 +2,26 @@
   <UPage>
     <UPageBody>
       <EcosystemHero />
-      <MoleculesStateCard
+      <FireStateCard
         v-if="outcome === 'pending'"
         entity="ecosystems"
         kind="collection"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'error'"
         entity="ecosystems"
         kind="collection"
         state="error"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="outcome === 'empty'"
         entity="ecosystems"
         kind="collection"
         state="empty"
       />
       <EcosystemCollection v-else :ecosystems="ecosystems" />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Ecosystems index acquisition"
         context="Canonical Ecosystems passed into the FL index surface."
         object-origin="fetched"

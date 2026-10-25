@@ -3,7 +3,7 @@
     <p v-if="message" role="status" class="whitespace-pre-line text-sm">
       {{ message }}
     </p>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
     <WorkspaceAIComposer
       v-model="prompt"
       :can-submit="Boolean(ready && prompt.trim() && !submitting)"

@@ -1,5 +1,5 @@
 <template>
-  <ContextEditor
+  <FireContextEditor
     :key="state.scopeKey.value"
     :title="title"
     :value="state.context.value"

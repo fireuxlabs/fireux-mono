@@ -2,7 +2,7 @@
   <p v-if="pending" role="status" class="fx-type-caption">Loading Menu…</p>
   <UAlert v-else-if="error" color="error" title="Menu could not be loaded">
     <template #description
-      ><MoleculesCopyError message="Menu could not be loaded"
+      ><FireCopyError message="Menu could not be loaded"
     /></template>
   </UAlert>
   <div v-else-if="menu" class="menu-heading-region">

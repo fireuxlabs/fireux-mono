@@ -1,5 +1,5 @@
 <template>
-  <LibraryDesignContracts />
+  <FireLibraryDesignContracts />
 </template>
 
 <script setup lang="ts">

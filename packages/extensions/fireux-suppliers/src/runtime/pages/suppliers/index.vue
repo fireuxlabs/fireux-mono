@@ -4,14 +4,14 @@
       <SupplierHero />
       <SupplierCreate />
       <SupplierCollection v-if="outcome === 'ready'" :suppliers="suppliers" />
-      <MoleculesStateCard
+      <FireStateCard
         v-else
         entity="suppliers"
         kind="collection"
         :loading="outcome === 'pending' || outcome === 'idle'"
         :state="outcome === 'error' ? 'error' : 'empty'"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Suppliers index acquisition"
         context="Canonical Suppliers passed into the FL index surface."
         object-origin="fetched"

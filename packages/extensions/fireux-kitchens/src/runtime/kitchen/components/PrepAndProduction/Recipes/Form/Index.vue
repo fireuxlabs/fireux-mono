@@ -12,7 +12,7 @@
         icon="i-lucide-check"
       />
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="message"
       state="error"
       title="Recipe not saved"

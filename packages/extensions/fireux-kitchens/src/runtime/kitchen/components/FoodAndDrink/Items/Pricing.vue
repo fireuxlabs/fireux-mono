@@ -34,7 +34,7 @@
       <p v-if="message" role="status">{{ message }}</p>
       <div v-if="error" role="alert">
         <p>{{ error }}</p>
-        <MoleculesCopyError :message="error" />
+        <FireCopyError :message="error" />
       </div>
     </form>
     <KitchenFoodAndDrinkItemsDeposit

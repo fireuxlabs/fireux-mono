@@ -1,14 +1,14 @@
 <!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: lead with the real User and current workspace while preserving authority boundaries. -->
 <template>
   <div class="contents">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="coreIsLoading"
       entity="user overview"
       kind="document"
       loading
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="coreIsError"
       entity="user overview"
       kind="document"
@@ -46,18 +46,18 @@
           }}</pre>
         </details>
       </template>
-    </MoleculesStateCard>
+    </FireStateCard>
 
     <template v-else-if="coreUser && userCard">
       <div class="space-y-4">
-        <DashboardOverviewUser
+        <FireDashboardOverviewUser
           :card="userCard"
           :has-custom-avatar="hasCustomAvatar"
           :account-outcome="accountOutcome"
         />
 
         <div class="space-y-4">
-          <DashboardOverviewApp
+          <FireDashboardOverviewApp
             :app-name="fireux.appName"
             :app-short-name="fireux.appShortName"
             :app-card="appCard"
@@ -75,8 +75,8 @@
             <template v-if="$slots.workspace" #workspace>
               <slot name="workspace" />
             </template>
-          </DashboardOverviewApp>
-          <DashboardOverviewEcosystem
+          </FireDashboardOverviewApp>
+          <FireDashboardOverviewEcosystem
             v-if="hasEcosystem && ecosystemProfileEntries.length"
             :name="ecosystemName"
             :profile-entries="ecosystemProfileEntries"
@@ -110,7 +110,7 @@
       </UAlert>
     </div>
 
-    <MoleculesStateCard v-else entity="user overview" kind="document" loading />
+    <FireStateCard v-else entity="user overview" kind="document" loading />
   </div>
 </template>
 
@@ -129,9 +129,9 @@ import { useUserView } from '../../user/composables/useUserView'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../user/utils/user-avatar'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
-import DashboardOverviewApp from './Overview/App.vue'
-import DashboardOverviewEcosystem from './Overview/Ecosystem.vue'
-import DashboardOverviewUser from './Overview/User.vue'
+import FireDashboardOverviewApp from './Overview/App.vue'
+import FireDashboardOverviewEcosystem from './Overview/Ecosystem.vue'
+import FireDashboardOverviewUser from './Overview/User.vue'
 import type { DashboardOverviewProfileEntry } from './Overview/types'
 
 const fireux = useFireUXConfig()

@@ -13,7 +13,7 @@
       </template>
 
       <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">Loading suppliers…</p>
-      <UAlert v-else-if="outcome === 'error'" color="error" title="Suppliers could not be loaded"><template #actions><MoleculesCopyError message="Suppliers could not be loaded." /></template></UAlert>
+      <UAlert v-else-if="outcome === 'error'" color="error" title="Suppliers could not be loaded"><template #actions><FireCopyError message="Suppliers could not be loaded." /></template></UAlert>
       <p v-else-if="outcome !== 'ready' && outcome !== 'empty'" class="text-sm text-muted">Select an available Kitchen to view suppliers.</p>
       <div v-else-if="cards.length" class="space-y-3">
         <KitchenSuppliersCardsCell
@@ -27,7 +27,7 @@
       <p v-else class="text-sm text-dimmed">No suppliers found.</p>
     </UCard>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Kitchen suppliers"
       scope="workspace"
       object-origin="fetched"

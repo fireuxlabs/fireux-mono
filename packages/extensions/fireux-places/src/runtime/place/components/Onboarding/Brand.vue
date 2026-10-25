@@ -2,7 +2,7 @@
   <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage optional logo and sparse shared colours. -->
   <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: make optional Place branding visual and concise. -->
   <section class="form-stack-sm">
-    <MoleculesFormsEditableImagePicker
+    <FireFormsEditableImagePicker
       v-if="imageEditable"
       :src="previewSource"
       :alt="placeName || 'Place'"

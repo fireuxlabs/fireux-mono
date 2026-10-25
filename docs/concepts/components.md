@@ -61,6 +61,16 @@ the applicable family map before introducing a new shared seam.
 
 ## Component placement and names
 
+Core's native [runtime layer](../../packages/core/fireux-core/src/runtime/nuxt.config.ts)
+registers the shared library with `Fire`. Atomic Design folders are scanned as
+internal roots, so molecules/State.vue exposes FireState and organisms/Page.vue
+exposes FirePage. Other responsibility folders remain meaningful, for example
+Collection/Pagination.vue exposes FireCollectionPagination. `Fire` is not a
+physical responsibility folder. No old-name compatibility registrations remain.
+App-local overrides use the same Fire name; Entity and Workspace registrations
+keep their existing names. Nuxt UI keeps `U`.
+
+
 - Core owns proved domain-neutral components and connected Core platform UI.
 - Entity UI belongs beneath the owning package's
   `src/runtime/<entity>/components`. Cross-Entity package UI belongs at the
@@ -111,10 +121,59 @@ Workspace grouping, routes, selection and domain capability placement belong in
 [family-workspace-entity.md](family-workspace-entity.md). A navigation group
 does not create a data owner or require matching page anatomy across families.
 
+## FirePage and visible domain content
+
+Core [FirePage](../../packages/core/fireux-core/src/runtime/components/organisms/Page.vue)
+composes native UPage/UPageHeader/UPageBody, optional State, Pagination and
+diagnostics. It exposes one default content slot so the consuming route visibly
+names its domain content. It accepts title/description and the existing state,
+pagination and diagnostics prop groups, and emits load-more. This is the
+explicitly accepted single-slot boundary for shared page framing and feedback;
+it does not introduce named content slots, dynamic Entity components or readers.
+
+Both Apps routes place AppCollection directly inside FirePage. Shared logic
+remains in
+[useAppCollectionPage](../../packages/core/fireux-core/src/runtime/app/composables/useAppCollectionPage.ts),
+which acquires once and coordinates reactive title, description, apps, ready,
+state, pagination, diagnostics and loadMore. SEO uses those same records.
+Routes retain metadata, layout/container, scope and genuine copy/search policy.
+Core uses ecosystem scope; FireUX uses platform scope. FirePage knows neither.
+FirePage adds no container or container-selection API. Existing layouts retain
+their framing responsibilities.
+FireUX's [usePlatformAppsPage](../../projects/fireux/fireux-app/app/composables/usePlatformAppsPage.ts)
+owns its Showcase copy, platform scope and indexable-App structured search data.
+The route retains navigation and layout metadata and visibly names AppCollection.
+The former AppCollectionPage and FireCollectionPage renderers remain removed.
+
+## State presentation
+
+Core [State.vue](../../packages/core/fireux-core/src/runtime/components/molecules/State.vue)
+(`FireState`) accepts a `ReadOutcome`, an optional Entity label and optional
+error details for the existing copy-error control. It presents pending, empty,
+missing and error messages with accessible status/alert semantics; ready and
+idle render nothing. It owns no reader, command, card shell or content slot.
+Both Core and FireUX App Apps indexes consume it. Existing `FireStateCard`
+consumers remain separate and are not migrated by this page change.
+
+Core [FireCollectionPagination](../../packages/core/fireux-core/src/runtime/components/Collection/Pagination.vue)
+accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
+`FireState` for pagination failure presentation and copying. It does not
+fetch records. App collection acquisition keeps next-page failures separate
+from initial-load errors, retaining the current records while loading or retrying.
+
+The working [Page composition showcase](../../projects/fireux/fireux-app/app/pages/components/page.vue)
+at `/components/page` extends the Nuxt UI reference for FireUX consumers, with
+Usage, Examples, API, Data and authority, and Theme sections. It uses native
+UPage side regions for component navigation and a table of contents. It keeps
+upstream component APIs upstream and documents FireUX-owned composition
+conventions and the actual State/Pagination contracts. Code examples do not
+acquire Entity records. The Components index lives at
+`pages/components/index.vue`; no custom parent shell is added.
+
 ## Multiple selection
 
 Core [MultiSelect.vue](../../packages/core/fireux-core/src/runtime/components/molecules/MultiSelect.vue)
-(`MoleculesMultiSelect`) provides visible toggle choices for short multi-select
+(`FireMultiSelect`) provides visible toggle choices for short multi-select
 lists. It accepts labelled
 items, an accessible group label, optional descriptions and disabled state, and
 an array model. It owns interaction only; domains provide choices, eligibility

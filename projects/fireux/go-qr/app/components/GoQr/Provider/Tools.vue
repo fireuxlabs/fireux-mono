@@ -1,5 +1,5 @@
 <template>
-  <ProviderToolIframe
+  <FireProviderToolIframe
     v-if="toolUrl"
     :src="toolUrl"
     :title="toolTitle"

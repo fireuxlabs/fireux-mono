@@ -9,7 +9,7 @@
         color="warning"
         variant="subtle"
       />
-      <MoleculesDisclosurePanel
+      <FireDisclosurePanel
         title="Capability reference"
         :default-open="false"
       >
@@ -24,7 +24,7 @@
           capability="Inventory"
           base-path="/workspace/kitchen/stock/inventory/search-demand"
         />
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </section>
   </div>
 </template>

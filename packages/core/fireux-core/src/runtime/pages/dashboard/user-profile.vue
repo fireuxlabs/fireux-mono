@@ -7,7 +7,7 @@
   <div class="min-h-full">
     <UDashboardPanel id="user-profile" :ui="{ body: 'lg:py-12' }">
       <template #header>
-        <LayoutsDashboardNavbar title="Profile" />
+        <FireLayoutsDashboardNavbar title="Profile" />
       </template>
 
       <template #body>
@@ -46,21 +46,21 @@
           </div>
 
           <section class="space-y-5" aria-label="User editor">
-            <MoleculesStateCard
+            <FireStateCard
               v-if="isLoading"
               entity="profile"
               kind="document"
               loading
             />
 
-            <MoleculesStateCard
+            <FireStateCard
               v-else-if="userError"
               entity="profile"
               kind="document"
               state="error"
             />
 
-            <MoleculesStateCard
+            <FireStateCard
               v-else-if="isMissing"
               entity="profile"
               kind="document"
@@ -74,7 +74,7 @@
               />
             </ClientOnly>
 
-            <MoleculesStateCard
+            <FireStateCard
               v-else
               entity="profile"
               kind="document"
@@ -108,14 +108,14 @@
           </UPageCard>
 
           <section class="space-y-5" aria-label="Account details">
-            <MoleculesStateCard
+            <FireStateCard
               v-if="accountOutcome === 'idle' || accountOutcome === 'pending'"
               entity="private account"
               kind="document"
               loading
             />
 
-            <MoleculesStateCard
+            <FireStateCard
               v-else-if="accountOutcome === 'error'"
               entity="private account"
               kind="document"
@@ -124,7 +124,7 @@
               description="Your profile still works, but private account details could not be loaded."
             />
 
-            <MoleculesStateCard
+            <FireStateCard
               v-else-if="accountOutcome === 'missing'"
               entity="private account"
               kind="document"
@@ -185,7 +185,7 @@
               </template>
             </UPageCard>
 
-            <MoleculesStateCard
+            <FireStateCard
               v-else
               entity="private account"
               kind="document"

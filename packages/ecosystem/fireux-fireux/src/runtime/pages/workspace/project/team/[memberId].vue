@@ -16,7 +16,7 @@
     title="Team could not be loaded"
   >
     <template #description
-      ><MoleculesCopyError message="Team could not be loaded" />
+      ><FireCopyError message="Team could not be loaded" />
     </template> </UAlert
   ><WorkspaceProjectTeam
     v-else-if="member"

@@ -1,18 +1,18 @@
 <template>
   <div class="mx-auto flex w-full max-w-xl flex-col gap-6">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="coreOutcome === 'idle' || coreOutcome === 'pending'"
       entity="account"
       kind="document"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="coreOutcome === 'error' || coreError"
       entity="account"
       kind="document"
       state="error"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="coreOutcome === 'missing'"
       entity="account"
       kind="document"
@@ -24,7 +24,7 @@
           label="Complete account setup"
         />
       </template>
-    </MoleculesStateCard>
+    </FireStateCard>
     <UPageCard v-else-if="coreUser" title="Your account" variant="subtle">
       <ClientOnly>
         <AvatarEditor :key="coreUser.id" :user="coreUser" />

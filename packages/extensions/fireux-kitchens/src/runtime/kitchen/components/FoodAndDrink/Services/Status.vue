@@ -1,10 +1,10 @@
 <template>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="['pending', 'idle'].includes(source.outcome.value)"
     entity="Kitchen services"
     loading
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="source.outcome.value === 'error'"
     entity="Kitchen services"
     state="error"

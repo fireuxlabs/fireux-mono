@@ -100,7 +100,7 @@
         :icon="'i-lucide-alert-triangle'"
       >
         <template #actions
-          ><MoleculesCopyError :message="errorMessage"
+          ><FireCopyError :message="errorMessage"
         /></template>
       </UAlert>
     </div>

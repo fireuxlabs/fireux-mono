@@ -13,7 +13,7 @@
     <div class="space-y-4">
       <UFormField label="Image">
         <div class="flex flex-col items-center gap-2">
-          <MoleculesFormsEditableImagePicker
+          <FireFormsEditableImagePicker
             :src="ingredient.image_url || ''"
             :alt="ingredient.name || 'Ingredient'"
             :initials="imageInitials"
@@ -33,7 +33,7 @@
             :disabled="imageUploading || saving"
             @click="generate(ingredientId).catch(() => {})"
           />
-          <MoleculesStateCard
+          <FireStateCard
             v-if="generationError"
             state="error"
             title="Image unavailable"

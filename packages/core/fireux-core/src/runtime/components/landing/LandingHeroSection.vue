@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: use the landing organism's namespaced title contract. -->
 <template>
   <section class="landing-index-section">
-    <LandingShell>
+    <FireLandingShell>
       <template #left>
         <div class="landing-hero">
           <div class="landing-hero__heading">
@@ -147,7 +147,7 @@
           </UCard>
         </div>
       </template>
-    </LandingShell>
+    </FireLandingShell>
 
     <slot name="separator">
       <div class="landing-index-divider">
@@ -162,7 +162,7 @@
     </slot>
 
     <slot name="before-get-started" />
-    <LandingSolutions variant="preview" />
+    <FireLandingSolutions variant="preview" />
     <slot name="get-started" />
     <slot name="apps" />
     <slot name="products" />

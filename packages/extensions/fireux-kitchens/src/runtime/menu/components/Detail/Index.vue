@@ -147,7 +147,7 @@
         :show-item-images="activeDetailMenu.presentation.showItemImages"
       />
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Menu"
         scope="runtime"
         object-origin="fetched"

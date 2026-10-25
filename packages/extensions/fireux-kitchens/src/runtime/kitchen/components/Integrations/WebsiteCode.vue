@@ -50,7 +50,7 @@
     <span class="sr-only" role="status">{{
       copied ? 'Code copied to clipboard.' : ''
     }}</span>
-    <MoleculesCopyError v-if="copyError" :message="copyError" />
+    <FireCopyError v-if="copyError" :message="copyError" />
   </div>
 </template>
 

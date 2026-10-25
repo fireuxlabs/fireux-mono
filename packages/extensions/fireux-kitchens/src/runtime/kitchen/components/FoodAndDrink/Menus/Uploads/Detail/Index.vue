@@ -2,7 +2,7 @@
   <section class="workspace-surface workspace-surface--compact">
     <UBreadcrumb :items="breadcrumbItems" />
 
-    <MoleculesCopyError
+    <FireCopyError
       v-if="menuSourcesError"
       :message="String(menuSourcesError)"
     />
@@ -20,15 +20,15 @@
         :key="`${kitchenId}/${uploadId}`"
         :context="processContext"
       />
-      <MoleculesDisclosurePanel title="Original document" :default-open="false">
+      <FireDisclosurePanel title="Original document" :default-open="false">
         <KitchenFoodAndDrinkMenusUploadsDetailFile
           :source="source"
           :files="sourceFiles"
         />
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </template>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

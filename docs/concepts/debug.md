@@ -74,7 +74,7 @@ Map how debug information should appear without becoming page noise.
 - A Detail component that independently fetches a related record or materially
   transforms the root object owns a second bounded panel beside that surface.
   The route does not aggregate those child internals.
-- These panels reuse `DiagnosticsDebugPanel`, remain dev-only, start closed, and do not
+- These panels reuse `FireDiagnosticsDebugPanel`, remain dev-only, start closed, and do not
   add loading/missing/unavailable product states.
 
 ## Good debug data
@@ -100,7 +100,7 @@ Copy page JSON action remains separate from source diagnostics.
   `DevDebugPayload`/`defineDevDebugPayload` Core contract. Keep payload
   construction with its owning script rather than hiding data-flow decisions
   in the renderer.
-- Use the `objects` and `derived` props on `DiagnosticsDebugPanel`. Every caller also
+- Use the `objects` and `derived` props on `FireDiagnosticsDebugPanel`. Every caller also
   declares `object-origin="fetched"` or `object-origin="passed"`; flat
   `data` payloads are rejected.
 - The inspect renderer presents record fields, colors, booleans, URLs, empty
@@ -132,12 +132,12 @@ Copy page JSON action remains separate from source diagnostics.
 
 | Surface                     | State      | Reason                                                                                                                                    |
 | --------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `DiagnosticsDebugPanel`             | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
+| `FireDiagnosticsDebugPanel`             | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
 | Another generic debug panel | `drift`    | Extend the one proven surface instead of creating a competing system                                                                      |
 
 ## Alignment roadmap
 
-- Now: use `DiagnosticsDebugPanel` beside its owning page or component surface. Enable
+- Now: use `FireDiagnosticsDebugPanel` beside its owning page or component surface. Enable
   `launcher` and open/close events when the diagnostic payload is expensive;
   enable `include-route` when route identity is material.
 - Later: guard against production rendering and unbounded closed-panel work if

@@ -20,7 +20,7 @@
             v-if="error"
             color="error"
             title="Connection could not be completed"
-            :description="error" /><MoleculesCopyError
+            :description="error" /><FireCopyError
             v-if="error"
             :message="error" /><UButton
             v-if="error"

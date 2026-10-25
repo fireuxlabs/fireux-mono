@@ -10,7 +10,8 @@ export type PlatformDirectoryTarget = {
  * Read targets for the FireUX control-plane directory.
  *
  * This is an infrastructure projection of each ecosystem package's Firebase
- * binding. The SEO guard keeps it aligned with those owning sources.
+ * binding. Ecosystem identity readers use this list; App discovery uses
+ * PLATFORM_APP_TARGETS below, which also includes standalone App databases.
  */
 export const PLATFORM_DIRECTORY_TARGETS = [
   {
@@ -57,3 +58,26 @@ export const PLATFORM_DIRECTORY_TARGETS = [
     detailPath: '/ecosystems/werkbox',
   },
 ] as const satisfies readonly PlatformDirectoryTarget[]
+
+/** App records can live in a standalone App database within an Ecosystem. */
+export const PLATFORM_APP_TARGETS: readonly PlatformDirectoryTarget[] = [
+  ...PLATFORM_DIRECTORY_TARGETS,
+  {
+    key: 'go-qr',
+    projectId: 'fireux-2005',
+    ecosystemId: 'fireux',
+    databaseId: 'go-qr',
+  },
+  {
+    key: 'find-my-seo',
+    projectId: 'fireux-2005',
+    ecosystemId: 'fireux',
+    databaseId: 'find-my-seo',
+  },
+  {
+    key: 'sproochli',
+    projectId: 'fireux-2005',
+    ecosystemId: 'fireux',
+    databaseId: 'sproochli',
+  },
+]

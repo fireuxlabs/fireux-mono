@@ -1,7 +1,7 @@
 <template>
   <WorkspaceAI :aria-label="`${label} Test AI`" compact>
     <p v-if="message" role="status" class="text-sm text-muted">{{ message }}</p>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
     <WorkspaceAIComposer
       v-model="prompt"
       :can-submit="Boolean(prompt.trim() && ready && !submitting)"
@@ -43,7 +43,7 @@
             :loading="applying"
             @click="applyDelete"
           />
-          <MoleculesCopyError v-if="error" :message="error" />
+          <FireCopyError v-if="error" :message="error" />
         </template>
       </template>
     </UModal>

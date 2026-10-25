@@ -38,7 +38,7 @@
       </div>
     </header>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-if="outcome === 'pending'"
       class="workspace-entity-collection__state"
       :entity="entity"
@@ -48,7 +48,7 @@
       :uppercase="false"
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="outcome === 'error' || outcome === 'missing'"
       class="workspace-entity-collection__state"
       :entity="entity"
@@ -68,7 +68,7 @@
           Retry
         </UButton>
       </div>
-    </MoleculesStateCard>
+    </FireStateCard>
 
     <div
       v-else-if="outcome === 'ready'"
@@ -78,7 +78,7 @@
       <slot />
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="outcome === 'empty'"
       class="workspace-entity-collection__state"
       :entity="entity"

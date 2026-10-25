@@ -26,7 +26,7 @@
         color="error"
         title="Shared sign-in is unavailable"
         :description="error"
-      /><MoleculesCopyError :message="error" />
+      /><FireCopyError :message="error" />
     </div>
   </div>
 </template>

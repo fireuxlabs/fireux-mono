@@ -45,7 +45,7 @@
       label="Open Menu"
       class="mt-3"
     />
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
   </section>
 </template>
 

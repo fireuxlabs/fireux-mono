@@ -119,7 +119,7 @@
             :disabled="pending"
             @click="respond(entry, 'completed')"
           />
-          <MoleculesDisclosurePanel
+          <FireDisclosurePanel
             v-if="
               entry.state === 'received' ||
               entry.order.customer?.phone ||
@@ -171,7 +171,7 @@
                 />
               </template>
             </div>
-          </MoleculesDisclosurePanel>
+          </FireDisclosurePanel>
         </div>
       </article>
     </div>

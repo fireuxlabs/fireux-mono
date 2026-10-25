@@ -3,7 +3,7 @@
 <template>
   <UApp>
     <ClientOnly>
-      <PwaStatus />
+      <FirePwaStatus />
     </ClientOnly>
     <!-- App content -->
     <UMain>

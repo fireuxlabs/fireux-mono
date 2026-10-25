@@ -3,7 +3,7 @@
 <template>
   <UDashboardPanel id="dashboard-chef-my-recipes">
     <template #header>
-      <LayoutsDashboardNavbar title="My Recipes" />
+      <FireLayoutsDashboardNavbar title="My Recipes" />
     </template>
 
     <template #body>

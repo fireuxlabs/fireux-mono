@@ -22,7 +22,7 @@
       title="Project creation failed"
       :description="formError || error"
     />
-    <MoleculesCopyError
+    <FireCopyError
       v-if="formError || error"
       :message="formError || error"
     />

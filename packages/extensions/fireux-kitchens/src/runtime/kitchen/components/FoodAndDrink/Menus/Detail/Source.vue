@@ -1,6 +1,6 @@
 <template>
   <section class="workspace-surface">
-    <MoleculesCopyError v-if="sourceError" :message="String(sourceError)" />
+    <FireCopyError v-if="sourceError" :message="String(sourceError)" />
     <p v-else-if="sourcePending" role="status">Loading source…</p>
     <UCard v-else-if="source && !menu">
       <template #header>
@@ -39,14 +39,14 @@
           />
         </section>
 
-        <MoleculesDisclosurePanel
+        <FireDisclosurePanel
           title="Processing tools"
           :default-open="false"
         >
           <div class="mt-4">
             <KitchenFoodAndDrinkMenusProcess />
           </div>
-        </MoleculesDisclosurePanel>
+        </FireDisclosurePanel>
       </div>
     </UCard>
 

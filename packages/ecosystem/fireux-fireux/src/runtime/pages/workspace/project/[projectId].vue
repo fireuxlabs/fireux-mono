@@ -26,7 +26,7 @@
       </div>
     </template>
     <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="source.outcome.value === 'error'"
       state="error"
       title="Project could not be loaded"

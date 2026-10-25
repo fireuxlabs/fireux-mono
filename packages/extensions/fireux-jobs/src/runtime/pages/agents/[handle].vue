@@ -11,7 +11,7 @@
     <div v-if="agentProfile && profileUser" data-public-profile="agent">
       <AgentDetail :profile="agentProfile" :user="profileUser" />
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

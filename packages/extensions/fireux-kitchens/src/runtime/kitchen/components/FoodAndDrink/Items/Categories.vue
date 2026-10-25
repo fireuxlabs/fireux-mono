@@ -9,7 +9,7 @@
     <p class="text-sm text-muted">
       Category describes the food. Menus decide where and when it is served.
     </p>
-    <MoleculesCopyError v-if="error" :message="error" />
+    <FireCopyError v-if="error" :message="error" />
     <div class="divide-y divide-default">
       <div
         v-for="dish in rows"

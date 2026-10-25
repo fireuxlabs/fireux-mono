@@ -16,14 +16,14 @@
           :mutation-authority="mutationAuthority"
         />
       </div>
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         label="Timezone"
         :value="place?.timezone"
         placeholder="Europe/Zurich"
         :maxlength="80"
         :update="handleTimezone"
       />
-      <MoleculesFormsEditableSimpleField
+      <FireFormsEditableSimpleField
         v-if="showCurrency"
         label="Currency"
         :value="place?.default_currency_code"
@@ -33,23 +33,23 @@
       />
       <slot name="settings" />
     </div>
-    <MoleculesDisclosurePanel title="Map coordinates and search" class="mt-4">
+    <FireDisclosurePanel title="Map coordinates and search" class="mt-4">
       <div class="grid gap-4 md:grid-cols-2">
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Search term"
           :value="place?.search_term"
           placeholder="yellow velo postgasse 11, 3800 interlaken, switzerland"
           :maxlength="240"
           :update="handleManualSearchTerm"
         />
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Latitude"
           type="number"
           :value="place?.lat"
           placeholder="46.6868497"
           :update="handleManualLat"
         />
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Longitude"
           type="number"
           :value="place?.lng"
@@ -57,7 +57,7 @@
           :update="handleManualLng"
         />
       </div>
-    </MoleculesDisclosurePanel>
+    </FireDisclosurePanel>
   </UCard>
 </template>
 

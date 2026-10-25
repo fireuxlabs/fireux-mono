@@ -122,7 +122,7 @@ async function markNotificationRead(notificationId: string) {
       </div>
 
       <div v-else class="space-y-3">
-        <MoleculesCopyError v-if="mutationError" :message="mutationError" />
+        <FireCopyError v-if="mutationError" :message="mutationError" />
         <UAlert
           v-if="mutationError"
           color="error"

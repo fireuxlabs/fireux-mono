@@ -1,10 +1,10 @@
 <template>
   <UPageGrid as="ul" class="list-none" aria-label="Portfolios">
     <li v-for="cell in cells" :key="cell.to">
-      <CollectionCell :cell="cell" />
+      <FireCollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DiagnosticsDebugPanel
+  <FireDiagnosticsDebugPanel
     title="Portfolios collection surface"
     context="Passed Portfolio cards and their final shared cell projection."
     object-origin="passed"
@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
 import type { PortfolioCard } from '../../composables/firestore/utils/view/usePortfolioInterface'
 const props = defineProps<{ cards: PortfolioCard.Card[] }>()

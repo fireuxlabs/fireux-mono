@@ -34,7 +34,7 @@
       </div>
       <div v-if="error" class="flex flex-wrap items-center gap-2" role="alert">
         <p class="break-words text-sm text-error">{{ error }}</p>
-        <MoleculesCopyError :message="error" />
+        <FireCopyError :message="error" />
       </div>
     </UContainer>
   </section>

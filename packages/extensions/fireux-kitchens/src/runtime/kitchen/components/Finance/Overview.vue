@@ -9,7 +9,7 @@
       title="Sales could not be loaded"
       :description="error"
     >
-      <template #actions><MoleculesCopyError :message="error" /></template>
+      <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
     <p
       v-else-if="outcome !== 'ready' && outcome !== 'empty'"

@@ -344,7 +344,7 @@ async function render(path, state) {
     'KitchenPrepAndProductionIngredientsPreview',
     'UButton',
     'UModal',
-    'DiagnosticsDebugPanel',
+    'FireDiagnosticsDebugPanel',
   ])
     app.component(name, { render: () => null })
   for (const name of ['UPage', 'UPageHeader', 'UPageBody'])
@@ -354,7 +354,7 @@ async function render(path, state) {
         () =>
           h('div', slots.default?.()),
     })
-  for (const name of ['UAlert', 'MoleculesStateCard'])
+  for (const name of ['UAlert', 'FireStateCard'])
     app.component(name, {
       props: ['title', 'state'],
       setup: (props) => () => h('p', props.title || props.state),

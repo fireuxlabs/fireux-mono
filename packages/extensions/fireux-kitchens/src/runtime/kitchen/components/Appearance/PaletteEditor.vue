@@ -50,7 +50,7 @@
           title="Could not save colours"
           :description="error"
           color="error"
-          ><template #actions><MoleculesCopyError :message="error" /></template
+          ><template #actions><FireCopyError :message="error" /></template
         ></UAlert>
         <div class="fx-card__actions">
           <UButton
@@ -86,7 +86,7 @@
       </div>
     </div>
     <ClientOnly>
-      <DiagnosticsDebugPanel v-bind="debug" title="Appearance debug" />
+      <FireDiagnosticsDebugPanel v-bind="debug" title="Appearance debug" />
     </ClientOnly>
   </section>
 </template>

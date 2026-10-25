@@ -12,7 +12,7 @@
       </UCard>
     </div>
     <p v-if="pending" class="text-sm text-muted">Loading Apps...</p>
-    <MoleculesCopyError v-else-if="error" :message="String(error)" />
+    <FireCopyError v-else-if="error" :message="String(error)" />
     <p v-else-if="!apps.length" class="text-sm text-muted">No published Apps.</p>
   </section>
 </template>

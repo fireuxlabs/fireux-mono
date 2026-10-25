@@ -448,7 +448,7 @@ test('Supplier pages show loading/error/unavailable without counts, stale cards 
         }
       )
       assert.doesNotMatch(html, /No supplier|No catalogue|data-ui="UBadge"/)
-      if (outcome === 'error') assert.match(html, /MoleculesCopyError/)
+      if (outcome === 'error') assert.match(html, /FireCopyError/)
       if (outcome === 'pending') assert.match(html, /Loading/)
       if (outcome === 'idle') assert.match(html, /Select an available Supplier/)
     }
@@ -480,7 +480,7 @@ test('Portfolio pages and Property bookings hide summaries, tools and false-empt
         html,
         /No documents|No tasks|No compliance|No reservations|Booked nights|Confirmed|Create task|Upload document|Total records|Source:|shared availability/
       )
-      if (outcome === 'error') assert.match(html, /MoleculesCopyError/)
+      if (outcome === 'error') assert.match(html, /FireCopyError/)
       if (outcome === 'pending') assert.match(html, /Loading/)
       if (outcome === 'idle') assert.match(html, /Select an available/)
     }

@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="readState"
       :state="readState"
       entity="Portfolio identity"
@@ -74,7 +74,7 @@
       </UCard>
     </template>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Portfolio identity"
       scope="workspace"
       object-origin="fetched"

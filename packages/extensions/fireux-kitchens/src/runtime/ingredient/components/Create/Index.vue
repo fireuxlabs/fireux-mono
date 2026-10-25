@@ -11,7 +11,7 @@
 
     <UFormField label="Image" hint="Optional">
       <div class="flex flex-col items-center gap-2">
-        <MoleculesFormsEditableImagePicker
+        <FireFormsEditableImagePicker
           :src="form.image_url || ''"
           :alt="form.name || 'Ingredient'"
           :initials="imageInitials"

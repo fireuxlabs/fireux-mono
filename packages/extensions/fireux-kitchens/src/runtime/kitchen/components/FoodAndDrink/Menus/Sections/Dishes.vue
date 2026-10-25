@@ -1,6 +1,6 @@
 <template>
   <p v-if="pending" class="text-sm text-muted">Loading dishes…</p>
-  <MoleculesCopyError v-else-if="error" :message="String(error)" />
+  <FireCopyError v-else-if="error" :message="String(error)" />
   <ul
     v-else-if="names.length"
     class="mt-2 space-y-1 text-base text-highlighted"

@@ -1,5 +1,5 @@
 <template>
-  <MoleculesDisclosurePanel
+  <FireDisclosurePanel
     title="Delivery"
     description="Zones, minimum orders, and delivery fees."
     icon="i-lucide-truck"
@@ -7,7 +7,7 @@
   >
     <UCard class="mt-4">
       <div class="space-y-4">
-        <MoleculesCopyError v-if="saveError" :message="saveError" />
+        <FireCopyError v-if="saveError" :message="saveError" />
         <UPageCard
           v-if="!zones.length"
           title="Add your first delivery area"
@@ -154,7 +154,7 @@
         </div>
       </div>
     </UCard>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 
 <script setup lang="ts">

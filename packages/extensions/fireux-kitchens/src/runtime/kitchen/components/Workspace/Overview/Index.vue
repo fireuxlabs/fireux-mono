@@ -1,12 +1,12 @@
 <template>
   <USkeleton v-if="targetOutcome === 'pending'" class="h-48" />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="targetOutcome === 'error'"
     state="error"
     title="Kitchen unavailable"
     description="The selected kitchen could not be loaded."
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="!selectedKitchen"
     state="missing"
     title="No kitchen selected"

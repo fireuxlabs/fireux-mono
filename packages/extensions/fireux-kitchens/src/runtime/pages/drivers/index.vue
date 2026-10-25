@@ -1,5 +1,5 @@
 <template>
-  <CollectionPage
+  <FireCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
       <DriverCurrent />
     </template>
-  </CollectionPage>
+  </FireCollectionPage>
 </template>
 
 <script setup lang="ts">

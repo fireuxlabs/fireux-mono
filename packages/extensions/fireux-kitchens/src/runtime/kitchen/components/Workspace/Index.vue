@@ -8,7 +8,7 @@
     <template #actions
       ><UButton
         label="Try again"
-        @click="adoption.adopt()" /><MoleculesCopyError
+        @click="adoption.adopt()" /><FireCopyError
         :message="adoption.error.value"
     /></template>
   </UAlert>

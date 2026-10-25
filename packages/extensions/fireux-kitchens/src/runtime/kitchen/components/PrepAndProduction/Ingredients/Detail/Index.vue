@@ -19,7 +19,7 @@
       description="Choose a Kitchen before viewing its ingredients."
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="loadError"
       state="error"
       title="Ingredient unavailable"
@@ -61,7 +61,7 @@
     >
       <template #body>
         <p class="font-medium">{{ ingredient?.name }}</p>
-        <MoleculesStateCard
+        <FireStateCard
           v-if="deleteError"
           state="error"
           title="Ingredient not removed"
@@ -88,7 +88,7 @@
       </template>
     </UModal>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Kitchen ingredient detail"
       scope="workspace"
       object-origin="fetched"

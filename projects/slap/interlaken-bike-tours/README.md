@@ -57,7 +57,7 @@ control until reloaded or closed. Shared behavior is owned by Core
 `src/config/app/pwa.ts`, `src/runtime/utils/pwa-controller.ts`,
 `src/runtime/components/Pwa` and `src/test/pwa.test.mjs`.
 
-The public layout consumes Core `LayoutsSharedPlatformFooter` for FireUX attribution
+The public layout consumes Core `FireLayoutsSharedPlatformFooter` for FireUX attribution
 and platform disclosures, and exposes the shared account entrance. Home and tour
 pages use Core SEO composables for canonical URLs, social previews and JSON-LD.
 The prototype deliberately configures noindex/disallow policy; Core filters its

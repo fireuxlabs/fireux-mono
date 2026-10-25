@@ -6,7 +6,7 @@
       :demand="demand"
     />
     <ClientOnly>
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         v-bind="debug"
         title="Identity research debug"
         class="mt-6"

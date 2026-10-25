@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel
+      <FireDiagnosticsModel
         :title="'Professionals · Model'"
         :model="professionalModelRuntime"
       />
@@ -18,7 +18,7 @@
               Inspect model drift separately from the public professionals
               collection manager.
             </p>
-            <DiagnosticsDriftToolbar
+            <FireDiagnosticsDriftToolbar
               :drift-kind="professionalsDriftKind"
               :selected-field="professionalsSelectedField"
               :filter-options="professionalsFilterOptions"

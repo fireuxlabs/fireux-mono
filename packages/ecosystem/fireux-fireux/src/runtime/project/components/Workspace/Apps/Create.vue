@@ -31,7 +31,7 @@
         Ecosystem: {{ config.ecosystemId }}. Saves an inactive App with a
         minimal HTML preview. No hosting or new database is provisioned.
       </p>
-      <MoleculesCopyError v-if="error" :message="error" />
+      <FireCopyError v-if="error" :message="error" />
       <UButton
         type="submit"
         :loading="saving"

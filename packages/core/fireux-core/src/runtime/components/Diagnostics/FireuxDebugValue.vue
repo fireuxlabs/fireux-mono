@@ -128,7 +128,7 @@ import {
   isDebugUrl,
 } from '../../utils/dev-debug-format'
 
-defineOptions({ name: 'FireuxDebugValue' })
+defineOptions({ name: 'FireDiagnosticsFireuxDebugValue' })
 
 const props = withDefaults(
   defineProps<{

@@ -8,7 +8,7 @@
       description="Supplier ingredients could not be loaded."
     >
       <template #actions
-        ><MoleculesCopyError
+        ><FireCopyError
           message="Supplier ingredients could not be loaded."
       /></template>
     </UAlert>
@@ -74,7 +74,7 @@
       <p v-else class="text-sm text-dimmed">No supplier ingredients found.</p>
     </UPageCard>
 
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Supplier ingredients"
       scope="workspace"
       object-origin="fetched"

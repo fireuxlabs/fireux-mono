@@ -46,7 +46,7 @@ import type { RouteLocationRaw } from 'vue-router'
 
 defineOptions({
   inheritAttrs: false,
-  name: 'MoleculesActionSurface',
+  name: 'FireActionSurface',
 })
 
 const props = withDefaults(

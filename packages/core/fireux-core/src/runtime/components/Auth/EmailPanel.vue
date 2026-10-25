@@ -42,7 +42,7 @@
             :title="error.title"
             :description="error.description"
           />
-          <MoleculesCopyError
+          <FireCopyError
             :message="`${error.title}: ${error.description}`"
           />
         </div>

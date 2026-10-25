@@ -1,5 +1,5 @@
 <template>
-  <CollectionRow>
+  <FireCollectionRow>
     <div class="min-w-0">
       <h3 class="text-sm font-semibold text-highlighted">{{ row.label }}</h3>
       <span v-if="row.item.status === 'archived'" class="text-xs text-muted"
@@ -29,7 +29,7 @@
         />
       </UDropdownMenu>
     </template>
-  </CollectionRow>
+  </FireCollectionRow>
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'

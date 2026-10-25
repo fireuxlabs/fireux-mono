@@ -1,5 +1,5 @@
 <template>
-  <LandingWorkspacePreviewFrame
+  <FireLandingWorkspacePreviewFrame
     :model-value="selectedSurfaceId"
     :items="operations"
     label="Interactive Kitchen Workspace preview"
@@ -77,7 +77,7 @@
       :key="selectedSurface.id"
       :title="selectedSurface.title"
     />
-  </LandingWorkspacePreviewFrame>
+  </FireLandingWorkspacePreviewFrame>
 </template>
 
 <script setup lang="ts">

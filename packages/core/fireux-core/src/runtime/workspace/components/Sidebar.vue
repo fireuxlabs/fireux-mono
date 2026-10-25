@@ -82,7 +82,7 @@
             </ClientOnly>
           </div>
 
-          <LayoutsSharedSideBarFooter
+          <FireLayoutsSharedSideBarFooter
             :collapsed="collapsed ?? false"
             :show-home="false"
           />

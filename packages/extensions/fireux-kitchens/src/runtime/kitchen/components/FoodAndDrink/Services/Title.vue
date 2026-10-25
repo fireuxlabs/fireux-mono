@@ -1,5 +1,5 @@
 <template>
-  <MoleculesFormsEditableSimpleField
+  <FireFormsEditableSimpleField
     label="Title"
     :value="title"
     :maxlength="120"

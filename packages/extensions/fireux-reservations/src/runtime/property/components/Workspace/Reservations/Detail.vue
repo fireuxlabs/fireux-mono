@@ -20,7 +20,7 @@
       title="Reservation unavailable"
     >
       <template #description
-        ><MoleculesCopyError :message="String(error)"
+        ><FireCopyError :message="String(error)"
       /></template>
     </UAlert>
 

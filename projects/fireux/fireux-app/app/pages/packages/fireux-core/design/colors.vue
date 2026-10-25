@@ -1,5 +1,5 @@
 <template>
-  <LibraryDesignColors />
+  <FireLibraryDesignColors />
 </template>
 
 <script setup lang="ts">

@@ -38,12 +38,12 @@
 
     <UPageGrid v-if="cells.length" as="ul" class="list-none">
       <li v-for="cell in cells" :key="cell.to">
-        <CollectionCell :cell="cell" />
+        <FireCollectionCell :cell="cell" />
       </li>
     </UPageGrid>
   </section>
 
-  <DiagnosticsDebugPanel
+  <FireDiagnosticsDebugPanel
     v-if="canInspect"
     title="User Kitchen memberships"
     context="Kitchen access, resolved Kitchens and Places, matching Team profiles, and the final profile cells."
@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
 import { useKitchenUserMemberships } from '../composables/useKitchenUserMemberships'

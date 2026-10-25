@@ -24,7 +24,7 @@
         :blocked="!process.canWrite || Boolean(process.pendingMode)"
       />
     </div>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       v-if="process.result"
       object-origin="fetched"
       launcher

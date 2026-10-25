@@ -36,7 +36,7 @@
         Design prototype · Enquiries open WhatsApp or your email app.
         Availability is confirmed by your guide.
       </p>
-      <LayoutsSharedPlatformFooter class="platform-footer" />
+      <FireLayoutsSharedPlatformFooter class="platform-footer" />
     </footer>
   </div>
 </template>

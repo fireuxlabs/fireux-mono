@@ -1,11 +1,11 @@
 <template>
   <section class="entity-collection supplier-collection">
-    <CollectionHeader title="Suppliers" description="Find suppliers and explore their identities, catalogues and delivery areas.">
+    <FireCollectionHeader title="Suppliers" description="Find suppliers and explore their identities, catalogues and delivery areas.">
       <template #controls>
         <UInput v-if="suppliers.length > 15" v-model="query" placeholder="Search suppliers…" aria-label="Search suppliers" icon="i-lucide-search" class="entity-collection__search" />
         <span class="entity-collection__count">{{ visibleCount }} suppliers</span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
     <SupplierCollectionList :cards="cards" />
   </section>
 </template>

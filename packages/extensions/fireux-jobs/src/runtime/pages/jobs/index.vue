@@ -4,12 +4,12 @@
       <JobHero />
       <JobCreate />
       <JobCollection :jobs="jobs" />
-      <CollectionPagination
+      <FireCollectionPagination
         :has-more="hasMore"
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Jobs index acquisition"
         context="Canonical Jobs and pagination inputs used by the FL index surface."
         object-origin="fetched"

@@ -1,10 +1,10 @@
 <template>
   <UPageGrid as="ul" class="list-none" aria-label="Jobs">
     <li v-for="cell in cells" :key="cell.to">
-      <CollectionCell :cell="cell" />
+      <FireCollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DiagnosticsDebugPanel
+  <FireDiagnosticsDebugPanel
     title="Jobs collection surface"
     context="Passed Job cards and their final shared cell projection."
     object-origin="passed"
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
 import type { JobCard } from '../../composables/firestore/utils/view/useJobInterface'
 const props = defineProps<{ cards: JobCard.Card[] }>()

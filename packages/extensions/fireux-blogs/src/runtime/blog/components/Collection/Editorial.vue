@@ -64,7 +64,7 @@
     </div>
 
     <div v-else-if="outcome === 'error'" class="blog-editorial__state">
-      <MoleculesStateCard
+      <FireStateCard
         entity="stories"
         state="error"
         surface="bare"
@@ -78,14 +78,14 @@
           variant="soft"
           @click="emit('retry')"
         />
-      </MoleculesStateCard>
+      </FireStateCard>
     </div>
 
     <div
       v-else-if="totalCount === 0"
       class="blog-editorial__state blog-editorial__state--empty"
     >
-      <MoleculesStateCard
+      <FireStateCard
         entity="stories"
         state="empty"
         surface="bare"
@@ -110,14 +110,14 @@
           :loading="loadingMore"
           @click="emit('load-more')"
         />
-      </MoleculesStateCard>
+      </FireStateCard>
     </div>
 
     <div
       v-else-if="isSearching && cards.length === 0"
       class="blog-editorial__state"
     >
-      <MoleculesStateCard
+      <FireStateCard
         entity="stories"
         state="empty"
         surface="bare"
@@ -131,7 +131,7 @@
           variant="soft"
           @click="searchQuery = ''"
         />
-      </MoleculesStateCard>
+      </FireStateCard>
     </div>
 
     <div v-else class="blog-editorial__content">

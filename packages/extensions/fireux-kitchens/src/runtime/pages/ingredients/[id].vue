@@ -14,7 +14,7 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <MoleculesStateCard
+      <FireStateCard
         v-if="outcome === 'error'"
         entity="Ingredient"
         state="error"
@@ -39,7 +39,7 @@
 
       <IngredientDetail v-else :ingredient="ingredient" />
 
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         v-if="ingredient"
         object-origin="fetched"
         launcher

@@ -12,13 +12,13 @@
       <AppSearchDemandBriefNav :briefs="briefs" /><AppSearchDemandStageNav
         current="tools"
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-if="pending"
         surface="collection"
         title="Loading proposed tools"
         loading
       />
-      <MoleculesStateCard
+      <FireStateCard
         v-else-if="error || !demand"
         surface="collection"
         :state="error ? 'error' : 'empty'"

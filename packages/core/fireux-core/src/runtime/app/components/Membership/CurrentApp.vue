@@ -1,18 +1,18 @@
 <template>
   <section class="space-y-5" aria-label="Current app">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="appPending"
       entity="app"
       kind="document"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="appError"
       entity="app"
       kind="document"
       state="error"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="!appCard"
       entity="app"
       kind="document"

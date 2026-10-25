@@ -13,7 +13,7 @@
         :option="option"
       />
     </div>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Kitchen Services"
       scope="workspace"
       object-origin="passed"

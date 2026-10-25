@@ -9,7 +9,7 @@
       @create="dialogs?.openCreate($event)"
     />
     <KitchenFoodAndDrinkItemsCollectionDialogs ref="dialogs" />
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

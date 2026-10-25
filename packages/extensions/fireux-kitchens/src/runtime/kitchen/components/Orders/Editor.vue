@@ -51,7 +51,7 @@
       title="Order could not be saved"
       :description="saveError"
     >
-      <template #actions><MoleculesCopyError :message="saveError" /></template>
+      <template #actions><FireCopyError :message="saveError" /></template>
     </UAlert>
     <fieldset
       v-if="order"

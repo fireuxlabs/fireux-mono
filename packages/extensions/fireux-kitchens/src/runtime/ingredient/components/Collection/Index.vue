@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection ingredient-collection">
-    <CollectionHeader :title="title" :description="description">
+    <FireCollectionHeader :title="title" :description="description">
       <template #controls>
         <div class="flex w-full flex-wrap items-center justify-end gap-2">
           <USelect
@@ -35,7 +35,7 @@
           </span>
         </div>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
     <IngredientImageBatch :ingredients="collection" />
 
@@ -57,7 +57,7 @@
       </template>
     </IngredientCollectionList>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else
       icon="i-lucide-carrot"
@@ -78,7 +78,7 @@
     />
 
     <div>
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

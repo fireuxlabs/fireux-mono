@@ -1,5 +1,5 @@
 <template>
-  <ProviderToolFrame
+  <FireProviderToolFrame
     provider-name="Sproochli"
     provider-url="https://sproochli.web.app"
     logo-alt="Sproochli"
@@ -8,7 +8,7 @@
     :endpoint="endpoint"
   >
     <slot />
-  </ProviderToolFrame>
+  </FireProviderToolFrame>
 </template>
 
 <script setup lang="ts">

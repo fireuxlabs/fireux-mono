@@ -40,7 +40,7 @@
         title="Project ecosystems could not be loaded"
         description="Please try again."
       />
-      <MoleculesCopyError
+      <FireCopyError
         message="Project ecosystems could not be loaded. Please try again."
         class="mt-3"
       />

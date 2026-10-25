@@ -1,6 +1,6 @@
 <template>
   <div class="fx-layout-shell">
-    <LayoutsDefaultHeader />
+    <FireLayoutsDefaultHeader />
 
     <main class="fx-layout-main fx-layout-main--landing">
       <UContainer>
@@ -8,10 +8,10 @@
       </UContainer>
     </main>
 
-    <LayoutsDefaultFooter />
-    <LayoutsSharedFloatingChatButton />
+    <FireLayoutsDefaultFooter />
+    <FireLayoutsSharedFloatingChatButton />
 
-    <LayoutsSharedRoleBadge />
+    <FireLayoutsSharedRoleBadge />
   </div>
 </template>
 

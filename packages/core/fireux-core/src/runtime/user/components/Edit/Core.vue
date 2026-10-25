@@ -11,7 +11,7 @@
           <USeparator />
 
           <div class="grid gap-6 sm:grid-cols-2">
-            <MoleculesFormsEditableSimpleField
+            <FireFormsEditableSimpleField
               :capture-intent="captureCompletion"
               label="Display name"
               :value="user.display_name"
@@ -23,7 +23,7 @@
             />
 
             <div>
-              <MoleculesFormsEditableSimpleField
+              <FireFormsEditableSimpleField
                 :capture-intent="captureCompletion"
                 label="Handle"
                 :value="user.handle"
@@ -40,7 +40,7 @@
 
           <USeparator />
 
-          <MoleculesFormsEditableSimpleField
+          <FireFormsEditableSimpleField
             :capture-intent="captureCompletion"
             label="Bio"
             :value="user.bio"
@@ -64,7 +64,7 @@
         </div>
       </UPageCard>
 
-      <MoleculesStateCard
+      <FireStateCard
         v-else
         entity="User"
         kind="document"

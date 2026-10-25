@@ -497,7 +497,7 @@ membership or hiding schedules. Routine timezone controls and labels are omitted
 here; the saved venue timezone remains in use, with missing/conflicting schedule
 timezones reported explicitly. Manual Place setup retains its timezone editor.
 This presentation does not establish Google verification or change timezone data.
-Identity pages expose one client-only, development-only bottom `DiagnosticsDebugPanel`
+Identity pages expose one client-only, development-only bottom `FireDiagnosticsDebugPanel`
 with Copy JSON. The owning reader/composition supplies bounded source projections
 and derived state; `kitchen/utils/identity-debug.ts` excludes credentials, private
 operational fields and signed media URLs. Operating hours reuses its one Menu
@@ -915,7 +915,7 @@ the owning document, not in question records or a context subcollection. Existin
 sparse documents without authored context read as empty text. Kitchen Identity &
 brand and Menu Settings compose Core's `components/Context/Editor.vue` text area;
 Core's scoped `useRecordContext` controller saves changes on leaving the field;
-Dish and Recipe detail reuse `ContextRecord` over the same Kitchen endpoint. The trusted
+Dish and Recipe detail reuse `FireContextRecord` over the same Kitchen endpoint. The trusted
 `kitchen/server/context/command.ts` updates only the selected document's context
 and audit stamp after current App membership and Kitchen association checks.
 Concurrent edits compare the previously read text before updating; failed edits
@@ -1603,7 +1603,7 @@ navbar's right slot. `Workspace/CollectionHeader.vue` supplies their common
 Kitchen breadcrumb, title and action layout without owning reads or permissions.
 Menu AI composition lives in the Menu capability rather than its route adapter.
 CollectionToolbar supplies the shared search/count row and optional controls and
-filters. Menus and Recipes use CollectionRow with domain-owned summaries; their
+filters. Menus and Recipes use FireCollectionRow with domain-owned summaries; their
 rows open the record directly. Food, Drinks and Ingredients default to compact
 lists and retain optional image grids. Ingredients opens its record directly,
 without a compulsory preview step. Food/Drinks and Ingredients render 40 filtered
@@ -2443,12 +2443,12 @@ or Order records are changed by these checks.
 
 The Services composition publishes `kitchen/utils/service-overview.ts` through
 Core's `useWorkspacePageState` for the header Copy page JSON action. The existing
-development-only DiagnosticsDebugPanel consumes the same safe projection: service
+development-only FireDiagnosticsDebugPanel consumes the same safe projection: service
 types, configuration IDs, menus, hours, availability, readiness and read outcomes.
 It excludes notification recipients, credentials, payment details and Order data.
 
 Services opens with compact selected-Menu chips and effective hours summaries.
-Menus composes Core `MoleculesMultiSelect` for all choices as toggle badges; selected badges are highlighted and
+Menus composes Core `FireMultiSelect` for all choices as toggle badges; selected badges are highlighted and
 multiple selections are allowed. There is no dropdown or separate edit step.
 ServiceHours and Timing own their local editor disclosures; opening or closing
 an editor never writes settings. Edits retain automatic saving.
@@ -2516,7 +2516,7 @@ stored policy remains preserved by sparse updates. Kiosk menu selection does not
 change normal Dish prices or Orders.
 
 `Setup/Hours.vue` owns the local range draft and composes `Hours/Range.vue` with
-Core `MoleculesMultiSelect` day pills and softly rounded native time inputs. Selected days
+Core `FireMultiSelect` day pills and softly rounded native time inputs. Selected days
 remain visible without opening a dropdown; each button exposes its full weekday
 label and pressed state. It emits the existing structured
 weekday/time configuration only when all ranges are complete; hydration never

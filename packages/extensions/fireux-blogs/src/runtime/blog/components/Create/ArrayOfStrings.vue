@@ -2,7 +2,7 @@
 <template>
   <div class="form-field">
     <!-- Top Controls -->
-    <MoleculesFormsTop
+    <FireFormsTop
       :label="label"
       :is-editing="isEditing"
       :has-data="hasData"

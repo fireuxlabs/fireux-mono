@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: point cleaning discovery at the Werkbox category. -->
 <template>
-  <LandingCardGrid :title="title" :subtitle="subtitle" :items="items" />
+  <FireLandingCardGrid :title="title" :subtitle="subtitle" :items="items" />
 </template>
 
 <script setup lang="ts">

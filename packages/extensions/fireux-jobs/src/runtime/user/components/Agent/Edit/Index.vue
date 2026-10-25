@@ -10,7 +10,7 @@
       variant="outline"
     >
       <div class="space-y-4">
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Title"
           :value="title"
           placeholder="Ex: Hospitality hiring team"
@@ -20,7 +20,7 @@
           :formatting-function="DisplayName.format"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Summary"
           type="textarea"
           :rows="3"
@@ -30,7 +30,7 @@
           :update="handleSummary"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Bio"
           type="textarea"
           :rows="6"
@@ -40,7 +40,7 @@
           :update="handleBio"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Hiring Profile Image URL"
           :value="imageUrl"
           placeholder="Optional: image URL for this hiring profile"
@@ -48,7 +48,7 @@
           :update="handleImage"
         />
 
-        <MoleculesFormsEditableArrayOfStrings
+        <FireFormsEditableArrayOfStrings
           label="Placement Types"
           :value="placementTypes"
           item-placeholder="Placement type"
@@ -56,7 +56,7 @@
           :update="handlePlacementTypes"
         />
 
-        <MoleculesFormsEditableArrayOfStrings
+        <FireFormsEditableArrayOfStrings
           label="Tags"
           :value="tags"
           item-placeholder="Tag"
@@ -64,7 +64,7 @@
           :update="handleTags"
         />
 
-        <MoleculesFormsEditableArrayOfStrings
+        <FireFormsEditableArrayOfStrings
           label="Coverage Areas"
           :value="coverageAreas"
           item-placeholder="Coverage area"
@@ -72,7 +72,7 @@
           :update="handleCoverageAreas"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Public Business Email"
           :value="contactEmail"
           placeholder="Ex: hello@example.com"
@@ -80,7 +80,7 @@
           :update="handleContactEmail"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Public Business Phone"
           :value="contactPhone"
           placeholder="Optional"
@@ -88,7 +88,7 @@
           :update="handleContactPhone"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Public Business Website"
           :value="websiteUrl"
           placeholder="Ex: https://example.com"
@@ -98,7 +98,7 @@
       </div>
     </UPageCard>
 
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       entity="hiring profile"
       kind="document"

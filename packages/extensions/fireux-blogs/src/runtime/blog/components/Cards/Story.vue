@@ -1,5 +1,5 @@
 <template>
-  <MoleculesActionSurface
+  <FireActionSurface
     :to="to"
     :aria-label="`Read ${title}`"
     class="blog-story"
@@ -35,7 +35,7 @@
         </div>
       </template>
     </UBlogPost>
-  </MoleculesActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 14:38 CEST — Company public projection: expose explicit bounded directory pagination. -->
 <template>
   <section class="entity-collection company-collection">
-    <CollectionHeader :title="title" :description="description">
+    <FireCollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -33,9 +33,9 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-if="outcome === 'pending'"
       title="Loading companies"
@@ -44,7 +44,7 @@
       loading
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else-if="outcome === 'error'"
       title="Companies unavailable"
@@ -61,7 +61,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </MoleculesStateCard>
+    </FireStateCard>
 
     <div v-else-if="cardsFiltered.length" class="grid gap-4">
       <CompanyCollectionList :cards="cardsFiltered" :variant="variant">
@@ -94,7 +94,7 @@
       </div>
     </div>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else
       icon="i-lucide-building-2"
@@ -107,7 +107,7 @@
     />
 
     <div>
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

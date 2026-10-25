@@ -13,7 +13,7 @@
         }}</UBadge>
       </div>
     </template>
-    <MoleculesCopyError v-if="error" :message="String(error)" />
+    <FireCopyError v-if="error" :message="String(error)" />
     <p v-else-if="pending" role="status">Loading sections…</p>
     <template v-else>
       <DishMenuSection

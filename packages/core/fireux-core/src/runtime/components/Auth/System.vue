@@ -30,7 +30,7 @@
               title="Your account could not be opened"
               :description="navigationError || 'Please try again.'"
             />
-            <MoleculesCopyError
+            <FireCopyError
               :message="`Your account could not be opened: ${navigationError || 'Please try again.'}`"
             />
             <UButton
@@ -65,7 +65,7 @@
             title="Sign-in is not available"
             :description="authUnavailableMessage"
           />
-          <MoleculesCopyError
+          <FireCopyError
             v-if="authUnavailableMessage"
             :message="`Sign-in is not available: ${authUnavailableMessage}`"
           />
@@ -102,7 +102,7 @@
                 :title="providerError.title"
                 :description="providerError.description"
               />
-              <MoleculesCopyError
+              <FireCopyError
                 :message="`${providerError.title}: ${providerError.description}`"
               />
             </div>
@@ -115,7 +115,7 @@
 
             <USeparator label="or continue with email" />
 
-            <AuthEmailPanel
+            <FireAuthEmailPanel
               :default-mode="authMode"
               :disabled="providerLoading || additionalProviderLoading"
               @busy="handleEmailBusy"

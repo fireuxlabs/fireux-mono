@@ -6,7 +6,7 @@
         <div class="card-title">Wordmark</div>
         <div class="card-hint">Wide feature image</div>
       </div>
-      <MoleculesFormsStateImagePicker
+      <FireFormsStateImagePicker
         ref="featuredImageRef"
         label="Wordmark"
         :state-key="FEATURED_IMAGE_KEY"
@@ -18,7 +18,7 @@
         <div class="card-title">Logo</div>
         <div class="card-hint">Square social image</div>
       </div>
-      <MoleculesFormsStateImagePicker
+      <FireFormsStateImagePicker
         ref="socialImageRef"
         label="Logo"
         :state-key="SOCIAL_IMAGE_KEY"

@@ -1,13 +1,13 @@
 <template>
   <UPageCard title="Join this app" :description="description" variant="subtle">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="pending && !error"
       entity="App access"
       kind="document"
       surface="bare"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="error"
       entity="App access"
       kind="document"

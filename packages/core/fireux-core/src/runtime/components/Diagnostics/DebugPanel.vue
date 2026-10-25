@@ -80,7 +80,7 @@
         </div>
 
         <div v-if="view === 'inspect'" class="jsonpanel-sections">
-          <DiagnosticsFireuxDebugDrift
+          <FireDiagnosticsFireuxDebugDrift
             :findings="contractFindings"
             :missing-count="missingCount"
             :extra-count="extraCount"
@@ -115,7 +115,7 @@
                   >
                 </dt>
                 <dd>
-                  <DiagnosticsFireuxDebugValue
+                  <FireDiagnosticsFireuxDebugValue
                     :name="entry.key"
                     :value="entry.value"
                     :path="`${section.key}.${entry.key}`"
@@ -147,7 +147,7 @@ import type {
   DevDebugPayload,
 } from '../../types/dev-debug'
 
-defineOptions({ name: 'DebugPanel' })
+defineOptions({ name: 'FireDiagnosticsDebugPanel' })
 
 interface DebugPanelProps {
   objects: DevDebugPayload['objects'] | unknown

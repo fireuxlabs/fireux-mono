@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'CollectionPage' })
+defineOptions({ name: 'FireCollectionPage' })
 
 withDefaults(
   defineProps<{

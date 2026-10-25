@@ -38,7 +38,7 @@
     <p v-else class="text-sm text-dimmed">
       No app records point to this project.
     </p>
-    <MoleculesCopyError v-if="outcome === 'error'" :message="error?.message || 'Project apps could not be loaded.'" />
+    <FireCopyError v-if="outcome === 'error'" :message="error?.message || 'Project apps could not be loaded.'" />
   </UCard>
 </template>
 

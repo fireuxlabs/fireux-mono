@@ -27,7 +27,7 @@
       />
     </UFormField>
 
-    <MoleculesFormsEditableImagePicker
+    <FireFormsEditableImagePicker
       v-if="coverEditable"
       :src="previewSource"
       :alt="`${placeName} cover`"

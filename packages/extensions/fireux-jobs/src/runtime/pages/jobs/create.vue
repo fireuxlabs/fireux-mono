@@ -59,7 +59,7 @@
           :description="errorMessage"
         />
 
-        <CreateShell
+        <FireCreateShell
           :loading="submitting"
           submit-label="Create draft"
           @clear="onReset"
@@ -72,7 +72,7 @@
           <template #preview>
             <JobCreatePreview :form="form" />
           </template>
-        </CreateShell>
+        </FireCreateShell>
       </div>
     </UPageBody>
   </UPage>

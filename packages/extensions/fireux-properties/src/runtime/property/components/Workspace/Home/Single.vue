@@ -1,6 +1,6 @@
 <template>
   <h2 class="font-semibold">{{ card?.title || 'Details' }}</h2>
-  <MoleculesStateCard
+  <FireStateCard
     v-if="outcome === 'pending' || outcome === 'error'"
     :loading="outcome === 'pending'"
     :state="outcome === 'error' ? 'error' : 'missing'"

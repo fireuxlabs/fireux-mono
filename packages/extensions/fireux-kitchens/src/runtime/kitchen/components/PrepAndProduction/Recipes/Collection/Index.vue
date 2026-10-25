@@ -36,7 +36,7 @@
         {{ item.label }} <span>{{ item.count }}</span>
       </button>
     </div>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="error"
       state="error"
       title="Recipes unavailable"
@@ -88,7 +88,7 @@
       description="Recipe preview"
       :ui="{ content: 'sm:max-w-5xl' }"
       ><template #body>
-        <MoleculesStateCard
+        <FireStateCard
           v-if="ingredientsError"
           state="error"
           title="Ingredient details unavailable"
@@ -96,7 +96,7 @@
         <p v-else-if="ingredientsPending" role="status">
           Loading ingredient details…
         </p>
-        <MoleculesStateCard
+        <FireStateCard
           v-if="prepError"
           state="error"
           title="Prep items unavailable"
@@ -131,7 +131,7 @@
           :root-collection="rootCollection"
           @saved="onCreated" /></template
     ></USlideover>
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       launcher
       title="Kitchen recipes"
       object-origin="fetched"

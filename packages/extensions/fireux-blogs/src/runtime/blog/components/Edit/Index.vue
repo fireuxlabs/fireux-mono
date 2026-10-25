@@ -5,7 +5,7 @@
   <UAlert v-else-if="!canPublishBlog" title="Admins only" color="warning" />
   <div v-else-if="outcome === 'error'" class="space-y-2">
     <UAlert title="The post could not be loaded." color="error" />
-    <MoleculesCopyError message="The post could not be loaded." />
+    <FireCopyError message="The post could not be loaded." />
   </div>
   <UAlert
     v-else-if="outcome === 'missing' || (outcome === 'ready' && !post)"
@@ -74,7 +74,7 @@
     </fieldset>
     <div v-if="error" role="alert" class="space-y-2">
       <p>{{ error }}</p>
-      <MoleculesCopyError :message="error" />
+      <FireCopyError :message="error" />
     </div>
     <p v-if="saved" role="status">Changes saved.</p>
     <div class="flex gap-3">

@@ -18,7 +18,7 @@
       </button>
     </div>
 
-    <LandingProductProofSection
+    <FireLandingProductProofSection
       :section-id="sectionId"
       :eyebrow="items.length > 1 ? 'Ways to use the App' : undefined"
       :title="selected.title"
@@ -38,7 +38,7 @@
           <span>{{ selected.description }}</span>
         </div>
       </slot>
-    </LandingProductProofSection>
+    </FireLandingProductProofSection>
   </section>
 </template>
 

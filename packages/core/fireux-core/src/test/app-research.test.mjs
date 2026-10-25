@@ -144,8 +144,8 @@ async function renderPage(name, demand, scope = '') {
     'UBadge',
     'AppSearchDemandStageNav',
     'AppSearchDemandBriefNav',
-    'MoleculesStateCard',
-    'DiagnosticsDebugPanel',
+    'FireStateCard',
+    'FireDiagnosticsDebugPanel',
     'UNavigationMenu',
     'UIcon',
   ])

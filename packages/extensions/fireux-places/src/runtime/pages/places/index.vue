@@ -4,12 +4,12 @@
       <PlaceHero />
       <PlaceCreate />
       <PlaceCollection :places="places" />
-      <CollectionPagination
+      <FireCollectionPagination
         :has-more="hasMore"
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         title="Places index acquisition"
         context="Canonical Places and pagination inputs used by the FL index surface."
         object-origin="fetched"

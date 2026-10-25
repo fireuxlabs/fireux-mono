@@ -125,7 +125,7 @@
         <span>Where it works</span>
         <h2>Useful language at the point of need.</h2>
       </div>
-      <LandingSolutions variant="preview" />
+      <FireLandingSolutions variant="preview" />
     </section>
 
     <section class="sproochli-closing">

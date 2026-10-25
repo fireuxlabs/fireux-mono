@@ -6,7 +6,7 @@
     </div>
     <p v-if="placeholder" class="mt-1 flex items-center gap-1.5 text-xs text-muted"><span class="size-1.5 rounded-full bg-error/60" />{{ description || 'Summary coming soon' }}</p>
     <USkeleton v-else-if="pending" class="mt-2 h-8" />
-    <div v-else-if="error" class="mt-2"><p class="text-sm text-error">{{ title }} could not be loaded.</p><MoleculesCopyError :message="`${title} could not be loaded.`" /></div>
+    <div v-else-if="error" class="mt-2"><p class="text-sm text-error">{{ title }} could not be loaded.</p><FireCopyError :message="`${title} could not be loaded.`" /></div>
     <div v-else class="mt-2 flex flex-1 flex-col gap-1.5"><p class="text-xl font-semibold tabular-nums leading-6 tracking-tight">{{ value }}</p><p v-if="description" class="text-xs text-muted">{{ description }}</p><slot /></div>
   </UCard>
 </template>

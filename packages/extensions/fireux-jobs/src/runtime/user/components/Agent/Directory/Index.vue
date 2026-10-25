@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection agent-collection">
-    <CollectionHeader :title="title" :description="description">
+    <FireCollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -29,9 +29,9 @@
           {{ countLabel }}
         </span>
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-if="outcome === 'pending'"
       title="Loading hiring profiles"
@@ -41,7 +41,7 @@
       aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else-if="outcome === 'error'"
       title="Hiring profiles unavailable"
@@ -64,7 +64,7 @@
       </template>
     </AgentCollectionList>
 
-    <MoleculesStateCard
+    <FireStateCard
       surface="collection"
       v-else
       icon="i-lucide-handshake"
@@ -77,7 +77,7 @@
     />
 
     <div>
-      <DiagnosticsDebugPanel
+      <FireDiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

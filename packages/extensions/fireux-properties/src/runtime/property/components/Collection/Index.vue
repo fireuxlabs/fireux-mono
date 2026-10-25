@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection property-collection">
-    <CollectionHeader
+    <FireCollectionHeader
       title="Properties"
       description="Browse properties available through this app."
     >
@@ -18,7 +18,7 @@
           {{ visibleCount === 1 ? 'property' : 'properties' }}</span
         >
       </template>
-    </CollectionHeader>
+    </FireCollectionHeader>
     <PropertyCollectionList :cards="cards" />
   </section>
 </template>

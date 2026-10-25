@@ -302,7 +302,7 @@
       </div>
     </div>
     <p v-else class="text-muted">No specification yet.</p>
-    <MoleculesStateCard
+    <FireStateCard
       v-if="error || readError"
       state="error"
       title="Specification unavailable"

@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <PortfolioDetailSummary v-if="profileCard" :card="profileCard" />
     <PortfolioDetailOperatorPanel :portfolio="portfolio" />
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       title="Portfolio detail surface"
       context="Passed Portfolio and its derived profile card."
       object-origin="passed"

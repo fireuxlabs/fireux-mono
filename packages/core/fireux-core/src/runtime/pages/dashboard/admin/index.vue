@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="app-admin">
     <template #header>
-      <LayoutsDashboardNavbar title="Admin" />
+      <FireLayoutsDashboardNavbar title="Admin" />
     </template>
 
     <template #body>

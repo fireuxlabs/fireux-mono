@@ -8,7 +8,7 @@
       variant="outline"
     >
       <div class="space-y-4">
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Title"
           :value="title"
           placeholder="Ex: Head Chef"
@@ -16,7 +16,7 @@
           :update="handleTitle"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Summary"
           type="textarea"
           :rows="3"
@@ -26,7 +26,7 @@
           :update="handleSummary"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Bio"
           type="textarea"
           :rows="6"
@@ -36,7 +36,7 @@
           :update="handleBio"
         />
 
-        <MoleculesFormsEditableSimpleField
+        <FireFormsEditableSimpleField
           label="Chef Image URL"
           :value="imageUrl"
           placeholder="Optional: image URL for this chef profile"
@@ -44,7 +44,7 @@
           :update="handleImage"
         />
 
-        <MoleculesFormsEditableArrayOfStrings
+        <FireFormsEditableArrayOfStrings
           label="Signature Dishes"
           :value="signatureDishes"
           item-placeholder="Signature dish"
@@ -54,7 +54,7 @@
       </div>
     </UPageCard>
 
-    <MoleculesStateCard v-else entity="chef profile" kind="document" loading />
+    <FireStateCard v-else entity="chef profile" kind="document" loading />
   </ClientOnly>
 </template>
 

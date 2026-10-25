@@ -84,7 +84,7 @@
       color="error"
       variant="soft"
     />
-    <MoleculesCopyError v-if="message" :message="message" />
+    <FireCopyError v-if="message" :message="message" />
   </form>
 </template>
 

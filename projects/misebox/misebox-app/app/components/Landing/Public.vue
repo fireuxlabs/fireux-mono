@@ -8,13 +8,13 @@
     workspace-description="Manage your Kitchen, Menus and Team in one Workspace."
     :workspace-to="workspaceEntryHref"
   >
-    <MoleculesStateCard
+    <FireStateCard
       v-if="pending"
       state="loading"
       entity="kitchens"
       surface="collection"
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="error"
       state="error"
       title="Kitchens could not be loaded"
@@ -24,9 +24,9 @@
       <template #actions
         ><UButton label="Try again" variant="soft" @click="refresh()"
       /></template>
-    </MoleculesStateCard>
+    </FireStateCard>
     <KitchenCollection v-else-if="kitchens.length" :kitchens="kitchens" />
-    <MoleculesStateCard
+    <FireStateCard
       v-else
       state="empty"
       title="No Kitchens available yet"

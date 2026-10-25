@@ -1,11 +1,11 @@
 <template>
   <section v-if="storageKitchenId" class="grid gap-6" aria-label="Menus">
     <KitchenFoodAndDrinkMenusCollection />
-    <MoleculesDisclosurePanel title="KitchenAI" :default-open="false">
+    <FireDisclosurePanel title="KitchenAI" :default-open="false">
       <KitchenFoodAndDrinkMenusAi />
-    </MoleculesDisclosurePanel>
+    </FireDisclosurePanel>
   </section>
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="outcome === 'error'"
     state="error"
     title="Kitchen unavailable"

@@ -1,16 +1,16 @@
 <template>
   <UFormField label="Menus">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="outcome === 'idle' || outcome === 'pending'"
       entity="Menus"
       loading
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="outcome === 'error'"
       entity="Menus"
       state="error"
     />
-    <MoleculesMultiSelect
+    <FireMultiSelect
       v-else-if="options.length"
       label="Menus"
       :model-value="menuIds"

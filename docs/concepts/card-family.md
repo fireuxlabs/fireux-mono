@@ -28,7 +28,7 @@ size ladder or a mandatory four-file scaffold.
 
 ## Composition and interaction
 
-Reuse Nuxt UI for controls and Core `MoleculesActionSurface` for ordinary whole-card
+Reuse Nuxt UI for controls and Core `FireActionSurface` for ordinary whole-card
 link, action or static rendering. A supplied enabled link renders a link; an action
 without a link renders a native button; a passive card remains noninteractive.
 Keep domain actions explicit. A card with separate service buttons or nested

@@ -18,7 +18,7 @@
         />
       </section>
 
-      <LandingSolutions
+      <FireLandingSolutions
         variant="preview"
         :limit="99"
         title="What do you need a QR code for?"

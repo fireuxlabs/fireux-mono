@@ -24,7 +24,7 @@
 import { computed, provide, ref } from 'vue'
 import { useDiagnosticsClipboard } from '../../composables/diagnostics/useDiagnosticsClipboard'
 
-defineOptions({ name: 'Model' })
+defineOptions({ name: 'FireDiagnosticsModel' })
 
 type ShapeNode = {
   key: string

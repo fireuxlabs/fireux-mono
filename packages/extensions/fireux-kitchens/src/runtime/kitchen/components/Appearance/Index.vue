@@ -22,7 +22,7 @@
       @save="save"
     />
   </div>
-  <MoleculesStateCard
+  <FireStateCard
     v-else
     entity="Kitchen"
     kind="document"
@@ -30,7 +30,7 @@
     :state="outcome === 'error' ? 'error' : 'missing'"
   />
   <ClientOnly v-if="outcome !== 'ready'">
-    <DiagnosticsDebugPanel
+    <FireDiagnosticsDebugPanel
       object-origin="fetched"
       :objects="{ storedPalette }"
       :derived="debugContext"

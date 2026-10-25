@@ -14,7 +14,7 @@
       title="Select a kitchen"
       description="Choose a Kitchen before viewing its food and drinks."
     />
-    <MoleculesStateCard
+    <FireStateCard
       v-else-if="error"
       state="error"
       :title="`${catalogue.singular} unavailable`"
@@ -105,7 +105,7 @@
         view === 'spec' && storageKitchenId && dishId && outcome !== 'missing'
       "
     />
-    <ContextRecord
+    <FireContextRecord
       v-if="dish && canWrite"
       :key="`${kitchenId}/${dishId}`"
       title="Dish AI context"

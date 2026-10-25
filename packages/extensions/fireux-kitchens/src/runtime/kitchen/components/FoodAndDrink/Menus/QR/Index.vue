@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-4">
-    <MoleculesStateCard
+    <FireStateCard
       v-if="
         !['ready', 'empty'].includes(qr.menusOutcome) ||
         !['ready', 'empty'].includes(qr.offeringsOutcome)

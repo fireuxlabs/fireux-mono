@@ -1,5 +1,5 @@
 <template>
-  <MoleculesDisclosurePanel
+  <FireDisclosurePanel
     v-if="items.some((item) => item.candidateUrl)"
     title="Dish media review"
     :default-open="false"
@@ -44,7 +44,7 @@
         <span v-if="error" class="text-sm text-error">{{ error }}</span>
       </div>
     </div>
-  </MoleculesDisclosurePanel>
+  </FireDisclosurePanel>
 </template>
 
 <script setup lang="ts">

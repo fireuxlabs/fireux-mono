@@ -1,12 +1,12 @@
 <template>
   <USkeleton v-if="outcome === 'pending'" class="h-48" />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="outcome === 'error'"
     state="error"
     title="Project unavailable"
     description="The selected Project could not be loaded."
   />
-  <MoleculesStateCard
+  <FireStateCard
     v-else-if="!data"
     state="missing"
     title="No Project selected"
@@ -32,7 +32,7 @@
       <p v-if="publication.status === 'pending'">Loading App identity…</p>
       <template v-if="publication.message"
         ><p>{{ publication.message }}</p>
-        <MoleculesCopyError :message="publication.message"
+        <FireCopyError :message="publication.message"
       /></template>
     </div>
     <OverviewCapabilities :publication="publication" />

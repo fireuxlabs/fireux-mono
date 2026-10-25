@@ -79,7 +79,7 @@ test('Supplier Home never turns a pending or failed read into a Choose prompt or
       ),
     })
     app.config.warnHandler = () => {}
-    app.component('MoleculesStateCard', {
+    app.component('FireStateCard', {
       props: ['loading', 'state'],
       setup: (p) => () =>
         h('div', { 'data-state': p.loading ? 'loading' : p.state }),

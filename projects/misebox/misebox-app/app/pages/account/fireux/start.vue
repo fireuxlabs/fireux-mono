@@ -10,7 +10,7 @@
           color="error"
           title="Shared sign-in is unavailable"
           :description="error"
-        /><MoleculesCopyError v-if="error" :message="error" /><UButton
+        /><FireCopyError v-if="error" :message="error" /><UButton
           v-if="error"
           label="Try again"
           @click="start"

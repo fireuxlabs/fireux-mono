@@ -26,7 +26,7 @@
           :loading="pending"
           class="w-full max-w-md"
         />
-        <MoleculesCopyError v-if="error" :message="String(error)" />
+        <FireCopyError v-if="error" :message="String(error)" />
         <UButton
           v-if="membersHasMore"
           class="mt-3"
@@ -45,7 +45,7 @@
         @created="onProvisioned"
       />
 
-      <DashboardAdminDomainCurationPanel
+      <FireDashboardAdminDomainCurationPanel
         domain="kitchen"
         title="Featured Kitchens"
         description="Add comma-separated kitchen slugs to feature on public kitchen surfaces."

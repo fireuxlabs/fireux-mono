@@ -4,14 +4,14 @@
     <section class="space-y-3" aria-labelledby="init-heading">
       <h2 id="init-heading" class="font-semibold">1. Init</h2>
       <UFormField label="Channel">
-        <MoleculesSegmentedSelector
+        <FireSegmentedSelector
           v-model="channel"
           :items="channels"
           label="Channel"
         />
       </UFormField>
       <UFormField v-if="channel === 'website'" label="Customer">
-        <MoleculesSegmentedSelector
+        <FireSegmentedSelector
           v-model="identity"
           :items="[
             { label: 'Guest', value: 'guest' },
@@ -41,7 +41,7 @@
         v-if="channel === 'pos' || channel === 'kiosk'"
         label="Fulfilment"
       >
-        <MoleculesSegmentedSelector
+        <FireSegmentedSelector
           v-model="kioskChoice"
           :items="[
             { label: 'Eat in', value: 'on_site' },
@@ -51,7 +51,7 @@
         />
       </UFormField>
       <UFormField v-if="channel === 'website'" label="Website entrance">
-        <MoleculesSegmentedSelector
+        <FireSegmentedSelector
           v-model="websiteEntry"
           :items="[
             { label: 'Collection', value: 'collection' },
@@ -153,12 +153,12 @@
         @click="submitExample"
       />
       <p class="text-xs text-muted">Preview only. No order is sent.</p>
-      <MoleculesDisclosurePanel title="View review data" :default-open="false">
+      <FireDisclosurePanel title="View review data" :default-open="false">
         <pre
           class="mt-3 overflow-auto text-sm"
           data-testid="review-json"
         ><code>{{ JSON.stringify(submittedOrder || order, null, 2) }}</code></pre>
-      </MoleculesDisclosurePanel>
+      </FireDisclosurePanel>
     </section>
     <section
       v-if="submittedOrder && successView"
@@ -170,7 +170,7 @@
         v-if="submittedOrder.requested_at && channel === 'website'"
         label="Confirmation outcome"
       >
-        <MoleculesSegmentedSelector
+        <FireSegmentedSelector
           v-model="successOutcome"
           :items="[
             { label: 'Confirmed', value: 'confirmed' },

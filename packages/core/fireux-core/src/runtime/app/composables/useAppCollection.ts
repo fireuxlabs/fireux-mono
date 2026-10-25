@@ -54,18 +54,31 @@ export function useAppCollection(
     active.value ? (current.value?.items ?? []) : []
   )
   const count = computed(() => apps.value.length)
+  const loadingMore = ref(false)
+  const loadMoreError = ref<unknown>(null)
   const pending = computed(
     () =>
       Boolean(options.authenticated && !hasAuthState.value) ||
-      (active.value && state.pending.value)
+      (active.value &&
+        state.pending.value &&
+        !(loadingMore.value && current.value))
   )
-  const error = state.error
-  const outcome = computed(() => resolveReadOutcome({
-    kind: 'collection', active: Boolean(options.authenticated && !hasAuthState.value) || active.value,
-    pending: pending.value, error: error.value, present: count.value > 0,
-  }))
-  const loadingMore = ref(false)
-  const loadMoreError = ref<unknown>(null)
+  const error = computed(() =>
+    loadingMore.value ||
+    (loadMoreError.value && state.error.value === loadMoreError.value)
+      ? null
+      : state.error.value
+  )
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      kind: 'collection',
+      active:
+        Boolean(options.authenticated && !hasAuthState.value) || active.value,
+      pending: pending.value,
+      error: error.value,
+      present: count.value > 0,
+    })
+  )
   const hasMore = computed(() => Boolean(current.value?.nextCursor))
   watch(
     key,
@@ -86,6 +99,11 @@ export function useAppCollection(
       if (key.value === requestKey) {
         loadMoreError.value = state.error.value
         if (state.error.value) pageCount.value--
+      }
+    } catch (cause) {
+      if (key.value === requestKey) {
+        loadMoreError.value = cause
+        pageCount.value--
       }
     } finally {
       if (key.value === requestKey) loadingMore.value = false
