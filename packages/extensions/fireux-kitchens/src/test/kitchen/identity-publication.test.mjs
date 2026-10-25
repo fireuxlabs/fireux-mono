@@ -216,8 +216,8 @@ test('Identity tools describe implemented controls and route to their actual pag
   }
   assert.deepEqual(navigations, [
     '/workspace/kitchen/identity',
-    '/workspace/kitchen/identity/profile',
-    '/workspace/kitchen/identity/profile',
+    '/workspace/kitchen/identity',
+    '/workspace/kitchen/identity',
     '/workspace/kitchen/identity/operating-hours',
     '/workspace/kitchen/identity/appearance',
   ])

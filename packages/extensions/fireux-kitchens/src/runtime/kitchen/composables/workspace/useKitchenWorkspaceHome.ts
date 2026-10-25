@@ -1,14 +1,14 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
-import { useKitchenWorkspaceIdentity } from './useKitchenWorkspaceIdentity'
+import { useKitchenIdentityProjection } from '../useKitchenIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenWorkspace } from './useKitchenWorkspace'
 
 export function useKitchenWorkspaceHome() {
   const workspace = useKitchenWorkspace()
-  const { place, placeOutcome } = useKitchenWorkspaceIdentity()
+  const { place, placeOutcome } = useKitchenIdentityProjection(workspace)
   const selectedKitchen = workspace.data
   const kitchenSource = computed(
     () => (selectedKitchen.value || {}) as Record<string, any>

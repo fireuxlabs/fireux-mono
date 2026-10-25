@@ -13,7 +13,6 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { useKitchenAccess } from '../useKitchenAccess'
-import { useKitchenPlace } from '../useKitchenPlace'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenOfferingCollection } from '../useKitchenOfferingCollection'
 import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
@@ -96,7 +95,7 @@ export function useKitchenOfferings(
   const storageKitchenId = computed(() =>
     ownerOutcome.value === 'ready' ? identity.kitchenId.value : ''
   )
-  const { place, placeOutcome } = useKitchenPlace(identity.kitchenId)
+  const { place, placeOutcome } = identity
   const collection = useKitchenMenuCollection(storageKitchenId)
   const offeringRead = useKitchenOfferingCollection(storageKitchenId)
   const outcome = computed(() =>

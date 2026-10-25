@@ -20,11 +20,11 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   },
   'kitchen.identity.update-place': {
     kind: 'route',
-    to: '/workspace/kitchen/identity/profile',
+    to: '/workspace/kitchen/identity',
   },
   'kitchen.identity.update-currency': {
     kind: 'route',
-    to: '/workspace/kitchen/identity/profile',
+    to: '/workspace/kitchen/identity',
   },
   'kitchen.identity.update-hours': {
     kind: 'route',

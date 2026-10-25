@@ -44,10 +44,9 @@ import { computed } from 'vue'
 import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 import { useRoute } from '#imports'
 import { useKitchenWorkspaceColours } from '../../composables/workspace/identity/useKitchenWorkspaceColours'
-import { useKitchenPlace } from '../../composables/useKitchenPlace'
 import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 const identity = useKitchenWorkspaceIdentity()
-const { place, placeId, placeOutcome } = useKitchenPlace(identity.kitchenId)
+const { place, placeId, placeOutcome } = identity
 const {
   kitchenId,
   outcome,

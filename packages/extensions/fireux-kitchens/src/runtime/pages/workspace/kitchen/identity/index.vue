@@ -6,7 +6,7 @@
     <WorkspaceFreemium
       family="kitchen"
       capability="identity"
-      page-label="Kitchen listing"
+      page-label="Identity"
       hide-description
       placement="top"
     />
@@ -36,11 +36,6 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      {
-        label: 'Venue profile',
-        to: '/workspace/kitchen/identity/profile',
-        icon: 'i-lucide-map-pin',
-      },
       {
         label: 'Operating hours',
         to: '/workspace/kitchen/identity/operating-hours',

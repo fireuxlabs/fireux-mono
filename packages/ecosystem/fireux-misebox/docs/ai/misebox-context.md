@@ -457,9 +457,10 @@ presentation (branding, currency and Kitchen palette). Kitchen identity and Menu
 readers consume it directly; Kitchen identity does not depend on Menu ownership.
 Verify this projection with `kitchen-identity-shape.test.mjs`.
 
-Kitchen listing at `/workspace/kitchen/identity` is an independent top-level
-group composing the existing listing controls and its venue/brand editor links.
-`/workspace/kitchen/identity/profile` owns the five focused venue edit sections;
+Kitchen Identity at `/workspace/kitchen/identity` composes the five focused venue
+edit sections, Kitchen listing controls, and separate Kitchen and Venue context.
+It reuses Core WorkspaceGroupPage framing and shared Identity read states.
+The separate `/identity/profile` page is retired without an alias;
 `/workspace/kitchen/identity/operating-hours` owns venue and Kitchen schedules;
 `/workspace/kitchen/identity/appearance` owns Kitchen menu palette editing.
 The former duplicate `/identity/place` editor is retired without an alias.
@@ -2575,9 +2576,11 @@ Kitchen and Ingredient IDs; the page supplies Workspace selection and route ID.
 Kitchen shared capability composition uses zero-ID-argument
 `useKitchenWorkspaceIdentity()`, `useKitchenWorkspaceTeam()` and
 `useKitchenWorkspaceCalendar()`. Explicit setup targets use
-`useKitchenIdentity(kitchenId)`; linked Place projection uses
-`useKitchenPlace(kitchenId)`. These domain readers do not choose or reconcile
-Workspace selection. Core owns shared management/read state and Calendar date
+`useKitchenIdentity(kitchenId)`, which acquires Kitchen and linked Place together.
+Workspace Identity and Home reuse the selected owner’s records through
+`useKitchenIdentityProjection`; this projection acquires no reads or commands.
+Home does not acquire Identity management or publish Identity page context.
+The explicit-ID reader does not choose or reconcile Workspace selection. Core owns shared management/read state and Calendar date
 state; Kitchen retains fields, roster authority, commands and event integration.
 
 ### Retired manual checks

@@ -6,8 +6,9 @@ import {
   readPlaceIdentity,
   placeIdentityFields,
 } from 'fireux-places/runtime/place/models/identity-edit'
-import { useKitchenPlace } from '../useKitchenPlace'
-import { useKitchenIdentity } from '../useKitchenIdentity'
+import { useKitchenIdentityProjection } from '../useKitchenIdentity'
+import { useKitchenUpdate } from '../firestore/useKitchenUpdate'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspace } from './useKitchenWorkspace'
 import {
   kitchenIdentityPurpose,
@@ -15,19 +16,17 @@ import {
 } from '../../models/identity-intent'
 export function useKitchenWorkspaceIdentity() {
   const workspace = useKitchenWorkspace()
-  const identity = useKitchenIdentity(() =>
-    workspace.outcome.value === 'ready' ? workspace.id.value : ''
-  )
-  const place = useKitchenPlace(identity.kitchenId)
+  const { currentUser } = useAuth()
+  const updater = useKitchenUpdate()
   const state = {
-    ...identity,
-    ...place,
-    kitchenId: workspace.id,
-    outcome: computed(() =>
-      workspace.outcome.value === 'ready'
-        ? identity.outcome.value
-        : workspace.outcome.value
+    ...useKitchenIdentityProjection(workspace),
+    canWrite: computed(
+      () =>
+        Boolean(currentUser.value && workspace.data.value) &&
+        workspace.outcome.value === 'ready'
     ),
+    update: (changes: Parameters<typeof updater.updateKitchen>[0]['changes']) =>
+      updater.updateKitchen({ kitchenId: workspace.id.value, changes }),
   }
   const { appId } = useFireUXConfig()
   const fields = computed(() => readPlaceIdentity(state.place.value))

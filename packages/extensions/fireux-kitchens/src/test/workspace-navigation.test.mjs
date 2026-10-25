@@ -120,7 +120,6 @@ test('Identity and brand is top level, separate from technical Settings', () => 
   assert.deepEqual(
     identity.children.map((item) => item.to),
     [
-      '/workspace/kitchen/identity/profile',
       '/workspace/kitchen/identity/operating-hours',
       '/workspace/kitchen/identity/appearance',
     ]
@@ -500,7 +499,10 @@ test('shared Workspace navigation preserves the agreed Kitchen group order', () 
         return read()
       },
     }),
-    () => ({ path: '/workspace/kitchen/food-and-drink', meta: { workspace: 'kitchen' } }),
+    () => ({
+      path: '/workspace/kitchen/food-and-drink',
+      meta: { workspace: 'kitchen' },
+    }),
     () => ({ workspaces: ['kitchen'] }),
     () => ({ items: { value: items } }),
     (value) => value,
@@ -525,32 +527,57 @@ test('shared Workspace navigation preserves the agreed Kitchen group order', () 
   )
 })
 
-
 test('Food & drink creation and service configuration have no redundant child pages', () => {
-  for (const file of ['items/create.vue', 'menus/create.vue', 'services/[offering].vue'])
+  for (const file of [
+    'items/create.vue',
+    'menus/create.vue',
+    'services/[offering].vue',
+  ])
     assert.equal(existsSync(join(root, 'food-and-drink', file)), false, file)
   assert.ok(existsSync(join(root, 'food-and-drink/items/[dishId].vue')))
   assert.ok(existsSync(join(root, 'food-and-drink/menus/[menuSlug]/index.vue')))
   assert.equal(existsSync(join(root, 'food/drinks')), false)
 })
 
-
 test('group child surfaces retain every entrance and compose summaries inside the standard card', () => {
   const components = new URL('../runtime/kitchen/components/', import.meta.url)
-  const group = readFileSync(new URL('../../../../core/fireux-core/src/runtime/workspace/components/GroupPage.vue', import.meta.url), 'utf8')
-  const food = readFileSync(new URL('FoodAndDrink/Index.vue', components), 'utf8')
-  const services = readFileSync(new URL('FoodAndDrink/Services/Overview.vue', components), 'utf8')
+  const group = readFileSync(
+    new URL(
+      '../../../../core/fireux-core/src/runtime/workspace/components/GroupPage.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const food = readFileSync(
+    new URL('FoodAndDrink/Index.vue', components),
+    'utf8'
+  )
+  const services = readFileSync(
+    new URL('FoodAndDrink/Services/Overview.vue', components),
+    'utf8'
+  )
   assert.match(group, /v-for="item in children"/)
   assert.match(group, /<slot>/)
   assert.ok(!group.includes('excludePages'))
-  assert.ok(food.indexOf('<KitchenFoodAndDrinkAI') < food.indexOf('<KitchenFoodAndDrinkItemsOverview'))
-  assert.match(food, /<WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-food"/)
+  assert.ok(
+    food.indexOf('<KitchenFoodAndDrinkAI') <
+      food.indexOf('<KitchenFoodAndDrinkItemsOverview')
+  )
+  assert.match(
+    food,
+    /<WorkspaceGroupPage workspace="kitchen" nav-key="workspace-kitchen-food"/
+  )
   assert.match(food, /<KitchenFoodAndDrinkServicesOverview/)
-  const keys = navigation(join(root, 'food-and-drink/index.vue')).children.map(child => child.key)
+  const keys = navigation(join(root, 'food-and-drink/index.vue')).children.map(
+    (child) => child.key
+  )
   assert.deepEqual(keys, ['items', 'menus', 'promotions', 'services'])
   assert.ok(!food.includes('<template #'))
   for (const name of ['Items', 'Menus', 'Promotions', 'Services']) {
-    const child = readFileSync(new URL(`FoodAndDrink/${name}/Overview.vue`, components), 'utf8')
+    const child = readFileSync(
+      new URL(`FoodAndDrink/${name}/Overview.vue`, components),
+      'utf8'
+    )
     assert.match(child, /WorkspaceKitchenNavigationChild/)
     assert.ok(child.includes(`child-key="${name.toLowerCase()}"`))
   }
@@ -561,19 +588,39 @@ test('group child surfaces retain every entrance and compose summaries inside th
 })
 
 test('every declared Kitchen group index composes the shared group shell', () => {
-  const groups = files(root).filter(file => file.endsWith('.vue') && navigation(file)?.groupIndex)
+  const groups = files(root).filter(
+    (file) => file.endsWith('.vue') && navigation(file)?.groupIndex
+  )
   assert.equal(groups.length, 10)
   for (const file of groups) {
     const source = readFileSync(file, 'utf8')
     const composition = file.endsWith('/food-and-drink/index.vue')
-      ? readFileSync(new URL('../runtime/kitchen/components/FoodAndDrink/Index.vue', import.meta.url), 'utf8')
+      ? readFileSync(
+          new URL(
+            '../runtime/kitchen/components/FoodAndDrink/Index.vue',
+            import.meta.url
+          ),
+          'utf8'
+        )
       : file.endsWith('/prep/index.vue')
-        ? readFileSync(new URL('../runtime/kitchen/components/PrepAndProduction/Index.vue', import.meta.url), 'utf8')
+        ? readFileSync(
+            new URL(
+              '../runtime/kitchen/components/PrepAndProduction/Index.vue',
+              import.meta.url
+            ),
+            'utf8'
+          )
         : source
-    assert.match(composition, /<WorkspaceGroupPage\b/, relative(root,file))
-    assert.ok(!composition.includes('<UDashboardPanel'), relative(root,file))
+    assert.match(composition, /<WorkspaceGroupPage\b/, relative(root, file))
+    assert.ok(!composition.includes('<UDashboardPanel'), relative(root, file))
   }
-  assert.equal(existsSync(join(root,'menu-setup.vue')),false)
-  const identity = readFileSync(new URL('../runtime/kitchen/components/Identity/Index.vue', import.meta.url),'utf8')
+  assert.equal(existsSync(join(root, 'menu-setup.vue')), false)
+  const identity = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/Identity/Index.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
   assert.ok(!identity.includes('<UBreadcrumb'))
 })

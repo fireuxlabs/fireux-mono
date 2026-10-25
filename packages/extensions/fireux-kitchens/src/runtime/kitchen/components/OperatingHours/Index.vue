@@ -20,7 +20,7 @@
       >
         <template #actions>
           <UButton
-            to="/workspace/kitchen/identity/profile"
+            to="/workspace/kitchen/identity"
             label="Venue profile"
             color="neutral"
             variant="outline"

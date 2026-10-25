@@ -1566,10 +1566,17 @@ Generic `useCalendar` lives under shared composables; `useWorkspaceCalendar`
 adds selected-Entity date-state disposal. Home uses existing shared collection, entry and overview components through
 `useXWorkspaceHome()`, which owns the real chooser and summary composition.
 
-Kitchen demonstrates an explicit-ID domain identity path with
-`useKitchenIdentity(kitchenId)` and `useKitchenPlace(kitchenId)`. Its Workspace
-Identity adapter composes these with the current selection and shared management
-state. Setup workflows supply their explicit ID directly to the domain reader.
+Kitchen Identity composes venue profile sections, listing controls and domain
+context at `/workspace/kitchen/identity`, using `WorkspaceGroupPage` and shared
+Identity read-state presentation. The separate profile route is retired; Hours
+and Appearance remain domain child pages. Place editors and Kitchen publication
+commands retain their separate authority.
+
+Kitchen keeps `useKitchenIdentity(kitchenId)` for explicit-ID setup workflows.
+`useKitchenIdentityProjection` maps supplied Kitchen and linked Place records
+without acquiring reads or commands. Workspace Identity and Home reuse the
+records already acquired by `useKitchenWorkspace()`. Only the Identity adapter
+adds management commands and publishes Identity page context.
 These private readers retain membership checks; this migration does not publish
 a new public identity API or claim event integrations for Calendar placeholders.
 Other Identity and Team adapters retain their existing domain reads and commands;

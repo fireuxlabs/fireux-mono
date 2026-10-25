@@ -119,6 +119,14 @@ export const useKitchenWorkspace = defineWorkspace(() => {
 
   return {
     data,
+    place: computed(() =>
+      outcome.value === 'ready' && place.value?.id === readId.value
+        ? place.value
+        : null
+    ),
+    placeOutcome: computed(() =>
+      outcome.value === 'ready' ? source.placeOutcome.value : outcome.value
+    ),
     id,
     outcome,
     collection: targets.kitchens,

@@ -56,6 +56,9 @@ export function useKitchenRead(
         ? related.value
         : null
     ),
+    placeOutcome: computed(() =>
+      placeId.value ? related.outcome.value : 'idle'
+    ),
     pending: computed(() => outcome.value === 'pending'),
     error,
     outcome,

@@ -75,7 +75,7 @@ paths, reproduce X normalization, or import X's internal stage state.
 
 Name Y's use of X from Y's perspective when that adaptation has a real job:
 
-- `useKitchenPlace` may consume Place detail or interface capabilities.
+- `useKitchenIdentity` composes Kitchen and linked Place reads.
 - `useKitchenOnboarding` may compose the completed Place onboarding result.
 - `usePlace` must not import Kitchen or expose Kitchen-specific fields.
 

@@ -1,66 +1,18 @@
 <template>
-  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
-    <header class="grid gap-4">
-      <UBreadcrumb
-        :ui="{ list: 'flex-wrap' }"
-        :items="[
-          {
-            label: identity.selectedKitchen.value?.name || 'Kitchen',
-            to: workspaceEntryPath,
-          },
-          { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
-          { label: 'Venue profile' },
-        ]"
-      />
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-semibold tracking-tight text-highlighted">
-            Venue profile
-          </h2>
-          <p class="mt-1 text-sm text-muted">
-            Your public profile and how people find you.
-          </p>
-        </div>
-        <UButton
-          v-if="identity.status.value === 'ready'"
-          :to="publicTo"
-          label="View public page"
-          icon="i-lucide-arrow-up-right"
-          target="_blank"
-          color="neutral"
-          variant="soft"
-        />
-      </div>
-    </header>
-
-    <USkeleton
-      v-if="identity.status.value === 'pending'"
-      class="h-64 rounded-xl"
-    />
-    <UAlert
-      v-else-if="identity.status.value === 'empty'"
-      title="No Kitchen selected"
-      description="Choose a Kitchen to continue."
-      icon="i-lucide-utensils"
-    />
-    <UAlert
-      v-else-if="identity.status.value === 'error'"
-      title="Venue details unavailable"
-      description="Your venue details could not be loaded. Try again."
-      color="error"
-    >
-      <template #description>
-        <p>Your venue details could not be loaded. Try again.</p>
-        <MoleculesCopyError
-          message="Your venue details could not be loaded. Try again."
-        />
-      </template>
-    </UAlert>
-    <UAlert
-      v-else-if="identity.status.value === 'missing'"
-      title="Venue details unavailable"
-      description="This Kitchen’s venue details could not be found."
-      color="warning"
+  <div class="grid min-w-0 gap-6">
+    <MoleculesStateCard
+      v-if="identity.readState.value"
+      :state="identity.readState.value"
+      entity="Kitchen identity"
+      kind="document"
+      :title="
+        identity.readState.value === 'empty' ? 'Choose a Kitchen' : undefined
+      "
+      :description="
+        identity.readState.value === 'empty'
+          ? 'Select a Kitchen to view its identity.'
+          : undefined
+      "
     />
     <template v-else-if="identity.place.value">
       <section aria-label="Venue profile" class="grid gap-5">
@@ -114,6 +66,14 @@
               </p>
             </div>
           </div>
+          <UButton
+            :to="publicTo"
+            label="View public page"
+            icon="i-lucide-arrow-up-right"
+            target="_blank"
+            color="neutral"
+            variant="soft"
+          />
           <PlaceEditGoogleReview
             v-if="identity.canWrite.value"
             :place="identity.place.value"
@@ -190,14 +150,14 @@
             <div
               v-if="
                 item.value === 'photos' &&
-                identity.place.value.gallery_images.length
+                identity.place.value.gallery_images?.length
               "
               class="mb-4 flex flex-wrap gap-2"
             >
               <img
-                v-for="(
-                  image, index
-                ) in identity.place.value.gallery_images.slice(0, 4)"
+                v-for="(image, index) in (
+                  identity.place.value.gallery_images || []
+                ).slice(0, 4)"
                 :key="image"
                 :src="image"
                 :alt="`Gallery photo ${index + 1}`"
@@ -278,21 +238,10 @@
       :can-write="identity.canWrite.value"
       :mutation-authority="identity.mutationAuthority.value"
     />
-    <ClientOnly>
-      <DiagnosticsDebugPanel v-bind="debug" title="Identity debug" />
-    </ClientOnly>
   </div>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute } from '#imports'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
-import {
-  identityKitchenDebug,
-  identityPlaceDebug,
-  identityPresenceDebug,
-} from '../../utils/identity-debug'
 import PlaceEditIdentity from 'fireux-places/runtime/place/components/Edit/Identity.vue'
 import PlaceEditGoogleReview from 'fireux-places/runtime/place/components/Edit/GoogleReview.vue'
 import type { KitchenIdentityIntent } from '../../models/identity-intent'
@@ -302,8 +251,6 @@ import { readKitchenVisibility } from '../../utils/kitchen-readers'
 const props = defineProps<{
   identity: ReturnType<typeof useKitchenWorkspaceIdentity>
 }>()
-const route = useRoute()
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const section = ref<PlaceIdentitySection | null>(null)
 const kitchenPath = computed(() => {
   const slug = props.identity.selectedKitchen.value?.identity?.slug
@@ -411,30 +358,6 @@ watch(
       section.value = null
   },
   { flush: 'sync' }
-)
-const debug = computed(() =>
-  defineDevDebugPayload({
-    objectOrigin: 'passed',
-    objects: {
-      kitchen: identityKitchenDebug(props.identity.selectedKitchen.value),
-      place: identityPlaceDebug(props.identity.place.value),
-    },
-    derived: {
-      route: route.path,
-      kitchenId: props.identity.kitchenId.value,
-      placeId: props.identity.placeId.value,
-      status: props.identity.status.value,
-      reads: {
-        kitchen: props.identity.outcome.value,
-        place: props.identity.placeOutcome.value,
-      },
-      canWrite: props.identity.canWrite.value,
-      availableActions: [...props.identity.availableActions.value],
-      editorSection: section.value,
-      publicPath: publicTo.value,
-      present: identityPresenceDebug(props.identity.place.value),
-    },
-  })
 )
 const editor = ref<InstanceType<typeof PlaceEditIdentity>>()
 defineExpose({

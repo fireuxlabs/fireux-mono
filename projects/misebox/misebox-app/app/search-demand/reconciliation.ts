@@ -15,7 +15,7 @@ export const kitchenReconciliation = {
         tool: 'Review and edit Kitchen identity',
         source_paths: [
           'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/Index.vue',
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenPlace.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenIdentity.ts',
         ],
       },
       {

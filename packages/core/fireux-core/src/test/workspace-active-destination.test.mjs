@@ -5,10 +5,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 const source = readFileSync(
-  new URL(
-    '../runtime/workspace/utils/active-destination.ts',
-    import.meta.url
-  ),
+  new URL('../runtime/workspace/utils/active-destination.ts', import.meta.url),
   'utf8'
 ).replace('export function', 'function')
 const active = compileFunction(
@@ -155,8 +152,8 @@ test('route-group index omits its duplicate child and indexless groups retain tr
         groupIndex: true,
       },
       {
-        label: 'Profile',
-        to: '/workspace/kitchen/identity/profile',
+        label: 'Operating hours',
+        to: '/workspace/kitchen/identity/operating-hours',
         group: 'Identity',
         groupDisplay: 'nested',
       },
@@ -175,19 +172,42 @@ test('route-group index omits its duplicate child and indexless groups retain tr
   assert.equal(identity.to, '/workspace/kitchen/identity')
   assert.deepEqual(
     identity.children.map((item) => item.label),
-    ['Profile']
+    ['Operating hours']
   )
   assert.equal(identity.defaultOpen, true)
   assert.equal(settings.type, 'trigger')
   assert.equal(settings.to, undefined)
 })
 
-test('Expand all opens both explicit-child and metadata groups without changing active selection',()=>{
-  const state=sidebar([
-    {key:'orders',label:'Orders',to:'/orders',groupIndex:true,children:[{label:'Board',to:'/orders/board'}]},
-    {key:'menus',label:'Menus',to:'/menus',group:'Menus',groupDisplay:'nested',groupIndex:true},
-    {key:'services',label:'Services',to:'/services',group:'Menus',groupDisplay:'nested'},
-  ],current('/services'),'all')
-  assert.ok(state.topNavItems.value.every(item=>item.defaultOpen))
-  assert.equal(state.activeDestination.value,'/services')
+test('Expand all opens both explicit-child and metadata groups without changing active selection', () => {
+  const state = sidebar(
+    [
+      {
+        key: 'orders',
+        label: 'Orders',
+        to: '/orders',
+        groupIndex: true,
+        children: [{ label: 'Board', to: '/orders/board' }],
+      },
+      {
+        key: 'menus',
+        label: 'Menus',
+        to: '/menus',
+        group: 'Menus',
+        groupDisplay: 'nested',
+        groupIndex: true,
+      },
+      {
+        key: 'services',
+        label: 'Services',
+        to: '/services',
+        group: 'Menus',
+        groupDisplay: 'nested',
+      },
+    ],
+    current('/services'),
+    'all'
+  )
+  assert.ok(state.topNavItems.value.every((item) => item.defaultOpen))
+  assert.equal(state.activeDestination.value, '/services')
 })
