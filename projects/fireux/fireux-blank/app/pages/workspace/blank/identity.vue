@@ -1,12 +1,7 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-blank-identity">
-      <template #header
-        ><WorkspaceNavbar title="Blank Identity"
-      /></template>
-      <template #body><WorkspaceBlankIdentity /></template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage workspace="blank" nav-key="workspace-blank-identity">
+    <WorkspaceBlankIdentity />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

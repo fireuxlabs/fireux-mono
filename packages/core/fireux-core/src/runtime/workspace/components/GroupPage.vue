@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel :id="navKey">
       <template #header>
-        <WorkspaceNavbar :title="index?.label || workspaceLabel">
+        <WorkspaceNavbar :title="pageTitle">
           <template v-if="$slots['header-right']" #right
             ><slot name="header-right"
           /></template>
@@ -49,6 +49,8 @@ import { toWorkspaceFamilyLabel } from '../utils/routes'
 const props = defineProps<{
   workspace: string
   navKey: string
+  title?: string
+  parentNavKey?: string
   notice?: string
 }>()
 const navigation = useNav(['workspace'])
@@ -56,6 +58,12 @@ const { workspaceEntryPath } = useWorkspaceEntryCta(props.workspace)
 const workspaceLabel = computed(() => toWorkspaceFamilyLabel(props.workspace))
 const index = computed(() =>
   navigation.items.value.find((item) => item.key === props.navKey)
+)
+const pageTitle = computed(
+  () => props.title || index.value?.label || workspaceLabel.value
+)
+const parent = computed(() =>
+  navigation.items.value.find((item) => item.key === props.parentNavKey)
 )
 const children = computed(() => index.value?.children || [])
 const breadcrumbs = computed(() => {
@@ -67,7 +75,10 @@ const breadcrumbs = computed(() => {
     ...(overview && overview.to !== index.value?.to
       ? [{ label: overview.label, to: overview.to }]
       : []),
-    { label: index.value?.label || workspaceLabel.value },
+    ...(parent.value
+      ? [{ label: parent.value.label, to: parent.value.to }]
+      : []),
+    { label: pageTitle.value },
   ]
 })
 </script>

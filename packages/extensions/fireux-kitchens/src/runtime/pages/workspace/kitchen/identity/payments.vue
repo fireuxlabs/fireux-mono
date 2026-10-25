@@ -1,9 +1,14 @@
 <template>
-  <UDashboardPanel id="kitchen-payments"
-    ><template #header><WorkspaceNavbar title="Payments" /></template
-    ><template #body><KitchenIdentityPayments /></template
-  ></UDashboardPanel>
+  <WorkspaceGroupPage
+    workspace="kitchen"
+    nav-key="workspace-kitchen-payments"
+    title="Payments"
+    parent-nav-key="workspace-kitchen-settings"
+  >
+    <KitchenIdentityPayments />
+  </WorkspaceGroupPage>
 </template>
+
 <script setup lang="ts">
 definePageMeta({
   layout: 'workspace',

@@ -1,12 +1,10 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-property-identity">
-      <template #header
-        ><WorkspaceNavbar title="Property Identity"
-      /></template>
-      <template #body><WorkspacePropertyIdentity /></template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage
+    workspace="property"
+    nav-key="workspace-property-identity"
+  >
+    <WorkspacePropertyIdentity />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

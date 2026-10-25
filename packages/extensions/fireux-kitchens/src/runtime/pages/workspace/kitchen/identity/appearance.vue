@@ -1,21 +1,12 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-appearance">
-      <template #header><WorkspaceNavbar title="Appearance" /></template>
-      <template #body>
-        <div class="workspace-profile">
-          <UBreadcrumb
-            class="mb-4"
-            :ui="{ list: 'flex-wrap' }"
-            :items="[
-              { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
-              { label: 'Appearance' },
-            ]"
-          /><KitchenAppearance />
-        </div>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage
+    workspace="kitchen"
+    nav-key="workspace-kitchen-appearance"
+    title="Appearance"
+    parent-nav-key="workspace-kitchen-identity"
+  >
+    <KitchenAppearance />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

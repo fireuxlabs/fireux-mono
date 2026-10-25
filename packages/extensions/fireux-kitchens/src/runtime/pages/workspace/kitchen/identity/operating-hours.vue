@@ -1,23 +1,12 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-operating-hours">
-      <template #header
-        ><WorkspaceNavbar title="Operating hours"
-      /></template>
-      <template #body>
-        <div class="workspace-profile">
-          <UBreadcrumb
-            class="mb-4"
-            :ui="{ list: 'flex-wrap' }"
-            :items="[
-              { label: 'Identity & brand', to: '/workspace/kitchen/identity' },
-              { label: 'Operating hours' },
-            ]"
-          /><KitchenOperatingHours />
-        </div>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage
+    workspace="kitchen"
+    nav-key="workspace-kitchen-operating-hours"
+    title="Operating hours"
+    parent-nav-key="workspace-kitchen-identity"
+  >
+    <KitchenOperatingHours />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

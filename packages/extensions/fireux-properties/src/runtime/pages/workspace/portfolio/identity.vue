@@ -1,13 +1,11 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-portfolio-identity">
-      <template #header
-        ><WorkspaceNavbar title="Portfolio Identity"
-      /></template>
-      <template #body><WorkspacePortfolioIdentity /></template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage
+    workspace="portfolio"
+    nav-key="workspace-portfolio-identity"
+  >
+    <WorkspacePortfolioIdentity />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

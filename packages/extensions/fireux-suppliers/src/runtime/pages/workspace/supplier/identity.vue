@@ -1,13 +1,11 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-supplier-identity">
-      <template #header
-        ><WorkspaceNavbar title="Supplier Identity"
-      /></template>
-      <template #body><WorkspaceSupplierIdentity /></template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage
+    workspace="supplier"
+    nav-key="workspace-supplier-identity"
+  >
+    <WorkspaceSupplierIdentity />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

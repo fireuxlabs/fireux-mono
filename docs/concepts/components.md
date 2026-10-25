@@ -134,8 +134,10 @@ family and navigation key. Home uses the existing Workspace entry resolver;
 an Overview ancestor is included when that family publishes one in navigation.
 The default slot lets each domain compose its AI and child surfaces; without
 custom content, the shell lists declared navigation children. Child content,
-status, styles, readers and commands remain domain-owned. Kitchen group indexes
-are the current adopters; other Workspaces may use the same framing without
+status, styles, readers and commands remain domain-owned. Project, Kitchen, Supplier, Portfolio, Property and Blank Identity pages use this
+frame. Kitchen Identity child pages supply a title and parent navigation key,
+so Core also owns their breadcrumbs. Identity compositions do not repeat outer
+width or page padding. Kitchen group indexes are additional adopters; other Workspaces may use the same framing without
 requiring identical child layouts or inventing group pages.
 
 Core `layouts/shared/PlatformFooter.vue` composes FireUX attribution and links to the shared platform privacy, terms and storage disclosures. The default footer and Interlaken Bike Tours' branded footer consume it directly; business-specific booking policies remain App-owned. The component performs no reads or commands.

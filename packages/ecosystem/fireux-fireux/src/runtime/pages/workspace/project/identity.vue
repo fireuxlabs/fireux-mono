@@ -1,35 +1,26 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: adopt route-level workspace metadata. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-project-identity">
-      <template #header>
-        <WorkspaceNavbar title="Project Identity"
-          ><template #right
-            ><WorkspaceIntroInfo
-              :intro="{
-                ...identity.intro.value,
-                ai: 'Use the Identity editor to review and save changes.',
-              }" /></template
-        ></WorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceFreemium
-          family="project"
-          capability="identity"
-          page-label="Identity"
-          hide-description
-          placement="top"
-        />
-        <section class="space-y-4">
-          <WorkspaceProjectIdentity
-            :key="identity.projectId.value"
-            :identity="identity"
-          />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceGroupPage workspace="project" nav-key="workspace-project-identity">
+    <template #header-right>
+      <WorkspaceIntroInfo
+        :intro="{
+          ...identity.intro.value,
+          ai: 'Use the Identity editor to review and save changes.',
+        }"
+      />
+    </template>
+    <WorkspaceFreemium
+      family="project"
+      capability="identity"
+      page-label="Identity"
+      hide-description
+      placement="top"
+    />
+    <WorkspaceProjectIdentity
+      :key="identity.projectId.value"
+      :identity="identity"
+    />
+  </WorkspaceGroupPage>
 </template>
 
 <script setup lang="ts">

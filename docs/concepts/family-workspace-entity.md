@@ -1649,3 +1649,9 @@ on disposal; read-only consumers cannot clear another publisher. Domain commands
 receive explicit targets and retain account/App authority checks; editor route and
 draft lifetime stays with the consuming surface. The selection-only write guard
 is removed rather than treated as mutation authority.
+
+Identity page framing is Core-owned through `WorkspaceGroupPage`: Project,
+Kitchen, Supplier, Portfolio, Property and Blank reuse its navbar, breadcrumbs,
+width and spacing. Domain compositions own their sections and editors, not
+another dashboard panel or outer page-width wrapper. Kitchen Identity child
+pages reuse the frame with their parent navigation key.

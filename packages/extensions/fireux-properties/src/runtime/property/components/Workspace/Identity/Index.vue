@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+  <section class="grid min-w-0 gap-6">
     <MoleculesStateCard
       v-if="readState"
       :state="readState"
