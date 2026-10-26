@@ -86,6 +86,30 @@ Entry points: [Misebox context](../../packages/ecosystem/fireux-misebox/docs/ai/
 [Menu map](../concepts/family-menu.md), and
 [historical Menu capability audit](../archive/2026-10-workspace-cleanup/reviews/kitchen-menus-capability-audit-2026-09-14.md).
 
+### Preserved Misebox Business direction
+
+**Product decision:** keep Free and Professional (CHF 20/month) accessible to
+independent, single-Kitchen owners. Retain the current Business proposal of
+CHF 100/month plus CHF 20/month per Kitchen; no pricing change is authorised
+by this handoff.
+
+Business should justify its premium through useful management across multiple
+Kitchens. An estate overview should show all locations, performance and what
+needs attention. Discussed coordination tools include:
+
+- sharing staff and arranging cover between restaurants;
+- requesting, dispatching and receiving ingredient/stock transfers;
+- publishing menus, prices and promotions to selected locations.
+
+Estate overview plus group publishing is a suggested first slice, not an
+approved implementation order. These are future product capabilities, not
+claims of delivered functionality or a new active implementation task.
+
+The user's current cycle is cleanup, source/asset assessment, then revenue
+planning. Cleanup remains in progress; the assessment and revenue direction
+are provisional until another cycle after cleanup. Preserve this intent for
+Codex continuation and promote a bounded Business slice deliberately.
+
 ## Parked ideas — no separate active tasks
 
 | Idea | Reopen only when |
