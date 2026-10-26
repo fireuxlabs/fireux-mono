@@ -110,6 +110,81 @@ planning. Cleanup remains in progress; the assessment and revenue direction
 are provisional until another cycle after cleanup. Preserve this intent for
 Codex continuation and promote a bounded Business slice deliberately.
 
+### Menu Express quick-buy pilot
+
+**Preserved direction:** offer a one-off Menu Express purchase through the
+proposed `misebox.app/products` catalogue and `/products/menu-express` page.
+The buyer receives a prepared, checked, published Menu and a downloadable QR;
+a Workspace or subscription is optional. Free self-service tools remain.
+Source was checked at `cf2413355d1ae138d7c061a1621cc29f3ef7b59d` on 2026-10-26.
+
+This continues the existing demand-to-tools-to-capabilities process:
+[the Misebox demand brief](../../projects/misebox/misebox-app/app/search-demand.ts)
+already prioritises Menu digitisation. The particular service package, price
+and paid conversion still need validation. This handoff preserves the proposed
+next revenue slice; finish/review the current cleanup and Git changes before
+promoting implementation. It does not silently replace the active task.
+
+**Buyer journey:**
+
+1. Choose Menu Express; see the scope, one-off price, turnaround and hosting terms.
+2. Supply restaurant name/location, email and a menu PDF/photos or source link,
+   with optional correction notes. A submitted URL may need manual processing.
+3. Review the order and pay. Show success only after verified payment.
+4. Follow a secure order link: preparing, ready for review, then published.
+5. Preview the Menu, request corrections or approve it before publication.
+6. Receive the public link and downloadable QR. Offer optional access to manage
+   the same Kitchen later, after verifying the appropriate authority.
+
+**Data and onboarding:** create or reuse the appropriate Place and Kitchen
+through their owning commands; retain their stable ids on the order and attach
+the reviewed Menu to that Kitchen. Venue matching or purchasing alone grants no
+Kitchen access. Set the linked Place currency before Menu import. The operator
+needs legitimate membership, access and entitlement; the buyer need not enter
+the Workspace. Collect delivery essentials first, reuse them for later
+onboarding, and use purchases/requested extras as evidence for future offers.
+Avoid duplicate venues and repeat setup; preserve existing records and access.
+
+**Small delivery sequence:**
+
+1. **Prove one manual delivery.** Rehearse authorised setup, import, correction,
+   customer approval, publication and public mobile/QR access. Menu QR printing
+   exists; downloadable SVG is available separately in Go QR and needs joining
+   to delivery. Confirm the actual deployed environment is suitable before
+   accepting customer information. No live journey or deployment was verified
+   by this source review.
+2. **Connect the public purchase.** Reuse Products in Misebox; persist a bounded
+   customer order and menu intake, correlate verified payment, and provide
+   buyer-scoped order/review access with truthful pending/failed/paid states.
+   The reviewed checkout creates a Stripe session but no service order. Its
+   success page announces confirmation before verification, while the session
+   lookup requires service/admin access. Preserve that boundary when adding
+   buyer access. Repeated callbacks or refreshes must not duplicate orders,
+   Kitchens or fulfilment. Keep preparation and delivery manual initially.
+3. **Run one paid pilot.** Verify purchase through approved Menu and downloadable
+   QR delivery without customer Workspace entry. Record fulfilment time,
+   corrections, delivery cost and feedback; automate only the next proved need.
+
+**Offer decisions before sale:** confirm price, turnaround, hosting/update terms
+and correction allowance. One Menu, one language and one correction round is a
+proposed starting scope. The earlier CHF 390, CHF 29/month, two-language and
+48-hour examples are not approved commitments or new subscription tiers.
+
+**Acceptance:** one complete buyer/operator journey; protected order/source
+access; no publication before approval; honest failed/pending payment states;
+safe retry without duplicate records; final public link and QR work on mobile.
+The product purchase is not an automatic Kitchen ownership claim. Existing
+Workspace pricing and the preserved Business direction above are unchanged.
+
+Source entry points: [Misebox configuration](../../projects/misebox/misebox-app/nuxt.config.ts),
+[Products checkout](../../packages/extensions/fireux-products/src/runtime/server/api/stripe/create-checkout-session.post.ts),
+[payment return page](../../packages/extensions/fireux-products/src/runtime/pages/products/success.vue),
+[session authority](../../packages/extensions/fireux-products/src/runtime/server/api/stripe/checkout-session.get.ts),
+[Kitchen creation](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/create-shell.ts),
+[Menu import](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/source/uploads.ts),
+[Menu publication](../../packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts),
+and [QR download tool](../../projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Url.vue).
+
 ## Parked ideas — no separate active tasks
 
 | Idea | Reopen only when |
