@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-28
-Ref: 57d034087
+Updated: 2026-10-29
+Ref: 77faf3e16
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -425,7 +425,10 @@ Waste and Menu content, remain owned by their trusted commands; there are no
 parallel browser-write Rules or copied command schemas. Its allow/deny suite
 checks that authorized readers cannot bypass those commands with direct create,
 update or delete requests. This local candidate does not change the accepted
-development-open template or its deployed policy.
+development-open template or its deployed policy. Blog, Product and provider-price
+creation/update likewise remain with their existing trusted commands; the
+Misebox candidate does not grant parallel browser writes or duplicate their
+business schemas. Storage policy remains independently owned and reviewed.
 Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized

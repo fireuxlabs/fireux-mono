@@ -63,86 +63,27 @@ service cloud.firestore {
           (get(/databases/$(database)/documents/kitchens/$(id)).data.created.by == id &&
            !get(/databases/$(database)/documents/kitchens/$(id)/claims/guest).data.keys().hasAny(['claimed_by'])));
     }
-    function text(value, max) { return value is string && value.size() <= max; }
-    function id(value) { return text(value, 1500) && value.size() > 0 && !value.matches('.*[/].*'); }
-    function updated() {
-      return request.resource.data.updated.keys().hasOnly(['at', 'by']) &&
-        request.resource.data.updated.at == request.time &&
-        request.resource.data.updated.by == request.auth.uid;
-    }
     function anyAppAdmin() {
       return admin('misebox-app') || admin('baeren-ringgenberg') || admin('friiites') ||
         admin('la-tap-berne') || admin('bangin-coffee') || admin('interlaken-essen');
     }
-    function authoredCreate() {
-      return admin(request.resource.data.source_app_id) &&
-        request.resource.data.created.keys().hasOnly(['at', 'by']) &&
-        request.resource.data.created.at == request.time && request.resource.data.created.by == request.auth.uid && updated();
-    }
-    function authoredEdit() {
-      return admin(resource.data.source_app_id) &&
-        request.resource.data.source_app_id == resource.data.source_app_id &&
-        request.resource.data.created == resource.data.created &&
-        request.resource.data.slug == resource.data.slug && updated();
-    }
 
     match /blogs/{post} {
-      function validBlog(d) {
-        return d.keys().hasOnly(['source_app_id', 'visibility', 'publication_scope', 'title', 'content', 'metaDescription', 'slug', 'author', 'keywords', 'tags', 'canonicalUrl', 'featuredImage', 'featuredImageAlt', 'socialImage', 'readingTime', 'cta_link', 'cta_text', 'type', 'product_id', 'editorial_review', 'sproochli', 'created', 'updated']) &&
-          d.slug == post && d.visibility in ['app', 'public'] && d.publication_scope in ['app', 'ecosystem'] &&
-          text(d.title, 500) && d.title.size() > 0 && text(d.content, 200000) && text(d.metaDescription, 2000) &&
-          d.author is map && d.author.keys().hasOnly(['id', 'display_name', 'avatar', 'handle']) &&
-          id(d.author.id) && text(d.author.display_name, 300) && text(d.author.avatar, 4000) && text(d.author.get('handle', ''), 100) &&
-          d.keywords is list && d.keywords.size() <= 100 && d.tags is list && d.tags.size() <= 100 &&
-          text(d.canonicalUrl, 4000) && text(d.featuredImage, 4000) && text(d.featuredImageAlt, 1000) && text(d.socialImage, 4000) &&
-          text(d.readingTime, 100) && text(d.cta_link, 4000) && text(d.cta_text, 1000) && d.type in ['article', 'product'] && text(d.product_id, 1500) &&
-          d.editorial_review is map && d.editorial_review.keys().hasOnly(['source_kind', 'privacy_reviewed', 'facts_reviewed', 'names_approved']) &&
-          d.editorial_review.source_kind in ['human', 'ai-assisted'] && d.editorial_review.privacy_reviewed is bool &&
-          d.editorial_review.facts_reviewed is bool && d.editorial_review.names_approved is bool &&
-          (!('sproochli' in d) || (d.sproochli is map && d.sproochli.keys().hasOnly(['default_language', 'translations']) &&
-            text(d.sproochli.default_language, 35) && d.sproochli.translations is map && d.sproochli.translations.size() <= 30));
-      }
       // Public blog readers already project approved fields through server APIs.
       allow get: if (!exists(/databases/$(database)/documents/blogs/$(post)) && anyAppAdmin()) || admin(resource.data.source_app_id);
       allow list: if admin(resource.data.source_app_id);
-      allow create: if validBlog(request.resource.data) && authoredCreate();
-      allow update: if validBlog(request.resource.data) && authoredEdit();
+      // Authoring and editorial approval belong to trusted commands.
     }
     match /products/{product} {
-      function validProduct(d) {
-        return d.keys().hasOnly(['source_app_id', 'visibility', 'name', 'tagline', 'Q', 'A', 'description', 'content', 'slug', 'active', 'main_image', 'images', 'features', 'categories', 'brands', 'source_url', 'requires_template', 'fulfillment_requirements', 'product_type', 'created', 'updated']) &&
-          d.slug == product && d.visibility in ['app', 'public'] && text(d.name, 500) && d.name.size() > 0 &&
-          text(d.tagline, 1000) && text(d.Q, 5000) && text(d.A, 10000) && text(d.description, 10000) && text(d.content, 200000) &&
-          d.active is bool && text(d.main_image, 4000) && text(d.source_url, 4000) && text(d.product_type, 200) && d.requires_template is bool &&
-          d.images is list && d.images.size() <= 100 && d.features is list && d.features.size() <= 100 &&
-          d.categories is list && d.categories.size() <= 100 && d.brands is list && d.brands.size() <= 100 &&
-          d.fulfillment_requirements is list && d.fulfillment_requirements.size() <= 100;
-      }
       // Product roots contain the published catalogue, never payment/customer data.
       allow get: if (!exists(/databases/$(database)/documents/products/$(product)) && anyAppAdmin()) ||
         (resource.data.visibility == 'public' && resource.data.active == true) || admin(resource.data.source_app_id);
       allow list: if (resource.data.visibility == 'public' && resource.data.active == true) || admin(resource.data.source_app_id);
-      allow create: if validProduct(request.resource.data) && authoredCreate();
-      allow update: if validProduct(request.resource.data) && authoredEdit();
+      // Product creation and provider reconciliation are trusted commands.
       match /prices/{price} {
         function productAdmin() { return admin(get(/databases/$(database)/documents/products/$(product)).data.source_app_id); }
-        function validPrice(d) {
-          return d.keys().hasOnly(['product_id', 'label', 'currency', 'unit_amount', 'type', 'interval', 'interval_count', 'billing_scheme', 'active', 'default', 'provider', 'provider_price_id', 'metadata', 'created', 'updated']) &&
-            d.product_id == product && text(d.label, 300) && text(d.currency, 3) && d.currency.size() == 3 &&
-            d.unit_amount is number && d.unit_amount >= 0 && d.unit_amount <= 100000000 &&
-            d.type in ['one_time', 'recurring'] && (!('interval' in d) || d.interval in ['day', 'week', 'month', 'year']) &&
-            (!('interval_count' in d) || (d.interval_count is int && d.interval_count > 0 && d.interval_count <= 100)) &&
-            d.billing_scheme in ['per_unit', 'tiered'] && d.active is bool && d.default is bool &&
-            d.provider == 'stripe' && d.provider_price_id == price && price.matches('price_[A-Za-z0-9]+') &&
-            d.metadata is map && d.metadata.size() <= 20;
-        }
         allow read: if productAdmin();
-        // Existing price creation supplies a client Timestamp after Stripe provisioning.
-        allow create: if productAdmin() && validPrice(request.resource.data) &&
-          request.resource.data.created.keys().hasOnly(['at', 'by']) && request.resource.data.created.by == request.auth.uid &&
-          request.resource.data.created.at is timestamp && request.resource.data.created.at <= request.time &&
-          request.resource.data.created.at > request.time - duration.value(5, 'm') &&
-          request.resource.data.updated == request.resource.data.created;
+        // Prices are written only by the provider-backed Product command.
       }
     }
 

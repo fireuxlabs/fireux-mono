@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-10-28
-Ref: 411ea9ffe
+Updated: 2026-10-29
+Ref: 77faf3e16
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1036,7 +1036,10 @@ or tenant Apps; the development template is never a production fallback. The can
 membership-bound Kitchen and Offering reads while keeping all Kitchen mutations
 and raw Sellable terms server-owned. The candidate has no direct browser Kitchen
 CRUD grants; existing trusted commands retain their validation and authority.
-Its six-App authority must pass the required
+Blog, Product and provider-price mutations also remain server-owned; their
+browser Rules grant reads only. Storage policy is a separate authority: App
+release/preflight does not review or deploy it, and a passing Firestore suite
+does not establish bucket security. Its six-App authority must pass the required
 overlapping-stale-grant access-budget regression, deleted/malformed earlier
 App grants and non-string ID denial before release. See that
 directory's README for commands and local-versus-live verification boundaries.

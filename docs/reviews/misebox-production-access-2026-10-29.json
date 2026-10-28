@@ -1,0 +1,116 @@
+{
+  "reviewed": "2026-10-29",
+  "role": "dated access review; not deployment authority",
+  "sourceBaseline": "77faf3e16",
+  "scope": {
+    "project": "misebox-78f9c",
+    "database": "misebox",
+    "storageBucket": "misebox-78f9c.appspot.com",
+    "function": "miseboxApp / europe-west6",
+    "supportedKitchenApps": [
+      "misebox-app",
+      "baeren-ringgenberg",
+      "friiites",
+      "la-tap-berne",
+      "bangin-coffee",
+      "interlaken-essen"
+    ]
+  },
+  "reviewComplete": true,
+  "releaseReady": false,
+  "score": 1,
+  "scoreScope": "Current live production readiness: development-open policies would permit unauthorized access if treated as production security. This is not a code-quality score.",
+  "summary": "Git queue reconciled and saved. Kitchen authority and trusted authoring boundaries were checked. Obsolete direct Blog/Product/Price writes were removed from the local candidate. Production deployment remains blocked by open Storage policy and public Product document metadata exposure. No live policy or data changed.",
+  "findings": [
+    {
+      "check": "Authority / unrestricted live access",
+      "severity": "critical",
+      "issue": "The live named Firestore database and Storage bucket Rules both allow read and write if true. The Firestore policy is the explicitly accepted development policy; neither is production privacy.",
+      "recommendation": "Keep deployment withheld. Prepare and approve separate Firestore and Storage rollouts with exact target backups and readback; do not silently alter the development policy."
+    },
+    {
+      "check": "Field-level read security",
+      "severity": "moderate",
+      "issue": "The local candidate permits direct public reads of active public Product roots. Product creation retains internal provisioning state on that root, including actor UID, request ID and recovery fingerprint. Client-side normalizeProduct drops those fields only after the raw document has reached the browser. A local emulator probe returned the internal field unauthenticated.",
+      "recommendation": "Use a domain-owned safe server projection for public Product collection reads, or move recovery state to a protected child with an explicitly reviewed data transition. Preserve the admin reader and creation retry contract. The existing Product detail API already normalizes its server response."
+    },
+    {
+      "check": "Business authority / obsolete browser writes",
+      "severity": "major",
+      "issue": "The prior candidate permitted direct Blog, Product and provider-price writes despite their trusted command owners. This could bypass editorial review, reservation and provider reconciliation.",
+      "recommendation": "Closed locally: direct create/update/delete is now denied, with current command tests and allow/deny regressions. Live permissions remain unchanged."
+    },
+    {
+      "check": "Media ownership integration",
+      "severity": "major",
+      "issue": "Place brand/gallery and Ingredient images still have direct client Storage upload consumers. There is no reviewed authored production Storage policy in this repository. Storage Rules cannot consult Kitchen grants in the named misebox database; Firebase supports their Firestore lookups only against the default database.",
+      "recommendation": "Move membership-protected media writes through the existing trusted server upload mechanics and owning domain authority. Then author/test the bucket policy for the remaining supported direct uploads and public/private reads. Do not add a parallel membership mirror or loosen bucket-wide permissions."
+    }
+  ],
+  "checks": {
+    "productionPolicyTests": 24,
+    "trustedBlogProductCommandTests": 16,
+    "localProductDiagnostic": {
+      "scope": "local demo emulator only; source-policy diagnostic",
+      "status": 200,
+      "publicInternalMetadataReadable": true
+    },
+    "liveGrantPrerequisites": {
+      "target": "misebox-78f9c / misebox",
+      "scope": "canonical Kitchen grant entries for the six supported Apps; read only",
+      "indexDocuments": 1,
+      "entries": 1,
+      "validEntries": 1,
+      "unsupportedEntries": 0,
+      "issues": []
+    },
+    "runtimeProjectRoleBindings": [
+      "roles/datastore.user",
+      "roles/firebaseauth.viewer",
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/storage.objectAdmin"
+    ],
+    "runtimeAccount": "misebox-ssr@misebox-78f9c.iam.gserviceaccount.com",
+    "ingress": "ALLOW_ALL; public website ingress, not command authorization",
+    "livePolicies": [
+      {
+        "release": "projects/misebox-78f9c/releases/cloud.firestore/misebox",
+        "ruleset": "projects/misebox-78f9c/rulesets/33afcb33-ebae-4625-84da-f70972e1807a",
+        "sha256": "b33ffb316608adf71cbf9facc0b3cf62f4d1b84e13f833e89753e282e01c7b80"
+      },
+      {
+        "release": "projects/misebox-78f9c/releases/firebase.storage/misebox-78f9c.appspot.com",
+        "ruleset": "projects/misebox-78f9c/rulesets/c7712cc7-15ca-48f9-b30a-03d32123be70",
+        "sha256": "e7268d4ddc677d4153055ae8f88111a351852f515471512bb741d0dfc3710dba"
+      }
+    ]
+  },
+  "sourceEvidence": {
+    "candidate": "packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules",
+    "tests": "projects/misebox/misebox-app/test/firestore.production.test.mjs",
+    "blogCommand": "packages/extensions/fireux-blogs/src/runtime/blog/server/authoring.ts",
+    "productCommand": "packages/extensions/fireux-products/src/runtime/product/server/create/command.ts",
+    "publicProductCollection": "packages/extensions/fireux-products/src/runtime/product/composables/useProductCollection.ts",
+    "publicProductDetail": "packages/extensions/fireux-products/src/runtime/server/api/products/[id].get.ts",
+    "directMediaExamples": [
+      "packages/extensions/fireux-places/src/runtime/place/components/Edit/Brand.vue",
+      "packages/extensions/fireux-places/src/runtime/place/components/Edit/Photos.vue",
+      "packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Edit/Index.vue"
+    ],
+    "serverUploadMechanics": "packages/core/fireux-core/src/runtime/server/utils/uploads/storage.ts"
+  },
+  "upstreamEvidence": [
+    "https://firebase.google.com/docs/storage/security/rules-conditions#enhance_with_cloud_firestore"
+  ],
+  "limits": [
+    "No deployment, live write, Rules change or IAM change was performed.",
+    "Runtime service-account direct project bindings were inspected; inherited IAM, bucket-level IAM and signed URL/download-token lifecycle were not exhaustively certified.",
+    "Tests prove their encoded cases, not all Apps, routes or commercial/provider journeys.",
+    "The live grant inventory found one canonical index and one matching supported-App entry; it does not infer or create additional operator grants."
+  ],
+  "nextAttack": [
+    "Close protected media upload authority and test an explicit Storage candidate.",
+    "Close public Product read exposure while preserving native admin reads and provider retry ownership.",
+    "Repeat the exact release checks and independently approve policy rollout before application deployment."
+  ]
+}

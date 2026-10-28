@@ -1,6 +1,6 @@
 # FireUX priorities
 
-Reviewed: 2026-10-28
+Reviewed: 2026-10-29
 Source baseline: `cf2413355`, with concurrent implementation preserved
 Role: consolidated priority list; recommendations, not release commitments
 
@@ -89,9 +89,11 @@ remains separate from preparing and verifying the release candidate.
 The [pilot checkpoint](../reviews/baeren-collection-pilot-2026-10-28.md) records
 fresh customer test order #21 through its receipt, operator completion and reload,
 with no duplicate and unchanged venue prices/hours. The local production policy
-candidate now follows the existing trusted Kitchen command ownership. Release
-still needs an exact reviewed source checkpoint, production-access approval and
-venue/operator acceptance; no live policy or application was deployed.
+candidate now follows the existing trusted Kitchen command ownership. The shared queue is saved in `77faf3e16`. The [completed access review](../reviews/misebox-production-access-2026-10-29.json)
+found two remaining release blockers: protected media/Storage access and raw
+public Product metadata exposure. Close those boundaries next, then repeat
+release checks and obtain production-access and venue/operator acceptance.
+No live policy or application was deployed.
 
 Start with one existing Collection configuration and follow the complete guest
 and operator journey. Fix only the Item, Menu, Offering or fulfilment gaps that

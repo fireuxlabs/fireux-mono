@@ -76,8 +76,9 @@ The offline `tools/misebox-migrations/kitchen-access.py` proposal preserves
 existing grants and current membership evidence, with create-only canonical
 targets and separately gated retirement. It has no network or apply mode.
 Source changes do not migrate live grants or deploy Rules. The accepted development template is
-unchanged. Nested authored lists/maps have bounded containers, not full
-per-element validation; public Product roots must contain catalogue content only.
+unchanged. Blog/Product/price authoring now uses trusted commands only; their business
+schemas are not duplicated in browser-write Rules. Public Product root reads
+still require the exposure repair identified in the access review below.
 
 Only after separate deployment authorization:
 
@@ -110,3 +111,12 @@ sharing this named database before a Rules rollout is authorized. The old
 restricted fragments use obsolete authority and are not a fallback. Rules rollout
 still follows the backup, exact-target and read-back requirements in
 `docs/ai/firestore-mutations-context.md`.
+
+## Access review
+
+The [2026-10-29 access review](../../../../docs/reviews/misebox-production-access-2026-10-29.json)
+is complete and does **not** approve deployment. Two release blockers remain:
+public Product roots can expose internal provisioning fields through direct
+client reads, and the Storage bucket has no reviewed restricted production
+policy covering its active upload consumers. Firestore preflight does not verify
+Storage or certify all runtime authority. Preserve the separate rollout gates.

@@ -221,23 +221,21 @@ test('malformed grants and deleted Kitchen parents cannot expose children', asyn
   denied(await write('kitchens/deleted/dishes/new', dish('malformed', 'deleted'), 'malformed', { create: true }))
 })
 
-test('exact-App editors can author Products, Blogs and provisioned prices without crossing Apps', async () => {
+test('App admins read their authored records while Blog, Product and price writes stay server-owned', async () => {
   const uid = 'author'
-  await seed('apps/friiites/users/author', { role: 'admin', created: { at: time } })
-  const common = { source_app_id: 'friiites', visibility: 'app', created: { by: uid, at: time }, updated: { by: uid, at: time } }
-  const product = { ...common, slug: 'authored', name: 'Meal', tagline: '', Q: '', A: '', description: '', content: '', active: true, main_image: '', source_url: '', product_type: '', requires_template: false, images: [], features: [], categories: [], brands: [], fulfillment_requirements: [] }
-  allowed(await write('products/authored', product, uid, { create: true }))
-  allowed(await write('products/authored', { name: 'Dinner', updated: { by: uid } }, uid, { mask: ['name', 'updated'] }))
-  denied(await write('products/authored', { source_app_id: 'misebox-app', updated: { by: uid } }, uid, { mask: ['source_app_id', 'updated'] }))
-  const blog = { ...common, slug: 'authored', publication_scope: 'app', title: 'Opening', content: '', metaDescription: '', author: { id: uid, display_name: 'Chef', avatar: '' }, keywords: [], tags: [], canonicalUrl: '', featuredImage: '', featuredImageAlt: '', socialImage: '', readingTime: '', cta_link: '', cta_text: '', type: 'article', product_id: '', editorial_review: { source_kind: 'human', privacy_reviewed: false, facts_reviewed: false, names_approved: false } }
-  allowed(await write('blogs/authored', blog, uid, { create: true }))
-  allowed(await write('blogs/authored', { title: 'Open today', updated: { by: uid } }, uid, { mask: ['title', 'updated'] }))
-  denied(await write('blogs/authored', { title: 'Intrusion', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['title', 'updated'] }))
-  const now = { timestampValue: new Date().toISOString() }
-  const price = { product_id: 'authored', label: '', currency: 'chf', unit_amount: 1500, type: 'one_time', billing_scheme: 'per_unit', active: true, default: true, provider: 'stripe', provider_price_id: 'price_proof', metadata: {}, created: { at: now, by: uid }, updated: { at: now, by: uid } }
-  allowed(await write('products/authored/prices/price_proof', price, uid, { create: true, stamped: false }))
-  denied(await get('products/authored/prices/price_proof'))
-  denied(await write('products/authored/prices/price_wrong', { ...price, product_id: 'foreign', provider_price_id: 'price_wrong' }, uid, { create: true, stamped: false }))
+  await seed(`apps/friiites/users/${uid}`, { role: 'admin', created: { at: time } })
+  const product = { source_app_id: 'friiites', visibility: 'app', slug: 'authored', name: 'Meal', active: false, ...stamp(uid, 'friiites') }
+  const blog = { source_app_id: 'friiites', visibility: 'app', slug: 'authored', title: 'Opening', ...stamp(uid, 'friiites') }
+  const price = { product_id: 'authored', provider: 'stripe', provider_price_id: 'price_proof', unit_amount: 1500, currency: 'chf' }
+  for (const [path, data] of [['products/authored', product], ['blogs/authored', blog], ['products/authored/prices/price_proof', price]]) {
+    await seed(path, data)
+    allowed(await get(path, uid))
+    denied(await get(path, 'operator-0'))
+    denied(await get(path))
+    denied(await write(`${path}-new`, data, uid, { create: true }))
+    denied(await write(path, { name: 'Changed', updated: { by: uid } }, uid, { mask: ['name', 'updated'] }))
+    denied(await write(path, {}, uid, { remove: true }))
+  }
 })
 
 const eq = (field, input) => ({ fieldFilter: { field: { fieldPath: field }, op: 'EQUAL', value: value(input) } })
