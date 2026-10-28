@@ -11,12 +11,12 @@
     :close="!saving"
   >
     <template #body>
-      <form class="space-y-4" @submit.prevent="save">
+      <form class="workspace-profile__form" @submit.prevent="save">
         <UFormField label="Name" required
           ><UInput
             v-model="name"
             maxlength="120"
-            class="w-full"
+            class="workspace-profile__input"
             autofocus
             :disabled="saving"
         /></UFormField>
@@ -24,7 +24,7 @@
           ><UTextarea
             v-model="description"
             maxlength="2000"
-            class="w-full"
+            class="workspace-profile__input"
             :disabled="saving"
         /></UFormField>
         <UFormField
@@ -34,11 +34,11 @@
           ><UInput
             v-model="imageUrl"
             type="url"
-            class="w-full"
+            class="workspace-profile__input"
             :disabled="saving"
         /></UFormField>
-        <div v-if="identity.publication.value" class="space-y-2 text-sm">
-          <p class="text-muted">
+        <div v-if="identity.publication.value" class="workspace-profile__notes">
+          <p class="workspace-profile__note">
             Description and image are published by
             {{ identity.publication.value.appName }}.
           </p>
@@ -53,11 +53,10 @@
             <UAvatar
               :src="identity.imageUrl.value"
               :alt="identity.publication.value.appName"
-              :ui="
-                identity.imageFit.value === 'contain'
-                  ? { image: 'object-contain p-1.5' }
-                  : undefined
-              "
+              :class="{
+                'workspace-profile__avatar--contain':
+                  identity.imageFit.value === 'contain',
+              }"
               size="xl"
             />
             <p>{{ identity.description.value }}</p>
@@ -77,10 +76,10 @@
           :description="error"
         />
         <FireCopyError v-if="error" :message="error" />
-        <p v-if="!sameProject" role="status" class="text-sm text-warning">
+        <p v-if="!sameProject" role="status" class="workspace-profile__warning">
           The selected Project changed. Close this editor and reopen it.
         </p>
-        <div class="flex justify-end gap-2">
+        <div class="workspace-profile__actions">
           <UButton
             label="Cancel"
             color="neutral"

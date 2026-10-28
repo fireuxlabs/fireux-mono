@@ -1,13 +1,11 @@
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
-import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
+import { defineFirestoreReadTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 
 // Existing Kitchen → Place integration: read the domain grant without importing Kitchens.
 export function placeKitchenAccessTarget() {
-  return defineFirestoreMutationTarget({
+  return defineFirestoreReadTarget({
     key: 'places.kitchen-access',
-    lane: 'server',
-    verbs: ['update'],
     database: { kind: 'runtime' },
     collectionPath: 'kitchen_access',
   })
@@ -76,3 +74,10 @@ export function canKitchenEditPlace(input: {
   const ids = readMembershipAccessIds(grant, input.membership)
   return ids.length <= 50 && ids.includes(input.kitchenId)
 }
+
+// Place owns these reference checks, not the referenced domains' write authority.
+export const placeReferenceTargets = Object.freeze({
+  kitchens: defineFirestoreReadTarget({ key: 'project.kitchens', database: { kind: 'runtime' }, collectionPath: 'kitchens' }),
+  properties: defineFirestoreReadTarget({ key: 'project.properties', database: { kind: 'runtime' }, collectionPath: 'properties' }),
+  jobs: defineFirestoreReadTarget({ key: 'project.jobs', database: { kind: 'runtime' }, collectionPath: 'jobs' }),
+})

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenAiUsageTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenAiUsageTarget } from '../mutation-targets'
 import { actualMenuAiCost } from '../../../menu/server/ai/cost.ts'
 import type { FireuxAgentTip } from 'fireux-ai/runtime/models/agents/agent-tip'
 

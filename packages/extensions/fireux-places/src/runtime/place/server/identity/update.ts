@@ -1,3 +1,4 @@
+import { placeReferenceTargets } from './mutation-authority'
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -6,10 +7,8 @@ import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { runtimeStorageBucketName } from 'fireux-core/runtime/server/utils/uploads/storage'
 import {
   canKitchenEditPlace,
@@ -74,11 +73,11 @@ export async function updatePlace(
       statusMessage: 'Kitchen Place authority must belong to the current App.',
     })
   }
-  const places = FIRESTORE_MUTATION_TARGETS.places
+  const places = PLACE_MUTATION_TARGETS.places
   const memberships = isFirestoreDocumentId(runtimeAppId)
     ? serverAppUsersTarget(runtimeAppId)
     : null
-  const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
+  const kitchens = placeReferenceTargets.kitchens
 
   await runGuardedServerTransaction(places.database, async (mutations) => {
     const [

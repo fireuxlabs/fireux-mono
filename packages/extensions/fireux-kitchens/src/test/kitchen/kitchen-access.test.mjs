@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import {
+  createSSRApp,
   computed,
   ref,
   toValue,
@@ -23,13 +24,13 @@ import {
   createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { createDefaultKitchenStation } from '../../runtime/kitchen/server/stations/default.ts'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
-} from 'fireux-core/runtime/utils/onboarding-route'
+} from 'fireux-core/runtime/user/utils/onboarding-route'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import {
   serverKitchenAccessTarget,
@@ -174,7 +175,7 @@ function shellHarness({
     data: records.get(path(owner, id)),
   })
   const requireOnboardingMemberRole = compile(
-    new URL('server/utils/workspace-entity/onboarding-authority.ts', core),
+    new URL('workspace/server/entity/onboarding-authority.ts', core),
     'requireWorkspaceEntityMemberRole',
     { createError }
   )
@@ -202,11 +203,9 @@ function shellHarness({
       serverKitchenAccessTarget,
       serverKitchenTeamMembersTarget: (id) => target(`kitchens/${id}/team`),
       serverKitchenMenusTarget: (id) => target(`kitchens/${id}/menus`),
-      FIRESTORE_MUTATION_TARGETS: {
-        runtimeUsers: target('users'),
-        places: target('places'),
-        kitchens: target('kitchens'),
-      },
+      USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
+      PLACE_MUTATION_TARGETS: { places: target('places') },
+      KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
       readKitchenAccessIds,
       withKitchenAppAccess,
       resolveKitchenGrantIds,
@@ -278,7 +277,7 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
   )
   assert.deepEqual(menus.map(([, value]) => value.slug).sort(), [
     'drinks',
-    'food',
+    'main',
   ])
   assert.ok(
     menus.every(([path, value]) => path.split('/').at(-1) !== value.slug)
@@ -350,10 +349,8 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
       serverAppUsersTarget: (appId) => ({
         collectionPath: `apps/${appId}/users`,
       }),
-      FIRESTORE_MUTATION_TARGETS: {
-        kitchens: { collectionPath: 'kitchens' },
-        places: { collectionPath: 'places' },
-      },
+      KITCHEN_MUTATION_TARGETS: { kitchens: { collectionPath: 'kitchens' } },
+      PLACE_MUTATION_TARGETS: { places: { collectionPath: 'places' } },
       isAppUserSubscription: (value) =>
         ['free', 'premium', 'business'].includes(value),
     }
@@ -417,7 +414,12 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
 
 test('all 50 Kitchen and Place bindings stay live and revoke without retaining stale targets', async () => {
   const ids = Array.from({ length: 50 }, (_, index) => `kitchen-${index}`)
-  const access = { ids: ref(ids), pending: ref(false), error: ref() }
+  const access = {
+    outcome: ref('ready'),
+    ids: ref(ids),
+    pending: ref(false),
+    error: ref(),
+  }
   const bindings = new Map()
   const options = []
   const exactLoader = compile(
@@ -427,6 +429,7 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
     ),
     'createFirestoreExactDocLoader',
     {
+      useNuxtApp: () => ({ vueApp: createSSRApp({ render: () => null }) }),
       computed,
       ref,
       unref,
@@ -449,11 +452,8 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
     }
   )
   const collection = compile(
-    new URL(
-      'kitchen/composables/workspace/useKitchenWorkspaceKitchens.ts',
-      runtime
-    ),
-    'useKitchenWorkspaceKitchens',
+    new URL('kitchen/composables/useKitchenTargets.ts', runtime),
+    'useKitchenTargets',
     {
       computed,
       toValue,
@@ -574,10 +574,8 @@ function adoptionHarness({
       requireOnboardingMemberRole: (exists) => {
         if (!exists) throw createError({ statusCode: 403 })
       },
-      FIRESTORE_MUTATION_TARGETS: {
-        kitchens: target('kitchens'),
-        runtimeUsers: target('users'),
-      },
+      KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
+      USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       runGuardedServerTransaction: async (_scope, run) => {
         const pending = []
         const key = (owner, id) => `${owner.collectionPath}/${id}`
@@ -678,10 +676,8 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
       },
       serverKitchenMenusTarget: (id) => target(`kitchens/${id}/menus`),
       serverKitchenTeamMembersTarget: (id) => target(`kitchens/${id}/team`),
-      FIRESTORE_MUTATION_TARGETS: {
-        kitchens: target('kitchens'),
-        places: target('places'),
-      },
+      KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
+      PLACE_MUTATION_TARGETS: { places: target('places') },
       createKitchenSystemMenus,
       createDefaultKitchenStation,
       buildKitchenTeamMemberRecord,
@@ -788,11 +784,8 @@ test('adopted Kitchen becomes selected only after the live collection contains i
   const kitchens = ref([{ id: 'existing' }])
   const outcome = ref('ready')
   const useIndex = compile(
-    new URL(
-      'kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
-      runtime
-    ),
-    'useKitchenWorkspaceIndex',
+    new URL('kitchen/composables/workspace/useKitchenWorkspace.ts', runtime),
+    'useKitchenWorkspace',
     {
       useCommandScope,
       watch,
@@ -818,7 +811,19 @@ test('adopted Kitchen becomes selected only after the live collection contains i
       useState: (key, init) =>
         key.startsWith('kitchen-adopted-selection:') ? adopted : ref(init()),
       useFireUXConfig: () => ({ appId: 'app' }),
-      useKitchenWorkspaceKitchens: () => ({ kitchens, outcome }),
+      defineWorkspace: (factory) => factory,
+      useKitchenTargets: () => ({ kitchens, outcome }),
+      useKitchenAccess: () => ({
+        ids: computed(() => kitchens.value.map((row) => row.id)),
+        outcome,
+      }),
+      useKitchenRead: () => ({
+        kitchen: ref(null),
+        place: ref(null),
+        outcome: ref('empty'),
+        placeOutcome: ref('empty'),
+      }),
+      useKitchenInterface: () => ({ surface: () => null }),
       useWorkspace: () => ({
         selectedId,
         select: (id) => {

@@ -6,7 +6,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -54,7 +54,7 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
         updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
       }
       mutations.update<DocumentData>(
-        FIRESTORE_MUTATION_TARGETS.kitchens,
+        KITCHEN_MUTATION_TARGETS.kitchens,
         requested.kitchenId,
         rootPatch
       )

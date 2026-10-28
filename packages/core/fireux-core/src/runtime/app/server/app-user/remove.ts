@@ -1,9 +1,4 @@
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppJoinRequestsTarget,
-  serverAppMembershipBlocksTarget,
-  serverAppUsersTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { APP_MUTATION_TARGETS, serverAppJoinRequestsTarget, serverAppMembershipBlocksTarget, serverAppUsersTarget } from '../mutation-targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
   appGovernancePatch,
@@ -53,7 +48,7 @@ export async function handleRemoveMember(
   }
   if (target.exists)
     mutations.update(
-      FIRESTORE_MUTATION_TARGETS.runtimeApps,
+      APP_MUTATION_TARGETS.runtimeApps,
       appId,
       appGovernancePatch(actorUid)
     )

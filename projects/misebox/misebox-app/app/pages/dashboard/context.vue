@@ -1,6 +1,8 @@
 <template>
   <UDashboardPanel id="misebox-app-context">
-    <template #header><FireLayoutsDashboardNavbar title="AI context" /></template>
+    <template #header
+      ><FireLayoutsDashboardNavbar title="AI context"
+    /></template>
     <template #body>
       <div class="space-y-5 max-w-3xl">
         <p class="text-muted">

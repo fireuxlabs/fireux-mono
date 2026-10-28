@@ -7,11 +7,9 @@ import {
 } from '../team/authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverSupplierItemsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { SUPPLIER_MUTATION_TARGETS, serverSupplierItemsTarget } from '../mutation-targets'
+import { PRODUCT_MUTATION_TARGETS } from 'fireux-products/runtime/product/server/mutation-targets'
+import { INGREDIENT_MUTATION_TARGETS } from 'fireux-kitchens/runtime/ingredient/server/mutation-targets'
 type SupplierItemAction = 'create' | 'update' | 'delete'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -171,7 +169,7 @@ async function authority(event: H3Event, supplierId: string) {
   const actor = await readSupplierMutationActor(event)
   return {
     ...actor,
-    suppliers: FIRESTORE_MUTATION_TARGETS.suppliers,
+    suppliers: SUPPLIER_MUTATION_TARGETS.suppliers,
     items: serverSupplierItemsTarget(supplierId),
   }
 }
@@ -196,12 +194,12 @@ export async function createSupplierItem(
       await requireSupplierMutationAuthority(mutations, context, supplierId)
       const [product, ingredient] = await Promise.all([
         mutations.read<Record<string, unknown>>(
-          FIRESTORE_MUTATION_TARGETS.products,
+          PRODUCT_MUTATION_TARGETS.products,
           productId
         ),
         ingredientId
           ? mutations.read<Record<string, unknown>>(
-              FIRESTORE_MUTATION_TARGETS.ingredients,
+              INGREDIENT_MUTATION_TARGETS.ingredients,
               ingredientId
             )
           : Promise.resolve({ exists: false, data: undefined }),

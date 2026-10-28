@@ -2,7 +2,7 @@ import { computed, type Ref } from 'vue'
 import {
   humanizeDebugKey,
   isDebugColor,
-} from '../../utils/dev-debug-format'
+} from '../../utils/diagnostics/format'
 
 type DebugEntry = {
   key: string

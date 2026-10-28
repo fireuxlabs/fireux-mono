@@ -3,10 +3,14 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+const compileFunction = (source, args = []) =>
+  args.includes('setResponseHeader')
+    ? compileNative(source, args)
+    : compileNative(source, ['setResponseHeader', ...args]).bind(null, () => {})
 
 function load(path, names, deps) {
-  deps = {...dishPricingHelpers,...deps}
+  deps = { ...dishPricingHelpers, ...deps }
 
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -37,7 +41,15 @@ test('the public section reader never acquires items from another calendar date'
           name === path
             ? sections
             : name === `${base}/dishes`
-              ? [{ id: 'dish', name: 'Meal', price: 12, price_options: [], add_ons: [] }]
+              ? [
+                  {
+                    id: 'dish',
+                    name: 'Meal',
+                    price: 12,
+                    price_options: [],
+                    add_ons: [],
+                  },
+                ]
               : [{ id: 'item', dish_id: 'dish', price: 12 }]
         return {
           docs: rows.map(({ id, ...data }) => ({ id, data: () => data })),
@@ -85,7 +97,7 @@ test('canonical Menu uses its published-date gate and expose no private sections
       published,
     }
     const deps = {
-      defineLiveReadHandler: (fn) => fn,
+      defineEventHandler: (fn) => fn,
       getRuntimeFirestore: () => ({}),
       dailyMenuToday: () => daily,
       readKitchenMenuSections: async (_db, input) => {
@@ -143,7 +155,7 @@ test('manually constructed order contexts reject daily Menus before content is a
         '../runtime/server/api/menus/[menuId].get.ts',
         'handler',
         {
-          defineLiveReadHandler: (fn) => fn,
+          defineEventHandler: (fn) => fn,
           setCorsHeaders: () => {},
           getRouterParam: () => 'specials',
           getQuery: () => ({ context }),

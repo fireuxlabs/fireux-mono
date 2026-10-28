@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/models/team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -6,7 +7,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { kitchenTeamMemberLimit } from '../../utils/team.ts'
 import { useKitchenWorkspace } from './useKitchenWorkspace'
 import { useKitchenChildCollection } from '../useKitchenChildCollection'
@@ -54,14 +55,16 @@ export function useKitchenWorkspaceTeam() {
       `kitchen-team-${currentUser.value?.uid || 'anonymous'}-${fetchKitchenId.value || 'none'}`
   )
   const { data: teamResponse, error: teamError } =
-    useLiveAsyncData<KitchenTeamResponse>(
+    useAsyncData<KitchenTeamResponse>(
       requestKey,
-      async (liveFetch) => {
+      async (_nuxtApp, { signal }) => {
+        const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
         const user = currentUser.value
         const kitchenId = fetchKitchenId.value
         if (!user || !kitchenId)
           return { ok: true, kitchenId: '', canManageTeam: false, members: [] }
-        return liveFetch<KitchenTeamResponse>(
+        return fetchRead<KitchenTeamResponse>(
           '/api/workspace/kitchen/team/members',
           {
             query: { kitchenId },
@@ -179,6 +182,15 @@ export function useKitchenWorkspaceTeam() {
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       '/api/workspace/kitchen/team/members',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         timeout: 15000,
         retry: 0,
@@ -210,6 +222,9 @@ export function useKitchenWorkspaceTeam() {
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(input.memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body: {
@@ -236,6 +251,9 @@ export function useKitchenWorkspaceTeam() {
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
         query: { kitchenId: targetId },

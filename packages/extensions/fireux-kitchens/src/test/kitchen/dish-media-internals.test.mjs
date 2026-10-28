@@ -22,7 +22,7 @@ const pathOf = (value, id) => value.collectionPath + '/' + id
 const serverKitchenDishesTarget = (id) => target('kitchens/' + id + '/dishes')
 const serverAppUsersTarget = (id) => target('apps/' + id + '/users')
 const serverKitchenAccessTarget = () => target('kitchen_access')
-const FIRESTORE_MUTATION_TARGETS = { kitchens: target('kitchens') }
+const KITCHEN_MUTATION_TARGETS = { kitchens: target('kitchens') }
 const readMembershipAccessIds = load(
   '../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
   {},
@@ -154,7 +154,7 @@ function harness(options = {}) {
       createError,
       getRuntimeFirestore: () => db,
       readKitchenAccessIds,
-      FIRESTORE_MUTATION_TARGETS,
+      KITCHEN_MUTATION_TARGETS,
       serverAppUsersTarget,
       serverKitchenAccessTarget,
       requireFirebaseBearerUser: async () => {

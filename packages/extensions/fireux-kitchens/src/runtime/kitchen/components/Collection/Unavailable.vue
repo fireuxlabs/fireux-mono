@@ -9,12 +9,17 @@
     :style="themeStyleVars"
     aria-labelledby="menu-order-unavailable-title"
   >
-    <UAlert title="Kitchen unavailable" description="This Kitchen is not available." color="neutral" />
+    <UAlert
+      title="Kitchen unavailable"
+      description="This Kitchen is not available."
+      color="neutral"
+    />
   </article>
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import { computed } from 'vue'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
@@ -35,7 +40,7 @@ const presentationPath = computed(
     `/api/kitchens/${encodeURIComponent(kitchenSlug.value)}/menu-presentation`
 )
 const { data: presentation } =
-  await useLiveFetch<KitchenMenuPresentation>(presentationPath)
+  await useFetch<KitchenMenuPresentation>(presentationPath)
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
     theme: computed(() => presentation.value?.theme),

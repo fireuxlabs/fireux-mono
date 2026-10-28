@@ -1,18 +1,20 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublicSummary } from '../models/project.model'
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
 
 export function useProjectDetail(id: MaybeRefOrGetter<string>) {
   const projectId = computed(() => String(toValue(id) || '').trim())
-  const state = useLiveAsyncData<DetailResponse<ProjectPublicSummary> | null>(
+  const state = useAsyncData<DetailResponse<ProjectPublicSummary> | null>(
     () => `project-detail-${projectId.value || 'none'}`,
-    (liveFetch) =>
-      projectId.value
-        ? liveFetch(`/api/projects/${encodeURIComponent(projectId.value)}`)
-        : null,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return projectId.value
+        ? fetchRead(`/api/projects/${encodeURIComponent(projectId.value)}`)
+        : null
+    },
     { server: true, watch: [projectId] }
   )
 

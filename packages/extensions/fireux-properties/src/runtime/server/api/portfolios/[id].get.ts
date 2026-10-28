@@ -1,7 +1,8 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getRouterParam } from 'h3'
+import { defineEventHandler, setResponseHeader, getRouterParam } from 'h3'
+
 import { readPortfolioDetail } from '../../../portfolio/server/index/read'
 
-export default defineLiveReadHandler((event) =>
-  readPortfolioDetail(getRouterParam(event, 'id'))
-)
+export default defineEventHandler((event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+  return readPortfolioDetail(getRouterParam(event, 'id'))
+})

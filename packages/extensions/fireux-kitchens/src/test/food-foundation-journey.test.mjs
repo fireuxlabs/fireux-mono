@@ -26,10 +26,8 @@ const requireFirestoreDocumentId = (value) => {
 }
 const readRecordString = (row, key) => String(row?.[key] ?? '')
 const targets = {
-  FIRESTORE_MUTATION_TARGETS: {
-    kitchens: target('kitchens'),
-    places: target('places'),
-  },
+  KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
+PLACE_MUTATION_TARGETS: { places: target('places') },
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: () => target('kitchen_access'),
   serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),

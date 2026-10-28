@@ -2,7 +2,7 @@ import { usePortfolioAccess } from '../usePortfolioAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { PortfolioStorage } from '../../models/portfolio.model.ts'
 import { usePortfolioWorkspace } from './usePortfolioWorkspace'
 

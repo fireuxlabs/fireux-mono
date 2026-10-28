@@ -232,6 +232,8 @@
   </section>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, ref, watch } from 'vue'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 const props = defineProps<{
@@ -282,6 +284,13 @@ async function request(
     roleIds?: string[]
     labels?: Record<string, string[]>
   }>(endpoint, {
+    onResponse: async ({ options, response }) => {
+      if (
+        response.ok &&
+        !['GET', 'HEAD'].includes(String(options.method || 'GET').toUpperCase())
+      )
+        await refreshNuxtData()
+    },
     method: 'POST',
     timeout: 15000,
     retry: 0,
@@ -383,7 +392,8 @@ function addRole() {
 watch(
   () => [props.endpoint, props.workspaceId, props.memberId],
   ([endpoint, workspaceId], previous) => {
-    const workspaceChanged = !previous || endpoint !== previous[0] || workspaceId !== previous[1]
+    const workspaceChanged =
+      !previous || endpoint !== previous[0] || workspaceId !== previous[1]
     if (workspaceChanged) {
       roles.value = []
       names.value = {}

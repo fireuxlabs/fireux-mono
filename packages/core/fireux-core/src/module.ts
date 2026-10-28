@@ -15,7 +15,7 @@ import {
 import { configureFireuxModule } from './config/module/module-wiring'
 import { registerComposablesDirs } from './config/module/module-helpers'
 import { configureComponents } from './config/module/components-config'
-import { configureWorkspacePageTransitions } from './config/module/pages-config'
+import { configurePageTransitions } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 
 const DEV_RESPONSE_MAX_LISTENERS = 32
@@ -172,7 +172,7 @@ export default defineNuxtModule({
       seo.sitemapPaths = mergeSitemapPaths(seo.sitemapPaths, autoPaths)
     })
 
-    configureWorkspacePageTransitions(nuxt)
+    configurePageTransitions(nuxt)
 
     configureFireuxModule(resolver, nuxt, {
       composables: (resolver) =>

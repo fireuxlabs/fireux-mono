@@ -1,11 +1,19 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getRouterParam, setResponseHeaders } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getRouterParam,
+  setResponseHeaders,
+} from 'h3'
+
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PlaceDetailResponse } from '../../../place/models/place-read.model.ts'
 import { readPlace } from '../../../place/server/identity/read'
 
-export default defineLiveReadHandler(
+export default defineEventHandler(
   async (event): Promise<PlaceDetailResponse> => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     const locator = requireFirestoreDocumentId(
       getRouterParam(event, 'placeId'),
       'Place id'
@@ -28,8 +36,7 @@ function success(
 ): PlaceDetailResponse {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control':
-      'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+    'Cache-Control': 'no-store',
   })
   return { place }
 }

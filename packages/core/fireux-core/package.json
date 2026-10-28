@@ -87,7 +87,7 @@
     "dist/types/theme.mjs",
     "dist/utils/brandAssets.mjs",
     "dist/utils/seoIndexing.mjs",
-    "dist/runtime/utils/sitemap-public-filters.mjs"
+    "dist/utils/sitemap-public-filters.mjs"
   ],
   "scripts": {
     "build": "nuxt-module-build build",

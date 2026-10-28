@@ -1,4 +1,8 @@
-import { defineLiveReadHandler } from '../../../utils/http/defineLiveReadHandler'
+import { defineEventHandler, setResponseHeader } from 'h3'
+
 import { readUserNotifications } from '../../../../user/server/notifications/read'
 
-export default defineLiveReadHandler(readUserNotifications)
+export default defineEventHandler((event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+  return readUserNotifications(event)
+})

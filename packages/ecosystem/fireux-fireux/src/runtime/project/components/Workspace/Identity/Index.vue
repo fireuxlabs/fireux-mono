@@ -1,15 +1,6 @@
 <template>
-  <section class="grid min-w-0 gap-6">
-    <WorkspaceProjectIdentityRead :identity="identity">
-      <template #actions>
-        <UButton
-          v-if="identity.canWrite.value"
-          label="Edit Identity"
-          icon="i-lucide-pencil"
-          @click="editor?.show()"
-        />
-      </template>
-    </WorkspaceProjectIdentityRead>
+  <section class="workspace-profile">
+    <WorkspaceProjectIdentityRead :identity="identity" @edit="editor?.show()" />
     <WorkspaceProjectIdentityWrite ref="editor" :identity="identity" />
     <FireContextRecord
       v-if="identity.canWrite.value"

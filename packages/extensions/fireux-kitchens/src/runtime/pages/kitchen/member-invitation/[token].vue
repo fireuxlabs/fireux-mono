@@ -67,7 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { refreshNuxtData, useFetch } from 'nuxt/app'
+
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -88,7 +89,7 @@ const {
   data: invitation,
   pending,
   error,
-} = await useLiveFetch<{
+} = await useFetch<{
   ok: true
   memberName: string
   expiresAt: string
@@ -97,7 +98,10 @@ const failure = computed(
   () =>
     actionFailure.value ||
     String(
-      (error.value?.data as { statusMessage?: unknown } | undefined)?.statusMessage || error.value?.message || ''
+      (error.value?.data as { statusMessage?: unknown } | undefined)
+        ?.statusMessage ||
+        error.value?.message ||
+        ''
     ).trim()
 )
 const authTo = computed(() => '/auth')
@@ -119,6 +123,15 @@ async function acceptInvitation() {
       memberName: string
       memberId: string
     }>(endpoint.value, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: `Bearer ${authToken}` },
     })

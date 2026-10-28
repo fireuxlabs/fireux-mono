@@ -6,14 +6,12 @@ import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.m
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PORTFOLIO_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+} from 'fireux-core/runtime/app/utils/entity-management'
 
 export async function readPortfolioMutationActor(event: H3Event) {
   const fireux = useFireUXConfig(event)
@@ -39,7 +37,7 @@ export async function requirePortfolioMutationAuthority(
   portfolioId: string
 ) {
   const [root, membership, access] = await Promise.all([
-    tx.read(FIRESTORE_MUTATION_TARGETS.portfolios, portfolioId),
+    tx.read(PORTFOLIO_MUTATION_TARGETS.portfolios, portfolioId),
     tx.read(serverAppUsersTarget(actor.runtimeAppId), actor.uid),
     tx.read(serverPortfolioAccessTarget(actor.runtimeAppId), actor.uid),
   ])

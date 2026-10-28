@@ -1,15 +1,20 @@
-import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
-import { createError, setResponseHeaders, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
 import type { DetailResponse } from '../../../models/utils/directory'
 import type { UserIdentitySummary } from '../../../user/models/user-directory.model.ts'
 import { readUserIdentitySummary } from '../../../user/server/identity/summary'
 
-const CACHE_CONTROL =
-  'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
 
-export default defineLiveReadHandler(async (event: H3Event) => {
   const userId = requireFirestoreDocumentId(
     event.context.params?.userId,
     'User id'
@@ -29,7 +34,7 @@ export default defineLiveReadHandler(async (event: H3Event) => {
 
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': CACHE_CONTROL,
+    'Cache-Control': 'no-store',
   })
 
   const response: DetailResponse<UserIdentitySummary> = {

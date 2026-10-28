@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -70,6 +71,15 @@ export function useKitchenWorkspaceColours() {
       const result = await $fetch<{ ok: true; kitchen_id: string }>(
         '/api/workspace/kitchen/theme',
         {
+          onResponse: async ({ options, response }) => {
+            if (
+              response.ok &&
+              !['GET', 'HEAD'].includes(
+                String(options.method || 'GET').toUpperCase()
+              )
+            )
+              await refreshNuxtData()
+          },
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body,

@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { ref, watch, type WatchSource } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
@@ -59,6 +60,15 @@ export function useKitchenIngredientUpdate(ownerSources: WatchSource[] = []) {
       kitchenId: string
       ingredientId: string
     }>(`/api/workspace/kitchen/ingredients/${action}`, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: { kitchenId, ingredientId },

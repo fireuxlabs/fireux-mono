@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -43,6 +43,9 @@ function setup() {
     computed,
     watch,
     useDishEditorScope,
+    useKitchenWorkspace: () => ({ id: kitchenId, outcome: ref('ready'), data: ref({ id: 'k' }) }),
+    useRouteParam: () => dishId,
+    useKitchenDishesContext: () => ({ catalogue: { singular: 'dish', path: '/dishes' } }),
     onBeforeUnmount: (fn) => unmount.push(fn),
     useToastify: () => ({ add: (value) => notices.push(value) }),
     URL: { revokeObjectURL() {}, createObjectURL: () => 'blob' },
@@ -161,7 +164,7 @@ test('Menu name flow stops before placement on destination change; failed placem
       component('FoodAndDrink/Menus/Items/Add/ByName'),
       {
         ...h.deps,
-        useKitchenWorkspaceMenuSection: () => ({
+        useMenuSection: () => ({
           kitchenId: h.kitchenId,
           menuId,
           sectionId,
@@ -210,7 +213,7 @@ test('delete does not navigate or toast after record changes, including same-tic
         ready: ref(true),
         error: ref(null),
       }),
-      useKitchenWorkspaceDish: () => ({
+      useKitchenDishDetail: () => ({
         kitchenId: h.kitchenId,
         dishId: h.dishId,
         dish: ref({ name: 'Pizza' }),
@@ -244,7 +247,7 @@ test('description proposal snapshots its body and never dispatches after focus c
         ...h.deps,
         useAuth: () => ({ currentUser: h.currentUser }),
         useFireUXConfig: () => ({ appId: 'app' }),
-        useKitchenWorkspaceDish: () => ({
+        useKitchenDishDetail: () => ({
           kitchenId: h.kitchenId,
           dishId: h.dishId,
           canWrite: ref(true),
@@ -323,7 +326,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     {
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
-      useKitchenWorkspaceDish: () => identity,
+      useKitchenDishDetail: () => identity,
       useDishUpdate: () => ({ updateDish: () => pending.promise }),
       useDishImageUpload: () => ({ uploadDishImage: async () => {} }),
     },
@@ -343,7 +346,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     {
       ...h.deps,
       useRoute: () => ({ query: {} }),
-      useKitchenWorkspaceDish: () => identity,
+      useKitchenDishDetail: () => identity,
       useKitchenIngredients: () => ({ ingredients: ref([]), error: ref(null) }),
       useKitchenPrepItems: () => ({ prepItems: ref([]), error: ref(null) }),
       useKitchenRecipeCollection: () => ({
@@ -403,7 +406,7 @@ test('Surviving Dish route completes its live removal but rejects external inten
           },
         }),
         navigateTo: async (x) => navigations.push(x),
-        useKitchenWorkspaceDish: () => ({
+        useKitchenDishDetail: () => ({
           dish,
           dishId: h.dishId,
           kitchenId: h.kitchenId,
@@ -459,7 +462,7 @@ for (const state of ['loading', 'error', 'referenced']) {
           ready: ref(state === 'referenced'),
           error: ref(state === 'error' ? Error('Unavailable') : null),
         }),
-        useKitchenWorkspaceDish: () => ({
+        useKitchenDishDetail: () => ({
           kitchenId: h.kitchenId,
           dishId: h.dishId,
           dish: ref({ name: 'Pizza' }),
@@ -493,7 +496,7 @@ test('Menu entry removal captures scope and suppresses obsolete completion', asy
       ...h.deps,
       window: { confirm: () => true },
       useMenuRecordNavigation: () => ({ rememberView() {} }),
-      useKitchenWorkspaceMenuSection: () => ({
+      useMenuSection: () => ({
         kitchenId: h.kitchenId,
         menuId,
         sectionId,
@@ -534,7 +537,7 @@ test('item moves disable list boundaries and discard obsolete completion', async
     {
       ...h.deps,
       useMenuRecordNavigation: () => ({ rememberView() {} }),
-      useKitchenWorkspaceMenuSection: () => ({
+      useMenuSection: () => ({
         kitchenId: h.kitchenId,
         menuId,
         sectionId,
@@ -596,7 +599,7 @@ test('Menu new-name creation asks for each price and preserves an explicit zero'
   const h = setup(), drafts = [], placements = []
   const api = evaluate(component('FoodAndDrink/Menus/Items/Add/ByName'), {
     ...h.deps,
-    useKitchenWorkspaceMenuSection: () => ({
+    useMenuSection: () => ({
       kitchenId: h.kitchenId, menuId: ref('menu'), sectionId: ref('section'),
       dishes: ref([]), itemRows: ref([]), canWrite: ref(true),
       createItem: async input => placements.push(input),

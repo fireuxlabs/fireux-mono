@@ -1,6 +1,6 @@
 # Pages
 
-Updated: 2026-10-25
+Updated: 2026-10-26
 Ref: ce2861c77
 Role: map, not canon
 
@@ -34,9 +34,10 @@ Map how route pages should be built and where consensus is still forming.
   selects Core's Workspace composition, whose page frame owns the nested
   `<NuxtPage />` outlet. Workspace pages provide route content.
 - Core supplies the app-wide Nuxt page transition and disables it for Workspace
-  routes through
+  routes and routes using the Dashboard layout through
   [pages-config.ts](../../packages/core/fireux-core/src/config/module/pages-config.ts)
-  so the shared frame remains mounted. Do not re-enable per-page transitions
+  so shared Workspace frames stay mounted and fragment-based Dashboard pages
+  remain unanimated. Do not re-enable per-page transitions
   without a proved route contract.
 - A rendered page must compile to one real root node when Nuxt page transitions
   are active.

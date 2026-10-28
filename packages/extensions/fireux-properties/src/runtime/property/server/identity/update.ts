@@ -1,7 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { canonicalPropertyRoot } from '../../utils/normalize-property'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PROPERTY_MUTATION_TARGETS } from '../mutation-targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
@@ -76,7 +76,7 @@ export async function updatePropertyIdentity(event: H3Event, input: unknown) {
         statusCode: 409,
         statusMessage: 'Property source is invalid.',
       })
-    tx.update(FIRESTORE_MUTATION_TARGETS.properties, propertyId, {
+    tx.update(PROPERTY_MUTATION_TARGETS.properties, propertyId, {
       ...changes,
       updated: serverAuditStamp({ by: actor.uid }),
     })

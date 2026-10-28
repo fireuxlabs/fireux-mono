@@ -1,3 +1,4 @@
+import type { RouteLocationNormalizedLoadedGeneric } from 'vue-router'
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -11,7 +12,7 @@ import {
 
 export function useMenuExit() {
   const fireux = useFireUXConfig()
-  const route = useRoute()
+  const route: RouteLocationNormalizedLoadedGeneric = useRoute()
   const kitchenSlug = computed(() => {
     const value = route.params.slug
 

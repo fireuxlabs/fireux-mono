@@ -1,6 +1,6 @@
 # Entity Collection Page family
 
-Updated: 2026-09-15
+Updated: 2026-10-25
 Ref: 61105afdf
 Role: map, not canon
 
@@ -23,7 +23,9 @@ Main Entity page coordinators compose Core
 `runtime/composables/shared/useCollectionPage.ts` over their existing reader.
 The explicit source has records, outcome and error; optional pagination supplies
 its existing flags and load-more operation. Shared code builds presentation,
-not queries or SEO. Domain coordinators retain records, scope, copy, SEO and
+not queries, outcome reclassification or SEO. The reader supplies the authoritative
+outcome and distinguishes failed pagination from a later independent read failure.
+Retained rows alone never establish readiness. Domain coordinators retain records, scope, copy, SEO and
 specialized interaction state; routes retain metadata and visible composition.
 Menu keeps its search/service controls mounted and owns contextual empty results.
 Non-paginated pages do not manufacture a load-more command.
@@ -35,7 +37,11 @@ They consume `useAppCollectionPage` for one acquisition, state/pagination/debug
 groups and SEO over the same records. Core uses ecosystem scope; FireUX's
 `usePlatformAppsPage` owns platform copy and structured SEO policy. The default
 layout provides its container; the full-width framework layout uses explicit
-route framing. The custom FirePage and FireCollectionPage renderers are retired.
+route framing. App-aware structured SEO builders receive the same reader’s
+records only when supplied. Without a builder, ordinary `useSeo` JSON-LD input
+(including refs/getters) remains intact; builder precedence stays with `useSeo`.
+The shared page supplies the reader’s load-more operation without a second
+return override. The custom FirePage and FireCollectionPage renderers are retired.
 
 ## FireUX composed lasagne
 
@@ -43,24 +49,34 @@ The accepted flat index-page arrangement is **fireux-composed-lasagne**:
 
 ```text
 route
-├── definePageMeta and useSeo
-├── acquire canonical Entity collection
+├── definePageMeta
+├── useXCollectionPage
+│   ├── existing Entity reader: acquisition, scope, outcome and pagination
+│   ├── domain copy and SEO over those same records
+│   └── useCollectionPage: presentation of the supplied facts
 └── UPage
+    ├── UPageHeader or EntityHero
     └── UPageBody
-        ├── EntityHero
-        ├── EntityCurrent      # only when a real current Entity exists
-        ├── EntityCreate
+        ├── FireState
+        ├── EntityCurrent?     # only when a real current Entity exists
+        ├── EntityCreate?      # only when a real creation doorway exists
         ├── EntityCollection   # receives the named plural Entity prop
-        ├── FireCollectionPagination? # route-owned acquisition control
-        └── FireDiagnosticsDebugPanel      # dev-only acquisition diagnostics
+        ├── FireCollectionPagination?
+        └── FireDiagnosticsDebugPanel
 ```
 
-The route owns metadata, SEO, route policy, acquisition, and visible
-composition. Kitchen and Menu browsing place their compact Create actions in
-the Hero’s links slot so discovery controls and records remain near the top.
-The introduction precedes `UPageBody`. It uses Nuxt UI's `UPage` and `UPageBody`; the layout already owns
-the semantic `main` and `UContainer`, so an index route does not repeat a
-`main`, maximum width, padding, or spacing utility shell.
+The route owns metadata, route policy and visible composition. Its named domain
+page coordinator acquires one reader and owns SEO; the reader owns acquisition,
+data scope, validity and pagination. The shared page helper presents that reader’s
+outcome unchanged, even when an older pagination error exists. Only the reader
+can establish that retained rows remain valid after a next-page failure.
+
+Kitchen and Menu browsing place compact Create actions in the Hero’s links slot.
+The introduction precedes `UPageBody`. Native Nuxt UI components and the existing
+layout provide framing; the default layout supplies `UContainer`, while the
+FireUX full-width framework route supplies its own container. Do not add another
+page engine or repeat spacing utility shells.
+
 The route composes Entity-owned components. The Collection entry lives at
 `runtime/<entity>/components/Collection/Index.vue`, beside its named List and
 other collection sections; Nuxt retains the `EntityCollection` name. Hero
@@ -120,7 +136,8 @@ current session. Create owns the concrete creation doorway. Collection presents
 the acquired records. The introduction and Collection are explicit in the audited
 index family. Current and Create appear when a real domain doorway exists. User deliberately renders Current or
 Create because one User identity is allowed; every other audited member renders
-Create directly. Pagination follows Collection and remains route-owned. The
+Create directly. Pagination follows Collection; its command and feedback remain reader-owned
+and are visibly composed by the route. The
 shared `FireCollectionPagination` is an acquisition control, not an Entity
 Collection child or page shell; it is rendered only where the reader currently
 supports pagination.
@@ -203,7 +220,7 @@ not drift.
   object into either Core's neutral `FireCollectionCell` or a proved Entity-owned
   Collection Cell. The latter owns presentation only; it does not fetch or
   change collection authority.
-- The route owns fetched-object/acquisition debug. `XCollectionList` owns the
+- The route renders the coordinator’s fetched-object/acquisition debug. `XCollectionList` owns the
   passed-interface/final-cell debug. Both use launcher-backed `FireDiagnosticsDebugPanel`
   and render only in development.
 - An included `XCreate` owns a real creation doorway. Do not invent one for
@@ -303,3 +320,24 @@ for Collection or a required section for every Entity.
 Supplier’s unconsumed Entry forwarding wrapper and Job’s unused Index Artwork
 and Promise remnants are retired. The live Job index remains route-owned
 Hero, Create, Collection and pagination composition.
+
+## App collection search and presentation
+
+App search explicitly uses name, short name, tagline, description and Ecosystem
+ID. Record IDs, private context, status, role and media URLs are not implicit
+search fields. Shared `useCollectionSearch` normalizes both explicit search text
+and its fallback consistently. The App Collection projects each visible App to
+its card once; searching does not project cards. Search filters only acquired
+records, and copy/counts disclose when more records remain unloaded.
+
+App Collection, its List and the shared collection cell use supported Nuxt UI
+props/slots and semantic CSS with design tokens. They contain no authored
+Tailwind utilities or utility-string `ui` recipes. Component registration owns
+the `FireCollectionCell` name; the App List does not re-import the component.
+
+Current bounded checks are Core `app-collection.test.mjs`,
+`collection-page.test.mjs`, `collection-reader-pagination.test.mjs`,
+`app-collection-search.test.mjs` and `collection-search.test.mjs`. They cover reader
+ownership, state precedence, pagination, scope changes, explicit search fields and
+projection counts. Nuxt owns ordinary API request/refresh behavior; these tests
+do not establish cross-browser pushed updates or live provider acceptance.

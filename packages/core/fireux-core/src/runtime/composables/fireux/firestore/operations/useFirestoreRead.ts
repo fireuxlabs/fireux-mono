@@ -20,6 +20,8 @@ import {
 } from 'firebase/firestore'
 import {
   computed,
+  getCurrentInstance,
+  onServerPrefetch,
   ref,
   shallowRef,
   unref,
@@ -138,6 +140,10 @@ function createServerFirestoreRead<T>(
   active: boolean | Ref<boolean>,
   kind: 'collection' | 'document'
 ): FirestoreReadRef<T> {
+  // VueFire registers this hook even for an inactive source. Preserve Vue's
+  // server/client ID boundary without starting a server-side Firestore read.
+  if (getCurrentInstance()) onServerPrefetch(() => undefined)
+
   const data = ref<T | undefined>(undefined) as Ref<T | undefined>
   const error = ref<unknown>()
   const pending = computed(() => Boolean(unref(active)))

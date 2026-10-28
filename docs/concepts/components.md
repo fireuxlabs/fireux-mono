@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-10-25
+Updated: 2026-10-28
 Ref: ce2861c77
 Role: map, not canon
 
@@ -112,13 +112,54 @@ Shared styles live in
 [workspace-surface.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-surface.scss).
 The authored utility rule still applies, and utility usage elsewhere remains
 migration debt; this shell change does not certify every connected component.
-Navbar retains its existing `ui` forwarding API, which does not permit callers
-to add authored utility overrides.
+WorkspaceNavbar accepts the page title and owns selected-identity and page
+actions. The separate Dashboard Navbar retains its existing `ui` forwarding;
+that does not permit authored utility overrides.
 
 Workspace grouping, routes, selection and domain capability placement belong in
 [workspace.md](workspace.md), [layouts](layouts.md) and
 [family-workspace-entity.md](family-workspace-entity.md). A navigation group
 does not create a data owner or require matching page anatomy across families.
+
+## Sharing page chrome
+
+Use the native control as the common foundation before introducing another
+FireUX frame. The [rendering map](layouts.md) records the App, layout, Workspace
+and Entity route boundaries.
+
+| Responsibility            | Current shared boundary                                                                                    | Remaining difference                                                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Public site header/footer | Core default and landing layouts already reuse their named Header and Footer; navigation comes from useNav | Framework, tenant and branded App headers retain real product framing                                                   |
+| Operational top bar       | Dashboard and Workspace both compose native UDashboardNavbar                                               | Dashboard owns account context; Workspace owns selected Entity identity, capability info, page JSON and Calendar access |
+| Subscription control      | Both operational bars consume UserSubscriptionControl                                                      | Placement follows the surface                                                                                           |
+| Notifications             | Both use the same User notification state and shared slideover                                             | UserNotificationsButton owns the badge, accessible label and open interaction; Dashboard retains its keyboard hint      |
+| Breadcrumbs               | Workspace owns its named route/navigation derivation and consumes native UBreadcrumb                       | Public Entity and Dashboard breadcrumb policy is not yet shared; resolved record labels remain with the owning reader   |
+| Page introduction         | Entity routes compose native UPageHeader or their named Hero/Detail                                        | A record introduction, collection introduction and operational context bar have different jobs                          |
+| Transitions               | Existing Core page policy uses native route metadata                                                       | Workspace and Dashboard remain unanimated; other page policy and genuine App differences remain explicit                |
+
+The App-owned [Connected ecosystems route](../../projects/fireux/fireux-app/app/pages/dashboard/connections.vue)
+uses native UDashboardNavbar directly, bypassing the shared Dashboard Navbar's
+subscription/notification controls. The reason for that difference is unproved;
+compare it with the common Dashboard contract before treating it as an exception.
+The Kitchen [Collection Header](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Collection/Header.vue)
+supplies content titles and actions for Ingredients, Recipes, Items, Menus and
+Promotions. It derives no route breadcrumbs; Core's Workspace frame owns the
+single trail. Domain controls and commands remain with those capabilities.
+
+[FireCollectionHeader](../../packages/core/fireux-core/src/runtime/components/Collection/Header.vue)
+already shares collection-section title and controls across Ingredient, Supplier,
+Property and Portfolio collections. Its h2 is a section heading, separate from
+the page's route heading. Reuse that proved boundary or native controls where
+appropriate rather than introducing a universal page/header wrapper.
+
+[UserNotificationsButton](../../packages/core/fireux-core/src/runtime/user/components/Notifications/Button.vue)
+shares the notification interaction between Dashboard and Workspace. It consumes
+the existing User notification state and opens the existing shared slideover;
+it adds no reader, account authority or notification-delivery mechanism. Reuse native navigation and breadcrumb controls;
+keep their items, identity, permissions and route context with their owners.
+Workspace content introductions must earn their place as content; do not repeat
+frame metadata merely to create another heading. Public Entity readers, SEO and
+commands stay independent of page chrome.
 
 ## Visible page composition
 
@@ -144,6 +185,15 @@ WorkspaceHero wrapper is retired.
 Info, selection, AI and availability sections are included for real domain
 responsibilities rather than a mandatory universal page scaffold. Their domain
 controllers retain lifecycle, scope and trusted commands.
+
+Project and Kitchen Identity compositions reuse the semantic
+[Workspace profile styles](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-profiles.scss).
+Project keeps its own identity summary, progress and guarded modal; Kitchen
+keeps Place-owned profile sections, brand media and listing controls. Kitchen's
+specialist media geometry remains scoped in its Profile component. These
+selected compositions use semantic classes and native control props; this does
+not certify every descendant editor or other Entity surface. Project's Read
+component emits its edit action to the named editor through an event.
 
 ## State presentation
 
@@ -200,3 +250,14 @@ paths and anchors, then finish with git diff --check.
 
 Keep this map focused on durable ownership and consumption. Put workflow detail
 in its family map and use Git history for superseded implementation snapshots.
+
+## Diagnostics display defaults
+
+`FireDiagnosticsDebugPanel` owns its generic title (`Debug`), empty explanatory
+context, included route context and collapsed launcher defaults. Supplied objects
+are `passed` by default; only a caller that owns acquisition should explicitly
+label them `fetched`. Callers may override display settings, including
+`:launcher="false"` for inline display and `:include-route="false"` to omit route
+context. Explicit `open`/`defaultOpen` behavior and development-only rendering
+remain supported. Collection-page coordinators supply only object and derived
+facts; they do not select diagnostic display defaults or assert acquisition.

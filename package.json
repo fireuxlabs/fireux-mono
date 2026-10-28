@@ -63,7 +63,16 @@
     "dev:kjordi": "pnpm --dir projects/sharer/kjordi dev",
     "kill:kjordi": "node tools/fireux-launcher/stop.mjs 3034",
     "gitsave": "bash .github/gitsave.sh",
-    "dev:richies": "pnpm --dir projects/werkbox/richies-reinigung dev"
+    "dev:richies": "pnpm --dir projects/werkbox/richies-reinigung dev",
+    "ide:sync": "node tools/ide/sync.mjs",
+    "ide:check": "node tools/ide/sync.mjs --check",
+    "check:changed": "node tools/ide/check.mjs check",
+    "lint:changed": "node tools/ide/check.mjs lint",
+    "format:changed": "node tools/ide/check.mjs format",
+    "check:scope": "node tools/ide/check.mjs check",
+    "test:scope": "node tools/ide/check.mjs test",
+    "typecheck:scope": "node tools/ide/check.mjs typecheck",
+    "test:unit": "node tools/ide/unit.mjs"
   },
   "engines": {
     "node": ">=22.23 <23",

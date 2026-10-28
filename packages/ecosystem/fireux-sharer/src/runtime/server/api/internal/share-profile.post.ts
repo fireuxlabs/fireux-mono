@@ -3,10 +3,8 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverAppUsersTarget,
-  serverShareProfilesTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/server-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverShareProfilesTarget } from '../../share-profile-target'
 import type { ShareProfileLink } from '../../../share-profile/models/share-profile.model'
 
 function fail(statusCode: number, statusMessage: string): never {

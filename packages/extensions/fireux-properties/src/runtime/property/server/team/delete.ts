@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { serverPropertyTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverPropertyTeamMembersTarget } from '../mutation-targets'
 import {
   readPropertyMutationActor,
   requirePropertyMutationAuthority,

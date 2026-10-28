@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import type { WatchSource } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -5,7 +6,7 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import type { KitchenUpdateInput } from '../../models/kitchen-input.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -49,6 +50,15 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
     const result = await $fetch<{ ok: true; kitchen_id: string }>(
       '/api/workspace/kitchen/update',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body: { kitchen_id: id, patch: changes },

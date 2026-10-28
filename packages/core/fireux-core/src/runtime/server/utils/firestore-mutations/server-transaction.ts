@@ -6,9 +6,10 @@ import type {
 } from 'firebase-admin/firestore'
 import type {
   FirestoreDatabasePlacement,
+  FirestoreReadTarget,
   FirestoreMutationTarget,
 } from '../../../types/firestore-mutations'
-import { assertFirestoreMutationVerb } from '../../../utils/firestore-mutations/targets'
+import { assertFirestoreMutationVerb } from '../../../utils/firestore-mutations/target-definition'
 import { assertFirestoreMutationSegment } from '../../../utils/firestore-mutations/target-definition'
 import {
   getRuntimeFirestore,
@@ -43,20 +44,20 @@ export function defineGuardedServerCollectionGroupTarget(input: {
 
 export type GuardedServerTransaction = Readonly<{
   read<T extends DocumentData>(
-    target: FirestoreMutationTarget<string, 'server'>,
+    target: FirestoreReadTarget,
     id: string
   ): Promise<{ exists: boolean; data: T | undefined }>
   readMany<T extends DocumentData>(
-    target: FirestoreMutationTarget<string, 'server'>,
+    target: FirestoreReadTarget,
     ids: readonly string[]
   ): Promise<Array<{ id: string; exists: boolean; data: T | undefined }>>
   readAll<T extends DocumentData>(
-    target: FirestoreMutationTarget<string, 'server'>,
+    target: FirestoreReadTarget,
     limit: number,
     afterId?: string
   ): Promise<Array<{ id: string; data: T }>>
   query<T extends DocumentData>(
-    target: FirestoreMutationTarget<string, 'server'>,
+    target: FirestoreReadTarget,
     input: {
       field: string
       op: '==' | 'array-contains' | 'in'
@@ -83,7 +84,7 @@ export type GuardedServerTransaction = Readonly<{
     id: string,
     data: UpdateData<T>
   ): void
-  delete(target: FirestoreMutationTarget<string, 'server'>, id: string): void
+  delete(target: FirestoreReadTarget, id: string): void
 }>
 
 function samePlacement(
@@ -114,11 +115,15 @@ export function runGuardedServerTransaction<T>(
             : undefined
         )
   const ref = (
-    target: FirestoreMutationTarget<string, 'server'>,
+    target: FirestoreReadTarget,
     verb: 'create' | 'update' | 'delete' | undefined,
     id: string
   ) => {
-    if (verb) assertFirestoreMutationVerb(target, 'server', verb)
+    if (verb) {
+      if (!('verbs' in target) || !('lane' in target))
+        throw new Error(`Read target ${target.key} does not authorize mutations.`)
+      assertFirestoreMutationVerb(target as FirestoreMutationTarget, 'server', verb)
+    }
     if (!samePlacement(placement, target.database))
       throw new Error(
         `Transaction placement does not own target ${target.key}.`
@@ -128,7 +133,7 @@ export function runGuardedServerTransaction<T>(
   return database.runTransaction(async (raw: Transaction) =>
     work({
       async read<T extends DocumentData>(
-        target: FirestoreMutationTarget<string, 'server'>,
+        target: FirestoreReadTarget,
         id: string
       ) {
         const snapshot = await raw.get(ref(target, undefined, id))
@@ -138,7 +143,7 @@ export function runGuardedServerTransaction<T>(
         }
       },
       async readMany<T extends DocumentData>(
-        target: FirestoreMutationTarget<string, 'server'>,
+        target: FirestoreReadTarget,
         ids: readonly string[]
       ) {
         const snapshots = await raw.getAll(
@@ -151,7 +156,7 @@ export function runGuardedServerTransaction<T>(
         }))
       },
       async readAll<T extends DocumentData>(
-        target: FirestoreMutationTarget<string, 'server'>,
+        target: FirestoreReadTarget,
         limit: number,
         afterId?: string
       ) {
@@ -173,7 +178,7 @@ export function runGuardedServerTransaction<T>(
         }))
       },
       async query<T extends DocumentData>(
-        target: FirestoreMutationTarget<string, 'server'>,
+        target: FirestoreReadTarget,
         input: {
           field: string
           op: '==' | 'array-contains' | 'in'

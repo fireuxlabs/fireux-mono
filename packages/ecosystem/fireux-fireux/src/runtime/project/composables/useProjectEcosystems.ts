@@ -1,6 +1,7 @@
+import { useAsyncData } from 'nuxt/app'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 
@@ -19,15 +20,17 @@ export function useProjectEcosystems(
     () =>
       `project-ecosystems:${currentUser.value?.uid || ''}:${projectId.value}`
   )
-  const source = useLiveAsyncData(
+  const source = useAsyncData(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const requestKey = key.value
       const requestId = projectId.value
       const user = currentUser.value
       if (!active.value || !user) return null
       const token = await user.getIdToken()
-      const result = await liveFetch<{
+      const result = await fetchRead<{
         project_id: string
         ecosystems: Ecosystem[]
       }>(

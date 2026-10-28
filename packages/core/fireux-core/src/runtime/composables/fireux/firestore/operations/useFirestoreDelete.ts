@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFirestoreResolver } from '../vuefire'
 import type { Ref } from 'vue'
@@ -19,6 +20,7 @@ export function useFirestoreDelete(options: UseFirestoreDeleteOptions = {}) {
     if (!documentId) throw new Error('Firestore document id is required.')
     const ref = doc(resolveDb(), path, documentId)
     await deleteDoc(ref)
+    await refreshNuxtData()
   }
 
   return { deleteDocument }

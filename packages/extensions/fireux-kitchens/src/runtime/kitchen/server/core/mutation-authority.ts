@@ -6,11 +6,9 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 export async function readKitchenMutationActor(event: H3Event) {
   const fireux = useFireUXConfig(event)
   const runtimeAppId = requireFirestoreDocumentId(
@@ -44,7 +42,7 @@ export async function requireKitchenRecordMutationAuthority(
 ) {
   const runtimeMemberships = serverAppUsersTarget(actor.runtimeAppId)
   const [root, runtimeMembership, access] = await Promise.all([
-    mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+    mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
     mutations.read(runtimeMemberships, actor.uid),
     mutations.read(serverKitchenAccessTarget(), actor.uid),
   ])
@@ -97,7 +95,7 @@ export async function requireKitchenMutationAuthority(
     kitchenId
   )
   const place = await mutations.read(
-    FIRESTORE_MUTATION_TARGETS.places,
+    PLACE_MUTATION_TARGETS.places,
     kitchenId
   )
   if (!place.exists) {

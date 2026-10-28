@@ -1,17 +1,19 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 
-import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Ecosystem } from '../models/ecosystem.model'
 
 export function useEcosystemDetail(id: MaybeRefOrGetter<string>) {
   const ecosystemId = computed(() => String(toValue(id) || '').trim())
-  const state = useLiveAsyncData<{ ecosystem: Ecosystem } | null>(
+  const state = useAsyncData<{ ecosystem: Ecosystem } | null>(
     () => `ecosystem-detail-${ecosystemId.value || 'none'}`,
-    (liveFetch) =>
-      ecosystemId.value
-        ? liveFetch(`/api/ecosystems/${encodeURIComponent(ecosystemId.value)}`)
-        : null,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return ecosystemId.value
+        ? fetchRead(`/api/ecosystems/${encodeURIComponent(ecosystemId.value)}`)
+        : null
+    },
     { server: true, watch: [ecosystemId] }
   )
 

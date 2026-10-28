@@ -42,11 +42,6 @@ service cloud.firestore {
         access.ids == access.ids.join('/').split('/')
           ? currentKitchenMembership(app, access) : false;
     }
-    function kitchenAccess(app, kitchen) {
-      let index = get(/databases/$(database)/documents/kitchen_access/$(request.auth.uid)).data;
-      return validKitchenIndex(index)
-        ? kitchenGrantAccess(app, kitchen, index.apps.get(app, {})) : false;
-    }
     function kitchenMember(kitchen) {
       let index = signedIn()
         ? get(/databases/$(database)/documents/kitchen_access/$(request.auth.uid)).data : {};
@@ -70,20 +65,10 @@ service cloud.firestore {
     }
     function text(value, max) { return value is string && value.size() <= max; }
     function id(value) { return text(value, 1500) && value.size() > 0 && !value.matches('.*[/].*'); }
-    function created(kitchen) {
-      let data = request.resource.data;
-      return exists(/databases/$(database)/documents/kitchens/$(kitchen)) && data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
-        data.created.at == request.time && data.created.by == request.auth.uid &&
-        knownApp(data.created.app_id) &&
-        kitchenAccess(data.created.app_id, kitchen) && updated();
-    }
     function updated() {
       return request.resource.data.updated.keys().hasOnly(['at', 'by']) &&
         request.resource.data.updated.at == request.time &&
         request.resource.data.updated.by == request.auth.uid;
-    }
-    function edit(fields) {
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields.concat(['updated'])) && updated();
     }
     function anyAppAdmin() {
       return admin('misebox-app') || admin('baeren-ringgenberg') || admin('friiites') ||
@@ -197,132 +182,17 @@ service cloud.firestore {
     match /kitchens/{kitchen} {
       allow get: if guestRoot(kitchen) || kitchenMember(kitchen);
       allow list: if kitchenMember(kitchen);
-      // Root deletion is the existing one-record CRUD operation; no cascade.
-      allow delete: if kitchenMember(kitchen);
-
+      // Kitchen mutations belong to trusted commands. No browser root deletion.
+      // Browser permissions must not bypass their authority or invariants.
       match /{collection}/{record} {
         allow read: if collection in ['dishes', 'recipes', 'prep-items', 'stations',
           'ingredients', 'suppliers', 'supplier-ingredients', 'menus', 'orders',
           'sales', 'team', 'roles', 'waste-events', 'tests', 'offerings'] && kitchenOperator(kitchen);
       }
       match /fulfilment/policy { allow get: if kitchenOperator(kitchen); }
-
-      match /dishes/{dish} {
-        function validDish(d) {
-          return d.keys().hasAll(['kitchen_id', 'name', 'slug', 'description', 'item_kind', 'is_deal', 'is_flagship', 'image', 'created', 'updated']) &&
-            d.keys().hasOnly(['kitchen_id', 'name', 'slug', 'description', 'item_kind', 'is_deal', 'is_flagship', 'image', 'category', 'spec', 'created', 'updated']) &&
-            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 && id(d.slug) &&
-            text(d.description, 10000) && d.item_kind in ['food', 'drink'] &&
-            d.is_deal is bool && d.is_flagship is bool && text(d.image, 2000) &&
-            (!('category' in d) || d.category in ['main', 'side', 'vegetable', 'salad', 'soup', 'dessert', 'sauce', 'bread', 'cheese']) &&
-            (!('spec' in d) || (d.spec is map && d.spec.keys().hasOnly(['portion', 'station', 'ingredients', 'prep_items', 'recipe_ids', 'assembly', 'source_note']) &&
-              d.spec.portion is number && d.spec.portion > 0 && text(d.spec.station, 200) &&
-              d.spec.ingredients is list && d.spec.ingredients.size() <= 100 &&
-              d.spec.prep_items is list && d.spec.prep_items.size() <= 100 &&
-              d.spec.recipe_ids is list && d.spec.recipe_ids.size() <= 100 &&
-              d.spec.assembly is list && d.spec.assembly.size() <= 100 && text(d.spec.source_note, 5000)));
-        }
-        allow create: if signedIn() && validDish(request.resource.data) && created(kitchen) && request.resource.data.image == '';
-        allow update: if kitchenOperator(kitchen) && validDish(request.resource.data) && edit(['name', 'slug', 'description', 'category', 'spec']);
-        allow delete: if kitchenOperator(kitchen);
-      }
-      match /stations/{station} {
-        function validStation(d) {
-          return d.keys().hasOnly(['kitchen_id', 'name', 'description', 'active', 'sort_order', 'created', 'updated']) &&
-            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 &&
-            text(d.description, 5000) && d.active is bool && d.sort_order is number;
-        }
-        allow create: if signedIn() && validStation(request.resource.data) && created(kitchen);
-        allow update: if kitchenOperator(kitchen) && validStation(request.resource.data) && edit(['name', 'description', 'active', 'sort_order']);
-        allow delete: if kitchenOperator(kitchen);
-      }
-      match /recipes/{recipe} {
-        function validRecipe(d) {
-          return d.keys().hasOnly(['kitchen_id', 'name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'preparation', 'created', 'updated']) &&
-            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 && id(d.slug) &&
-            text(d.description, 10000) && text(d.source_language, 35) &&
-            d.names is map && d.names.size() <= 30 && d.descriptions is map && d.descriptions.size() <= 30 &&
-            (!('preparation' in d) || (d.preparation is map &&
-              d.preparation.keys().hasOnly(['status', 'yield', 'ingredients', 'prep_items', 'method', 'source_note']) &&
-              d.preparation.status in ['draft', 'ready'] && d.preparation.yield is map &&
-              d.preparation.yield.keys().hasOnly(['quantity', 'unit']) &&
-              d.preparation.yield.quantity is number && d.preparation.yield.quantity > 0 && text(d.preparation.yield.unit, 40) &&
-              d.preparation.ingredients is list && d.preparation.ingredients.size() <= 100 &&
-              d.preparation.prep_items is list && d.preparation.prep_items.size() <= 100 &&
-              d.preparation.method is list && d.preparation.method.size() <= 100 && text(d.preparation.source_note, 2000)));
-        }
-        allow create: if signedIn() && validRecipe(request.resource.data) && created(kitchen);
-        allow update: if kitchenOperator(kitchen) && validRecipe(request.resource.data) && edit(['name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'preparation']);
-        allow delete: if kitchenOperator(kitchen);
-      }
-      match /prep-items/{prep} {
-        function validPrep(d) {
-          return d.keys().hasOnly(['kitchen_id', 'name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'station', 'inputs', 'recipe_id', 'yield', 'method', 'created', 'updated']) &&
-            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 && id(d.slug) &&
-            text(d.description, 10000) && text(d.source_language, 35) &&
-            d.names is map && d.names.size() <= 30 && d.descriptions is map && d.descriptions.size() <= 30 &&
-            text(d.station, 200) && text(d.recipe_id, 1500) &&
-            d.inputs is list && d.inputs.size() <= 100 && d.method is list && d.method.size() <= 100 &&
-            d.yield is map && d.yield.keys().hasOnly(['quantity', 'unit']) && d.yield.quantity is number && d.yield.quantity >= 0 &&
-            d.yield.unit in ['g', 'ml', 'each', 'portion', ''];
-        }
-        allow create: if signedIn() && validPrep(request.resource.data) && created(kitchen);
-        allow update: if kitchenOperator(kitchen) && validPrep(request.resource.data) && edit(['name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'station', 'inputs', 'recipe_id', 'yield', 'method']);
-        allow delete: if kitchenOperator(kitchen);
-      }
-      match /waste-events/{record} {
-        function validWaste(d) {
-          return d.keys().hasOnly(['kitchen_id', 'item_name', 'quantity', 'unit', 'reason', 'source', 'occurred_at', 'notes', 'created', 'updated']) &&
-            d.kitchen_id == kitchen && text(d.item_name, 300) && d.item_name.size() > 0 &&
-            d.quantity is number && d.quantity > 0 && d.quantity <= 1000000 &&
-            text(d.unit, 80) && d.unit.size() > 0 && text(d.notes, 5000) && d.occurred_at == request.time &&
-            d.reason in ['spoilage', 'preparation', 'overproduction', 'cooking_error', 'returned', 'other'] &&
-            d.source in ['storage', 'prep', 'production', 'service', 'customer_return', 'other'];
-        }
-        allow create: if signedIn() && validWaste(request.resource.data) && created(kitchen);
-      }
-      match /supplier-ingredients/{record} {
-        function validLink(d) {
-          return d.keys().hasOnly(['kitchen_id', 'supplier_id', 'ingredient_id', 'created', 'updated']) &&
-            d.kitchen_id == kitchen && id(d.supplier_id) && id(d.ingredient_id);
-        }
-        allow create: if signedIn() && validLink(request.resource.data) && created(kitchen);
-        allow update: if kitchenOperator(kitchen) && validLink(request.resource.data) && edit(['supplier_id', 'ingredient_id']);
-        allow delete: if kitchenOperator(kitchen);
-      }
-      match /menus/{menu} {
-        function validMetadata(d) {
-          return text(d.get('description', ''), 10000) && d.sort_order is number &&
-            (!('doc' in d) || (d.doc is map && d.doc.keys().hasOnly(['url', 'name', 'type', 'storage_path']) &&
-              text(d.doc.url, 4000) && text(d.doc.name, 500) && text(d.doc.type, 200) && text(d.doc.storage_path, 2000)));
-        }
-        // Names/slugs, capacity, schedule and publication use trusted commands.
-        allow update: if kitchenOperator(kitchen) && validMetadata(request.resource.data) && edit(['description', 'sort_order', 'doc']);
-        allow delete: if kitchenOperator(kitchen);
-        match /sections/{section} {
-          allow read: if kitchenOperator(kitchen);
-          function validSection(d) {
-            return d.keys().hasOnly(['kitchen_id', 'menu_id', 'label', 'description', 'status', 'sort_order', 'date', 'created', 'updated']) &&
-              d.kitchen_id == kitchen && d.menu_id == menu && text(d.label, 300) && d.label.size() > 0 &&
-              text(d.description, 5000) && d.status in ['active', 'archived'] && d.sort_order is number &&
-              (!('date' in d) || (text(d.date, 10) && d.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')));
-          }
-          allow create: if signedIn() && validSection(request.resource.data) && created(kitchen) &&
-            get(/databases/$(database)/documents/kitchens/$(kitchen)/menus/$(menu)).data.get('schedule', 'regular') != 'daily' && !('date' in request.resource.data);
-          allow update: if kitchenOperator(kitchen) && validSection(request.resource.data) && edit(['label', 'description', 'status', 'sort_order']);
-          match /items/{item} {
-            allow read: if kitchenOperator(kitchen);
-            function validItem(d) {
-              return d.keys().hasOnly(['kitchen_id', 'menu_id', 'section_id', 'dish_id', 'price', 'price_options', 'add_ons', 'status', 'sort_order', 'created', 'updated']) &&
-                d.kitchen_id == kitchen && d.menu_id == menu && d.section_id == section && id(d.dish_id) &&
-                d.price is number && d.price >= 0 && d.price <= 1000000 && d.sort_order is number &&
-                d.status == 'active' && d.price_options == [] && d.add_ons == [];
-            }
-            allow create: if signedIn() && validItem(request.resource.data) && created(kitchen) &&
-              exists(/databases/$(database)/documents/kitchens/$(kitchen)/menus/$(menu)/sections/$(section)) &&
-              exists(/databases/$(database)/documents/kitchens/$(kitchen)/dishes/$(request.resource.data.dish_id));
-          }
-        }
+      match /menus/{menu}/sections/{section} {
+        allow read: if kitchenOperator(kitchen);
+        match /items/{item} { allow read: if kitchenOperator(kitchen); }
       }
     }
     // Server projections own public discovery and private integration records.

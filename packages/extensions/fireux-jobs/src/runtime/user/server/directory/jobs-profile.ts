@@ -6,8 +6,8 @@ import type {
   ProfileDirectoryConfig,
   ProfileDirectoryMapper,
 } from 'fireux-core/runtime/user/server/directory/profile-directory'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/https-url'
 import { ProfessionalConstraints } from '../../utils/profiles/Professional/professional'
 
 function text(value: unknown, max: number): string {

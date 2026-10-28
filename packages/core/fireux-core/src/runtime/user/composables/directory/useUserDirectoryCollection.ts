@@ -1,6 +1,7 @@
+import { useAsyncData } from 'nuxt/app'
 import { computed, ref } from 'vue'
-import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
-import { readLivePages } from '../../../composables/fireux/firestore/readLivePages'
+
+import { readPages } from '../../../composables/http/readPages'
 import { resolveReadOutcome } from '../../../utils/read-outcome'
 import type { CollectionPage } from '../../../models/utils/directory'
 import type { User } from '../../models/user.model'
@@ -9,9 +10,12 @@ import type { User } from '../../models/user.model'
 export function useUserDirectoryCollection(appId: string) {
   const pageCount = ref(1)
   const loadingMore = ref(false)
-  const state = useLiveAsyncData<CollectionPage<User>>(
+  const state = useAsyncData<CollectionPage<User>>(
     `user-directory:${appId}`,
-    (fetch) => readLivePages(fetch, '/api/users?limit=25', pageCount.value)
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return readPages(fetchRead, '/api/users?limit=25', pageCount.value)
+    }
   )
   const users = computed(() =>
     state.error.value ? [] : (state.data.value?.items ?? [])

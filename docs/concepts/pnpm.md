@@ -1,7 +1,7 @@
 # pnpm concept map
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-26
+Ref: cf2413355
 Role: map, not canon
 
 ## Purpose
@@ -23,8 +23,10 @@ commands. Each package owns its runtime dependencies and local scripts.
 
 The desktop launcher discovers Apps and ports through
 `tools/fireux-launcher/apps.mjs`. Root dev shortcuts invoke App-owned commands.
-VS Code launch entries and toolbar presentation are maintained directly.
-There is no App registry or synchronization generator.
+The toolbar consumes this discovery and keeps only display metadata locally.
+`tools/ide/sync.mjs` derives VS Code tasks, launch entries and root-based
+workspaces from App manifests; `pnpm ide:check` detects drift. See the
+[IDE workflow](../../tools/ide/README.md) for focused checks and debugging.
 
 ## Commands
 
@@ -36,6 +38,11 @@ There is no App registry or synchronization generator.
 - `pnpm build:nuxt-baseline`: build FireUX Blank.
 - `pnpm typecheck:packages` and `pnpm typecheck:apps`: broader checks.
 - `pnpm lint`: run the current ESLint configuration.
+- `pnpm check:changed`: check changed files and their direct owners.
+- `pnpm check:scope <path>`, `pnpm test:scope <path>` and
+  `pnpm typecheck:scope <path>`: check one owner.
+- `pnpm test:unit`: run the bounded offline Core and IDE suite.
+- `pnpm ide:sync` / `pnpm ide:check`: update / verify generated IDE files.
 - `pnpm gitsave`: stage all changes, commit, and push through
   `.github/gitsave.sh`; run only when the user requests a save and the shared
   tree is stable. It does not run the deleted guard suite.
@@ -56,6 +63,7 @@ Reuse healthy development servers. Direct Nuxt commands do not provide the old
 smoke wrapper's port ownership and readiness checks. Do not stop an occupied
 port merely to make a new command succeed.
 
-The current CI workflow is `.github/workflows/ci.yml`; it runs package typing,
-lint, package builds, and the baseline App build. No shape workflow or script
+The current CI workflow is `.github/workflows/ci.yml`; it verifies generated IDE
+configuration, runs the bounded offline unit suite, package typing, lint,
+package builds, and the baseline App build. No shape workflow or script
 lifecycle guard remains.

@@ -60,57 +60,29 @@ remains valid when its product surface has no server-owned behaviour; empty
 folder symmetry is not required. The complete visible capability map is owned
 by `docs/concepts/workspace.md`.
 
-## Mutable read transport
+## API reads and refresh
 
-Core `server/utils/http/defineLiveReadHandler.ts` preserves an endpoint's normal
-JSON response and supports a same-origin live client using `Accept:
-text/event-stream`. Core `server/utils/firestore/live-read.ts` observes the
-Admin SDK reads made through the participating database resolvers within that
-request. Changes rerun the same domain handler, including its authorization;
-only the handler's projection crosses the boundary. Each evaluation has fresh
-response-header state. Connections dispose their subscriptions on disconnect,
-source removal or read failure, and renew before ordinary bearer-token expiry.
+Server-owned projections use normal H3 `defineEventHandler` routes. Their existing
+authorization, database selection, joins and public DTO boundaries remain on the
+server. Mutable read routes set `Cache-Control: no-store` using H3's native header
+API. Firestore accessors return the native Admin SDK instance without observation
+proxies or request-local subscription collection.
 
-Browser server-projection readers use Core `useLiveAsyncData` or `useLiveFetch`.
-SSR uses the ordinary GET; in the browser, the live connection supplies both
-the first result and subsequent results. A pushed result reruns the caller's
-composition using the latest subscribed values, without fetching the same data
-again. Subscription startup and event delivery bypass Nuxt cached data;
-hydration must attach the live reader. SSR payloads use the caller's logical
-read key; browser state is isolated per component owner and hydrates from that
-logical key, independently of server/client component ID allocation. Core's
-`live-client-read.test.mjs` verifies this handover and subsequent pushed updates.
-`readLivePages`
-rebuilds the loaded cursor chain, replacing membership rather than retaining
-stale appended rows. Source/account changes dispose old connections. Data is
-cleared on authorization/read failure; transport reconnects use bounded backoff.
-`sharedLiveResponse` multiplexes active projections over one browser connection
-per tab through `/api/fireux/live`. Apps whose public proxy buffers streaming
-responses may set `public.fireux.liveReadEndpoint` to their own streaming-capable
-backend and own its exact-origin CORS policy. Cross-origin requests retain
-per-projection bearer/capability authority and do not send cookies.
-Changing the active set closes the previous
-connection before opening its replacement; identical URL/header reads share a
-projection. This avoids separate long-lived HTTP/1 connections starving page
-assets and navigation. The endpoint permits local API GET reads only, forwards
-each reader's bearer authorization, order capability and the request cookie, and routes through
-the existing handler and middleware. A request-local `liveResponseSink` carries
-events without opening internal HTTP sockets. Scope and hot-module disposal
-release consumers. Server dependency collection rejects subscriptions discovered
-after disconnect. This transport does not change domain authority or replace
-VueFire's direct Firestore bindings. Plain HTTP clients use shared four-second
-JSON snapshot refreshes instead of streaming, preserving navigation connection
-slots and avoiding indefinite first-frame waits. HTTPS retains multiplexed SSE.
-Live JSON responses disable response caching so an update cannot be replaced
-by an older HTTP-cache entry. Command validation, explicit lookup/search,
-static configuration and external-provider requests are separate read jobs.
+Browser API consumers use native Nuxt `useAsyncData` or `useFetch`. A composed
+reader can create a native `$fetch` instance bound to Nuxt's request signal and
+`cache: 'no-store'`; Core `runtime/composables/http/readPages.ts` only walks the
+requested cursor chain through that supplied fetcher. It owns no connection,
+subscription, retry manager or server authority.
 
-The database observation boundary is read-only and request-local. New server
-resolvers must participate explicitly; importing the Admin SDK directly can
-bypass it. Tests live in Core's `src/test/live-client-read.test.mjs` and
-`src/test/live-server-read.test.mjs`, `src/test/shared-live-response.test.mjs`
-and `src/test/live-multiplex.test.mjs`,
-with Menu's consumer test in Kitchens.
+Successful client write requests refresh Nuxt data through native `onResponse`
+hooks at their action owners. Shared direct-Firestore create/update/delete
+operations also refresh API projections after the committed write. Native Firebase
+listeners continue to own direct Firestore views. Server-only projections refresh
+after actions or explicit refresh; changes in another browser are not pushed.
+
+The custom live HTTP bridge, multiplex endpoint, SSE codec, polling/visibility
+manager, streaming CORS middleware and subscription-tracking proxy are removed.
+There are no forwarding aliases or separate streaming deployment settings.
 
 ## Endpoint spine
 

@@ -1,6 +1,13 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getQuery,
+  setResponseHeaders,
+} from 'h3'
+
 import { FieldPath } from 'firebase-admin/firestore'
-import { createError, getQuery, setResponseHeaders } from 'h3'
+
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
@@ -64,11 +71,12 @@ const requestedIds = (value: unknown) => {
   return ids
 }
 
-export default defineLiveReadHandler(async (event): Promise<PlaceIndexPage> => {
+export default defineEventHandler(async (event): Promise<PlaceIndexPage> => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control':
-      'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+    'Cache-Control': 'no-store',
   })
 
   const query = getQuery(event)

@@ -36,7 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
@@ -49,9 +50,12 @@ definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()
 const stores = ref<MarketplaceStore[]>([])
 const { currentUser: liveUser } = useAuth()
-const liveRecords = useLiveAsyncData(
+const liveRecords = useAsyncData(
   computed(() => `market-managedStores:${liveUser.value?.uid || ''}`),
-  (liveFetch) => useMarketplaceClient(liveFetch).managedStores(),
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return useMarketplaceClient(fetchRead).managedStores()
+  },
   { server: false }
 )
 watch(

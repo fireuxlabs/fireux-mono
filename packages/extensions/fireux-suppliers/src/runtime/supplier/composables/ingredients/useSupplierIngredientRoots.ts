@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 
 export type SupplierIngredientRoot = {
@@ -52,9 +53,11 @@ export function useSupplierIngredientRoots(
     [...new Set(toValue(ids).map(text).filter(Boolean))].sort()
   )
   const idKey = computed(() => normalizedIds.value.join(','))
-  const state = useLiveAsyncData<SupplierIngredientRoot[]>(
+  const state = useAsyncData<SupplierIngredientRoot[]>(
     () => `supplier-ingredient-roots-${idKey.value || 'none'}`,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!enabled.value || !normalizedIds.value.length) return []
 
       const pages = await Promise.all(
@@ -65,7 +68,7 @@ export function useSupplierIngredientRoots(
               index * 100,
               (index + 1) * 100
             )
-            return liveFetch<IngredientProjectionResponse>(
+            return fetchRead<IngredientProjectionResponse>(
               `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
             )
           }

@@ -12,10 +12,9 @@ import {
   createClientRouteCheck,
   resolveClientAppAdmin,
   resolveClientAuthState,
-} from '../utils/routeAuthGuard'
+} from '../composables/navigation/route-auth'
 
-import { resolvePostAuthDestination } from '../utils/onboarding-route'
-
+import { resolvePostAuthDestination } from '../user/utils/onboarding-route'
 const AUTH_WAIT_TIMEOUT_MS = 2500
 
 function isWorkspacePath(path: string) {

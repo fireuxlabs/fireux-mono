@@ -40,13 +40,14 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
+import { useHead, useRoute } from '#imports'
 import { useWorkspacePageNavigation } from '../composables/useWorkspacePageNavigation'
 import { useWorkspaceNav } from '../composables/useWorkspaceNav'
 import { useWorkspace } from '../composables/useWorkspace'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 const route = useRoute()
 const { title, description } = useWorkspacePageNavigation()
+useHead({ title })
 const { currentWorkspace: workspace } = useWorkspaceNav()
 const selections = new Map(
   useFireUXConfig().workspaces.map((family) => [family, useWorkspace(family)])

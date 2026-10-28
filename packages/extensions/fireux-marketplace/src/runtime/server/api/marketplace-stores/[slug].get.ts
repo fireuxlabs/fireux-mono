@@ -1,7 +1,8 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getRouterParam } from 'h3'
+import { defineEventHandler, setResponseHeader, getRouterParam } from 'h3'
+
 import { readMarketplaceStoreDetail } from '../../../marketplace-store/server/core/capabilities'
 
-export default defineLiveReadHandler((event) =>
-  readMarketplaceStoreDetail(event, getRouterParam(event, 'slug'))
-)
+export default defineEventHandler((event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+  return readMarketplaceStoreDetail(event, getRouterParam(event, 'slug'))
+})

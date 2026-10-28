@@ -1,10 +1,6 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverKitchenDishesTarget,
-  serverKitchenMenuItemsTarget,
-  serverKitchenMenuSectionsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget, serverKitchenMenuItemsTarget, serverKitchenMenuSectionsTarget } from '../../../kitchen/server/mutation-targets'
 import type { planKitchenMenuDraft } from './plan'
 
 /** Apply content changes inside the caller's authorized transaction, after its reads. */

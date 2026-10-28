@@ -1,5 +1,12 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getQuery,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -30,8 +37,10 @@ async function requireHiddenKitchenAccess(
   }
 }
 
-export default defineLiveReadHandler(
+export default defineEventHandler(
   async (event): Promise<Array<Kitchen & { place: Place }>> => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     const query = getQuery(event)
     const includeHidden = text(query.includeHidden) === 'true'
     if (query.includeHidden && !includeHidden) {
@@ -52,7 +61,7 @@ export default defineLiveReadHandler(
     if (includeHidden) await requireHiddenKitchenAccess(event, db)
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'private, no-store',
+      'Cache-Control': 'no-store',
     })
 
     return readKitchens({

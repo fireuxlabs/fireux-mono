@@ -3,8 +3,9 @@ import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { KITCHEN_MUTATION_TARGETS } from '../../mutation-targets'
 import { readKitchenOnboardingActor } from './onboarding-actor'
 import { resolveKitchenOnboardingTransactionLocator } from './locator'
 import { assertKitchenOnboardingPlaceDefaults } from './onboarding-policy'
@@ -42,8 +43,8 @@ export async function contributeKitchenDirectory(
     : resolveKitchenOnboardingTransactionLocator(body)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const [place, kitchen] = await Promise.all([
-      mutations.read(FIRESTORE_MUTATION_TARGETS.places, placeId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+      mutations.read(PLACE_MUTATION_TARGETS.places, placeId),
+      mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
     ])
     if (kitchen.exists) {
       return {
@@ -70,7 +71,7 @@ export async function contributeKitchenDirectory(
     const created = serverAuditStamp({ by: actor.uid, appId: actor.appId })
     const updated = serverAuditStamp({ by: actor.uid })
     if (unlisted) {
-      mutations.create(FIRESTORE_MUTATION_TARGETS.places, placeId, {
+      mutations.create(PLACE_MUTATION_TARGETS.places, placeId, {
         name,
         slug,
         place_type: 'non_physical',
@@ -79,7 +80,7 @@ export async function contributeKitchenDirectory(
         updated,
       })
     }
-    mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+    mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, {
       identity: {
         source: unlisted ? 'user' : 'place',
         slug,

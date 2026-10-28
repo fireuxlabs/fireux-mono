@@ -11,13 +11,10 @@ import {
 } from '../../models/user-handle'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
 import { resolveUserAvatarSource } from '../../utils/user-avatar.ts'
-import { readHttpsUrl } from '../../../utils/httpsUrl'
-import { validatePublicSlug } from '../../../utils/slug/validatePublicSlug'
+import { readHttpsUrl } from '../../../utils/https-url'
+import { validatePublicSlug } from '../../../utils/slug/validate-public-slug'
 import { readUserDisplayName } from '../../utils/profile-validation'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverUserAccountTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS, serverUserAccountTarget } from '../mutation-targets'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -95,7 +92,7 @@ export async function updateUserHandle(input: {
 
   const requestedHandle = requireHandle(input.payload?.handle)
   const creation = normalizeCreation(input.payload?.create)
-  const users = FIRESTORE_MUTATION_TARGETS.users
+  const users = USER_MUTATION_TARGETS.users
   const accounts = serverUserAccountTarget(uid)
 
   return runGuardedServerTransaction(users.database, async (mutations) => {

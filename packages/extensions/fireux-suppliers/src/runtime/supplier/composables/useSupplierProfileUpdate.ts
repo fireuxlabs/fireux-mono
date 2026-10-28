@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { PlaceUpdateAdapter } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceUpdate'
@@ -21,6 +22,15 @@ export function useSupplierProfileUpdate() {
     const result = await $fetch<{ ok: true; supplierId: string; place: Place }>(
       '/api/workspace/supplier/profile',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body,

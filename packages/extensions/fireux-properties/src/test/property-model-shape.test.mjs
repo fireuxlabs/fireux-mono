@@ -25,11 +25,11 @@ function load(file, result, deps = {}) {
   )(...Object.values(deps))
 }
 const isFirestoreDocumentId = load(
-  '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts',
+  '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts',
   'isFirestoreDocumentId'
 )
 const readFireuxEntityManagement = load(
-  '../../../../core/fireux-core/src/runtime/utils/entity-management.ts',
+  '../../../../core/fireux-core/src/runtime/app/utils/entity-management.ts',
   'readFireuxEntityManagement'
 )
 const model = load(

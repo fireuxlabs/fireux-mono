@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { computed, ref, watch } from 'vue'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
@@ -101,6 +102,15 @@ export function useMarketplaceProfile(profile: MarketplaceProfile) {
         return false
       }
       await $fetch('/api/marketplace/profile', {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body,

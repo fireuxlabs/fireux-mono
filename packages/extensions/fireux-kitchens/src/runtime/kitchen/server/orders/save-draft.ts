@@ -4,7 +4,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
@@ -71,7 +71,7 @@ export async function saveKitchenOrderDraft(event: H3Event, input: unknown) {
     )
     const current = await tx.read(target, id)
     if (!current.exists) {
-      const staff = await tx.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, actor.uid)
+      const staff = await tx.read(USER_MUTATION_TARGETS.runtimeUsers, actor.uid)
       const name = typeof staff.data?.display_name === 'string' ? staff.data.display_name.trim() : ''
       if (!staff.exists || !name || order.placed_by?.kind !== 'person' || order.placed_by.id !== actor.uid || order.placed_by.name !== name)
         throw createError({ statusCode: 409, statusMessage: 'Start this POS order with your current staff identity.' })

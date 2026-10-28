@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-20
+Updated: 2026-10-28
 Ref: 57d034087
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -47,9 +47,9 @@ it must not replace Delete or be hidden inside a primitive.
 
 The retained mutation types define three lanes: Client, Server, and MCP/Skill,
 with Create, Update, and Delete verbs. Client primitives and Server touchpoints
-remain implemented. MCP/Skill target declarations remain, but their write
-adapters were removed with `scripts/`; there is no supported repository
-MCP/Skill write entrypoint. Scripts and CLI do not gain an additional lane or
+remain implemented. The unused MCP/Skill metadata target declarations and their
+former write adapters are retired; there is no supported repository MCP/Skill
+write entrypoint. The lane type alone grants no target authority. Scripts and CLI do not gain an additional lane or
 permission to bypass target authority because those adapters are absent.
 Generic set, upsert, write, arbitrary collection strings, and caller-selected database ids
 are not consumer APIs. Domain transactions use the guarded Server transaction
@@ -90,7 +90,7 @@ service to be enabled, unpaused and linked to that Menu with configured hours
 fail for review. The generic basic Order remains separate from Menu selections
 and commercial snapshots.
 
-Server and MCP/Skill mutation targets own database placement, collection path,
+Active Server mutation targets own database placement, collection path,
 allowed verbs, and access lane. Client CRUD instead consumes a domain-owned
 collection path and optional runtime database id; the domain composable owns
 validation, authorization intent, and relationship cascades. `(default)` contains only the bounded metadata projections
@@ -207,11 +207,13 @@ records. Public meal-deal projection remains read-only.
 
 ## Current source and migration boundary
 
-- Stable target registry barrel and static targets:
-  `packages/core/fireux-core/src/runtime/utils/firestore-mutations/targets.ts`
+- Domain mutation definitions live under each owning Entity’s `server/mutation-targets.ts`.
+  Core App, User and Ecosystem own their definitions; no global target registry
+  or compatibility barrel imports domains into Core. FireUX-specific named-database
+  bindings live in the FireUX ecosystem’s `project/server/platform-targets.ts`.
 - Target validation and dynamic Server target factories:
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts`
-  plus Core-owned targets in the adjacent target modules. Domain-specific
+  while Core-owned definitions live beneath App, User and Ecosystem. Domain-specific
   targets live with their owning domain command; Kitchen Team invitation
   targets are the current proved example.
 - Client primitives:
@@ -347,9 +349,15 @@ implement customer selection or Order pricing. See the Misebox context,
 
 ## Ownership boundaries and verification
 
+Core’s shared utilities contain stateless target validation, not Entity target
+definitions. Read-only reference targets carry no mutation lane or verbs; guarded
+transaction reads accept them, while writes still require the full mutation
+contract. Place’s existing relationship checks use those read-only targets without
+importing upper domains or granting writes to their records.
+
 Core owns the path-based Client primitives plus target types, validation, and
-generic Server touchpoints. MCP/Skill target authority remains defined even
-though its operational write adapters are absent. Domain packages own their
+generic Server touchpoints. The retained MCP/Skill lane type has no active
+metadata target declarations or operational write adapter. Domain packages own their
 domain-specific target definitions, payload validation, and lifecycle decisions while reusing
 Core's target-definition API.
 Security Rules remain an independent authorization boundary.
@@ -410,6 +418,14 @@ overlapping-stale-grant access-budget regression and the deleted/malformed
 earlier-grant cases, not only single-App cases. ID lists must remain string-only;
 Rules joining a list alone is not a type check.
 The App-owned release README documents the local proof and separate rollout boundary.
+
+The Misebox production candidate permits membership-bound Kitchen reads only.
+Kitchen root and child mutations, including Dish, Recipe, Prep, Station, sourcing,
+Waste and Menu content, remain owned by their trusted commands; there are no
+parallel browser-write Rules or copied command schemas. Its allow/deny suite
+checks that authorized readers cannot bypass those commands with direct create,
+update or delete requests. This local candidate does not change the accepted
+development-open template or its deployed policy.
 Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized
@@ -501,8 +517,9 @@ account's feed.
 App public featured-slug curation captures its App, account, admin/membership
 context and submitted values, then verifies the returned App and field. Portfolio
 Identity updates accept nested `changes.identity` and an explicit Portfolio ID, capture original inputs and live
-account/App/membership/disposal context; their editor owns record and route lifetime; results identify the exact
-updated root. The server remains authoritative after client dispatch. Current
+account/App/membership/disposal context; their editor owns record and route lifetime. Portfolio passes that captured
+surface predicate into command preparation so a changed editor cannot dispatch
+after credentials resolve; results identify the exact updated root. The server remains authoritative after client dispatch. Current
 proof includes Core `foundation-command-intent.test.mjs` and
 `foundation-additional-surfaces.test.mjs`, and Properties'
 `portfolio-identity-scope.test.mjs`.

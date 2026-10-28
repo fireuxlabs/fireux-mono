@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -38,6 +39,15 @@ export function useKitchenStationCreate() {
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/stations',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body,
@@ -57,6 +67,9 @@ export function useKitchenStationCreate() {
     if (currentUser.value?.uid !== user.uid)
       throw new Error('The signed-in account changed.')
     await $fetch('/api/workspace/kitchen/stations/ensure-default', {
+      onResponse: async ({ response }) => {
+        if (response.ok) await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: { kitchenId },

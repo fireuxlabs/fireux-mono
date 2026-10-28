@@ -6,13 +6,15 @@
   />
 </template>
 <script setup lang="ts">
+import type { RouteLocationNormalizedGeneric } from 'vue-router'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { roomServiceRoomNumber } from '../../../../menu/utils/room-service'
 definePageMeta({
   name: 'KitchenRoomServiceMenuPage',
   title: 'Room service',
-  validate: (route) => Boolean(roomServiceRoomNumber(route.params.room)),
+  validate: (route: RouteLocationNormalizedGeneric) =>
+    Boolean(roomServiceRoomNumber(route.params.room)),
 })
 const kitchenSlug = useRouteParam('slug')
 const room = useRouteParam('room')

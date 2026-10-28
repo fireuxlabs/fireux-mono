@@ -105,7 +105,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import { computed, ref, watch } from 'vue'
 
 type DirectoryResponse = {
@@ -115,7 +116,7 @@ type DirectoryResponse = {
   ecosystems: unknown[]
 }
 
-const { data, pending, error, refresh } = await useLiveFetch<DirectoryResponse>(
+const { data, pending, error, refresh } = await useFetch<DirectoryResponse>(
   '/api/directory',
   {
     server: true,

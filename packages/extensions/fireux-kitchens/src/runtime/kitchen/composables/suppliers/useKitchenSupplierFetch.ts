@@ -1,5 +1,6 @@
+import { useFetch } from 'nuxt/app'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
@@ -75,7 +76,7 @@ export function useKitchenSupplierFetch(
       : ''
   )
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
-  const supplierNetwork = useLiveFetch<{
+  const supplierNetwork = useFetch<{
     suppliers: Supplier[]
     places: Place[]
   }>('/api/supply/suppliers', {
@@ -158,11 +159,25 @@ export function useKitchenSupplierFetch(
   )
 
   const count = computed(() => suppliers.value.length)
-  const pending = computed(() => Boolean(collectionPath.value) && (supplierLinksRef.pending.value || (supplierLinks.value.length > 0 && supplierNetwork.pending.value)))
-  const error = computed(() => !collectionPath.value ? undefined : supplierLinksRef.error.value || (supplierLinks.value.length > 0 ? supplierNetwork.error.value : undefined))
+  const pending = computed(
+    () =>
+      Boolean(collectionPath.value) &&
+      (supplierLinksRef.pending.value ||
+        (supplierLinks.value.length > 0 && supplierNetwork.pending.value))
+  )
+  const error = computed(() =>
+    !collectionPath.value
+      ? undefined
+      : supplierLinksRef.error.value ||
+        (supplierLinks.value.length > 0
+          ? supplierNetwork.error.value
+          : undefined)
+  )
   const { outcome } = useFirestoreCollectionState({
     active: computed(() => Boolean(collectionPath.value)),
-    count, pending, error,
+    count,
+    pending,
+    error,
   })
 
   return {

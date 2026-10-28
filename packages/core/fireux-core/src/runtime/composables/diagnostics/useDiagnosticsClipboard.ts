@@ -1,75 +1,11 @@
 import { ref } from 'vue'
-
-interface ToastApi {
-  add: (options: {
-    title?: string
-    description?: string
-    icon?: string
-    color?: string
-    timeout?: number
-  }) => void
-}
+import { useToast } from '#imports'
+import { useClipboard } from '@vueuse/core'
 
 interface CopyOptions {
   label?: string
   success?: string
   error?: string
-}
-
-function resolveToast(): ToastApi | undefined {
-  const useToastFn = (globalThis as any).useToast as
-    | undefined
-    | (() => ToastApi)
-
-  if (typeof useToastFn === 'function') {
-    try {
-      return useToastFn()
-    } catch (error) {
-      console.warn('useDiagnosticsClipboard: failed to resolve toast instance', error)
-    }
-  }
-
-  return undefined
-}
-
-function writeToClipboardLegacy(text: string): boolean {
-  if (!text) {
-    return false
-  }
-
-  if (typeof document === 'undefined') {
-    return false
-  }
-
-  try {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    textarea.setAttribute('readonly', 'true')
-
-    textarea.style.position = 'fixed'
-    textarea.style.top = '0'
-    textarea.style.left = '0'
-    textarea.style.width = '1px'
-    textarea.style.height = '1px'
-    textarea.style.opacity = '0'
-    textarea.style.pointerEvents = 'none'
-
-    document.body.appendChild(textarea)
-
-    const activeElement = document.activeElement as HTMLElement | null
-    textarea.focus()
-    textarea.select()
-
-    const ok = document.execCommand('copy')
-
-    textarea.remove()
-    activeElement?.focus?.()
-
-    return ok
-  } catch (error) {
-    console.error('useDiagnosticsClipboard: legacy copy failed', error)
-    return false
-  }
 }
 
 function createSafeJsonReplacer() {
@@ -92,35 +28,15 @@ function createSafeJsonReplacer() {
   }
 }
 
-async function writeToClipboard(text: string): Promise<boolean> {
-  if (!text) {
-    return false
-  }
-
-  const hasClipboardApi =
-    typeof navigator !== 'undefined' && Boolean(navigator.clipboard)
-
-  if (hasClipboardApi) {
-    try {
-      await navigator.clipboard.writeText(text)
-      return true
-    } catch (error) {
-      console.error('useDiagnosticsClipboard: failed to write to clipboard', error)
-    }
-  } else {
-    console.warn('useDiagnosticsClipboard: navigator.clipboard unavailable')
-  }
-
-  return writeToClipboardLegacy(text)
-}
-
+/** Diagnostics own safe JSON and copy feedback; VueUse owns clipboard access. */
 export function useDiagnosticsClipboard() {
   const copying = ref(false)
-  const toast = resolveToast()
+  const toast = useToast()
+  const { copy, isSupported } = useClipboard()
 
   const copyText = async (text: string, options: CopyOptions = {}) => {
     if (!text) {
-      toast?.add({
+      toast.add({
         title: options.error ?? 'Nothing to copy',
         description: options.label,
         icon: 'i-lucide-alert-circle',
@@ -128,34 +44,30 @@ export function useDiagnosticsClipboard() {
       })
       return false
     }
-
-    if (copying.value) {
-      return false
-    }
+    if (copying.value) return false
 
     copying.value = true
-
-    const success = await writeToClipboard(text)
-
-    copying.value = false
-
-    if (success) {
-      toast?.add({
+    try {
+      if (!isSupported.value) throw new Error('Clipboard unavailable')
+      await copy(text)
+      toast.add({
         title: options.success ?? 'Copied to clipboard',
         description: options.label,
         icon: 'i-lucide-clipboard-check',
         color: 'success',
       })
-    } else {
-      toast?.add({
+      return true
+    } catch {
+      toast.add({
         title: options.error ?? 'Copy failed',
         description: 'Unable to access the clipboard',
         icon: 'i-lucide-x-circle',
         color: 'error',
       })
+      return false
+    } finally {
+      copying.value = false
     }
-
-    return success
   }
 
   const copyJSON = async (value: unknown, options: CopyOptions = {}) => {
@@ -167,7 +79,10 @@ export function useDiagnosticsClipboard() {
       try {
         payload = JSON.stringify(value, createSafeJsonReplacer(), 2) ?? ''
       } catch (error) {
-        console.error('useDiagnosticsClipboard: failed to stringify JSON payload', error)
+        console.error(
+          'useDiagnosticsClipboard: failed to stringify JSON payload',
+          error
+        )
         payload = ''
       }
     }
@@ -179,9 +94,5 @@ export function useDiagnosticsClipboard() {
     })
   }
 
-  return {
-    copying,
-    copyText,
-    copyJSON,
-  }
+  return { copying, copyText, copyJSON }
 }

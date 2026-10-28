@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
 import type { CollectionResponse } from '../../../models/utils/directory.ts'
@@ -39,12 +40,14 @@ export function useProfileDirectoryCollection<
   options: ProfileDirectoryOptions
 ): UseProfileDirectoryCollectionReturn<TProfilePayload> {
   const key = `profile-directory-${options.collection}`
-  const { data, pending, error, refresh } = useLiveAsyncData(
+  const { data, pending, error, refresh } = useAsyncData(
     key,
-    (liveFetch) =>
-      liveFetch<CollectionResponse<ProfileDirectoryEntry<TProfilePayload>>>(
-        `/api/${options.collection}`
-      ),
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return fetchRead<
+        CollectionResponse<ProfileDirectoryEntry<TProfilePayload>>
+      >(`/api/${options.collection}`)
+    },
     { server: true, lazy: false }
   )
 

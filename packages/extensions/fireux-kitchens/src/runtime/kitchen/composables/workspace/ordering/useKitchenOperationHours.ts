@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -11,7 +12,13 @@ export function useKitchenOperationHours() {
   const config = useFireUXConfig()
   const { appUser } = useUserSession()
   const access = useKitchenAccess()
-  const captureIntent = useCommandScope([() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), () => JSON.stringify(access.ids.value), () => access.outcome.value])
+  const captureIntent = useCommandScope([
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    () => JSON.stringify(access.ids.value),
+    () => access.outcome.value,
+  ])
   async function updateHours(
     kitchenId: string,
     hours: WeekdayTimeWindowsConfig | null
@@ -20,12 +27,27 @@ export function useKitchenOperationHours() {
     const uid = currentUser.value?.uid
     const body = { kitchenId, hours: JSON.parse(JSON.stringify(hours)) }
     const user = await useRequireUser()
-    if (!isCurrent() || user.uid !== uid) throw new Error('The account or Kitchen changed. Reopen serving hours.')
+    if (!isCurrent() || user.uid !== uid)
+      throw new Error('The account or Kitchen changed. Reopen serving hours.')
     const token = await user.getIdToken()
-    if (!isCurrent() || !['ready', 'empty'].includes(access.outcome.value) || !access.ids.value.includes(kitchenId)) throw new Error('Current Kitchen association is required.')
+    if (
+      !isCurrent() ||
+      !['ready', 'empty'].includes(access.outcome.value) ||
+      !access.ids.value.includes(kitchenId)
+    )
+      throw new Error('Current Kitchen association is required.')
     const result = await $fetch<{ ok: true; kitchenId: string }>(
       '/api/workspace/kitchen/ordering/hours',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body,

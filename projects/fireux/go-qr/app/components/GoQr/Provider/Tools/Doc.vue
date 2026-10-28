@@ -5,10 +5,7 @@
     endpoint="/api/tools/doc"
   >
     <ClientOnly>
-      <form
-        class="space-y-4"
-        @submit.prevent="createDoc"
-      >
+      <form class="space-y-4" @submit.prevent="createDoc">
         <UFormField :label="fileLabel">
           <UFileUpload
             v-model="selectedFile"
@@ -52,18 +49,12 @@
           {{ isCreating ? loadingLabel : ctaLabel }}
         </UButton>
 
-        <p
-          v-if="createError"
-          class="text-xs text-error"
-        >
+        <p v-if="createError" class="text-xs text-error">
           {{ createError }}
         </p>
       </form>
 
-      <div
-        v-if="createdPath"
-        class="flex flex-wrap gap-2"
-      >
+      <div v-if="createdPath" class="flex flex-wrap gap-2">
         <UButton
           v-if="createdPath"
           :to="createdPath"
@@ -84,13 +75,8 @@
       </div>
 
       <template #fallback>
-        <UCard
-          variant="subtle"
-          class="rounded-lg"
-        >
-          <p class="text-sm text-dimmed">
-            Loading menu upload...
-          </p>
+        <UCard variant="subtle" class="rounded-lg">
+          <p class="text-sm text-dimmed">Loading menu upload...</p>
         </UCard>
       </template>
     </ClientOnly>
@@ -98,6 +84,8 @@
 </template>
 
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type DocToolConfig = {
@@ -132,11 +120,14 @@ type DocToolConfig = {
   }
 }
 
-const props = withDefaults(defineProps<{
-  tool?: DocToolConfig | null
-}>(), {
-  tool: null,
-})
+const props = withDefaults(
+  defineProps<{
+    tool?: DocToolConfig | null
+  }>(),
+  {
+    tool: null,
+  }
+)
 
 const selectedFile = ref<File | File[] | null>(null)
 const slugInput = ref('')
@@ -159,39 +150,25 @@ const files = computed(() =>
       : []
 )
 const configuredText = (value: unknown) => String(value ?? '').trim()
-const toolTitle = computed(() =>
-  configuredText(props.tool?.copy?.title)
-)
+const toolTitle = computed(() => configuredText(props.tool?.copy?.title))
 const toolDescription = computed(() =>
   configuredText(props.tool?.copy?.description)
 )
-const fileLabel = computed(() =>
-  configuredText(props.tool?.upload?.fileLabel)
-)
-const pathLabel = computed(() =>
-  configuredText(props.tool?.slug?.label)
-)
+const fileLabel = computed(() => configuredText(props.tool?.upload?.fileLabel))
+const pathLabel = computed(() => configuredText(props.tool?.slug?.label))
 const slugPlaceholder = computed(() =>
   configuredText(props.tool?.slug?.placeholder)
 )
 const slugInitialValue = computed(() =>
   configuredText(props.tool?.slug?.initialValue)
 )
-const slugLocked = computed(() =>
-  Boolean(props.tool?.slug?.locked)
+const slugLocked = computed(() => Boolean(props.tool?.slug?.locked))
+const accept = computed(() => configuredText(props.tool?.upload?.accept))
+const allowMultipleFiles = computed(
+  () => props.tool?.upload?.multiple !== false
 )
-const accept = computed(() =>
-  configuredText(props.tool?.upload?.accept)
-)
-const allowMultipleFiles = computed(() =>
-  props.tool?.upload?.multiple !== false
-)
-const uploadHint = computed(() =>
-  configuredText(props.tool?.upload?.hint)
-)
-const ctaLabel = computed(() =>
-  configuredText(props.tool?.copy?.ctaLabel)
-)
+const uploadHint = computed(() => configuredText(props.tool?.upload?.hint))
+const ctaLabel = computed(() => configuredText(props.tool?.copy?.ctaLabel))
 const loadingLabel = computed(() =>
   configuredText(props.tool?.copy?.loadingLabel)
 )
@@ -262,21 +239,24 @@ watch(slugInput, async () => {
     })
 
     slugTaken.value = Boolean(response.taken)
-    slugError.value = response.is_valid === false
-      ? configuredText(response.message)
-      : ''
+    slugError.value =
+      response.is_valid === false ? configuredText(response.message) : ''
   } catch (error) {
     slugError.value = error instanceof Error ? error.message : ''
   }
 })
 
-watch(slugInitialValue, (value) => {
-  if (!value) return
-  if (slugInput.value && slugInput.value !== appliedInitialSlug.value) return
+watch(
+  slugInitialValue,
+  (value) => {
+    if (!value) return
+    if (slugInput.value && slugInput.value !== appliedInitialSlug.value) return
 
-  slugInput.value = value
-  appliedInitialSlug.value = value
-}, { immediate: true })
+    slugInput.value = value
+    appliedInitialSlug.value = value
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   parentOrigin.value = resolveParentOrigin()
@@ -300,18 +280,22 @@ function handleToolAuthMessage(event: MessageEvent) {
 }
 
 function requestToolAuth() {
-  if (!import.meta.client || window.parent === window) return Promise.resolve(authToken.value)
+  if (!import.meta.client || window.parent === window)
+    return Promise.resolve(authToken.value)
   if (authToken.value) return Promise.resolve(authToken.value)
   const targetOrigin = parentOrigin.value || resolveParentOrigin()
   if (!targetOrigin) return Promise.resolve(authToken.value)
 
   return new Promise<string>((resolve) => {
     authRequestResolve = resolve
-    window.parent.postMessage({
-      source: 'go-qr',
-      tool: 'doc',
-      type: 'tool-auth-request',
-    }, targetOrigin)
+    window.parent.postMessage(
+      {
+        source: 'go-qr',
+        tool: 'doc',
+        type: 'tool-auth-request',
+      },
+      targetOrigin
+    )
 
     window.setTimeout(() => {
       if (!authRequestResolve) return
@@ -343,6 +327,15 @@ async function createDoc() {
       url?: string
       qr_url?: string
     }>(createEndpoint.value, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: token ? { authorization: `Bearer ${token}` } : undefined,
       body: form,
@@ -363,13 +356,16 @@ function notifyToolResult(result: Record<string, unknown>) {
   const targetOrigin = parentOrigin.value || resolveParentOrigin()
   if (!targetOrigin) return
 
-  window.parent.postMessage({
-    source: 'go-qr',
-    tool: 'doc',
-    type: 'tool-result',
-    action: 'created',
-    result,
-  }, targetOrigin)
+  window.parent.postMessage(
+    {
+      source: 'go-qr',
+      tool: 'doc',
+      type: 'tool-result',
+      action: 'created',
+      result,
+    },
+    targetOrigin
+  )
 }
 
 function resolveParentOrigin() {

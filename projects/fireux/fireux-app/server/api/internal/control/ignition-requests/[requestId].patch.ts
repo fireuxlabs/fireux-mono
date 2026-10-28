@@ -10,7 +10,7 @@ import {
 } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppConversationsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverAppConversationsTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import {
   parseIgnitionRequestPatch,
   serializeIgnitionRequest,

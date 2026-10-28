@@ -1,5 +1,11 @@
-import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
-import { createError, setResponseHeaders, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+
 import type { DetailResponse } from '../../../models/utils/directory'
 import type { User } from '../../../user/models/user.model.ts'
 import {
@@ -11,9 +17,6 @@ import {
   isUserDirectoryEligible,
   normalizeUser,
 } from '../../../user/utils/normalize-user.ts'
-
-const CACHE_CONTROL =
-  'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
 function normalizeHandle(value: unknown): string {
   return String(value ?? '')
@@ -45,10 +48,12 @@ async function readCanonicalUserByHandle(handle: string): Promise<User | null> {
   return dto
 }
 
-export default defineLiveReadHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': CACHE_CONTROL,
+    'Cache-Control': 'no-store',
   })
 
   const rawHandle = event.context.params?.handle

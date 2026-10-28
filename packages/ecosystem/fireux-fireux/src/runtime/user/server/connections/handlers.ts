@@ -16,7 +16,7 @@ import {
   protectConnectionResponse,
   requireConnectionOrigin,
 } from 'fireux-core/runtime/user/server/connections/transport'
-import { resolvePostAuthDestination } from 'fireux-core/runtime/utils/onboarding-route'
+import { resolvePostAuthDestination } from 'fireux-core/runtime/user/utils/onboarding-route'
 import { resolveConnectionResume } from '../../utils/connection-resume'
 import { createConnectionService, connectionPath } from './service'
 import { connectionStore, privateConnectionDatabase } from './store'

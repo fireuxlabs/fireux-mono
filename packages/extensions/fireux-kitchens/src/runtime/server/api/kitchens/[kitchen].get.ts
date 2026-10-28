@@ -1,6 +1,12 @@
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getRouterParam,
+  setResponseHeaders,
+} from 'h3'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getRouterParam, setResponseHeaders } from 'h3'
+
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { KitchenDetailResponse } from '../../../kitchen/models/kitchen-detail.response.ts'
 import {
@@ -13,12 +19,13 @@ import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/spr
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export default defineLiveReadHandler(
+export default defineEventHandler(
   async (event): Promise<KitchenDetailResponse> => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control':
-        'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+      'Cache-Control': 'no-store',
     })
 
     const slug = text(getRouterParam(event, 'kitchen')).toLowerCase()

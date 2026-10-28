@@ -2,11 +2,8 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverKitchenMenusTarget,
-  serverKitchenDishesTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenDishesTarget } from '../mutation-targets'
 import { recipeTarget } from '../recipes/record-input'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import {
@@ -79,14 +76,14 @@ export async function kitchenRecordContext(
     )
     const target =
       subject === 'venue'
-        ? FIRESTORE_MUTATION_TARGETS.places
+        ? PLACE_MUTATION_TARGETS.places
         : subject === 'menu'
           ? serverKitchenMenusTarget(kitchenId)
           : subject === 'recipe'
             ? recipeTarget(kitchenId)
             : subject === 'dish'
               ? serverKitchenDishesTarget(kitchenId)
-              : FIRESTORE_MUTATION_TARGETS.kitchens
+              : KITCHEN_MUTATION_TARGETS.kitchens
     const id = recordId || menuId || kitchenId
     const owner =
       subject === 'kitchen'

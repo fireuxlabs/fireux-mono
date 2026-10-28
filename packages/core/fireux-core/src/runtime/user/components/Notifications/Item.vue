@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { UserNotification } from '../../models/user-notification.model'
-import { formatFirestoreTimestamp } from '../../../utils/formatTimestamp'
+import { formatFirestoreTimestamp } from '../../../utils/firestore-timestamp'
 const props = defineProps<{ notification: UserNotification; busy: boolean; disabled: boolean }>()
 defineEmits<{ read: [] }>()
 const timestamp = computed(() => formatFirestoreTimestamp(props.notification.created?.at, { fallback: '' }) || '')

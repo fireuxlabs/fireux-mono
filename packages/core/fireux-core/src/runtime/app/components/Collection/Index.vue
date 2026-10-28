@@ -1,40 +1,37 @@
 <template>
-  <section class="space-y-5" aria-label="App directory">
-    <div class="flex flex-wrap items-center gap-3">
+  <section class="app-collection" aria-label="App directory">
+    <div class="collection-manager__controls">
       <UInput
         v-model="query"
         :placeholder="hasMore ? 'Filter loaded apps…' : 'Search apps…'"
         :aria-label="hasMore ? 'Filter loaded apps' : 'Search apps'"
         icon="i-lucide-search"
-        class="min-w-0 flex-1 sm:max-w-sm"
+        class="entity-collection__search"
       />
-      <span class="text-sm text-muted" role="status">{{ countLabel }}</span>
+      <span class="entity-collection__count" role="status">{{
+        countLabel
+      }}</span>
     </div>
     <AppCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
-    <div
+    <UPageCard
       v-else
-      class="rounded-2xl border border-dashed border-default px-6 py-10 text-center"
+      :title="hasMore ? 'No matches in loaded apps' : 'No matching apps'"
+      :description="
+        hasMore
+          ? 'Load more apps below or try another keyword.'
+          : 'Try another name or keyword.'
+      "
+      variant="subtle"
       role="status"
     >
-      <p class="font-medium text-highlighted">
-        {{ hasMore ? 'No matches in loaded apps' : 'No matching apps' }}
-      </p>
-      <p class="mt-1 text-sm text-muted">
-        {{
-          hasMore
-            ? 'Load more apps below or try another keyword.'
-            : 'Try another name or keyword.'
-        }}
-      </p>
       <UButton
         v-if="query"
-        class="mt-4"
         label="Clear search"
         variant="soft"
         color="neutral"
         @click="query = ''"
       />
-    </div>
+    </UPageCard>
   </section>
 </template>
 
@@ -51,7 +48,12 @@ const { query, visibleItems, visibleCount } = useCollectionSearch<
   NonNullable<ReturnType<typeof makeCard>>
 >({
   items: computed(() => props.apps),
-  makeCard: (app) => makeCard(app),
+  // App search is discovery copy, not media URLs, internal context or status.
+  searchText: (app) =>
+    [app.name, app.short_name, app.tagline, app.description, app.ecosystem_id]
+      .filter(Boolean)
+      .join(' '),
+  makeCard,
 })
 const cardsFiltered = computed(() =>
   visibleItems.value
@@ -66,3 +68,11 @@ const countLabel = computed(
     (props.hasMore ? ' loaded' : '')
 )
 </script>
+
+<style scoped>
+.app-collection {
+  display: grid;
+  gap: calc(var(--spacing) * 5);
+  min-width: 0;
+}
+</style>

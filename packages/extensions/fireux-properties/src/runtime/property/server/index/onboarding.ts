@@ -10,7 +10,7 @@ import { createError, type H3Event } from 'h3'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+} from 'fireux-core/runtime/app/utils/entity-management'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -20,11 +20,8 @@ import {
   resolveWorkspaceEntityOnboardingPolicy,
 } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverPropertyTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PROPERTY_MUTATION_TARGETS, serverPropertyTeamMembersTarget } from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { canonicalPropertyRoot } from '../../utils/normalize-property.ts'
 import type { PropertyOnboardingCompleteResult } from '../../models/property-onboarding.model.ts'
 import type {
@@ -132,7 +129,7 @@ export async function completePropertyOnboarding(
 
   const memberships = serverAppUsersTarget(current.appId)
   const grants = serverPropertyAccessTarget(current.appId)
-  const properties = FIRESTORE_MUTATION_TARGETS.properties
+  const properties = PROPERTY_MUTATION_TARGETS.properties
   const team = serverPropertyTeamMembersTarget(propertyId)
 
   return runGuardedServerTransaction(properties.database, async (mutations) => {

@@ -1,6 +1,7 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useRoute } from '#imports'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -100,6 +101,15 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     const result = await $fetch<SupplierOnboardingCompleteResult>(
       '/api/suppliers/onboarding/complete',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: supplierId

@@ -1,6 +1,5 @@
 import { useRuntimeConfig } from '#imports'
 import { getFirestore } from 'firebase-admin/firestore'
-import { observeRuntimeFirestore } from './firestore/live-read'
 import { getAdminApp } from './getAdmin'
 
 export function getRuntimeFirestore(databaseId?: string) {
@@ -9,11 +8,9 @@ export function getRuntimeFirestore(databaseId?: string) {
     databaseId || runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
   ).trim()
 
-  return observeRuntimeFirestore(
-    configuredDatabaseId
-      ? getFirestore(getAdminApp(), configuredDatabaseId)
-      : getFirestore(getAdminApp())
-  )
+  return configuredDatabaseId
+    ? getFirestore(getAdminApp(), configuredDatabaseId)
+    : getFirestore(getAdminApp())
 }
 
 export function getRuntimeIdentityFirestore(databaseId?: string) {
@@ -25,9 +22,7 @@ export function getRuntimeIdentityFirestore(databaseId?: string) {
     databaseId || firebase?.identityDatabaseId || firebase?.databaseId || ''
   ).trim()
 
-  return observeRuntimeFirestore(
-    configuredDatabaseId
-      ? getFirestore(getAdminApp(), configuredDatabaseId)
-      : getFirestore(getAdminApp())
-  )
+  return configuredDatabaseId
+    ? getFirestore(getAdminApp(), configuredDatabaseId)
+    : getFirestore(getAdminApp())
 }

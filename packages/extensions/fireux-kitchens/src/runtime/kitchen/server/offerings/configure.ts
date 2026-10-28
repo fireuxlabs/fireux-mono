@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget } from '../mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,

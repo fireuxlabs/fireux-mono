@@ -41,9 +41,7 @@ function fixture({ authorized = true, extras = {}, duringActor } = {}) {
       assert.ok(x.verbs.length)
       return x
     },
-    FIRESTORE_MUTATION_TARGETS: {
-      ingredients: { collectionPath: 'ingredients' },
-    },
+    INGREDIENT_MUTATION_TARGETS: { ingredients: { collectionPath: 'ingredients' } },
     readKitchenMutationActor: async () => {
       await duringActor?.()
       return { uid: 'operator', runtimeAppId: 'app' }

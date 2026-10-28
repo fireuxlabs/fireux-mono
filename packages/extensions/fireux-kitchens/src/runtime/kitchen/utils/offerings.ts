@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { requireKitchenInteractionChanges } from './interaction-validation'
 import { normalizeKitchenOfferings } from './offering-policy'
 import type { KitchenOffering } from '../models/offering.model'

@@ -2,7 +2,19 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toRef, compile, createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 const base = new URL('../runtime/kitchen/components/', import.meta.url)
@@ -78,7 +90,7 @@ async function currency(service, place) {
     toRef,
     defineProps: () => props,
     readPlaceCurrencyCode,
-    useLiveAsyncData: () => ({
+    useAsyncData: () => ({
       data: ref({ sources: [] }),
       pending: ref(false),
       error: ref(null),

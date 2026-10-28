@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { $fetch, useRoute } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -46,6 +47,15 @@ export function useProjectIntent() {
       const result = await $fetch<T, '/api/workspace/project/intent', 'POST'>(
         '/api/workspace/project/intent',
         {
+          onResponse: async ({ options, response }) => {
+            if (
+              response.ok &&
+              !['GET', 'HEAD'].includes(
+                String(options.method || 'GET').toUpperCase()
+              )
+            )
+              await refreshNuxtData()
+          },
           method: 'POST',
           timeout: 60_000,
           retry: 0,

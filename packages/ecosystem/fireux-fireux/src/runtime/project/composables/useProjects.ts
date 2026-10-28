@@ -1,5 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed, type Ref } from 'vue'
 import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
 import type { DirectoryOutcome } from 'fireux-core/runtime/types/directory-controller.types'
@@ -18,10 +19,12 @@ export type ProjectCollectionController = {
 export function useProjects(
   endpoint = '/api/projects'
 ): ProjectCollectionController {
-  const { data, pending, error, refresh } = useLiveAsyncData(
+  const { data, pending, error, refresh } = useAsyncData(
     `projects:${endpoint}`,
-    (liveFetch) =>
-      liveFetch<CollectionResponse<ProjectPublicSummary>>(endpoint),
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return fetchRead<CollectionResponse<ProjectPublicSummary>>(endpoint)
+    },
     { server: true, lazy: false }
   )
   const candidates = computed<ProjectPublicSummary[]>(

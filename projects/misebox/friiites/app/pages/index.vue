@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import TemplateOnePage from 'fireux-misebox/runtime/components/TemplateOne/Page.vue'
 import {
   createTemplateOneFixtureProjection,
@@ -14,8 +15,8 @@ import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/
 
 const kitchen = findLandingTemplateBrand('friiites')!
 const [{ data: menuResult }, { data: flagshipResult }] = await Promise.all([
-  useLiveFetch<MenuDetailPayload>('/api/menus/friiites'),
-  useLiveFetch<KitchenFlagshipDishResult>(
+  useFetch<MenuDetailPayload>('/api/menus/friiites'),
+  useFetch<KitchenFlagshipDishResult>(
     '/api/kitchens/5dGJgdjDv7Zi0tjva61O/flagship-dish',
     {
       query: { appId: 'friiites' },

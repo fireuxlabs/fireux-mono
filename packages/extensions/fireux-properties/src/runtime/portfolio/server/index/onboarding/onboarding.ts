@@ -12,11 +12,8 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverPortfolioTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PORTFOLIO_MUTATION_TARGETS, serverPortfolioTeamMembersTarget } from '../../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import {
   assertManagement,
   requireMemberRole,
@@ -67,7 +64,7 @@ export async function completePortfolioOnboarding(
 
   const memberships = serverAppUsersTarget(current.appId)
   const grants = serverPortfolioAccessTarget(current.appId)
-  const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
+  const portfolios = PORTFOLIO_MUTATION_TARGETS.portfolios
   const team = serverPortfolioTeamMembersTarget(portfolioId)
 
   return runGuardedServerTransaction(portfolios.database, async (mutations) => {

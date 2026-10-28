@@ -5,7 +5,19 @@ import { readFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref } from 'vue'
 import { normalizeSupplier } from '../runtime/supplier/utils/normalize-supplier.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
@@ -186,7 +198,7 @@ test('Malformed granted Supplier roots produce a failed collection without parti
             ? { docs, pending, error }
             : { docs: ref([]), pending: ref(false), error: ref(null) },
       }),
-      useLiveAsyncData: () => ({
+      useAsyncData: () => ({
         data: ref(null),
         pending: ref(false),
         error: ref(null),

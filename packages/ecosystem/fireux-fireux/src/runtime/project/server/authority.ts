@@ -6,10 +6,7 @@ import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  fireuxAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from './platform-targets'
 import { fireuxProjectsTarget } from './targets'
 import { serverProjectAccessTarget } from './access'
 
@@ -79,7 +76,7 @@ export async function requireProjectOperatorInTransaction(
   actor: { uid: string; appId: string; projectId: string }
 ) {
   const [app, membership, access, project] = await Promise.all([
-    transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, actor.appId),
+    transaction.read(FIREUX_MUTATION_TARGETS.fireuxApps, actor.appId),
     transaction.read(fireuxAppUsersTarget(actor.appId), actor.uid),
     transaction.read(serverProjectAccessTarget(actor.appId), actor.uid),
     transaction.read(fireuxProjectsTarget, actor.projectId),

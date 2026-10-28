@@ -3,7 +3,7 @@
     <LayoutsMiseboxTenantHeader v-if="!chromeHidden" />
 
     <section class="latap-default-layout__body" aria-label="La Tap Berne">
-      <NuxtPage />
+      <slot />
     </section>
 
     <LaTapBerneNav v-if="!chromeHidden" />

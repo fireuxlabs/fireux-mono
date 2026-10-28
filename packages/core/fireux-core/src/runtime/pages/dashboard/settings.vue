@@ -136,7 +136,7 @@
 import { computed, definePageMeta, ref, useHead } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserAccount } from '../../user/composables/account/useUserAccount'
-import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
+import { formatFirestoreTimestamp } from '../../utils/firestore-timestamp'
 
 definePageMeta({
   layout: 'dashboard',

@@ -62,9 +62,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData, createError, useRuntimeConfig } from 'nuxt/app'
 
-import { createError, useRuntimeConfig } from 'nuxt/app'
 import { computed, onMounted, ref } from 'vue'
 import { toDataURL } from 'qrcode'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
@@ -88,10 +87,12 @@ definePageMeta({
   robots: 'noindex, nofollow',
 })
 
-const { data: documentData } = await useLiveAsyncData(
+const { data: documentData } = await useAsyncData(
   `go-qr-doc-qr-${slug}`,
-  (liveFetch) =>
-    liveFetch<PublicGoQrRecord>(`/api/docs/${encodeURIComponent(slug)}`)
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchRead<PublicGoQrRecord>(`/api/docs/${encodeURIComponent(slug)}`)
+  }
 )
 
 if (!documentData.value) {

@@ -1,5 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { useNuxtApp } from '#imports'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import {
   computed,
   effectScope,
@@ -59,9 +60,12 @@ function createPlaceFetcher(): PlaceFetchFunction {
 
     scope.run(() =>
       nuxtApp.runWithContext(() => {
-        const state = useLiveAsyncData<PlaceDetailResponse>(
+        const state = useAsyncData<PlaceDetailResponse>(
           `place-lookup:${id}`,
-          (liveFetch) => liveFetch(`/api/places/${encodeURIComponent(id)}`),
+          async (_nuxtApp, { signal }) => {
+            const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+            return fetchRead(`/api/places/${encodeURIComponent(id)}`)
+          },
           { server: false }
         )
         watch(
@@ -89,11 +93,13 @@ export function usePlaceFetch(
   const locator = isRef(id)
     ? computed(() => cleanLocator(id.value))
     : computed(() => cleanLocator(id))
-  const state = useLiveAsyncData<PlaceDetailResponse | null>(
+  const state = useAsyncData<PlaceDetailResponse | null>(
     () => `place-detail|${locator.value || 'none'}`,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!locator.value) return null
-      return liveFetch<PlaceDetailResponse>(
+      return fetchRead<PlaceDetailResponse>(
         `/api/places/${encodeURIComponent(locator.value)}`
       )
     },

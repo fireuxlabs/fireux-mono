@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toValue } from 'vue'
 function load(path, result, deps) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -34,7 +46,7 @@ function harness() {
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
       useAuth: () => ({ currentUser: user }),
-      useLiveAsyncData: (k, fn, options) => {
+      useAsyncData: (k, fn, options) => {
         key = k
         read = fn
         assert.deepEqual(options, { server: false })
@@ -43,11 +55,13 @@ function harness() {
     }
   )
   const controller = make(id)
-  const run = async (result) =>
-    read(async (url, options) => {
+  const run = async (result) => (
+    (currentReadFetch = async (url, options) => {
       requests.push({ url, options })
       return result
-    })
+    }),
+    read({}, { signal: new AbortController().signal })
+  )
   return { id, user, source, requests, key, controller, run }
 }
 test('Project Ecosystems uses authenticated live transport and exact returned relationship', async () => {

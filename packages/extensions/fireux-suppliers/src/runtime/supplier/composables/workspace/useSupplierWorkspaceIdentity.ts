@@ -3,7 +3,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
 import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { useSupplierWorkspace } from './useSupplierWorkspace'
 
 export function useSupplierWorkspaceIdentity() {

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { SPROOCHLI_MUTATION_TARGETS } from './mutation-targets'
 import type { SproochliHostStorage } from './storage'
 import {
   matchesSproochliStorageMetadata,
@@ -175,7 +175,7 @@ export async function writeSproochliMenuTranslationCache(input: {
   })
   if (fields.some((field) => !field)) return false
 
-  const target = FIRESTORE_MUTATION_TARGETS.sproochliMenuTranslationCaches
+  const target = SPROOCHLI_MUTATION_TARGETS.sproochliMenuTranslationCaches
   await runGuardedServerTransaction(target.database, async (mutations) => {
     const existing = await mutations.read(target, normalized.id)
     if (existing.exists) return

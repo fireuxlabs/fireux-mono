@@ -30,7 +30,7 @@ const requirePortfolioMutationAuthority = load(
     readMembershipAccessIds,
     serverPortfolioAccessTarget: (app) => `portfolio_access/${app}/users`,
     serverAppUsersTarget: (app) => `apps/${app}/users`,
-    FIRESTORE_MUTATION_TARGETS: { portfolios: 'portfolios' },
+    PORTFOLIO_MUTATION_TARGETS: { portfolios: 'portfolios' },
     isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
     readFireuxEntityManagement: (x) => x,
     resolveFireuxEntityManagementAppId: (x) => x.app_id,

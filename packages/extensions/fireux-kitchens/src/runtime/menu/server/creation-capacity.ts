@@ -5,7 +5,7 @@ import {
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget } from '../../kitchen/server/mutation-targets'
 import {
   requireKitchenMutationAuthority,
   type readKitchenMutationActor,

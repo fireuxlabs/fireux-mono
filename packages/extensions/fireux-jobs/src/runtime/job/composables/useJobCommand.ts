@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { $fetch, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -53,6 +54,15 @@ export function useJobCommand(ownerSources: WatchSource[] = []) {
     const token = await user.getIdToken()
     assertCurrent()
     return (await $fetch<T, string, 'POST' | 'PATCH'>(path, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method,
       headers: { Authorization: `Bearer ${token}` },
       ...(body === undefined ? {} : { body }),

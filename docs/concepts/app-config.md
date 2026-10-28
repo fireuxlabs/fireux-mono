@@ -115,7 +115,7 @@ Domains register canonical sitemap sources through `fireux:seo:sitemaps:extend`.
 Core's `config/app/seo.ts` normalizes that contract; `runtime/server/utils/seo-sitemaps.ts`
 applies it to counts, page queries and final document eligibility. A domain may
 contribute `additionalPublicFilters`, explicit scalar equality conditions beside
-its primary public field. `runtime/utils/sitemap-public-filters.ts` validates these
+its primary public field. `src/utils/sitemap-public-filters.ts` validates these
 conditions; malformed policy fails closed. Existing owners without additional
 conditions keep their current policy. Supplier proves the two-condition case:
 active nested Identity and visibility true, matching its directory and public SEO.

@@ -2,10 +2,8 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { INGREDIENT_MUTATION_TARGETS } from './mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import type { Ingredient } from '../models/ingredient.model'
 import { assertCurator, curatorContext } from './curation-authority'
 import { badRequest, normalizeIngredientInput } from './curation-input'
@@ -15,7 +13,7 @@ import {
 } from './curation-storage'
 import { normalizeIngredient } from './normalize'
 
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 
 export async function createIngredient(
   event: H3Event,
@@ -27,7 +25,7 @@ export async function createIngredient(
   if (!isFirestoreDocumentId(id)) badRequest('Unable to resolve Ingredient id.')
 
   const context = await curatorContext(event)
-  const ingredients = FIRESTORE_MUTATION_TARGETS.ingredients
+  const ingredients = INGREDIENT_MUTATION_TARGETS.ingredients
   const memberships = serverAppUsersTarget(context.appId)
 
   const result = await runGuardedServerTransaction(

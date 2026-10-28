@@ -1,5 +1,5 @@
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget } from '../../../kitchen/server/mutation-targets'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import {

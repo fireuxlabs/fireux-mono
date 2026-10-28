@@ -1,8 +1,10 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getQuery } from 'h3'
+import { defineEventHandler, setResponseHeader, getQuery } from 'h3'
+
 import { listJobApplications } from '../../../job/server/hiring/index.ts'
 
-export default defineLiveReadHandler((event) => {
+export default defineEventHandler((event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   const query = getQuery(event)
   return listJobApplications(event, query.scope)
 })

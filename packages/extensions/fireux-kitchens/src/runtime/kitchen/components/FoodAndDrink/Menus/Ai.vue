@@ -19,6 +19,8 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
@@ -132,6 +134,15 @@ async function ask(question = prompt.value.trim()) {
     const intent = await $fetch<KitchenMenusIntent>(
       '/api/workspace/kitchen/menus/intent',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         retry: 0,
         timeout: 65_000,

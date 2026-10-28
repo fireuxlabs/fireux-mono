@@ -4,7 +4,19 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toValue } from 'vue'
 
 test('App detail rejects previous scope data and distinguishes disappearance from failure', async () => {
@@ -25,7 +37,7 @@ test('App detail rejects previous scope data and distinguishes disappearance fro
     'resolveHttpDocumentOutcome',
     'computed',
     'toValue',
-    'useLiveAsyncData',
+    'useAsyncData',
   ])(
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
@@ -33,10 +45,11 @@ test('App detail rejects previous scope data and distinguishes disappearance fro
     toValue,
     (_key, handler) => {
       run = async () => {
-        data.value = await handler(async () => ({
+        data.value = await ((currentReadFetch = async () => ({
           ok: true,
           item: { id: 'a' },
-        }))
+        })),
+        handler({}, { signal: new AbortController().signal }))
       }
       return {
         data,

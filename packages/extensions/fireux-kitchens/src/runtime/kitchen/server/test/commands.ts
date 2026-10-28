@@ -6,7 +6,7 @@ import {
   serverAuditStamp,
   serverTimestamp,
 } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenTestsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenTestsTarget } from '../mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,

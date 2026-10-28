@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
 
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
@@ -70,10 +70,12 @@ definePageMeta({
 
 const route = useRoute()
 const slug = readRouteParam(route.params.slug)
-const { data: read } = await useLiveAsyncData(
+const { data: read } = await useAsyncData(
   `yellow-velo-product-${slug}`,
-  (liveFetch) =>
-    liveFetch<ProductRead>(`/api/products/${encodeURIComponent(slug)}`)
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchRead<ProductRead>(`/api/products/${encodeURIComponent(slug)}`)
+  }
 )
 const product = computed(() => read.value?.product || null)
 const defaultPrice = computed(() => read.value?.defaultPrice || null)

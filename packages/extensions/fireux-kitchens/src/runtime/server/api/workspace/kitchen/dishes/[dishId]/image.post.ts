@@ -19,7 +19,7 @@ import {
   requireKitchenWriter,
   requireKitchenWriterAccount,
 } from '../../../../../../kitchen/server/core/operator-access.ts'
-import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget } from '../../../../../../kitchen/server/mutation-targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'] as const

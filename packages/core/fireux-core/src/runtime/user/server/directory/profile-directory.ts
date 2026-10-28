@@ -1,4 +1,12 @@
-import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getQuery,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+
 import type {
   CollectionResponse,
   DetailResponse,
@@ -7,13 +15,11 @@ import type {
   ProfileDirectoryEntry,
   ProfileUser,
 } from '../../models/user-directory.model.ts'
-import { defineLiveReadHandler } from '../../../server/utils/http/defineLiveReadHandler'
+
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import { readUserIdentitySummary } from '../identity/summary'
 
-const CACHE_CONTROL =
-  'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 const DEFAULT_LIMIT = 100
 const MAX_LIMIT = 200
 const USER_HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]{2,29}$/
@@ -75,12 +81,14 @@ function mapEntry(
 function setPublicHeaders(event: H3Event) {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': CACHE_CONTROL,
+    'Cache-Control': 'no-store',
   })
 }
 
 export function createProfileDirectoryHandler(config: ProfileDirectoryConfig) {
-  return defineLiveReadHandler(async (event: H3Event) => {
+  return defineEventHandler(async (event: H3Event) => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     setPublicHeaders(event)
     const limit = normalizeLimit(getQuery(event).limit)
     const db = getRuntimeIdentityFirestore()
@@ -118,7 +126,9 @@ export function createProfileDirectoryHandler(config: ProfileDirectoryConfig) {
 }
 
 export function createProfileDetailHandler(config: ProfileDirectoryConfig) {
-  return defineLiveReadHandler(async (event: H3Event) => {
+  return defineEventHandler(async (event: H3Event) => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     setPublicHeaders(event)
     const identifier = requireFirestoreDocumentId(
       event.context.params?.id,

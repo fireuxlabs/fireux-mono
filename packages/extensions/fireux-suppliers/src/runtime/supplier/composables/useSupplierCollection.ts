@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { computed } from 'vue'
 import type { Company } from 'fireux-companies/runtime/place/models/company.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
@@ -42,7 +43,7 @@ export function useSupplierCollection(
       ? DEFAULT_COLLECTION_PATH
       : ''
   )
-  const directory = useLiveAsyncData<SupplierDirectoryResponse>(
+  const directory = useAsyncData<SupplierDirectoryResponse>(
     computed(() =>
       [
         'supplier-collection',
@@ -50,10 +51,12 @@ export function useSupplierCollection(
         usesTargetedRootRead.value ? 'targeted' : 'directory',
       ].join('|')
     ),
-    (liveFetch) =>
-      sourceMode.value === 'live' && !usesTargetedRootRead.value
-        ? liveFetch<SupplierDirectoryResponse>('/api/suppliers')
-        : Promise.resolve({ suppliers: [], companies: [], places: [] }),
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return sourceMode.value === 'live' && !usesTargetedRootRead.value
+        ? fetchRead<SupplierDirectoryResponse>('/api/suppliers')
+        : Promise.resolve({ suppliers: [], companies: [], places: [] })
+    },
     { watch: [sourceMode, usesTargetedRootRead] }
   )
   const rootDocuments = firestoreLoadDocsByIds<SupplierRootDoc>({

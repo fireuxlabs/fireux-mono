@@ -1,7 +1,7 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import type { UserProfileKind } from '../../../utils/firestore-mutations/targets'
-import { USER_PROFILE_KINDS } from '../../../utils/firestore-mutations/targets'
+import type { UserProfileKind } from '../../../user/server/mutation-targets'
+import { USER_PROFILE_KINDS } from '../../../user/server/mutation-targets'
 import { serverAuditStamp } from '../records/stamps'
 
 export type ProfileProvisionContractSeed = Readonly<Record<string, unknown>>

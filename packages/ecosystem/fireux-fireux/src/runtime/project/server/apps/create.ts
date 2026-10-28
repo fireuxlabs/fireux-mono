@@ -1,10 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  fireuxAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
 import {
   stamp,
   initialMembership,
@@ -90,7 +87,7 @@ export async function createProjectApp(
       statusMessage:
         'Creation is currently supported in this FireUX Ecosystem only.',
     })
-  const targets = FIRESTORE_MUTATION_TARGETS
+  const targets = FIREUX_MUTATION_TARGETS
   const memberships = fireuxAppUsersTarget(input.id)
   await runGuardedServerTransaction(
     { kind: 'named', databaseId: 'fireux' },

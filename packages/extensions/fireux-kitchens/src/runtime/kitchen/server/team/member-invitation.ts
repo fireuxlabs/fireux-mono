@@ -11,7 +11,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenTeamMembersTarget } from '../mutation-targets'
 import { createError, type H3Event } from 'h3'
 import {
   readKitchenMutationActor,

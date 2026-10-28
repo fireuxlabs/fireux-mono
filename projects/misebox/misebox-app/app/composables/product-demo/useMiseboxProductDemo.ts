@@ -1,5 +1,5 @@
+import { useAsyncData } from 'nuxt/app'
 // Product Demo composable: browser data loading and stable exports.
-import { useLiveAsyncData, type LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { IngredientDirectoryPage } from 'fireux-kitchens/runtime/ingredient/models/ingredient-directory.model'
 import { experiences } from './misebox-product-demo-experiences'
 import { loadMiseboxProductDemo } from './loadMiseboxProductDemo'
@@ -19,7 +19,7 @@ export type MiseboxProductDemoKioskAppearance =
 export async function useMiseboxProductDemo() {
   const loadIngredientRoots = async (
     ids: string[],
-    requestFetch: LiveFetch
+    requestFetch: typeof $fetch
   ) => {
     const pages = await Promise.all(
       Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {
@@ -31,12 +31,14 @@ export async function useMiseboxProductDemo() {
     )
     return pages.flatMap((page: IngredientDirectoryPage) => page.items)
   }
-  const state = await useLiveAsyncData<MiseboxProductDemoModel>(
+  const state = await useAsyncData<MiseboxProductDemoModel>(
     'misebox-product-demo-production-v12',
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       try {
         return await loadMiseboxProductDemo((ids) =>
-          loadIngredientRoots(ids, liveFetch)
+          loadIngredientRoots(ids, fetchRead)
         )
       } catch (error) {
         console.error(

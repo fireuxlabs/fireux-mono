@@ -10,603 +10,652 @@
       ]
     },
     {
-      "name": "FireUX dev (3000)",
+      "name": "Debug: bringli (3006)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:fireux",
+      "command": "pnpm --dir 'projects/bringli/bringli-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 1
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: bringli",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Misebox dev (3001)",
-      "type": "node-terminal",
+      "name": "Browser: bringli",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:misebox",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3006",
+      "webRoot": "${workspaceFolder}/projects/bringli/bringli-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 2
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Werkbox dev (3002)",
+      "name": "Debug: buenohost (3012)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:werkbox",
+      "command": "pnpm --dir 'projects/buenohost/buenohost-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 3
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: buenohost",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Richies Reinigung dev (3004)",
-      "type": "node-terminal",
+      "name": "Browser: buenohost",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:richies",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3012",
+      "webRoot": "${workspaceFolder}/projects/buenohost/buenohost-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 4
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "FireUX Tenant dev (3005)",
+      "name": "Debug: book-with-nats (3028)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:tenant",
+      "command": "pnpm --dir 'projects/buenohost/book-with-nats' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 5
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: book-with-nats",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Bringli dev (3006)",
-      "type": "node-terminal",
+      "name": "Browser: book-with-nats",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:bringli",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3028",
+      "webRoot": "${workspaceFolder}/projects/buenohost/book-with-nats",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 6
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Find My SEO dev (3010)",
+      "name": "Debug: ausfinn-apartments (3029)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:find-my-seo",
+      "command": "pnpm --dir 'projects/buenohost/ausfinn-apartments' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 7
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: ausfinn-apartments",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Sproochli dev (3011)",
-      "type": "node-terminal",
+      "name": "Browser: ausfinn-apartments",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:sproochli",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3029",
+      "webRoot": "${workspaceFolder}/projects/buenohost/ausfinn-apartments",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 8
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "BuenoHost dev (3012)",
+      "name": "Debug: fireux (3000)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:buenohost",
+      "command": "pnpm --dir 'projects/fireux/fireux-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 9
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: fireux",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Go QR dev (3013)",
-      "type": "node-terminal",
+      "name": "Browser: fireux",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:go-qr",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/projects/fireux/fireux-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 10
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Slap dev (3009)",
+      "name": "Debug: tenant (3005)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:slap",
+      "command": "pnpm --dir 'projects/fireux/tenant' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 11
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: tenant",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Yellow Velo dev (3014)",
-      "type": "node-terminal",
+      "name": "Browser: tenant",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:yellow-velo",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3005",
+      "webRoot": "${workspaceFolder}/projects/fireux/tenant",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 12
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Holzworm dev (3030)",
+      "name": "Debug: find-my-seo (3010)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:holzworm",
+      "command": "pnpm --dir 'projects/fireux/find-my-seo-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 13
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: find-my-seo",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Granite dev (3007)",
-      "type": "node-terminal",
+      "name": "Browser: find-my-seo",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:granite",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3010",
+      "webRoot": "${workspaceFolder}/projects/fireux/find-my-seo-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 13
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Lifeguard Community dev (3031)",
+      "name": "Debug: sproochli (3011)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:lifeguard-community",
+      "command": "pnpm --dir 'projects/fireux/sproochli' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 14
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: sproochli",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "La Tap Berne dev (3008)",
-      "type": "node-terminal",
+      "name": "Browser: sproochli",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:la-tap-berne",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3011",
+      "webRoot": "${workspaceFolder}/projects/fireux/sproochli",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 14
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "FireUX Blank dev (3015)",
+      "name": "Debug: go-qr (3013)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:fireux-blank",
+      "command": "pnpm --dir 'projects/fireux/go-qr' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 15
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: go-qr",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Bangin Coffee dev (3016)",
-      "type": "node-terminal",
+      "name": "Browser: go-qr",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:bangin-coffee",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3013",
+      "webRoot": "${workspaceFolder}/projects/fireux/go-qr",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 16
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Bären Ringgenberg dev (3017)",
+      "name": "Debug: fireux-blank (3015)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:baeren-ringgenberg",
+      "command": "pnpm --dir 'projects/fireux/fireux-blank' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 17
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: fireux-blank",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Interlaken Essen dev (3026)",
-      "type": "node-terminal",
+      "name": "Browser: fireux-blank",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:interlaken-essen",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3015",
+      "webRoot": "${workspaceFolder}/projects/fireux/fireux-blank",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 18
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Book with Nats dev (3028)",
+      "name": "Debug: holzworm (3030)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:book-with-nats",
+      "command": "pnpm --dir 'projects/fireux/holzworm' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 19
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: holzworm",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Friiites dev (3033)",
-      "type": "node-terminal",
+      "name": "Browser: holzworm",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:friiites",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3030",
+      "webRoot": "${workspaceFolder}/projects/fireux/holzworm",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 19
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "AUSFinn Apartments dev (3029)",
+      "name": "Debug: lifeguard-community (3031)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:ausfinn-apartments",
+      "command": "pnpm --dir 'projects/fireux/lifeguard-community' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 20
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: lifeguard-community",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Sharer dev (3032)",
-      "type": "node-terminal",
+      "name": "Browser: lifeguard-community",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm dev:sharer",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3031",
+      "webRoot": "${workspaceFolder}/projects/fireux/lifeguard-community",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 20
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kjordi dev (3034)",
+      "name": "Debug: ignition-menu-demo (3048)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:kjordi",
+      "command": "pnpm --dir 'projects/fireux/ignition-menu-demo' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 21
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: ignition-menu-demo",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill FireUX dev (3000)",
-      "type": "node-terminal",
+      "name": "Browser: ignition-menu-demo",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:fireux",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3048",
+      "webRoot": "${workspaceFolder}/projects/fireux/ignition-menu-demo",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 101
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Misebox dev (3001)",
+      "name": "Debug: granite (3007)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:misebox",
+      "command": "pnpm --dir 'projects/granite/granite-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 102
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: granite",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Werkbox dev (3002)",
-      "type": "node-terminal",
+      "name": "Browser: granite",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:werkbox",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3007",
+      "webRoot": "${workspaceFolder}/projects/granite/granite-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 103
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Richies Reinigung dev (3004)",
+      "name": "Debug: misebox (3001)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:richies",
+      "command": "pnpm --dir 'projects/misebox/misebox-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 104
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: misebox",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill FireUX Tenant dev (3005)",
-      "type": "node-terminal",
+      "name": "Browser: misebox",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:tenant",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/projects/misebox/misebox-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 105
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Bringli dev (3006)",
+      "name": "Debug: la-tap-berne (3008)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:bringli",
+      "command": "pnpm --dir 'projects/misebox/la-tap-berne' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 106
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: la-tap-berne",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Find My SEO dev (3010)",
-      "type": "node-terminal",
+      "name": "Browser: la-tap-berne",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:find-my-seo",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3008",
+      "webRoot": "${workspaceFolder}/projects/misebox/la-tap-berne",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 107
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Sproochli dev (3011)",
+      "name": "Debug: bangin-coffee (3016)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:sproochli",
+      "command": "pnpm --dir 'projects/misebox/bangin-coffee' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 108
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: bangin-coffee",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill BuenoHost dev (3012)",
-      "type": "node-terminal",
+      "name": "Browser: bangin-coffee",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:buenohost",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3016",
+      "webRoot": "${workspaceFolder}/projects/misebox/bangin-coffee",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 109
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Go QR dev (3013)",
+      "name": "Debug: baeren-ringgenberg (3017)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:go-qr",
+      "command": "pnpm --dir 'projects/misebox/baeren-ringgenberg' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 110
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: baeren-ringgenberg",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Slap dev (3009)",
-      "type": "node-terminal",
+      "name": "Browser: baeren-ringgenberg",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:slap",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3017",
+      "webRoot": "${workspaceFolder}/projects/misebox/baeren-ringgenberg",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 111
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Yellow Velo dev (3014)",
+      "name": "Debug: interlaken-essen (3026)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:yellow-velo",
+      "command": "pnpm --dir 'projects/misebox/interlaken-essen' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 112
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: interlaken-essen",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Holzworm dev (3030)",
-      "type": "node-terminal",
+      "name": "Browser: interlaken-essen",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:holzworm",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3026",
+      "webRoot": "${workspaceFolder}/projects/misebox/interlaken-essen",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 113
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Granite dev (3007)",
+      "name": "Debug: friiites (3033)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:granite",
+      "command": "pnpm --dir 'projects/misebox/friiites' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 113
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: friiites",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Lifeguard Community dev (3031)",
-      "type": "node-terminal",
+      "name": "Browser: friiites",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:lifeguard-community",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3033",
+      "webRoot": "${workspaceFolder}/projects/misebox/friiites",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 114
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill La Tap Berne dev (3008)",
+      "name": "Debug: sharer (3032)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:la-tap-berne",
+      "command": "pnpm --dir 'projects/sharer/sharer-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 114
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: sharer",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill FireUX Blank dev (3015)",
-      "type": "node-terminal",
+      "name": "Browser: sharer",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:fireux-blank",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3032",
+      "webRoot": "${workspaceFolder}/projects/sharer/sharer-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 115
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Bangin Coffee dev (3016)",
+      "name": "Debug: kjordi (3034)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:bangin-coffee",
+      "command": "pnpm --dir 'projects/sharer/kjordi' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 116
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: kjordi",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Bären Ringgenberg dev (3017)",
-      "type": "node-terminal",
+      "name": "Browser: kjordi",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:baeren-ringgenberg",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3034",
+      "webRoot": "${workspaceFolder}/projects/sharer/kjordi",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 117
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Interlaken Essen dev (3026)",
+      "name": "Debug: slap (3009)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:interlaken-essen",
+      "command": "pnpm --dir 'projects/slap/slap-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 118
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: slap",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Book with Nats dev (3028)",
-      "type": "node-terminal",
+      "name": "Browser: slap",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:book-with-nats",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3009",
+      "webRoot": "${workspaceFolder}/projects/slap/slap-app",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 119
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Friiites dev (3033)",
+      "name": "Debug: yellow-velo (3014)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:friiites",
+      "command": "pnpm --dir 'projects/slap/yellow-velo' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 119
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: yellow-velo",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill AUSFinn Apartments dev (3029)",
-      "type": "node-terminal",
+      "name": "Browser: yellow-velo",
+      "type": "pwa-chrome",
       "request": "launch",
-      "command": "pnpm kill:ausfinn-apartments",
-      "cwd": "${workspaceFolder}",
+      "url": "http://localhost:3014",
+      "webRoot": "${workspaceFolder}/projects/slap/yellow-velo",
+      "sourceMaps": true,
       "presentation": {
-        "group": "Dev Servers",
-        "order": 120
+        "group": "Browser sessions"
       }
     },
     {
-      "name": "Kill Sharer dev (3032)",
+      "name": "Debug: interlaken-bike-tours (3035)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:sharer",
+      "command": "pnpm --dir 'projects/slap/interlaken-bike-tours' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 120
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: interlaken-bike-tours",
+        "killOnServerStop": true
       }
     },
     {
-      "name": "Kill Kjordi dev (3034)",
+      "name": "Browser: interlaken-bike-tours",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:3035",
+      "webRoot": "${workspaceFolder}/projects/slap/interlaken-bike-tours",
+      "sourceMaps": true,
+      "presentation": {
+        "group": "Browser sessions"
+      }
+    },
+    {
+      "name": "Debug: werkbox (3002)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:kjordi",
+      "command": "pnpm --dir 'projects/werkbox/werkbox-app' dev",
       "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 121
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: werkbox",
+        "killOnServerStop": true
       }
-    }
-  ],
-  "compounds": [
-    {
-      "name": "All dev servers (3000+3001+3002)",
-      "configurations": [
-        "FireUX dev (3000)",
-        "Misebox dev (3001)",
-        "Werkbox dev (3002)"
-      ]
     },
     {
-      "name": "All dev servers extended (3000-3005)",
-      "configurations": [
-        "FireUX dev (3000)",
-        "Misebox dev (3001)",
-        "Werkbox dev (3002)",
-        "Richies Reinigung dev (3004)",
-        "FireUX Tenant dev (3005)"
-      ]
+      "name": "Browser: werkbox",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:3002",
+      "webRoot": "${workspaceFolder}/projects/werkbox/werkbox-app",
+      "sourceMaps": true,
+      "presentation": {
+        "group": "Browser sessions"
+      }
     },
     {
-      "name": "All dev servers full (3000-3010)",
-      "configurations": [
-        "FireUX dev (3000)",
-        "Misebox dev (3001)",
-        "Werkbox dev (3002)",
-        "Richies Reinigung dev (3004)",
-        "FireUX Tenant dev (3005)",
-        "Bringli dev (3006)",
-        "Find My SEO dev (3010)",
-        "Sproochli dev (3011)",
-        "BuenoHost dev (3012)",
-        "Go QR dev (3013)",
-        "Slap dev (3009)",
-        "Yellow Velo dev (3014)",
-        "Holzworm dev (3030)",
-        "Granite dev (3007)",
-        "La Tap Berne dev (3008)",
-        "FireUX Blank dev (3015)",
-        "Bangin Coffee dev (3016)",
-        "Bären Ringgenberg dev (3017)",
-        "Interlaken Essen dev (3026)",
-        "Book with Nats dev (3028)",
-        "Friiites dev (3033)",
-        "AUSFinn Apartments dev (3029)",
-        "Sharer dev (3032)",
-        "Kjordi dev (3034)"
-      ]
+      "name": "Debug: richies (3004)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm --dir 'projects/werkbox/richies-reinigung' dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "pattern": "Nitro server built|Nuxt Nitro server built",
+        "action": "startDebugging",
+        "name": "Browser: richies",
+        "killOnServerStop": true
+      }
+    },
+    {
+      "name": "Browser: richies",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:3004",
+      "webRoot": "${workspaceFolder}/projects/werkbox/richies-reinigung",
+      "sourceMaps": true,
+      "presentation": {
+        "group": "Browser sessions"
+      }
     }
   ]
 }

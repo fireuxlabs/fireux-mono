@@ -1,7 +1,7 @@
 # FireUX Ignite context
 
-Updated: 2026-10-21
-Ref: eddc8186c
+Updated: 2026-10-28
+Ref: cf2413355
 Role: living context
 Scope: reusable FireUX app ignition and reconciliation
 
@@ -18,6 +18,27 @@ The FireUX App consumer is `projects/fireux/fireux-app/app/pages/workspace/proje
 A product service is a configured business outcome composed from capabilities and exposed through surfaces. Service-layer execution coordinates the supported operations. Neither owns every domain record it consumes; an ordering channel is not automatically a complete product service.
 
 Misebox is a reference implementation, not proof that Ignition generated it. Keep business briefs independent of reference app names, routes and file structure. Record durable decisions, reasons, owners and source evidence; do not embed raw chat history, credentials or private operator/customer records. A path is a pointer, not proof that its behaviour has been tested.
+
+## One creation path
+
+The intended creation contract has two clients: the FireUX App and Codex acting
+as an authorized operator. Both use the same brief/assembly contracts and
+underlying creation, initialization, verification and preview mechanics.
+Richer context or operator permissions do not establish a separate creation
+implementation or bypass an owning command's authority. Different public offers
+may retain their intake policies while converging on these shared mechanics.
+
+Creation delivers an agreed working starting App. Post-creation development
+extends that App through its existing owners. A repair repeatedly needed after
+creation belongs back with the shared creation step or foundation that owns it.
+The FireUX App owns a bounded assisted Menu-preview source recipe, consumed by
+its website and operator CLI. See its [intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md)
+and [operator entrypoint](../../../../../projects/fireux/fireux-app/ignition/README.md).
+This does not make the neutral package an executor or prove general industry
+generation. Prove each supported path through its actual commands and preview
+before claiming it is shared. The
+[priority list](../../../../../docs/roadmaps/fireux-priorities.md) gates this work
+after acceptance of the current foundation slice.
 
 ## Shared structure first, explicit deltas second
 
@@ -98,6 +119,15 @@ research, crawl sites, generate pages or certify rankings automatically.
 - [App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md): concrete FireUX App request and delivery owner.
 
 ## Refresh and verification
+
+Prove complete pipelines using existing real records or domain-owned demo data
+as appropriate. Trace an input through validation, the existing owning commands,
+the saved result and its consumer; check reload, interrupted completion and
+retry without duplication. Demo inputs follow the real contracts and do not
+establish a parallel runtime or mutation path. Record whether evidence came
+from fixtures, connected application behaviour or hosting. A venue-specific
+schedule or operational acceptance check does not block independent pipeline
+proof, and must not be bypassed to manufacture it.
 
 Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
 

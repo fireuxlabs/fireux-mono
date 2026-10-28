@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: fail closed on public avatar sources.
-import { readHttpsUrl } from '../../utils/httpsUrl'
+import { readHttpsUrl } from '../../utils/https-url'
 
 export const USER_ECOSYSTEM_AVATAR_SRC = '/img/ecosystem/avatar.png'
 export const USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE = USER_ECOSYSTEM_AVATAR_SRC

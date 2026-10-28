@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { DishSpec } from '../models/dish.model'
 
 export const emptyDishSpecification = (): DishSpec => ({

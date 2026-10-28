@@ -5,11 +5,8 @@ import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutatio
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import {
-  serverKitchenDishesTarget,
-  serverKitchenMenuUploadsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { serverKitchenDishesTarget, serverKitchenMenuUploadsTarget } from '../../../../../kitchen/server/mutation-targets'
 import { writeKitchenMenuDraft } from '../../../../../menu/server/draft/write'
 import { menuNameAndSlug } from '../../../../../menu/server/name'
 import { compareKitchenMenuDraftToCurrent } from '../../../../../menu/server/draft/comparison'

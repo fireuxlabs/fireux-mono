@@ -1,6 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeUserHandle } from '../utils/user-handle'
@@ -25,12 +25,14 @@ export function useUserDirectoryDetail(handle: MaybeRefOrGetter<string>) {
       normalized.value,
     ])
   )
-  const state = useLiveAsyncData<{ key: string; user: User } | null>(
+  const state = useAsyncData<{ key: string; user: User } | null>(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!normalized.value) return null
       const requestKey = key.value
-      const response = await liveFetch<DetailResponse<User>>(
+      const response = await fetchRead<DetailResponse<User>>(
         `/api/users/${encodeURIComponent(normalized.value)}`
       )
       return { key: requestKey, user: response.item }

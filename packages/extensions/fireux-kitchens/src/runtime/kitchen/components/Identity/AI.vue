@@ -18,6 +18,8 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -93,6 +95,15 @@ async function submit() {
     const intent = await $fetch<KitchenIdentityIntent>(
       '/api/workspace/kitchen/identity/intent',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         timeout: 60000,
         retry: 0,

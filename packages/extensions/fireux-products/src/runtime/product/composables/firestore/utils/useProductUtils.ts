@@ -1,11 +1,11 @@
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import { ProductStorage } from '../../../utils/product.ts'
 
 export function useProductUtils() {
   const { uploadImage } = useImageStorage()
-  const { firestoreGetDoc } = useFirestoreManager()
+  const { firestoreGetDoc } = useFirestoreRead()
 
   async function buildSlugIfUnique(
     title: string,

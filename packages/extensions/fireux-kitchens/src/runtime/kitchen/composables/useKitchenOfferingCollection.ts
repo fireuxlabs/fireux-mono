@@ -2,7 +2,7 @@ import { computed, ref, watch, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useKitchenAccess } from './useKitchenAccess'
 import { readKitchenOfferingRecords } from '../utils/offerings'
 

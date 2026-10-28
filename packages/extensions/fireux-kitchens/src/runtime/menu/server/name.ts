@@ -1,11 +1,10 @@
 import { createError, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { serverKitchenMenusTarget } from '../../kitchen/server/mutation-targets'
 export function menuNameAndSlug(event: H3Event, value: unknown) {
   const name = typeof value === 'string' ? value.trim() : ''
   if (!name || name.length > 160)

@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 function load(path, dependencies, name) {
   dependencies = { ...dishPricingHelpers, ...dependencies }
 
@@ -60,7 +60,8 @@ const requireKitchenRecordMutationAuthority = load(
   {
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverKitchenAccessTarget: (app) => 'kitchen_access',
-    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
     readKitchenAccessIds,
     isAppUserSubscription: (value) =>
       ['free', 'premium', 'business'].includes(value),
@@ -103,7 +104,7 @@ const references = load(
     ...catalogue,
     createError,
     defineFirestoreMutationTarget: (x) => x.collectionPath,
-    FIRESTORE_MUTATION_TARGETS: { ingredients: 'ingredients' },
+    INGREDIENT_MUTATION_TARGETS: { ingredients: 'ingredients' },
   },
   '({requireKitchenIngredientReferences,requireKitchenPrepItemReferences,requireKitchenRecipeReference})'
 )
@@ -382,15 +383,8 @@ test('Dish transport snapshots nested input and invalidates account/Kitchen roun
         {
           onBeforeUnmount: (fn) => disposed.push(fn),
           watch,
-          useRoute: () => ({
-            get fullPath() {
-              return routePath.value
-            },
-          }),
           useAuth: () => ({ currentUser }),
           useRequireUser: () => auth,
-          useWorkspace: () => ({ selectedId }),
-          useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
           $fetch: (...args) => {
             calls.push(args)
             return response
@@ -399,7 +393,11 @@ test('Dish transport snapshots nested input and invalidates account/Kitchen roun
         'useDishMutation'
       )
       const input = { draft: { name: 'Cola' } },
-        pending = useDishMutation().mutate('POST', input, 'k')
+        pending = useDishMutation([selectedId, routePath]).mutate(
+          'POST',
+          input,
+          'k'
+        )
       const done =
         scope === 'stable' || stage === 'response'
           ? pending
@@ -725,23 +723,34 @@ test('Dish deletion never scans another Kitchen', async () => {
 
 test('Dish deletion refuses an incomplete usage scan', async () => {
   const h = harness()
-  for (let index = 0; index < 1000; index++) h.records.set(`kitchens/k/promotions/${index}`, { dishes: [] })
-  await assert.rejects(h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }), /Too many records/)
+  for (let index = 0; index < 1000; index++)
+    h.records.set(`kitchens/k/promotions/${index}`, { dishes: [] })
+  await assert.rejects(
+    h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }),
+    /Too many records/
+  )
   assert.deepEqual(h.writes, [])
 })
-
 
 test('Dish creation preserves unset, explicit zero and normal prices without changing existing records', async () => {
   for (const price of [undefined, 0, 13]) {
     const h = harness()
-    await h.createDish({}, { kitchenId: 'k', draft: { name: 'New item', ...(price === undefined ? {} : { price }) } })
+    await h.createDish(
+      {},
+      {
+        kitchenId: 'k',
+        draft: { name: 'New item', ...(price === undefined ? {} : { price }) },
+      }
+    )
     const data = h.writes[0][3]
     assert.equal(Object.hasOwn(data, 'price'), price !== undefined)
     assert.equal(data.price, price)
   }
   for (const price of [null, '', -1, NaN]) {
     const h = harness()
-    await assert.rejects(h.createDish({}, { kitchenId: 'k', draft: { name: 'Bad price', price } }))
+    await assert.rejects(
+      h.createDish({}, { kitchenId: 'k', draft: { name: 'Bad price', price } })
+    )
     assert.equal(h.writes.length, 0)
   }
 })

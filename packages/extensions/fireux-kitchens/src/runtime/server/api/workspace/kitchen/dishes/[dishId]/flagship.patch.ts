@@ -8,7 +8,7 @@ import {
 } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget } from '../../../../../../kitchen/server/mutation-targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {

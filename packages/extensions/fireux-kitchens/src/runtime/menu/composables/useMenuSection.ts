@@ -97,7 +97,12 @@ function createMenuSectionState(
     }
   )
   const itemMutations = useMenuItemMutations()
-  const dishMutations = useDishUpdate()
+  const dishMutations = useDishUpdate([
+    menuState.storageKitchenId,
+    menuState.menuId,
+    sectionId,
+    menuState.canWrite,
+  ])
   const items = itemState.items
   const itemsPending = itemState.pending
   const itemsCollectionPath = itemState.collectionPath

@@ -1,9 +1,9 @@
-# Ecosystem workspace experiment
+# Focused ecosystem workspaces
 
-These `.code-workspace` files are the optional ecosystem-window experiment
-added on 2026-07-23. They do not change the monorepo, app registry, dev
-commands, or FireUX toolbar.
+These workspaces open the repository root and retain its shared editor settings,
+tasks and debug entries. Explorer filters hide other ecosystems' App folders;
+repository search remains available.
 
-If the separate workspace windows are more annoying than useful, remove this
-`workspaces` directory. The Activity Bar ecosystem tabs are independent and
-will continue to work.
+`pnpm ide:sync` generates one workspace per discovered App ecosystem. Use the
+root `fireux-mono.code-workspace` when you want every App visible. See
+[the IDE workflow](../../tools/ide/README.md) for commands and ownership.

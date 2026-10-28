@@ -6,7 +6,7 @@ import {
   isAppUserSubscription,
   isAppUserRole,
 } from '../../models/app-user.model.ts'
-import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
+import { serverAppUsersTarget } from '../mutation-targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
   countTransactionAdmins,

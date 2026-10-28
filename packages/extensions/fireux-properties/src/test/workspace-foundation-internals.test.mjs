@@ -2,7 +2,19 @@ import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/run
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { test } from 'node:test'
 import { computed, effectScope, reactive, ref, toValue, watch } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
@@ -318,7 +330,7 @@ test('Portfolio detail hides Nuxt retained data during refresh, route changes, i
       computed,
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
-      useLiveAsyncData: (nextKey, nextHandler, nextOptions) => {
+      useAsyncData: (nextKey, nextHandler, nextOptions) => {
         calls++
         key = nextKey
         handler = nextHandler
@@ -341,10 +353,11 @@ test('Portfolio detail hides Nuxt retained data during refresh, route changes, i
   assert.equal(detail.outcome.value, 'pending')
   assert.equal(detail.portfolio.value, null)
   const requests = []
-  await handler(async (request) => {
+  await ((currentReadFetch = async (request) => {
     requests.push(request)
     return { portfolio: { id: 'b' } }
-  })
+  }),
+  handler({}, { signal: new AbortController().signal }))
   assert.deepEqual(requests, ['/api/portfolios/b'])
   state.data.value = { portfolio: { id: 'b' } }
   assert.equal(detail.outcome.value, 'ready')
@@ -361,9 +374,10 @@ test('Portfolio detail hides Nuxt retained data during refresh, route changes, i
   assert.equal(detail.outcome.value, 'idle')
   assert.equal(detail.portfolio.value, null)
   assert.equal(
-    await handler(() => {
+    await ((currentReadFetch = () => {
       throw Error('inactive detail dispatched')
     }),
+    handler({}, { signal: new AbortController().signal })),
     null
   )
   id.value = 'b'

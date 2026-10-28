@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: reuse the browser-safe Firestore document-id predicate.
 import { createError } from 'h3'
-import { isFirestoreDocumentId } from '../../../utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from '../../../utils/firestore-document-id'
 import { readString } from '../records/read.ts'
 
 export { isFirestoreDocumentId }

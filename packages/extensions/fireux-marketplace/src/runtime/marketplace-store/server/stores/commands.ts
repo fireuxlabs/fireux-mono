@@ -2,10 +2,7 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverMarketplaceStoresTarget,
-  serverMarketplaceStoreTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverMarketplaceStoresTarget, serverMarketplaceStoreTeamMembersTarget } from '../mutation-targets'
 import type { MarketplaceStore } from '../../models/marketplace.model.ts'
 import type { MarketplaceMutationResponse } from '../../models/marketplace-api.model.ts'
 import {

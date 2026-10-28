@@ -50,12 +50,20 @@ only localhost/127.0.0.1, compiles the exact ecosystem-owned
 back to cloud Firestore. Run the suite alone with
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 node --test projects/misebox/misebox-app/test/firestore.production.test.mjs`.
 
+Stop the Rules emulator before restoring the normal Nuxt development server.
+Nuxt VueFire's native development discovery can attach that preview to a running
+Firestore emulator, even when the Rules fixtures use a separate demo project.
+Keep policy tests and a real-data preview sequential; verify the real venue and
+receipt after restoring the preview. This needs no App emulator adapter.
+
 The production candidate uses current App membership and Kitchen-owned grants
 stored in `kitchen_access/{uid}.apps[appId]` and bound to that membership's
 creation timestamp. Existing operators need those
 grants already present; Team labels and obsolete AppUser arrays grant no access.
-Offering child records are readable by an associated operator; their mutations
-and raw Sellable terms remain server-owned. The candidate enumerates all six
+Kitchen records and their supported children are readable by an associated
+operator. All Kitchen mutations use trusted server commands; browser create,
+update and delete requests cannot bypass their validation, including at the root.
+Raw Sellable terms remain server-owned. The candidate enumerates all six
 supported Apps. Its required overlapping-stale-grant regression proves current authority
 remains reachable within Firestore's document-access and expression-evaluation
 budgets for the six supported Apps. The shared index is validated once per

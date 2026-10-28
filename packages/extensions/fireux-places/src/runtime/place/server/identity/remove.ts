@@ -1,3 +1,4 @@
+import { placeReferenceTargets } from './mutation-authority'
 // Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: authorize and remove only unreferenced Place roots.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
@@ -8,11 +9,8 @@ import {
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
 import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 const text = (value: unknown) => String(value ?? '').trim()
 
 const dependencyLabel = (family: string) => {
@@ -31,7 +29,7 @@ export async function removePlace(event: H3Event, placeId: string) {
   const runtime = useRuntimeConfig(event)
   const runtimeAppId = text(runtime.public?.fireux?.id)
   const developerId = text(runtime.public?.fireux?.developerId)
-  const places = FIRESTORE_MUTATION_TARGETS.places
+  const places = PLACE_MUTATION_TARGETS.places
   const memberships = isFirestoreDocumentId(runtimeAppId)
     ? serverAppUsersTarget(runtimeAppId)
     : null
@@ -61,22 +59,22 @@ export async function removePlace(event: H3Event, placeId: string) {
 
     const references = await Promise.all([
       mutations.read<Record<string, unknown>>(
-        FIRESTORE_MUTATION_TARGETS.companies,
+        PLACE_MUTATION_TARGETS.companies,
         id
       ),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.kitchens, {
+      mutations.query(placeReferenceTargets.kitchens, {
         field: 'place_id',
         op: '==',
         value: id,
         limit: 1,
       }),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.properties, {
+      mutations.query(placeReferenceTargets.properties, {
         field: 'place_id',
         op: '==',
         value: id,
         limit: 1,
       }),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.jobs, {
+      mutations.query(placeReferenceTargets.jobs, {
         field: 'place_id',
         op: '==',
         value: id,

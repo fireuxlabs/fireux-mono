@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -35,17 +36,19 @@ export function usePropertyWorkspaceTeam() {
     pending: requestPending,
     error: requestError,
     refresh,
-  } = useLiveAsyncData<PropertyTeamResponse>(
+  } = useAsyncData<PropertyTeamResponse>(
     computed(
       () =>
         `property-team-${currentUser.value?.uid || 'anonymous'}-${propertyId.value || 'none'}`
     ),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const id = propertyId.value
       const user = currentUser.value
       if (!id || !user)
         return { ok: true, propertyId: id, canManageTeam: false, members: [] }
-      return liveFetch<PropertyTeamResponse>(
+      return fetchRead<PropertyTeamResponse>(
         '/api/workspace/property/team/members',
         {
           query: { propertyId: id },
@@ -134,6 +137,15 @@ export function usePropertyWorkspaceTeam() {
     const result = await $fetch<{ memberId: string; name: string }>(
       '/api/workspace/property/team/members',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         retry: 0,
         timeout: 15000,
@@ -163,6 +175,9 @@ export function usePropertyWorkspaceTeam() {
     await $fetch(
       `/api/workspace/property/team/members/${encodeURIComponent(input.memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'PATCH',
         retry: 0,
         timeout: 15000,
@@ -183,6 +198,9 @@ export function usePropertyWorkspaceTeam() {
     const result = await $fetch<{ name: string }>(
       `/api/workspace/property/team/members/${encodeURIComponent(memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'DELETE',
         retry: 0,
         timeout: 15000,

@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { computed, ref, watch } from 'vue'
 import { useIngredientCreate } from '../../composables/firestore/mutations/useIngredientCreate'
 import { createDefaultIngredientForm, type IngredientCreateForm } from './types'

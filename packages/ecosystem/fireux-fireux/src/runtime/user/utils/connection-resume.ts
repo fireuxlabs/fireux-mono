@@ -1,7 +1,5 @@
-import {
-  resolveInternalRedirect,
-  resolvePostAuthDestination,
-} from 'fireux-core/runtime/utils/onboarding-route'
+import { resolveInternalRedirect } from 'fireux-core/runtime/utils/internal-redirect'
+import { resolvePostAuthDestination } from 'fireux-core/runtime/user/utils/onboarding-route'
 
 // Resume the approved hub screen only; this is navigation context, not authority.
 export function resolveConnectionResume(value: unknown): string {

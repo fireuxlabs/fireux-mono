@@ -15,6 +15,8 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composables/useWorkspaceDraftHandoff'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -73,6 +75,15 @@ async function submit() {
     const intent = await $fetch<TeamAIIntent>(
       '/api/workspace/kitchen/team/intent',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         timeout: 60_000,
         retry: 0,

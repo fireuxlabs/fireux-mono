@@ -47,3 +47,10 @@ export type FirestoreDeleteInput = Readonly<{
   target: TargetFor<FirestoreMutationLane, 'delete'>
   id: string
 }>
+
+/** Scoped read access carries no mutation lane or allowed write verbs. */
+export type FirestoreReadTarget = Readonly<{
+  key: string
+  database: FirestoreDatabasePlacement
+  collectionPath: string
+}>

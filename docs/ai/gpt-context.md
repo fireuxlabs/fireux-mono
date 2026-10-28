@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-25
+Updated: 2026-10-26
 Ref: ce2861c77
 Role: living context
 Scope: repository-wide
@@ -17,10 +17,16 @@ it does not make existing implementation desirable or complete.
 
 ## FireUX ownership
 
+> Nuxt runs the web app, Nuxt UI supplies the controls, Firebase supplies the backend, and FireUX composes them into repeatable SaaS products.
+
+This is the platform ownership principle for design, implementation and review.
+Use native behavior by default. A FireUX abstraction must earn its place with a
+specific product responsibility or a demonstrated integration gap.
+
 FireUX is an industry SaaS framework built by composing shared SaaS foundations
-with industry libraries. Its technical foundation is Nuxt, Nuxt UI, Vue and
-Firebase. Start with the [platform map](../concepts/fireux.md); use official
-upstream docs for framework behavior and FireUX maps for FireUX-owned choices.
+with industry libraries. Start with the [platform map](../concepts/fireux.md)
+for the composition picture; use official upstream docs for framework behavior
+and FireUX maps for FireUX-owned choices.
 
 Implementation follows this dependency direction:
 
@@ -54,6 +60,10 @@ Before editing:
 3. Name the supported lower components, readers and commands to reuse.
 4. Preserve data scope, permissions, mutation and navigation contracts.
 5. Choose checks that prove the changed responsibility.
+
+Nuxt layouts consume their supplied content through the native layout slot.
+Use `NuxtPage` for an App or family route outlet and real parent/child routes;
+keep each outlet with its owning shell. See [layouts](../concepts/layouts.md).
 
 Composition is the default from the first implementation. Keep parents readable
 as named responsibilities. Add a child only when it owns real behavior; small
@@ -93,11 +103,18 @@ The detailed UI and Entity conventions live in [components](../concepts/componen
 
 ## UI and design system
 
+App roots provide Nuxt UI's native `UApp` once around shared controls, normally
+through Core AppShell. Custom roots preserve that provider and their explicit
+route-outlet ownership. See [the rendering map](../concepts/layouts.md).
+
 Nuxt UI owns its component API, accessibility behavior and theming API.
 FireUX Core adds only proved shared visual or interaction responsibilities;
 domains keep their business meaning and Apps keep deliberate product framing.
-Use the current stable Nuxt UI API and inspect real consumers before retiring a
-FireUX mechanism. See the [Nuxt UI integration map](../concepts/nuxt-ui.md).
+Use native Nuxt colour-mode state and persistence; do not add a parallel
+preference store, media listener or root-class observer. Appearance preference
+is stored automatically, initially following the device; other storage triggers
+remain governed by the feature inventory. Use the current stable Nuxt UI API
+and inspect real consumers before retiring a FireUX mechanism. See the [Nuxt UI integration map](../concepts/nuxt-ui.md).
 
 Authored Tailwind utility classes are banned in FireUX templates, bound class
 expressions, script-generated strings, per-instance ui overrides and new theme
@@ -118,6 +135,19 @@ owns shared-library registration.
 Use Nuxt's generated component names when package registration provides them.
 Do not add an explicit import or alias without an inspected registration gap or
 name collision. See [component ownership and reuse](../concepts/components.md).
+
+## Shared utility boundary
+
+Core `runtime/utils` owns small stateless transformations and validators for
+shared FireUX value contracts. It does not own reactive/browser lifecycle,
+fetching, authentication coordination, onboarding workflow, product literature
+or Entity-specific target definitions. Authored utility filenames use kebab-case;
+exported functions use camelCase. Scope-specific stateless helpers may live under
+a named utility scope, such as `runtime/utils/diagnostics/format.ts`, rather than
+posing as composables. Collocate stateful responsibilities with
+their existing system or Entity owner. Do not create forwarding wrappers or
+mandatory utility folders; use native framework/platform primitives where no
+FireUX rule is required. See the runtime filesystem map.
 
 ## Entities, Workspace and data authority
 
@@ -142,8 +172,11 @@ and do not create local User, AppUser or Workspace grants. Login authority stays
 in a separate server-only store. Follow the
 [account connections context](account-connections-context.md).
 
-For mutable on-screen data, use the owning live reader. A reactive parameter
-around a one-shot read or periodic polling does not establish a live view.
+Direct Firestore views use the owning Firebase listener. Server-only API
+projections use native Nuxt `useAsyncData`/`useFetch`, with `refreshNuxtData`
+after successful actions and explicit refresh when needed. They do not receive
+automatic updates from another browser. FireUX does not add a custom SSE,
+connection-sharing or polling bridge around these native owners.
 Public projections omit protected children; hiding data in Vue is not
 authorization. Routes and UI availability do not grant mutation authority.
 Protected writes use a named trusted command that validates the exact target.
@@ -161,6 +194,14 @@ this read contract. Core `runtime/utils/read-outcome.ts` classifies normalized
 boolean facts without document/collection kind. HTTP absence and reader identity
 checks remain at their adapter/reader owners. There is no missing compatibility
 status or adapter. See [composables](../concepts/composables.md).
+
+Collection-page presentation preserves its reader’s outcome unchanged. A reader
+owns whether retained rows remain valid after pagination fails; an old paging
+error must not turn a later idle, pending, empty or error read into ready.
+Collection coordinators supply diagnostic facts only; the diagnostics component
+owns display defaults and defaults supplied objects to passed provenance.
+Domain search supplies explicit searchable fields where hidden/internal values
+or presentation metadata would otherwise become accidental search inputs.
 
 ## Firebase security boundary
 
@@ -199,6 +240,10 @@ contexts.
 - Never stage, commit, push, deploy or modify live data without user
   authorization for that action. gitsave stages shared work and requires an
   explicit save request.
+- IDE tasks, launch entries and workspaces are generated through `pnpm ide:sync`
+  from App-owned manifests and the existing launcher discovery. Use
+  [the IDE workflow](../../tools/ide/README.md) for focused checks; keep generated
+  configuration current with `pnpm ide:check`.
 - Use focused package checks and source-owned tests for code changes. For
   prose-only changes, verify claims, local paths and anchors, then run
   git diff --check.

@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from '../fireux/firebase/useAuth'
@@ -55,6 +56,15 @@ export function useRecordContext(
     const token = await user.getIdToken()
     if (!isCurrent()) return
     const result = await $fetch<{ context: string }>(toValue(endpoint), {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method,
       headers: { Authorization: `Bearer ${token}` },
       ...(method === 'GET'

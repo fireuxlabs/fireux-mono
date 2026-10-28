@@ -106,7 +106,7 @@ for (const byAdmin of [false, true]) {
       '../runtime/app/server/app-user/remove.ts',
       'handleRemoveMember',
       {
-        FIRESTORE_MUTATION_TARGETS: { runtimeApps: 'apps' },
+        APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
         serverAppUsersTarget: () => 'members',
         serverAppJoinRequestsTarget: () => 'joins',
         serverAppMembershipBlocksTarget: () => 'blocks',

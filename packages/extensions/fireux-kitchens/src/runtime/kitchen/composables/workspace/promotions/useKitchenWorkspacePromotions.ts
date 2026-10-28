@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { computed } from 'vue'
 import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
@@ -61,6 +62,15 @@ export function useKitchenWorkspacePromotions() {
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/promotions',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: input,

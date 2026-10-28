@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { defineEventHandler, setResponseHeader } from 'h3'
-import { readPlatformContext } from 'fireux-core/runtime/utils/platform-context'
+import { readPlatformContext } from '../../../../shared/platform-context'
 
 export default defineEventHandler((event) => {
   const context = readPlatformContext()

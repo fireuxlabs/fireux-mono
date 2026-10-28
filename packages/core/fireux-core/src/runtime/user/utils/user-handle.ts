@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
-import { normalizeSlug } from '../../utils/slug/normalizeSlug'
-import { validatePublicSlug } from '../../utils/slug/validatePublicSlug'
+import { normalizeSlug } from '../../utils/slug/normalize-slug'
+import { validatePublicSlug } from '../../utils/slug/validate-public-slug'
 
 const MIN_HANDLE_LENGTH = 3
 const MAX_HANDLE_LENGTH = 30

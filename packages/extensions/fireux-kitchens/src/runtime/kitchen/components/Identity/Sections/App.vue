@@ -136,7 +136,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
@@ -172,14 +173,16 @@ const emit = defineEmits<{ saved: [] }>()
 const toast = useToastify()
 const state = ref<AppThemeState | null>(null)
 const { currentUser: liveUser } = useAuth()
-const liveTheme = useLiveAsyncData<AppThemeState | null>(
+const liveTheme = useAsyncData<AppThemeState | null>(
   computed(
     () => `kitchen-theme:${liveUser.value?.uid || ''}:${props.kitchenId}`
   ),
-  async (liveFetch) => {
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
     const user = liveUser.value
     if (!props.kitchenId || !user) return null
-    return liveFetch<AppThemeState>('/api/workspace/kitchen/app-theme', {
+    return fetchRead<AppThemeState>('/api/workspace/kitchen/app-theme', {
       query: { kitchen_id: props.kitchenId },
       headers: { Authorization: `Bearer ${await user.getIdToken()}` },
     })
@@ -275,6 +278,15 @@ async function save() {
   try {
     const user = await useRequireUser()
     await $fetch('/api/workspace/kitchen/app-theme', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'PATCH',
       headers: { Authorization: `Bearer ${await user.getIdToken()}` },
       body: {

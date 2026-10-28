@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
@@ -36,6 +37,15 @@ export function useUserNotificationMarkRead() {
       notificationId: string
       read: true
     }>(`/api/internal/user/notifications/${encodeURIComponent(id)}`, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
     })

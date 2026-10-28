@@ -40,7 +40,8 @@ const targets = {
   serverKitchenMenuSectionsTarget: (id, menu) => `${id}/menus/${menu}/sections`,
   serverKitchenMenuItemsTarget: (id, menu, section) =>
     `${id}/menus/${menu}/sections/${section}/items`,
-  FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
+  KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+PLACE_MUTATION_TARGETS: { places: 'places' },
 }
 const metadata = load(
   '../runtime/menu/utils/menu-metadata.ts',

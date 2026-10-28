@@ -41,7 +41,7 @@ test('App membership is created and validated without an onboarding completion f
     '{ initialMembership, requireCanonicalMembership }',
     {
       FieldValue: { serverTimestamp: () => at },
-      FIRESTORE_MUTATION_TARGETS: { runtimeUsers: {} },
+      USER_MUTATION_TARGETS: { runtimeUsers: {} },
       isAppUserSubscription,
       createError: (value) =>
         Object.assign(new Error(value.statusMessage), value),

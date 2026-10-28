@@ -44,7 +44,19 @@ test('HTTP document adapter maps absence before classifying the read', () => {
 
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toValue } from 'vue'
 
 test('public Project detail rejects old identities and exposes recoverable read states', () => {
@@ -67,7 +79,7 @@ test('public Project detail rejects old identities and exposes recoverable read 
       'toValue',
       'resolveReadOutcome',
       'resolveHttpDocumentOutcome',
-      'useLiveAsyncData',
+      'useAsyncData',
     ]
   )(computed, toValue, resolveReadOutcome, resolveHttpDocumentOutcome, () => ({
     data,
@@ -117,7 +129,7 @@ test('Ecosystem detail reads one canonical record without loading the directory'
       'toValue',
       'resolveReadOutcome',
       'resolveHttpDocumentOutcome',
-      'useLiveAsyncData',
+      'useAsyncData',
     ]
   )(
     computed,
@@ -125,7 +137,13 @@ test('Ecosystem detail reads one canonical record without loading the directory'
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
     (_key, fetcher) => {
-      request = fetcher((url) => url)
+      currentReadFetch = (url) => {
+        request = url
+        return Promise.resolve({
+          ecosystem: { id: 'misebox', project_id: 'owner' },
+        })
+      }
+      void fetcher({}, { signal: new AbortController().signal })
       return { data, pending, error, then: (fn) => Promise.resolve().then(fn) }
     }
   )
@@ -162,7 +180,7 @@ for (const [name, path, key] of [
         'computed',
         'resolveReadOutcome',
         'resolveHttpDocumentOutcome',
-        'useLiveAsyncData',
+        'useAsyncData',
         'useAuth',
       ]
     )(

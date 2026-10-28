@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { Project, ProjectIdentity, ProjectPublicSummary } from '../models/project.model.ts'
 
 const PROJECT_FIELDS = new Set(['context', 'id', 'identity', 'guest_owner_uid', 'created', 'updated'])

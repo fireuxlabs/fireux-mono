@@ -1,330 +1,160 @@
-// VS Code presentation and launch shortcuts. App manifests own dev commands and ports.
-const apps = [
-  {
-    key: 'fireux',
-    ecosystem: 'fireux',
+const path = require('node:path')
+const { pathToFileURL } = require('node:url')
+
+// Presentation only. App manifests and the launcher discovery own paths and ports.
+const presentation = {
+  fireux: {
     name: 'FireUX',
     icon: '$(flame)',
-    port: 3000,
     commandId: 'fireuxToolbar.startFireux',
-    taskLabel: 'pnpm dev:fireux',
-    terminalName: 'FireUX (3000)',
-    pnpmCommand: 'pnpm dev:fireux --host',
-    tooltip: 'Start FireUX dev (port 3000)',
-    url: 'http://localhost:3000',
   },
-  {
-    key: 'misebox',
-    ecosystem: 'misebox',
+  misebox: {
     name: 'Misebox',
     icon: '$(book)',
-    port: 3001,
     commandId: 'fireuxToolbar.startMisebox',
-    taskLabel: 'pnpm dev:misebox',
-    terminalName: 'Misebox (3001)',
-    pnpmCommand: 'pnpm dev:misebox --host',
-    tooltip: 'Start Misebox dev (port 3001)',
-    url: 'http://localhost:3001',
   },
-  {
-    key: 'werkbox',
-    ecosystem: 'werkbox',
+  werkbox: {
     name: 'Werkbox',
     icon: '$(beaker)',
-    port: 3002,
     commandId: 'fireuxToolbar.startWerkbox',
-    taskLabel: 'pnpm dev:werkbox',
-    terminalName: 'Werkbox (3002)',
-    pnpmCommand: 'pnpm dev:werkbox --host',
-    tooltip: 'Start Werkbox dev (port 3002)',
-    url: 'http://localhost:3002',
   },
-  {
-    key: 'richies',
-    ecosystem: 'werkbox',
+  richies: {
     name: 'Richies Reinigung',
     icon: '$(tools)',
-    port: 3004,
     commandId: 'fireuxToolbar.startRichies',
-    taskLabel: 'pnpm dev:richies',
-    terminalName: 'Richies Reinigung (3004)',
-    pnpmCommand: 'pnpm dev:richies --host',
-    tooltip: 'Start Richies Reinigung dev (port 3004)',
-    url: 'http://localhost:3004',
   },
-  {
-    key: 'tenant',
-    ecosystem: 'fireux',
+  tenant: {
     name: 'FireUX Tenant',
     icon: '$(home)',
-    port: 3005,
     commandId: 'fireuxToolbar.startTenant',
-    taskLabel: 'pnpm dev:tenant',
-    terminalName: 'FireUX Tenant (3005)',
-    pnpmCommand: 'pnpm dev:tenant --host',
-    tooltip: 'Start FireUX Tenant dev (port 3005)',
-    url: 'http://localhost:3005',
   },
-  {
-    key: 'bringli',
-    ecosystem: 'bringli',
+  bringli: {
     name: 'Bringli',
     icon: '$(symbol-namespace)',
-    port: 3006,
     commandId: 'fireuxToolbar.startBringli',
-    taskLabel: 'pnpm dev:bringli',
-    terminalName: 'Bringli (3006)',
-    pnpmCommand: 'pnpm dev:bringli --host',
-    tooltip: 'Start Bringli dev (port 3006)',
-    url: 'http://localhost:3006',
   },
-  {
-    key: 'find-my-seo',
-    ecosystem: 'fireux',
+  'find-my-seo': {
     name: 'Find My SEO',
     icon: '$(search)',
-    port: 3010,
     commandId: 'fireuxToolbar.startFindMySeo',
-    taskLabel: 'pnpm dev:find-my-seo',
-    terminalName: 'Find My SEO (3010)',
-    pnpmCommand: 'pnpm dev:find-my-seo --host',
-    tooltip: 'Start Find My SEO dev (port 3010)',
-    url: 'http://localhost:3010',
   },
-  {
-    key: 'sproochli',
-    ecosystem: 'fireux',
+  sproochli: {
     name: 'Sproochli',
     icon: '$(globe)',
-    port: 3011,
     commandId: 'fireuxToolbar.startSproochli',
-    taskLabel: 'pnpm dev:sproochli',
-    terminalName: 'Sproochli (3011)',
-    pnpmCommand: 'pnpm dev:sproochli --host',
-    tooltip: 'Start Sproochli dev (port 3011)',
-    url: 'http://localhost:3011',
   },
-  {
-    key: 'buenohost',
-    ecosystem: 'buenohost',
+  buenohost: {
     name: 'BuenoHost',
     icon: '$(key)',
-    port: 3012,
     commandId: 'fireuxToolbar.startBuenoHost',
-    taskLabel: 'pnpm dev:buenohost',
-    terminalName: 'BuenoHost (3012)',
-    pnpmCommand: 'pnpm dev:buenohost --host',
-    tooltip: 'Start BuenoHost dev (port 3012)',
-    url: 'http://localhost:3012',
   },
-  {
-    key: 'go-qr',
-    ecosystem: 'fireux',
+  'go-qr': {
     name: 'Go QR',
     icon: '$(file-media)',
-    port: 3013,
     commandId: 'fireuxToolbar.startGoQr',
-    taskLabel: 'pnpm dev:go-qr',
-    terminalName: 'Go QR (3013)',
-    pnpmCommand: 'pnpm dev:go-qr --host',
-    tooltip: 'Start Go QR dev (port 3013)',
-    url: 'http://localhost:3013',
   },
-  {
-    key: 'fireux-blank',
-    ecosystem: 'fireux',
+  'fireux-blank': {
     name: 'FireUX Blank',
     icon: '$(empty-window)',
-    port: 3015,
     commandId: 'fireuxToolbar.startFireuxBlank',
-    taskLabel: 'pnpm dev:fireux-blank',
-    terminalName: 'FireUX Blank (3015)',
-    pnpmCommand: 'pnpm dev:fireux-blank --host',
-    tooltip: 'Start FireUX Blank dev (port 3015)',
-    url: 'http://localhost:3015',
   },
-  {
-    key: 'yellow-velo',
-    ecosystem: 'slap',
+  'yellow-velo': {
     name: 'Yellow Velo',
     icon: '$(symbol-color)',
-    port: 3014,
     commandId: 'fireuxToolbar.startYellowVelo',
-    taskLabel: 'pnpm dev:yellow-velo',
-    terminalName: 'Yellow Velo (3014)',
-    pnpmCommand: 'pnpm dev:yellow-velo --host',
-    tooltip: 'Start Yellow Velo dev (port 3014)',
-    url: 'http://localhost:3014',
   },
-  {
-    key: 'holzworm',
-    ecosystem: 'fireux',
+  holzworm: {
     name: 'Holzworm',
     icon: '$(tools)',
-    port: 3030,
     commandId: 'fireuxToolbar.startHolzworm',
-    taskLabel: 'pnpm dev:holzworm',
-    terminalName: 'Holzworm (3030)',
-    pnpmCommand: 'pnpm dev:holzworm --host',
-    tooltip: 'Start Holzworm dev (port 3030)',
-    url: 'http://localhost:3030',
   },
-  {
-    key: 'lifeguard-community',
-    ecosystem: 'fireux',
+  'lifeguard-community': {
     name: 'Lifeguard Community',
     icon: '$(heart)',
-    port: 3031,
     commandId: 'fireuxToolbar.startLifeguardCommunity',
-    taskLabel: 'pnpm dev:lifeguard-community',
-    terminalName: 'Lifeguard Community (3031)',
-    pnpmCommand: 'pnpm dev:lifeguard-community --host',
-    tooltip: 'Start Lifeguard Community dev (port 3031)',
-    url: 'http://localhost:3031',
   },
-  {
-    key: 'granite',
-    ecosystem: 'granite',
+  granite: {
     name: 'Granite',
     icon: '$(database)',
-    port: 3007,
     commandId: 'fireuxToolbar.startGranite',
-    taskLabel: 'pnpm dev:granite',
-    terminalName: 'Granite (3007)',
-    pnpmCommand: 'pnpm dev:granite --host',
-    tooltip: 'Start Granite dev (port 3007)',
-    url: 'http://localhost:3007',
   },
-  {
-    key: 'slap',
-    ecosystem: 'slap',
+  slap: {
     name: 'Slap',
     icon: '$(sparkle)',
-    port: 3009,
     commandId: 'fireuxToolbar.startSlap',
-    taskLabel: 'pnpm dev:slap',
-    terminalName: 'Slap (3009)',
-    pnpmCommand: 'pnpm dev:slap --host',
-    tooltip: 'Start Slap dev (port 3009)',
-    url: 'http://localhost:3009',
   },
-  {
-    key: 'la-tap-berne',
-    ecosystem: 'misebox',
+  'la-tap-berne': {
     name: 'La Tap Berne',
     icon: '$(tag)',
-    port: 3008,
     commandId: 'fireuxToolbar.startLaTapBerne',
-    taskLabel: 'pnpm dev:la-tap-berne',
-    terminalName: 'La Tap Berne (3008)',
-    pnpmCommand: 'pnpm dev:la-tap-berne --host',
-    tooltip: 'Start La Tap Berne dev (port 3008)',
-    url: 'http://localhost:3008',
   },
-  {
-    key: 'baeren-ringgenberg',
-    ecosystem: 'misebox',
-    name: 'Bären Ringgenberg',
+  'baeren-ringgenberg': {
+    name: 'B\u00e4ren Ringgenberg',
     icon: '$(tag)',
-    port: 3017,
     commandId: 'fireuxToolbar.startBaerenRinggenberg',
-    taskLabel: 'pnpm dev:baeren-ringgenberg',
-    terminalName: 'Bären Ringgenberg (3017)',
-    pnpmCommand: 'pnpm dev:baeren-ringgenberg --host',
-    tooltip: 'Start Bären Ringgenberg dev (port 3017)',
-    url: 'http://localhost:3017',
   },
-  {
-    key: 'book-with-nats',
-    ecosystem: 'buenohost',
+  'book-with-nats': {
     name: 'Book with Nats',
     icon: '$(home)',
-    port: 3028,
     commandId: 'fireuxToolbar.startBookWithNats',
-    taskLabel: 'pnpm dev:book-with-nats',
-    terminalName: 'Book with Nats (3028)',
-    pnpmCommand: 'pnpm dev:book-with-nats --host',
-    tooltip: 'Start Book with Nats dev (port 3028)',
-    url: 'http://localhost:3028',
   },
-  {
-    key: 'ausfinn-apartments',
-    ecosystem: 'buenohost',
+  'ausfinn-apartments': {
     name: 'AUSFinn Apartments',
     icon: '$(home)',
-    port: 3029,
     commandId: 'fireuxToolbar.startAusfinnApartments',
-    taskLabel: 'pnpm dev:ausfinn-apartments',
-    terminalName: 'AUSFinn Apartments (3029)',
-    pnpmCommand: 'pnpm dev:ausfinn-apartments --host',
-    tooltip: 'Start AUSFinn Apartments dev (port 3029)',
-    url: 'http://localhost:3029',
   },
-  {
-    key: 'bangin-coffee',
-    ecosystem: 'misebox',
+  'bangin-coffee': {
     name: 'Bangin Coffee',
     icon: '$(coffee)',
-    port: 3016,
     commandId: 'fireuxToolbar.startBanginCoffee',
-    taskLabel: 'pnpm dev:bangin-coffee',
-    terminalName: 'Bangin Coffee (3016)',
-    pnpmCommand: 'pnpm dev:bangin-coffee --host',
-    tooltip: 'Start Bangin Coffee dev (port 3016)',
-    url: 'http://localhost:3016',
   },
-  {
-    key: 'interlaken-essen',
-    ecosystem: 'misebox',
+  'interlaken-essen': {
     name: 'Interlaken Essen',
     icon: '$(tag)',
-    port: 3026,
     commandId: 'fireuxToolbar.startInterlakenEssen',
-    taskLabel: 'pnpm dev:interlaken-essen',
-    terminalName: 'Interlaken Essen (3026)',
-    pnpmCommand: 'pnpm dev:interlaken-essen --host',
-    tooltip: 'Start Interlaken Essen dev (port 3026)',
-    url: 'http://localhost:3026',
   },
-  {
-    key: 'friiites',
-    ecosystem: 'misebox',
+  friiites: {
     name: 'Friiites',
     icon: '$(server-process)',
-    port: 3033,
     commandId: 'fireuxToolbar.startFriiites',
-    taskLabel: 'pnpm dev:friiites',
-    terminalName: 'Friiites (3033)',
-    pnpmCommand: 'pnpm dev:friiites --host',
-    tooltip: 'Start Friiites dev (port 3033)',
-    url: 'http://localhost:3033',
   },
-  {
-    key: 'sharer',
-    ecosystem: 'sharer',
+  sharer: {
     name: 'Sharer',
     icon: '$(server-process)',
-    port: 3032,
     commandId: 'fireuxToolbar.startSharer',
-    taskLabel: 'pnpm dev:sharer',
-    terminalName: 'Sharer (3032)',
-    pnpmCommand: 'pnpm dev:sharer --host',
-    tooltip: 'Start Sharer dev (port 3032)',
-    url: 'http://localhost:3032',
   },
-  {
-    key: 'kjordi',
-    ecosystem: 'sharer',
+  kjordi: {
     name: 'Kjordi',
     icon: '$(server-process)',
-    port: 3034,
     commandId: 'fireuxToolbar.startKjordi',
-    taskLabel: 'pnpm dev:kjordi',
-    terminalName: 'Kjordi (3034)',
-    pnpmCommand: 'pnpm dev:kjordi --host',
-    tooltip: 'Start Kjordi dev (port 3034)',
-    url: 'http://localhost:3034',
   },
-]
+}
 
-module.exports = { apps }
+async function getApps(repoRoot) {
+  if (!repoRoot) return []
+  const { getAppRegistryEntries } = await import(
+    pathToFileURL(path.join(repoRoot, 'tools/fireux-launcher/apps.mjs')).href
+  )
+  return getAppRegistryEntries(repoRoot).map((app) => {
+    const display = presentation[app.key] ?? {
+      name: app.key,
+      icon: '$(server-process)',
+      commandId: `fireuxToolbar.start${app.key
+        .split('-')
+        .map((part) => part[0].toUpperCase() + part.slice(1))
+        .join('')}`,
+    }
+    const directory = `'${app.directory.replaceAll("'", "'\"'\"'")}'`
+    return {
+      ...app,
+      ...display,
+      taskLabel: `pnpm dev:${app.key}`,
+      terminalName: `${display.name} (${app.port})`,
+      pnpmCommand: `pnpm --dir ${directory} dev`,
+      tooltip: `Start ${display.name} dev (port ${app.port})`,
+      url: app.baseUrl,
+    }
+  })
+}
+
+module.exports = { getApps }

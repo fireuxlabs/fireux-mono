@@ -1,16 +1,22 @@
-import { readKitchenPresentation } from '../../../../kitchen/utils/kitchen-presentation'
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: include only explicitly linked Place defaults in Kitchen Menu presentation.
-import { createError, getRouterParam } from 'h3'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
-  readMenuKitchenPlaceData,
-} from '../../../../menu/server/ownership/kitchen-scope.ts'
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getRouterParam,
+} from 'h3'
+import { readKitchenPresentation } from '../../../../kitchen/utils/kitchen-presentation'
+
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: include only explicitly linked Place defaults in Kitchen Menu presentation.
+
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
+import { readMenuKitchenPlaceData } from '../../../../menu/server/ownership/kitchen-scope.ts'
 import { resolveDirectoryMenuScope } from '../../../../menu/server/ownership/app-scope.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setCorsHeaders(event, {
     methods: ['GET'],
   })

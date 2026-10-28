@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useState } from '#imports'
@@ -57,6 +58,15 @@ export function useKitchenAnonymousAdoption() {
         kitchen_id: string
         adopted: boolean
       }>('/api/kitchens/onboarding/adopt-anonymous', {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: {

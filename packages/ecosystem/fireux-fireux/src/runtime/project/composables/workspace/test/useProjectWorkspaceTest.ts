@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useProjectTestRecords } from '../../useProjectTestRecords'
 import { useWorkspaceTest } from 'fireux-core/runtime/workspace/composables/useWorkspaceTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -42,6 +43,15 @@ export function useProjectWorkspaceTest() {
       test_id?: string
       testId?: string
     }>(id ? `${endpoint}/${encodeURIComponent(id)}` : endpoint, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method,
       headers: { authorization: `Bearer ${token}` },
       body,

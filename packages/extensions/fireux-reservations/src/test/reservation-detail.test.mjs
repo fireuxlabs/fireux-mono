@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toValue } from 'vue'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 const load = (file, names, deps) => {
@@ -47,7 +59,7 @@ function fixture() {
       useRequireUser: async () => currentUser.value,
       useFireUXConfig: () => ({ appId: 'buenohost' }),
       useActiveProperty: () => runtime,
-      useLiveAsyncData: (_key, fn) => {
+      useAsyncData: (_key, fn) => {
         handler = fn
         return state
       },
@@ -55,7 +67,7 @@ function fixture() {
   )
   const detail = usePropertyReservation(id, runtime)
   const fetch = async () => {
-    state.data.value = await handler(async (url, options) => {
+    state.data.value = await ((currentReadFetch = async (url, options) => {
       requests.push({ url, options })
       return {
         reservation: {
@@ -64,7 +76,8 @@ function fixture() {
           notes: 'Current record',
         },
       }
-    })
+    }),
+    handler({}, { signal: new AbortController().signal }))
     state.pending.value = false
     state.error.value = null
   }

@@ -8,12 +8,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
-import {
-  serverKitchenDishesTarget,
-  serverKitchenMenusTarget,
-  serverKitchenMenuSectionsTarget,
-  serverKitchenMenuItemsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget, serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../../../kitchen/server/mutation-targets'
 import { normalizeMenuItemPatch } from '../../utils/menu-item-patch'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'

@@ -5,7 +5,7 @@ import type {
   ProfileDirectoryConfig,
   ProfileDirectoryMapper,
 } from 'fireux-core/runtime/user/server/directory/profile-directory'
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/https-url'
 import { CHEF_GALLERY_MAX_ITEMS } from '../../utils/chef.ts'
 
 function text(value: unknown, max: number): string {

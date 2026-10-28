@@ -15,7 +15,10 @@
         </div>
       </UCard>
 
-      <FireDiagnosticsModel :title="'Users · Model'" :model="userModelRuntime" />
+      <FireDiagnosticsModel
+        :title="'Users · Model'"
+        :model="userModelRuntime"
+      />
 
       <UCard v-if="signedInUserPreview || signedInUserSummary" variant="subtle">
         <template #header>
@@ -93,7 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from '../../composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: inspect the bounded public User projection.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: keep projected User model inspection biography-aware.
 import { definePageMeta } from '#imports'
@@ -121,7 +125,7 @@ definePageMeta({
   description: 'Developer view for Users (collection-first).',
 })
 
-const directoryUsers = useLiveFetch<{
+const directoryUsers = useFetch<{
   items: User[]
 }>('/api/users', { key: 'dev-users', query: { limit: 200 } })
 const users = computed<User[]>(() => {

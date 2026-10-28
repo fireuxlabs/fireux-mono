@@ -1,16 +1,25 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, setResponseHeaders } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  setResponseHeaders,
+} from 'h3'
+
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { BlogDetailResponse } from '../../../blog/models/blog-directory.model.ts'
-import { projectBlogDetail, readBlogRuntimeScope } from '../../../blog/server/read.ts'
+import {
+  projectBlogDetail,
+  readBlogRuntimeScope,
+} from '../../../blog/server/read.ts'
 
-export default defineLiveReadHandler(
+export default defineEventHandler(
   async (event): Promise<BlogDetailResponse> => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control':
-        'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+      'Cache-Control': 'no-store',
     })
     const slug = requireFirestoreDocumentId(
       event.context.params?.slug,

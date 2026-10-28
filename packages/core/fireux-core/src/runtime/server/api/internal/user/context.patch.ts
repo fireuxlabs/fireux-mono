@@ -6,10 +6,7 @@ import {
   UserContextStorage,
   type UpdateCurrentUserContextResponse,
 } from '../../../../user/models/user-context.model.ts'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverUserContextTarget,
-} from '../../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS, serverUserContextTarget } from '../../../../user/server/mutation-targets'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../utils/firestore-mutations/server-transaction'
 
@@ -47,7 +44,7 @@ export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const body = await readBody(event)
   const context = readContext(body)
-  const users = FIRESTORE_MUTATION_TARGETS.users
+  const users = USER_MUTATION_TARGETS.users
   const contexts = serverUserContextTarget(uid)
 
   await runGuardedServerTransaction(contexts.database, async (mutations) => {

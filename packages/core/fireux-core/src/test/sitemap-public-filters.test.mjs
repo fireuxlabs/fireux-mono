@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import {
   readSitemapPublicFilters,
   matchesSitemapPublicFilters,
-} from '../runtime/utils/sitemap-public-filters.ts'
+} from '../utils/sitemap-public-filters.ts'
 function load(file, result, deps = {}) {
   const source = readFileSync(new URL(file, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')

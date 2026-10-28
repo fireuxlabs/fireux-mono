@@ -13,54 +13,39 @@
         : undefined
     "
   />
-  <div v-else class="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-    <UCard class="overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-      <div
-        v-if="imageUrl && !coverFailed"
-        class="relative flex h-44 items-center justify-center overflow-hidden bg-gradient-to-br from-primary/25 via-elevated to-primary/5 sm:h-60"
-      >
+  <div v-else class="workspace-profile__overview">
+    <UCard class="workspace-profile__identity-card">
+      <div v-if="imageUrl && !coverFailed" class="workspace-profile__cover">
         <img
           :src="imageUrl"
           alt=""
           @error="coverFailed = true"
-          class="absolute inset-0 size-full object-cover opacity-20 blur-sm"
+          class="workspace-profile__cover-image"
         />
       </div>
-      <div class="p-6 sm:p-8">
-        <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
+      <div class="workspace-profile__identity-body">
+        <div class="workspace-profile__identity">
           <UAvatar
             :src="imageUrl || undefined"
             :alt="name || 'Project'"
-            :ui="
-              identity.imageFit.value === 'contain'
-                ? { image: 'object-contain p-2' }
-                : undefined
-            "
+            :class="{
+              'workspace-profile__avatar--contain':
+                identity.imageFit.value === 'contain',
+            }"
             icon="i-lucide-folder"
             size="3xl"
-            class="rounded-2xl"
-            style="
-              width: 6rem;
-              height: 6rem;
-              flex: 0 0 6rem;
-              align-self: flex-start;
-            "
+            class="workspace-profile__avatar"
           />
-          <div class="min-w-0 flex-1">
-            <h2
-              class="break-words text-3xl font-semibold tracking-tight text-highlighted"
-            >
+          <div class="workspace-profile__copy">
+            <h2 class="workspace-profile__title">
               {{ name || 'Untitled project' }}
             </h2>
-            <p
-              v-if="description"
-              class="mt-4 whitespace-pre-line text-base leading-7 text-muted"
-            >
+            <p v-if="description" class="workspace-profile__description">
               {{ description }}
             </p>
             <p
               v-else-if="identity.publication.value"
-              class="mt-4 text-sm text-muted"
+              class="workspace-profile__note"
               role="status"
             >
               {{
@@ -71,63 +56,69 @@
                     : 'No description published by the App.'
               }}
             </p>
-            <p v-else class="mt-4 text-base leading-7 text-muted">
+            <p v-else class="workspace-profile__description">
               Add a description to tell the story of this project.
             </p>
           </div>
         </div>
       </div>
       <template #footer>
-        <div class="flex justify-end">
-          <slot name="actions" />
+        <div class="workspace-profile__actions">
+          <UButton
+            v-if="identity.canWrite.value"
+            label="Edit Identity"
+            icon="i-lucide-pencil"
+            @click="$emit('edit')"
+          />
         </div>
       </template>
     </UCard>
-    <div class="space-y-5">
+    <div class="workspace-profile__aside">
       <UCard v-if="identity.publicationReady.value">
-        <div class="flex items-center justify-between gap-4">
-          <h2 class="font-semibold">Your project profile</h2>
-          <span class="text-3xl font-semibold text-primary"
-            >{{ completion }}%</span
-          >
+        <div class="workspace-profile__header">
+          <h2 class="workspace-profile__heading">Your project profile</h2>
+          <span class="workspace-profile__completion">{{ completion }}%</span>
         </div>
         <UProgress
           :model-value="completion"
-          class="mt-5"
+          class="workspace-profile__spacing"
           aria-label="Identity completion"
         />
-        <p class="mt-3 text-sm text-muted">
+        <p class="workspace-profile__note">
           {{ completed }} of 3 essentials added: name, description and image.
         </p>
       </UCard>
       <UCard v-if="identity.publication.value">
-        <div class="flex items-center gap-3">
-          <UIcon name="i-lucide-link" class="size-5 text-primary" />
-          <h2 class="font-semibold">Published by your App</h2>
+        <div class="workspace-profile__heading-row">
+          <UIcon name="i-lucide-link" class="workspace-profile__icon" />
+          <h2 class="workspace-profile__heading">Published by your App</h2>
         </div>
 
-        <p class="mt-5 text-lg font-medium">
+        <p class="workspace-profile__source-name">
           {{ identity.publication.value.appName }}
         </p>
-        <p class="mt-2 text-sm leading-6 text-muted">
+        <p class="workspace-profile__note">
           Description and imagery stay connected to the App’s published
           identity.
         </p>
         <p
           v-if="identity.publication.value.status === 'pending'"
-          class="mt-4 text-sm"
+          class="workspace-profile__note"
           role="status"
         >
           Loading App identity…
         </p>
-        <div v-if="identity.publication.value.message" class="mt-4">
-          <p role="status" class="text-sm">
+        <div
+          v-if="identity.publication.value.message"
+          class="workspace-profile__spacing"
+        >
+          <p role="status" class="workspace-profile__note">
             {{ identity.publication.value.message }}
           </p>
           <FireCopyError :message="identity.publication.value.message" />
         </div>
         <UButton
-          class="mt-5"
+          class="workspace-profile__spacing"
           :to="identity.publication.value.sourceUrl"
           target="_blank"
           label="View published source"
@@ -143,7 +134,8 @@
 import { computed, ref, watch } from 'vue'
 import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
 const props = defineProps<{ identity: ProjectWorkspaceIdentityState }>()
-const { selectedProject, outcome, name, description, imageUrl } = props.identity
+defineEmits<{ edit: [] }>()
+const { name, description, imageUrl } = props.identity
 const coverFailed = ref(false)
 watch(imageUrl, () => {
   coverFailed.value = false

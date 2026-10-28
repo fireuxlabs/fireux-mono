@@ -9,10 +9,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { serverProjectAccessTarget } from '../access'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  fireuxAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
 import { hasProjectAppContext } from '../../utils/app-context-connection'
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -83,7 +80,7 @@ export async function updateProjectIdentity(
     { kind: 'named', databaseId: 'fireux' },
     async (transaction) => {
       const [app, membership, access, project] = await Promise.all([
-        transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
+        transaction.read(FIREUX_MUTATION_TARGETS.fireuxApps, appId),
         transaction.read(memberships, uid),
         transaction.read(accessTarget, uid),
         transaction.read(fireuxProjectsTarget, projectId),

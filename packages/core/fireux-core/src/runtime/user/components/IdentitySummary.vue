@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 
-import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
+import { formatFirestoreTimestamp } from '../../utils/firestore-timestamp'
 
 type Props = {
   avatarUrl?: string

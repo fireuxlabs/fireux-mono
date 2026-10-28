@@ -46,6 +46,8 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, ref, watch } from 'vue'
 import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
@@ -127,6 +129,15 @@ async function save() {
     const result = await $fetch<{ ok: true; app_id: string }>(
       `/api/internal/control/projects/${encodeURIComponent(selectedProject)}/apps`,
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { authorization: `Bearer ${token}` },
         body,

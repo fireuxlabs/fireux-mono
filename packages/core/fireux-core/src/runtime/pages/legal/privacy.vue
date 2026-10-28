@@ -16,8 +16,8 @@
           This Privacy Policy explains how FireUX (“we”, “us”, “our”) collects,
           uses, and protects your personal information when you use FireUX or
           any application built on the FireUX platform. This policy applies to
-          FireUX Core, all FireUX-branded applications (e.g., Misebox,
-          Werkbox), and tenant apps that run on FireUX infrastructure.
+          FireUX Core, all FireUX-branded applications (e.g., Misebox, Werkbox),
+          and tenant apps that run on FireUX infrastructure.
         </p>
       </section>
 
@@ -35,8 +35,8 @@
         </ul>
         <h3 class="text-base font-semibold">2.2 Operational information</h3>
         <p>
-          Our infrastructure may process limited technical information needed
-          to deliver and secure a request:
+          Our infrastructure may process limited technical information needed to
+          deliver and secure a request:
         </p>
         <ul class="list-disc space-y-1 pl-6">
           <li>Security and authentication events</li>
@@ -55,9 +55,7 @@
       </section>
 
       <section class="space-y-3">
-        <h2 class="text-lg font-semibold">
-          3. Cookies and browser storage
-        </h2>
+        <h2 class="text-lg font-semibold">3. Cookies and browser storage</h2>
         <p>
           FireUX and Misebox apps do not use analytics or advertising cookies,
           cross-site identifiers, device fingerprints, or third-party
@@ -66,12 +64,14 @@
           storage, these apps do not show a cookie-consent popup.
         </p>
         <p>
-          Strictly necessary storage begins only after a visitor requests a
-          feature such as sign-in, a remembered preference, a cart, anonymous
-          order recovery, or chat. The authoritative list of purposes, owners,
+          Nuxt saves the appearance preference automatically, initially
+          following the device. Other feature storage begins when a visitor
+          requests sign-in, a remembered choice, a cart, anonymous order
+          recovery, or chat. The authoritative list of purposes, owners,
           lifetimes, and deletion behaviour is the
-          <NuxtLink to="/legal/storage">Cookies and browser storage page</NuxtLink>.
-          These values are not read as analytics identifiers or joined into a
+          <NuxtLink to="/legal/storage"
+            >Cookies and browser storage page</NuxtLink
+          >. These values are not read as analytics identifiers or joined into a
           behavioural profile.
         </p>
         <p>
@@ -100,9 +100,7 @@
       </section>
 
       <section class="space-y-3">
-        <h2 class="text-lg font-semibold">
-          5. Legal Basis for Processing
-        </h2>
+        <h2 class="text-lg font-semibold">5. Legal Basis for Processing</h2>
         <p>
           Depending on where you are, applicable Swiss and European data
           protection law may require a legal basis for processing. Our bases
@@ -161,9 +159,9 @@
         </p>
         <p>
           Security logs follow the retention configured by the relevant
-          infrastructure provider. Any future aggregate operational
-          measurements must expire after no more than 13 months. They may be
-          deleted sooner and must never be converted into person-level history.
+          infrastructure provider. Any future aggregate operational measurements
+          must expire after no more than 13 months. They may be deleted sooner
+          and must never be converted into person-level history.
         </p>
       </section>
 

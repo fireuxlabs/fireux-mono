@@ -1,5 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -46,17 +47,19 @@ export function useSupplierDetail(
   const key = computed(() =>
     ['supplier-detail', fireux.appId, id.value || 'none'].join('|')
   )
-  const state = useLiveAsyncData<{
+  const state = useAsyncData<{
     key: string
     supplier: Supplier
     company: Company
     place: Place
   } | null>(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!id.value) return null
       const requestKey = key.value
-      const data = await liveFetch<{
+      const data = await fetchRead<{
         supplier: Supplier
         company: Company
         place: Place

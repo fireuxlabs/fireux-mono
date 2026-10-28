@@ -23,7 +23,7 @@
   ></UContainer>
 </template>
 <script setup lang="ts">
-import { resolvePostAuthDestination } from 'fireux-core/runtime/utils/onboarding-route'
+import { resolvePostAuthDestination } from 'fireux-core/runtime/user/utils/onboarding-route'
 import { onMounted } from 'vue'
 definePageMeta({ layout: 'auth' })
 useHead({

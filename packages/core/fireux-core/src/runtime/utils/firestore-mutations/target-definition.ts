@@ -1,5 +1,6 @@
 import type {
   FirestoreDatabasePlacement,
+  FirestoreReadTarget,
   FirestoreMutationLane,
   FirestoreMutationTarget,
   FirestoreMutationVerb,
@@ -99,4 +100,16 @@ export function resolveFirestoreMutationDatabaseId(
     target.database.kind === 'local-sproochli'
     ? target.database.databaseId
     : undefined
+}
+
+export function defineFirestoreReadTarget(
+  input: FirestoreReadTarget
+): FirestoreReadTarget {
+  const collectionPath = input.collectionPath
+    .split('/')
+    .map((part) => assertFirestoreMutationSegment(part, 'collectionPath'))
+    .join('/')
+  if (input.database.kind === 'named' || input.database.kind === 'local-sproochli')
+    assertFirestoreMutationSegment(input.database.databaseId, 'databaseId')
+  return Object.freeze({ ...input, collectionPath })
 }

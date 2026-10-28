@@ -294,9 +294,9 @@ const audiences = [
   },
   {
     title: 'Service teams',
-    copy: 'See guest choices enter a clear Kitchen queue and move toward a ready handoff.',
-    action: 'Preview the order board',
-    to: '/demo/service',
+    copy: 'Explore the Kitchen operations for handling guest choices and service handoff.',
+    action: 'Explore Kitchen operations',
+    to: '/operations',
     icon: 'i-lucide-bell-ring',
   },
 ] as const

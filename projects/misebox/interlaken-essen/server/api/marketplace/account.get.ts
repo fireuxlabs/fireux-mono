@@ -1,6 +1,7 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { defineEventHandler, setResponseHeader, createError } from 'h3'
+
 import { useRuntimeConfig } from '#imports'
-import { createError } from 'h3'
+
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
@@ -24,7 +25,9 @@ function profileText(value: unknown, label: string, max: number) {
   return value.trim()
 }
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   const runtime = useRuntimeConfig(event)
   const appId = String(runtime.public?.fireux?.id || '').trim()
   if (appId !== INTERLAKEN_ESSEN_APP_ID) {

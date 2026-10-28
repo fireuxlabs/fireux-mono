@@ -23,7 +23,7 @@
       </a>
     </header>
 
-    <NuxtPage />
+    <slot />
 
     <footer class="yv-footer">
       <div class="yv-footer__lead">

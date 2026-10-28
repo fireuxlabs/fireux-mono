@@ -1,12 +1,14 @@
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import { computed, watchEffect } from 'vue'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { useProjectWorkspace } from './useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 
@@ -33,15 +35,17 @@ export function useProjectWorkspaceTeam() {
     data,
     pending: requestPending,
     error: requestError,
-  } = useLiveAsyncData<ProjectTeamResponse>(
+  } = useAsyncData<ProjectTeamResponse>(
     requestKey,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const user = currentUser.value
       const id = projectId.value
       if (!user || !id) {
         return { ok: true, project_id: id, members: [] }
       }
-      return liveFetch<ProjectTeamResponse>(
+      return fetchRead<ProjectTeamResponse>(
         `/api/internal/control/projects/${encodeURIComponent(id)}/team`,
         {
           headers: { authorization: `Bearer ${await user.getIdToken()}` },
@@ -134,6 +138,15 @@ export function useProjectWorkspaceTeam() {
     const result = await $fetch<{ memberId: string; name: string }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team`,
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { authorization: `Bearer ${token}` },
         body: input,
@@ -157,6 +170,9 @@ export function useProjectWorkspaceTeam() {
     await $fetch(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(input.memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { authorization: `Bearer ${token}` },
         body: {
@@ -179,6 +195,9 @@ export function useProjectWorkspaceTeam() {
     const result = await $fetch<{ name: string }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'DELETE',
         headers: { authorization: `Bearer ${token}` },
       }

@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 
 export type MemberRole = 'admin' | 'user' | 'dev'
 

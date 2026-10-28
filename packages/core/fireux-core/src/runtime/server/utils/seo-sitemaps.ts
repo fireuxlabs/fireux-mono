@@ -3,12 +3,12 @@ import {
   readSitemapPublicFilters,
   matchesSitemapPublicFilters,
   type SitemapPublicFilter,
-} from '../../utils/sitemap-public-filters'
+} from '../../../utils/sitemap-public-filters'
 import { setResponseHeaders, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { getRuntimeFirestore } from './getRuntimeFirestore'
-import { normalizeSlug } from '../../utils/slug/normalizeSlug'
-import { isFirestoreDocumentId } from '../../utils/firestoreDocumentId'
+import { normalizeSlug } from '../../utils/slug/normalize-slug'
+import { isFirestoreDocumentId } from '../../utils/firestore-document-id'
 
 type AnyRecord = Record<string, unknown>
 

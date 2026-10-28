@@ -1,0 +1,24 @@
+{
+  "name": "ignition-menu-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "APP_DOMAIN=http://localhost:3048 nuxi dev --port 3048 --dotenv ../fireux-app/.env",
+    "build": "APP_DOMAIN=http://localhost:3048 nuxi build --dotenv ../fireux-app/.env",
+    "typecheck": "APP_DOMAIN=http://localhost:3048 nuxi typecheck --dotenv ../fireux-app/.env"
+  },
+  "dependencies": {
+    "nuxt": "4.6.1",
+    "vue": "3.5.43",
+    "vue-router": "5.4.0",
+    "@nuxt/ui": "4.12.0",
+    "@nuxt/icon": "2.5.1",
+    "fireux-core": "workspace:*",
+    "fireux-fireux": "workspace:*",
+    "fireux-blogs": "workspace:*",
+    "fireux-kitchens": "workspace:*",
+    "fireux-ignite": "workspace:*",
+    "@vite-pwa/nuxt": "1.1.1",
+    "@iconify-json/lucide": "^1.2.82"
+  }
+}

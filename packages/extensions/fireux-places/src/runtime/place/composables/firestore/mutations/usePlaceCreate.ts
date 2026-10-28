@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: persist only present shared currency and business-hours onboarding data.
 // Concurrent edit — 2026-07-21 14:13 CEST — Werkbox Firebase hardening: route idempotent Place creation through the authenticated server boundary.
 // Concurrent edit — 2026-07-21 14:52 CEST — Place provenance/privacy hardening: submit only the provider identity and never browser-authored Place truth.
@@ -28,19 +29,43 @@ export const PlaceCreatePlan = defineFireuxCreatePlan({
 })
 
 export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
-  const { currentUser } = useAuth(), config = useFireUXConfig(), route = useRoute()
+  const { currentUser } = useAuth(),
+    config = useFireUXConfig(),
+    route = useRoute()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
-  const sources = [() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), appPending, appError, appOutcome, () => route.fullPath, ...(options.sources || [])]
+  const sources = [
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    appPending,
+    appError,
+    appOutcome,
+    () => route.fullPath,
+    ...(options.sources || []),
+  ]
   const captureIntent = useCommandScope(sources)
   const scopeEpoch = ref(0)
-  watch(sources, () => { scopeEpoch.value += 1 }, { flush: 'sync' })
+  watch(
+    sources,
+    () => {
+      scopeEpoch.value += 1
+    },
+    { flush: 'sync' }
+  )
   async function authHeaders() {
-    const uid = currentUser.value?.uid, isCurrent = captureIntent()
-    const assertCurrent = () => { if (!uid || !isCurrent()) throw new Error('The account, App, Place or page changed. Reopen Place setup.') }
+    const uid = currentUser.value?.uid,
+      isCurrent = captureIntent()
+    const assertCurrent = () => {
+      if (!uid || !isCurrent())
+        throw new Error(
+          'The account, App, Place or page changed. Reopen Place setup.'
+        )
+    }
     assertCurrent()
     const user = await useRequireUser()
     assertCurrent()
-    if (user.uid !== uid) throw new Error('The account changed. Reopen Place setup.')
+    if (user.uid !== uid)
+      throw new Error('The account changed. Reopen Place setup.')
     const token = await user.getIdToken()
     assertCurrent()
     return { Authorization: `Bearer ${token}` }
@@ -55,6 +80,15 @@ export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
     const result = await $fetch<{ ok: boolean; id: string; created: boolean }>(
       '/api/places/ensure',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: await authHeaders(),
         body: { id },
@@ -94,12 +128,17 @@ export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
   }
 
   async function completePlaceOnboarding(input: PlaceOnboardingCompleteInput) {
-    const body = JSON.parse(JSON.stringify(input)) as PlaceOnboardingCompleteInput
+    const body = JSON.parse(
+      JSON.stringify(input)
+    ) as PlaceOnboardingCompleteInput
     const id = canonicalPlaceId(body.id)
     if (!id) throw new Error('Choose a Place before continuing.')
     const result = await $fetch<PlaceOnboardingCompleteResult>(
       '/api/places/onboarding/complete',
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'POST',
         headers: await authHeaders(),
         body: { ...body, id },
@@ -116,12 +155,21 @@ export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
   async function enrichPlaceOnboarding(idValue: string) {
     const id = canonicalPlaceId(idValue)
     if (!id) throw new Error('Choose a Place before continuing.')
-    const result = await $fetch<PlaceOnboardingEnrichment>('/api/places/onboarding/enrich', {
-      method: 'POST',
-      headers: await authHeaders(),
-      body: { id },
-    })
-    if (result?.id !== id || typeof result.generated !== 'boolean') throw new Error('Place enrichment response did not match the requested Place.')
+    const result = await $fetch<PlaceOnboardingEnrichment>(
+      '/api/places/onboarding/enrich',
+      {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
+        method: 'POST',
+        headers: await authHeaders(),
+        body: { id },
+      }
+    )
+    if (result?.id !== id || typeof result.generated !== 'boolean')
+      throw new Error(
+        'Place enrichment response did not match the requested Place.'
+      )
     return result
   }
 

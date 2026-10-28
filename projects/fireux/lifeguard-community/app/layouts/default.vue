@@ -11,7 +11,7 @@
         }}</NuxtLink>
       </nav>
     </header>
-    <NuxtPage />
+    <slot />
     <footer class="community-footer">
       <p>
         Lifeguard Community · Placeholder identity pending Nick’s brand details.

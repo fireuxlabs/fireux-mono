@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { useFirestoreResolver } from '../vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
@@ -57,6 +58,7 @@ export function useFirestoreUpdate(options: UseFirestoreUpdateOptions = {}) {
     }
 
     await updateDoc(ref, patch)
+    await refreshNuxtData()
   }
 
   return { updateDocument }

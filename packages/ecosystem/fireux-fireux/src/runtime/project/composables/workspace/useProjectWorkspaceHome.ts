@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
@@ -26,13 +27,15 @@ export function useProjectWorkspaceHome() {
     () =>
       `project-team-summary-${currentUser.value?.uid || ''}-${workspace.id.value}-${workspace.outcome.value}`
   )
-  const { data, status, error } = useLiveAsyncData(
+  const { data, status, error } = useAsyncData(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const id = workspace.outcome.value === 'ready' ? workspace.id.value : ''
       const user = currentUser.value
       if (!id || !user) return null
-      return liveFetch<{ project_id: string; members: Member[] }>(
+      return fetchRead<{ project_id: string; members: Member[] }>(
         `/api/internal/control/projects/${encodeURIComponent(id)}/team`,
         {
           headers: { authorization: `Bearer ${await user.getIdToken()}` },

@@ -21,14 +21,14 @@ const check = compileFunction(
     'isAppUserSubscription',
     'serverAppUsersTarget',
     'serverKitchenTeamMembersTarget',
-    'FIRESTORE_MUTATION_TARGETS', 'serverKitchenAccessTarget', 'readKitchenAccessIds',
+    'KITCHEN_MUTATION_TARGETS', 'PLACE_MUTATION_TARGETS', 'serverKitchenAccessTarget', 'readKitchenAccessIds',
   ]
 )(
   (x) => Object.assign(new Error(x.statusMessage), x),
   (x) => ['free', 'premium', 'business'].includes(x),
   () => 'app',
   (id) => `team:${id}`,
-  { kitchens: 'kitchens', places: 'places' }, () => 'access', readMembershipAccessIds
+  { kitchens: 'kitchens' }, { places: 'places' }, () => 'access', readMembershipAccessIds
 )
 test('Kitchen tools require current membership-bound access, never legacy arrays or Team labels', async () => {
  const actor={uid:'daniel',runtimeAppId:'misebox-app'},stamp={seconds:100,nanoseconds:0}

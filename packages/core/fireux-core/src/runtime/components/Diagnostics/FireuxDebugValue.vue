@@ -126,7 +126,7 @@ import {
   humanizeDebugKey,
   isDebugColor,
   isDebugUrl,
-} from '../../utils/dev-debug-format'
+} from '../../utils/diagnostics/format'
 
 defineOptions({ name: 'FireDiagnosticsFireuxDebugValue' })
 

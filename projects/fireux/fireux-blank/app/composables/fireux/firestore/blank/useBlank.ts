@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
 import { blankAccessCollection } from '../../../../utils/blank-access'
@@ -80,6 +81,15 @@ export function useBlankCreate() {
       id: string
       createdRoot: true
     }>('/api/workspace/blank/onboarding', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: { name: text(input.name) || 'Blank target' },

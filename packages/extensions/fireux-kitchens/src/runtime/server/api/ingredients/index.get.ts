@@ -1,6 +1,13 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getQuery,
+  setResponseHeaders,
+} from 'h3'
+
 import { FieldPath } from 'firebase-admin/firestore'
-import { createError, getQuery, setResponseHeaders } from 'h3'
+
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { IngredientDirectoryPage } from '../../../ingredient/models/ingredient-directory.model.ts'
@@ -35,8 +42,10 @@ const exactIds = (value: unknown) => {
   return ids
 }
 
-export default defineLiveReadHandler(
+export default defineEventHandler(
   async (event): Promise<IngredientDirectoryPage> => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     const db = getRuntimeFirestore()
     const ids = exactIds(getQuery(event).ids)
     const documents = ids.length
@@ -69,8 +78,7 @@ export default defineLiveReadHandler(
 
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control':
-        'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+      'Cache-Control': 'no-store',
     })
     return {
       items: items.filter((item): item is Ingredient => Boolean(item)),

@@ -2,7 +2,7 @@ import {
   addFinancialMoney,
   multiplyFinancialMoney,
 } from 'fireux-finance/runtime/utils/money'
-import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/app/utils/entity-management'
 import {
   MARKETPLACE_OFFER_STATES,
   MARKETPLACE_ORDER_STATUSES,

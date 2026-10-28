@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+} from 'fireux-core/runtime/app/utils/entity-management'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import {
   requireWorkspaceEntityMemberRole,

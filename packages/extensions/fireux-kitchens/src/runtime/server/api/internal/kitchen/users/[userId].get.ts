@@ -1,14 +1,21 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getRouterParam, setResponseHeaders } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  getRouterParam,
+  setResponseHeaders,
+} from 'h3'
+
 import { readKitchenUserMemberships } from '../../../../../kitchen/server/core/user-memberships'
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   const response = await readKitchenUserMemberships(event, {
     userId: getRouterParam(event, 'userId') || '',
   })
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'private, no-store',
+    'Cache-Control': 'no-store',
   })
   return response
 })

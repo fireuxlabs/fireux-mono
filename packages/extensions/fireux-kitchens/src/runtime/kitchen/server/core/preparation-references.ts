@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { INGREDIENT_MUTATION_TARGETS } from '../../../ingredient/server/mutation-targets'
 import {
   isActiveIngredient,
   normalizeIngredient,
@@ -32,7 +32,7 @@ export async function requireKitchenIngredientReferences(
     [...new Set(ids)].map(async (id) => {
       const [link, ingredient] = await Promise.all([
         transaction.read(links, id),
-        transaction.read(FIRESTORE_MUTATION_TARGETS.ingredients, id),
+        transaction.read(INGREDIENT_MUTATION_TARGETS.ingredients, id),
       ])
       if (
         !link.exists ||

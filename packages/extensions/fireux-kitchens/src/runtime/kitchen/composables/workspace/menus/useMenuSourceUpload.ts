@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import {
   computed,
   ref,
@@ -92,6 +93,15 @@ export function useMenuSourceUpload(
       body.set('slug', id)
       for (const file of files) body.append('file', file, file.name)
       const result = await $fetch<{ ok: boolean; id: string }>(endpoint, {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         query,
         headers: { Authorization: `Bearer ${token}` },

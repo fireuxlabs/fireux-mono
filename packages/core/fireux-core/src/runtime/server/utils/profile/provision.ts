@@ -1,13 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler } from 'h3'
 import type { ProfileProvisionResult } from '../../../models/operations/profile-provisioning'
-import { isRuntimeProfileEnabled } from '../../../utils/profile-index'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverUserProfileAppStateTarget,
-  serverUserProfileTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS, serverUserProfileAppStateTarget, serverUserProfileTarget } from '../../../user/server/mutation-targets'
+import { serverAppUsersTarget } from '../../../app/server/mutation-targets'
 import { requireFirebaseBearerUser } from '../auth/bearer'
 import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
 import {
@@ -28,6 +23,16 @@ export type {
   ProfileProvisionContractDefinition as ProfileProvisionDefinition,
   ProfileProvisionContractSeed as ProfileProvisionSeed,
 } from './profile-provision-contract'
+
+function isRuntimeProfileEnabled(
+  configuredProfiles: unknown,
+  profileId: string
+): boolean {
+  return (
+    Array.isArray(configuredProfiles) &&
+    configuredProfiles.some((configured) => configured === profileId)
+  )
+}
 
 function runtimeDatabaseContext(definition: ProfileProvisionDefinition) {
   const runtime = useRuntimeConfig()
@@ -74,8 +79,8 @@ async function provisionUserProfile(
 ): Promise<ProfileTransactionOutcome> {
   const users =
     placement === 'runtime'
-      ? FIRESTORE_MUTATION_TARGETS.runtimeUsers
-      : FIRESTORE_MUTATION_TARGETS.users
+      ? USER_MUTATION_TARGETS.runtimeUsers
+      : USER_MUTATION_TARGETS.users
   const memberships = includeMembership ? serverAppUsersTarget(appId) : null
   const profiles = serverUserProfileTarget(uid, definition.kind, placement)
   const appStates = definition.appState

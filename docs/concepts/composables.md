@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-10-09
+Updated: 2026-10-28
 Ref: 57d034087
 Role: map, not canon
 
@@ -91,6 +91,14 @@ never grants permission. Generic read classification does not
 inspect transport errors or own stale-result detection. It has no Vue, Nuxt or
 Firebase runtime dependency. UI and domain readers consume that owner directly;
 Firestore adapters consume it too, rather than owning the shared vocabulary.
+Server placeholders must preserve VueFire's Vue lifecycle boundary so native
+controls keep stable server/client IDs, while retaining the no-server-read
+contract. See [the reader owner](../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts)
+and [the native lifecycle comparison](../../packages/core/fireux-core/src/test/firestore-ssr-lifecycle.test.mjs).
+Exact-ID hydration creates its later VueFire bindings inside the owning Nuxt
+Vue app's native `runWithContext`. The effect scope still owns subscription
+disposal; it does not supply injection context. See the [loader](../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/firestore-exact-doc-loader.ts)
+and [native VueFire regression](../../packages/core/fireux-core/src/test/reactive-exact-documents.test.mjs).
 The Firestore operation outcome types derive from that contract. The former
 `composables/fireux/firestore/operations/read-outcome.ts` path is retired.
 
@@ -135,10 +143,16 @@ classifier tests alone do not prove every page's behavior.
 Core `runtime/composables/shared/useCollectionPage.ts` owns common reactive
 page presentation over an explicit existing collection source: title,
 description, ready/state, optional pagination feedback and acquisition
-diagnostics. It owns no fetch, SEO, permissions or persistence command.
+diagnostics. The diagnostic payload contains only `objects` and `derived` facts.
+The panel owns its display defaults and defaults provenance to passed objects;
+the page helper does not claim to fetch them. It owns no fetch, SEO, permissions
+or persistence command.
 Non-paginated sources expose neither pagination feedback nor a load-more operation.
-Ready and visible state derive from the same presentation outcome. A next-page failure is
-presented by pagination while retained records stay available.
+Ready and visible state derive directly from the reader’s supplied outcome.
+The shared helper must not infer readiness from retained rows or pagination errors.
+Each reader normalizes its own next-page feedback, rolls back failed page expansion
+for retry, and keeps later independent failures visible. Pagination presents the
+reader’s next-page error without acquiring or reclassifying records.
 
 Main Entity indexes consume a domain `useXCollectionPage` that composes its
 existing reader, domain SEO and the shared presentation. The domain maps its
@@ -466,6 +480,10 @@ invalidate that intent on disposal; calls outside a component release their
 own temporary watcher. `useAuth` supplies its current-User ref directly to
 bootstrap, avoiding recursive Auth construction. Other setup callers reuse the
 lower VueFire current-User ref. Ordinary sign-in does not invoke bootstrap.
+The Firebase Auth service remains opaque to Vue reactivity (`markRaw`): state
+watchers must not traverse SDK internals such as Google's cross-origin popup.
+The [SDK boundary regression](../../packages/core/fireux-core/src/test/auth-sdk-boundary.test.mjs)
+checks that the native service remains unproxied through the Auth binding.
 Core `UserCreateSystem` also captures its account, App and route intent around
 setup completion. A committed result remains real, but obsolete completion does
 not navigate a different account or overwrite its setup feedback/consent. Its
@@ -498,12 +516,12 @@ are not auto-import directories, and retired paths have no compatibility files.
 
 Tenant directory pages follow App membership document cursors before canonical
 User hydration. Missing or incomplete identities do not end pagination; every
-loaded page is re-read through `readLivePages` when its live dependencies change.
+loaded page is read through `readPages` when the owning Nuxt reader refreshes.
 Failures hide retained rows. Profile directory/detail factories use the same
-`defineLiveReadHandler` transport as their client readers. Existing-User
+native H3 request boundary as their client readers. Existing-User
 provisioning retains the server's canonical handle; new creation and handle edits
 still verify the requested handle. Core `user-directory-collection`,
-`live-server-read` and `user-profile-commands` tests protect these boundaries.
+`user-directory-detail` and `user-profile-commands` tests protect these boundaries.
 
 The `profile` group's existing four-family vocabulary remains a bounded legacy
 contract used by real domain routes. This pass preserves those domain consumers;
@@ -661,8 +679,10 @@ empty override disables the read. Callers must preserve that distinction.
 ## Editable field completion
 
 Core `useEditableStringField` owns generic string-field state. Its local epoch
-covers the draft, editing session, source value, disabled state and supplied
-context sources. SimpleField, ArrayOfStrings, ListActions and ImagePicker use
+covers the draft, editing session, foreign source revisions, disabled state and
+supplied context sources. A matching live acknowledgement of its pending save or
+clear does not invalidate completion; account, record, draft and disposal changes
+still do. This follows the existing Select and Checkbox behaviour. SimpleField, ArrayOfStrings, ListActions and ImagePicker use
 the shared `useCommandScope` mechanism for account/App/membership and disposal.
 Domains may pass their existing intent capture to a field; parent notifications
 consume its optional current-surface predicate. This controls presentation after
@@ -683,3 +703,34 @@ child reads or deletion; it cannot silently become a create action. Website
 settings use that same owner boundary and retain local dirty edits across live
 updates. See Kitchen `src/test/kitchen/offering-tool-internals.test.mjs`, `offering-field-internals.test.mjs` and
 `offering-website-client-internals.test.mjs`.
+
+## Native API read ownership
+
+Nuxt `useAsyncData` and `useFetch` own API acquisition, keyed state, SSR hydration,
+cancellation and refresh. Entity readers retain scope, domain normalization and
+request-key checks. API authorization and database selection stay server-owned.
+Core `runtime/composables/http/readPages.ts` only aggregates the requested cursor
+pages through a supplied native fetcher; it does not own an HTTP transport.
+
+Successful actions use native `refreshNuxtData` to reacquire API projections.
+Direct Firestore views retain their existing Firebase listeners. Server-only
+views do not receive automatic changes from other browsers; they refresh after
+actions or on explicit request. There is no custom SSE bridge, connection pool,
+visibility/polling manager, protocol decoder or subscription-tracking proxy.
+
+Collection-page coordinators and the separate platform/ecosystem Apps routes
+retain their existing composition and SEO. Reader-owned scope versions prevent
+obsolete paging completions from changing a newer flight. Focused evidence lives
+in `app-collection.test.mjs`, `app-detail.test.mjs`,
+`collection-reader-pagination.test.mjs` and the owning Entity read tests.
+
+## Project Identity command lifetime
+
+`useProjectUpdate` uses the existing `useCommandScope`, following Kitchen's
+update command. It captures account, current App membership, App identity,
+route and any caller-owned sources before waiting for a token. The Workspace
+Identity owner supplies its selected Project id. A scope change or disposal
+before dispatch rejects the command even if the values later return; the server
+still owns authorization. The
+[Project Identity regression](../../projects/fireux/fireux-app/app/tests/project-identity-command.test.mjs)
+checks the explicit-target PATCH contract and those invalidation boundaries.

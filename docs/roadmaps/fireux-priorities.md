@@ -1,81 +1,102 @@
 # FireUX priorities
 
-Reviewed: 2026-10-25
-Source baseline: `4a06df9ef`, with concurrent Kitchen/Workspace work preserved
+Reviewed: 2026-10-28
+Source baseline: `cf2413355`, with concurrent implementation preserved
 Role: consolidated priority list; recommendations, not release commitments
 
 ## How to use this list
 
 Keep one implementation task active: **Audit FireUX progress**. The cleanup
-chat handles organisation only. Promote a parked item deliberately when it
-unblocks the current outcome or becomes the chosen next outcome; do not reopen
-old chat checklists just because they contain unchecked boxes.
+chat handles organisation only. Promote a parked item deliberately; historical
+unchecked boxes are not new assignments. This file owns sequencing, while
+[AGENTS.md](../../AGENTS.md), [global context](../ai/gpt-context.md), current
+source and scoped contexts own implementation rules and authority.
 
-This roadmap owns priority and preserved intent. [AGENTS.md](../../AGENTS.md),
-[global context](../ai/gpt-context.md), current source and the relevant scoped
-contexts own working rules and behaviour. Historical chat claims require
-fresh source verification before implementation.
+**Current emphasis:** build and prove the pipelines. Existing real records and
+domain demo data are valid test inputs; a new App or a particular venue's opening
+window is not required to prove a shared mechanism. Follow the same owning
+commands from input to saved result, reload and failure/retry recovery. Keep
+pipeline proof distinct from that venue's operational acceptance and deployment.
+Read-only demo fixtures remain read-only; any persisted test records use the
+normal authorized domain commands, with clear test labels.
 
-## Now — 1. Finish the active shared Workspace slice
+## Attack order
 
-**Outcome:** familiar Identity framing, states and editing conventions across
-the real reference Workspaces, with justified domain differences visible.
+| Priority | Work | Finish line |
+| --- | --- | --- |
+| 1 | Accept the shared shape | Project/Kitchen Identity and the existing Apps collection chain have clear shared/domain owners, readable composition and justified differences |
+| 2 | Prove the bounded behaviour | Relevant read/edit, error, scope-change and session checks pass or have explicit remaining limits; the accepted slice is reviewable |
+| 3 | Define one creation contract | Codex and the FireUX App are clients of one proposed workflow, with agreed inputs, outputs, authority, step owners and recovery |
+| 4 | Prove that shared path | One bounded example exercises the actual mechanics from both entrances; manual intervention and post-creation development are identified |
+| 5 | Release a deliberately selected product | Its complete customer journey, access policy, hosting and operator acceptance are verified for the exact release scope |
 
-Continue the current Project/Kitchen comparison and existing uncommitted work.
-Reuse Nuxt UI and Core fundamentals; keep Kitchen/Place facts, Project fields,
-authority and commands with their domain owners. Inspect the other reference
-Workspaces through representative data when needed. Sample data creation is a
-separate concrete action, not already completed by this plan.
+Priorities 1–2 close the current foundation phase. Priority 3 begins only after
+that acceptance. Agreeing the one-path destination does not promote its
+implementation ahead of the current work. Demo cleanup and the recently
+repaired reader/editing mechanics are retained evidence, not automatic new
+audit projects.
 
-**Finish when:** the bounded comparison has explained shared versus domain
-differences, selected controls and states work in the browser, affected checks
-pass or have explicit existing limits, and the relevant maps match source.
-Then save the accepted slice through the normal requested Git-save flow.
+## Accepted locally — 1. Bounded shared-foundation slice
 
-Entry points: [Workspace family map](../concepts/family-workspace-entity.md),
-[components](../concepts/components.md), and the active chat. The
-[old Identity roadmap](../archive/2026-10-workspace-cleanup/roadmaps/identity-and-workspaces.md)
-is historical acceptance evidence, not a fresh implementation order.
+**Status:** locally accepted on 2026-10-28 within the boundary and limits in the
+[acceptance evidence](../reviews/shared-foundation-acceptance-2026-10-28.md).
+The focused 185-test suite and both App typechecks passed. This closes the
+bounded foundation phase; it does not certify every Entity or a live release.
 
-## Next — 2. Prove one real Ignition creation journey
+Core owns the persistent Workspace frame and shared profile layout. Project and
+Kitchen keep their domain identity editors; the two Apps indexes keep their
+actual scope and SEO differences. Current maps and focused checks cover that
+bounded slice. Earlier real Menu save/reload/restore and session evidence are
+retained with explicit limits.
 
-**Outcome:** a creator can move from a reviewed App idea and Project to a real
-initialised App with a usable preview/deployment result and clear ownership.
+Broader naming, style and family migrations are not an implicit continuation.
+Reopen this phase only for a concrete regression, rather than repeating a
+platform-wide alignment audit. Git save remains separately authorized.
 
-Combine the Lovable-alternative idea, capability-library work, Nuxt UI reuse
-and Bike Tours learning under this one task. Start by reconciling current
-App-record creation, brief/review flow and deployment tooling. The last chat
-request to build automatic creation/deployment failed before implementation;
-a brief or App record is not that proof. The FireUX App manifest still names
-removed root `scripts/` helpers for deployment, so revalidate that execution
-path before extending it.
+## Locally proved — 2. One bounded assisted Ignition path
 
-Bike Tours supplies a concrete branded consumer. Its next small UI improvement
-was the enquiry form: reuse existing controls/states while preserving tour
-questions and email/WhatsApp draft behaviour. Its historical PWA/SEO work is
-completed evidence, not another open foundation project. Preserve the intended
-preview `noindex` policy until a deliberate launch decision.
+**Status:** steps 3–4 are defined and locally proved for the curated Menu
+starting-App case. The [pipeline proof](../reviews/ignition-assisted-preview-2026-10-28.md)
+records both entrances, matching artifacts, native startup, authenticated Core
+initialization, saved context/membership, reload and the successful native build.
 
-**Finish when:** one bounded creation journey exercises the actual framework,
-documents manual steps and missing automation, handles failure/retry, verifies
-its intended hosting result and makes no stronger generation claim than proved.
-Agree the concrete infrastructure/release action separately before performing it.
+The FireUX App and Codex call one preparation function. Filesystem materialization,
+installation, startup and initialization remain explicit operator steps. Identical
+outputs resume; stale source and developer edits are not overwritten. The
+[operator entrypoint](../../projects/fireux/fireux-app/ignition/README.md) owns
+current commands and constraints.
+
+This is a real source-workspace pipeline using existing Kitchen demo data, not
+proof of arbitrary industry generation or automated commercial intake. The
+industry email enquiry and priced request queue retain their separate policies.
+No deployment, customer ownership transfer or production privacy is accepted by
+this proof. Reopen only for a concrete gap in the supported pipeline.
+
+The later independent dog App, then separate cat App, remain parked. Do not
+expand the recipe into a universal engine or build more libraries to improve
+a claim beyond this bounded acceptance.
 
 Entry points: [Ignite context](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md),
-[FireUX intake context](../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md),
-[Bike Tours brief](../../projects/slap/interlaken-bike-tours/app/ignition/brief.ts),
-and [parked capability-library plan](../archive/2026-10-workspace-cleanup/roadmaps/business-capability-library.md).
+[App intake context](../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md),
+and [original delivery-path audit](../reviews/ignition-delivery-path-2026-10-28.md).
 
-## Later — 3. Resume Misebox delivery when promoted
+## Selected product proof — 3. Misebox Collection at Bären
 
-**Status:** parked; the latest carried-forward direction paused Misebox while
-the shared foundation was being clarified. This cleanup does not resume it.
+**Status:** promoted as the final product acceptance target on 2026-10-28.
+Use labelled test records in Restaurant Bären's existing Kitchen. Live release
+remains separate from preparing and verifying the release candidate.
 
-Preserve the sequence: Food & drink (Items → Menus → Promotions → Services),
-then one complete Collection order and Kitchen fulfilment journey; then Delivery
-with assignment/handover/delivered states; then Kiosk, table/room entry and
-pre-order. Existing Workspace pages, meaningful index controls, child tools and
-their Free/Plus policy remain part of the eventual completion review.
+The [pilot checkpoint](../reviews/baeren-collection-pilot-2026-10-28.md) records
+fresh customer test order #21 through its receipt, operator completion and reload,
+with no duplicate and unchanged venue prices/hours. The local production policy
+candidate now follows the existing trusted Kitchen command ownership. Release
+still needs an exact reviewed source checkpoint, production-access approval and
+venue/operator acceptance; no live policy or application was deployed.
+
+Start with one existing Collection configuration and follow the complete guest
+and operator journey. Fix only the Item, Menu, Offering or fulfilment gaps that
+block that bounded outcome. Preserve venue prices and hours. Delivery, Kiosk,
+table/room entry, pre-order and wider capability completion remain later work.
 
 **Finish when:** each promoted slice has current source and command checks plus
 customer/operator acceptance, followed by a separately reviewed release decision.

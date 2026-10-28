@@ -1,10 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
-    <UPageHeader
-      :title="moduleTitle"
-      :description="moduleTagline"
-    />
+    <UPageHeader :title="moduleTitle" :description="moduleTagline" />
 
     <UPageBody class="pagebody space-y-10">
       <div v-if="moduleProduct" class="space-y-8">
@@ -91,9 +88,7 @@
               <div v-if="moduleContent" class="text-sm text-toned">
                 <div v-html="moduleContent" />
               </div>
-              <p v-else class="text-sm text-muted">
-                No overview yet.
-              </p>
+              <p v-else class="text-sm text-muted">No overview yet.</p>
             </div>
 
             <div class="space-y-3">
@@ -111,9 +106,7 @@
         <UCard>
           <template #header>
             <div class="space-y-1">
-              <p class="text-sm font-semibold text-highlighted">
-                Roadmap
-              </p>
+              <p class="text-sm font-semibold text-highlighted">Roadmap</p>
               <p class="text-xs text-muted">
                 What exists now and what we are building next.
               </p>
@@ -154,36 +147,46 @@ definePageMeta({
 
 const slug = useRouteParam('id')
 
-const { read: moduleRead, pending, error } = useProductRecord(slug, { productType: 'module' })
+const {
+  read: moduleRead,
+  pending,
+  error,
+} = useProductRecord(slug, { productType: 'module' })
 const { preview: toCard } = useProductInterface()
 
 const moduleProduct = computed(() => moduleRead.value?.product || null)
 
 const moduleTitle = computed(() => moduleProduct.value?.name || 'Module')
-const moduleTagline = computed(() => moduleProduct.value?.tagline || 'FireUX module')
+const moduleTagline = computed(
+  () => moduleProduct.value?.tagline || 'FireUX module'
+)
 const moduleDescription = computed(() => moduleProduct.value?.description || '')
 const moduleContent = computed(() =>
   moduleProduct.value?.content ? String(moduleProduct.value.content).trim() : ''
 )
 const moduleQ = computed(() => moduleProduct.value?.Q || 'Questions')
 const moduleA = computed(() => moduleProduct.value?.A || '')
-const moduleFeatures = computed(() =>
-  moduleProduct.value?.features?.map((feature) => feature.title).filter(Boolean) ?? []
+const moduleFeatures = computed(
+  () =>
+    moduleProduct.value?.features
+      ?.map((feature) => feature.title)
+      .filter(Boolean) ?? []
 )
-const moduleCard = computed(() =>
-  toCard(moduleProduct.value) ?? {
-    id: moduleProduct.value?.id || '',
-    to: '',
-    avatarUrl: moduleProduct.value?.main_image || '',
-    title: moduleTitle.value,
-    subtitle: moduleTagline.value,
-    name: moduleTitle.value,
-    description: moduleDescription.value,
-    imageUrl: moduleProduct.value?.main_image || '',
-    summary: moduleDescription.value,
-    status: String(moduleProduct.value?.product_type || ''),
-    badges: [],
-  }
+const moduleCard = computed(
+  () =>
+    toCard(moduleProduct.value) ?? {
+      id: moduleProduct.value?.id || '',
+      to: '',
+      avatarUrl: moduleProduct.value?.main_image || '',
+      title: moduleTitle.value,
+      subtitle: moduleTagline.value,
+      name: moduleTitle.value,
+      description: moduleDescription.value,
+      imageUrl: moduleProduct.value?.main_image || '',
+      summary: moduleDescription.value,
+      status: String(moduleProduct.value?.product_type || ''),
+      badges: [],
+    }
 )
 
 const priceLabel = computed(() => {
@@ -195,8 +198,8 @@ const priceLabel = computed(() => {
     currency: currency.toUpperCase(),
   }).format(price / 100)
 })
-const requiresTemplate = computed(() =>
-  moduleProduct.value?.requires_template === true
+const requiresTemplate = computed(
+  () => moduleProduct.value?.requires_template === true
 )
 const ctaHint = computed(() =>
   requiresTemplate.value
@@ -204,9 +207,7 @@ const ctaHint = computed(() =>
     : 'Works with FireUX Template'
 )
 
-const timelineItems = computed(
-  () => roadmapBySlug[slug.value] ?? []
-)
+const timelineItems = computed(() => roadmapBySlug[slug.value] ?? [])
 
 const isBuying = ref(false)
 const notify = (title: string, description: string) => {
@@ -225,17 +226,18 @@ const notify = (title: string, description: string) => {
 }
 
 function resolveCheckoutPriceId(): string {
-  const fallback = String(moduleRead.value?.defaultPrice?.provider_price_id || moduleRead.value?.defaultPrice?.id || '').trim()
+  const fallback = String(
+    moduleRead.value?.defaultPrice?.provider_price_id ||
+      moduleRead.value?.defaultPrice?.id ||
+      ''
+  ).trim()
   if (!fallback || fallback.startsWith('local_')) return ''
   return fallback
 }
 
 async function startCheckout() {
   const product = moduleProduct.value
-  const appId = String(
-    product?.source_app_id ||
-      ''
-  ).trim()
+  const appId = String(product?.source_app_id || '').trim()
   const productId = String(product?.id || '').trim()
   const productSlug = String(product?.slug || '').trim()
   const priceId = resolveCheckoutPriceId()
@@ -246,7 +248,10 @@ async function startCheckout() {
   }
 
   if (!priceId) {
-    notify('Checkout unavailable', 'No live Stripe price found for this module yet.')
+    notify(
+      'Checkout unavailable',
+      'No live Stripe price found for this module yet.'
+    )
     return
   }
 

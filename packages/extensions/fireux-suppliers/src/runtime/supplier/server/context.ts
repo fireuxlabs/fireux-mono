@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { SUPPLIER_MUTATION_TARGETS } from './mutation-targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import {
@@ -26,7 +26,7 @@ export async function supplierContext(
     const current = readRecordString(rootData, 'context')
     if (!write) return { context: current }
     const context = contextChange(value, current)
-    tx.update(FIRESTORE_MUTATION_TARGETS.suppliers, id, {
+    tx.update(SUPPLIER_MUTATION_TARGETS.suppliers, id, {
       context,
       updated: serverAuditStamp({ by: actor.uid }),
     })

@@ -39,10 +39,8 @@
   ></UContainer>
 </template>
 <script setup lang="ts">
-import {
-  resolveInternalRedirect,
-  resolvePostAuthDestination,
-} from 'fireux-core/runtime/utils/onboarding-route'
+import { resolveInternalRedirect } from 'fireux-core/runtime/utils/internal-redirect'
+import { resolvePostAuthDestination } from 'fireux-core/runtime/user/utils/onboarding-route'
 import Confirm from 'fireux-core/runtime/user/components/Connections/Confirm.vue'
 import {
   useAccountConnectionAction,

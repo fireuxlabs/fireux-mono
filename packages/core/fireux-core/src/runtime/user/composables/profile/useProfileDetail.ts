@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { DetailResponse } from '../../../models/utils/directory.ts'
@@ -52,11 +53,13 @@ export async function useProfileDetail<
   const identifier = computed(() =>
     String(unref(profileIdentifier) ?? '').trim()
   )
-  const { data, pending, error, refresh } = await useLiveAsyncData(
+  const { data, pending, error, refresh } = await useAsyncData(
     () => `profile-detail-${options.collection}-${identifier.value || 'none'}`,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!identifier.value) return null
-      return liveFetch<DetailResponse<ProfileDirectoryEntry<TProfile>>>(
+      return fetchRead<DetailResponse<ProfileDirectoryEntry<TProfile>>>(
         `/api/${options.collection}/${encodeURIComponent(identifier.value)}`
       )
     },

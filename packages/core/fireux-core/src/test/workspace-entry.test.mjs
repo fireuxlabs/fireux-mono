@@ -8,7 +8,7 @@ import * as routes from '../runtime/workspace/utils/routes.ts'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
-} from '../runtime/utils/onboarding-route.ts'
+} from '../runtime/user/utils/onboarding-route.ts'
 
 const source = readFileSync(
   new URL(

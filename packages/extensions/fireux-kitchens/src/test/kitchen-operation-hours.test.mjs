@@ -96,7 +96,7 @@ function command({ denied = false } = {}) {
         }
       },
       runGuardedServerTransaction: async (_, callback) => callback(tx),
-      FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
+      KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
       serverAuditStamp: (stamp) => stamp,
       FieldValue: { delete: () => deleted },
     }

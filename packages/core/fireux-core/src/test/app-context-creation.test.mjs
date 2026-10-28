@@ -23,10 +23,8 @@ function fixture() {
       createError: (value) =>
         Object.assign(new Error(value.statusMessage), value),
       FieldValue: { serverTimestamp: () => 'now' },
-      FIRESTORE_MUTATION_TARGETS: {
-        runtimeApps: target('apps'),
-        runtimeUsers: target('users'),
-      },
+      APP_MUTATION_TARGETS: { runtimeApps: target('apps') },
+USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       serverAppUsersTarget: (id) => target(`apps/${id}/users`),
       getRuntimeIdentityFirestore: () => {
         throw new Error('Unexpected identity read')

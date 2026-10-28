@@ -9,7 +9,7 @@ import {
 } from '../core/mutation-authority'
 import { serverKitchenOfferingsTarget } from './target'
 import { kitchenOfferingData } from '../../utils/offerings'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget } from '../mutation-targets'
 import { readKitchenOfferingsInTransaction } from './read'
 import {
   readOfferingUpdate,

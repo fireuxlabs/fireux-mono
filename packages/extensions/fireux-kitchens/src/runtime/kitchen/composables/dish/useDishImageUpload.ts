@@ -1,6 +1,7 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { ref, type WatchSource } from 'vue'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useDishEditorScope } from './useDishEditorScope'
 
 type DishImageUploadResponse = {
@@ -53,6 +54,15 @@ export function useDishImageUpload(ownerSources: WatchSource[] = []) {
       const result = await $fetch<DishImageUploadResponse>(
         `/api/workspace/kitchen/dishes/${encodeURIComponent(dishId)}/image`,
         {
+          onResponse: async ({ options, response }) => {
+            if (
+              response.ok &&
+              !['GET', 'HEAD'].includes(
+                String(options.method || 'GET').toUpperCase()
+              )
+            )
+              await refreshNuxtData()
+          },
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           query: { kitchenId },

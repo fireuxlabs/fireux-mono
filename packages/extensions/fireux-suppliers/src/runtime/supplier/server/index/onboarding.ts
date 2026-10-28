@@ -12,7 +12,7 @@ import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-su
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+} from 'fireux-core/runtime/app/utils/entity-management'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -22,13 +22,11 @@ import {
   resolveWorkspaceEntityOnboardingPolicy,
 } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverSupplierTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { SUPPLIER_MUTATION_TARGETS, serverSupplierTeamMembersTarget } from '../mutation-targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { buildSupplierTeamMemberRecord } from '../team/member-record'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
@@ -176,7 +174,7 @@ export async function completeSupplierOnboarding(
 
   const memberships = serverAppUsersTarget(policy.appId)
   const grants = serverSupplierAccessTarget(policy.appId)
-  const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
+  const suppliers = SUPPLIER_MUTATION_TARGETS.suppliers
   const team = serverSupplierTeamMembersTarget(supplierId)
 
   return runGuardedServerTransaction(suppliers.database, async (mutations) => {
@@ -208,11 +206,11 @@ export async function completeSupplierOnboarding(
       : newCompanyId
     const [company, place] = await Promise.all([
       mutations.read<Record<string, unknown>>(
-        FIRESTORE_MUTATION_TARGETS.companies,
+        PLACE_MUTATION_TARGETS.companies,
         companyId
       ),
       mutations.read<Record<string, unknown>>(
-        FIRESTORE_MUTATION_TARGETS.places,
+        PLACE_MUTATION_TARGETS.places,
         companyId
       ),
     ])

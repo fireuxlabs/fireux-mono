@@ -7,6 +7,12 @@
         description="Shape the platform, its operating Workspace and the Apps your customers will use."
       />
       <UPageBody>
+      <UButton
+        to="/ignite-preview"
+        label="Try the assisted Menu starting App"
+        color="neutral"
+        variant="soft"
+      />
         <UCard>
           <form class="space-y-6" @submit.prevent="prepare">
             <UFormField label="Your idea" required>

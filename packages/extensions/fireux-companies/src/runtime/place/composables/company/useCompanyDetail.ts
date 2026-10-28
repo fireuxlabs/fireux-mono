@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { CompanyDetailResponse } from '../../models/company-collection.model.ts'
@@ -38,11 +39,13 @@ export function useCompanyDetail(
   companyId: MaybeRef<string | null | undefined>
 ): UseCompanyDetailReturn {
   const id = computed(() => String(unref(companyId) ?? '').trim())
-  const state = useLiveAsyncData<CompanyDetailResponse | null>(
+  const state = useAsyncData<CompanyDetailResponse | null>(
     () => `company-detail|${id.value || 'none'}`,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!id.value) return null
-      return liveFetch<CompanyDetailResponse>(
+      return fetchRead<CompanyDetailResponse>(
         `/api/companies/${encodeURIComponent(id.value)}`
       )
     },

@@ -1,5 +1,5 @@
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
-import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -266,9 +266,7 @@ function createHarness(access) {
         ['free', 'premium', 'business'].includes(value),
       hasAppSubscriptionCapacity,
       fireuxProjectsTarget: projectsTarget,
-      FIRESTORE_MUTATION_TARGETS: {
-        fireuxApps: appTarget,
-      },
+      FIREUX_MUTATION_TARGETS: { fireuxApps: appTarget },
       fireuxAppUsersTarget: () => ({ collectionPath: 'apps/app/users' }),
       fireuxProjectTeamMembersTarget: (id) => ({
         collectionPath: `projects/${id}/team`,

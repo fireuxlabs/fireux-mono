@@ -52,8 +52,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useAsyncData, useFetch } from 'nuxt/app'
+
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { MarketplaceStoreDirectoryPage } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
@@ -64,16 +64,18 @@ definePageMeta({
 
 const { copy } = useInterlakenCopy()
 const { currentUser, hasAuthState } = useAuth()
-const { data } = await useLiveFetch<MarketplaceStoreDirectoryPage>(
+const { data } = await useFetch<MarketplaceStoreDirectoryPage>(
   '/api/marketplace-stores',
   { default: () => ({ items: [], truncated: false }) }
 )
-const previewRead = useLiveAsyncData<MarketplaceStoreDirectoryPage | null>(
+const previewRead = useAsyncData<MarketplaceStoreDirectoryPage | null>(
   computed(() => `market-preview:${currentUser.value?.uid || ''}`),
-  async (liveFetch) => {
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
     const user = currentUser.value
     if (!hasAuthState.value || !user) return null
-    return liveFetch<MarketplaceStoreDirectoryPage>(
+    return fetchRead<MarketplaceStoreDirectoryPage>(
       '/api/marketplace-stores?visibility=all',
       {
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },

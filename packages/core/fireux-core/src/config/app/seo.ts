@@ -2,7 +2,7 @@ import { resolveSeoRobots } from '../../utils/seoIndexing'
 import {
   readSitemapPublicFilters,
   type SitemapPublicFilter,
-} from '../../runtime/utils/sitemap-public-filters'
+} from '../../utils/sitemap-public-filters'
 import type { NuxtConfig } from '@nuxt/schema'
 import {
   normalizePaths,

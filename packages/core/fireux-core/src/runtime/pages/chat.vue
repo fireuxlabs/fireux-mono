@@ -72,6 +72,8 @@
 </template>
 
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, definePageMeta, onMounted, reactive, ref } from '#imports'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
@@ -163,6 +165,13 @@ async function refreshSession() {
   const response = await $fetch<{
     messages: ChatMessage[]
   }>('/api/chat/session', {
+    onResponse: async ({ options, response }) => {
+      if (
+        response.ok &&
+        !['GET', 'HEAD'].includes(String(options.method || 'GET').toUpperCase())
+      )
+        await refreshNuxtData()
+    },
     method: 'POST',
     headers: await requestHeaders(),
     body: {
@@ -202,6 +211,9 @@ async function sendMessage() {
         token: string
         expires_at: string
       }>('/api/chat/start', {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'POST',
         headers: await requestHeaders(),
         body: {
@@ -223,6 +235,9 @@ async function sendMessage() {
       )
     } else {
       await $fetch('/api/chat/message', {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'POST',
         headers: await requestHeaders(),
         body: {

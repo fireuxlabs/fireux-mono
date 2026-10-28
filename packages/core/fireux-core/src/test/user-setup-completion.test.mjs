@@ -11,7 +11,7 @@ import {
   ref,
   watch,
 } from 'vue'
-import { resolveUserOnboardingDestination } from '../runtime/utils/onboarding-route.ts'
+import { resolveUserOnboardingDestination } from '../runtime/user/utils/onboarding-route.ts'
 function load(path, result, deps) {
   let source = readFileSync(
     new URL('../runtime/' + path, import.meta.url),

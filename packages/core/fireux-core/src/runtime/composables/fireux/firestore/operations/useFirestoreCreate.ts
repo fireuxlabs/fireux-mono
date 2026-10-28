@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import {
   addDoc,
   collection,
@@ -52,7 +53,11 @@ export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
 
     const db = resolveDb()
     const id = createOptions.id?.trim()
-    if (!id) return (await addDoc(collection(db, path), payload)).id
+    if (!id) {
+      const created = await addDoc(collection(db, path), payload)
+      await refreshNuxtData()
+      return created.id
+    }
 
     await runTransaction(db, async (transaction) => {
       const reference = doc(db, path, id)
@@ -61,6 +66,7 @@ export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
       }
       transaction.set(reference, payload)
     })
+    await refreshNuxtData()
     return id
   }
 

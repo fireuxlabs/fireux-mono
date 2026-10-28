@@ -3,12 +3,9 @@ import { readKitchenAccessIds } from '../../../kitchen/utils/kitchen-access'
 import { createError } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverUserProfileAppStateTarget,
-  serverUserProfileTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { APP_MUTATION_TARGETS, serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { KITCHEN_MUTATION_TARGETS } from '../../../kitchen/server/mutation-targets'
+import { serverUserProfileAppStateTarget, serverUserProfileTarget } from 'fireux-core/runtime/user/server/mutation-targets'
 import { planDriverKitchenLinks } from '../../utils/driver/kitchen-links'
 import {
   type DriverKitchenAccessInput,
@@ -43,10 +40,10 @@ export async function mutateDriverKitchenAccess(
         kitchenSnapshot,
         actorKitchenAccess,
       ] = await Promise.all([
-        mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId),
+        mutations.read(APP_MUTATION_TARGETS.runtimeApps, appId),
         mutations.read(memberships, actorUid),
         mutations.read(memberships, input.driver_id),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchen_id),
+        mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, input.kitchen_id),
         mutations.read(serverKitchenAccessTarget(), actorUid),
       ])
 

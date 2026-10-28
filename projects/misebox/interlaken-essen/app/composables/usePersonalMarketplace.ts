@@ -1,6 +1,8 @@
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import { useMarketplaceCommands } from 'fireux-marketplace/runtime/marketplace-store/composables/useMarketplaceCommands'
 import { useMarketplaceClient } from 'fireux-marketplace/runtime/marketplace-store/composables/useMarketplaceClient'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import type {
   MarketplaceAccountResponse,
   MarketplaceAccountSettings,
@@ -42,19 +44,27 @@ export function usePersonalMarketplace() {
 
   const activeSurface = ref<PersonalSurface>('buyer')
   const orderActionId = ref('')
-  watch(marketplace.scopeEpoch, () => { orderActionId.value = '' }, { flush: 'sync' })
+  watch(
+    marketplace.scopeEpoch,
+    () => {
+      orderActionId.value = ''
+    },
+    { flush: 'sync' }
+  )
   const deliveryAddress = ref('')
   const settingsState = ref<SettingsState>('idle')
   const settingsMessageKey = ref<SettingsMessageKey | null>(null)
   const profileEditorOpen = ref(false)
   let storedDeliveryAddress = ''
 
-  const account = useLiveAsyncData<MarketplaceAccountResponse | null>(
+  const account = useAsyncData<MarketplaceAccountResponse | null>(
     computed(() => `market-account:${authUser.value?.uid || ''}`),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const user = authUser.value
       if (!user) return null
-      return liveFetch<MarketplaceAccountResponse>('/api/marketplace/account', {
+      return fetchRead<MarketplaceAccountResponse>('/api/marketplace/account', {
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
       })
     },
@@ -64,15 +74,17 @@ export function usePersonalMarketplace() {
     authUser.value ? (account.data.value?.profile ?? null) : null
   )
 
-  const liveRecords = useLiveAsyncData(
+  const liveRecords = useAsyncData(
     computed(() => `personal-market:${authUser.value?.uid || ''}`),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!authUser.value)
         return {
           stores: [] as MarketplaceStore[],
           orders: [] as MarketplaceOrder[],
         }
-      const client = useMarketplaceClient(liveFetch)
+      const client = useMarketplaceClient(fetchRead)
       const [stores, orders] = await Promise.all([
         client.managedStores(),
         client.orders('buyer'),
@@ -224,6 +236,15 @@ export function usePersonalMarketplace() {
       const response = await $fetch<MarketplaceSettingsResponse>(
         '/api/marketplace/account',
         {
+          onResponse: async ({ options, response }) => {
+            if (
+              response.ok &&
+              !['GET', 'HEAD'].includes(
+                String(options.method || 'GET').toUpperCase()
+              )
+            )
+              await refreshNuxtData()
+          },
           method: 'PATCH',
           headers: { Authorization: `Bearer ${token}` },
           body,

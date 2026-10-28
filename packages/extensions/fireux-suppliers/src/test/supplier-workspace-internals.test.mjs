@@ -3,7 +3,19 @@ import { placeIdentityMedia } from '../../../fireux-places/src/runtime/place/uti
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import {
   computed,
   ref,
@@ -16,8 +28,8 @@ import {
 } from 'vue'
 import { normalizeSupplier } from '../runtime/supplier/utils/normalize-supplier.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
-import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
-import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/string.ts'
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
+import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 
 function load(file, result, deps = {}) {
   let source = readFileSync(new URL(file, import.meta.url), 'utf8')
@@ -35,7 +47,7 @@ function load(file, result, deps = {}) {
 }
 const core = '../../../../core/fireux-core/src/runtime/'
 const normalizeSlug = load(
-  `${core}utils/slug/normalizeSlug.ts`,
+  `${core}utils/slug/normalize-slug.ts`,
   'normalizeSlug',
   { normalizeString }
 )
@@ -143,7 +155,7 @@ test('granted collection follows exact linked Place identity, rebinding, removal
             return createLoader({ resolveDb: () => ({}), options })
           },
         }),
-        useLiveAsyncData: () => ({
+        useAsyncData: () => ({
           data: ref(null),
           pending: ref(false),
           error: ref(null),
@@ -247,7 +259,7 @@ test('targeted workspace collections use a different live-data key from the publ
             error: ref(null),
           }),
         }),
-        useLiveAsyncData: (key) => {
+        useAsyncData: (key) => {
           keys.push(unref(key))
           return { data: ref(null), pending: ref(false), error: ref(null) }
         },

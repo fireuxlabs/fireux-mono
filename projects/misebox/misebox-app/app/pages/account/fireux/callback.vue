@@ -56,7 +56,7 @@ import { getAuth, signInWithCustomToken } from 'firebase/auth'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { connectionFeedback } from 'fireux-core/runtime/user/composables/connections/useAccountConnectionAction'
-import { resolvePostAuthDestination } from 'fireux-core/runtime/utils/onboarding-route'
+import { resolvePostAuthDestination } from 'fireux-core/runtime/user/utils/onboarding-route'
 definePageMeta({ layout: 'auth' })
 useHead({
   title: 'Open Misebox',

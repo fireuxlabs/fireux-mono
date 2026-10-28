@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import * as Vue from 'vue'
 import { renderToString } from 'vue/server-renderer'
 const {
@@ -277,7 +289,7 @@ function reservations() {
         useUserSession: () => ({ appUser }),
         useCollectionById: () => ({ byId: () => undefined }),
         reservationNights: () => 1,
-        useLiveAsyncData: (_, fn) => {
+        useAsyncData: (_, fn) => {
           handler = fn
           return source
         },
@@ -290,11 +302,13 @@ function reservations() {
     source.pending.value = true
     source.error.value = null
     const requests = []
-    const promise = handler((...args) => {
-      const d = deferred()
-      requests.push({ args, ...d })
-      return d.promise
-    })
+    const promise =
+      ((currentReadFetch = (...args) => {
+        const d = deferred()
+        requests.push({ args, ...d })
+        return d.promise
+      }),
+      handler({}, { signal: new AbortController().signal }))
     return { promise, requests }
   }
   return {

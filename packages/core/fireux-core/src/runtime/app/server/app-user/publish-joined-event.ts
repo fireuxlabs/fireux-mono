@@ -3,13 +3,8 @@ import {
   AppEventNames, appUserJoinedEventId, type AppEvent, } from '../../models/event'
 import type { AppUser } from '../../models/app-user.model.ts'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppEventsTarget,
-  serverAppUsersTarget,
-  serverUserNotificationsTarget,
-} from '../../../utils/firestore-mutations/targets'
-
+import { APP_MUTATION_TARGETS, serverAppEventsTarget, serverAppUsersTarget } from '../mutation-targets'
+import { serverUserNotificationsTarget } from '../../../user/server/mutation-targets'
 export type PublishAppUserJoinedEventInput = {
   appId: string
   ecosystemId: string
@@ -70,7 +65,7 @@ function timestampIso(value: unknown): string {
 export async function publishAppUserJoinedEvent(
   input: PublishAppUserJoinedEventInput
 ): Promise<PublishAppUserJoinedEventResult> {
-  const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
+  const apps = APP_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(input.appId)
   const events = serverAppEventsTarget(input.appId)
   let eventId = ''

@@ -14,7 +14,7 @@ import {
   createClientRouteCheck,
   resolveClientAppAdmin,
   resolveClientAuthState,
-} from '../utils/routeAuthGuard'
+} from '../composables/navigation/route-auth'
 
 import { useWorkspaceEntryCta } from '../workspace/composables/useWorkspaceEntryCta'
 

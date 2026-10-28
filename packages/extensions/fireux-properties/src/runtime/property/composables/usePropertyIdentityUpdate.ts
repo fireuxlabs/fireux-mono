@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { PropertyIdentityUpdateInput } from '../models/property.model'
 
@@ -17,6 +18,15 @@ export function usePropertyIdentityUpdate() {
     const result = await $fetch<{ ok: true; propertyId: string }>(
       '/api/workspace/property/identity',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body,

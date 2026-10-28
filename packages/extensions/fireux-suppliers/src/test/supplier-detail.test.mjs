@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, unref, reactive } from 'vue'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
@@ -34,7 +46,7 @@ function fixture() {
       'computed',
       'unref',
       'useFireUXConfig',
-      'useLiveAsyncData',
+      'useAsyncData',
       'resolveReadOutcome',
       'resolveHttpDocumentOutcome',
     ]
@@ -52,10 +64,11 @@ function fixture() {
   )
   const detail = useSupplierDetail(id)
   const load = async (payload) => {
-    state.data.value = await handler(async (url) => {
+    state.data.value = await ((currentReadFetch = async (url) => {
       assert.equal(url, `/api/suppliers/${encodeURIComponent(id.value.trim())}`)
       return payload
-    })
+    }),
+    handler({}, { signal: new AbortController().signal }))
     state.pending.value = false
     state.error.value = null
   }

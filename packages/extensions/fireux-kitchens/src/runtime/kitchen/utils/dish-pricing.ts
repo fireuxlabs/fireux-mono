@@ -1,4 +1,4 @@
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type {
   DishPriceOption,
   DishAddOnOption,

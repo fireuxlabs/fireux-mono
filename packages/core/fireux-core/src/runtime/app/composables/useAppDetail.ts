@@ -1,19 +1,25 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
+
 import type { App } from '../models/app.model'
 import type { DetailResponse } from '../../models/utils/directory'
 
 /** Public App projection. The endpoint owns visibility and database scope. */
 export function useAppDetail(endpoint: MaybeRefOrGetter<string>) {
   const url = computed(() => String(toValue(endpoint) || '').trim())
-  const state = useLiveAsyncData(
+  const state = useAsyncData(
     () => `app-detail:${url.value}`,
-    async (fetch) => ({
-      endpoint: url.value,
-      response: url.value ? await fetch<DetailResponse<App>>(url.value) : null,
-    })
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return {
+        endpoint: url.value,
+        response: url.value
+          ? await fetchRead<DetailResponse<App>>(url.value)
+          : null,
+      }
+    }
   )
   const error = state.error
   const pending = computed(() => outcome.value === 'pending')

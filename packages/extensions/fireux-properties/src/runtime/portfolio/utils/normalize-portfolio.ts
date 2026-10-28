@@ -1,5 +1,5 @@
-import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/app/utils/entity-management'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { Portfolio } from '../models/portfolio.model.ts'
 
 const record = (value: unknown): Record<string, unknown> | null =>

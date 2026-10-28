@@ -37,8 +37,14 @@
               </p>
             </div>
 
-            <ul class="grid gap-3 text-sm leading-6 text-highlighted md:grid-cols-2">
-              <li v-for="item in jobsReviewItems" :key="item" class="flex gap-3">
+            <ul
+              class="grid gap-3 text-sm leading-6 text-highlighted md:grid-cols-2"
+            >
+              <li
+                v-for="item in jobsReviewItems"
+                :key="item"
+                class="flex gap-3"
+              >
                 <UIcon
                   name="i-lucide-circle-alert"
                   class="mt-1 size-4 shrink-0 text-error"
@@ -102,7 +108,7 @@ const legalDocuments = [
   },
   {
     title: 'Cookies and browser storage',
-    description: 'The exact browser storage used after a feature request.',
+    description: 'Browser storage for appearance and requested features.',
     icon: 'i-lucide-cookie',
     to: '/legal/storage',
   },

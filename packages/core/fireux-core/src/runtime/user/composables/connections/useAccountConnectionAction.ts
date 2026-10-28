@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { $fetch } from '#imports'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -50,6 +51,15 @@ export function useAccountConnectionAction(endpoint: string) {
       const token = confirmed?.token || (await user.getIdToken())
       if (!isCurrent()) return null
       const response = await $fetch<T, string, 'POST'>(endpoint, {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         body: input,
         headers: { Authorization: `Bearer ${token}` },

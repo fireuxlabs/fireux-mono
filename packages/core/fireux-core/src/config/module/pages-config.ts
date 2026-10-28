@@ -6,12 +6,21 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   requireNativeRuntimeLayer(resolver, nuxt)
 }
 
-/** Core owns this policy once, independently of package runtime discovery. */
-export function configureWorkspacePageTransitions(nuxt: Nuxt) {
-  nuxt.hook('pages:extend', (pages: any[]) => {
-    const disableWorkspaceTransitions = (items: any[]) => {
+/** Keep shared frames stable and fragment-based Dashboard pages unanimated. */
+export function configurePageTransitions(nuxt: Nuxt) {
+  // The policy needs the layout name before Nuxt generates runtime routes.
+  nuxt.options.experimental.extraPageMetaExtractionKeys = [
+    ...new Set([
+      ...(nuxt.options.experimental.extraPageMetaExtractionKeys || []),
+      'layout',
+    ]),
+  ]
+  nuxt.hook('pages:resolved', (pages: any[]) => {
+    const applyPolicy = (items: any[], parentLayout?: string | false) => {
       for (const page of items) {
+        const layout = page?.meta?.layout ?? parentLayout
         if (
+          layout === 'dashboard' ||
           page?.meta?.workspacePage === true ||
           String(page?.path ?? '').startsWith('/workspace') ||
           String(page?.file ?? '').includes('/pages/workspace/')
@@ -19,11 +28,11 @@ export function configureWorkspacePageTransitions(nuxt: Nuxt) {
           page.meta = { ...(page.meta || {}), pageTransition: false }
         }
         if (Array.isArray(page?.children)) {
-          disableWorkspaceTransitions(page.children)
+          applyPolicy(page.children, layout)
         }
       }
     }
-    disableWorkspaceTransitions(pages)
+    applyPolicy(pages)
   })
 }
 

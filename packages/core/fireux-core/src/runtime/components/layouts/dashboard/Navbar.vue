@@ -18,36 +18,12 @@
       <UserSubscriptionControl v-if="showSubscription" />
       <slot name="right" />
 
-      <UTooltip
-        v-if="showNotifications"
-        :text="notificationTooltip"
-        :kbds="['N']"
-      >
-        <UButton
-          color="neutral"
-          variant="ghost"
-          square
-          :aria-label="notificationTooltip"
-          @click="openNotifications()"
-        >
-          <UChip
-            color="error"
-            inset
-            :show="unreadCount > 0"
-            :text="unreadLabel"
-          >
-            <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
-          </UChip>
-        </UButton>
-      </UTooltip>
+      <UserNotificationsButton v-if="showNotifications" :kbds="['N']" />
     </template>
   </UDashboardNavbar>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useUserNotifications } from '../../../user/composables/notifications/useUserNotifications'
-
 withDefaults(
   defineProps<{
     title: string
@@ -57,15 +33,5 @@ withDefaults(
     showTitle?: boolean
   }>(),
   { showSubscription: true, showNotifications: true, showTitle: true }
-)
-
-const { open: openNotifications, unreadCount } = useUserNotifications()
-const unreadLabel = computed(() =>
-  unreadCount.value > 99 ? '99+' : unreadCount.value
-)
-const notificationTooltip = computed(() =>
-  unreadCount.value
-    ? `${unreadCount.value} unread notification${unreadCount.value === 1 ? '' : 's'}`
-    : 'Notifications'
 )
 </script>

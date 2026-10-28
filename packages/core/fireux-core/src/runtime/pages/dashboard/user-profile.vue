@@ -195,7 +195,7 @@ import { computed, definePageMeta, useHead } from '#imports'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useUserAccount } from '../../user/composables/account/useUserAccount'
 import { useUserView } from '../../user/composables/useUserView'
-import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
+import { formatFirestoreTimestamp } from '../../utils/firestore-timestamp'
 
 definePageMeta({
   layout: 'dashboard',

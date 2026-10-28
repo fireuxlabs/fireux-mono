@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import type { Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -49,6 +50,15 @@ export function useReservationCreate(
     const response = await $fetch<ReservationResponse>(
       `/api/workspace/properties/${encodeURIComponent(propertyId)}/reservations`,
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body,

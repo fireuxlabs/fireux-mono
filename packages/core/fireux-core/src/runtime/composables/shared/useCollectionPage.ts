@@ -21,8 +21,6 @@ export type CollectionPageOptions = {
   collection: CollectionPageSource
   pagination?: CollectionPagePagination
   diagnostics?: {
-    title?: string
-    context?: string
     objects?: MaybeRefOrGetter<Record<string, unknown>>
     derived?: MaybeRefOrGetter<Record<string, unknown>>
   }
@@ -50,26 +48,16 @@ export function useCollectionPage(options: CollectionPageOptions) {
   )
   const loadMore = options.pagination?.loadMore
 
-  // Retained records remain presentable after a next-page failure.
-  const presentationOutcome = computed<ReadOutcome>(() =>
-    count.value > 0 && pagination.value?.error
-      ? 'ready'
-      : collectionOutcome.value
-  )
+  // The reader owns validity, including any retained records after paging fails.
   const state = computed(() => ({
-    outcome: presentationOutcome.value,
+    outcome: collectionOutcome.value,
     entity: options.entity,
     error: toValue(options.collection.error),
   }))
-  const ready = computed(() => presentationOutcome.value === 'ready')
+  const ready = computed(() => collectionOutcome.value === 'ready')
 
   // Diagnostics describe the same records and feedback used by the page.
   const diagnostics = computed(() => ({
-    title: options.diagnostics?.title ?? `${title.value} index acquisition`,
-    context:
-      options.diagnostics?.context ??
-      'Records and acquisition state supplied by the page reader.',
-    objectOrigin: 'fetched' as const,
     objects: toValue(options.diagnostics?.objects) ?? {
       [options.entity]: toValue(options.collection.records),
     },
@@ -83,8 +71,6 @@ export function useCollectionPage(options: CollectionPageOptions) {
         : {}),
       ...toValue(options.diagnostics?.derived),
     },
-    includeRoute: true,
-    launcher: true,
   }))
 
   return reactive({

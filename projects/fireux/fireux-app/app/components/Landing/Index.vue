@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { readPlatformContext } from 'fireux-core/runtime/utils/platform-context'
+import { readPlatformContext } from '../../../shared/platform-context'
 import { fireuxOffer } from '../../content/meta/source'
 
 const platform = readPlatformContext()

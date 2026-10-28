@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate.ts
 // flag
 // Concurrent edit — 2026-07-20 20:17 CEST — Repo Efficiency Pass 2 of 6: expose only bounded single-family Professional mutations.
@@ -7,7 +8,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/httpsUrl'
+import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/https-url'
 import {
   ProfessionalConstraints,
   ProfessionalStorage,
@@ -137,6 +138,15 @@ export function useProfessionalUpdate(
     }
     const token = await user.getIdToken()
     await $fetch('/api/internal/profiles/professional/structured', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
       body: { field: key, items: items ?? [] },
@@ -202,10 +212,7 @@ export function useProfessionalUpdate(
     source: File | Blob,
     options: UpdateOptions = {}
   ) => {
-    const id = await base.resolveUid(
-      ProfessionalStorage.document,
-      options.id
-    )
+    const id = await base.resolveUid(ProfessionalStorage.document, options.id)
     const path = `professionals/${id}/image/current`
     const url = await uploadImage(path, source)
     const next = normalizeHttpsUrlInput(cacheBust(url), {

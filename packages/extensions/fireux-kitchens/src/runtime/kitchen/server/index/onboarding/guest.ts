@@ -3,11 +3,8 @@ import type { H3Event } from 'h3'
 import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverKitchenMenusTarget,
-  serverKitchenTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -35,8 +32,8 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
   const menus = serverKitchenMenusTarget(id)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const [root, place, member, systemMenus, claim] = await Promise.all([
-      tx.read(FIRESTORE_MUTATION_TARGETS.kitchens, id),
-      tx.read(FIRESTORE_MUTATION_TARGETS.places, id),
+      tx.read(KITCHEN_MUTATION_TARGETS.kitchens, id),
+      tx.read(PLACE_MUTATION_TARGETS.places, id),
       tx.read(team, uid),
       tx.readAll(menus, 1),
       tx.read(claimTarget, 'guest'),
@@ -59,14 +56,14 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
     } else {
       const created = serverAuditStamp({ by: uid, appId: policy.appId })
       const name = `kitchen-${id.slice(0, 6)}`
-      tx.create(FIRESTORE_MUTATION_TARGETS.places, id, {
+      tx.create(PLACE_MUTATION_TARGETS.places, id, {
         name,
         slug: id.toLowerCase(),
         place_type: 'non_physical',
         entity_families: ['kitchen'],
         created,
       })
-      tx.create(FIRESTORE_MUTATION_TARGETS.kitchens, id, {
+      tx.create(KITCHEN_MUTATION_TARGETS.kitchens, id, {
         identity: {
           source: 'user',
           slug: id.toLowerCase(),

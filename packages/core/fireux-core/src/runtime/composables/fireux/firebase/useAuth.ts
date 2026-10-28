@@ -15,7 +15,7 @@ import {
   type Auth,
   type User,
 } from 'firebase/auth'
-import { computed, watch, type Ref } from 'vue'
+import { computed, markRaw, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
 import { useUserBootstrap } from '../../../user/composables/identity/useUserBootstrap'
@@ -138,7 +138,8 @@ export function useAuth() {
 
     try {
       const bound = tryBindVueFire()
-      auth.value = bound.auth
+      // Firebase owns this service, including Google's cross-origin popup.
+      auth.value = bound.auth ? markRaw(bound.auth) : null
       currentUser.value = bound.currentUser.value
       // keep it live
       watch(bound.currentUser, (v: User | null) => (currentUser.value = v), {

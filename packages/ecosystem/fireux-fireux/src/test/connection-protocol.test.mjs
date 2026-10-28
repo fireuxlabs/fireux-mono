@@ -1,3 +1,5 @@
+import { resolveInternalRedirect } from '../../../../core/fireux-core/src/runtime/utils/internal-redirect.ts'
+import { resolvePostAuthDestination as readPostAuthDestination } from '../../../../core/fireux-core/src/runtime/user/utils/onboarding-route.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -20,10 +22,7 @@ const api = load(
   '{ConnectionError,opaque,digest,equalSecret,requireOpaque,connectionOrigin,requireRecentAuth,sealHandoff,openHandoff,requirePeerSecret}',
   crypto
 )
-const redirects = load(
-  '../../../../core/fireux-core/src/runtime/utils/onboarding-route.ts',
-  '{resolveInternalRedirect,resolvePostAuthDestination}'
-)
+const redirects = { resolveInternalRedirect, resolvePostAuthDestination: readPostAuthDestination }
 Object.assign(
   api,
   redirects,
@@ -363,10 +362,7 @@ test('a fresh confirmation for another account is rejected before dispatch', asy
   h.scope.stop()
 })
 
-const resolvePostAuthDestination = load(
-  '../../../../core/fireux-core/src/runtime/utils/onboarding-route.ts',
-  'resolvePostAuthDestination'
-)
+const resolvePostAuthDestination = readPostAuthDestination
 test('Dashboard auth hydration preserves the original protected destination even if another guard already navigated', async () => {
   const route = ref({ fullPath: '/dashboard/connections?from=account' })
   const hasAuthState = ref(false),

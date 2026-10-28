@@ -2,10 +2,8 @@ import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../composables/config/FireUXConfig'
 import type { AppInitializationResult } from '../../models/app-initialization'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { APP_MUTATION_TARGETS, serverAppUsersTarget } from '../mutation-targets'
+import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import {
@@ -109,7 +107,7 @@ export async function initializeRuntimeApp(
     if (!identityUser.exists) conflict('The User record does not exist.')
   }
 
-  const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
+  const apps = APP_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(config.appId)
 
   const result = await runGuardedServerTransaction(
@@ -117,7 +115,7 @@ export async function initializeRuntimeApp(
     async (mutations) => {
       if (sameDatabase) {
         const user = await mutations.read(
-          FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+          USER_MUTATION_TARGETS.runtimeUsers,
           uid
         )
         if (!user.exists) conflict('The User record does not exist.')

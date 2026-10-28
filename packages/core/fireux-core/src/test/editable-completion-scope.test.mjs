@@ -656,3 +656,34 @@ test('queued Kitchen payment update does not dispatch after its editor is cancel
   assert.equal(writes.length, 1)
   scope.stop()
 })
+
+for (const action of ['save', 'clear']) {
+  test(`string ${action} completes when its live value arrives before the command response`, async () => {
+    const scope = effectScope()
+    const value = ref('original')
+    const reply = deferred()
+    const emitted = []
+    const field = scope.run(() =>
+      useEditableStringField({
+        value,
+        update: () => reply.promise,
+        emitUpdated: (value) => emitted.push(value),
+      })
+    )
+    try {
+      field.startEditing()
+      field.draft.value = 'saved'
+      const pending = field[action]()
+      const saved = action === 'clear' ? '' : 'saved'
+      value.value = saved
+      assert.equal(field.saving.value, true)
+      reply.resolve()
+      await pending
+      assert.equal(field.isEditing.value, false)
+      assert.equal(field.saving.value, false)
+      assert.deepEqual(emitted, [saved])
+    } finally {
+      scope.stop()
+    }
+  })
+}

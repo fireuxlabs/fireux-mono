@@ -1,7 +1,7 @@
 import {
   validatePublicSlug,
   type ValidatePublicSlugOptions,
-} from '../../../utils/slug/validatePublicSlug.ts'
+} from '../../../utils/slug/validate-public-slug.ts'
 
 export type PublicSlugAvailabilityStatus = {
   slug: string

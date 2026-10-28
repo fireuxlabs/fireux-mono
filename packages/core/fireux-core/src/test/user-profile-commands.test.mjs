@@ -112,7 +112,7 @@ function avatarHarness(options = {}) {
           { name: 'avatar', data: png, type: 'untrusted/type' },
         ],
       setResponseHeaders: () => {},
-      FIRESTORE_MUTATION_TARGETS: { users: { database: { kind: 'identity' } } },
+      USER_MUTATION_TARGETS: { users: { database: { kind: 'identity' } } },
       saveStorageFileWithDownloadToken: async (input) => {
         saved.push(input)
         return {
@@ -327,7 +327,7 @@ function handleCommandHarness(
       readHttpsUrl: (value) =>
         typeof value === 'string' && value.startsWith('https://') ? value : '',
       FIREUX_ACCOUNT_TERMS_VERSION: 'terms',
-      FIRESTORE_MUTATION_TARGETS: { users: { key: 'users', database: {} } },
+      USER_MUTATION_TARGETS: { users: { key: 'users', database: {} } },
       serverUserAccountTarget: () => ({ key: 'account' }),
       UserAccountStorage: { document: 'account' },
       FieldValue: {

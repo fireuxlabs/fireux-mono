@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useColorMode as useFireuxColorMode } from '../../../composables/theme/useColorMode'
+import { useColorMode } from '#imports'
 import { ref } from 'vue'
 
 // Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: expose stable visual specimens for shared atomic contracts.
 // Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: demonstrate Nuxt UI in place of one-off CSS metrics and card foundations.
 
 const activationCount = ref(0)
-const contractColorMode = useFireuxColorMode()
+const contractColorMode = useColorMode()
 
 const contractSolutions = [
   {
@@ -46,27 +46,35 @@ const contractSolutions = [
         role="group"
         aria-label="Contract color mode"
       >
-        <UButton
-          label="Light"
-          aria-label="Preview light mode"
-          color="neutral"
-          :variant="contractColorMode === 'light' ? 'solid' : 'soft'"
-          @click="contractColorMode = 'light'"
-        />
-        <UButton
-          label="Dark"
-          aria-label="Preview dark mode"
-          color="neutral"
-          :variant="contractColorMode === 'dark' ? 'solid' : 'soft'"
-          @click="contractColorMode = 'dark'"
-        />
-        <UButton
-          label="System"
-          aria-label="Follow system color mode"
-          color="neutral"
-          :variant="contractColorMode === 'system' ? 'solid' : 'soft'"
-          @click="contractColorMode = 'system'"
-        />
+        <ColorScheme>
+          <UButton
+            label="Light"
+            aria-label="Preview light mode"
+            color="neutral"
+            :variant="
+              contractColorMode.preference === 'light' ? 'solid' : 'soft'
+            "
+            @click="contractColorMode.preference = 'light'"
+          />
+          <UButton
+            label="Dark"
+            aria-label="Preview dark mode"
+            color="neutral"
+            :variant="
+              contractColorMode.preference === 'dark' ? 'solid' : 'soft'
+            "
+            @click="contractColorMode.preference = 'dark'"
+          />
+          <UButton
+            label="System"
+            aria-label="Follow system color mode"
+            color="neutral"
+            :variant="
+              contractColorMode.preference === 'system' ? 'solid' : 'soft'
+            "
+            @click="contractColorMode.preference = 'system'"
+          />
+        </ColorScheme>
       </div>
     </header>
 
@@ -117,7 +125,8 @@ const contractSolutions = [
       <div>
         <h2 class="fx-type-section-title">Outcome states</h2>
         <p class="fx-type-caption">
-          Loading, empty, missing, and failed reads have distinct semantics.
+          Loading, empty and failed reads use the same contract for documents
+          and collections.
         </p>
       </div>
 

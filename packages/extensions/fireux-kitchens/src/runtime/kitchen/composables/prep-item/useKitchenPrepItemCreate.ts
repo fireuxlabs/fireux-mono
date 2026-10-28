@@ -1,5 +1,6 @@
+import { refreshNuxtData } from 'nuxt/app'
 import type { WatchSource } from 'vue'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useKitchenAccess } from '../useKitchenAccess'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
@@ -106,6 +107,15 @@ export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/prep-items',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: {

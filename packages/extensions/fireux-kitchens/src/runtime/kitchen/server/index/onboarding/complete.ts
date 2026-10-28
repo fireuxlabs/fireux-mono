@@ -5,13 +5,11 @@ import {
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverKitchenMenusTarget,
-  serverKitchenTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
@@ -70,9 +68,9 @@ export async function completeKitchenOnboarding(
       pass,
     ] = await Promise.all([
       mutations.read(memberships, ownerUserId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
+      mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
+      mutations.read(PLACE_MUTATION_TARGETS.places, locator.placeId),
+      mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId),
       mutations.read(teamMembers, ownerUserId),
       ownerUserId === current.uid
         ? Promise.resolve(null)
@@ -146,7 +144,7 @@ export async function completeKitchenOnboarding(
 
     if (createdRoot) {
       const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
-      mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
+      mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         identity: { source: 'place', slug, status: 'active', visibility: true },
         created: stamp,
       })

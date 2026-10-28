@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { computed, ref, watch, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -69,6 +70,15 @@ export function useKitchenOrderDraftSave(
         kitchen_id: string
         draft: SavedOrderDraft
       }>('/api/workspace/kitchen/order-drafts/save', {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: { kitchenId: id, order: snapshot, expectedRevision },

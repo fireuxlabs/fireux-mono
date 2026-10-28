@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useKitchenIdentity } from '../useKitchenIdentity'
 import {
   computed,
@@ -11,7 +12,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useKitchenAccess } from '../useKitchenAccess'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenOfferingCollection } from '../useKitchenOfferingCollection'
@@ -148,6 +149,15 @@ export function useKitchenOfferings(
       kitchen_id: string
       offering: KitchenOffering
     }>('/api/workspace/kitchen/services/' + action, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: 'Bearer ' + token },
       body: { ...payload, kitchenId },

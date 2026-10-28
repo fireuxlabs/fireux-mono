@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 import { provisionSignedInUserAvatar } from '../../utils/provision-user-avatar'
 import type { User } from '../../models/user.model'
@@ -47,6 +48,15 @@ export function useUserProfileUpdate({
     const result = await $fetch<{ ok: true; uid: string }>(
       '/api/internal/user/profile',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { authorization: `Bearer ${token}` },
         body,

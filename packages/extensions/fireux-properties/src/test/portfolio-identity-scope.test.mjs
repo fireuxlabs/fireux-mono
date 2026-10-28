@@ -85,7 +85,10 @@ test('Portfolio update captures fields and rejects credential/response account/A
         )()
       )
       const input = { portfolioId: 'p', changes: { identity: { name: 'Original' } } },
-        pending = api.updatePortfolio(input),
+        pending = api.updatePortfolio(
+          input,
+          owner.run(() => useCommandScope([h.selectedId, h.routePath]))()
+        ),
         done =
           change === 'stable' || stage === 'response'
             ? pending
@@ -134,6 +137,7 @@ test('Portfolio Identity suppresses obsolete field success and error toasts', as
       let current = true
       const pending = deferred(),
         calls = []
+      let submittedSurface
       const api = load(
         '../runtime/portfolio/components/Workspace/Identity/Edit/Index.vue',
         {
@@ -141,9 +145,14 @@ test('Portfolio Identity suppresses obsolete field success and error toasts', as
             identity: { portfolioId: ref('p'), canWrite: ref(true) },
           }),
           usePortfolioUpdate: () => ({
-            updatePortfolio: () => pending.promise,
+            updatePortfolio: (_input, isCurrent) => {
+              submittedSurface = isCurrent
+              return pending.promise
+            },
             captureIntent: () => () => current,
           }),
+          useRoute: () => ({ fullPath: '/identity' }),
+          useCommandScope: () => () => () => current,
           useToastify: () => ({ add: (x) => calls.push(x) }),
         },
         '({handleName})',
@@ -152,7 +161,9 @@ test('Portfolio Identity suppresses obsolete field success and error toasts', as
       const result = api.handleName('Name')
       const done =
         failed && !changed ? assert.rejects(result, /Failure/) : result
+      assert.equal(submittedSurface(), true)
       current = !changed
+      assert.equal(submittedSurface(), !changed)
       failed ? pending.reject(Error('Failure')) : pending.resolve()
       await done
       assert.equal(calls.length, changed ? 0 : 1)

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 
 function load(path, names, dependencies = {}) {
   const source = stripTypeScriptTypes(
@@ -60,7 +60,8 @@ const authority = load(
     createError,
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverKitchenAccessTarget: () => 'kitchen_access',
-    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+PLACE_MUTATION_TARGETS: { places: 'places' },
     isAppUserSubscription: (x) => x === 'free',
   }
 )
@@ -92,7 +93,7 @@ const references = load(
     ...catalogue,
     createError,
     defineFirestoreMutationTarget: (x) => x.collectionPath,
-    FIRESTORE_MUTATION_TARGETS: { ingredients: 'ingredients' },
+    INGREDIENT_MUTATION_TARGETS: { ingredients: 'ingredients' },
   }
 )
 const prepTranslation = load('../runtime/kitchen/utils/prep-item.ts', [

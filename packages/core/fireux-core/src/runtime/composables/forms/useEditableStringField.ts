@@ -8,7 +8,7 @@ import {
   type WatchSource,
 } from 'vue'
 import { useCommandScope } from '../fireux/commands/useCommandScope'
-import { normalizeSlug } from '../../utils/slug/normalizeSlug'
+import { normalizeSlug } from '../../utils/slug/normalize-slug'
 
 export type ValidationResult = {
   isValid: boolean
@@ -53,13 +53,16 @@ export function useEditableStringField(options: Options) {
   const optimisticValue = ref<string | null>(null)
   const saving = ref(false)
   const errorMessage = ref('')
+  const sourceValue = computed(() => toStringValue(toValue(options.value)))
+  const sourceRevision = ref(0)
+  let submission: { value: string } | undefined
   const completionSources = [
     ...(options.sources ?? []),
     draft,
     isEditing,
-    () => toValue(options.value),
+    sourceRevision,
     () => toValue(options.id),
-    () => options.captureIntent ? undefined : toValue(options.disabled),
+    () => (options.captureIntent ? undefined : toValue(options.disabled)),
   ]
   const captureCompletion = useCommandScope(completionSources)
   watch(
@@ -97,21 +100,20 @@ export function useEditableStringField(options: Options) {
   })
 
   watch(
-    () => toValue(options.value),
-    (next: string | number | null | undefined) => {
+    sourceValue,
+    (next) => {
+      // A listener may acknowledge our write before its command response.
+      if (!submission || next !== submission.value) sourceRevision.value++
       if (!isEditing.value) {
-        const nextValue = toStringValue(next)
-        draft.value = nextValue
+        draft.value = next
         optimisticValue.value = null
       }
     },
-    { immediate: true }
+    { immediate: true, flush: 'sync' }
   )
 
   const effectiveValue = computed(() =>
-    optimisticValue.value !== null
-      ? optimisticValue.value
-      : toStringValue(toValue(options.value))
+    optimisticValue.value !== null ? optimisticValue.value : sourceValue.value
   )
 
   const displayValue = computed(() => {
@@ -136,6 +138,8 @@ export function useEditableStringField(options: Options) {
   }
 
   async function persist(value: string, fallback: string) {
+    const operation = { value }
+    submission = operation
     const isCurrent = captureCompletion()
     const isOwnerCurrent = options.captureIntent?.() ?? (() => true)
     saving.value = true
@@ -154,6 +158,8 @@ export function useEditableStringField(options: Options) {
       saving.value = false
       if (!isOwnerCurrent()) return
       errorMessage.value = (error as Error)?.message || fallback
+    } finally {
+      if (submission === operation) submission = undefined
     }
   }
 

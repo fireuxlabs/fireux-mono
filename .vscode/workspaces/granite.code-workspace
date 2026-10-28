@@ -1,25 +1,21 @@
 {
   "folders": [
-    { "name": "Granite apps", "path": "../../projects/granite" },
-    { "name": "Granite ecosystem", "path": "../../packages/ecosystem/fireux-granite" },
-    { "name": "Shared core", "path": "../../packages/core" },
-    { "name": "Shared extensions", "path": "../../packages/extensions" },
-    { "name": "Repository docs", "path": "../../docs" },
-    { "name": "Repository scripts", "path": "../../scripts" }
+    {
+      "name": "granite — FireUX Mono",
+      "path": "../.."
+    }
   ],
   "settings": {
-    "window.title": "Granite — ${activeEditorShort}",
+    "window.title": "granite — ${activeEditorShort}",
     "files.exclude": {
-      "**/.nuxt": true,
-      "**/.output": true,
-      "**/dist": true,
-      "**/node_modules": true
-    },
-    "search.exclude": {
-      "**/.nuxt": true,
-      "**/.output": true,
-      "**/dist": true,
-      "**/node_modules": true
+      "projects/bringli": true,
+      "projects/buenohost": true,
+      "projects/fireux": true,
+      "projects/misebox": true,
+      "projects/sharer": true,
+      "projects/slap": true,
+      "projects/templates": true,
+      "projects/werkbox": true
     }
   }
 }

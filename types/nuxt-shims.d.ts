@@ -8,15 +8,12 @@ import type {} from '@nuxt/nitro-server/augments'
   // Re-export everything Nuxt normally auto-imports
   export * from 'nuxt/app'
 
-  /**
-   * Optional: color mode composable used in your core runtime.
-   * This is a light-weight type so TS is happy in packages.
-   * The actual implementation still comes from your Nuxt modules (@nuxt/ui / color-mode).
-   */
+  // Standalone bridge for native colour-mode state. Apps use generated types.
   export function useColorMode(): {
     value: string
-    preference?: string
-    unknown?: boolean
+    preference: string
+    unknown: boolean
+    forced: boolean
   }
 
   // Explicit re-export so TS always sees the macro

@@ -1,5 +1,12 @@
-import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
-import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getQuery,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
 import type { CollectionResponse } from '../../../models/utils/directory'
 import type { User } from '../../../user/models/user.model.ts'
@@ -13,9 +20,6 @@ import {
   isUserDirectoryEligible,
   normalizeUser,
 } from '../../../user/utils/normalize-user.ts'
-
-const CACHE_CONTROL =
-  'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
 function normalizeLimit(value: unknown): number {
   const parsed = Number(value)
@@ -71,10 +75,12 @@ async function readTenantAppUsers(
   }
 }
 
-export default defineLiveReadHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': CACHE_CONTROL,
+    'Cache-Control': 'no-store',
   })
 
   const query = getQuery(event)

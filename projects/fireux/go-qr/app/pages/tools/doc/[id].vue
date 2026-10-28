@@ -6,8 +6,10 @@
 </template>
 
 <script setup lang="ts">
+import { useAsyncData } from 'nuxt/app'
+
 import { computed, ref } from 'vue'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
@@ -46,12 +48,14 @@ type DocToolConfig = {
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
 const id = readRouteParam(route.params.id)
-const toolRead = useLiveAsyncData<{ config: DocToolConfig } | null>(
+const toolRead = useAsyncData<{ config: DocToolConfig } | null>(
   `go-qr-doc:${id}`,
-  (liveFetch) =>
-    id
-      ? liveFetch(`/api/tools/doc/${encodeURIComponent(id)}`)
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return id
+      ? fetchRead(`/api/tools/doc/${encodeURIComponent(id)}`)
       : Promise.resolve(null)
+  }
 )
 const toolConfig = computed(() => toolRead.data.value?.config || null)
 

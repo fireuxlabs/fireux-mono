@@ -1,5 +1,5 @@
 <template>
-  <div class="grid min-w-0 gap-6">
+  <div class="workspace-profile">
     <KitchenIdentityProfile :identity="identity" />
     <KitchenIdentityListing :identity="identity" />
     <template v-if="identity.status.value === 'ready'">

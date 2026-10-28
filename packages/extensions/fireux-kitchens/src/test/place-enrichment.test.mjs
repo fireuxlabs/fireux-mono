@@ -1,9 +1,22 @@
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toValue } from 'vue'
 
 function load(path, dependencies, result) {
@@ -30,7 +43,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
     {
       computed,
       toValue,
-      useLiveAsyncData: (_key, read) => {
+      useAsyncData: (_key, read) => {
         fetcher = read
         return state
       },
@@ -51,10 +64,11 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
   const placeId = ref('CaseSensitivePlace')
   const collection = useCollection({ placeId })
   let endpoint
-  await fetcher(async (url) => {
+  await ((currentReadFetch = async (url) => {
     endpoint = url
     return []
-  })
+  }),
+  fetcher({}, { signal: new AbortController().signal }))
   assert.equal(endpoint, '/api/kitchens?placeId=CaseSensitivePlace')
   state.data.value = [{ id: 'CaseSensitivePlace' }, { id: 'unrelated' }]
   assert.deepEqual(
@@ -71,10 +85,11 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
   assert.deepEqual(collection.collection.value, [])
   placeId.value = ''
   let called = false
-  await fetcher(async () => {
+  await ((currentReadFetch = async () => {
     called = true
     return []
-  })
+  }),
+  fetcher({}, { signal: new AbortController().signal }))
   assert.equal(
     called,
     false,
@@ -243,7 +258,7 @@ test('Misebox Workspace root renders in place and preserves query intent', () =>
   }
 })
 
-test('ordinary Kitchen directories retain their reader key and hide records during unsettled refresh', () => {
+test('ordinary Kitchen directories retain their reader key and hide records during unsettled refresh', async () => {
   const records = [{ id: 'one' }, { id: 'two' }]
   const state = {
     data: ref(records),
@@ -259,23 +274,23 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
     {
       computed,
       toValue,
-      useLiveAsyncData: (sourceKey, read) => {
+      useAsyncData: (sourceKey, read) => {
         key = sourceKey
         fetcher = read
         return state
       },
-      resolveReadOutcome: ({ pending, error, present }) =>
-        error ? 'error' : pending ? 'pending' : present ? 'ready' : 'empty',
+      resolveReadOutcome,
       resolveHttpDocumentOutcome,
     },
     'useKitchenCollection'
   )
   const collection = useCollection()
   assert.equal(key(), 'kitchens')
-  fetcher((url) => {
+  currentReadFetch = (url) => {
     assert.equal(url, '/api/kitchens')
     return Promise.resolve(records)
-  })
+  }
+  await fetcher({}, { signal: new AbortController().signal })
   assert.deepEqual(collection.collection.value, records)
   state.pending.value = true
   assert.deepEqual(collection.collection.value, [])

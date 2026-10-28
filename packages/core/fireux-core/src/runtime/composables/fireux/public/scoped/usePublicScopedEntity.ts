@@ -3,7 +3,7 @@ import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
-} from '../../../../utils/entity-management'
+} from '../../../../app/utils/entity-management'
 import type { FireuxEntityManagement } from '../../../../models/utils/scope.model'
 
 const text = (value: unknown) => String(value ?? '').trim()

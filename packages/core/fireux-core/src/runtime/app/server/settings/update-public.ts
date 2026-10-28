@@ -1,10 +1,7 @@
 import { createError, readBody, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import {
-  serverAppPublicSettingsTarget,
-  serverAppUsersTarget,
-} from '../../../utils/firestore-mutations/server-targets'
+import { serverAppPublicSettingsTarget, serverAppUsersTarget } from '../mutation-targets'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 
 function fail(statusCode: number, statusMessage: string): never {

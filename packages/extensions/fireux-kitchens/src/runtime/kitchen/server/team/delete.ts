@@ -3,7 +3,7 @@ import { deleteTeamMember } from 'fireux-core/runtime/workspace/server/team/memb
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenTeamMembersTarget } from '../mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,

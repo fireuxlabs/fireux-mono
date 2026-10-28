@@ -70,11 +70,8 @@ function fixture({
       user_id: userId,
       role_ids: [],
     }),
-    FIRESTORE_MUTATION_TARGETS: {
-      suppliers: { database: 'db' },
-      companies: 'companies',
-      places: 'places',
-    },
+    SUPPLIER_MUTATION_TARGETS: { suppliers: { database: 'db' } },
+PLACE_MUTATION_TARGETS: { companies: 'companies', places: 'places' },
     serverAppUsersTarget: () => 'memberships',
     serverSupplierAccessTarget: (appId) => {
       assert.equal(appId, 'app')

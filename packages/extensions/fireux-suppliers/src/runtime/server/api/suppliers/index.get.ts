@@ -1,12 +1,13 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { setResponseHeaders } from 'h3'
+import { defineEventHandler, setResponseHeader, setResponseHeaders } from 'h3'
+
 import { readSuppliers } from '../../../supplier/server/identity/read.ts'
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control':
-      'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+    'Cache-Control': 'no-store',
   })
   return readSuppliers()
 })

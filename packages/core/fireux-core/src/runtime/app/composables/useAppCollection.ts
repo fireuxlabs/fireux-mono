@@ -1,7 +1,8 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveReadOutcome } from '../../utils/read-outcome'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
-import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
-import { readLivePages } from '../../composables/fireux/firestore/readLivePages'
+
+import { readPages } from '../../composables/http/readPages'
 import type { App } from '../models/app.model'
 import type { CollectionPage } from '../../models/utils/directory'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
@@ -23,9 +24,11 @@ export function useAppCollection(
     Boolean(url.value && (!options.authenticated || currentUser.value))
   )
   const pageCount = ref(1)
-  const state = useLiveAsyncData<CollectionPage<App> & { requestKey: string }>(
+  const state = useAsyncData<CollectionPage<App> & { requestKey: string }>(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const requestKey = key.value
       const requestUrl = url.value
       const requestedPages = pageCount.value
@@ -34,8 +37,8 @@ export function useAppCollection(
           ? { authorization: `Bearer ${await currentUser.value.getIdToken()}` }
           : undefined
       const page = active.value
-        ? await readLivePages<CollectionPage<App>>(
-            liveFetch,
+        ? await readPages<CollectionPage<App>>(
+            fetchRead,
             requestUrl,
             requestedPages,
             { headers }
@@ -45,9 +48,7 @@ export function useAppCollection(
     },
     { server: !options.authenticated }
   )
-  const current = computed<
-    (CollectionPage<App> & { requestKey: string }) | undefined
-  >(() =>
+  const current = computed(() =>
     state.data.value?.requestKey === key.value ? state.data.value : undefined
   )
   const apps = computed<App[]>(() =>
@@ -64,8 +65,9 @@ export function useAppCollection(
         !(loadingMore.value && current.value))
   )
   const error = computed(() =>
-    loadingMore.value ||
-    (loadMoreError.value && state.error.value === loadMoreError.value)
+    count.value > 0 &&
+    (loadingMore.value ||
+      (loadMoreError.value && state.error.value === loadMoreError.value))
       ? null
       : state.error.value
   )
@@ -79,9 +81,11 @@ export function useAppCollection(
     })
   )
   const hasMore = computed(() => Boolean(current.value?.nextCursor))
+  let scopeVersion = 0
   watch(
     key,
     () => {
+      scopeVersion++
       pageCount.value = 1
       loadingMore.value = false
       loadMoreError.value = null
@@ -90,26 +94,23 @@ export function useAppCollection(
   )
   async function loadMore() {
     if (!hasMore.value || loadingMore.value) return
-    const requestKey = key.value
+    const requestVersion = scopeVersion
     loadingMore.value = true
     pageCount.value++
     try {
       await state.refresh()
-      if (key.value === requestKey) {
+      if (scopeVersion === requestVersion) {
         loadMoreError.value = state.error.value
         if (state.error.value) pageCount.value--
       }
     } catch (cause) {
-      if (key.value === requestKey) {
+      if (scopeVersion === requestVersion) {
         loadMoreError.value = cause
         pageCount.value--
       }
     } finally {
-      if (key.value === requestKey) loadingMore.value = false
+      if (scopeVersion === requestVersion) loadingMore.value = false
     }
-  }
-  async function refresh() {
-    await state.refresh()
   }
   return {
     apps,
@@ -117,7 +118,7 @@ export function useAppCollection(
     pending,
     error,
     outcome,
-    refresh,
+    refresh: state.refresh,
     hasMore,
     loadingMore,
     loadMoreError,

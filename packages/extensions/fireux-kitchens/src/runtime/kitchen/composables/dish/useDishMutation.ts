@@ -1,5 +1,6 @@
+import { refreshNuxtData } from 'nuxt/app'
 import type { WatchSource } from 'vue'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useDishEditorScope } from './useDishEditorScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -40,6 +41,15 @@ export function useDishMutation(ownerSources: WatchSource[] = []) {
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/dishes',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method,
         headers: { Authorization: `Bearer ${token}` },
         body,

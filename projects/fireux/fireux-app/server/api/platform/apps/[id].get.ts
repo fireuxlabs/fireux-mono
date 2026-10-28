@@ -1,15 +1,19 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import {
+  defineEventHandler,
+  setResponseHeader,
   createError,
   getRouterParam,
   setResponseHeaders,
   type H3Event,
 } from 'h3'
+
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { readPlatformApp } from '../../../utils/apps'
 
-export default defineLiveReadHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',

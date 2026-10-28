@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { normalizeKitchenPrepItemTranslatedText } from '../../utils/prep-item'
 

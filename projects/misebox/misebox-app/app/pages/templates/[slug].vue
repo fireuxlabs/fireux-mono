@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
 
 import { createError } from 'h3'
 import TemplateOnePage from 'fireux-misebox/runtime/components/TemplateOne/Page.vue'
@@ -66,19 +66,24 @@ const deanosData =
     ? await useTemplateOneProductDemo()
     : null
 const [{ data: flagship }, { data: menuResult }] = await Promise.all([
-  useLiveAsyncData(`template-flagship-${kitchen.id}`, (liveFetch) =>
-    isTemplateOne && kitchen.id !== 'deanos'
-      ? liveFetch<KitchenFlagshipDishResult>(
-          `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
-          { query: { appId: kitchen.appProps!.appId } }
-        )
-      : null
+  useAsyncData(
+    `template-flagship-${kitchen.id}`,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return isTemplateOne && kitchen.id !== 'deanos'
+        ? fetchRead<KitchenFlagshipDishResult>(
+            `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
+            { query: { appId: kitchen.appProps!.appId } }
+          )
+        : null
+    }
   ),
-  useLiveAsyncData(`template-menu-${kitchen.id}`, (liveFetch) =>
-    isTemplateOne && kitchen.id !== 'deanos'
-      ? liveFetch<MenuDetailPayload>('/api/menus/friiites')
+  useAsyncData(`template-menu-${kitchen.id}`, async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return isTemplateOne && kitchen.id !== 'deanos'
+      ? fetchRead<MenuDetailPayload>('/api/menus/friiites')
       : null
-  ),
+  }),
 ])
 const storageUrl = (path: string) =>
   `https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/${encodeURIComponent(`apps/friiites/img/app/${path}`)}?alt=media`

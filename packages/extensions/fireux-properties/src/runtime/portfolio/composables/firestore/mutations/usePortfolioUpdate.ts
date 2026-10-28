@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -14,17 +15,22 @@ export function usePortfolioUpdate() {
     session.appUser,
     () => config.appId,
   ])
-  async function updatePortfolio(input: {
-    portfolioId: string
-    changes: PortfolioUpdateInput
-  }) {
+  async function updatePortfolio(
+    input: { portfolioId: string; changes: PortfolioUpdateInput },
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
     const body = JSON.parse(JSON.stringify(input)),
       uid = currentUser.value?.uid,
       isCurrent = captureIntent()
     if (!String(body.portfolioId || '').trim())
       throw new Error('Portfolio id is required.')
     const assertCurrent = () => {
-      if (!uid || !isCurrent() || currentUser.value?.uid !== uid)
+      if (
+        !uid ||
+        !isCurrent() ||
+        !isSurfaceCurrent() ||
+        currentUser.value?.uid !== uid
+      )
         throw new Error('The account or Portfolio changed. Reopen Identity.')
     }
     const user = await useRequireUser()
@@ -35,7 +41,20 @@ export function usePortfolioUpdate() {
     assertCurrent()
     const result = await $fetch<{ ok: true; portfolioId: string }>(
       '/api/workspace/portfolio/identity',
-      { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body }
+      {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      }
     )
     if (result?.ok !== true || result.portfolioId !== body.portfolioId)
       throw new Error(

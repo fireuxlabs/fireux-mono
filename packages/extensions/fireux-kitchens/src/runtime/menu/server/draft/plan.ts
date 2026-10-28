@@ -3,7 +3,7 @@ import {
   normalizeDishPriceOptions,
   normalizeDishAddOns,
 } from '../../../kitchen/utils/dish-pricing'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type {
   KitchenMenuDraftTranslation,

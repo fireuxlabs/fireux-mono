@@ -3,7 +3,7 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -75,7 +75,7 @@ export async function updateKitchenOperationHours(
         statusCode: 400,
         statusMessage: 'Kitchen hours must fit within venue opening hours.',
       })
-    tx.update(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
+    tx.update(KITCHEN_MUTATION_TARGETS.kitchens, requested.kitchenId, {
       'orders.operation_hours': requested.hours ?? FieldValue.delete(),
       updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),
     })

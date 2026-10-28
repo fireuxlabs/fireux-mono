@@ -6,7 +6,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
 import { normalizeMenuMetadataPatch } from '../../utils/menu-metadata'
 import type { MenuUpdateInput } from '../../models/menu-storage.model'
 import { resolveKitchenOperationHours } from '../../../kitchen/utils/kitchen-readers'

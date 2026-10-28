@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
-import { resolvePostAuthDestination } from '../runtime/utils/onboarding-route.ts'
+import { resolvePostAuthDestination } from '../runtime/user/utils/onboarding-route.ts'
 
 function load(path, result, deps) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -25,7 +25,7 @@ function authHarness() {
     unsubscribed = 0,
     timers = 0
   const api = load(
-    '../runtime/utils/routeAuthGuard.ts',
+    '../runtime/composables/navigation/route-auth.ts',
     '{resolveClientAuthState,createClientRouteCheck}',
     {
       watch,

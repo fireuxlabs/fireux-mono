@@ -1,3 +1,4 @@
+import type { RouteLocationNormalizedLoadedGeneric } from 'vue-router'
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
@@ -18,7 +19,7 @@ const menuDebug = (menu: Menu) => ({
 })
 
 export function useKitchenMenuScope() {
-  const route = useRoute()
+  const route: RouteLocationNormalizedLoadedGeneric = useRoute()
   const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
   const { kitchen, pending: kitchenPending } = useKitchenRead(kitchenSlug)

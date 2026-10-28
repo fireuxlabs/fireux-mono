@@ -1,6 +1,6 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { SPROOCHLI_MUTATION_TARGETS } from './mutation-targets'
 import {
   TranslationMemoryStorage,
   type TranslationMemoryProvenanceKind,
@@ -185,7 +185,7 @@ export async function writeSproochliTranslationMemory(
   if (!normalizedById.size) return 0
 
   let writes = 0
-  const target = FIRESTORE_MUTATION_TARGETS.sproochliTranslationMemory
+  const target = SPROOCHLI_MUTATION_TARGETS.sproochliTranslationMemory
   for (const group of chunks([...normalizedById.entries()], WRITE_BATCH_SIZE)) {
     writes += await runGuardedServerTransaction(
       target.database,

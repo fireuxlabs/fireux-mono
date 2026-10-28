@@ -1,6 +1,7 @@
+import { useAsyncData } from 'nuxt/app'
 import { computed, watch } from 'vue'
 import { useState } from '#imports'
-import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
+
 import { type UserNotification } from '../../models/user-notification.model.ts'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
@@ -32,17 +33,17 @@ export function useUserNotifications() {
       hasAuthState.value && currentUser.value && !currentUser.value.isAnonymous
     )
   )
-  const state = useLiveAsyncData<
-    UserNotificationsResponse & { ownerId: string }
-  >(
+  const state = useAsyncData<UserNotificationsResponse & { ownerId: string }>(
     computed(
       () => `user-notifications:${currentUser.value?.uid || ''}:${active.value}`
     ),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const user = currentUser.value
       if (!active.value || !user)
         return { ok: true, notifications: [], unreadCount: 0, ownerId: '' }
-      const response = await liveFetch<UserNotificationsResponse>(
+      const response = await fetchRead<UserNotificationsResponse>(
         '/api/internal/user/notifications',
         {
           headers: { Authorization: `Bearer ${await user.getIdToken()}` },

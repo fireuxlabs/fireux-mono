@@ -1,5 +1,5 @@
 import { useBlogCommand } from '../../authoring/useBlogCommand'
-import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import type { BlogPostCreateInput } from '../../../utils/blog-post'
 
 export function useBlogCreate() {

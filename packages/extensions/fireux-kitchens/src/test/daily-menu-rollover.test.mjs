@@ -2,7 +2,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import {
   computed,
   ref,
@@ -37,7 +49,7 @@ test('the mounted reader clears yesterday and refreshes once at the server date 
     watch,
     onScopeDispose,
     useRoute: () => ({ query: {} }),
-    useLiveAsyncData: () => state,
+    useAsyncData: () => state,
     normalizeSproochliLanguage: () => '',
     normalizeMenuRouteContext: () => 'generic',
     menuRouteIndexPath: () => '/menus',

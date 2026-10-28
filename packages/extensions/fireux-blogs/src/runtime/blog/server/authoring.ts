@@ -5,8 +5,9 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { defineFirestoreMutationTarget, FIRESTORE_MUTATION_TARGETS, serverAppUsersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
+import { APP_MUTATION_TARGETS, serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import type { BlogPostCreateInput } from '../utils/blog-post'
 import { normalizeBlogPost, normalizeBlogPostCreate, normalizeBlogPostUpdate } from '../utils/normalize-blog-post'
 import { buildBlogEditorialUpdate } from '../utils/blog-editor'
@@ -28,7 +29,7 @@ async function author(event: H3Event, slug: string, change: (data: Record<string
   const { uid } = await requireFirebaseBearerUser(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async tx => {
     const [app, member, record] = await Promise.all([
-      tx.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId),
+      tx.read(APP_MUTATION_TARGETS.runtimeApps, appId),
       tx.read(serverAppUsersTarget(appId), uid),
       tx.read(blogs, slug),
     ])

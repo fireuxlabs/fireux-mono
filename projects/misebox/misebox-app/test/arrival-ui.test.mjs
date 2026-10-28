@@ -1,3 +1,4 @@
+import { resolveInternalRedirect } from '../../../../packages/core/fireux-core/src/runtime/utils/internal-redirect.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,9 +6,8 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, reactive } from 'vue'
 import {
-  resolveInternalRedirect,
   resolvePostAuthDestination,
-} from '../../../../packages/core/fireux-core/src/runtime/utils/onboarding-route.ts'
+} from '../../../../packages/core/fireux-core/src/runtime/user/utils/onboarding-route.ts'
 function page(path, result, route, preview = null) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]

@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget } from '../mutation-targets'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import {

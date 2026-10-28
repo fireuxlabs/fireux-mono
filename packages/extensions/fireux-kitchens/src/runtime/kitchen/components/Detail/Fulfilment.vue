@@ -19,7 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import { computed } from 'vue'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
@@ -34,7 +35,7 @@ const fulfilmentPath = computed(() =>
     ? `/api/kitchens/${encodeURIComponent(props.kitchen.slug)}/fulfilment`
     : ''
 )
-const { data: fulfilment } = useLiveFetch<KitchenFulfilment>(fulfilmentPath, {
+const { data: fulfilment } = useFetch<KitchenFulfilment>(fulfilmentPath, {
   immediate: Boolean(fulfilmentPath.value),
   watch: [fulfilmentPath],
 })

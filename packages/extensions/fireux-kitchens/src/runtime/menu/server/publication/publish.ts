@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
 import { requireKitchenWriterAccount } from '../../../kitchen/server/core/operator-access'
 import { assertKitchenMenuCanPublish } from './validation'
 

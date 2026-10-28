@@ -1,6 +1,12 @@
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getQuery,
+  getRouterParam,
+} from 'h3'
 import { dailyMenuToday } from '../../../menu/utils/daily-menu'
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getQuery, getRouterParam } from 'h3'
+
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
@@ -98,7 +104,9 @@ async function readKitchenMenu(
   })
 }
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setCorsHeaders(event, {
     methods: ['GET'],
   })

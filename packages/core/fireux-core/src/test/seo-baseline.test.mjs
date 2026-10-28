@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, toValue } from 'vue'
-import { readSitemapPublicFilters } from '../runtime/utils/sitemap-public-filters.ts'
+import { readSitemapPublicFilters } from '../utils/sitemap-public-filters.ts'
 import {
   resolveSeoRobots,
   matchesSeoPath,

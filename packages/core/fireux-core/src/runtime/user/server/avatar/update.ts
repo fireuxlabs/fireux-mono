@@ -12,7 +12,7 @@ import {
   parseFirebaseStorageDownloadUrl,
   saveStorageFileWithDownloadToken,
 } from '../../../server/utils/uploads/storage'
-import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS } from '../mutation-targets'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 
 const MAX_AVATAR_BYTES = 10 * 1024 * 1024
@@ -52,7 +52,7 @@ export async function updateUserAvatar(event: H3Event) {
     })
   }
   const contentType = avatarContentType(image.data)
-  const users = FIRESTORE_MUTATION_TARGETS.users
+  const users = USER_MUTATION_TARGETS.users
   const saved = await saveStorageFileWithDownloadToken({
     objectPath: `users/${uid}/avatar/${randomUUID()}`,
     data: image.data,

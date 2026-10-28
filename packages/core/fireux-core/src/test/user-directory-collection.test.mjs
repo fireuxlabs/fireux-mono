@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref } from 'vue'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 
@@ -153,7 +165,7 @@ function serverHarness() {
     '../runtime/server/api/users/index.get.ts',
     'handler',
     {
-      defineLiveReadHandler: (fn) => fn,
+      defineEventHandler: (fn) => fn,
       createError,
       setResponseHeaders() {},
       getQuery: (event) => event.query,
@@ -172,9 +184,9 @@ function serverHarness() {
       isUserDirectoryEligible: (user) => Boolean(user.handle),
     }
   )
-  const { readLivePages } = load(
-    '../runtime/composables/fireux/firestore/readLivePages.ts',
-    'readLivePages',
+  const { readPages } = load(
+    '../runtime/composables/http/readPages.ts',
+    'readPages',
     {}
   )
   const fetch = async (_url, options = {}) =>
@@ -184,7 +196,7 @@ function serverHarness() {
     identities,
     handler,
     fetch,
-    readLivePages,
+    readPages,
     setMembers: (value) => {
       members = value
     },
@@ -228,7 +240,7 @@ test('Tenant pagination follows membership cursors across missing identities wit
 
 test('Loaded tenant pages replace membership after removal, identity edits and moving cursor boundaries', async () => {
   const h = serverHarness()
-  const read = () => h.readLivePages(h.fetch, '/api/users', 2)
+  const read = () => h.readPages(h.fetch, '/api/users', 2)
   assert.deepEqual(
     (await read()).items.map((user) => user.id),
     ['a', 'd']
@@ -273,7 +285,8 @@ test('Tenant collection preserves live pages, honest failures and bounded load-m
       try {
         if (fail) throw new Error('Unavailable')
         state.error.value = null
-        state.data.value = await run(h.fetch)
+        state.data.value = await ((currentReadFetch = h.fetch),
+        run({}, { signal: new AbortController().signal }))
       } catch (error) {
         state.error.value = error
       } finally {
@@ -289,8 +302,8 @@ test('Tenant collection preserves live pages, honest failures and bounded load-m
       ref,
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
-      readLivePages: h.readLivePages,
-      useLiveAsyncData: (key, handler) => {
+      readPages: h.readPages,
+      useAsyncData: (key, handler) => {
         assert.equal(key, 'user-directory:tenant-a')
         run = handler
         return state

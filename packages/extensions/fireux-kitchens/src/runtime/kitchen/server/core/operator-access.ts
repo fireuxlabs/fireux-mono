@@ -3,10 +3,8 @@ import { readKitchenAccessIds } from '../../utils/kitchen-access'
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: expose App-admin-or-Kitchen-operator write authority.
 import { createError, type H3Event } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { serverKitchenAccessTarget } from './access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -76,7 +74,7 @@ export async function requireKitchenWriterAccount(
   const db = getRuntimeFirestore()
   const targets = [
     [serverAppUsersTarget(input.appId), uid],
-    [FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchenId],
+    [KITCHEN_MUTATION_TARGETS.kitchens, input.kitchenId],
     [serverKitchenAccessTarget(), uid],
   ] as const
   const [membershipSnapshot, rootKitchenSnapshot, accessSnapshot] = mutations

@@ -14,7 +14,7 @@
 
       <div class="w-full h-screen overflow-y-auto bg-elevated/50">
         <div class="min-h-full p-0 lg:p-4">
-          <NuxtPage />
+          <slot />
         </div>
       </div>
     </UDashboardGroup>

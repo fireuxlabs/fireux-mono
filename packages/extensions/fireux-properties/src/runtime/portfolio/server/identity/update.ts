@@ -1,7 +1,7 @@
 import { normalizePortfolio } from '../../utils/normalize-portfolio'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PORTFOLIO_MUTATION_TARGETS } from '../mutation-targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
@@ -63,7 +63,7 @@ export async function updatePortfolioIdentity(event: H3Event, input: unknown) {
     const { rootData } = await requirePortfolioMutationAuthority(tx, actor, portfolioId)
     if (!normalizePortfolio(portfolioId, rootData))
       throw createError({ statusCode: 409, statusMessage: 'Portfolio source is invalid.' })
-    tx.update(FIRESTORE_MUTATION_TARGETS.portfolios, portfolioId, {
+    tx.update(PORTFOLIO_MUTATION_TARGETS.portfolios, portfolioId, {
       ...changes,
       updated: serverAuditStamp({ by: actor.uid }),
     })

@@ -79,26 +79,6 @@ export function readBrandPalette(value: unknown): SparseBrandPalette {
   return palette
 }
 
-/** Keep only child tokens that materially override the inherited palette. */
-export function compactBrandPalette(
-  value: unknown,
-  inherited: unknown = DEFAULT_BRAND_PALETTE
-): SparseBrandPalette {
-  const palette = readBrandPalette(value)
-  const parent = {
-    ...DEFAULT_BRAND_PALETTE,
-    ...readBrandPalette(inherited),
-  }
-
-  return Object.fromEntries(
-    BRAND_PALETTE_KEYS.flatMap(key =>
-      palette[key] && palette[key] !== parent[key]
-        ? [[key, palette[key]]]
-        : []
-    )
-  ) as SparseBrandPalette
-}
-
 function semanticPalette<K extends string>(
   value: unknown,
   keys: readonly K[]
@@ -163,9 +143,3 @@ export const resolveAppPalette = (
   workspacePalette: WorkspacePalette,
   appPalette: AppPaletteLayer
 ): AppPalette | null => readAppPalette({ ...workspacePalette, ...appPalette })
-
-export const appPaletteLayersEqual = (
-  left: AppPaletteLayer,
-  right: AppPaletteLayer
-) => JSON.stringify(Object.entries(left).sort()) ===
-  JSON.stringify(Object.entries(right).sort())

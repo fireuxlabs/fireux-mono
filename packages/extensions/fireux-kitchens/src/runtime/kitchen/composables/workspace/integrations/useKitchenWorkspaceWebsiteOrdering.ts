@@ -1,11 +1,13 @@
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { computed, onScopeDispose, ref, watch } from 'vue'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenWorkspaceIdentity } from '../useKitchenWorkspaceIdentity'
@@ -84,7 +86,7 @@ export function useKitchenWorkspaceWebsiteOrdering() {
     ownerOutcome.value === 'ready' ? identity.kitchenId.value : ''
   )
   const requestEpoch = ref(-1)
-  const source = useLiveAsyncData<{
+  const source = useAsyncData<{
     scope: number
     kitchenId: string
     allowed_origins: string[]
@@ -93,7 +95,9 @@ export function useKitchenWorkspaceWebsiteOrdering() {
       () =>
         `kitchen-websites-${config.appId}-${currentUser.value?.uid || 'none'}-${identity.kitchenId.value || 'none'}-${ownerEpoch.value}`
     ),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!storageKitchenId.value) return null
       const isCurrent = captureIntent()
       const epoch = ownerEpoch.value
@@ -103,7 +107,7 @@ export function useKitchenWorkspaceWebsiteOrdering() {
       try {
         const token = await user.getIdToken()
         if (!isCurrent() || !storageKitchenId.value || !token) return null
-        const response = await liveFetch<{
+        const response = await fetchRead<{
           kitchenId: string
           allowed_origins: string[]
         }>('/api/workspace/kitchen/website-ordering', {
@@ -183,6 +187,15 @@ export function useKitchenWorkspaceWebsiteOrdering() {
     const result = await $fetch<{ ok: true; kitchenId: string }>(
       '/api/workspace/kitchen/website-ordering',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: 'Bearer ' + token },
         body: { kitchenId, allowed_origins: origins },

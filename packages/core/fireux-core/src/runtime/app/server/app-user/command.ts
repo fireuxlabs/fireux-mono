@@ -1,11 +1,7 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import type { AppMembershipMutationResult } from '../../models/app-membership'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppJoinRequestsTarget,
-  serverAppMembershipBlocksTarget,
-  serverAppUsersTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { APP_MUTATION_TARGETS, serverAppJoinRequestsTarget, serverAppMembershipBlocksTarget, serverAppUsersTarget } from '../mutation-targets'
+import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import {
@@ -31,7 +27,7 @@ async function mutateInTransaction(
   crossDatabaseUserVerified: boolean
 ): Promise<TransactionOutcome> {
   const { actorUid, appId, developerUid, input } = context
-  const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
+  const apps = APP_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(appId)
   const joinRequests = serverAppJoinRequestsTarget(appId)
   const blocks = serverAppMembershipBlocksTarget(appId)
@@ -46,7 +42,7 @@ async function mutateInTransaction(
     if (input.action === 'ensure-self') {
       if (!crossDatabaseUserVerified) {
         const user = await mutations.read(
-          FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+          USER_MUTATION_TARGETS.runtimeUsers,
           actorUid
         )
         if (!user.exists)
@@ -83,7 +79,7 @@ async function mutateInTransaction(
         forbidden(403, 'Only the configured developer can bootstrap this App.')
       if (!crossDatabaseUserVerified) {
         const user = await mutations.read(
-          FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+          USER_MUTATION_TARGETS.runtimeUsers,
           actorUid
         )
         if (!user.exists)

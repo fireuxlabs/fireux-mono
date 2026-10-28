@@ -533,10 +533,9 @@ these owners directly; retired transport-based read paths have no compatibility 
 Tenant User directory collections and details share the server-owned current-App
 membership scope. Global Apps retain the canonical identity directory. The tenant
 collection's membership cursor is independent of User handles and incomplete
-identity records; its joined membership and User reads stay live. Profile pair
-factories also use Core's live server transport, including missing-profile
-reappearance and cleanup. Current evidence is Core's
-`user-directory-collection.test.mjs` and `live-server-read.test.mjs`.
+identity records; its joined membership and User reads refresh through Nuxt. Profile pair
+factories use the same ordinary API boundary. Current evidence is Core's
+`user-directory-collection.test.mjs` and `user-directory-detail.test.mjs`.
 
 Current work is tracked in [FireUX priorities](../roadmaps/fireux-priorities.md).
 Earlier reconciliation evidence and deferred optional profiles remain in the

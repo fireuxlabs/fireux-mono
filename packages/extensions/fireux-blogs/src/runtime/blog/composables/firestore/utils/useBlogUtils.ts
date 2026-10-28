@@ -1,5 +1,5 @@
 import type { BlogAuthor } from '../../../utils/blog-post'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 
 function normalizeBlogSlug(title: string): string {
   return normalizeSlug(title)

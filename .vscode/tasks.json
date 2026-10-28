@@ -3,7 +3,7 @@
   "tasks": [
     {
       "label": "Git Save",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "gitsave"
@@ -11,745 +11,20 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "pnpm dev:fireux",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:fireux"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
+      "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:misebox",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:misebox"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:werkbox",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:werkbox"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:richies",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:richies"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:tenant",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:tenant"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
         "panel": "dedicated"
       }
     },
     {
       "label": "pnpm dev:bringli",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "dev:bringli"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:find-my-seo",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:find-my-seo"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:sproochli",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:sproochli"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:buenohost",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:buenohost"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:go-qr",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:go-qr"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:slap",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:slap"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:yellow-velo",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:yellow-velo"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:holzworm",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:holzworm"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:granite",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:granite"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:lifeguard-community",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:lifeguard-community"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:la-tap-berne",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:la-tap-berne"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:fireux-blank",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:fireux-blank"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:bangin-coffee",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:bangin-coffee"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:baeren-ringgenberg",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:baeren-ringgenberg"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:interlaken-essen",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:interlaken-essen"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:book-with-nats",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:book-with-nats"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:friiites",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:friiites"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:ausfinn-apartments",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:ausfinn-apartments"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:sharer",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:sharer"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm dev:kjordi",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "dev:kjordi"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "fireux-dev",
-        "pattern": {
-          "regexp": "^(?!)",
-          "message": 0
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\[dev\\] Starting .*$",
-          "endsPattern": "^\\[dev\\] .* ready$"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      }
-    },
-    {
-      "label": "pnpm kill:fireux",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:fireux"
+        "--dir",
+        "projects/bringli/bringli-app",
+        "dev"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -757,81 +32,12 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:misebox",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:misebox"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:werkbox",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:werkbox"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:richies",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:richies"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:tenant",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:tenant"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
       "label": "pnpm kill:bringli",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "kill:bringli"
@@ -842,16 +48,17 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
-      "label": "pnpm kill:find-my-seo",
-      "type": "shell",
+      "label": "pnpm dev:buenohost",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "kill:find-my-seo"
+        "--dir",
+        "projects/buenohost/buenohost-app",
+        "dev"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -859,30 +66,12 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:sproochli",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:sproochli"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
       "label": "pnpm kill:buenohost",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "kill:buenohost"
@@ -893,16 +82,17 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
-      "label": "pnpm kill:go-qr",
-      "type": "shell",
+      "label": "pnpm dev:book-with-nats",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "kill:go-qr"
+        "--dir",
+        "projects/buenohost/book-with-nats",
+        "dev"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -910,183 +100,12 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:slap",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:slap"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:yellow-velo",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:yellow-velo"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:holzworm",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:holzworm"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:granite",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:granite"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:lifeguard-community",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:lifeguard-community"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:la-tap-berne",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:la-tap-berne"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:fireux-blank",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:fireux-blank"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:bangin-coffee",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:bangin-coffee"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:baeren-ringgenberg",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:baeren-ringgenberg"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "pnpm kill:interlaken-essen",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "kill:interlaken-essen"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
       "label": "pnpm kill:book-with-nats",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "kill:book-with-nats"
@@ -1097,16 +116,17 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
-      "label": "pnpm kill:friiites",
-      "type": "shell",
+      "label": "pnpm dev:ausfinn-apartments",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "kill:friiites"
+        "--dir",
+        "projects/buenohost/ausfinn-apartments",
+        "dev"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -1114,13 +134,12 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
       "label": "pnpm kill:ausfinn-apartments",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "kill:ausfinn-apartments"
@@ -1131,13 +150,558 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:fireux",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/fireux-app",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:fireux",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:fireux"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:tenant",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/tenant",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:tenant",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:tenant"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:find-my-seo",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/find-my-seo-app",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:find-my-seo",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:find-my-seo"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:sproochli",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/sproochli",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:sproochli",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:sproochli"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:go-qr",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/go-qr",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:go-qr",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:go-qr"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:fireux-blank",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/fireux-blank",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:fireux-blank",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:fireux-blank"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:holzworm",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/holzworm",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:holzworm",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:holzworm"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:lifeguard-community",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/lifeguard-community",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:lifeguard-community",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:lifeguard-community"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:ignition-menu-demo",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/fireux/ignition-menu-demo",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:granite",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/granite/granite-app",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:granite",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:granite"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:misebox",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/misebox/misebox-app",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:misebox",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:misebox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:la-tap-berne",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/misebox/la-tap-berne",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:la-tap-berne",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:la-tap-berne"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:bangin-coffee",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/misebox/bangin-coffee",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:bangin-coffee",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:bangin-coffee"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:baeren-ringgenberg",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/misebox/baeren-ringgenberg",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:baeren-ringgenberg",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:baeren-ringgenberg"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:interlaken-essen",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/misebox/interlaken-essen",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:interlaken-essen",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:interlaken-essen"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:friiites",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/misebox/friiites",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:friiites",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:friiites"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:sharer",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/sharer/sharer-app",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
       }
     },
     {
       "label": "pnpm kill:sharer",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "kill:sharer"
@@ -1148,13 +712,30 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:kjordi",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/sharer/kjordi",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
       }
     },
     {
       "label": "pnpm kill:kjordi",
-      "type": "shell",
+      "type": "process",
       "command": "pnpm",
       "args": [
         "kill:kjordi"
@@ -1165,67 +746,299 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
-      "label": "pnpm: build:packages",
-      "type": "shell",
+      "label": "pnpm dev:slap",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "build:packages"
+        "--dir",
+        "projects/slap/slap-app",
+        "dev"
       ],
-      "isBackground": false,
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:slap",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:slap"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:yellow-velo",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/slap/yellow-velo",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:yellow-velo",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:yellow-velo"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:interlaken-bike-tours",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/slap/interlaken-bike-tours",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:werkbox",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/werkbox/werkbox-app",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:werkbox",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:werkbox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:richies",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        "projects/werkbox/richies-reinigung",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm kill:richies",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "kill:richies"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "FireUX: Check changed files",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "check:changed"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": [
+        "$eslint-stylish",
         "$tsc"
       ],
-      "group": "build"
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     },
     {
-      "label": "pnpm: lint",
-      "type": "shell",
+      "label": "FireUX: Lint changed files",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "lint"
+        "lint:changed"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "isBackground": false,
-      "problemMatcher": [
-        "$eslint-compact"
-      ],
-      "group": "test"
+      "problemMatcher": "$eslint-stylish",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     },
     {
-      "label": "pnpm: typecheck",
-      "type": "shell",
+      "label": "FireUX: Check formatting of changed files",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "typecheck"
+        "format:changed"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "isBackground": false,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "FireUX: Test current owner",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "test:scope",
+        "${file}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "FireUX: Typecheck current owner",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "typecheck:scope",
+        "${file}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "FireUX: Check current owner",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "check:scope",
+        "${file}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": [
+        "$eslint-stylish",
         "$tsc"
       ],
-      "group": "build"
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     },
     {
-      "label": "pnpm: format",
-      "type": "shell",
+      "label": "FireUX: Unit tests",
+      "type": "process",
       "command": "pnpm",
       "args": [
-        "format"
+        "test:unit"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "isBackground": false,
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "FireUX: Verify IDE configuration",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "ide:check"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     }
   ]
 }

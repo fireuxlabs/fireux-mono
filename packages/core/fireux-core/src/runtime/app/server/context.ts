@@ -8,11 +8,7 @@ import {
 } from '../../server/utils/records/context'
 import { readRecordString } from '../../server/utils/records/read'
 import { serverAuditStamp } from '../../server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from '../../utils/firestore-mutations/targets'
-
+import { APP_MUTATION_TARGETS, serverAppUsersTarget } from './mutation-targets'
 /** Only the configured owning App; directory membership grants no remote write. */
 export async function appContext(
   event: H3Event,
@@ -27,7 +23,7 @@ export async function appContext(
       statusCode: 403,
       statusMessage: 'Only the current App context may be managed here.',
     })
-  const target = FIRESTORE_MUTATION_TARGETS.runtimeApps
+  const target = APP_MUTATION_TARGETS.runtimeApps
   return runGuardedServerTransaction(target.database, async (tx) => {
     const [app, membership] = await Promise.all([
       tx.read(target, config.appId),

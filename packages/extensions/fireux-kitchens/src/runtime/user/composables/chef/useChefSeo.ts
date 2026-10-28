@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 // Concurrent edit — 2026-07-20 19:32 CEST — Repo Efficiency Pass 2 of 6: constrain Chef meta and JSON-LD images to HTTPS.
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/https-url'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Chef } from '../../utils/chef.ts'
 

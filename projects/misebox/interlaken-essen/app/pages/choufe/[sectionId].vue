@@ -26,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { findMarketSection } from '../../content/market-sections'
 import type {
@@ -39,7 +40,7 @@ definePageMeta({
 })
 
 const { copy } = useInterlakenCopy()
-const route = useRoute()
+const route = useRoute<'choufe-sectionId'>()
 const sectionId = String(route.params.sectionId || '')
 const section = findMarketSection(sectionId)
 
@@ -51,7 +52,7 @@ if (!section) {
 }
 
 const titleId = `section-${section.id}`
-const { data } = await useLiveFetch<MarketplaceStoreDirectoryPage>(
+const { data } = await useFetch<MarketplaceStoreDirectoryPage>(
   '/api/marketplace-stores',
   { default: () => ({ items: [], truncated: false }) }
 )

@@ -99,6 +99,8 @@
 </template>
 
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { useKitchenWorkspace } from '../../../../composables/workspace/useKitchenWorkspace'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenDishesContext } from '../../../../composables/workspace/dishes/useKitchenDishesContext'
@@ -259,6 +261,15 @@ const handleFlagship = async (value: boolean) => {
     if (!isCurrent() || !canWrite.value) return
     if (!token) throw new Error('Sign in before updating the flagship Dish.')
     await $fetch(`/api/workspace/kitchen/dishes/${requestedDishId}/flagship`, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
       query: { kitchenId: requestedKitchenId },

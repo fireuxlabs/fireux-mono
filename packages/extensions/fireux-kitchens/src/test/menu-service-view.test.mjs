@@ -2,7 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+const compileFunction = (source, args = []) =>
+  args.includes('setResponseHeader')
+    ? compileNative(source, args)
+    : compileNative(source, ['setResponseHeader', ...args]).bind(null, () => {})
 const source = readFileSync(
   new URL('../runtime/menu/utils/service-menu.ts', import.meta.url),
   'utf8'
@@ -413,7 +417,7 @@ test('service item endpoint carries Delivery through every page and excludes doc
   const handler = compileFunction(
     stripTypeScriptTypes(handlerSource) + '; return handler',
     [
-      'defineLiveReadHandler',
+      'defineEventHandler',
       'getQuery',
       'createError',
       'readMenuDirectoryPage',
@@ -719,11 +723,15 @@ test('service selections retain the original menu, section and item identity acr
     sourceMenu('food', 'Pizza', ['margherita']),
     sourceMenu('takeaway-drinks', 'Drinks', ['cola']),
   ])
-  assert.deepEqual(result.map((section) => section.items[0].source), [
-    { kitchenId: 'kitchen', menuId: 'food', sectionId: 'section' },
-    { kitchenId: 'kitchen', menuId: 'takeaway-drinks', sectionId: 'section' },
-  ])
-  assert.deepEqual(result.map((section) => section.items[0].item.id), [
-    'food-margherita', 'takeaway-drinks-cola',
-  ])
+  assert.deepEqual(
+    result.map((section) => section.items[0].source),
+    [
+      { kitchenId: 'kitchen', menuId: 'food', sectionId: 'section' },
+      { kitchenId: 'kitchen', menuId: 'takeaway-drinks', sectionId: 'section' },
+    ]
+  )
+  assert.deepEqual(
+    result.map((section) => section.items[0].item.id),
+    ['food-margherita', 'takeaway-drinks-cola']
+  )
 })

@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -91,12 +92,14 @@ export function useKitchenWorkspaceFinance() {
     epoch.value += 1
   })
 
-  const state = useLiveAsyncData<KitchenGrossSalesReport | null>(
+  const state = useAsyncData<KitchenGrossSalesReport | null>(
     computed(
       () =>
         `kitchen-finance:${fireux.appId}:${currentUser.value?.uid || ''}:${workspace.id.value}:${rangeMode.value}:${customFrom.value}:${customTo.value}:${epoch.value}`
     ),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const readEpoch = epoch.value
       const isCurrent = () => !disposed && readEpoch === epoch.value
       const user = currentUser.value
@@ -115,7 +118,7 @@ export function useKitchenWorkspaceFinance() {
       try {
         const token = await user.getIdToken()
         if (!isCurrent() || !canLoad.value) return null
-        const result = await liveFetch<KitchenGrossSalesReport>(
+        const result = await fetchRead<KitchenGrossSalesReport>(
           '/api/workspace/kitchen/reports/gross-sales',
           { headers: { Authorization: `Bearer ${token}` }, query }
         )

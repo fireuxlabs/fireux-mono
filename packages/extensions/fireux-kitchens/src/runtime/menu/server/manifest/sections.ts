@@ -16,11 +16,7 @@ type MenuReadObserver = {
     records: Array<{ id: string; data: Record<string, unknown> }>
   ) => void
 }
-import {
-  serverKitchenDishesTarget,
-  serverKitchenMenuSectionsTarget,
-  serverKitchenMenuItemsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../../../kitchen/server/mutation-targets'
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
 import type { Firestore } from 'firebase-admin/firestore'
 import { readDishItemKind } from '../../../kitchen/utils/dish.ts'

@@ -1,3 +1,4 @@
+import { useAsyncData } from 'nuxt/app'
 import {
   useFirestoreCollectionState,
   type FirestoreCollectionOutcome,
@@ -14,8 +15,8 @@ import {
 } from 'vue'
 import type { RouteRecordNormalized } from 'vue-router'
 import { useRouter } from '#imports'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
+
+import { readPages } from 'fireux-core/runtime/composables/http/readPages'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   MENU_DIRECTORY_MAX_PAGE_SIZE,
@@ -40,7 +41,9 @@ export type MenuDirectoryOutcome =
 
 type UseMenuDirectoryOptions = {
   routeScope?: MaybeRefOrGetter<MenuRouteScope>
-  service?: MaybeRefOrGetter<'online' | 'collection' | 'delivery' | 'table' | 'room_service'>
+  service?: MaybeRefOrGetter<
+    'online' | 'collection' | 'delivery' | 'table' | 'room_service'
+  >
   offering?: MaybeRefOrGetter<string>
   search?: MaybeRefOrGetter<string>
   pageSize?: number
@@ -84,11 +87,22 @@ export function useMenuDirectory(
       ? String(routeScope.value.kitchenSlug || '').trim()
       : ''
   )
-  const search = ref(String(toValue(options.search) || '').trim().slice(0, 120))
-  watch(() => toValue(options.search), (value, _previous, onCleanup) => {
-    const timer = setTimeout(() => { search.value = String(value || '').trim().slice(0, 120) }, 250)
-    onCleanup(() => clearTimeout(timer))
-  })
+  const search = ref(
+    String(toValue(options.search) || '')
+      .trim()
+      .slice(0, 120)
+  )
+  watch(
+    () => toValue(options.search),
+    (value, _previous, onCleanup) => {
+      const timer = setTimeout(() => {
+        search.value = String(value || '')
+          .trim()
+          .slice(0, 120)
+      }, 250)
+      onCleanup(() => clearTimeout(timer))
+    }
+  )
   const service = computed(() => toValue(options.service))
   const pageSize = normalizePageSize(options.pageSize)
   const baseEndpoint = computed(() => {
@@ -126,14 +140,16 @@ export function useMenuDirectory(
     },
     { flush: 'sync' }
   )
-  const state = useLiveAsyncData<MenuDirectoryPage>(
+  const state = useAsyncData<MenuDirectoryPage>(
     key,
-    (liveFetch) =>
-      readLivePages<MenuDirectoryPage>(
-        liveFetch,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return readPages<MenuDirectoryPage>(
+        fetchRead,
         baseEndpoint.value,
         pageCount.value
-      ),
+      )
+    },
     { watch: [baseEndpoint] }
   )
   const ready = state.then(() => undefined)
@@ -164,12 +180,22 @@ export function useMenuDirectory(
         )
       : null
   )
-  const error = computed(() => state.error.value || routePolicyError.value)
+  const pending = computed(
+    () =>
+      state.pending.value && !(loadingMore.value && collection.value.length > 0)
+  )
+  const error = computed(() => {
+    const pagingFailure =
+      collection.value.length > 0 &&
+      (loadingMore.value ||
+        (loadMoreError.value && state.error.value === loadMoreError.value))
+    return (pagingFailure ? null : state.error.value) || routePolicyError.value
+  })
   const redirectSingleTenant = computed(
     () => routeScope.value.kind === 'tenant'
   )
   const directoryOutcome = computed<MenuDirectoryOutcome>(() => {
-    if (state.pending.value) return { kind: 'loading' }
+    if (pending.value) return { kind: 'loading' }
     if (error.value || !state.data.value) return { kind: 'unavailable' }
     if (!collection.value.length) return { kind: 'empty' }
 
@@ -189,7 +215,7 @@ export function useMenuDirectory(
   const count = computed(() => collection.value.length)
   const { outcome } = useFirestoreCollectionState({
     count,
-    pending: state.pending,
+    pending,
     error,
   })
   const statusCode = computed(() =>
@@ -220,7 +246,10 @@ export function useMenuDirectory(
       if (state.error.value) throw state.error.value
       return true
     } catch (error) {
-      if (requestEndpoint === baseEndpoint.value) loadMoreError.value = error
+      if (requestEndpoint === baseEndpoint.value) {
+        loadMoreError.value = error
+        pageCount.value--
+      }
       return false
     } finally {
       if (requestEndpoint === baseEndpoint.value) loadingMore.value = false
@@ -229,7 +258,7 @@ export function useMenuDirectory(
 
   return {
     collection,
-    pending: state.pending,
+    pending,
     error,
     refresh: state.refresh,
     ready,

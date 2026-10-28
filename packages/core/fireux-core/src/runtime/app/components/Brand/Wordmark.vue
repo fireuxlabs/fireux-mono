@@ -16,8 +16,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useResolvedColorMode } from '../../../composables/theme/useColorMode'
-import { CORE_BRAND_DEFAULT_ASSETS, GLOBAL_BRAND_ASSETS as brandAssets } from '../../../../utils/brandAssets'
+import { useColorMode } from '#imports'
+import {
+  CORE_BRAND_DEFAULT_ASSETS,
+  GLOBAL_BRAND_ASSETS as brandAssets,
+} from '../../../../utils/brandAssets'
 
 type BrandSize = 'card' | 'small' | 'medium' | 'large' | 'hero'
 
@@ -38,8 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
 const size = computed<BrandSize>(() => props.size)
 const loading = computed(() => props.loading)
 
-const resolvedMode = useResolvedColorMode()
-
+const resolvedMode = useColorMode()
 
 const isDark = computed(() => resolvedMode.value === 'dark')
 

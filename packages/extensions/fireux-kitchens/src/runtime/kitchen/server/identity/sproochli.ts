@@ -1,7 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { serverKitchenIntegrationsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenIntegrationsTarget } from '../mutation-targets'
 import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,

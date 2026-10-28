@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
 
 import { computed } from 'vue'
 import {
@@ -93,9 +93,12 @@ definePageMeta({
   layout: 'landing',
 })
 
-const { data } = await useLiveAsyncData<PlatformDirectoryResponse>(
+const { data } = await useAsyncData<PlatformDirectoryResponse>(
   'fireux-default-directory',
-  (liveFetch) => liveFetch('/api/directory'),
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchRead('/api/directory')
+  },
   { server: true, lazy: false }
 )
 const { apps } = useEcosystemApps('cleanbox')

@@ -1,5 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { type ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
@@ -21,11 +22,13 @@ export function useIngredientDetail(
   ingredientId: MaybeRef<string | null | undefined>
 ): UseIngredientDetailReturn {
   const id = computed(() => String(unref(ingredientId) ?? '').trim())
-  const state = useLiveAsyncData<IngredientDetailResponse | null>(
+  const state = useAsyncData<IngredientDetailResponse | null>(
     () => `ingredient-detail|${id.value || 'none'}`,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!id.value) return null
-      return liveFetch<IngredientDetailResponse>(
+      return fetchRead<IngredientDetailResponse>(
         `/api/ingredients/${encodeURIComponent(id.value)}`
       )
     },

@@ -98,7 +98,7 @@ function fixture({ existing = {}, contextWait, retry } = {}) {
       if (member?.role !== 'admin')
         throw createError({ statusCode: 403, statusMessage: 'Denied' })
     },
-    FIRESTORE_MUTATION_TARGETS: { ingredients: target },
+    INGREDIENT_MUTATION_TARGETS: { ingredients: target },
     serverAppUsersTarget: () => ({ collectionPath: 'apps/app/users' }),
     serverAuditStamp: (actor) => ({ at: 'now', ...actor }),
     runGuardedServerTransaction: async (_, work) => {

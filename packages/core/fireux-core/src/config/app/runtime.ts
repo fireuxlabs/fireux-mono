@@ -29,8 +29,6 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   domain: string
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string
-  /** App-owned streaming endpoint when its public proxy buffers live responses. */
-  liveReadEndpoint?: string
   /** Registered root route keys excluded from public User handles. */
   reservedRouteKeys?: readonly string[]
   modules: readonly string[]

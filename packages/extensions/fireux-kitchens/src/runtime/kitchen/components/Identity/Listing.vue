@@ -4,10 +4,10 @@
     aria-label="Kitchen listing"
   >
     <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <UIcon name="i-lucide-link" class="size-5 text-muted" />
-          <h2 class="font-semibold">Kitchen listing</h2>
+      <div class="workspace-profile__header">
+        <div class="workspace-profile__heading-row">
+          <UIcon name="i-lucide-link" class="workspace-profile__icon" />
+          <h2 class="workspace-profile__heading">Kitchen listing</h2>
           <UBadge color="neutral" variant="subtle">{{ kitchenStatus }}</UBadge>
         </div>
         <UButton
@@ -21,12 +21,10 @@
         />
       </div>
     </template>
-    <div
-      class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <div class="min-w-0">
-        <p class="text-xs font-medium text-muted">Kitchen URL</p>
-        <p class="mt-1 break-all font-mono text-sm">
+    <div class="workspace-profile__header">
+      <div class="workspace-profile__copy">
+        <p class="workspace-profile__label">Kitchen URL</p>
+        <p class="workspace-profile__path">
           {{ kitchenPath || 'No Kitchen URL set' }}
         </p>
       </div>

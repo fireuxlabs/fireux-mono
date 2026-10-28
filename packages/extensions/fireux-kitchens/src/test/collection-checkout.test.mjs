@@ -70,10 +70,8 @@ const ordering = makeMenuOrdering({
     target(`kitchens/${k}/menus/${m}/sections/${s}/items`),
   serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
   kitchenPromotionsTarget: (k) => target(`kitchens/${k}/promotions`),
-  FIRESTORE_MUTATION_TARGETS: {
-    places: target('places'),
-    kitchens: target('kitchens'),
-  },
+  PLACE_MUTATION_TARGETS: { places: target('places') },
+KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
   readPlaceCurrencyCode: (place) => place.currency,
   readKitchenOfferingsInTransaction: async (tx) => tx.offerings,
 })
@@ -521,10 +519,8 @@ test('the existing command stores canonical choices once and retries without ano
         return value
       },
       defineFirestoreMutationTarget: (value) => value,
-      FIRESTORE_MUTATION_TARGETS: {
-        kitchens: target('kitchens'),
-        runtimeUsers: target('users'),
-      },
+      KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
+USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       resolveMenuOrderLines: (transaction, input) =>
         ordering.resolveMenuOrderLines(transaction, input, monday),
       serverAuditStamp: () => ({ at: 'test' }),

@@ -43,7 +43,7 @@ function server() {
     'saveKitchenOrderDraft',
     {
       ...ordering,
-      FIRESTORE_MUTATION_TARGETS: { runtimeUsers: { collectionPath: 'users' } },
+      USER_MUTATION_TARGETS: { runtimeUsers: { collectionPath: 'users' } },
       createError,
       requireFirestoreDocumentId: docId,
       useRuntimeConfig: () => ({

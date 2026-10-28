@@ -1,7 +1,7 @@
 # FireUX Mono repository map
 
-Updated: 2026-10-25
-Ref: ce2861c77
+Updated: 2026-10-26
+Ref: cf2413355
 Role: map, not canon
 
 ## Purpose and navigation
@@ -20,13 +20,13 @@ upstream docs linked there and the focused FireUX maps.
 
 ## Workspace lanes
 
-| Lane | Owner |
-| --- | --- |
-| packages/core | Shared FireUX and Nuxt foundations. |
-| packages/ecosystem | Real cross-extension product composition and Ecosystem bindings. |
-| packages/extensions | Reusable domains and capabilities. |
-| `projects/*/*` | Concrete Nuxt Apps and the project starter. |
-| tools | Local development and operational tools outside reusable runtime packages. |
+| Lane                | Owner                                                                      |
+| ------------------- | -------------------------------------------------------------------------- |
+| packages/core       | Shared FireUX and Nuxt foundations.                                        |
+| packages/ecosystem  | Real cross-extension product composition and Ecosystem bindings.           |
+| packages/extensions | Reusable domains and capabilities.                                         |
+| `projects/*/*`      | Concrete Nuxt Apps and the project starter.                                |
+| tools               | Local development and operational tools outside reusable runtime packages. |
 
 A directory is a package only when it has its own package.json and is included
 by pnpm-workspace.yaml. That workspace file owns the package globs. The
@@ -67,8 +67,10 @@ brand or folder name alone.
 - tsconfig.base.json owns package path mapping; project App TypeScript
   configuration is shared through projects/tsconfig.projects.json.
 - tools/fireux-launcher/apps.mjs discovers Apps and their development ports from
-  App-owned manifests and commands. It is a launcher, not a package registry or
-  projection generator.
+  App-owned manifests and commands. The toolbar and IDE configuration generator
+  reuse this discovery; App manifests remain the command and port owners.
+- tools/ide owns focused local checks and generated VS Code workspace, task and
+  launch configuration. See [the IDE workflow](../../tools/ide/README.md).
 - Generated Nuxt output, dist and node_modules are not authored source.
 
 Use [pnpm](pnpm.md) for current commands and workspace checks. Root scripts and

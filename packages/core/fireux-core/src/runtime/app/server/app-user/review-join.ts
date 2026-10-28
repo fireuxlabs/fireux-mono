@@ -1,9 +1,5 @@
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppJoinRequestsTarget,
-  serverAppMembershipBlocksTarget,
-  serverAppUsersTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
+import { APP_MUTATION_TARGETS, serverAppJoinRequestsTarget, serverAppMembershipBlocksTarget, serverAppUsersTarget } from '../mutation-targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
   appGovernancePatch,
@@ -32,7 +28,7 @@ export async function handleReviewJoin(
   if (
     input.approve &&
     !crossDatabaseUserVerified &&
-    !(await mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, userId))
+    !(await mutations.read(USER_MUTATION_TARGETS.runtimeUsers, userId))
       .exists
   )
     forbidden(409, 'The public User record does not exist.')
@@ -46,7 +42,7 @@ export async function handleReviewJoin(
     if (block?.exists) mutations.delete(blocks, userId)
   }
   mutations.update(
-    FIRESTORE_MUTATION_TARGETS.runtimeApps,
+    APP_MUTATION_TARGETS.runtimeApps,
     appId,
     appGovernancePatch(actorUid)
   )

@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { computed } from 'vue'
 import type {
   DirectoryOutcome,
@@ -10,9 +11,12 @@ import type {
 } from 'fireux-core/runtime/models/utils/directory'
 
 export function usePlatformDirectory() {
-  return useLiveAsyncData<PlatformDirectoryResponse>(
+  return useAsyncData<PlatformDirectoryResponse>(
     'fireux-default-directory',
-    (liveFetch) => liveFetch('/api/directory'),
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return fetchRead('/api/directory')
+    },
     { server: true, lazy: false }
   )
 }

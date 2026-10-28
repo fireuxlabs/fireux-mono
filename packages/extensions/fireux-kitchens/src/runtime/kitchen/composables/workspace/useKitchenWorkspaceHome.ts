@@ -1,9 +1,10 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
 import { useKitchenIdentityProjection } from '../useKitchenIdentity'
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { useKitchenWorkspace } from './useKitchenWorkspace'
 
 export function useKitchenWorkspaceHome() {
@@ -55,13 +56,15 @@ export function useKitchenWorkspaceHome() {
     () =>
       `kitchen-team-summary-${currentUser.value?.uid || ''}-${workspace.id.value}-${workspace.outcome.value}`
   )
-  const { data, status, error } = useLiveAsyncData(
+  const { data, status, error } = useAsyncData(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const id = workspace.outcome.value === 'ready' ? workspace.id.value : ''
       const user = currentUser.value
       if (!id || !user) return null
-      return liveFetch<{ kitchenId: string; members: Member[] }>(
+      return fetchRead<{ kitchenId: string; members: Member[] }>(
         '/api/workspace/kitchen/team/members',
         {
           query: { kitchenId: id },

@@ -1,10 +1,12 @@
-import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
 import {
+  defineEventHandler,
+  setResponseHeader,
   createError,
   getRouterParam,
   setResponseHeaders,
   type H3Event,
 } from 'h3'
+
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
@@ -12,7 +14,9 @@ import { readAppDocument } from '../../../app/utils/readApp.ts'
 import { asTrimmedString } from '../../utils/projection/normalize'
 import type { DetailResponse } from '../../../models/utils/directory'
 
-export default defineLiveReadHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     // Detail consumers can turn the App website into durable links.

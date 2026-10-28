@@ -44,7 +44,7 @@ const contract = load(
     createError: ({ statusCode, statusMessage }) =>
       Object.assign(new Error(statusMessage), { statusCode }),
     FieldValue: { serverTimestamp: () => ({ seconds: 123, nanoseconds: 0 }) },
-    FIRESTORE_MUTATION_TARGETS: { runtimeUsers: 'users' },
+    USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
   }
 )
 const review = load(
@@ -52,7 +52,8 @@ const review = load(
   'handleReviewJoin',
   {
     ...contract,
-    FIRESTORE_MUTATION_TARGETS: { runtimeApps: 'apps', runtimeUsers: 'users' },
+    APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
+USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
     serverAppUsersTarget: memberships,
     serverAppJoinRequestsTarget: joins,
     serverAppMembershipBlocksTarget: blocks,
@@ -461,7 +462,7 @@ test('removing a disposable member revokes live domain access and a new membersh
       serverAppUsersTarget: memberships,
       serverAppJoinRequestsTarget: joins,
       serverAppMembershipBlocksTarget: blocks,
-      FIRESTORE_MUTATION_TARGETS: { runtimeApps: 'apps' },
+      APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
     }
   )
   const writes = []

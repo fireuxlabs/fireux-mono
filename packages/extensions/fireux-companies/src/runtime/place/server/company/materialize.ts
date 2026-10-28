@@ -7,10 +7,8 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { canonicalCompanyRole } from './canonical'
 
@@ -65,8 +63,8 @@ export async function materializeCompany(
         })
       }
       const [placeSnapshot, companySnapshot] = await Promise.all([
-        mutations.read(FIRESTORE_MUTATION_TARGETS.places, id),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.companies, id),
+        mutations.read(PLACE_MUTATION_TARGETS.places, id),
+        mutations.read(PLACE_MUTATION_TARGETS.companies, id),
       ])
       if (
         !placeSnapshot.exists ||
@@ -89,7 +87,7 @@ export async function materializeCompany(
         return false
       }
 
-      mutations.create(FIRESTORE_MUTATION_TARGETS.companies, id, {
+      mutations.create(PLACE_MUTATION_TARGETS.companies, id, {
         created: { at: FieldValue.serverTimestamp() },
         updated: { at: FieldValue.serverTimestamp() },
       })

@@ -1,11 +1,7 @@
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverKitchenMenusTarget,
-  serverKitchenMenuSectionsTarget,
-  serverKitchenMenuItemsTarget,
-  FIRESTORE_MUTATION_TARGETS,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, KITCHEN_MUTATION_TARGETS } from '../../kitchen/server/mutation-targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { readKitchenOfferingsInTransaction } from '../../kitchen/server/offerings/read'
 import { resolveKitchenOperationHours } from '../../kitchen/utils/kitchen-readers'
@@ -44,11 +40,11 @@ export async function resolveMenuOrderLines(
   now = new Date()
 ) {
   const place = await tx.read(
-    FIRESTORE_MUTATION_TARGETS.places,
+    PLACE_MUTATION_TARGETS.places,
     input.kitchenId
   )
   const kitchen = await tx.read(
-    FIRESTORE_MUTATION_TARGETS.kitchens,
+    KITCHEN_MUTATION_TARGETS.kitchens,
     input.kitchenId
   )
   const currency = readPlaceCurrencyCode(place.data || {})

@@ -214,7 +214,7 @@ function findRepoRoot(startDir) {
   while (current) {
     const hasWorkspace = fs.existsSync(path.join(current, 'pnpm-workspace.yaml'))
     const hasRegistry = fs.existsSync(
-      path.join(current, 'scripts', '_lib', 'app-registry.mjs')
+      path.join(current, 'tools', 'fireux-launcher', 'apps.mjs')
     )
     if (hasWorkspace && hasRegistry) return current
 

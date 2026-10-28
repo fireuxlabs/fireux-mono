@@ -1,12 +1,19 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getQuery, setResponseHeaders, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  getQuery,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+
 import { readCompanyDirectoryPage } from '../../../place/server/company/directory'
 
-export default defineLiveReadHandler((event: H3Event) => {
+export default defineEventHandler((event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control':
-      'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+    'Cache-Control': 'no-store',
   })
   return readCompanyDirectoryPage(getQuery(event))
 })

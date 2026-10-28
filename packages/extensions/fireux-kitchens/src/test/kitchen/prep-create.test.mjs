@@ -17,7 +17,8 @@ const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtim
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
 const requireKitchenRecordMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
-  FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
+  KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+PLACE_MUTATION_TARGETS: { places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
 }, 'requireKitchenRecordMutationAuthority')
 const normalizeKitchenPrepItemTranslatedText=load('../../runtime/kitchen/utils/prep-item.ts',{},'normalizeKitchenPrepItemTranslatedText')

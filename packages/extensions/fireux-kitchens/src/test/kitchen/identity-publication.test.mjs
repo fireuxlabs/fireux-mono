@@ -148,7 +148,7 @@ test('Kitchen-only updates use record authority inside their transaction and rej
       checks.push([actual, a, id])
       if (denied) throw new Error('revoked')
     },
-    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
   })
   assert.deepEqual(
     await update(

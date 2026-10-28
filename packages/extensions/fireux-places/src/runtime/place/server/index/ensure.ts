@@ -7,10 +7,8 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PLACE_MUTATION_TARGETS } from '../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { fetchVerifiedGooglePlacePayload } from '../integration/google/details'
 
 type PlaceEnsureRequest = {
@@ -73,7 +71,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
 
   const payload = await fetchVerifiedGooglePlacePayload(event, id)
   const memberships = serverAppUsersTarget(runtimeAppId)
-  const places = FIRESTORE_MUTATION_TARGETS.places
+  const places = PLACE_MUTATION_TARGETS.places
   const created = await runGuardedServerTransaction(
     places.database,
     async (mutations) => {

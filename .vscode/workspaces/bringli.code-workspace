@@ -1,25 +1,21 @@
 {
   "folders": [
-    { "name": "Bringli apps", "path": "../../projects/bringli" },
-    { "name": "Bringli ecosystem", "path": "../../packages/ecosystem/fireux-bringli" },
-    { "name": "Shared core", "path": "../../packages/core" },
-    { "name": "Shared extensions", "path": "../../packages/extensions" },
-    { "name": "Repository docs", "path": "../../docs" },
-    { "name": "Repository scripts", "path": "../../scripts" }
+    {
+      "name": "bringli — FireUX Mono",
+      "path": "../.."
+    }
   ],
   "settings": {
-    "window.title": "Bringli — ${activeEditorShort}",
+    "window.title": "bringli — ${activeEditorShort}",
     "files.exclude": {
-      "**/.nuxt": true,
-      "**/.output": true,
-      "**/dist": true,
-      "**/node_modules": true
-    },
-    "search.exclude": {
-      "**/.nuxt": true,
-      "**/.output": true,
-      "**/dist": true,
-      "**/node_modules": true
+      "projects/buenohost": true,
+      "projects/fireux": true,
+      "projects/granite": true,
+      "projects/misebox": true,
+      "projects/sharer": true,
+      "projects/slap": true,
+      "projects/templates": true,
+      "projects/werkbox": true
     }
   }
 }

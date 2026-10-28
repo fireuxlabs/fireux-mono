@@ -2,7 +2,19 @@ import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/run
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { stripTypeScriptTypes } from 'node:module'
 import {
   compile,
@@ -163,7 +175,7 @@ function catalogueFixture(includeInactive = false) {
       useFireUXConfig: () => config,
       useAppSession: () => session,
       useFirestoreCollectionState,
-      useLiveAsyncData: (k, h, o) => {
+      useAsyncData: (k, h, o) => {
         key = k
         handler = h
         options = o
@@ -234,10 +246,12 @@ test('private catalogue token wait cannot execute under an obsolete App/member s
       resolveToken = resolve
     })
   const reads = []
-  const task = f.handler(async (request) => {
-    reads.push(request)
-    return { items: [] }
-  })
+  const task =
+    ((currentReadFetch = async (request) => {
+      reads.push(request)
+      return { items: [] }
+    }),
+    f.handler({}, { signal: new AbortController().signal }))
   const rejection = assert.rejects(task, /context changed/)
   f.session.appUser.value = { role: 'admin', created: { at: 2 } }
   resolveToken('old-token')
@@ -262,7 +276,7 @@ test('Ingredient detail hides retained identity on pending/error, with error tak
       unref,
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
-      useLiveAsyncData: () => raw,
+      useAsyncData: () => raw,
     }
   )
   const state = use(id)
@@ -305,7 +319,7 @@ test('Kitchen association projection does not hydrate from retained canonical ro
       resolveKitchenChildCollectionBasePath: () => 'kitchens',
       KitchenIngredientStorage: { collection: 'ingredients' },
       useFirestoreRead: () => ({ firestoreFetchCollection: () => binding }),
-      useLiveAsyncData: () => roots,
+      useAsyncData: () => roots,
       useCollectionById: () => ({ byId: () => undefined }),
     }
   )
@@ -419,7 +433,11 @@ test('public Ingredient page reader follows reused route params and closes the p
       useUserSession: () => ({ isAdmin: ref(true) }),
       useIngredientDetail: (id) => {
         readerId = id
-        return { ingredient: ref(null), pending: ref(false), error: ref(null) }
+        return {
+          ingredient: ref(null),
+          pending: ref(false),
+          error: ref(null),
+        }
       },
       useIngredientSeo: () => {},
     })
@@ -474,7 +492,7 @@ test('explicit empty Kitchen parent disables link reads and retained-ID hydratio
           }
         },
       }),
-      useLiveAsyncData: (_key, read) => {
+      useAsyncData: (_key, read) => {
         handler = read
         return {
           data: ref({ items: [] }),
@@ -489,10 +507,11 @@ test('explicit empty Kitchen parent disables link reads and retained-ID hydratio
   assert.equal(readPath.value, '')
   const requests = []
   assert.deepEqual(
-    await handler(async (url) => {
+    await ((currentReadFetch = async (url) => {
       requests.push(url)
       return { items: [] }
     }),
+    handler({}, { signal: new AbortController().signal })),
     { items: [] }
   )
   assert.deepEqual(requests, [])

@@ -3,7 +3,7 @@ import { projectIdentityMedia } from '../../utils/project-identity-media'
 import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 import { useProjectAccess } from '../useProjectAccess'
 import { useProjectWorkspace } from './useProjectWorkspace'
 
@@ -13,7 +13,7 @@ export function useProjectWorkspaceIdentity(
   } = {}
 ) {
   const workspace = useProjectWorkspace()
-  const { updateProject } = useProjectUpdate()
+  const { updateProject } = useProjectUpdate([workspace.id])
   const access = useProjectAccess()
   const publication = computed(() => {
     const source = toValue(options.publication)

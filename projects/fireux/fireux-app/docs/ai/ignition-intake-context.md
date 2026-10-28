@@ -1,7 +1,7 @@
 # FireUX App Ignition intake context
 
-Updated: 2026-10-21
-Ref: eddc8186c
+Updated: 2026-10-28
+Ref: cf2413355
 Role: living context
 Scope: FireUX App Ignition requests and private delivery tracking
 
@@ -72,6 +72,23 @@ priced branded-App request below; do not silently apply those terms to an
 industry-platform enquiry.
 
 Paths below are relative to this App:
+
+- `/ignite-preview` is a separate, explicitly bounded assisted Menu starting-App
+  entrance. Its form and `server/api/ignition/preview.post.ts` use
+  `shared/ignition-preview.ts`; the operator CLI in `ignition/prepare.mjs` uses
+  that same preparation function. The App owns this concrete source recipe,
+  not Core or a new neutral template registry. It reuses Kitchen demo data,
+  Core AppShell/configuration and the existing trusted initializer.
+- Website preparation returns a source artifact only. Filesystem materialization,
+  dependency installation, native Nuxt startup and authenticated Core initialization
+  are explicit operator steps. No public shell execution, credential copy,
+  provider provisioning or deployment is added. Repeating an identical artifact
+  preserves source; changed/stale artifacts and operator edits are not overwritten.
+  The [operator entrypoint](../../ignition/README.md) and
+  `app/tests/ignition-preview.test.mjs` own current commands and checks.
+- This supported source-workspace example does not turn the general industry
+  email enquiry or the priced Conversation queue into an automatic creator.
+  Their offer, authority and storage boundaries remain distinct.
 
 - `app/pages/get-started.vue` and `app/composables/useIgnitionRequestForm.ts`: public intake and `/api/conversations` submission.
 - `server/utils/ignition-request.ts`: input, origin, status and checklist validation and serialization.

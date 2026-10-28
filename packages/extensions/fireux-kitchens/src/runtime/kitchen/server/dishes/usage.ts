@@ -1,10 +1,6 @@
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverKitchenMenusTarget,
-  serverKitchenMenuSectionsTarget,
-  serverKitchenMenuItemsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../mutation-targets'
 import { kitchenPromotionsTarget } from '../promotions/target'
 import type { DishUsage } from '../../models/dish-usage.model'
 

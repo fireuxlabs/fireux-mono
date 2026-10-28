@@ -1,5 +1,10 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getRouterParam } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getRouterParam,
+} from 'h3'
+
 import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider'
 import {
   type GoQrDocToolConfig,
@@ -8,7 +13,9 @@ import {
 } from '../../../utils/tools/doc'
 import { readToolConfig } from '../../../utils/tools/config-store'
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setToolProviderResponseHeaders(event)
 
   const { id, config: rawConfig } = await readToolConfig(

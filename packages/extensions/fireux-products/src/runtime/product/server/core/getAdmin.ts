@@ -1,4 +1,3 @@
-import { observeRuntimeFirestore } from 'fireux-core/runtime/server/utils/firestore/live-read'
 import * as admin from 'firebase-admin'
 import { getFirestore } from 'firebase-admin/firestore'
 import { readFileSync } from 'node:fs'
@@ -171,9 +170,7 @@ export function getProductsFirestore(databaseId?: string) {
   ).trim()
   const admin = getProductsAdmin()
 
-  return observeRuntimeFirestore(
-    configuredDatabaseId
-      ? getFirestore(admin.app(), configuredDatabaseId)
-      : getFirestore(admin.app())
-  )
+  return configuredDatabaseId
+    ? getFirestore(admin.app(), configuredDatabaseId)
+    : getFirestore(admin.app())
 }

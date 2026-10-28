@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import type { ProductCreateInput, StripePriceInput } from '../../utils/product'
 export function invalidProductInput(): never { throw createError({ statusCode: 400, statusMessage: 'Invalid Product creation input.' }) }
 function fields(input: unknown, allowed: string[]) {

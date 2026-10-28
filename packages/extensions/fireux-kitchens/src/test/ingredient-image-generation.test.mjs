@@ -36,7 +36,7 @@ function fixture(options = {}) {
       'generateFireuxImage',
       'saveStorageFileWithDownloadToken',
       'runGuardedServerTransaction',
-      'FIRESTORE_MUTATION_TARGETS',
+      'INGREDIENT_MUTATION_TARGETS',
       'serverAppUsersTarget',
       'isFirestoreDocumentId',
       'serverAuditStamp',

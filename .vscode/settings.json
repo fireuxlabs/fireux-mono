@@ -1,0 +1,77 @@
+{
+  // ----- Editor behaviour -----
+  "files.autoSave": "off",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.inlineSuggest.enabled": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.suggest.showKeywords": false,
+  // ----- ESLint / Prettier / Vue / TS wiring -----
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
+  "eslint.probe": ["javascript", "typescript", "vue"],
+  "eslint.run": "onType",
+  "eslint.format.enable": false,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  "npm.autoDetect": "off",
+  // ----- TypeScript performance -----
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "**/dist/**",
+    "**/.nuxt/**",
+    "**/.output/**"
+  ],
+  "javascript.preferences.autoImportFileExcludePatterns": [
+    "**/dist/**",
+    "**/.nuxt/**",
+    "**/.output/**"
+  ],
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.enablePromptUseWorkspaceTsdk": false,
+  // ----- Performance tuning -----
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.nuxt/**": true,
+    "**/.output/**": true,
+    "**/dist/**": true,
+    "**/.firebase/**": true,
+    "**/.git/**": true,
+    "**/.turbo/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.nuxt": true,
+    "**/.output": true,
+    "**/dist": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.pnpm-store": true,
+    "**/.nuxt": true,
+    "**/.output": true,
+    "**/.firebase": true,
+    "**/dist": true,
+    "temp": true,
+    "artifacts": true,
+    "mirror": true,
+    "output": true
+  },
+  // ----- Tailwind v4 CSS at-rules (e.g. @theme) -----
+  // VS Code's built-in CSS validator doesn't recognize these, but the build does.
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore"
+}

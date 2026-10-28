@@ -23,13 +23,14 @@
       :description="error || 'Try again in a moment.'"
     >
       <template #actions
-        ><FireCopyError
-          :message="error || 'Your Kitchen could not be opened.'"
+        ><FireCopyError :message="error || 'Your Kitchen could not be opened.'"
       /></template>
     </UAlert>
   </section>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, ref } from 'vue'
 import { navigateTo } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -81,6 +82,15 @@ async function start() {
     claim.value = await rememberGuestKitchenClaim(config.appId, user.uid)
     const token = await user.getIdToken()
     await $fetch<{ kitchen_id: string }>('/api/kitchens/onboarding/guest', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: { claim_secret: claim.value.secret },

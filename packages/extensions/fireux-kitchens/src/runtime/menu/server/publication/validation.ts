@@ -7,12 +7,7 @@ import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverKitchenMenuSectionsTarget,
-  serverKitchenMenuItemsTarget,
-  serverKitchenDishesTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, serverKitchenDishesTarget } from '../../../kitchen/server/mutation-targets'
 const text = (value: unknown) => String(value ?? '').trim()
 
 async function activeRecords(

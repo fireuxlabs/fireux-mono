@@ -1,6 +1,6 @@
 # Nuxt UI integration map
 
-Updated: 2026-10-25
+Updated: 2026-10-26
 Ref: ce2861c77
 Role: map, not canon
 
@@ -53,8 +53,9 @@ Group links use Nuxt UI page cards through the ordinary
 [PageLinks.vue](../../packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue)
 content component. The frame uses semantic styles in
 [workspace-surface.scss](../../packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-surface.scss).
-Navbar retains its existing `ui` forwarding API; this does not permit callers
-to author utility overrides. The shared frame does not establish that every
+WorkspaceNavbar owns selected identity and page actions; Dashboard's separate
+Navbar retains its existing `ui` forwarding, which does not permit authored
+utility overrides. The shared frame does not establish that every
 header, domain component or App has completed styling migration. Route and
 domain ownership remain as described in [Workspace](workspace.md) and
 [Workspace Entity composition](family-workspace-entity.md).

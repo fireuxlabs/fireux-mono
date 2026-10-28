@@ -1,6 +1,4 @@
 name: CI
-# Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: use the canonical package typecheck command directly.
-# Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: gate the baseline Nuxt production build after packages.
 
 on:
   push:
@@ -33,6 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Verify IDE configuration
+        run: pnpm ide:check
+
+      - name: Offline unit tests
+        run: pnpm test:unit
 
       - name: TypeScript project build check
         run: pnpm typecheck:packages

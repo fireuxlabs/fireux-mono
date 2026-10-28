@@ -3,8 +3,7 @@ import { onNuxtReady, useNuxtApp } from '#imports'
 import { computed, ref, toValue, type MaybeRefOrGetter, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from './useAuth'
-import { resolvePostAuthDestination } from '../../../utils/onboarding-route'
-
+import { resolvePostAuthDestination } from '../../../user/utils/onboarding-route'
 type AuthRedirectOptions = {
   unauthenticatedPath?: string
   bindErrorPath?: string

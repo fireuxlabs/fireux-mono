@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, toValue, reactive } from 'vue'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 function load(file, names, deps) {
@@ -38,7 +50,7 @@ test('public User detail follows API scope, normalized handles and honest read o
       resolveHttpDocumentOutcome,
       normalizeUserHandle: (s) => s.toLowerCase(),
       useFireUXConfig: () => config,
-      useLiveAsyncData: (_key, handler) => {
+      useAsyncData: (_key, handler) => {
         run = handler
         return state
       },
@@ -46,7 +58,7 @@ test('public User detail follows API scope, normalized handles and honest read o
   )
   const detail = useUserDirectoryDetail(handle)
   const fetch = async () => {
-    state.data.value = await run(async (url) => {
+    state.data.value = await ((currentReadFetch = async (url) => {
       urls.push(url)
       return {
         item: {
@@ -54,7 +66,8 @@ test('public User detail follows API scope, normalized handles and honest read o
           handle: handle.value.replace(/^@/, '').toLowerCase(),
         },
       }
-    })
+    }),
+    run({}, { signal: new AbortController().signal }))
     state.pending.value = false
   }
   await fetch()
@@ -108,7 +121,7 @@ test('server rejects ambiguous handles and enforces existing global/tenant membe
     '../runtime/server/api/users/[handle].get.ts',
     'handler',
     {
-      defineLiveReadHandler: (fn) => fn,
+      defineEventHandler: (fn) => fn,
       createError,
       setResponseHeaders() {},
       resolveUserDirectoryScope: () => scope,

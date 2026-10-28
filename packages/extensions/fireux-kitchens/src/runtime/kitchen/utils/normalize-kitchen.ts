@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { readKitchenVisibility } from './kitchen-readers.ts'

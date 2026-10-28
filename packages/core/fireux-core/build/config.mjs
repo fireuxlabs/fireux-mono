@@ -12,8 +12,8 @@ const configDependencyFiles = [
     output: join(packageRoot, 'dist/utils/seoIndexing.mjs'),
   },
   {
-    source: join(packageRoot, 'src/runtime/utils/sitemap-public-filters.ts'),
-    output: join(packageRoot, 'dist/runtime/utils/sitemap-public-filters.mjs'),
+    source: join(packageRoot, 'src/utils/sitemap-public-filters.ts'),
+    output: join(packageRoot, 'dist/utils/sitemap-public-filters.mjs'),
   },
   {
     source: join(packageRoot, 'src/types/theme.ts'),

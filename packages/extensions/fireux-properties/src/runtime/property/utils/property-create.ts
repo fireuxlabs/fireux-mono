@@ -1,13 +1,13 @@
 // Concurrent edit — 2026-07-21 22:30 CEST — Workspace alignment — Property: share exact draft-root normalization between public and trusted creation.
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type {
   Property,
   PropertyCreateInput,
   PropertyIdentity,
 } from '../models/property.model.ts'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/app/utils/entity-management'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

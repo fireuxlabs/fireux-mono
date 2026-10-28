@@ -39,9 +39,7 @@ export function useMenuCollectionPage() {
     description: 'Browse live menus.',
     collection: { records: menus, outcome: feedbackOutcome, error },
     pagination: {
-      hasMore: computed(
-        () => hasMore.value && (!error.value || Boolean(loadMoreError.value))
-      ),
+      hasMore: computed(() => hasMore.value && !error.value),
       loading: loadingMore,
       error: loadMoreError,
       loadMore,
@@ -53,7 +51,7 @@ export function useMenuCollectionPage() {
     pending,
     error,
     refresh,
-    unavailable: computed(() => Boolean(error.value && !loadMoreError.value)),
+    unavailable: computed(() => Boolean(error.value)),
     search,
     service,
     loadMore,

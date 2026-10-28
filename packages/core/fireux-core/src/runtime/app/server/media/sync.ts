@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { basename, dirname, extname, join } from 'node:path'
 import { type DocumentData, type UpdateData } from 'firebase-admin/firestore'
 import imageSize from 'image-size'
-import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
+import { APP_MUTATION_TARGETS } from '../mutation-targets'
 import { serverUpdate } from '../../../server/utils/firestore-mutations/server-update'
 import { requireDevDeveloper } from '../../../server/utils/auth/developer'
 import {
@@ -211,7 +211,7 @@ export async function syncConfiguredAppMedia(event: H3Event, input?: unknown) {
 
   if (Object.keys(patch).length) {
     // Retain immutable revisions on failure: the update may have committed despite an error.
-    await serverUpdate(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId, patch)
+    await serverUpdate(APP_MUTATION_TARGETS.runtimeApps, appId, patch)
   }
 
   return {

@@ -1,7 +1,4 @@
-import {
-  assertFirestoreMutationVerb,
-  resolveFirestoreMutationDatabaseId,
-} from '../../../utils/firestore-mutations/targets'
+import { assertFirestoreMutationVerb, resolveFirestoreMutationDatabaseId } from '../../../utils/firestore-mutations/target-definition'
 import type {
   FirestoreMutationTarget,
   FirestoreMutationVerb,

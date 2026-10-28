@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from '#imports'
 import { fireuxOffer } from '../meta'
@@ -157,6 +158,15 @@ export function useIgnitionRequestForm() {
     submitting.value = true
     try {
       const response = await $fetch<IgnitionResponse>('/api/conversations', {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         body: {
           kind: 'ignition',

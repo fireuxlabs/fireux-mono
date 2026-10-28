@@ -1,5 +1,10 @@
-import { defineLiveReadHandler } from '../../utils/http/defineLiveReadHandler'
-import { getQuery, setResponseHeaders } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  getQuery,
+  setResponseHeaders,
+} from 'h3'
+
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import {
   appCollectionPage,
@@ -8,7 +13,9 @@ import {
 } from '../../../app/server/collection/read'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   const { ecosystemId } = useFireUXConfig(event)
   const { limit, cursor } = readAppPageInput(getQuery(event))
   setResponseHeaders(event, { 'Cache-Control': 'no-store' })

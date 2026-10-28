@@ -305,7 +305,7 @@ function commands({
       trace.push('authority')
       return { rootData: { services: stored }, ownerAppId: 'app' }
     },
-    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
     serverKitchenMenusTarget: (id) => `kitchens/${id}/menus`,
     serverAuditStamp: (value) => value,
   }

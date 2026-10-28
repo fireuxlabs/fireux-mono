@@ -2,8 +2,20 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
-import { computed, ref, isRef } from 'vue'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
+import { computed, ref, isRef, watch } from 'vue'
 function load(path, name, dependencies) {
   const source = stripTypeScriptTypes(
     readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -70,7 +82,7 @@ test('Handle changes reuse one query binding and never resolve previous handle r
   assert.equal(query.value, null)
   assert.equal(calls, 1)
   rows.error.value = new Error('Denied')
-  assert.equal(state.missing.value, false)
+  assert.equal(state.empty.value, false)
 })
 test('Notifications hide previous owner data immediately on account change or logout', async () => {
   const currentUser = ref({ uid: 'a', getIdToken: async () => 'token' }),
@@ -82,13 +94,17 @@ test('Notifications hide previous owner data immediately on account change or lo
     'useUserNotifications',
     {
       computed,
+      watch,
+      useState: (_key, initial) => ref(initial()),
       useAuth: () => ({ currentUser, hasAuthState: ref(true) }),
-      useLiveAsyncData: (_key, handler) => {
+      useAsyncData: (_key, handler) => {
         execute = async () => {
-          data.value = await handler(async () => ({
+          data.value = await ((currentReadFetch = async () => ({
             ok: true,
             notifications: [{ id: 'notice', read: false }],
-          }))
+            unreadCount: 1,
+          })),
+          handler({}, { signal: new AbortController().signal }))
         }
         return { data, error, pending: ref(false), refresh: () => execute() }
       },

@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 
 const record = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)

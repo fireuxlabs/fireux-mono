@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "name": "sharer — FireUX Mono",
+      "path": "../.."
+    }
+  ],
+  "settings": {
+    "window.title": "sharer — ${activeEditorShort}",
+    "files.exclude": {
+      "projects/bringli": true,
+      "projects/buenohost": true,
+      "projects/fireux": true,
+      "projects/granite": true,
+      "projects/misebox": true,
+      "projects/slap": true,
+      "projects/templates": true,
+      "projects/werkbox": true
+    }
+  }
+}

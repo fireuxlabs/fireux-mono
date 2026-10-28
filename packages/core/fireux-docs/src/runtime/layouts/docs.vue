@@ -19,7 +19,7 @@
               </p>
             </div>
 
-            <NuxtPage />
+            <slot />
           </UPageBody>
         </UPage>
       </UContainer>

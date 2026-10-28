@@ -2,7 +2,7 @@ import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import { type App } from '../models/app.model.ts'
 import { resolveAppMediaForView } from '../utils/app-media'
-import { useResolvedColorMode } from '../../composables/theme/useColorMode'
+import { useColorMode } from '#imports'
 
 export type AppCard = {
     id: string
@@ -70,7 +70,7 @@ function makeAvatarText(app: App): string {
 export function useAppView(
   appRef?: Ref<App | null | undefined>
 ) {
-  const resolvedMode = useResolvedColorMode()
+  const resolvedMode = useColorMode()
 
   function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {

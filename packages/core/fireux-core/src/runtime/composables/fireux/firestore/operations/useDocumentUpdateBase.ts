@@ -1,4 +1,5 @@
-import { useFirestoreManager } from './useFirestoreManager'
+import { useFirestoreUpdate } from './useFirestoreUpdate'
+import { useFirestoreUtils } from '../utils/useFirestoreUtils'
 
 type DocumentUpdateBaseOptions = {
   /** Use optional App-scoped collection path resolution. */
@@ -13,12 +14,12 @@ export function useDocumentUpdateBase<T extends Record<string, any>>(
   collectionName: string,
   options: DocumentUpdateBaseOptions = {}
 ) {
-  const { updateDocument, getCollectionPath } = useFirestoreManager()
+  const { updateDocument } = useFirestoreUpdate()
   const resolvePath = options.resolvePath ?? false
   const appScoped = options.appScoped ?? true
 
   const collectionPath = resolvePath
-    ? getCollectionPath(collectionName, appScoped)
+    ? useFirestoreUtils().getCollectionPath(collectionName, appScoped)
     : collectionName
 
   const normalizeId = (value?: string | null) => String(value ?? '').trim()
@@ -34,11 +35,14 @@ export function useDocumentUpdateBase<T extends Record<string, any>>(
   }
 
   const pruneUndefined = (payload: Partial<T>) => {
-    const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
+    const entries = Object.entries(payload).filter(
+      ([, value]) => value !== undefined
+    )
     return Object.fromEntries(entries) as Partial<T>
   }
 
-  const cleanString = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
+  const cleanString = (value: unknown) =>
+    typeof value === 'string' ? value.trim() : ''
 
   const toStringArray = (value: string | string[]) =>
     Array.from(

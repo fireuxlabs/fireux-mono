@@ -1,5 +1,5 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getRouterParam } from 'h3'
+import { defineEventHandler, setResponseHeader, getRouterParam } from 'h3'
+
 import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider'
 import { readToolConfig } from '../../../utils/tools/config-store'
 import {
@@ -7,7 +7,9 @@ import {
   normalizeUrlToolConfig,
 } from '../../../utils/tools/url'
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setToolProviderResponseHeaders(event)
 
   const { id, config: rawConfig } = await readToolConfig(

@@ -152,7 +152,7 @@ defineOptions({ name: 'FireDiagnosticsDebugPanel' })
 interface DebugPanelProps {
   objects: DevDebugPayload['objects'] | unknown
   derived: DevDebugPayload['derived'] | unknown
-  objectOrigin: DevDebugPayload['objectOrigin']
+  objectOrigin?: DevDebugPayload['objectOrigin']
   contract?: DevDebugContract
   contracts?: DevDebugContracts
   derivedDependencies?: DevDebugDependencies
@@ -169,13 +169,14 @@ interface DebugPanelProps {
 
 const props = withDefaults(defineProps<DebugPanelProps>(), {
   title: 'Debug',
+  objectOrigin: 'passed',
   context: '',
   parent: '',
   open: undefined,
   defaultOpen: false,
   hideWhenEmpty: true,
-  includeRoute: false,
-  launcher: false,
+  includeRoute: true,
+  launcher: true,
   scope: 'runtime',
 })
 const emit = defineEmits<{

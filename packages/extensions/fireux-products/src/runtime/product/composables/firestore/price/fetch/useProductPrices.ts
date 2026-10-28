@@ -4,13 +4,15 @@ import {
   type ProductPrice,
 } from '../../../../utils/product.ts'
 import { normalizeProductPrice } from '../../../../utils/normalize-product.ts'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useFirestoreUtils } from 'fireux-core/runtime/composables/fireux/firestore/utils/useFirestoreUtils'
 
 /** Fetch subcollection prices for a given product. */
 export function useProductPrices() {
-  const { firestoreFetchSubcollection } = useFirestoreManager()
+  const { firestoreFetchSubcollection } = useFirestoreUtils()
 
-  const fetchProductPrices = async (productId: string): Promise<ProductPrice[]> => {
+  const fetchProductPrices = async (
+    productId: string
+  ): Promise<ProductPrice[]> => {
     if (!productId) return []
     const raw = await firestoreFetchSubcollection<Record<string, unknown>>(
       ProductStorage.collection,

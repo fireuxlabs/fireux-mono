@@ -2,7 +2,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, ref, unref } from 'vue'
 const source = readFileSync(
   new URL(
@@ -30,7 +42,7 @@ function fixture() {
     unref,
     useFireUXConfig: () => ({ appId: 'app' }),
     useFirestoreRead: () => ({ firestoreFetchCollection: () => binding }),
-    useLiveAsyncData: () => roots,
+    useAsyncData: () => roots,
     useCollectionById: () => ({ byId: () => undefined }),
     resolveKitchenChildCollectionBasePath: () => 'kitchens',
     KitchenIngredientStorage: { collection: 'ingredients' },

@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import {
@@ -26,7 +27,20 @@ export function useTaskMutation(portfolio: PortfolioScope) {
     assertScope()
     const result = await $fetch<{ id: string; portfolioId: string; ok: true }>(
       '/api/workspace/portfolio/tasks',
-      { method, headers: { Authorization: `Bearer ${token}` }, body }
+      {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
+        method,
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      }
     )
     if (
       !result?.id ||

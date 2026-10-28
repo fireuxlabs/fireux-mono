@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-10-21
+Updated: 2026-10-28
 Ref: 411ea9ffe
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -679,22 +679,16 @@ Verify `menu-publication.test.mjs`, `menu-publication-client.test.mjs`,
 `menu-workspace-commands.test.mjs`.
 
 Public Menu directory/detail, customer Order status/history, Team projections
-and the other mutable Misebox server readers consume Core's live read transport.
-The Main App's production `public.fireux.liveReadEndpoint` points directly to
-its existing Cloud Function because Firebase Hosting buffers streaming rewrites.
-Its `server/middleware/live-read-cors.ts` permits only the configured Misebox
-website origins on that transport route; projection bearer/capability authority
-is unchanged and cross-origin cookies are not sent. Local development keeps the
-same-origin endpoint. Verify production with a first streamed frame and a hydrated
-browser page, not just a successful JSON request or server-rendered HTML.
-The same API returns initial JSON for SSR and an event stream for live clients;
-its domain projection and authorization are rerun when their Firestore
-query/document dependencies change. This includes related Menus,
-Kitchens, Places and identity records. Unpublishing a Menu or its source removes
-its doorway from an open directory; every loaded page retains live membership.
-There is no separate Menu-only transport or periodic Order polling. Local
-basket/editor drafts remain separate from live stored records. Verify the
-Menu directory/projection tests with Core's live read lifecycle tests.
+and other server-owned Misebox views use normal Nuxt API fetching. Their existing
+server projections retain authorization and related-record joins. Successful
+client actions refresh Nuxt data; direct Firestore views keep Firebase listeners.
+Changes from another browser require refresh on server-only views. Local
+basket/editor drafts remain separate from stored records.
+
+The custom SSE bridge, streaming endpoint override and transport-only CORS
+middleware are removed. These APIs return normal uncached JSON through H3
+handlers. Verify reader refresh, scope, pagination and publication projection
+behaviour with the owning Menu/API tests and native Nuxt App typechecks.
 
 The public `/menus` route is a customer discovery surface, separate from Kitchen
 Workspace management. It presents one Menu collection, grouping only records
@@ -1010,18 +1004,15 @@ acceptance remains distinct from source inspection.
   execution remains with the owning capability.
 - Public Demo/Product Demo is read-only presentation over package-owned
   deterministic fixtures. It never becomes Live/Test authority or writes data.
-  The public order board is a simplified preview: it skips customer confirmation
-  and payment and changes sample tickets only in memory. Its table presentation
-  reads optional configuration from the canonical Kitchen root; a Kitchen with
-  no tables must not block the Menu or order preview. Ingredient presentation
-  still uses the supported public canonical reader, so this is not an offline
-  catalogue. The App-owned product-demo-foundations.test.mjs protects the table
-  boundary; source-owned service tests and controlled journeys prove real orders.
-  The dedicated default-kiosk skin preview reads a supported public Menu and
-  Place rather than the fictional catalogue. Its typed counter-preview configs
-  feed the Showcase memory-only order slot; they are neither stored Offerings
-  nor write authority. `useDefaultKioskSkinPreview.ts` and its App-owned test
-  protect that adapter; browser checks verify the shared kiosk consumer.
+  The public demo routes are `/demo` and `/demo/menu`; the retired Kiosk and
+  order-board previews have no public demo links or sitemap entries. Keep the
+  Kitchen and Supplier examples and their required Company/Place relationships
+  with their domain owners. Ingredient presentation uses the supported public
+  canonical reader, so the showroom is not an offline catalogue. Historical
+  Deanos data keeps its explicit sample period and does not represent current
+  customer activity. The App-owned product-demo-foundations.test.mjs protects
+  the canonical Kitchen table boundary. See [Demo data](../../../../../docs/concepts/demo-data.md)
+  for source owners, read-only boundaries and verification.
 - Media, brand, SEO, translation, finance, jobs, blogs, and marketplace work read
   their named concept maps and owner source rather than expanding this context.
 
@@ -1042,8 +1033,10 @@ allow/deny emulator tests. Upload in either mode reads the existing named-databa
 Rules release and requires an exact match to its selected source, recording the
 policy and target with the proof. These commands never deploy Rules, Storage policy
 or tenant Apps; the development template is never a production fallback. The candidate permits
-operator Offering reads while keeping Offering mutations and raw Sellable terms
-server-owned. Its six-App authority must pass the required
+membership-bound Kitchen and Offering reads while keeping all Kitchen mutations
+and raw Sellable terms server-owned. The candidate has no direct browser Kitchen
+CRUD grants; existing trusted commands retain their validation and authority.
+Its six-App authority must pass the required
 overlapping-stale-grant access-budget regression, deleted/malformed earlier
 App grants and non-string ID denial before release. See that
 directory's README for commands and local-versus-live verification boundaries.
@@ -1599,8 +1592,9 @@ entry behavior without changing live Kitchen selection or publishing data.
 Menus, Food, Drinks, Recipes and Ingredients collection route adapters share
 one dashboard-panel/header/body composition with the same bounded content width.
 Each owns its existing context and metadata; capability information occupies the
-navbar's right slot. `Workspace/CollectionHeader.vue` supplies their common
-Kitchen breadcrumb, title and action layout without owning reads or permissions.
+navbar's right slot. `Workspace/Collection/Header.vue` supplies their Kitchen content title and
+actions without owning reads or permissions. Core's Workspace frame owns the
+single route-breadcrumb trail; the Kitchen header does not derive another one.
 Menu AI composition lives in the Menu capability rather than its route adapter.
 CollectionToolbar supplies the shared search/count row and optional controls and
 filters. Menus and Recipes use FireCollectionRow with domain-owned summaries; their

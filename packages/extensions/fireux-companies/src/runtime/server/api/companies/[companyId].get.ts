@@ -1,15 +1,21 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getRouterParam, setResponseHeaders } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  getRouterParam,
+  setResponseHeaders,
+} from 'h3'
+
 import type { CompanyDetailResponse } from '../../../place/models/company-collection.model.ts'
 import { readCompanyDetail } from '../../../place/server/company/projection'
 
-export default defineLiveReadHandler(
+export default defineEventHandler(
   async (event): Promise<CompanyDetailResponse> => {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+
     const detail = await readCompanyDetail(getRouterParam(event, 'companyId'))
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control':
-        'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+      'Cache-Control': 'no-store',
     })
     return detail
   }

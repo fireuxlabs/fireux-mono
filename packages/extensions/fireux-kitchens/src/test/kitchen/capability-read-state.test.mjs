@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import * as Vue from 'vue'
 import { renderToString } from 'vue/server-renderer'
 const {
@@ -89,7 +101,7 @@ function finance() {
         useAppSession: () => session,
         useFireUXConfig: () => config,
         useKitchenWorkspace: () => workspace,
-        useLiveAsyncData: (k, fn) => {
+        useAsyncData: (k, fn) => {
           key = k
           handler = fn
           return source
@@ -102,11 +114,13 @@ function finance() {
     source.pending.value = true
     source.error.value = null
     const requests = []
-    const promise = handler((...args) => {
-      const response = deferred()
-      requests.push({ args, ...response })
-      return response.promise
-    })
+    const promise =
+      ((currentReadFetch = (...args) => {
+        const response = deferred()
+        requests.push({ args, ...response })
+        return response.promise
+      }),
+      handler({}, { signal: new AbortController().signal }))
     return { requests, promise }
   }
   async function accept(run, result = report()) {

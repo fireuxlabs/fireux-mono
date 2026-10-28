@@ -55,14 +55,19 @@ export function useAppCollectionPage(options: {
     diagnostics: { derived: () => ({ scope: options.scope }) },
   })
 
+  const { jsonLdBuilder, ...seo } = options.seo ?? {}
   useSeo({
-    ...options.seo,
-    title: options.seo?.title ?? (() => `${appName} | ${page.title}`),
-    description: options.seo?.description ?? (() => page.description),
-    path: options.seo?.path ?? '/apps',
-    jsonLdBuilder: (context) =>
-      options.seo?.jsonLdBuilder?.(context, apps.value),
+    ...seo,
+    title: seo.title ?? (() => `${appName} | ${page.title}`),
+    description: seo.description ?? (() => page.description),
+    path: seo.path ?? '/apps',
+    ...(jsonLdBuilder
+      ? {
+          jsonLdBuilder: (context: FireuxSeoBuilderContext) =>
+            jsonLdBuilder(context, apps.value),
+        }
+      : {}),
   })
 
-  return reactive({ ...toRefs(page), apps, loadMore })
+  return reactive({ ...toRefs(page), apps })
 }

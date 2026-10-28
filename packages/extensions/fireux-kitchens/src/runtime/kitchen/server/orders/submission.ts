@@ -3,7 +3,8 @@ import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
+import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   type readKitchenMutationActor,
@@ -109,7 +110,7 @@ export async function submitKitchenOrder(
       await requireKitchenRecordMutationAuthority(tx, operator, kitchenId)
     if (menuContext) {
       const kitchen = await tx.read(
-        FIRESTORE_MUTATION_TARGETS.kitchens,
+        KITCHEN_MUTATION_TARGETS.kitchens,
         kitchenId
       )
       if (
@@ -137,7 +138,7 @@ export async function submitKitchenOrder(
     }
     if (order.channel === 'pos') {
       const staff = await tx.read(
-        FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+        USER_MUTATION_TARGETS.runtimeUsers,
         actor.callerUid
       )
       if (

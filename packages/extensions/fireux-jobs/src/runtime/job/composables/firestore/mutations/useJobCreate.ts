@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: submit caller-safe Job intent to the fixed-scope Admin create route.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: submit canonical Place, contract, schedule, and compensation intent.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: validate free neutral category ids only for all-category Apps.
-import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money'
 import { ref } from 'vue'
 import type { JobCreateIntent } from '../../../models/job-author.model.ts'

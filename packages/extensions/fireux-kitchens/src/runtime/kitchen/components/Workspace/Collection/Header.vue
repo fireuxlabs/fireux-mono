@@ -1,36 +1,37 @@
 <template>
-  <div class="grid min-w-0 gap-4">
-    <UBreadcrumb :ui="{ list: 'flex-wrap' }" :items="breadcrumbs" />
-    <header class="flex flex-wrap items-center justify-between gap-4">
-      <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
-        {{ title }}
-      </h1>
-      <div v-if="$slots.actions" class="flex flex-wrap items-center gap-2">
-        <slot name="actions" />
-      </div>
-    </header>
-  </div>
+  <header class="kitchen-collection-header">
+    <h1 class="kitchen-collection-header__title">{{ title }}</h1>
+    <div v-if="$slots.actions" class="kitchen-collection-header__actions">
+      <slot name="actions" />
+    </div>
+  </header>
 </template>
+
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from '#imports'
-import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-const props = defineProps<{ title: string }>()
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const route = useRoute()
-const navigation = useNav(['workspace'])
-const breadcrumbs = computed(() => {
-  const parent = navigation.items.value.find(
-    (item) =>
-      item.groupIndex &&
-      item.children?.some((child) => child.to.split('#')[0] === route.path)
-  )
-  return [
-    { label: 'Home', to: workspaceEntryPath.value },
-    { label: 'Overview', to: '/workspace/kitchen/overview' },
-    ...(parent ? [{ label: parent.label, to: parent.to }] : []),
-    { label: props.title },
-  ]
-})
+defineProps<{ title: string }>()
 </script>
+
+<style scoped>
+.kitchen-collection-header,
+.kitchen-collection-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 4);
+}
+.kitchen-collection-header {
+  min-width: 0;
+  justify-content: space-between;
+}
+.kitchen-collection-header__actions {
+  gap: calc(var(--spacing) * 2);
+}
+.kitchen-collection-header__title {
+  margin: 0;
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-3xl);
+  line-height: var(--text-3xl--line-height);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+</style>

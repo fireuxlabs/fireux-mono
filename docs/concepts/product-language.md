@@ -144,7 +144,7 @@ capabilities while preserving each owned Tool's validation, authority and
 failure boundary.
 Human and AI surfaces use the same supported Tools and authority boundaries.
 
-Core's `runtime/utils/platform-context.ts` publishes this grammar. Kitchen's
+The FireUX App's `shared/platform-context.ts` publishes this grammar. Kitchen's
 `kitchen/models/capabilities.ts`, the Menus Workspace route and Project Team
 composition demonstrate its current use. Their existence does not prove every
 catalogued Tool or capability is fully implemented.
@@ -334,7 +334,7 @@ changing published offers. Product owners may then accept or round each price.
 
 - `packages/core/fireux-core/src/runtime/workspace/models/team-member.model.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
-- `packages/core/fireux-core/src/runtime/utils/platform-context.ts`
+- `projects/fireux/fireux-app/shared/platform-context.ts`
 - `packages/core/fireux-core/src/runtime/workspace/components/Capability.vue`
 - `packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Team/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/menus/index.vue`

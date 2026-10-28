@@ -10,11 +10,8 @@ import type { DocumentData } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  serverKitchenDishesTarget,
-  serverKitchenMenusTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { serverKitchenDishesTarget, serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type { normalizeKitchenMenuDraftSections } from './sections'
 import { planKitchenMenuDraft } from './plan'
 import { replaceKitchenMenuDraftContent } from './replace-content'

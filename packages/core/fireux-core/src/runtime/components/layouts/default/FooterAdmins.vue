@@ -28,7 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from '../../../composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import { computed } from 'vue'
 import type { UserCard } from '../../../user/composables/useUserView'
 
@@ -41,10 +42,9 @@ type PublicAppAdmin = {
   unavailable?: boolean
 }
 
-const adminRead = useLiveFetch<{ admins: PublicAppAdmin[] }>(
-  '/api/app/admins',
-  { server: false }
-)
+const adminRead = useFetch<{ admins: PublicAppAdmin[] }>('/api/app/admins', {
+  server: false,
+})
 const admins = computed(() => adminRead.data.value?.admins || [])
 const pending = adminRead.pending
 

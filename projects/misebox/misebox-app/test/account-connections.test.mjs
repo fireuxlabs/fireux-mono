@@ -1,3 +1,5 @@
+import { resolveInternalRedirect } from '../../../../packages/core/fireux-core/src/runtime/utils/internal-redirect.ts'
+import { resolvePostAuthDestination } from '../../../../packages/core/fireux-core/src/runtime/user/utils/onboarding-route.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -20,10 +22,7 @@ const protocol = load(
   '{ConnectionError,connectionOrigin,requirePeerSecret,opaque,digest,requireOpaque,requireRecentAuth,sealHandoff,openHandoff}',
   crypto
 )
-const redirects = load(
-  core + 'utils/onboarding-route.ts',
-  '{resolvePostAuthDestination,resolveInternalRedirect}'
-)
+const redirects = { resolvePostAuthDestination, resolveInternalRedirect }
 function harness({
   enabled = true,
   project = 'misebox-78f9c',

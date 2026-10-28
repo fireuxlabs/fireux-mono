@@ -133,11 +133,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { googleSignInFeedback, type SignInFeedback } from './sign-in-feedback'
-import {
-  resolvePostAuthDestination,
-  userOnboardingPath,
-} from '../../utils/onboarding-route'
-
+import { resolvePostAuthDestination, userOnboardingPath } from '../../user/utils/onboarding-route'
 const router = useRouter()
 const route = useRoute()
 const {

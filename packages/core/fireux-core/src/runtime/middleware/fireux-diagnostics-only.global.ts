@@ -10,9 +10,8 @@ import {
 import {
   createClientRouteCheck,
   resolveClientAuthState,
-} from '../utils/routeAuthGuard'
-import { resolvePostAuthDestination } from '../utils/onboarding-route'
-
+} from '../composables/navigation/route-auth'
+import { resolvePostAuthDestination } from '../user/utils/onboarding-route'
 const AUTH_WAIT_TIMEOUT_MS = 2500
 
 function isDiagnosticsPath(path: string) {

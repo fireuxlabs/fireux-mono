@@ -40,6 +40,8 @@
 </template>
 
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { useToast } from '#imports'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -204,6 +206,15 @@ async function runPrompt(text: string) {
       resultAction?: KitchenAIResultAction
       workspaceAction?: { id: string; targetId?: string }
     }>('/api/workspace/kitchen/agent', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers,
       body: request,

@@ -1,5 +1,6 @@
-import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+import { readPages } from 'fireux-core/runtime/composables/http/readPages'
+
 // Concurrent edit — 2026-07-21 13:09 CEST — Job Directory: keep pagination callbacks explicitly typed.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: distinguish exhausted emptiness from a scan page with more results.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: key public collections by all-versus-allowlist authority.
@@ -50,18 +51,34 @@ export function useJobDirectory(
     `limit=${pageSize}`,
   ].join('|')
   const pageCount = ref(1)
-  const state = useLiveAsyncData<JobDirectoryPage>(key, (liveFetch) =>
-    readLivePages<JobDirectoryPage>(liveFetch, endpoint, pageCount.value)
+  const state = useAsyncData<JobDirectoryPage>(
+    key,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return readPages<JobDirectoryPage>(fetchRead, endpoint, pageCount.value)
+    }
   )
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
   const jobs = computed(() => state.data.value?.items ?? [])
   const count = computed(() => jobs.value.length)
+  // Only the failed next-page request may retain the current records.
+  const pending = computed(
+    () => state.pending.value && !(loadingMore.value && jobs.value.length > 0)
+  )
+  const error = computed(() =>
+    jobs.value.length > 0 &&
+    (loadingMore.value ||
+      (loadMoreError.value && state.error.value === loadMoreError.value))
+      ? undefined
+      : (state.error.value ?? undefined)
+  )
   const nextCursor = computed(() => state.data.value?.nextCursor || '')
   const hasMore = computed(() => Boolean(nextCursor.value))
   const outcome = computed<JobDirectoryOutcome>(() => {
-    if (state.pending.value) return 'pending'
-    if (state.error.value || !state.data.value) return 'error'
+    if (error.value) return 'error'
+    if (pending.value) return 'pending'
+    if (!state.data.value) return 'error'
     return jobs.value.length || nextCursor.value ? 'ready' : 'empty'
   })
 
@@ -76,6 +93,7 @@ export function useJobDirectory(
       return true
     } catch (error) {
       loadMoreError.value = error
+      pageCount.value--
       return false
     } finally {
       loadingMore.value = false
@@ -85,8 +103,8 @@ export function useJobDirectory(
   return {
     jobs,
     count,
-    pending: state.pending,
-    error: state.error,
+    pending,
+    error,
     refresh: state.refresh,
     ready: state.then(() => undefined),
     outcome,

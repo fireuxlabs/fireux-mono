@@ -1,7 +1,7 @@
 import { getFirestore } from 'firebase-admin/firestore'
 import { useRuntimeConfig } from '#imports'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
-import { observeRuntimeFirestore } from 'fireux-core/runtime/server/utils/firestore/live-read'
+
 import { ConnectionError } from 'fireux-core/runtime/user/server/connections/protocol'
 import type { ConnectionStore } from './service'
 
@@ -17,7 +17,7 @@ export function privateConnectionDatabase() {
       'fireux-2005'
   )
     throw new ConnectionError(503, 'Account connections are not available yet.')
-  return observeRuntimeFirestore(getFirestore(app, 'identity-connections'))
+  return getFirestore(app, 'identity-connections')
 }
 export function connectionStore(): ConnectionStore {
   const db = privateConnectionDatabase()

@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useMenuEditorScope } from '../useMenuEditorScope'
 
@@ -30,6 +31,15 @@ export function useMenuPublication() {
     const result = await $fetch<{ ok: boolean; menu_id?: string }>(
       `/api/workspace/kitchen/menus/${action}`,
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: { kitchenId, menuId },

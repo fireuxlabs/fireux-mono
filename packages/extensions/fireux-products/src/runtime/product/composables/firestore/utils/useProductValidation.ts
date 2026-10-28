@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import {
   ProductStorage,
   type Product,

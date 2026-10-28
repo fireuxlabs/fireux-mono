@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -31,7 +31,8 @@ const authority = load(
       Object.assign(new Error(statusMessage), { statusCode }),
     serverAppUsersTarget: (id) => `apps/${id}/users`,
     serverKitchenAccessTarget: () => 'kitchen_access',
-    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+PLACE_MUTATION_TARGETS: { places: 'places' },
     isAppUserSubscription: (value) => value === 'free',
     readKitchenAccessIds,
   }

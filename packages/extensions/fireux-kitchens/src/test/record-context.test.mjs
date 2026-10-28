@@ -58,10 +58,8 @@ function fixture() {
         return id
       },
       serverAuditStamp: () => ({ by: 'actor' }),
-      FIRESTORE_MUTATION_TARGETS: {
-        kitchens: target('kitchens'),
-        places: target('places'),
-      },
+      KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
+PLACE_MUTATION_TARGETS: { places: target('places') },
       recipeTarget: (k) => target(`kitchens/${k}/recipes`),
       serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
       serverKitchenMenusTarget: (k) => target(`kitchens/${k}/menus`),

@@ -3,7 +3,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import {
   computed,
   effectScope,
@@ -219,7 +231,7 @@ test('Kitchen directory hides retained rows during failure/loading and recovers 
       toValue,
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
-      useLiveAsyncData: () => state,
+      useAsyncData: () => state,
     }
   )()
   assert.equal(collection.outcome.value, 'ready')

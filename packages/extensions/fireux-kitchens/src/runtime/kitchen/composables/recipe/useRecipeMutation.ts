@@ -1,5 +1,6 @@
+import { refreshNuxtData } from 'nuxt/app'
 import type { WatchSource } from 'vue'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useRecipeScope } from './useRecipeScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -42,6 +43,15 @@ export function useRecipeMutation(ownerSources: WatchSource[] = []) {
     const result = await $fetch<{ id: string }>(
       '/api/workspace/kitchen/recipes',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method,
         headers: { Authorization: `Bearer ${token}` },
         body,

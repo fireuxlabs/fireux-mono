@@ -235,16 +235,22 @@ function harness(spec, waitAt = 'token', invalid = false) {
               ? fn()
               : fn
   )
+  const capturePortfolioSurface = scope.run(() =>
+    useCommandScope([selected, () => route.fullPath])
+  )
   const invoke = () =>
     kind === 'public-settings'
       ? controller.updateFeaturedSlugs('featured_kitchens_slugs', input.kinds)
       : kind === 'notification'
         ? controller.markRead('n1')
         : kind === 'portfolio'
-          ? controller.updatePortfolio({
-              portfolioId: selected.value,
-              changes: { identity: { name: input.name } },
-            })
+          ? controller.updatePortfolio(
+              {
+                portfolioId: selected.value,
+                changes: { identity: { name: input.name } },
+              },
+              capturePortfolioSurface()
+            )
           : kind === 'settings'
             ? controller.updateSocialLinks(input.social)
             : kind === 'membership'

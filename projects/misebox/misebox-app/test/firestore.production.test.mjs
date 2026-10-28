@@ -171,32 +171,27 @@ test('access records and App membership cannot be forged or self-promoted', asyn
   denied(await write('kitchen_access/stranger', { ids: ['kitchen-0'], membership_created_at: time }, 'stranger', { create: true }))
   denied(await get('kitchen_access/operator-0', 'operator-1'))
 })
-test('each Kitchen App can create and edit its Dish without gaining another Kitchen', async () => {
+test('each Kitchen App reads its Dish but cannot bypass trusted create, update or delete', async () => {
   for (const [index, app] of apps.entries()) {
     const uid = `operator-${index}`, kitchen = `kitchen-${index}`
-    allowed(await write(`kitchens/${kitchen}/dishes/new`, dish(uid, kitchen, app), uid, { create: true }))
-    allowed(await write(`kitchens/${kitchen}/dishes/new`, { name: 'New soup', updated: { by: uid } }, uid, { mask: ['name', 'updated'] }))
+    allowed(await get(`kitchens/${kitchen}/dishes/soup`, uid))
+    denied(await write(`kitchens/${kitchen}/dishes/new`, dish(uid, kitchen, app), uid, { create: true }))
+    denied(await write(`kitchens/${kitchen}/dishes/soup`, { name: 'New soup', updated: { by: uid } }, uid, { mask: ['name', 'updated'] }))
+    denied(await write(`kitchens/${kitchen}/dishes/soup`, {}, uid, { remove: true }))
   }
   denied(await write('kitchens/kitchen-0/dishes/intruder', dish('operator-1', 'kitchen-0', apps[1]), 'operator-1', { create: true }))
 })
-test('create and update reject schema injection, media bypass, identity/stamp changes and invalid values', async () => {
-  for (const patch of [{ admin: true }, { name: '' }, { name: 42 }, { image: 'https://untrusted' }, { kitchen_id: 'kitchen-1' }, { created: { by: 'stranger', at: time } }]) {
-    denied(await write('kitchens/kitchen-0/dishes/new', { ...patch, updated: { by: 'operator-0' } }, 'operator-0', { mask: [...Object.keys(patch), 'updated'] }))
+test('Menu metadata and nested content stay readable but require commands for all mutations', async () => {
+  const base = 'kitchens/kitchen-0/menus/food'
+  await seed(`${base}/sections/lunch`, { kitchen_id: 'kitchen-0', menu_id: 'food', label: 'Lunch', status: 'active' })
+  await seed(`${base}/sections/lunch/items/soup`, { kitchen_id: 'kitchen-0', menu_id: 'food', section_id: 'lunch', dish_id: 'soup', status: 'active' })
+  for (const path of [base, `${base}/sections/lunch`, `${base}/sections/lunch/items/soup`]) {
+    allowed(await get(path, 'operator-0'))
+    denied(await get(path, 'operator-1'))
+    denied(await write(`${path}-new`, { name: 'Injected', ...stamp('operator-0') }, 'operator-0', { create: true }))
+    denied(await write(path, { description: 'Changed', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['description', 'updated'] }))
+    denied(await write(path, {}, 'operator-0', { remove: true }))
   }
-  denied(await write('kitchens/kitchen-0/dishes/bad', { ...dish('operator-0', 'kitchen-0'), extra: true }, 'operator-0', { create: true }))
-})
-test('Menu publication, rename, schedule and creation stay server-only; description editing works', async () => {
-  allowed(await write('kitchens/kitchen-0/menus/food', { description: 'Lunch', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['description', 'updated'] }))
-  for (const [key, value] of Object.entries({ status: 'published', name: 'Renamed', slug: 'renamed', schedule: 'daily' })) denied(await write('kitchens/kitchen-0/menus/food', { [key]: value, updated: { by: 'operator-0' } }, 'operator-0', { mask: [key, 'updated'] }))
-  denied(await write('kitchens/kitchen-0/menus/third', { name: 'Third', ...stamp('operator-0') }, 'operator-0', { create: true }))
-})
-test('ordinary Menu sections/items work; daily date creation and foreign Dish references are denied', async () => {
-  const section = { kitchen_id: 'kitchen-0', menu_id: 'food', label: 'Lunch', description: '', status: 'active', sort_order: 0, ...stamp('operator-0') }
-  allowed(await write('kitchens/kitchen-0/menus/food/sections/lunch', section, 'operator-0', { create: true }))
-  const item = { kitchen_id: 'kitchen-0', menu_id: 'food', section_id: 'lunch', dish_id: 'soup', price: 12, price_options: [], add_ons: [], status: 'active', sort_order: 0, ...stamp('operator-0') }
-  allowed(await write('kitchens/kitchen-0/menus/food/sections/lunch/items/soup', item, 'operator-0', { create: true }))
-  denied(await write('kitchens/kitchen-0/menus/food/sections/lunch/items/bad', { ...item, dish_id: 'missing' }, 'operator-0', { create: true }))
-  denied(await write('kitchens/kitchen-0/menus/food/sections/date', { ...section, date: '2026-09-24' }, 'operator-0', { create: true }))
 })
 test('claims, integrations, kiosk secrets and unknown descendants remain unreadable to operators', async () => {
   for (const path of ['claims/guest', 'integrations/website-ordering', 'kiosks/device', 'private/secret', 'unknown/record', 'menus/food/private/secret']) denied(await get(`kitchens/kitchen-0/${path}`, 'operator-0'))
@@ -280,26 +275,18 @@ test('actual Kitchen collection lookup by document ids remains authorized', asyn
   allowed(await query('kitchens', 'operator-3', '', where))
   denied(await query('kitchens', 'operator-0', '', where))
 })
-test('Recipe and Prep Item authoring preserve scope and deny invalid create/update payloads', async () => {
-  const common = { kitchen_id: 'kitchen-0', name: 'Soup', slug: 'soup', description: '', source_language: 'en', names: {}, descriptions: {}, ...stamp('operator-0') }
-  const recipe = { ...common, preparation: { status: 'draft', yield: { quantity: 1, unit: 'portion' }, ingredients: [], prep_items: [], method: [], source_note: '' } }
-  allowed(await write('kitchens/kitchen-0/recipes/soup', recipe, 'operator-0', { create: true }))
-  allowed(await write('kitchens/kitchen-0/recipes/soup', { description: 'Updated', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['description', 'updated'] }))
-  denied(await write('kitchens/kitchen-0/recipes/soup', { preparation: { ...recipe.preparation, ingredients: 'invalid' }, updated: { by: 'operator-0' } }, 'operator-0', { mask: ['preparation', 'updated'] }))
-  const prep = { ...common, station: '', inputs: [], recipe_id: '', yield: { quantity: 1, unit: 'portion' }, method: [] }
-  allowed(await write('kitchens/kitchen-0/prep-items/soup', prep, 'operator-0', { create: true }))
-  denied(await write('kitchens/kitchen-0/prep-items/bad', { ...prep, kitchen_id: 'other' }, 'operator-0', { create: true }))
-})
-test('Station and sourcing-link CRUD remain scoped, while immutable waste records cannot be edited', async () => {
-  const station = { kitchen_id: 'kitchen-0', name: 'Grill', description: '', active: true, sort_order: 0, ...stamp('operator-0') }
-  allowed(await write('kitchens/kitchen-0/stations/grill', station, 'operator-0', { create: true }))
-  allowed(await write('kitchens/kitchen-0/stations/grill', { name: 'Hot', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['name', 'updated'] }))
-  denied(await write('kitchens/kitchen-0/stations/grill', { active: 'yes', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['active', 'updated'] }))
-  const link = { kitchen_id: 'kitchen-0', supplier_id: 'supplier', ingredient_id: 'carrot', ...stamp('operator-0') }
-  allowed(await write('kitchens/kitchen-0/supplier-ingredients/carrot', link, 'operator-0', { create: true }))
-  denied(await write('kitchens/kitchen-0/supplier-ingredients/carrot', { kitchen_id: 'other', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['kitchen_id', 'updated'] }))
-  await seed('kitchens/kitchen-0/waste-events/waste', { kitchen_id: 'kitchen-0', quantity: 1 })
-  denied(await write('kitchens/kitchen-0/waste-events/waste', { quantity: 2 }, 'operator-0', { mask: ['quantity'] }))
+test('Kitchen root, Recipe, Prep, Station, sourcing and Waste mutations stay server-owned', async () => {
+  const root = 'kitchens/kitchen-0'
+  for (const child of ['recipes/soup', 'prep-items/soup', 'stations/grill', 'supplier-ingredients/carrot', 'waste-events/waste']) {
+    const path = `${root}/${child}`
+    await seed(path, { kitchen_id: 'kitchen-0', name: 'Fixture', ...stamp('operator-0') })
+    allowed(await get(path, 'operator-0'))
+    denied(await write(`${path}-new`, { kitchen_id: 'kitchen-0', name: 'Injected', ...stamp('operator-0') }, 'operator-0', { create: true }))
+    denied(await write(path, { name: 'Changed', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['name', 'updated'] }))
+    denied(await write(path, {}, 'operator-0', { remove: true }))
+  }
+  denied(await write(root, { name: 'Changed', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['name', 'updated'] }))
+  denied(await write(root, {}, 'operator-0', { remove: true }))
 })
 
 // Required release gate: authority must remain reachable within Firestore's access budget.

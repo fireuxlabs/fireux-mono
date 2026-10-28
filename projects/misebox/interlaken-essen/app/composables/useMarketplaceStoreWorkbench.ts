@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
@@ -21,12 +22,14 @@ export function useMarketplaceStoreWorkbench() {
   const store = ref<ManagedMarketplaceStore>()
   const orders = ref<MarketplaceOrder[]>([])
   const { currentUser: liveUser } = useAuth()
-  const liveRecords = useLiveAsyncData(
+  const liveRecords = useAsyncData(
     computed(
       () => `market-workbench:${liveUser.value?.uid || ''}:${storeId.value}`
     ),
-    async (liveFetch) => {
-      const client = useMarketplaceClient(liveFetch)
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
+      const client = useMarketplaceClient(fetchRead)
       const [store, orders] = await Promise.all([
         client.managedStore(storeId.value),
         client.orders('seller', storeId.value),
@@ -41,7 +44,14 @@ export function useMarketplaceStoreWorkbench() {
   })
   const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
   const message = ref('')
-  watch(marketplace.scopeEpoch, () => { state.value = 'idle'; message.value = '' }, { flush: 'sync' })
+  watch(
+    marketplace.scopeEpoch,
+    () => {
+      state.value = 'idle'
+      message.value = ''
+    },
+    { flush: 'sync' }
+  )
   const offerPrices = reactive<Record<string, string>>({})
   const storeForm = reactive({
     name: '',

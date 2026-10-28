@@ -51,7 +51,7 @@ test('table count uses the existing exact Kitchen authority and root update', as
         assert.equal(id, 'venue')
         if (!authorized) throw new Error('Denied')
       },
-      FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
+      KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
       runGuardedServerTransaction: async (_, command) =>
         command({ update: (...args) => writes.push(args) }),
     })

@@ -1,5 +1,6 @@
-import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+import { readPages } from 'fireux-core/runtime/composables/http/readPages'
+
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
@@ -32,16 +33,18 @@ export type UseCompanyCollectionReturn = {
 export function useCompanyCollection(): UseCompanyCollectionReturn {
   const collectionPath = computed(() => CompanyStorage.collection)
   const pageCount = ref(1)
-  const state = useLiveAsyncData<CompanyDirectoryPage>(
+  const state = useAsyncData<CompanyDirectoryPage>(
     `company-collection|limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
-    (liveFetch) =>
-      readLivePages<CompanyDirectoryPage>(
-        liveFetch,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return readPages<CompanyDirectoryPage>(
+        fetchRead,
         `/api/companies?limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
         pageCount.value,
         {},
         ['companies', 'places']
       )
+    }
   )
   const companies = computed(() => state.data.value?.companies ?? [])
   const places = computed(() => state.data.value?.places ?? [])

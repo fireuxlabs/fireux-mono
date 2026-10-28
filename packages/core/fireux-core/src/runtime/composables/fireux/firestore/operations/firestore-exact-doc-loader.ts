@@ -1,8 +1,16 @@
 import { doc, type Firestore } from 'firebase/firestore'
-import { effectScope } from 'vue'
+import { useNuxtApp } from '#imports'
 import { useDocument } from '../vuefire'
 import { guardFirestorePromise } from './firestore-read-errors'
-import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
+import {
+  computed,
+  effectScope,
+  ref,
+  unref,
+  watch,
+  type ComputedRef,
+  type Ref,
+} from 'vue'
 import { attachDevCollectionMeta } from '../../../diagnostics/useDiagnosticsCollectionJson'
 import type { FirestoreReadOutcome } from './useFirestoreRead'
 
@@ -23,6 +31,7 @@ export function createFirestoreExactDocLoader<T>(input: {
   error: Ref<unknown | undefined>
   outcome: ComputedRef<FirestoreReadOutcome>
 } {
+  const { vueApp } = useNuxtApp()
   const { resolveDb } = input
   const { collectionPath, ids } = input.options
   const docs = ref<T[] | undefined>(undefined) as Ref<T[] | undefined>
@@ -89,43 +98,45 @@ export function createFirestoreExactDocLoader<T>(input: {
       error.value = undefined
       const scope = effectScope()
       onCleanup(() => scope.stop())
-      scope.run(() => {
-        const bindings = ids.map((id) =>
-          useDocument(doc(resolveDb(), collectionPath, id), {
-            reset: true,
-          })
-        )
-        bindings.forEach((binding, index) =>
-          guardFirestorePromise(binding, `${collectionPath}/${ids[index]}`)
-        )
-        watch(
-          () =>
-            bindings.map((binding) => ({
-              value: binding.value,
-              pending: binding.pending.value,
-              error: binding.error.value,
-            })),
-          (states) => {
-            if (currentRequestId !== requestId) return
-            pending.value = states.some((state) => state.pending)
-            error.value = states.find((state) => state.error)?.error
-            docs.value =
-              pending.value || error.value
-                ? undefined
-                : states.flatMap((state, index) => {
-                    if (!state.value) return []
-                    return [
-                      attachDevCollectionMeta(
-                        { ...state.value, id: ids[index] },
-                        collectionPath,
-                        ids[index]!
-                      ) as T,
-                    ]
-                  })
-          },
-          { immediate: true, deep: true }
-        )
-      })
+      vueApp.runWithContext(() =>
+        scope.run(() => {
+          const bindings = ids.map((id) =>
+            useDocument(doc(resolveDb(), collectionPath, id), {
+              reset: true,
+            })
+          )
+          bindings.forEach((binding, index) =>
+            guardFirestorePromise(binding, `${collectionPath}/${ids[index]}`)
+          )
+          watch(
+            () =>
+              bindings.map((binding) => ({
+                value: binding.value,
+                pending: binding.pending.value,
+                error: binding.error.value,
+              })),
+            (states) => {
+              if (currentRequestId !== requestId) return
+              pending.value = states.some((state) => state.pending)
+              error.value = states.find((state) => state.error)?.error
+              docs.value =
+                pending.value || error.value
+                  ? undefined
+                  : states.flatMap((state, index) => {
+                      if (!state.value) return []
+                      return [
+                        attachDevCollectionMeta(
+                          { ...state.value, id: ids[index] },
+                          collectionPath,
+                          ids[index]!
+                        ) as T,
+                      ]
+                    })
+            },
+            { immediate: true, deep: true }
+          )
+        })
+      )
     },
     { immediate: true, deep: true }
   )

@@ -1,3 +1,4 @@
+import type { RouteLocationNormalizedGeneric } from 'vue-router'
 import {
   abortNavigation,
   createError,
@@ -13,49 +14,51 @@ import {
   tenantMenuRouteScope,
 } from '../menu/utils/menu-route'
 
-export default defineNuxtRouteMiddleware((to) => {
-  const fireux = useFireUXConfig()
-  if (!fireux.isTenant) return
+export default defineNuxtRouteMiddleware(
+  (to: RouteLocationNormalizedGeneric) => {
+    const fireux = useFireUXConfig()
+    if (!fireux.isTenant) return
 
-  const router = useRouter()
-  const target = parseMenuRouteTarget(to.params.menuId)
-  const scope = tenantMenuRouteScope()
-  const genericPath = menuRoutePath({
-    scope,
-    menuId: target.menuId,
-  })
-  const resolvesToMenu = router
-    .resolve(genericPath)
-    .matched.some((record) => record.meta.menuProjection === true)
+    const router = useRouter()
+    const target = parseMenuRouteTarget(to.params.menuId)
+    const scope = tenantMenuRouteScope()
+    const genericPath = menuRoutePath({
+      scope,
+      menuId: target.menuId,
+    })
+    const resolvesToMenu = router
+      .resolve(genericPath)
+      .matched.some((record) => record.meta.menuProjection === true)
 
-  if (!genericPath || !resolvesToMenu) {
-    return abortNavigation(
-      createError({
-        statusCode: 404,
-        statusMessage: 'Menu not found.',
-      })
+    if (!genericPath || !resolvesToMenu) {
+      return abortNavigation(
+        createError({
+          statusCode: 404,
+          statusMessage: 'Menu not found.',
+        })
+      )
+    }
+
+    if (!to.path.startsWith('/menus/')) return
+
+    const path = to.path.endsWith('/qr')
+      ? menuRouteQrPath({
+          scope,
+          menuId: target.menuId,
+          context: target.context,
+        })
+      : menuRoutePath({
+          scope,
+          menuId: target.menuId,
+          context: target.context,
+        })
+
+    return navigateTo(
+      { path, query: to.query, hash: to.hash },
+      {
+        redirectCode: 302,
+        replace: true,
+      }
     )
   }
-
-  if (!to.path.startsWith('/menus/')) return
-
-  const path = to.path.endsWith('/qr')
-    ? menuRouteQrPath({
-        scope,
-        menuId: target.menuId,
-        context: target.context,
-      })
-    : menuRoutePath({
-        scope,
-        menuId: target.menuId,
-        context: target.context,
-      })
-
-  return navigateTo(
-    { path, query: to.query, hash: to.hash },
-    {
-      redirectCode: 302,
-      replace: true,
-    }
-  )
-})
+)

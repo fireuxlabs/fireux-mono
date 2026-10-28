@@ -2,11 +2,9 @@ import { timingSafeEqual } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverKitchenTeamMembersTarget,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { KITCHEN_MUTATION_TARGETS, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
 import { readKitchenOnboardingActor as actor } from './onboarding-actor'
 import {
@@ -59,10 +57,10 @@ export async function connectGuestKitchen(event: H3Event, input: unknown) {
       access,
       claim,
     ] = await Promise.all([
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+      mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
       mutations.read(teamMembers, anonymousUid),
       mutations.read(teamMembers, current.uid),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
+      mutations.read(USER_MUTATION_TARGETS.runtimeUsers, current.uid),
       mutations.read(memberships, current.uid),
       mutations.read(accessTarget, current.uid),
       mutations.read(claimTarget, 'guest'),

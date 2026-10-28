@@ -1,5 +1,6 @@
 import type { NavItem, NavPosition } from './types'
 import { computed } from 'vue'
+import { useMounted } from '@vueuse/core'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useDeveloperAccess } from '../../app/composables/useDeveloperAccess'
 import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
@@ -22,6 +23,7 @@ const canShowDashboardItem = (
 }
 
 export const useDashboardNav = () => {
+  const mounted = useMounted()
   const nav = useNav(['dashboard'])
   const { isAdmin } = useUserSession()
   const { isDeveloper } = useDeveloperAccess()
@@ -40,9 +42,9 @@ export const useDashboardNav = () => {
     !item.profileId &&
     canShowDashboardItem(
       item,
-      isAdmin.value,
-      isDeveloper.value,
-      hasWorkspaceEntry.value
+      mounted.value && isAdmin.value,
+      mounted.value && isDeveloper.value,
+      mounted.value && hasWorkspaceEntry.value
     )
 
   const resolveItemPosition = (item: NavItem): NavPosition => {

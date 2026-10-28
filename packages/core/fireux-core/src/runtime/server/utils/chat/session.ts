@@ -12,11 +12,7 @@ import { firebaseBearerUser } from '../auth/bearer'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../ids/path'
 import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
-import {
-  serverAppConversationsTarget,
-  serverConversationMessagesTarget,
-  serverConversationPrivateTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { serverAppConversationsTarget, serverConversationMessagesTarget, serverConversationPrivateTarget } from '../../../app/server/mutation-targets'
 import { requireChatStartBudget } from './start-rate-limit'
 
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000

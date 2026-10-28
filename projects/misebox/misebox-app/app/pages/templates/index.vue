@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
 
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import {
@@ -113,15 +113,18 @@ const selectedKitchen = computed<TemplateOneKitchenSpecimen>(() => {
 const flagshipKey = computed(
   () => `template-kitchen-readiness-${selectedKitchen.value.id}`
 )
-const { data: flagship } = await useLiveAsyncData(
+const { data: flagship } = await useAsyncData(
   flagshipKey,
-  (liveFetch) =>
-    selectedKitchen.value.appProps && selectedKitchen.value.id !== 'deanos'
-      ? liveFetch<KitchenFlagshipDishResult>(
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return selectedKitchen.value.appProps &&
+      selectedKitchen.value.id !== 'deanos'
+      ? fetchRead<KitchenFlagshipDishResult>(
           `/api/kitchens/${selectedKitchen.value.appProps.kitchenId}/flagship-dish`,
           { query: { appId: selectedKitchen.value.appProps.appId } }
         ).catch(() => null)
-      : Promise.resolve(null),
+      : Promise.resolve(null)
+  },
   { watch: [selectedKitchen] }
 )
 const requiredAssets = [

@@ -1,4 +1,3 @@
-import { observeRuntimeFirestore } from 'fireux-core/runtime/server/utils/firestore/live-read'
 import {
   applicationDefault,
   cert,
@@ -114,11 +113,9 @@ export async function getFirestoreDb(databaseId?: string): Promise<Firestore> {
     databaseId || runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
   ).trim()
 
-  return observeRuntimeFirestore(
-    configuredDatabaseId && configuredDatabaseId !== '(default)'
-      ? getFirestore(app, configuredDatabaseId)
-      : getFirestore(app)
-  )
+  return configuredDatabaseId && configuredDatabaseId !== '(default)'
+    ? getFirestore(app, configuredDatabaseId)
+    : getFirestore(app)
 }
 
 /** Read another Firebase project's directory through the trusted control plane. */
@@ -131,16 +128,14 @@ export async function getFirestoreProjectDb(
 
   const ownerApp = await getFirebaseAdminApp()
   if (ownerApp.options.projectId === targetProjectId) {
-    return observeRuntimeFirestore(
-      databaseId === '(default)'
-        ? getFirestore(ownerApp)
-        : getFirestore(ownerApp, databaseId)
-    )
+    return databaseId === '(default)'
+      ? getFirestore(ownerApp)
+      : getFirestore(ownerApp, databaseId)
   }
 
   const databaseKey = `${targetProjectId}/${databaseId}`
   const cachedDatabase = projectDatabases.get(databaseKey)
-  if (cachedDatabase) return observeRuntimeFirestore(cachedDatabase)
+  if (cachedDatabase) return cachedDatabase
 
   let targetApp = projectApps.get(targetProjectId)
   if (!targetApp) {
@@ -166,5 +161,5 @@ export async function getFirestoreProjectDb(
   // same Admin credential and IAM checks.
   database.settings({ preferRest: true })
   projectDatabases.set(databaseKey, database)
-  return observeRuntimeFirestore(database)
+  return database
 }

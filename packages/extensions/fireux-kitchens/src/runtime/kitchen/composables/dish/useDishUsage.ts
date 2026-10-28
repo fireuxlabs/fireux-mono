@@ -1,6 +1,7 @@
+import { useAsyncData } from 'nuxt/app'
 import { computed, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import type { DishUsageResponse } from '../../models/dish-usage.model'
 
 export function useDishUsage(kitchenId: Ref<string>, dishId: Ref<string>) {
@@ -9,14 +10,16 @@ export function useDishUsage(kitchenId: Ref<string>, dishId: Ref<string>) {
     () =>
       `dish-usage:${currentUser.value?.uid || ''}:${kitchenId.value}:${dishId.value}`
   )
-  const { data, error, pending } = useLiveAsyncData<DishUsageResponse | null>(
+  const { data, error, pending } = useAsyncData<DishUsageResponse | null>(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const user = currentUser.value
       const kitchen = kitchenId.value
       const dish = dishId.value
       if (!user || !kitchen || !dish) return null
-      return liveFetch<DishUsageResponse>(
+      return fetchRead<DishUsageResponse>(
         '/api/workspace/kitchen/dishes/usage',
         {
           query: { kitchenId: kitchen, dishId: dish },

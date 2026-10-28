@@ -6,9 +6,8 @@ import {
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
 import { serverKitchenOfferingsTarget } from '../../../kitchen/server/offerings/target'
-import { serverKitchenMenuSectionsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { serverKitchenMenuSectionsTarget } from '../../../kitchen/server/mutation-targets'
+import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
 export async function deleteKitchenMenu(event: H3Event, input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw createError({ statusCode: 400, statusMessage: 'Invalid Menu input.' })

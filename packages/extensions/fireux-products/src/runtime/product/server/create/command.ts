@@ -4,7 +4,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { serverAppUsersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { runGuardedServerTransaction, type GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readProductCreateInput } from './input'

@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 // FILE: packages/extensions/fireux-places/src/runtime/place/composables/firestore/mutations/usePlaceUpdate.ts
 // Concurrent edit — 2026-07-20 21:57 CEST — Place-root authority pass: route sparse Place configuration through the trusted owner/operator boundary.
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: exclude claims from browser patch types and fail closed at legacy claim entrypoints.
@@ -135,7 +136,20 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     assertCurrent()
     const response = await $fetch<PlaceDetailResponse>(
       `/api/places/${encodeURIComponent(id)}`,
-      { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body }
+      {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      }
     )
     if (response?.place?.id !== id)
       throw new Error('Place response did not match the requested Place.')

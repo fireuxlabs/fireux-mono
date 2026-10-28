@@ -8,6 +8,8 @@ import {
   rm,
   cp,
   realpath,
+  rename,
+  symlink,
 } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
@@ -223,6 +225,11 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     await readFile(resolve(root, '.output/server/package.json'), 'utf8'),
     before
   )
+  const sdkDirectory = resolve(root, '.output/server/node_modules/firebase-functions')
+  const escapedSdk = resolve(root, 'external-sdk')
+  await rename(sdkDirectory, escapedSdk)
+  await symlink(escapedSdk, sdkDirectory, 'dir')
+  await assert.rejects(checkOutput(root), /discovery dependencies are incomplete/)
   await writeFile(
     resolve(root, 'server/firebase.runtime-env.json'),
     JSON.stringify({ projectId, environment: { FIREUX_AI_MODE: 'disabled' } })

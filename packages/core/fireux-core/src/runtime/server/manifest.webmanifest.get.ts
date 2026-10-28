@@ -1,7 +1,7 @@
 import { defineEventHandler, getQuery, getRequestURL, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../utils/brandAssets'
-import { withBuildVersion } from '../utils/buildVersionUrl'
+import { withBuildVersion } from '../utils/build-version-url'
 
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'

@@ -144,7 +144,10 @@ const updateIdentityField = async (
 
   const isCurrent = captureIntent()
   try {
-    await updatePortfolio({ portfolioId: id, changes: { identity: patch } })
+    await updatePortfolio(
+      { portfolioId: id, changes: { identity: patch } },
+      () => isCurrent() && isSurfaceCurrent()
+    )
     if (!isCurrent() || !isSurfaceCurrent()) return
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'

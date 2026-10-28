@@ -51,26 +51,7 @@
             variant="ghost"
             aria-label="Open Calendar"
           />
-          <UTooltip :text="notificationLabel">
-            <UButton
-              :aria-label="notificationLabel"
-              color="neutral"
-              variant="ghost"
-              @click="openNotifications()"
-            >
-              <UChip
-                color="error"
-                inset
-                :show="unreadCount > 0"
-                :text="unreadCount > 99 ? '99+' : unreadCount"
-              >
-                <UIcon
-                  name="i-lucide-bell"
-                  class="workspace-navbar__notification-icon"
-                />
-              </UChip>
-            </UButton>
-          </UTooltip>
+          <UserNotificationsButton />
         </div>
       </template>
     </UDashboardNavbar>
@@ -100,18 +81,11 @@ import { useNuxtApp, useToast } from '#imports'
 import { toWorkspaceFamilyLabel } from '../utils/routes'
 import { useWorkspaceNav } from '../composables/useWorkspaceNav'
 import { useWorkspacePageState } from '../composables/useWorkspacePageState'
-import { useUserNotifications } from '../../user/composables/notifications/useUserNotifications'
 
 defineProps<{
   title: string
 }>()
 
-const { unreadCount, open: openNotifications } = useUserNotifications()
-const notificationLabel = computed(() =>
-  unreadCount.value
-    ? `${unreadCount.value} unread notification${unreadCount.value === 1 ? '' : 's'}`
-    : 'Notifications'
-)
 const workspaceNav = useWorkspaceNav()
 const nuxtApp = useNuxtApp()
 const identityComponent = computed(() =>

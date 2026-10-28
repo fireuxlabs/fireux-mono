@@ -133,9 +133,10 @@
 </template>
 
 <script setup lang="ts">
+import { useAsyncData } from 'nuxt/app'
+
 import { watch } from 'vue'
 
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, reactive, ref } from 'vue'
 import {
@@ -147,10 +148,18 @@ import type { JobApplicationView } from '../../../job/models/job-hiring.model.ts
 
 const items = ref<JobApplicationView[]>([])
 const pending = ref(true)
-const { mutateJobApplicationRequest, captureIntent, scopeEpoch } = useJobHiringCommands()
+const { mutateJobApplicationRequest, captureIntent, scopeEpoch } =
+  useJobHiringCommands()
 const busyId = ref('')
 const errorMessage = ref('')
-watch(scopeEpoch, () => { busyId.value = ''; errorMessage.value = '' }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    busyId.value = ''
+    errorMessage.value = ''
+  },
+  { flush: 'sync' }
+)
 const acceptedTerms = reactive<Record<string, boolean>>({})
 
 function label(value: string): string {
@@ -179,9 +188,12 @@ function requestError(error: unknown): string {
 }
 
 const { currentUser: liveUser } = useAuth()
-const liveApplications = useLiveAsyncData(
+const liveApplications = useAsyncData(
   computed(() => `job-applications:candidate:${liveUser.value?.uid || ''}`),
-  (liveFetch) => fetchJobApplications('candidate', liveFetch),
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchJobApplications('candidate', fetchRead)
+  },
   { server: false }
 )
 watch(liveApplications.data, (value) => {

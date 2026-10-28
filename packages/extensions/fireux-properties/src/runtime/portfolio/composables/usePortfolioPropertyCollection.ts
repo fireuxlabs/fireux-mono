@@ -13,7 +13,7 @@ import { canonicalPropertyRoot } from '../../property/utils/normalize-property'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+} from 'fireux-core/runtime/app/utils/entity-management'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const propertyBelongsToApp = (

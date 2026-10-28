@@ -1,7 +1,7 @@
 import { createError, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { requireMenuName, text } from './uploads'
 
 export type KitchenMenuUrlSourceRequest = {

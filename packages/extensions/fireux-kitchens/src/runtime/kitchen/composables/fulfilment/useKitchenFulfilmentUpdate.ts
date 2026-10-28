@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -42,6 +43,15 @@ export function useKitchenFulfilmentUpdate() {
       kitchen_id: string
       fulfilment: KitchenFulfilment
     }>('/api/workspace/kitchen/fulfilment', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
       body: { kitchen_id: kitchenId, changes },

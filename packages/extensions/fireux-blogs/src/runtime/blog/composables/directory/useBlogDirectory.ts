@@ -1,5 +1,6 @@
-import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+import { readPages } from 'fireux-core/runtime/composables/http/readPages'
+
 import { computed, ref, watch } from 'vue'
 import type { BlogDirectoryPage } from '../../models/blog-directory.model.ts'
 import { useBlogLanguage } from './useBlogLanguage'
@@ -7,17 +8,19 @@ import { useBlogLanguage } from './useBlogLanguage'
 export function useBlogDirectory() {
   const blogLanguage = useBlogLanguage()
   const pageCount = ref(1)
-  const state = useLiveAsyncData<BlogDirectoryPage>(
+  const state = useAsyncData<BlogDirectoryPage>(
     'blog-directory',
-    (liveFetch) =>
-      readLivePages<BlogDirectoryPage>(
-        liveFetch,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return readPages<BlogDirectoryPage>(
+        fetchRead,
         '/api/blogs',
         pageCount.value,
         {
           query: blogLanguage.query.value,
         }
-      ),
+      )
+    },
     {
       watch: [blogLanguage.language],
     }

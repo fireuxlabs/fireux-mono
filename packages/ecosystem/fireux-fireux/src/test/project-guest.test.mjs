@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -71,9 +71,7 @@ function harness({ root, appExists = true, canCreate = true } = {}) {
         at: { seconds: 123, nanoseconds: 0 },
       }),
       fireuxProjectsTarget: 'projects',
-      FIRESTORE_MUTATION_TARGETS: {
-        fireuxApps: 'apps',
-      },
+      FIREUX_MUTATION_TARGETS: { fireuxApps: 'apps' },
       // Serialize commits as Firestore does for competing transactions on this root.
       runGuardedServerTransaction: (database, run) => {
         assert.deepEqual(database, { kind: 'named', databaseId: 'fireux' })

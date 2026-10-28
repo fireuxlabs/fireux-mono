@@ -1,25 +1,21 @@
 {
   "folders": [
-    { "name": "Werkbox apps", "path": "../../projects/werkbox" },
-    { "name": "Werkbox ecosystem", "path": "../../packages/ecosystem/fireux-werkbox" },
-    { "name": "Shared core", "path": "../../packages/core" },
-    { "name": "Shared extensions", "path": "../../packages/extensions" },
-    { "name": "Repository docs", "path": "../../docs" },
-    { "name": "Repository scripts", "path": "../../scripts" }
+    {
+      "name": "werkbox — FireUX Mono",
+      "path": "../.."
+    }
   ],
   "settings": {
-    "window.title": "Werkbox — ${activeEditorShort}",
+    "window.title": "werkbox — ${activeEditorShort}",
     "files.exclude": {
-      "**/.nuxt": true,
-      "**/.output": true,
-      "**/dist": true,
-      "**/node_modules": true
-    },
-    "search.exclude": {
-      "**/.nuxt": true,
-      "**/.output": true,
-      "**/dist": true,
-      "**/node_modules": true
+      "projects/bringli": true,
+      "projects/buenohost": true,
+      "projects/fireux": true,
+      "projects/granite": true,
+      "projects/misebox": true,
+      "projects/sharer": true,
+      "projects/slap": true,
+      "projects/templates": true
     }
   }
 }

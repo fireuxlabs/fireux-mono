@@ -114,7 +114,7 @@ function fixture({
     imageSize: () => ({ width: 256, height: 256, type: 'png' }),
     randomUUID,
     saveStorageFileWithDownloadToken,
-    FIRESTORE_MUTATION_TARGETS: { runtimeApps: 'fixed-runtime-apps' },
+    APP_MUTATION_TARGETS: { runtimeApps: 'fixed-runtime-apps' },
     serverUpdate: async (...args) => {
       patches.push(args)
       const commit = () => Object.assign(app, args[2])

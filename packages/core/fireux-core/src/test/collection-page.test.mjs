@@ -54,12 +54,16 @@ test('next-page failure stays in pagination while existing records remain presen
   await page.loadMore()
   assert.equal(calls, 1)
   assert.equal(page.loadMore, loadMore)
-  outcome.value = 'error'
-  error.value = nextError.value = new Error('Next page failed')
+  nextError.value = new Error('Next page failed')
   assert.equal(page.state.outcome, 'ready')
   assert.equal(page.ready, true)
   assert.equal(page.pagination.error, nextError.value)
   assert.equal(page.diagnostics.derived.scope, 'app')
+  outcome.value = 'error'
+  error.value = new Error('The current read is unavailable')
+  assert.equal(page.state.outcome, 'error')
+  assert.equal(page.ready, false)
+  assert.equal(page.state.error, error.value)
   records.value = []
   assert.equal(page.state.outcome, 'error')
   assert.equal(page.ready, false)
@@ -128,6 +132,7 @@ test('Menu page keeps one live reader connected to search, service and paginatio
   assert.equal(page.search, 'Soup')
   rows.value = [{ id: 'retained' }]
   source.loadMoreError.value = failure.value
+  failure.value = null // The reader retains valid rows and normalizes paging feedback.
   assert.equal(page.unavailable, false)
   assert.equal(page.state.outcome, 'ready')
   assert.equal(page.pagination.hasMore, true)
@@ -155,3 +160,22 @@ test('Job route metadata remains evaluable independently of its page coordinator
   assert.equal(typeof metadata.description, 'string')
   assert.ok(metadata.description.length > 0)
 })
+
+for (const outcome of ['idle', 'pending', 'error', 'empty', 'ready']) {
+  test(`pagination cannot override the reader's ${outcome} outcome`, () => {
+    const failure = new Error('Current read failed')
+    const page = useCollectionPage({
+      entity: 'apps',
+      title: 'Apps',
+      collection: { records: [{ id: 'retained' }], outcome, error: failure },
+      pagination: {
+        hasMore: true,
+        error: new Error('Older page failure'),
+        loadMore() {},
+      },
+    })
+    assert.equal(page.state.outcome, outcome)
+    assert.equal(page.ready, outcome === 'ready')
+    assert.equal(page.state.error, failure)
+  })
+}

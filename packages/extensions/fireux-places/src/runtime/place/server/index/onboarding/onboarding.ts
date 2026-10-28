@@ -1,10 +1,8 @@
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PLACE_MUTATION_TARGETS } from '../../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import type {
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,
@@ -125,7 +123,7 @@ export async function completePlaceOnboarding(
   }
 
   const memberships = serverAppUsersTarget(actor.runtimeAppId)
-  const places = FIRESTORE_MUTATION_TARGETS.places
+  const places = PLACE_MUTATION_TARGETS.places
 
   return runGuardedServerTransaction(places.database, async (mutations) => {
     const [membership, snapshot] = await Promise.all([

@@ -227,7 +227,7 @@ for (const [body, exists, valid] of [
         readBody: async () => body,
         readUserProfileChanges,
         requireFirebaseBearerUser: async () => ({ uid: 'actor' }),
-        FIRESTORE_MUTATION_TARGETS: { users: { database: 'identity' } },
+        USER_MUTATION_TARGETS: { users: { database: 'identity' } },
         runGuardedServerTransaction: async (database, callback) => {
           assert.equal(database, 'identity')
           await callback({

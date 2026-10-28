@@ -5,7 +5,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { readKitchenMutationActor } from '../../../kitchen/server/core/mutation-authority'
 import { randomUUID } from 'node:crypto'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
 import {
   normalizeMenuCreateInput,
   buildMenuPayload,

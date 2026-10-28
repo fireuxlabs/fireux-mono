@@ -1,6 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -26,11 +26,11 @@ export function usePropertyReservation(
       id.value,
     ])
   )
-  const state = useLiveAsyncData<
-    (ReservationResponse & { key: string }) | null
-  >(
+  const state = useAsyncData<(ReservationResponse & { key: string }) | null>(
     key,
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (
         !runtimeProperty.canRead.value ||
         !runtimeProperty.id.value ||
@@ -45,7 +45,7 @@ export function usePropertyReservation(
       const token = await user.getIdToken()
       if (requestKey !== key.value || user.uid !== currentUser.value?.uid)
         return null
-      const response = await liveFetch<ReservationResponse>(
+      const response = await fetchRead<ReservationResponse>(
         `/api/workspace/properties/${encodeURIComponent(propertyId)}/reservations/${encodeURIComponent(requestedId)}`,
         { headers: { Authorization: `Bearer ${token}` } }
       )

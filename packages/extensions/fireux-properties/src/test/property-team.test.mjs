@@ -102,7 +102,7 @@ function fixture({
     requireFirestoreDocumentId: (value) => value,
     isAppUserSubscription: (value) =>
       ['free', 'pro', 'business'].includes(value),
-    FIRESTORE_MUTATION_TARGETS: { properties: 'properties' },
+    PROPERTY_MUTATION_TARGETS: { properties: 'properties' },
     serverAppUsersTarget: () => 'memberships',
     serverPropertyAccessTarget: (appId) => {
       assert.equal(appId, 'app')

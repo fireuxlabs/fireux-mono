@@ -34,7 +34,7 @@ function core(path, names, dependencies = {}) {
 const createError = (input) =>
   Object.assign(new Error(input.statusMessage), input)
 const { isFirestoreDocumentId } = core(
-  'utils/firestoreDocumentId',
+  'utils/firestore-document-id',
   'isFirestoreDocumentId'
 )
 const requireFirestoreDocumentId = (value) => {
@@ -110,7 +110,8 @@ const authority = load(
     readKitchenAccessIds,
     serverAppUsersTarget: (app) => 'apps/' + app + '/users',
     serverKitchenAccessTarget: () => 'kitchen_access',
-    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+PLACE_MUTATION_TARGETS: { places: 'places' },
     isAppUserSubscription: (value) =>
       ['free', 'premium', 'business'].includes(value),
   }

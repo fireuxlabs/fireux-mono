@@ -1,5 +1,5 @@
 import { createError, readBody, type H3Event } from 'h3'
-import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS } from '../mutation-targets'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import { readUserProfileChanges } from '../../utils/profile-validation'
@@ -18,7 +18,7 @@ function readChange(body: unknown): Record<string, string> {
 export async function updateUserProfile(event: H3Event) {
   const { uid } = await requireFirebaseBearerUser(event)
   const change = readChange(await readBody(event))
-  const users = FIRESTORE_MUTATION_TARGETS.users
+  const users = USER_MUTATION_TARGETS.users
 
   await runGuardedServerTransaction(users.database, async (mutations) => {
     const user = await mutations.read(users, uid)

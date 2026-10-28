@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { RecipePreparation } from '../models/recipe-preparation'
 
 export const emptyRecipePreparation = (): RecipePreparation => ({

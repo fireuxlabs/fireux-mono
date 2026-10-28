@@ -1,6 +1,6 @@
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runtimeStorageBucketName } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { stagePlaceUpdate } from 'fireux-places/runtime/place/server/identity/stage-update'
@@ -47,8 +47,8 @@ export async function updateSupplierProfile(event: H3Event, input: unknown) {
           'The Supplier business profile changed. Reopen Identity.',
       })
     const [company, place] = await Promise.all([
-      tx.read(FIRESTORE_MUTATION_TARGETS.companies, placeId),
-      tx.read(FIRESTORE_MUTATION_TARGETS.places, placeId),
+      tx.read(PLACE_MUTATION_TARGETS.companies, placeId),
+      tx.read(PLACE_MUTATION_TARGETS.places, placeId),
     ])
     if (
       !company.exists ||

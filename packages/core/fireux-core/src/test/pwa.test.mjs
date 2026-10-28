@@ -110,7 +110,7 @@ function fixture({
     removeItem: (key) => values.delete(key),
   }
   const create = load(
-    '../runtime/utils/pwa-controller.ts',
+    '../runtime/composables/pwa/controller.ts',
     'createPwaController',
     {
       ref,

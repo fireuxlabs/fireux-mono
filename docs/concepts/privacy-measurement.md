@@ -30,7 +30,8 @@ The current essential feature storage includes:
 - authentication and security state;
 - a remembered language choice;
 - a short-lived anonymous-order recovery capability;
-- an explicitly selected colour mode, Workspace selection, and chat recovery;
+- native Nuxt appearance preference, saved automatically (initially System);
+- Workspace selection and chat recovery;
 - an explicitly enabled App-specific offline preference, worker and reconnect
   page cache.
 
@@ -61,7 +62,7 @@ closed. New-session abuse control keeps only an ephemeral salted IP hash in
 process memory; it never persists or logs a raw address.
 
 The PWA policy and verification entrypoints are Core `src/config/app/pwa.ts`,
-`src/runtime/utils/pwa-controller.ts`, `src/runtime/components/Pwa`,
+`src/runtime/composables/pwa/controller.ts`, `src/runtime/components/Pwa`,
 `src/runtime/pages/install.vue` and `src/test/pwa.test.mjs`.
 Browser checks must separately confirm fresh-visit storage, opt-in, cache
 contents, removal and deliberate update/reload behavior.

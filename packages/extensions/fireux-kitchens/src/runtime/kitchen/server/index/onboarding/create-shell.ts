@@ -4,13 +4,11 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-  serverKitchenMenusTarget,
-  serverKitchenTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
+import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
+import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import {
   onboardingText as text,
   requireOnboardingMemberRole,
@@ -72,9 +70,9 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       access,
     ] = await Promise.all([
       mutations.read(memberships, ownerUserId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+      mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
+      mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId),
+      mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
       mutations.read(teamMembers, ownerUserId),
       ownerUserId === current.uid
         ? Promise.resolve(null)
@@ -127,14 +125,14 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         by: current.uid,
         appId: current.appId,
       })
-      mutations.create(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
+      mutations.create(PLACE_MUTATION_TARGETS.places, kitchenId, {
         name,
         slug,
         place_type: 'non_physical',
         entity_families: ['kitchen'],
         created,
       })
-      mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+      mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, {
         identity: { source: 'user', slug, status: 'active', visibility: true },
         created,
       })

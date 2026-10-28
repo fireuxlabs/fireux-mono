@@ -139,7 +139,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, reactive, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
@@ -154,9 +155,12 @@ const { copy } = useInterlakenCopy()
 const marketplace = useMarketplaceCommands()
 const stores = ref<MarketplaceStore[]>([])
 const { currentUser: liveUser } = useAuth()
-const liveRecords = useLiveAsyncData(
+const liveRecords = useAsyncData(
   computed(() => `market-adminStores:${liveUser.value?.uid || ''}`),
-  (liveFetch) => useMarketplaceClient(liveFetch).adminStores(),
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return useMarketplaceClient(fetchRead).adminStores()
+  },
   { server: false }
 )
 watch(
@@ -168,7 +172,14 @@ watch(
 )
 const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
 const message = ref('')
-watch(marketplace.scopeEpoch, () => { state.value = 'idle'; message.value = '' }, { flush: 'sync' })
+watch(
+  marketplace.scopeEpoch,
+  () => {
+    state.value = 'idle'
+    message.value = ''
+  },
+  { flush: 'sync' }
+)
 const memberUid = reactive<Record<string, string>>({})
 const draftForm = reactive({
   name: '',

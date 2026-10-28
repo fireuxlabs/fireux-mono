@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
@@ -66,6 +67,15 @@ export function useMenuCreate(
       slug: string
       kitchenId: string
     }>('/api/workspace/kitchen/menus', {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body,

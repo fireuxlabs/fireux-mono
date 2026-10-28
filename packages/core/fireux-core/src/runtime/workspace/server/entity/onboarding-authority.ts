@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import { resolveWorkspaceCanCreate } from '../../utils/policy'
-import { resolveFireuxEntityManagementForApp } from '../../../utils/entity-management'
+import { resolveFireuxEntityManagementForApp } from '../../../app/utils/entity-management'
 
 export type WorkspaceEntityMemberRole = 'admin' | 'user' | 'dev'
 

@@ -3,7 +3,7 @@
     <LayoutsMiseboxTenantHeader v-if="!chromeHidden" />
 
     <section class="baeren-default-layout__body" aria-label="Hotel Bären Ringgenberg">
-      <NuxtPage />
+      <slot />
     </section>
 
     <BaerenNav v-if="!chromeHidden" />

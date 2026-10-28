@@ -1,6 +1,7 @@
+import { useAsyncData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { KitchenUserMembershipsResponse } from '../models/user-memberships.model.ts'
 
@@ -17,12 +18,14 @@ export function useKitchenUserMemberships(
     () => isOwnProfile.value || isAdmin.value || isDeveloper.value
   )
 
-  const state = useLiveAsyncData<KitchenUserMembershipsResponse | null>(
+  const state = useAsyncData<KitchenUserMembershipsResponse | null>(
     computed(
       () =>
         `kitchen-user-memberships:${currentUser.value?.uid || ''}:${userId.value}:${canInspect.value}`
     ),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const user = currentUser.value
       if (
         !hasAuthState.value ||
@@ -32,7 +35,7 @@ export function useKitchenUserMemberships(
         !canInspect.value
       )
         return null
-      return liveFetch<KitchenUserMembershipsResponse>(
+      return fetchRead<KitchenUserMembershipsResponse>(
         `/api/internal/kitchen/users/${encodeURIComponent(userId.value)}`,
         {
           headers: { Authorization: `Bearer ${await user.getIdToken()}` },

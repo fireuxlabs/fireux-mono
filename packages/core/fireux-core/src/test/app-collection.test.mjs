@@ -5,7 +5,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import { computed, reactive, ref, toRefs, toValue, watch } from 'vue'
 
 function load(path, name, dependencies) {
@@ -36,24 +48,24 @@ function controller(fetch) {
       toValue,
       watch,
       useAuth: () => ({ currentUser: ref(null), hasAuthState: ref(true) }),
-      readLivePages: load(
-        '../runtime/composables/fireux/firestore/readLivePages.ts',
-        'readLivePages',
+      readPages: load(
+        '../runtime/composables/http/readPages.ts',
+        'readPages',
         {}
       ),
-      useLiveAsyncData: (_key, handler) => {
+      useAsyncData: (_key, handler) => {
         execute = async () => {
           pending.value = true
           error.value = null
           try {
-            data.value = await handler((url, options) =>
+            data.value = await ((currentReadFetch = (url, options) =>
               fetch(
                 url +
                   (options?.query?.cursor
                     ? `&cursor=${options.query.cursor}`
                     : '')
-              )
-            )
+              )),
+            handler({}, { signal: new AbortController().signal }))
           } catch (cause) {
             error.value = cause
           } finally {
@@ -265,8 +277,108 @@ for (const scope of ['ecosystem', 'platform']) {
     nextError.value = new Error('Next page unavailable')
     assert.equal(page.ready, true)
     assert.equal(page.pagination.error, nextError.value)
+    assert.equal(page.loadMore, reader.loadMore)
     await page.loadMore()
     assert.equal(more, 1)
     assert.equal(reads, 1)
   })
+}
+
+for (const scope of ['ecosystem', 'platform']) {
+  for (const mode of [
+    'none',
+    'static',
+    'ref',
+    'getter',
+    'builder',
+    'null-builder',
+  ]) {
+    test(`App ${scope} SEO ${mode} follows useSeo precedence over the same reader`, () => {
+      const apps = ref([{ id: 'first' }])
+      const schema = ref({ '@type': 'CollectionPage', name: 'Original' })
+      let head,
+        reads = 0
+      const useSeo = load(
+        '../runtime/composables/fireux/seo/useSeo.ts',
+        'useSeo',
+        {
+          computed,
+          toValue,
+          useRuntimeConfig: () => ({ public: { fireux: {} } }),
+          useRequestURL: () => new URL('https://example.test/apps'),
+          resolveSeoRobots: () => 'index,follow',
+          useSeoMeta() {},
+          useHead: (value) => {
+            head = value
+          },
+        }
+      )
+      const usePage = load(
+        '../runtime/app/composables/useAppCollectionPage.ts',
+        'useAppCollectionPage',
+        {
+          reactive,
+          toRefs,
+          useCollectionPage,
+          useSeo,
+          useFireUXConfig: () => ({ appName: 'Example' }),
+          useAppCollection: () => {
+            reads++
+            return {
+              apps,
+              outcome: ref('ready'),
+              error: ref(null),
+              hasMore: ref(false),
+              loadingMore: ref(false),
+              loadMoreError: ref(null),
+              loadMore() {},
+            }
+          },
+        }
+      )
+      const seo =
+        mode === 'none'
+          ? undefined
+          : {
+              jsonLd:
+                mode === 'ref'
+                  ? schema
+                  : mode === 'getter'
+                    ? () => schema.value
+                    : schema.value,
+              ...(mode.endsWith('builder')
+                ? {
+                    jsonLdBuilder: (context, rows) =>
+                      mode === 'null-builder'
+                        ? null
+                        : {
+                            canonical: context.canonicalUrl,
+                            ids: rows.map((app) => app.id),
+                          },
+                  }
+                : {}),
+            }
+      const page = usePage({ scope, seo })
+      assert.equal(reads, 1)
+      assert.equal(head().link[0].href, 'https://example.test/apps')
+      if (mode === 'none' || mode === 'null-builder')
+        assert.deepEqual(head().script, [])
+      else if (mode === 'builder') {
+        assert.deepEqual(JSON.parse(head().script[0].innerHTML), {
+          canonical: 'https://example.test/apps',
+          ids: ['first'],
+        })
+        apps.value = [{ id: 'second' }]
+        assert.deepEqual(JSON.parse(head().script[0].innerHTML).ids, ['second'])
+        assert.equal(page.apps, apps.value)
+      } else {
+        assert.deepEqual(JSON.parse(head().script[0].innerHTML), schema.value)
+        if (mode === 'ref' || mode === 'getter') {
+          schema.value = { '@type': 'CollectionPage', name: 'Updated' }
+          assert.deepEqual(JSON.parse(head().script[0].innerHTML), schema.value)
+        }
+      }
+      assert.equal(reads, 1)
+    })
+  }
 }

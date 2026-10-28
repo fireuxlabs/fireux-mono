@@ -4,10 +4,7 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverUserAccountTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS, serverUserAccountTarget } from '../mutation-targets'
 import {
   UserAccountModel,
   UserAccountStorage,
@@ -27,7 +24,7 @@ type ProvisionUserAccountInput = {
 export async function provisionUserAccount(
   input: ProvisionUserAccountInput
 ): Promise<UserAccountProvisioningResult> {
-  const users = FIRESTORE_MUTATION_TARGETS.users
+  const users = USER_MUTATION_TARGETS.users
   const accounts = serverUserAccountTarget(input.uid)
 
   return runGuardedServerTransaction(accounts.database, async (mutations) => {

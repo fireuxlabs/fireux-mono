@@ -1,7 +1,9 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getRouterParam, setResponseHeader } from 'h3'
+import { defineEventHandler, getRouterParam, setResponseHeader } from 'h3'
+
 import { readProjectAppContext } from '../../../../../project/index/app-context'
-export default defineLiveReadHandler((event) => {
+export default defineEventHandler((event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setResponseHeader(event, 'cache-control', 'no-store')
   return readProjectAppContext(event, getRouterParam(event, 'projectId'))
 })

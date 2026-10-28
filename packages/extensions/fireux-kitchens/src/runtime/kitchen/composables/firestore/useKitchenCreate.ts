@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { computed } from 'vue'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
 import { useKitchenAccess } from '../useKitchenAccess'
@@ -120,6 +121,9 @@ export function useKitchenCreate() {
     const result = await $fetch<KitchenOnboardingCompleteResult>(
       '/api/kitchens/onboarding/complete',
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'POST',
         headers: await authHeaders(isCurrent),
         body: input,
@@ -143,6 +147,9 @@ export function useKitchenCreate() {
     const result = await $fetch<KitchenDirectoryContributionResult>(
       '/api/kitchens/onboarding/contribute',
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'POST',
         headers: await authHeaders(isCurrent),
         body: input,
@@ -199,6 +206,9 @@ export function useKitchenCreate() {
     const result = await $fetch<KitchenShellCreateResult>(
       '/api/kitchens/onboarding/shell',
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'POST',
         headers: await authHeaders(isCurrent),
         body: {

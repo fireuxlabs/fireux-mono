@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useRoute } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -5,27 +6,98 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { ref, watch, type WatchSource } from 'vue'
-import type { MarketplaceMutationResponse, MarketplaceOfferCreateIntent, MarketplaceOfferPatchIntent, MarketplaceOrderCreateIntent, MarketplaceStoreCreateIntent, MarketplaceStoreMemberIntent, MarketplaceStoreModerationIntent, MarketplaceStorePatchIntent } from '../models/marketplace-api.model'
-import type { MarketplaceOffer, MarketplaceOfferState, MarketplaceOrder, MarketplaceOrderStatus, MarketplaceStore } from '../models/marketplace.model'
+import type {
+  MarketplaceMutationResponse,
+  MarketplaceOfferCreateIntent,
+  MarketplaceOfferPatchIntent,
+  MarketplaceOrderCreateIntent,
+  MarketplaceStoreCreateIntent,
+  MarketplaceStoreMemberIntent,
+  MarketplaceStoreModerationIntent,
+  MarketplaceStorePatchIntent,
+} from '../models/marketplace-api.model'
+import type {
+  MarketplaceOffer,
+  MarketplaceOfferState,
+  MarketplaceOrder,
+  MarketplaceOrderStatus,
+  MarketplaceStore,
+} from '../models/marketplace.model'
 
 export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
-  const { currentUser } = useAuth(), config = useFireUXConfig(), route = useRoute()
+  const { currentUser } = useAuth(),
+    config = useFireUXConfig(),
+    route = useRoute()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
-  const sources = [() => currentUser.value?.uid, () => config.appId, appUser, appPending, appError, appOutcome, () => route.fullPath, ...ownerSources]
-  const captureIntent = useCommandScope(sources), scopeEpoch = ref(0)
-  watch(sources, () => { scopeEpoch.value += 1 }, { flush: 'sync' })
-  async function request<T extends { id: string; store_id?: string; slug?: string }>(path: string, options: { method: 'POST' | 'PATCH'; body?: unknown }, expected: { id?: string; storeId?: string; slug?: string } = {}) {
-    const uid = currentUser.value?.uid, isCurrent = captureIntent()
-    const body = options.body === undefined ? undefined : JSON.parse(JSON.stringify(options.body))
-    const assertCurrent = () => { if (!uid || !isCurrent()) throw new Error('The account, App, store or page changed. Reopen this Marketplace action.') }
+  const sources = [
+    () => currentUser.value?.uid,
+    () => config.appId,
+    appUser,
+    appPending,
+    appError,
+    appOutcome,
+    () => route.fullPath,
+    ...ownerSources,
+  ]
+  const captureIntent = useCommandScope(sources),
+    scopeEpoch = ref(0)
+  watch(
+    sources,
+    () => {
+      scopeEpoch.value += 1
+    },
+    { flush: 'sync' }
+  )
+  async function request<
+    T extends { id: string; store_id?: string; slug?: string },
+  >(
+    path: string,
+    options: { method: 'POST' | 'PATCH'; body?: unknown },
+    expected: { id?: string; storeId?: string; slug?: string } = {}
+  ) {
+    const uid = currentUser.value?.uid,
+      isCurrent = captureIntent()
+    const body =
+      options.body === undefined
+        ? undefined
+        : JSON.parse(JSON.stringify(options.body))
+    const assertCurrent = () => {
+      if (!uid || !isCurrent())
+        throw new Error(
+          'The account, App, store or page changed. Reopen this Marketplace action.'
+        )
+    }
     assertCurrent()
     const user = await useRequireUser()
     assertCurrent()
-    if (user.uid !== uid) throw new Error('The account changed. Reopen this Marketplace action.')
+    if (user.uid !== uid)
+      throw new Error('The account changed. Reopen this Marketplace action.')
     const token = await user.getIdToken()
     assertCurrent()
-    const result = await $fetch<MarketplaceMutationResponse<T>>(path, { method: options.method, headers: { Authorization: `Bearer ${token}` }, ...(body === undefined ? {} : { body }) })
-    if (result?.ok !== true || !result.item?.id || (expected.id && result.item.id !== expected.id) || (expected.storeId && result.item.store_id !== expected.storeId) || (expected.slug && result.item.slug !== expected.slug)) throw new Error('Marketplace response did not match the requested record.')
+    const result = await $fetch<MarketplaceMutationResponse<T>>(path, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
+      method: options.method,
+      headers: { Authorization: `Bearer ${token}` },
+      ...(body === undefined ? {} : { body }),
+    })
+    if (
+      result?.ok !== true ||
+      !result.item?.id ||
+      (expected.id && result.item.id !== expected.id) ||
+      (expected.storeId && result.item.store_id !== expected.storeId) ||
+      (expected.slug && result.item.slug !== expected.slug)
+    )
+      throw new Error(
+        'Marketplace response did not match the requested record.'
+      )
     return result
   }
   const createStore = async (body: MarketplaceStoreCreateIntent) =>
@@ -34,7 +106,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body,
-      }, { slug: body.slug }
+      },
+      { slug: body.slug }
     )
 
   const patchStore = async (
@@ -46,7 +119,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'PATCH',
         body,
-      }, { id: storeId }
+      },
+      { id: storeId }
     )
 
   const submitStore = async (storeId: string) =>
@@ -54,7 +128,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       `/api/marketplace/stores/${encodeURIComponent(storeId)}/submit`,
       {
         method: 'POST',
-      }, { id: storeId }
+      },
+      { id: storeId }
     )
 
   const createOffer = async (
@@ -66,7 +141,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body,
-      }, { storeId }
+      },
+      { storeId }
     )
 
   const patchOffer = async (
@@ -79,7 +155,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'PATCH',
         body,
-      }, { id: offerId, storeId }
+      },
+      { id: offerId, storeId }
     )
 
   const transitionOffer = async (
@@ -92,7 +169,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body: { state },
-      }, { id: offerId, storeId }
+      },
+      { id: offerId, storeId }
     )
 
   const createOrder = async (body: MarketplaceOrderCreateIntent) =>
@@ -101,7 +179,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body,
-      }, { storeId: body.store_id }
+      },
+      { storeId: body.store_id }
     )
 
   const transitionOrder = async (
@@ -113,7 +192,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body: { status },
-      }, { id: orderId }
+      },
+      { id: orderId }
     )
 
   const moderateStore = async (
@@ -125,7 +205,8 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body,
-      }, { id: storeId }
+      },
+      { id: storeId }
     )
 
   const mutateStoreMember = async (
@@ -137,8 +218,22 @@ export function useMarketplaceCommands(ownerSources: WatchSource[] = []) {
       {
         method: 'POST',
         body,
-      }, { id: storeId }
+      },
+      { id: storeId }
     )
 
-  return { createStore, patchStore, submitStore, createOffer, patchOffer, transitionOffer, createOrder, transitionOrder, moderateStore, mutateStoreMember, captureIntent, scopeEpoch }
+  return {
+    createStore,
+    patchStore,
+    submitStore,
+    createOffer,
+    patchOffer,
+    transitionOffer,
+    createOrder,
+    transitionOrder,
+    moderateStore,
+    mutateStoreMember,
+    captureIntent,
+    scopeEpoch,
+  }
 }

@@ -91,9 +91,19 @@ for (const [entity, packageName] of [
               Object.assign(stored, patch)
             },
           }),
-        FIRESTORE_MUTATION_TARGETS: {
-          [entity === 'property' ? 'properties' : `${entity}s`]: target,
-        },
+        APP_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+USER_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+ECOSYSTEM_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+FIREUX_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+SPROOCHLI_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+PLACE_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+KITCHEN_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+INGREDIENT_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+PRODUCT_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+PROPERTY_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+PORTFOLIO_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+SUPPLIER_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+JOB_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
         serverAuditStamp: () => ({ by: 'operator' }),
       }
     )
@@ -139,9 +149,7 @@ test('App context is confined to configured App and transactional admin authorit
       readRecordString,
       useFireUXConfig: () => ({ appId: 'local' }),
       requireFirebaseBearerUser: async () => ({ uid: 'actor' }),
-      FIRESTORE_MUTATION_TARGETS: {
-        runtimeApps: { database: 'runtime', collectionPath: 'apps' },
-      },
+      APP_MUTATION_TARGETS: { runtimeApps: { database: 'runtime', collectionPath: 'apps' } },
       serverAppUsersTarget: () => ({ collectionPath: 'members' }),
       serverAuditStamp: () => ({ by: 'actor' }),
       runGuardedServerTransaction: async (_, action) =>
@@ -278,7 +286,7 @@ test('User editing writes only the authenticated private context and detects con
     requireFirebaseBearerUser: async () => ({ uid: 'self' }),
     USER_CONTEXT_MAX_LENGTH: 8000,
     UserContextStorage: { document: 'context' },
-    FIRESTORE_MUTATION_TARGETS: { users: { collectionPath: 'users' } },
+    USER_MUTATION_TARGETS: { users: { collectionPath: 'users' } },
     serverUserContextTarget: uid => ({ database: 'identity', collectionPath: `users/${uid}/private` }),
     runGuardedServerTransaction: async (_, action) => action({
       read: async target => target.collectionPath === 'users' ? { exists: true } : { exists: true, data: { context: saved } },

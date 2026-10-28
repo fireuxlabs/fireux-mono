@@ -17,7 +17,8 @@ const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtim
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
 const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
-  FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
+  KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+PLACE_MUTATION_TARGETS: { places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
 }, 'requireKitchenMutationAuthority')
 const kitchenWasteEventRecordTool=load('../../runtime/kitchen/tools/waste/record-event.ts',{},'kitchenWasteEventRecordTool')

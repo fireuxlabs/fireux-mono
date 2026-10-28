@@ -1,5 +1,6 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model.ts'
@@ -33,15 +34,17 @@ export function useKitchenCollection(
       ? `/api/kitchens?placeId=${encodeURIComponent(placeId.value)}`
       : '/api/kitchens'
   )
-  const state = useLiveAsyncData<KitchenCollectionRecord[]>(
+  const state = useAsyncData<KitchenCollectionRecord[]>(
     () =>
       options.placeId === undefined
         ? 'kitchens'
         : `kitchens:place:${placeId.value || 'inactive'}`,
-    (liveFetch) =>
-      active.value
-        ? liveFetch<KitchenCollectionRecord[]>(endpoint.value)
-        : Promise.resolve([]),
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return active.value
+        ? fetchRead<KitchenCollectionRecord[]>(endpoint.value)
+        : Promise.resolve([])
+    },
     { watch: [endpoint, active] }
   )
   const collection = computed<KitchenCollectionRecord[]>(() => {

@@ -5,11 +5,8 @@ import { Timestamp } from 'firebase-admin/firestore'
 import {
   createError, defineEventHandler, getHeader, readRawBody, setResponseHeaders, setResponseStatus, type H3Event, } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverAppConversationsTarget,
-  serverConversationMessagesTarget,
-  serverIdentityUserNotificationsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverAppConversationsTarget, serverConversationMessagesTarget } from 'fireux-core/runtime/app/server/mutation-targets'
+import { serverIdentityUserNotificationsTarget } from 'fireux-core/runtime/user/server/mutation-targets'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 import {
   emptyIgnitionChecklist,

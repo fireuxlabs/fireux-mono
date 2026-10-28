@@ -1,6 +1,6 @@
 # Runtime filesystem ownership
 
-Updated: 2026-10-24
+Updated: 2026-10-26
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -35,6 +35,15 @@ with their existing prefixes. App-local shared-component overrides use their
 canonical Fire name. Keep one registration owner per tree and migrate consumers
 with registration; do not retain old-name aliases.
 
+## Shared HTTP reads
+
+Core's live HTTP lifecycle and aggregation helpers live under
+`runtime/composables/http`; they are independent of Firestore storage. The shared
+SSE byte decoder stays with this HTTP owner because incremental decoding retains
+a connection-local buffer. It owns no connection or reactive lifecycle. See
+[the live read contract](composables.md#live-http-read-ownership) for current owners,
+supported inputs and source-owned checks.
+
 ## Ownership invariant
 
 The package root contains Nuxt entrypoints, generic shared mechanisms, and
@@ -65,7 +74,7 @@ src/runtime/
 ├── demo/             # shared cross-entity Demo composition
 ├── tools/            # shared capability and primitive definitions
 ├── types/            # shared runtime coordination contracts
-├── utils/            # shared runtime behaviour
+├── utils/            # shared stateless value transformations and validators
 ├── server/           # Nuxt server boundaries and shared server primitives
 │
 ├── kitchen/
@@ -361,3 +370,21 @@ local actions; they do not reacquire those records.
 Nested components are registered by the owning module; no local component import
 is required. Properties demo scenarios live under `property/demo`, with their
 Portfolio context retained as explicit composition.
+
+## Shared utility boundary
+
+Core `runtime/utils` contains only shared stateless value contracts: identifiers,
+URLs, read outcomes, timestamps, theme values and mutation-target validation.
+These are admitted responsibilities, not mandatory folders or scaffolds.
+Reactive/browser lifecycle lives with the existing composable or plugin owner:
+PWA’s controller is beside `composables/pwa/usePwa.ts`; route-auth coordination
+is under `composables/navigation`; diagnostic formatting is at `utils/diagnostics/format.ts`, shared explicitly
+by diagnostics components and composables. Utility filenames use kebab-case;
+exported function names use camelCase. Core User owns onboarding destinations, App owns management policy,
+and Entity server owners define mutation targets. FireUX App public platform
+literature lives in that App’s `shared/platform-context.ts`.
+
+Sitemap publication-filter validation is shared between configuration and runtime
+server generation, so its owner is Core `src/utils/sitemap-public-filters.ts`,
+not the projected runtime or a server-only folder. Core’s config build emits it
+with the other configuration-shared utilities.

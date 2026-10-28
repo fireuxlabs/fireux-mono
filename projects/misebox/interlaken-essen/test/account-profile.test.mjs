@@ -1,7 +1,19 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { compileFunction as compileNative } from 'node:vm'
+let currentReadFetch
+const compileFunction = (source, args = []) => {
+  const mocks = {
+    $fetch: { create: () => currentReadFetch },
+    setResponseHeader: () => {},
+  }
+  const names = Object.keys(mocks).filter((name) => !args.includes(name))
+  return compileNative(source, [...names, ...args]).bind(
+    null,
+    ...names.map((name) => mocks[name])
+  )
+}
 import test from 'node:test'
 import { computed, effectScope, nextTick, ref, watch } from 'vue'
 
@@ -88,7 +100,7 @@ function serverFixture({
       Object.assign(new Error(value.statusMessage), value),
     requireFirebaseBearerUser: async () => ({ uid: 'person' }),
     getRuntimeFirestore: () => db,
-    defineLiveReadHandler: (handler) => handler,
+    defineEventHandler: (handler) => handler,
     defineEventHandler: (handler) => handler,
     readBody: async () => input,
     serverAuditStamp: () => ({}),
@@ -316,7 +328,7 @@ test('/mis reads account once live, never opens a profile automatically, and kee
         scopeEpoch: ref(0),
         transitionOrder: async (...args) => transitions.push(args),
       }),
-      useLiveAsyncData: (key) => {
+      useAsyncData: (key) => {
         reads += 1
         return key.value.startsWith('market-account:') ? account : records
       },

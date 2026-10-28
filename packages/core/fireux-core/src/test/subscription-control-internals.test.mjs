@@ -388,7 +388,7 @@ const contract = load(
     createError: ({ statusCode, statusMessage }) =>
       Object.assign(new Error(statusMessage), { statusCode }),
     FieldValue: { serverTimestamp: () => ({ seconds: 1, nanoseconds: 0 }) },
-    FIRESTORE_MUTATION_TARGETS: { runtimeUsers: 'users' },
+    USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
   }
 )
 const handleSettings = load(

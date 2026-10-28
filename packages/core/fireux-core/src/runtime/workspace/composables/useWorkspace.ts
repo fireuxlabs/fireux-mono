@@ -7,7 +7,7 @@ import {
   type EffectScope,
 } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { normalizeString } from '../../utils/string'
+import { normalizeString } from '../../utils/normalize-string'
 import type { WorkspaceOutcome } from '../models/outcome'
 
 export function normalizeWorkspace(value: unknown) {

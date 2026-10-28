@@ -62,6 +62,9 @@ packages/core/fireux-core/build/*
 .nitro/
 **/*.js.map
 
+# Local Ignition proof: Nitro-generated deployment placeholder, not an App target.
+/projects/fireux/ignition-menu-demo/firebase.json
+
 # TypeScript build info
 *.tsbuildinfo
 
@@ -72,10 +75,12 @@ packages/core/fireux-core/build/*
 !packages/extensions/fireux-kitchens/src/types/runtime-config.d.ts
 
 # Editor configs and OS files
-# VS Code: ignore all settings by default, allow only tasks/launch
+# VS Code: share editor defaults and generated workflows; keep MCP/local config private
 .vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
+!.vscode/settings.json
+!.vscode/extensions.json
 !.vscode/**/
 !.vscode/**/*.md
 .idea/

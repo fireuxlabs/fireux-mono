@@ -1,15 +1,15 @@
 {
-  "policy": "essential-after-feature-use",
+  "policy": "essential-feature-storage",
   "optionalTracking": false,
   "mechanisms": [
     {
       "key": "nuxt-color-mode",
       "technology": "localStorage",
-      "owner": "FireUX Core",
-      "purpose": "Remember an explicitly selected light or dark appearance",
-      "trigger": "Theme selection",
-      "lifetime": "Until System is selected or browser data is cleared",
-      "deletion": "Selecting System removes the value"
+      "owner": "Nuxt colour mode",
+      "purpose": "Remember light, dark or the device appearance preference",
+      "trigger": "Colour-mode startup and theme selection",
+      "lifetime": "Until browser site data is cleared",
+      "deletion": "Clear browser site data; selecting System stores the system preference"
     },
     {
       "key": "fireux:pwa:{appId}",

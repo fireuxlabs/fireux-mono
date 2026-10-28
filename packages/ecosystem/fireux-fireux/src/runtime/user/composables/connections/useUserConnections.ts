@@ -1,12 +1,13 @@
+import { useAsyncData } from 'nuxt/app'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 export function useUserConnections() {
   const { currentUser } = useAuth()
   const active = computed(() =>
     Boolean(currentUser.value && !currentUser.value.isAnonymous)
   )
-  const state = useLiveAsyncData<{
+  const state = useAsyncData<{
     uid: string
     connected: boolean
     localLabel: string
@@ -14,14 +15,16 @@ export function useUserConnections() {
     miseboxOrigin: string
   }>(
     computed(() => `user-connections:${currentUser.value?.uid || ''}`),
-    async (fetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const user = currentUser.value
       if (!user || !active.value)
         throw new Error('Sign in to view connected accounts.')
       const token = await user.getIdToken()
       if (currentUser.value?.uid !== user.uid)
         throw new Error('Your account changed.')
-      return fetch('/api/account/connections', {
+      return fetchRead('/api/account/connections', {
         headers: { Authorization: `Bearer ${token}` },
       })
     },

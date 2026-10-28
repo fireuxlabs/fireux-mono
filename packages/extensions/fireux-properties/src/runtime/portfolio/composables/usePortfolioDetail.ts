@@ -1,17 +1,19 @@
+import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from 'fireux-core/runtime/utils/http-document-outcome'
 
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { PortfolioDetailResponse } from '../models/portfolio-read.model.ts'
 import { computed, type Ref } from 'vue'
 
 export function usePortfolioDetail(id: Ref<string>) {
   const portfolioId = computed(() => id.value.trim())
-  const state = useLiveAsyncData<PortfolioDetailResponse | null>(
+  const state = useAsyncData<PortfolioDetailResponse | null>(
     () => `portfolio-detail:${portfolioId.value || 'none'}`,
-    (liveFetch) =>
-      portfolioId.value
-        ? liveFetch(`/api/portfolios/${encodeURIComponent(portfolioId.value)}`)
-        : null,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return portfolioId.value
+        ? fetchRead(`/api/portfolios/${encodeURIComponent(portfolioId.value)}`)
+        : null
+    },
     { default: () => null, watch: [portfolioId] }
   )
   const outcome = computed(() => {

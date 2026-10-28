@@ -28,15 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
 
 const props = defineProps<{
   endpoint: string
   query?: Record<string, string>
 }>()
 
-const { data, error, pending } = await useLiveAsyncData(
+const { data, error, pending } = await useAsyncData(
   () => `menu-json-${props.endpoint}-${JSON.stringify(props.query ?? {})}`,
-  (liveFetch) => liveFetch<unknown>(props.endpoint, { query: props.query })
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchRead<unknown>(props.endpoint, { query: props.query })
+  }
 )
 </script>

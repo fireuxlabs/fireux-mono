@@ -1,5 +1,5 @@
 <template>
-  <div class="grid min-w-0 gap-6">
+  <div class="workspace-profile">
     <FireStateCard
       v-if="identity.readState.value"
       :state="identity.readState.value"
@@ -15,12 +15,15 @@
       "
     />
     <template v-else-if="identity.place.value">
-      <section aria-label="Venue profile" class="grid gap-5">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div class="flex min-w-0 items-center gap-3">
+      <section aria-label="Venue profile" class="workspace-profile__aside">
+        <div class="workspace-profile__header">
+          <div class="workspace-profile__heading-row">
             <figure
-              class="m-0 grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-elevated"
-              :class="identity.place.value.logo_image ? 'p-2' : ''"
+              class="kitchen-identity__avatar"
+              :class="{
+                'kitchen-identity__avatar--logo':
+                  identity.place.value.logo_image,
+              }"
               :style="
                 identity.place.value.logo_image &&
                 identity.place.value.media_backdrop_color
@@ -42,25 +45,25 @@
                 "
                 :alt="identity.place.value.name || 'Kitchen'"
                 :class="[
-                  'size-full',
+                  'kitchen-identity__avatar-image',
                   identity.place.value.logo_image
-                    ? 'object-contain'
-                    : 'object-cover',
+                    ? 'kitchen-identity__avatar-image--logo'
+                    : 'kitchen-identity__avatar-image--photo',
                 ]"
               />
               <UIcon
                 v-else
                 name="i-lucide-utensils"
-                class="size-6 text-muted"
+                class="workspace-profile__icon"
               />
             </figure>
-            <div class="min-w-0">
-              <h3 class="break-words text-xl font-semibold text-highlighted">
+            <div class="workspace-profile__copy">
+              <h3 class="workspace-profile__heading">
                 {{ identity.place.value.name || 'Add a venue name' }}
               </h3>
               <p
                 v-if="identity.place.value.tagline"
-                class="mt-1 break-words text-sm text-muted"
+                class="workspace-profile__note"
               >
                 {{ identity.place.value.tagline }}
               </p>
@@ -79,20 +82,20 @@
             :place="identity.place.value"
           />
         </div>
-        <p v-if="!identity.canWrite.value" class="text-sm text-muted">
+        <p v-if="!identity.canWrite.value" class="workspace-profile__note">
           You can view this profile. Editing requires Kitchen access.
         </p>
-        <div class="grid items-start gap-4 md:grid-cols-2">
+        <div class="workspace-profile__sections">
           <UCard
             v-for="item in sections"
             :key="item.value"
             :aria-label="item.label"
           >
             <template #header>
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                  <UIcon :name="item.icon" class="size-5 text-muted" />
-                  <h4 class="font-semibold">{{ item.label }}</h4>
+              <div class="workspace-profile__header">
+                <div class="workspace-profile__heading-row">
+                  <UIcon :name="item.icon" class="workspace-profile__icon" />
+                  <h4 class="workspace-profile__heading">{{ item.label }}</h4>
                 </div>
                 <UButton
                   v-if="identity.canWrite.value"
@@ -112,7 +115,7 @@
                 (identity.place.value.logo_image ||
                   identity.place.value.wordmark_image)
               "
-              class="mb-4 flex flex-wrap items-center gap-3"
+              class="kitchen-identity__assets"
             >
               <figure
                 v-for="asset in [
@@ -123,7 +126,7 @@
                   },
                 ].filter((asset) => asset.url)"
                 :key="asset.label"
-                class="m-0 grid h-20 min-w-20 max-w-48 place-items-center rounded-lg bg-elevated p-3"
+                class="kitchen-identity__asset"
                 :style="{
                   backgroundColor:
                     identity.place.value.media_backdrop_color || undefined,
@@ -132,18 +135,18 @@
                 <img
                   :src="asset.url"
                   :alt="asset.label"
-                  class="max-h-14 max-w-full object-contain"
+                  class="kitchen-identity__asset-image"
                 />
               </figure>
             </div>
             <div
               v-if="item.value === 'photos' && identity.place.value.cover_image"
-              class="mb-4 overflow-hidden rounded-lg bg-elevated"
+              class="kitchen-identity__cover"
             >
               <img
                 :src="identity.place.value.cover_image"
                 alt="Venue cover"
-                class="aspect-video w-full object-cover"
+                class="kitchen-identity__cover-image"
                 loading="lazy"
               />
             </div>
@@ -152,7 +155,7 @@
                 item.value === 'photos' &&
                 identity.place.value.gallery_images?.length
               "
-              class="mb-4 flex flex-wrap gap-2"
+              class="kitchen-identity__gallery"
             >
               <img
                 v-for="(image, index) in (
@@ -161,24 +164,27 @@
                 :key="image"
                 :src="image"
                 :alt="`Gallery photo ${index + 1}`"
-                class="size-16 rounded-lg object-cover"
+                class="kitchen-identity__gallery-image"
                 loading="lazy"
               />
             </div>
-            <dl class="grid gap-3">
+            <dl class="workspace-profile__fields">
               <div
                 v-for="field in item.fields"
                 :key="field.label"
-                class="grid gap-1"
+                class="workspace-profile__field"
               >
-                <dt class="text-xs font-medium text-muted">
+                <dt class="workspace-profile__label">
                   {{ field.label }}
                 </dt>
                 <dd
                   :class="[
-                    'break-words text-sm',
-                    field.label === 'About' ? 'line-clamp-4' : '',
-                    field.value ? 'text-default' : 'text-muted',
+                    'workspace-profile__value',
+                    {
+                      'workspace-profile__value--summary':
+                        field.label === 'About',
+                    },
+                    { 'workspace-profile__value--empty': !field.value },
                   ]"
                 >
                   {{ field.value || 'Not added' }}
@@ -193,7 +199,6 @@
                 trailing
                 color="neutral"
                 variant="link"
-                :ui="{ base: 'p-0' }"
               />
             </template>
           </UCard>
@@ -205,7 +210,6 @@
       :open="Boolean(section) && identity.canWriteKitchen.value"
       :title="sectionTitle"
       :description="identity.fields.value.name || 'Venue details'"
-      :ui="{ content: 'sm:max-w-xl' }"
       @update:open="
         (open) => {
           if (!open) section = null
@@ -213,7 +217,7 @@
       "
     >
       <template #body>
-        <p class="mb-4 text-sm text-muted">
+        <p class="workspace-profile__note">
           Changes apply wherever this venue is used. Save each field or image as
           you edit.
         </p>
@@ -228,7 +232,7 @@
         />
         <USkeleton
           v-else-if="section && identity.status.value === 'pending'"
-          class="h-64 rounded-xl"
+          class="kitchen-identity__loading"
         />
       </template>
     </USlideover>
@@ -365,3 +369,74 @@ defineExpose({
   },
 })
 </script>
+
+<style scoped>
+.kitchen-identity__avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--ui-bg-elevated);
+}
+.kitchen-identity__avatar--logo {
+  padding: calc(var(--spacing) * 2);
+}
+.kitchen-identity__avatar-image {
+  width: 100%;
+  height: 100%;
+}
+.kitchen-identity__avatar-image--logo {
+  object-fit: contain;
+}
+.kitchen-identity__avatar-image--photo {
+  object-fit: cover;
+}
+.kitchen-identity__assets,
+.kitchen-identity__gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 3);
+  margin-block-end: calc(var(--spacing) * 4);
+}
+.kitchen-identity__asset {
+  display: grid;
+  place-items: center;
+  min-width: 5rem;
+  max-width: 12rem;
+  height: 5rem;
+  margin: 0;
+  padding: calc(var(--spacing) * 3);
+  border-radius: var(--radius-lg);
+  background: var(--ui-bg-elevated);
+}
+.kitchen-identity__asset-image {
+  max-height: 3.5rem;
+  max-width: 100%;
+  object-fit: contain;
+}
+.kitchen-identity__cover {
+  overflow: hidden;
+  margin-block-end: calc(var(--spacing) * 4);
+  border-radius: var(--radius-lg);
+  background: var(--ui-bg-elevated);
+}
+.kitchen-identity__cover-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.kitchen-identity__gallery-image {
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+}
+.kitchen-identity__loading {
+  height: 16rem;
+  border-radius: var(--radius-lg);
+}
+</style>

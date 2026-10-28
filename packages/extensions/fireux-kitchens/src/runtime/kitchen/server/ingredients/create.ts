@@ -10,7 +10,7 @@ import {
 } from './link-input'
 
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { INGREDIENT_MUTATION_TARGETS } from '../../../ingredient/server/mutation-targets'
 import {
   isActiveIngredient,
   normalizeIngredient,
@@ -23,7 +23,7 @@ export async function createKitchenIngredient(event: H3Event, input: unknown) {
     await requireKitchenRecordMutationAuthority(mutations, actor, kitchenId)
     const links = ingredientCollectionTarget(kitchenId, 'ingredients')
     const [ingredient, existing] = await Promise.all([
-      mutations.read(FIRESTORE_MUTATION_TARGETS.ingredients, ingredientId),
+      mutations.read(INGREDIENT_MUTATION_TARGETS.ingredients, ingredientId),
       mutations.read(links, ingredientId),
     ])
     if (

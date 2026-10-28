@@ -3,12 +3,12 @@
     :is="cell.to ? NuxtLink : 'article'"
     v-if="!cell.imageStyle"
     :to="cell.to || undefined"
-    class="block h-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    class="collection-cell-plain"
   >
     <UPageCard
       :title="cell.title"
       :description="cell.description || undefined"
-      class="h-full"
+      class="collection-cell-plain__card"
     >
       <template v-if="cell.image" #leading>
         <UAvatar
@@ -21,8 +21,8 @@
       </template>
 
       <template v-if="cell.meta || cell.badges?.length" #footer>
-        <div class="flex flex-wrap items-center gap-2">
-          <span v-if="cell.meta" class="text-sm text-muted">{{
+        <div class="collection-cell__badges">
+          <span v-if="cell.meta" class="collection-cell__badge-meta">{{
             cell.meta
           }}</span>
           <UBadge
@@ -60,7 +60,7 @@
         <div v-else class="collection-cell__cover-fallback">
           <UIcon
             :name="cell.fallbackIcon || 'i-lucide-image'"
-            class="size-12"
+            class="collection-cell__fallback-icon"
           />
         </div>
       </div>
@@ -78,13 +78,13 @@
             :ui="avatarUi"
           />
 
-          <div class="min-w-0">
+          <div class="collection-cell__heading">
             <h3 class="collection-cell__title">{{ cell.title }}</h3>
             <p v-if="cell.meta" class="collection-cell__meta">
               <UIcon
                 v-if="cell.imageStyle === 'cover'"
                 name="i-lucide-map-pin"
-                class="size-4 shrink-0"
+                class="collection-cell__meta-icon"
               />
               {{ cell.meta }}
             </p>
@@ -99,7 +99,7 @@
           v-if="cell.badges?.length || cell.actionLabel"
           class="collection-cell__footer"
         >
-          <div class="flex flex-wrap gap-2">
+          <div class="collection-cell__badges">
             <UBadge
               v-for="badge in cell.badges"
               :key="badge"
@@ -112,7 +112,10 @@
 
           <span v-if="cell.actionLabel" class="collection-cell__action">
             {{ cell.actionLabel }}
-            <UIcon name="i-lucide-arrow-right" class="size-4" />
+            <UIcon
+              name="i-lucide-arrow-right"
+              class="collection-cell__action-icon"
+            />
           </span>
         </div>
       </div>
@@ -133,15 +136,60 @@ const avatarStyle = computed(() =>
 )
 const avatarUi = computed(() =>
   props.cell.imageFit === 'contain'
-    ? { image: 'object-contain p-1.5' }
+    ? { image: 'collection-cell__image--contained' }
     : undefined
 )
 const cardUi = computed(() =>
-  props.cell.imageStyle === 'cover' ? { body: 'p-0 sm:p-0' } : undefined
+  props.cell.imageStyle === 'cover'
+    ? { body: 'collection-cell__frame' }
+    : undefined
 )
 </script>
 
 <style scoped>
+.collection-cell-plain {
+  display: block;
+  height: 100%;
+  border-radius: var(--ui-radius);
+}
+.collection-cell-plain:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+.collection-cell-plain__card {
+  height: 100%;
+}
+.collection-cell__badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+.collection-cell__badge-meta {
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+}
+.collection-cell__fallback-icon {
+  width: calc(var(--spacing) * 12);
+  height: calc(var(--spacing) * 12);
+}
+.collection-cell__heading {
+  min-width: 0;
+}
+.collection-cell__meta-icon,
+.collection-cell__action-icon {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  flex: none;
+}
+:deep(.collection-cell__image--contained) {
+  object-fit: contain;
+  padding: calc(var(--spacing) * 1.5);
+}
+:deep(.collection-cell__frame) {
+  padding: 0;
+}
+
 .collection-cell {
   height: 100%;
   overflow: hidden;

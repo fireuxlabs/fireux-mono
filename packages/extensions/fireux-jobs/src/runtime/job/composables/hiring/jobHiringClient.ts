@@ -1,7 +1,6 @@
 import { type WatchSource } from 'vue'
 import { useJobCommand } from '../useJobCommand'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
   JobApplicationActionIntent,
   JobApplicationCreateIntent,
@@ -21,8 +20,7 @@ async function authorizationHeader(): Promise<Record<string, string>> {
 
 export async function fetchJobApplications(
   scope: JobApplicationListScope,
-  fetcher: LiveFetch = <T>(request: string, options?: Record<string, any>) =>
-    $fetch<T, string>(request, options)
+  fetcher: typeof $fetch = $fetch
 ): Promise<JobApplicationListResponse> {
   return fetcher('/api/internal/job-applications', {
     headers: await authorizationHeader(),

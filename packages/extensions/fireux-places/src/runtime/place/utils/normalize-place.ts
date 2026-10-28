@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { Place, PlaceStamp } from '../models/place.model.ts'

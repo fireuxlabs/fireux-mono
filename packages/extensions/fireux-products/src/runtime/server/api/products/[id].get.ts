@@ -1,5 +1,11 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getRouterParam, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getRouterParam,
+  type H3Event,
+} from 'h3'
+
 import { useRuntimeConfig } from '#imports'
 import {
   ProductPriceStorage,
@@ -53,7 +59,9 @@ function serializeFirestoreValue(value: unknown): unknown {
   )
 }
 
-export default defineLiveReadHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   const id = String(getRouterParam(event, 'id') || '').trim()
   assertSafeDocumentSegment(id)
 

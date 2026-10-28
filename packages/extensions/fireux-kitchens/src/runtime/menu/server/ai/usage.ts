@@ -1,11 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { DocumentData, UpdateData } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  serverKitchenAiUsageTarget,
-  serverKitchenMenuUploadsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-
+import { serverKitchenAiUsageTarget, serverKitchenMenuUploadsTarget } from '../../../kitchen/server/mutation-targets'
 export async function writeKitchenMenuAiUsage(input: {
   sourceUpdate: UpdateData<DocumentData>
   appId: string

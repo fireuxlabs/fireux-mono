@@ -9,10 +9,8 @@ import {
   isAppUserRole,
   type AppUserRole,
 } from '../../models/app-user.model.ts'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from '../../../utils/firestore-mutations/targets'
+import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
+import { serverAppUsersTarget } from '../mutation-targets'
 import type { GuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 
@@ -108,4 +106,4 @@ export type MembershipTransactionState = {
   actorMembership: DocumentData | undefined
 }
 
-export const runtimeUsersTarget = FIRESTORE_MUTATION_TARGETS.runtimeUsers
+export const runtimeUsersTarget = USER_MUTATION_TARGETS.runtimeUsers

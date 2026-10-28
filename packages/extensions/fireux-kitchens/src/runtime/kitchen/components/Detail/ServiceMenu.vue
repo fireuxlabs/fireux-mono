@@ -100,10 +100,12 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useAsyncData } from 'nuxt/app'
+
 import { computed, toRef } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { setResponseStatus, useHead, useSeoMeta, useRoute } from '#imports'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { useKitchenDetail } from '../../composables/useKitchenDetail'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
 import type { MenuService } from '../../../menu/utils/service-menu'
@@ -144,9 +146,12 @@ const endpoint = computed(
   () =>
     `/api/menus/service/items?service=${service.value}&kitchenSlug=${encodeURIComponent(slug.value)}${offeringId.value ? '&offering=' + encodeURIComponent(offeringId.value) : ''}`
 )
-const menus = useLiveAsyncData<{ sources: MenuServiceSource[] }>(
+const menus = useAsyncData<{ sources: MenuServiceSource[] }>(
   computed(() => `menu-service-items:${service.value}:${slug.value}`),
-  (fetch) => fetch(endpoint.value),
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchRead(endpoint.value)
+  },
   { watch: [endpoint] }
 )
 const { now: pricingNow } = useKitchenOfferingNow()
@@ -169,6 +174,8 @@ useHead({
     `${presentation.value?.display_name || 'Restaurant'} | ${serviceLabel.value}`,
 })
 useSeoMeta({
+  description: () =>
+    `${serviceLabel.value} food and drinks from ${presentation.value?.display_name || 'this kitchen'}. Browse the menu and current serving times.`,
   robots: () =>
     service.value === 'room_service' ||
     service.value === 'table' ||

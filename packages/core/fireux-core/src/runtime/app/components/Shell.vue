@@ -168,14 +168,13 @@ import { resolveSeoRobots } from '../../../utils/seoIndexing'
 import { useRouter } from 'vue-router'
 import { useHead, useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../composables/config/FireUXConfig'
-import { useColorMode } from '../../composables/theme/useColorMode'
 import { useDiagnosticsUi } from '../../composables/diagnostics/useDiagnosticsUi'
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../utils/sync-app-media'
 import { workspaceFamilyFromRouteContext } from '../../workspace/utils/routes'
 import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
-import { withBuildVersion } from '../../utils/buildVersionUrl'
+import { withBuildVersion } from '../../utils/build-version-url'
 
 const isDev = import.meta.dev
 const router = useRouter()
@@ -201,8 +200,6 @@ const manifestHref = computed(() => {
       : undefined
   )
 })
-// App shell owns global colour-mode activation; components should only consume resolved mode.
-useColorMode()
 const {
   panelOpen,
   notesVisible,

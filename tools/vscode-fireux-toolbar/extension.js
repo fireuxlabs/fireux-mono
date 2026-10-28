@@ -1,6 +1,6 @@
 const vscode = require('vscode')
 const fs = require('node:fs')
-const { apps } = require('./apps')
+const { getApps } = require('./apps')
 const { registerFileTreeCommands } = require('./file-tree-commands')
 const {
   findRepoRoot,
@@ -8,7 +8,7 @@ const {
   tryReuseTabMacOS,
 } = require('./toolbar-utils')
 
-function activate(context) {
+async function activate(context) {
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
   const workspaceCwd = workspaceFolders
     .map((folder) => findRepoRoot(folder.uri.fsPath))
@@ -18,6 +18,8 @@ function activate(context) {
     (workspaceCwd && fs.existsSync(workspaceCwd) && workspaceCwd) ||
     (fallbackRepoCwd && fs.existsSync(fallbackRepoCwd) && fallbackRepoCwd) ||
     undefined
+
+  const apps = await getApps(cwd)
 
   const ensureTerminal = (name, command) => {
     const existing = vscode.window.terminals.find((t) => t.name === name)
@@ -145,6 +147,10 @@ function activate(context) {
   const killApp = async (app) => {
     if (!app) return
 
+    if (!app.killScript) {
+      await vscode.window.showWarningMessage(`No stop command is defined for ${app.name}. Stop its dev task or terminal.`)
+      return
+    }
     const taskLabel = `pnpm kill:${app.key}`
     const ranTask = await runTaskIfPresent(taskLabel)
     if (ranTask) return

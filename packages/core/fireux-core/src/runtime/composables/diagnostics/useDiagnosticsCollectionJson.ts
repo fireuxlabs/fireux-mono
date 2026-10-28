@@ -151,9 +151,12 @@ export function useDiagnosticsCollectionJson<T extends object>(
 
   watch(
     [enabled, fetchKey, refreshToken, authUid],
-    async (
-      [isEnabled, nextKey, , nextUid]: [boolean, string, number, string]
-    ) => {
+    async ([isEnabled, nextKey, , nextUid]: [
+      boolean,
+      string,
+      number,
+      string,
+    ]) => {
       if (!import.meta.dev || import.meta.server) return
       if (!isEnabled) return
 

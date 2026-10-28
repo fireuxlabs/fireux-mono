@@ -11,7 +11,7 @@ import {
   readWorkspacePalette,
   resolveAppPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { APP_MUTATION_TARGETS } from 'fireux-core/runtime/app/server/mutation-targets'
 import type {
   AppPalette,
   AppTypography,
@@ -171,7 +171,7 @@ export async function updateKitchenAppTheme(event: H3Event, value: unknown) {
         )
       }
       const app = await mutations.read<Record<string, unknown>>(
-        FIRESTORE_MUTATION_TARGETS.runtimeApps,
+        APP_MUTATION_TARGETS.runtimeApps,
         current.ownerAppId
       )
       if (!app.exists) fail(409, 'The dedicated App record does not exist.')
@@ -180,7 +180,7 @@ export async function updateKitchenAppTheme(event: H3Event, value: unknown) {
         inheritedPalette
       )
       mutations.update(
-        FIRESTORE_MUTATION_TARGETS.runtimeApps,
+        APP_MUTATION_TARGETS.runtimeApps,
         current.ownerAppId,
         {
           'theme.palette': compact,

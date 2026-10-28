@@ -1,5 +1,10 @@
-import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { createError, getRouterParam } from 'h3'
+import {
+  defineEventHandler,
+  setResponseHeader,
+  createError,
+  getRouterParam,
+} from 'h3'
+
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   readMenuKitchenFulfilment,
@@ -8,7 +13,9 @@ import {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export default defineLiveReadHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+
   setCorsHeaders(event, {
     methods: ['GET'],
   })

@@ -129,7 +129,7 @@ function harness({
       ...offeringContract,
       ...offeringReads,
       ...offeringTargets,
-      FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
+      KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
       serverKitchenMenusTarget: (kitchenId) => kitchenId + '/menus',
       serverAuditStamp: (value) => value,
       runGuardedServerTransaction: async (_, callback) =>

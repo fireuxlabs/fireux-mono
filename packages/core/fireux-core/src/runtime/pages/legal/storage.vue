@@ -5,7 +5,7 @@
       description="The exact browser storage used by FireUX-powered apps and when it begins."
     />
     <UPageBody class="pagebody">
-      <p class="text-sm text-muted">Last updated: October 21, 2026</p>
+      <p class="text-sm text-muted">Last updated: October 26, 2026</p>
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">No tracking storage</h2>
@@ -13,15 +13,16 @@
           FireUX does not use analytics or advertising identifiers, device
           fingerprints, or cross-App behavioural identity. An ordinary public
           visit does not need a consent popup because optional tracking is not
-          active. Storage begins only when you ask an App to remember a choice,
-          sign you in, enable offline support, retain a cart or order, or
-          continue a conversation.
+          active. Nuxt remembers the appearance preference automatically,
+          initially following your device. Other feature storage begins when you
+          ask an App to remember a choice, sign you in, enable offline support,
+          retain a cart or order, or continue a conversation.
         </p>
       </section>
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">
-          Storage used after a feature request
+          Appearance and requested feature storage
         </h2>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
@@ -35,10 +36,10 @@
             <tbody>
               <tr>
                 <td>Appearance</td>
-                <td>Core remembers light or dark after you select it.</td>
+                <td>Nuxt remembers light, dark or System automatically.</td>
                 <td>
-                  Until you select System or clear site data. Selecting System
-                  removes it.
+                  Until you clear site data. Selecting System remembers that the
+                  appearance should follow your device.
                 </td>
               </tr>
               <tr>

@@ -6,7 +6,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverUserProfileTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverUserProfileTarget } from 'fireux-core/runtime/user/server/mutation-targets'
 import {
   ProfessionalConstraints,
 } from '../../utils/profiles/Professional/professional.ts'

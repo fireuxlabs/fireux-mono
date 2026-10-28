@@ -5,7 +5,7 @@
 
     <main class="fx-layout-main">
       <UContainer>
-        <NuxtPage />
+        <slot />
       </UContainer>
     </main>
 

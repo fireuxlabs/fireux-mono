@@ -5,7 +5,7 @@ import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/kitchen/utils/
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 
 export type MiseboxProductDemoExperienceModel = {
-  to: '/demo/menu' | '/demo/kiosk' | '/demo/service'
+  to: '/demo/menu'
   eyebrow: string
   title: string
   description: string

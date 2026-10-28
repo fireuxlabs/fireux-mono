@@ -177,7 +177,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
 
 import { computed } from 'vue'
 import { setResponseStatus } from '#imports'
@@ -199,12 +199,14 @@ definePageMeta({
   name: 'FireuxMiseboxEcosystemPage',
 })
 
-const { data, pending, error } =
-  await useLiveAsyncData<PlatformDirectoryResponse>(
-    'fireux-misebox-public-directory',
-    (liveFetch) => liveFetch('/api/directory'),
-    { server: true, lazy: false }
-  )
+const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
+  'fireux-misebox-public-directory',
+  async (_nuxtApp, { signal }) => {
+    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+    return fetchRead('/api/directory')
+  },
+  { server: true, lazy: false }
+)
 const { apps } = useEcosystemApps('misebox')
 
 const ecosystem = computed(

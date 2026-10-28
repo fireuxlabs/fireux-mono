@@ -23,9 +23,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useResolvedColorMode } from 'fireux-core/runtime/composables/theme/useColorMode'
+import { useColorMode } from '#imports'
 
-const resolvedMode = useResolvedColorMode()
+const resolvedMode = useColorMode()
 const isDark = computed(() => resolvedMode.value === 'dark')
 
 const logos = {
@@ -61,7 +61,10 @@ const stripeSrc = computed(() =>
   justify-content: center;
   padding: calc(var(--spacing) * 6);
   background-color: var(--ui-bg);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
   border-radius: calc(var(--ui-radius) * 3);
   box-shadow: var(--shadow-sm);
 }

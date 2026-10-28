@@ -42,7 +42,8 @@ function harness(existing: boolean, unlisted = false, visibility = true) {
     }) => ownerUserId,
     requireFirestoreDocumentId: (id: string) => id,
     serverKitchenMenusTarget: () => 'menus',
-    FIRESTORE_MUTATION_TARGETS: { places: 'places', kitchens: 'kitchens' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
+KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
     runGuardedServerTransaction: async (_: unknown, callback: Function) =>
       callback({
         read: async (target: string) =>

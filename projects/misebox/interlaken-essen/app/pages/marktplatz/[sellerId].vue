@@ -22,7 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { useFetch } from 'nuxt/app'
+
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
@@ -34,7 +35,7 @@ definePageMeta({
 
 const { copy } = useInterlakenCopy()
 const sellerId = useRouteParam('sellerId')
-const { data } = await useLiveFetch<MarketplaceStoreDetailResponse>(
+const { data } = await useFetch<MarketplaceStoreDetailResponse | null>(
   () => `/api/marketplace-stores/${encodeURIComponent(sellerId.value)}`,
   { default: () => null }
 )

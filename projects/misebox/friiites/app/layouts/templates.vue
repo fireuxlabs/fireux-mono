@@ -4,7 +4,7 @@
     <FriiitesOrderBanner />
 
     <div class="templates-layout__page">
-      <NuxtPage />
+      <slot />
     </div>
   </div>
 </template>

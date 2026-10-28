@@ -1,9 +1,10 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { ref, watch, type WatchSource } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
 import type {
@@ -63,6 +64,15 @@ export function useIngredientCreate(ownerSources: WatchSource[] = []) {
     const response = await $fetch<IngredientDetailResponse>(
       '/api/internal/ingredients',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         timeout: 240_000,
         retry: 0,

@@ -1,5 +1,5 @@
 import type { DocumentData, Timestamp } from 'firebase-admin/firestore'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { requireFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {

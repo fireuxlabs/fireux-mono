@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { ref, watch, type WatchSource } from 'vue'
 import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -55,6 +56,15 @@ export function useIngredientImageGeneration(ownerSources: WatchSource[] = []) {
         image_url: string
         generated: boolean
       }>(`/api/internal/ingredients/${encodeURIComponent(id)}/image`, {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         timeout: 240_000,

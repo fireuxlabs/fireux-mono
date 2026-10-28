@@ -3,10 +3,8 @@ import { createError, type H3Event } from 'h3'
 import { generateFireuxImage } from 'fireux-ai/runtime/server/utils/image-generation.server'
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { INGREDIENT_MUTATION_TARGETS } from './mutation-targets'
+import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { assertCurator, curatorContext } from './curation-authority'
@@ -22,7 +20,7 @@ export async function generateIngredientImage(event: H3Event, id: string) {
       statusMessage: 'Ingredient id is invalid.',
     })
   const context = await curatorContext(event)
-  const ingredients = FIRESTORE_MUTATION_TARGETS.ingredients
+  const ingredients = INGREDIENT_MUTATION_TARGETS.ingredients
   const members = serverAppUsersTarget(context.appId)
   const requestId = randomUUID()
   const claim = await runGuardedServerTransaction(

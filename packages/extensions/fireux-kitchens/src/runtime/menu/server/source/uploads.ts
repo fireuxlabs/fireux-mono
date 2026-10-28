@@ -14,8 +14,8 @@ import {
   type MultipartParts,
 } from 'fireux-core/runtime/server/utils/uploads/multipart'
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../utils/menu-source-upload.ts'
 

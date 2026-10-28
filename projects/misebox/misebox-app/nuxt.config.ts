@@ -9,7 +9,8 @@ const app: FireuxAppConfig = {
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'misebox-app',
-  context: "Misebox connects public Kitchen and Menu discovery with a Kitchen Workspace for operators. Venue information, menu content and operational configuration have separate owners.",
+  context:
+    'Misebox connects public Kitchen and Menu discovery with a Kitchen Workspace for operators. Venue information, menu content and operational configuration have separate owners.',
   name: 'Misebox',
   shortName: 'Misebox',
   homePath: '/',
@@ -34,8 +35,6 @@ const app: FireuxAppConfig = {
       '/programme',
       '/demo',
       '/demo/menu',
-      '/demo/kiosk',
-      '/demo/service',
     ],
   },
   modules: [
@@ -83,16 +82,6 @@ export default {
       packageComponents: {},
       sharedSignIn: { enabled: false },
       ordering: { channels: ['pos', 'kiosk', 'website'] },
-    },
-  },
-  $production: {
-    runtimeConfig: {
-      public: {
-        fireux: {
-          liveReadEndpoint:
-            'https://europe-west6-misebox-78f9c.cloudfunctions.net/miseboxApp/api/fireux/live',
-        },
-      },
     },
   },
   extends: [

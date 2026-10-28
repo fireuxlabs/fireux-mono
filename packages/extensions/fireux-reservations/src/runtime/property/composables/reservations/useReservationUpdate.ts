@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
@@ -48,6 +49,15 @@ export function useReservationUpdate(runtimeProperty: PropertyScope) {
     const response = await $fetch<ReservationResponse>(
       `/api/workspace/properties/${encodeURIComponent(propertyId)}/reservations/${encodeURIComponent(reservationId)}`,
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body,

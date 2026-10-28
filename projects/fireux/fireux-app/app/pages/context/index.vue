@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { readPlatformContext } from 'fireux-core/runtime/utils/platform-context'
+import { readPlatformContext } from '../../../shared/platform-context'
 const context = readPlatformContext()
 definePageMeta({ layout: 'landing' })
 useSeoMeta({ title: 'FireUX context', description: context.summary })

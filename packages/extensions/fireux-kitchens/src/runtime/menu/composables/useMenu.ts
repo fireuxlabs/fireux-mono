@@ -1,3 +1,4 @@
+import { useAsyncData } from 'nuxt/app'
 import {
   onScopeDispose,
   watch,
@@ -6,7 +7,7 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { createError, useRoute } from '#imports'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
@@ -165,13 +166,15 @@ export function useMenu(
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}${qs ? `?${qs}` : ''}`
   })
-  const state = useLiveAsyncData(
+  const state = useAsyncData(
     key,
-    async (requestFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!endpoint.value) return null
 
       try {
-        return await requestFetch<MenuDetailPayload>(endpoint.value)
+        return await fetchRead<MenuDetailPayload>(endpoint.value)
       } catch (error) {
         const failure = menuLoadFailure(requestStatusCode(error))
 

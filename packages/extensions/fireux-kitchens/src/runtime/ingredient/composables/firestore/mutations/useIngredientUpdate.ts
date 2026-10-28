@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { ref, watch, type WatchSource } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -51,6 +52,15 @@ export function useIngredientUpdate(ownerSources: WatchSource[] = []) {
     const response = await $fetch<IngredientDetailResponse>(
       `/api/internal/ingredients/${encodeURIComponent(resolvedIngredientId)}`,
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body,

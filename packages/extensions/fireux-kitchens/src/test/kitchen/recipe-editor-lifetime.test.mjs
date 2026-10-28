@@ -21,7 +21,7 @@ const useCommandScope = load(
   vue
 )
 const isFirestoreDocumentId = load(
-  '../../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts',
+  '../../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts',
   'isFirestoreDocumentId',
   {}
 )

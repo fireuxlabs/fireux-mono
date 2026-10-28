@@ -1417,8 +1417,10 @@ It validates name, tagline, owner/strategy/region labels and notes using the
 existing editor lengths, then rechecks current membership-bound Portfolio and
 management authority in the write transaction. Root id/slug, ownership, status
 and audit fields are not editable through this command. Its adapter captures
-input before credentials and invalidates account/App/selection/route round trips
-and disposal; the editor suppresses obsolete success/error feedback. Blank Identity remains explicitly read-only. Property has its own bounded Identity command as described above.
+input before credentials and invalidates account/App/membership changes and
+disposal. The editor supplies its captured selection/route/field lifetime predicate
+to stop obsolete credential preparation before dispatch and suppresses obsolete
+success/error feedback. The explicit-ID command does not acquire Workspace selection. Blank Identity remains explicitly read-only. Property has its own bounded Identity command as described above.
 See Properties' `portfolio-identity.test.mjs` and
 `portfolio-identity-scope.test.mjs`; browser/provider proof remains separate.
 

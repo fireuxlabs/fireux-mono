@@ -97,8 +97,9 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['place-order'],
       uses: ['menus', 'offerings'],
       sourcePaths: [
-        source + 'kitchen/models/order.model.ts',
-        source + 'kitchen/utils/ordering.ts',
+        source + 'menu/composables/useCollectionCheckout.ts',
+        source + 'menu/server/ordering.ts',
+        source + 'kitchen/server/orders/submission.ts',
       ],
     },
     {
@@ -107,7 +108,11 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['menu', 'place-order'],
       uses: ['ordering'],
-      sourcePaths: [source + 'kitchen/components/Orders/Ticket.vue'],
+      sourcePaths: [
+        source + 'kitchen/components/Detail/ServiceMenu.vue',
+        source + 'menu/components/Selection/Index.vue',
+        source + 'menu/components/Selection/Checkout.vue',
+      ],
     },
     {
       id: 'orders',

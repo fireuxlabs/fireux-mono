@@ -12,10 +12,7 @@ import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  fireuxAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   createMembershipAccess,
@@ -65,7 +62,7 @@ export async function createProject(event: H3Event, input: unknown) {
       { kind: 'named', databaseId: 'fireux' },
       async (transaction) => {
         const [app, project] = await Promise.all([
-          transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
+          transaction.read(FIREUX_MUTATION_TARGETS.fireuxApps, appId),
           transaction.read(fireuxProjectsTarget, projectId),
         ])
         if (!app.exists) fail(403, 'The FireUX App is unavailable.')
@@ -105,7 +102,7 @@ export async function createProject(event: H3Event, input: unknown) {
     { kind: 'named', databaseId: 'fireux' },
     async (transaction) => {
       const [app, membership, access] = await Promise.all([
-        transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
+        transaction.read(FIREUX_MUTATION_TARGETS.fireuxApps, appId),
         transaction.read(memberships, uid),
         transaction.read(accessTarget, uid),
       ])

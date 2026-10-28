@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+
 import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -35,17 +36,19 @@ export function useBlankWorkspaceTeam() {
     pending: requestPending,
     error: requestError,
     refresh,
-  } = useLiveAsyncData<BlankTeamResponse>(
+  } = useAsyncData<BlankTeamResponse>(
     computed(
       () =>
         `blank-team-${currentUser.value?.uid || 'anonymous'}-${blankId.value || 'none'}`
     ),
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       const id = blankId.value
       const user = currentUser.value
       if (!id || !user)
         return { ok: true, blankId: id, canManageTeam: false, members: [] }
-      return liveFetch<BlankTeamResponse>('/api/workspace/blank/team/members', {
+      return fetchRead<BlankTeamResponse>('/api/workspace/blank/team/members', {
         query: { blankId: id },
         headers: { authorization: `Bearer ${await user.getIdToken()}` },
       })
@@ -131,6 +134,15 @@ export function useBlankWorkspaceTeam() {
     const result = await $fetch<{ memberId: string; name: string }>(
       '/api/workspace/blank/team/members',
       {
+        onResponse: async ({ options, response }) => {
+          if (
+            response.ok &&
+            !['GET', 'HEAD'].includes(
+              String(options.method || 'GET').toUpperCase()
+            )
+          )
+            await refreshNuxtData()
+        },
         method: 'POST',
         retry: 0,
         timeout: 15000,
@@ -160,6 +172,9 @@ export function useBlankWorkspaceTeam() {
     await $fetch(
       `/api/workspace/blank/team/members/${encodeURIComponent(input.memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'PATCH',
         retry: 0,
         timeout: 15000,
@@ -180,6 +195,9 @@ export function useBlankWorkspaceTeam() {
     const result = await $fetch<{ name: string }>(
       `/api/workspace/blank/team/members/${encodeURIComponent(memberId)}`,
       {
+        onResponse: async ({ response }) => {
+          if (response.ok) await refreshNuxtData()
+        },
         method: 'DELETE',
         retry: 0,
         timeout: 15000,

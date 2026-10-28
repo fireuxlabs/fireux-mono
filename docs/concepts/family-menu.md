@@ -576,7 +576,7 @@ and later-page failure feedback; Results retains local search/selection while
 hidden during refresh and distinguishes a settled empty service from no search
 matches. Service changes reset pagination and refresh the same live reader owner.
 Verify `menu-service-view.test.mjs`, `menu-portal-states.test.mjs` and
-`menu-live.test.mjs`. This remains Menu pagination; venue grouping combines only
+`menu-directory-read.test.mjs`. This remains Menu pagination; venue grouping combines only
 loaded eligible menus, not an independently stored venue catalogue.
 
 ## Food search in the portal

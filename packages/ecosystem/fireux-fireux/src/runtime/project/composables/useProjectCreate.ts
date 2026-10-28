@@ -1,8 +1,9 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { ref, watch } from 'vue'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 type ProjectCreateResponse = {
@@ -58,6 +59,15 @@ export function useProjectCreate() {
       const response = await $fetch<ProjectCreateResponse>(
         '/api/internal/control/projects',
         {
+          onResponse: async ({ options, response }) => {
+            if (
+              response.ok &&
+              !['GET', 'HEAD'].includes(
+                String(options.method || 'GET').toUpperCase()
+              )
+            )
+              await refreshNuxtData()
+          },
           method: 'POST',
           headers: { authorization: `Bearer ${token}` },
           body: { name },

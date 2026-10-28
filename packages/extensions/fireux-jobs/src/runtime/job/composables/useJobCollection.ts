@@ -1,12 +1,16 @@
+import { useAsyncData } from 'nuxt/app'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { fetchAuthorJobs } from './author/jobAuthorClient'
 export function useJobCollection() {
   const { currentUser } = useAuth()
-  const state = useLiveAsyncData(
+  const state = useAsyncData(
     computed(() => `author-jobs:${currentUser.value?.uid || ''}`),
-    (liveFetch) => fetchAuthorJobs(liveFetch),
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return fetchAuthorJobs(fetchRead)
+    },
     { server: false }
   )
   const jobs = computed(() => state.data.value?.items || [])

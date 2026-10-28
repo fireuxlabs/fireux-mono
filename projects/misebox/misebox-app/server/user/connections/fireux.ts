@@ -1,3 +1,4 @@
+import { resolveInternalRedirect } from 'fireux-core/runtime/utils/internal-redirect'
 import {
   readBody,
   getQuery,
@@ -27,10 +28,7 @@ import {
   protectConnectionResponse,
   requireConnectionOrigin,
 } from 'fireux-core/runtime/user/server/connections/transport'
-import {
-  resolveInternalRedirect,
-  resolvePostAuthDestination,
-} from 'fireux-core/runtime/utils/onboarding-route'
+import { resolvePostAuthDestination } from 'fireux-core/runtime/user/utils/onboarding-route'
 
 function settings() {
   const runtime = useRuntimeConfig()

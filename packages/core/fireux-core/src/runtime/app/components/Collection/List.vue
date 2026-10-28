@@ -1,5 +1,5 @@
 <template>
-  <UPageGrid as="ul" class="list-none app-collection-list" aria-label="Apps">
+  <UPageGrid as="ul" class="app-collection-list" aria-label="Apps">
     <li v-for="cell in cells" :key="cell.to">
       <FireCollectionCell :cell="cell" />
     </li>
@@ -15,7 +15,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import FireCollectionCell from '../../../components/Collection/Cell.vue'
 import type { CollectionCellData } from '../../../models/utils/collection-cell'
 import type { AppCard } from '../../composables/useAppView'
 
@@ -33,6 +32,7 @@ const cells = computed<CollectionCellData[]>(() =>
 
 <style scoped>
 .app-collection-list {
+  list-style: none;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
 }
 </style>

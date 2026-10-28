@@ -1,7 +1,3 @@
-<!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: introduce the public Misebox demonstration index. -->
-<!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: make Misebox Restaurant the default showroom path and Deanos the burger contrast. -->
-<!-- Concurrent edit — 2026-07-22 14:20 CEST — Demo quick-link pass: expose the showroom in landing and default footer navigation. -->
-<!-- Concurrent edit — 2026-07-23 09:32 CEST — Demo entry popup: open the Kiosk portrait preview in place instead of segueing to its route. -->
 <template>
   <main class="product-demo-index" data-misebox-product-demo="index">
     <section class="product-demo-index__hero">
@@ -10,12 +6,12 @@
       </UBadge>
 
       <div class="product-demo-index__intro">
-        <p class="fx-type-headline">From guest choice to Kitchen handoff</p>
-        <h1>Try Misebox’s menus and order board.</h1>
+        <p class="fx-type-headline">A guest view of Misebox</p>
+        <h1>Explore Misebox’s guest menu.</h1>
         <p>
-          Explore three fictional restaurants through the same Menu, Kiosk and
-          Kitchen Order components used by Misebox. Your changes stay in these
-          previews; no order is sent or payment taken.
+          Browse a fictional restaurant through the same guest Menu components
+          used by Misebox. This read-only preview sends no orders and takes no
+          payments.
         </p>
       </div>
 
@@ -28,29 +24,18 @@
         >
           Explore Misebox Restaurant
         </UButton>
-        <UButton
-          to="/demo/service"
-          color="neutral"
-          variant="soft"
-          size="xl"
-          icon="i-lucide-chef-hat"
-        >
-          Preview Deanos’ order board
-        </UButton>
       </div>
 
       <div v-if="productDemo" class="product-demo-index__world">
         <span>
           <UIcon name="i-lucide-store" aria-hidden="true" />
-          Featured Demo Kitchens
+          Featured Demo Kitchen
         </span>
         <strong>{{ productDemo.menu.kitchenName }}</strong>
         <small>
-          Default Demo Kitchen · Guest Menu & Kiosk ·
+          Guest Menu ·
           {{ productDemo.menu.placeLabel }}
         </small>
-        <strong>{{ productDemo.service.kitchenName }}</strong>
-        <small>Smash Burger Kitchen · Order board preview</small>
       </div>
 
       <UAlert
@@ -74,16 +59,13 @@
       aria-label="Product demonstrations"
     >
       <div class="product-demo-index__grid">
-        <component
+        <NuxtLink
           v-for="experience in experiences"
           :key="experience.to"
-          :is="experience.to === '/demo/kiosk' ? 'button' : NuxtLink"
-          :to="experience.to === '/demo/kiosk' ? undefined : experience.to"
-          :type="experience.to === '/demo/kiosk' ? 'button' : undefined"
+          :to="experience.to"
           class="product-demo-index__link"
-          @click="handleExperienceClick(experience.to)"
         >
-          <UCard class="product-demo-index__card" :ui="{ body: 'h-full' }">
+          <UCard class="product-demo-index__card">
             <div class="product-demo-index__card-body">
               <span
                 class="product-demo-index__icon"
@@ -112,7 +94,7 @@
               </span>
             </div>
           </UCard>
-        </component>
+        </NuxtLink>
       </div>
     </section>
 
@@ -121,13 +103,11 @@
       <div>
         <strong>A real interface over a fictional world</strong>
         <p>
-          These demonstrations perform no Firestore writes, create no live
-          Orders and never borrow a user’s Test Kitchen.
+          This demonstration performs no Firestore writes and creates no live
+          Orders. Its fictional records remain separate from your Workspace.
         </p>
       </div>
     </aside>
-
-    <UAlert title="Kiosk ordering is being rebuilt" color="neutral" />
   </main>
 </template>
 
@@ -138,16 +118,6 @@ const {
   experiences,
   refresh,
 } = await useMiseboxProductDemo()
-
-const kioskPreviewOpen = ref(false)
-const kioskPreviewKitchenId = ref(productDemo.value?.kiosk.defaultId || '')
-const NuxtLink = resolveComponent('NuxtLink')
-
-function handleExperienceClick(to: string) {
-  if (to !== '/demo/kiosk') return
-
-  kioskPreviewOpen.value = true
-}
 
 definePageMeta({
   layout: 'landing',
@@ -167,7 +137,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Interactive Product Demo · Misebox',
   description:
-    'Explore Misebox guest menus, touch-first Kiosk ordering and the Kitchen Order service board in a safe interactive demo.',
+    'Explore Misebox’s guest Menu through a read-only fictional restaurant demo.',
 })
 </script>
 

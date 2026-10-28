@@ -50,6 +50,8 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
+import { refreshNuxtData } from 'nuxt/app'
+
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import TestForm from './Form.vue'
 import type { TestController } from '../../composables/useWorkspaceTest'
@@ -61,7 +63,12 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import type { TestIntent } from '../../../models/test-intent'
 
-const props = defineProps<{ test: TestController; family: string; label: string; endpoint: string }>()
+const props = defineProps<{
+  test: TestController
+  family: string
+  label: string
+  endpoint: string
+}>()
 const page = useWorkspacePageState(props.family)
 const { currentUser } = useAuth()
 const config = useFireUXConfig()
@@ -79,7 +86,12 @@ let active = true
 onBeforeUnmount(() => {
   active = false
 })
-const snapshot = computed(() => JSON.stringify({ context: page.state.value, userId: currentUser.value?.uid ?? '' }))
+const snapshot = computed(() =>
+  JSON.stringify({
+    context: page.state.value,
+    userId: currentUser.value?.uid ?? '',
+  })
+)
 const ready = computed(() =>
   Boolean(
     props.test.id.value && !props.test.pending.value && !props.test.error.value
@@ -110,16 +122,39 @@ watch(snapshot, () => {
       'The Tests or selection changed. Ask again using the current view.'
   }
 })
-const contextSources = [() => currentUser.value?.uid, () => config.appId,
-  () => JSON.stringify(appUser.value), () => props.test.id.value, () => props.endpoint]
+const contextSources = [
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => JSON.stringify(appUser.value),
+  () => props.test.id.value,
+  () => props.endpoint,
+]
 const captureCommand = useCommandScope(contextSources)
 const capturePrepare = useCommandScope([...contextSources, prompt])
-const captureApply = useCommandScope([...contextSources, reviewOpen, preparedKey])
-watch(contextSources, () => {
-  submitting.value = false; applying.value = false; reviewOpen.value = false
-  prepared.value = null; message.value = ''; error.value = ''
-}, { flush: 'sync' })
-watch([reviewOpen, preparedKey], () => { applying.value = false }, { flush: 'sync' })
+const captureApply = useCommandScope([
+  ...contextSources,
+  reviewOpen,
+  preparedKey,
+])
+watch(
+  contextSources,
+  () => {
+    submitting.value = false
+    applying.value = false
+    reviewOpen.value = false
+    prepared.value = null
+    message.value = ''
+    error.value = ''
+  },
+  { flush: 'sync' }
+)
+watch(
+  [reviewOpen, preparedKey],
+  () => {
+    applying.value = false
+  },
+  { flush: 'sync' }
+)
 async function prepare() {
   if (!ready.value || !prompt.value.trim() || submitting.value) return
   const isCurrent = captureCommand()
@@ -137,19 +172,27 @@ async function prepare() {
   prepared.value = null
   try {
     const user = await useRequireUser()
-    if (!isCurrent() || !owner() || user.uid !== actorUid) throw new Error('The account or workspace changed.')
+    if (!isCurrent() || !owner() || user.uid !== actorUid)
+      throw new Error('The account or workspace changed.')
     const token = await user.getIdToken()
-    if (!isCurrent() || !owner()) throw new Error('The account or workspace changed.')
-    const intent = await $fetch<TestIntent>(
-      endpoint,
-      {
-        method: 'POST',
-        retry: 0,
-        timeout: 60_000,
-        headers: { authorization: `Bearer ${token}` },
-        body: { prompt: submittedPrompt, context },
-      }
-    )
+    if (!isCurrent() || !owner())
+      throw new Error('The account or workspace changed.')
+    const intent = await $fetch<TestIntent>(endpoint, {
+      onResponse: async ({ options, response }) => {
+        if (
+          response.ok &&
+          !['GET', 'HEAD'].includes(
+            String(options.method || 'GET').toUpperCase()
+          )
+        )
+          await refreshNuxtData()
+      },
+      method: 'POST',
+      retry: 0,
+      timeout: 60_000,
+      headers: { authorization: `Bearer ${token}` },
+      body: { prompt: submittedPrompt, context },
+    })
     if (!active || !isSurfaceCurrent() || !owner()) return
     if (snapshot.value !== requestedSnapshot) {
       message.value =

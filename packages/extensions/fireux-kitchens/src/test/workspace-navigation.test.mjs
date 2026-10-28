@@ -133,7 +133,7 @@ test('Identity and brand is top level, separate from technical Settings', () => 
       '/workspace/kitchen/settings/access',
     ]
   )
-  for (const file of ['profile', 'operating-hours', 'appearance']) {
+  for (const file of ['operating-hours', 'appearance']) {
     const nav = navigation(join(root, `identity/${file}.vue`))
     assert.equal(nav.hidden, true)
     assert.equal(nav.group, 'Identity & brand')
@@ -369,16 +369,16 @@ test('Overview presents group entrances without flattening their children', () =
   assert.deepEqual(areas[0].children, items[2].children)
 })
 
-test('collection breadcrumbs return to their route-owned group index', () => {
+test('shared Workspace breadcrumbs own Kitchen route ancestry', () => {
   const file = fileURLToPath(
     new URL(
-      '../runtime/kitchen/components/Workspace/Collection/Header.vue',
+      '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspacePageNavigation.ts',
       import.meta.url
     )
   )
   const script = readFileSync(file, 'utf8')
-    .match(/<script[^>]*>([\s\S]*?)<\/script>/)[1]
     .replace(/^import .*$/gm, '')
+    .replace(/^export /gm, '')
   const executable = ts.transpileModule(script, {
     compilerOptions: { target: ts.ScriptTarget.ESNext },
   }).outputText
@@ -386,21 +386,40 @@ test('collection breadcrumbs return to their route-owned group index', () => {
   const project = (path) =>
     Function(
       'computed',
-      'defineProps',
-      'useWorkspaceEntryCta',
       'useRoute',
-      'useNav',
-      `${executable}; return breadcrumbs.value`
+      'useWorkspaceNav',
+      'useWorkspaceEntryCta',
+      'toWorkspaceFamilyLabel',
+      `${executable}; return useWorkspacePageNavigation().breadcrumbs.value`
     )(
       (read) => ({
         get value() {
           return read()
         },
       }),
-      () => ({ title: path.endsWith('recipes') ? 'Recipes' : 'Food & drinks' }),
+      () => ({
+        path,
+        meta: {
+          nav: {
+            label: path.endsWith('recipes') ? 'Recipes' : 'Food & drinks',
+          },
+        },
+      }),
+      () => ({
+        currentWorkspace: { value: 'kitchen' },
+        items: {
+          value: [
+            {
+              key: 'workspace-kitchen-overview',
+              label: 'Overview',
+              to: '/workspace/kitchen/overview',
+            },
+            { ...prep, to: '/workspace/kitchen/prep' },
+          ],
+        },
+      }),
       () => ({ workspaceEntryPath: { value: '/' } }),
-      () => ({ path }),
-      () => ({ items: { value: [{ ...prep, to: '/workspace/kitchen/prep' }] } })
+      () => 'Kitchen'
     )
   assert.deepEqual(
     project('/workspace/kitchen/prep/recipes').map((item) => item.to),

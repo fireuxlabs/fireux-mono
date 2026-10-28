@@ -1,4 +1,5 @@
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAsyncData } from 'nuxt/app'
+
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -58,14 +59,16 @@ export function useIngredientCollection(
             (config.devMode && config.developerId === currentUser.value.uid))
       )
   )
-  const state = useLiveAsyncData<IngredientDirectoryPage>(
+  const state = useAsyncData<IngredientDirectoryPage>(
     () =>
       includeInactive
         ? `curator-ingredient-library-v2|${scopeEpoch.value}`
         : 'ingredient-collection-v2',
-    async (liveFetch) => {
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+
       if (!includeInactive) {
-        return liveFetch<IngredientDirectoryPage>('/api/ingredients')
+        return fetchRead<IngredientDirectoryPage>('/api/ingredients')
       }
 
       const user = currentUser.value
@@ -74,7 +77,7 @@ export function useIngredientCollection(
       const token = await user.getIdToken()
       if (epoch !== scopeEpoch.value || !active.value)
         throw new Error('The Ingredient curation context changed.')
-      return liveFetch<IngredientDirectoryPage>('/api/internal/ingredients', {
+      return fetchRead<IngredientDirectoryPage>('/api/internal/ingredients', {
         headers: { Authorization: `Bearer ${token}` },
       })
     },

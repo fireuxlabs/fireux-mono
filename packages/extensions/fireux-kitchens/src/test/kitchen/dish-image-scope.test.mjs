@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'

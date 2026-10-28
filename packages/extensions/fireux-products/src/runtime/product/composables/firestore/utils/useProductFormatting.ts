@@ -1,20 +1,15 @@
-import type {
-  Product,
-  ProductPrice,
-} from '../../../utils/product.ts'
+import type { Product, ProductPrice } from '../../../utils/product.ts'
 import { ProductStorage } from '../../../utils/product.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 
 export function useProductFormatting() {
   const { uploadImage } = useImageStorage()
-  const { firestoreGetDoc } = useFirestoreManager()
+  const { firestoreGetDoc } = useFirestoreRead()
 
-  function formatProductData(
-    product: Partial<Product>
-  ): Partial<Product> {
+  function formatProductData(product: Partial<Product>): Partial<Product> {
     const formatted: Partial<Product> = { ...product }
 
     if (formatted.name) formatted.name = formatted.name.trim()
@@ -69,10 +64,7 @@ export function useProductFormatting() {
     return product.name || 'Unnamed Product'
   }
 
-  function formatProductExcerpt(
-    product: Product,
-    maxLength = 150
-  ): string {
+  function formatProductExcerpt(product: Product, maxLength = 150): string {
     const description = product.description || ''
     if (description.length <= maxLength) return description
     return description.substring(0, maxLength).replace(/\s+\S*$/, '') + '...'

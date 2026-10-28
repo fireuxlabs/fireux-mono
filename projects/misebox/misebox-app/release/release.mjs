@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { readFile, writeFile, mkdir, access, mkdtemp, rm } from 'node:fs/promises'
+import { readFile, writeFile, mkdir, access, mkdtemp, rm, realpath } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { resolve, dirname, relative, isAbsolute } from 'node:path'
@@ -169,8 +169,10 @@ export async function checkOutput(root = appRoot) {
 
 async function checkDiscoveryDependencies(output, manifest) {
   try {
-    const modules = resolve(output, 'node_modules')
-    const sdk = createRequire(resolve(output, 'package.json')).resolve('firebase-functions')
+    const modules = await realpath(resolve(output, 'node_modules'))
+    const sdk = await realpath(
+      createRequire(resolve(output, 'package.json')).resolve('firebase-functions')
+    )
     const localPath = relative(modules, sdk)
     if (localPath.startsWith('..') || isAbsolute(localPath))
       throw new Error('Functions SDK resolved outside prepared output.')

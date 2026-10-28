@@ -1,7 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { readDishUsage } from './usage'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenDishesTarget } from '../mutation-targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   readKitchenMutationActor,

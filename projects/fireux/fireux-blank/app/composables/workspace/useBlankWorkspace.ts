@@ -4,7 +4,7 @@ import {
   defineWorkspace,
 } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useBlankCollection } from '../fireux/firestore/blank/useBlank'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
 
 export const useBlankWorkspace = defineWorkspace(() => {
   const selection = useWorkspace('blank')

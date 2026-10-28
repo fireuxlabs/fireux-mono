@@ -147,7 +147,12 @@ const {
 )
 const route = useRoute()
 const manage = ref(false)
-const { deleteDish } = useDishDelete()
+const { deleteDish } = useDishDelete([
+  kitchenId,
+  dishId,
+  () => route.fullPath,
+  canWrite,
+])
 const toast = useToastify()
 const captureIntent = useDishEditorScope(
   [kitchenId, dishId, () => route.fullPath],
