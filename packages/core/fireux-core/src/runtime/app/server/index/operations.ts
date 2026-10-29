@@ -40,9 +40,7 @@ function asFamilyArray<const T extends readonly string[]>(
 ): T[number][] | undefined {
   if (!Array.isArray(value)) return undefined
   const items = value.map(asString)
-  if (
-    items.some((item) => !item || !allowed.includes(item as T[number]))
-  ) {
+  if (items.some((item) => !item || !allowed.includes(item as T[number]))) {
     return undefined
   }
   return [...new Set(items as T[number][])]
@@ -61,14 +59,8 @@ function normalizeCapabilityFamilies(
     value.entries,
     WORKSPACE_CAPABILITY_ENTRY_FAMILIES
   )
-  const tools = asFamilyArray(
-    value.tools,
-    WORKSPACE_CAPABILITY_TOOL_FAMILIES
-  )
-  const scopes = asFamilyArray(
-    value.scopes,
-    WORKSPACE_CAPABILITY_TOOL_SCOPES
-  )
+  const tools = asFamilyArray(value.tools, WORKSPACE_CAPABILITY_TOOL_FAMILIES)
+  const scopes = asFamilyArray(value.scopes, WORKSPACE_CAPABILITY_TOOL_SCOPES)
   if (!surfaces?.length || !entries || !tools || !scopes) return undefined
   if (Boolean(tools.length) !== Boolean(scopes.length)) return undefined
 
@@ -144,7 +136,7 @@ function isFireuxMetaContent(value: unknown): value is FireuxMetaContent {
 
 export function readAppOperations(event: H3Event) {
   const runtimeConfig = useRuntimeConfig(event)
-  const meta = runtimeConfig.fireux?.meta
+  const meta: unknown = runtimeConfig.fireux?.meta
   const operations = isFireuxMetaContent(meta)
     ? (meta.operations || [])
         .map((operation) => normalizeOperation(operation))

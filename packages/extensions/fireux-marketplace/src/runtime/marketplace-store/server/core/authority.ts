@@ -59,8 +59,10 @@ export function invalidStored(label: string): never {
   })
 }
 
-export function canonicalStore(snapshot: DocumentSnapshot): MarketplaceStore {
-  if (!snapshot.exists) {
+export function canonicalStore(
+  snapshot: DocumentSnapshot | undefined
+): MarketplaceStore {
+  if (!snapshot?.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Store not found.' })
   }
   try {
@@ -81,8 +83,10 @@ export function canonicalGuardedStore(
   } as DocumentSnapshot)
 }
 
-export function canonicalOffer(snapshot: DocumentSnapshot): MarketplaceOffer {
-  if (!snapshot.exists) {
+export function canonicalOffer(
+  snapshot: DocumentSnapshot | undefined
+): MarketplaceOffer {
+  if (!snapshot?.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Offer not found.' })
   }
   try {
@@ -92,8 +96,10 @@ export function canonicalOffer(snapshot: DocumentSnapshot): MarketplaceOffer {
   }
 }
 
-export function canonicalOrder(snapshot: DocumentSnapshot): MarketplaceOrder {
-  if (!snapshot.exists) {
+export function canonicalOrder(
+  snapshot: DocumentSnapshot | undefined
+): MarketplaceOrder {
+  if (!snapshot?.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
   }
   try {
@@ -135,8 +141,10 @@ export function ordersRef(store: DocumentReference) {
   return store.collection(MarketplaceOrderStorage.collection)
 }
 
-export function validMemberRole(snapshot: DocumentSnapshot): MemberRole | '' {
-  if (!snapshot.exists) return ''
+export function validMemberRole(
+  snapshot: DocumentSnapshot | undefined
+): MemberRole | '' {
+  if (!snapshot?.exists) return ''
   const role = text(snapshot.get('role'))
   return role === 'admin' || role === 'user' || role === 'dev' ? role : ''
 }
@@ -152,7 +160,7 @@ export async function requireMarketplaceMember(
     membershipRef(db, scope.appId, uid)
   )
   const role = validMemberRole(membership)
-  if (!app.exists || !role) {
+  if (!app?.exists || !role) {
     throw createError({
       statusCode: 403,
       statusMessage: 'A valid current App membership is required.',

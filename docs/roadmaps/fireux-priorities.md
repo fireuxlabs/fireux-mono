@@ -1,7 +1,7 @@
 # FireUX priorities
 
 Reviewed: 2026-10-29
-Source baseline: `cf2413355`, with concurrent implementation preserved
+Source baseline: `3f46d22a2`, with verified compatibility repairs in the shared queue
 Role: consolidated priority list; recommendations, not release commitments
 
 ## How to use this list
@@ -12,13 +12,41 @@ unchecked boxes are not new assignments. This file owns sequencing, while
 [AGENTS.md](../../AGENTS.md), [global context](../ai/gpt-context.md), current
 source and scoped contexts own implementation rules and authority.
 
-**Current emphasis:** build and prove the pipelines. Existing real records and
+**Current emphasis:** functionality, centralisation, and proving the pipelines.
+Permission compatibility belongs here where a real reader, upload or ownership
+path is broken. Live permission rollout remains a pre-shipping gate and is not
+a reason to expand current work into a wider security project. Build and prove
+the pipelines. Existing real records and
 domain demo data are valid test inputs; a new App or a particular venue's opening
 window is not required to prove a shared mechanism. Follow the same owning
 commands from input to saved result, reload and failure/retry recovery. Keep
 pipeline proof distinct from that venue's operational acceptance and deployment.
 Read-only demo fixtures remain read-only; any persisted test records use the
 normal authorized domain commands, with clear test labels.
+
+## Current execution focus
+
+The accepted Project/Kitchen Identity and Apps collection slice stays closed
+unless a concrete regression is reproduced. Mapping that same chain again is
+orientation, not a new implementation milestone. Small internal differences
+are not blockers merely because they could be made more symmetrical.
+
+Continue agreed local work through inspection, necessary repairs and focused
+verification without handing each small step back to the human. Report a
+completed, reviewable outcome or a specific blocker requiring human input.
+Do not turn an optional polish item or a release-only decision into a dependency
+for functionality work.
+
+The next functional proof is the Collection customer/operator journey on a
+narrow screen, retaining the existing desktop order evidence. Then address only
+reproduced journey failures. Ignition's supported Menu starting-App path is
+already proved as assisted; installation, startup and initialization are explicit
+operator steps, not evidence that the shared preparation is missing. Broader
+creation automation needs a concrete supported-user outcome before expansion.
+
+Keep the current compatibility repairs separate from new work in the shared
+queue. Their focused checks and six-App build/type evidence are recorded in the
+existing access review. Git save and deployment remain separately authorized.
 
 ## Attack order
 
@@ -90,10 +118,12 @@ The [pilot checkpoint](../reviews/baeren-collection-pilot-2026-10-28.md) records
 fresh customer test order #21 through its receipt, operator completion and reload,
 with no duplicate and unchanged venue prices/hours. The local production policy
 candidate now follows the existing trusted Kitchen command ownership. The shared queue is saved in `77faf3e16`. The [completed access review](../reviews/misebox-production-access-2026-10-29.json)
-found two remaining release blockers: protected media/Storage access and raw
-public Product metadata exposure. Close those boundaries next, then repeat
-release checks and obtain production-access and venue/operator acceptance.
-No live policy or application was deployed.
+originally found protected media/Storage access and raw public Product metadata
+exposure. Those local code repairs were saved in `3f46d22a2`; do not reopen them
+as unfinished implementation. The subsequent six-App compatibility pass is
+locally verified and remains in the shared uncommitted queue. Its remaining
+legacy deployment/file classification belongs to release preparation, not a
+new foundation audit. No live policy or application was deployed.
 
 Start with one existing Collection configuration and follow the complete guest
 and operator journey. Fix only the Item, Menu, Offering or fulfilment gaps that

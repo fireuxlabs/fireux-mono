@@ -4,14 +4,11 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useUserSession } from '../session/useUserSession'
 import { isUserDirectoryEligible } from '../../utils/normalize-user'
 import { useUserCollection } from '../useUserCollection'
-import { useUserDirectoryCollection } from './useUserDirectoryCollection'
 
 /** Live User directory with App-owned eligibility on tenant surfaces. */
 export function useUserDirectory() {
   const { appId, isTenant } = useFireUXConfig()
-  const source = isTenant
-    ? useUserDirectoryCollection(appId)
-    : useUserCollection()
+  const source = useUserCollection()
   const { user: currentUser, appUser, appOutcome } = useUserSession()
   const users = computed(() => {
     if (source.pending.value || source.error.value) return []

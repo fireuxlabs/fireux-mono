@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { projectMarketplaceStoreDirectoryEntry } from '../../dist/runtime/server/marketplace/directory/projection.js'
+import { projectMarketplaceStoreDirectoryEntry } from '../runtime/marketplace-store/server/directory/projection.ts'
 import {
   MarketplaceValidationError,
   canonicalMarketplaceOffer,
@@ -8,7 +8,7 @@ import {
   canonicalMarketplaceStore,
   normalizeMarketplaceOfferCreate,
   normalizeMarketplaceOrderCreate,
-} from '../../dist/runtime/server/marketplace/core/validation.js'
+} from '../runtime/marketplace-store/server/core/validation.ts'
 
 const stamp = {
   created: {
@@ -23,8 +23,7 @@ const stamp = {
 }
 
 const draftStore = {
-  id: 'anja-honey',
-  app_id: 'interlaken-essen',
+  management: { mode: 'app', app_id: 'interlaken-essen' },
   slug: 'anja-honey',
   name: 'Anja’s Honey',
   description: 'Local Goldsiegel honey from Zweilütschinen.',
@@ -34,8 +33,6 @@ const draftStore = {
   section_ids: ['honig'],
   fulfilment_methods: [],
   publication_state: 'draft',
-  owner_ids: ['owner-1'],
-  editor_ids: [],
   submitted_at: null,
   published_at: null,
   ...stamp,
@@ -61,12 +58,10 @@ test('draft Stores and Offers can remain free of invented commercial terms', () 
     []
   )
   assert.equal(canonicalMarketplaceOffer('honey-250', draftOffer).price, null)
-  assert.deepEqual(
-    canonicalMarketplaceStore('anja-honey', {
-      ...draftStore,
-      owner_ids: [],
-    }).owner_ids,
-    []
+  assert.throws(
+    () =>
+      canonicalMarketplaceStore('anja-honey', { ...draftStore, owner_ids: [] }),
+    MarketplaceValidationError
   )
 })
 
@@ -129,6 +124,7 @@ test('order requests require bounded lines and a local-delivery address', () => 
 test('stored Order snapshots reconcile every line and the total', () => {
   const order = {
     id: 'order-1',
+    record_type: 'marketplace-order',
     app_id: 'interlaken-essen',
     store_id: 'anja-honey',
     store_name: 'Anja’s Honey',

@@ -5,7 +5,8 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
 function harness(id = 'runtime') {
-  const calls = []
+  const calls = [],
+    refreshed = []
   const source = readFileSync(
     new URL(
       '../runtime/app/composables/identity/useAppIdentityUpdate.ts',
@@ -17,7 +18,14 @@ function harness(id = 'runtime') {
     .replace('export function', 'function')
   const make = compileFunction(
     `${stripTypeScriptTypes(source)}; return useAppIdentityUpdate`,
-    ['useRequireUser', 'useFireUXConfig', 'fetch', 'useAuth', 'useCommandScope']
+    [
+      'useRequireUser',
+      'useFireUXConfig',
+      'fetch',
+      'useAuth',
+      'useCommandScope',
+      'refreshNuxtData',
+    ]
   )(
     async () => ({ uid: 'actor', getIdToken: async () => 'test-token' }),
     () => ({ appId: 'runtime' }),
@@ -26,14 +34,18 @@ function harness(id = 'runtime') {
       return { ok: true, json: async () => ({ ok: true, appId: 'runtime' }) }
     },
     () => ({ currentUser: { value: { uid: 'actor' } } }),
-    () => () => () => true
+    () => () => () => true,
+    async (key) => refreshed.push(key)
   )
-  return { settings: make({ value: { id } }), calls }
+  return { settings: make({ value: { id } }), calls, refreshed }
 }
 
 test('App settings send authenticated raw input to the single server validator', async () => {
-  const { settings, calls } = harness()
+  const { settings, calls, refreshed } = harness()
   await settings.updateDescription('  Saved description  ')
+  assert.deepEqual(refreshed, [
+    JSON.stringify(['app-read', 'runtime', 'actor']),
+  ])
   assert.equal(calls[0][0], '/api/internal/app/settings')
   assert.equal(calls[0][1].headers.authorization, 'Bearer test-token')
   assert.deepEqual(JSON.parse(calls[0][1].body), {

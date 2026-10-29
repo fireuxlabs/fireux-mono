@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-10-29
-Ref: 96c699615
+Ref: 3f46d22a2
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1048,8 +1048,14 @@ validate image bytes, write immutable revisions and recheck authority before
 issuing the URL. The separate authored `storage.production.rules` closes browser
 SDK access; explicit public image token URLs remain readable. Production
 preflight requires both localhost policy suites, and production upload compares
-both exact live policy sources. Neither command deploys policies. Existing
-historical tokens and inherited/bucket IAM still require their own review. Its six-App authority must pass the required
+both exact live policy sources. Neither command deploys policies. Historical token classification and legacy deployed consumers remain separate
+rollout decisions. Compatibility source/evidence is recorded in the dated access
+review. The candidate supports owner-only private account reads, App-admin
+featured settings, and Kitchen-operator Menu uploads, drafts, table tabs and
+promotions. App metadata and join policy share Core's safe App-status snapshot;
+public User directories and member display identities reuse their server
+projection owners. Canonical membership lookup remains App-admin scoped and
+independent of public tenant-directory eligibility. Its six-App authority must pass the required
 overlapping-stale-grant access-budget regression, deleted/malformed earlier
 App grants and non-string ID denial before release. See that
 directory's README for commands and local-versus-live verification boundaries.

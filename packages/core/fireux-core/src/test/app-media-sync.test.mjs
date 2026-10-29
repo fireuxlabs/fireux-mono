@@ -13,6 +13,7 @@ import { compileFunction } from 'node:vm'
 
 const runtimeFile = (path) => new URL(`../runtime/${path}`, import.meta.url)
 const compileSource = (input, exported, dependencies) => {
+  dependencies = { refreshNuxtData: async () => {}, ...dependencies }
   const source = stripTypeScriptTypes(
     input
       .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -82,10 +83,20 @@ function fixture({
     ),
   ])
   const sync = compile('app/server/media/sync.ts', 'syncConfiguredAppMedia', {
-    findRepoRoot: compile('server/utils/files/repository-root.ts', 'findRepoRoot', {
-      existsSync: (path) => paths.has(path), join, pathResolve,
-    }),
-    normalizeStorageBucketName: compile('server/utils/uploads/storage.ts', 'normalizeStorageBucketName', {}),
+    findRepoRoot: compile(
+      'server/utils/files/repository-root.ts',
+      'findRepoRoot',
+      {
+        existsSync: (path) => paths.has(path),
+        join,
+        pathResolve,
+      }
+    ),
+    normalizeStorageBucketName: compile(
+      'server/utils/uploads/storage.ts',
+      'normalizeStorageBucketName',
+      {}
+    ),
     requireDevDeveloper: async () => {
       if (denied)
         throw Object.assign(new Error('Developer required'), {
@@ -210,23 +221,22 @@ test('media sync rejects alternate owners, unknown kinds and invalid images befo
 
 test('the media adapter sends only selected kinds through the authenticated command', async () => {
   let request
-  const sync = compile(
-    'app/utils/sync-app-media.ts',
-    'syncAppMediaToStorage',
-    {
-      useRequireUser: async () => ({ uid: 'actor', getIdToken: async () => 'test-token' }),
-      useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
-      useFireUXConfig: () => ({ appId: 'child' }),
-      captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
-      fetch: async (url, options) => {
-        request = { url, options }
-        return {
-          ok: true,
-          json: async () => ({ appId: 'child', uploaded: {}, failed: [] }),
-        }
-      },
-    }
-  )
+  const sync = compile('app/utils/sync-app-media.ts', 'syncAppMediaToStorage', {
+    useRequireUser: async () => ({
+      uid: 'actor',
+      getIdToken: async () => 'test-token',
+    }),
+    useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
+    useFireUXConfig: () => ({ appId: 'child' }),
+    captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
+    fetch: async (url, options) => {
+      request = { url, options }
+      return {
+        ok: true,
+        json: async () => ({ appId: 'child', uploaded: {}, failed: [] }),
+      }
+    },
+  })
   await sync(['logo'])
   assert.equal(request.url, '/api/internal/app/sync-media')
   assert.equal(request.options.headers.authorization, 'Bearer test-token')

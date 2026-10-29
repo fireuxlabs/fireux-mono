@@ -64,9 +64,8 @@ export async function createMarketplaceOrder(
         statusMessage: 'Store does not support that fulfilment method.',
       })
     }
-    const offers = snapshots.slice(1).map(canonicalOffer)
-    const lines = offers.map((offer, index) => {
-      const requested = intent.lines[index]
+    const lines = intent.lines.map((requested, index) => {
+      const offer = canonicalOffer(snapshots[index + 1])
       if (
         offer.app_id !== current.appId ||
         offer.store_id !== store.id ||

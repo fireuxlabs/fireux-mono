@@ -266,7 +266,8 @@ export function canonicalMarketplaceOrder(
     buyer_uid: marketplaceDocumentId(data.buyer_uid, 'Order buyer'),
     lines,
     total,
-    fulfilment_method: fulfilmentMethod,
+    fulfilment_method:
+      fulfilmentMethod ?? fail('Stored Order fulfilment method is required.'),
     delivery_address: deliveryAddress,
     buyer_note: optionalText(data.buyer_note, 'Buyer note', 500),
     status: data.status as MarketplaceOrder['status'],

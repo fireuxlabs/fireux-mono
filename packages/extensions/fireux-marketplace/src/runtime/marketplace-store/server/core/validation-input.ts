@@ -255,7 +255,8 @@ export function normalizeMarketplaceOrderCreate(
   return {
     store_id: marketplaceDocumentId(data.store_id, 'Store id'),
     lines,
-    fulfilment_method: methods[0],
+    fulfilment_method:
+      methods[0] ?? fail('Order fulfilment method is required.'),
     delivery_address: deliveryAddress,
     buyer_note: optionalText(data.buyer_note, 'Buyer note', 500),
   }

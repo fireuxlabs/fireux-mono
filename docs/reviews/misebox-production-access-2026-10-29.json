@@ -20,7 +20,7 @@
   "releaseReady": false,
   "score": 1,
   "scoreScope": "Current live production readiness: development-open policies would permit unauthorized access if treated as production security. This is not a code-quality score.",
-  "summary": "Product public reads and protected media blockers are closed in source and local tests. Domain commands reuse existing authority and Core upload mechanics. The production gate now requires both reviewed live policy sources, but no deployment, live policy update or live data write was performed. Live development-open permissions remain a release blocker.",
+  "summary": "The two earlier blockers and current six-App reader compatibility gaps are repaired locally. Shared App/User reads now use their existing projection owners, while native owner/operator readers retain explicit candidate grants. Bucket/link metadata was inspected read-only. Work remains before release: identify the legacy Niederhorn deployment, repair seven legacy Product image references, classify tokenised files, release compatible Apps and separately approve policy rollout.",
   "findings": [
     {
       "check": "Authority / unrestricted live access",
@@ -153,5 +153,143 @@
     "Review historical download-token exposure and inherited/bucket IAM before approving production policy rollout.",
     "Separately authorize backed-up, exact-target Firestore and Storage policy rollout and readback.",
     "Only then approve an application release; no deployment is authorized by this audit."
-  ]
+  ],
+  "compatibilityAudit": {
+    "sourceBaseline": "3f46d22a2",
+    "scope": "six current repository Misebox Apps; shared native readers, safe API owners and bucket/link metadata; not a deployed-version acceptance test",
+    "apps": [
+      "misebox-app",
+      "baeren-ringgenberg",
+      "friiites",
+      "la-tap-berne",
+      "bangin-coffee",
+      "interlaken-essen"
+    ],
+    "readerFamilies": {
+      "appMetadataAndJoining": "one safe App-status snapshot; private root context omitted",
+      "userDirectory": "one public User collection owner; global and tenant cursors preserved",
+      "membershipIdentities": "public summary hydration; admin canonical handle lookup independent of tenant directory eligibility",
+      "privateAccount": "owner-only native Firebase document read",
+      "appAdministration": "native exact-App membership/join-request reads; featured settings admin-only",
+      "kitchenWorkspace": "membership-bound roots/Places and enumerated children; added source uploads, drafts, promotions and table tabs",
+      "publicDomains": "Menu, Place, Company, Ingredient, Job/profile, Blog and Product projections use existing server owners",
+      "supplierConsumer": "Kitchen reads its own supplier links and the existing supply API; Supplier-owner workspace readers are not enabled by current Misebox App workspace declarations",
+      "translations": "unconsumed raw translation helper is not an active reader; existing owned translation commands remain separate"
+    },
+    "bucket": {
+      "objects": 722,
+      "objectsWithDownloadTokens": 721,
+      "publicObjectAclGrants": 0,
+      "publicBucketIamGrants": 0,
+      "publicProjectIamGrants": 0,
+      "projectParent": "none reported",
+      "uniformBucketLevelAccess": false,
+      "firebaseRules": "development-open remains unchanged",
+      "tokenisedPdfs": 9,
+      "otherNonImageMimeObjects": 2,
+      "objectsWithoutContentType": 29
+    },
+    "storedMediaLinks": {
+      "rootCollections": [
+        "apps",
+        "places",
+        "kitchens",
+        "suppliers",
+        "companies",
+        "users",
+        "blogs",
+        "products"
+      ],
+      "nestedCollectionGroups": [
+        "dishes",
+        "menus",
+        "menu-uploads",
+        "profiles",
+        "items"
+      ],
+      "references": 426,
+      "matchingTokenReferences": 419,
+      "missingObjects": [
+        {
+          "document": "products/prod_OI6EvLOCGmdjQi",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "2410_Vaya_Sweet Potato_22.png",
+          "status": "missing-object"
+        },
+        {
+          "document": "products/prod_OIoWmUNqj3YGLN",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "balsamic.png",
+          "status": "missing-object"
+        },
+        {
+          "document": "products/prod_OJw5MIstXVbqBs",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "cake.jpg",
+          "status": "missing-object"
+        },
+        {
+          "document": "products/prod_OJxS02NtrBjSlG",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "551800-grt-Best-Substitutes-for-Lemon-Juice-1200x628-Facebook-1200x628.jpg",
+          "status": "missing-object"
+        },
+        {
+          "document": "products/prod_OQg4hky1fApvXU",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "2530_Vaya_Roots_80g_223.png",
+          "status": "missing-object"
+        },
+        {
+          "document": "products/prod_OR2S7lABWWuQIT",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "2315_VAYA_Bean_Salt2.webp",
+          "status": "missing-object"
+        },
+        {
+          "document": "products/prod_OR4YbtialsaplF",
+          "field": "images[0]",
+          "bucket": "misebox-78f9c.appspot.com",
+          "path": "2370_VAYA_Hummus_Creamy_Herbs_22.webp",
+          "status": "missing-object"
+        }
+      ],
+      "scopeLimit": "media fields only; not free-text links, historical order snapshots or external sites"
+    },
+    "localFixes": [
+      "App metadata and stored join policy share the existing safe status API; removed duplicate join-policy reader",
+      "Unified public User collection ownership; preserved global pagination and tenant eligibility",
+      "Reused User identity projection for member-name batches and protected canonical admin lookup",
+      "Refreshed App snapshot after settings/media commands",
+      "Matched candidate reads to existing owner-account, admin settings and Kitchen source/draft/table/promotion readers",
+      "Kept private App context admin-only",
+      "Corrected native Nuxt head options and optional metadata typing; fixed exposed Marketplace snapshot/index typing and stale test fixtures"
+    ],
+    "verification": {
+      "sixAppTypechecks": "passed",
+      "sharedReaderTests": 46,
+      "appCommandAndLifecycleTests": 118,
+      "projectionTests": 4,
+      "marketplaceTests": 5,
+      "localRuleTests": 29,
+      "runtimeReadOnlySmoke": "safe App metadata, two distinct public User pages, bounded identity summaries, unsigned admin lookup rejected, B\u00e4ren Kitchen 200",
+      "localMiseboxBuild": "passed",
+      "changedFileLint": "passed",
+      "ideConfiguration": "current",
+      "totalFocusedChecks": 202
+    },
+    "remaining": [
+      "Identify the live Niederhorn application function, absent from the six current App source entries, before policy rollout",
+      "Repair seven legacy Product image references through their normal data owner; no matching repository asset was found",
+      "Decide whether the nine tokenised PDFs are deliberately link-shared; source scans and retained image revisions also require classification before revocation",
+      "Deploy compatible versions to affected Apps before any separately approved policy rollout; existing live versions were not compared byte-for-byte with source",
+      "No live record edits, token revocation, IAM changes or deployment were performed"
+    ]
+  }
 }

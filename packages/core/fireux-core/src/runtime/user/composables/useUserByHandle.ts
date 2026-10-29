@@ -1,100 +1,82 @@
-import {
-  collection,
-  limit as fslimit,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef } from 'vue'
-import type { Ref } from 'vue'
-import {
-  readRuntimeIdentityFirestoreDatabaseId,
-  useFirestore,
-} from '../../composables/fireux/firestore/vuefire'
-import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useAsyncData } from 'nuxt/app'
+import { computed, unref, type Ref } from 'vue'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeUserHandle } from '../utils/user-handle'
-import { useUserRead } from './useUserRead'
+import type { UserIdentitySummary } from '../models/user-directory.model'
+import { resolveReadOutcome } from '../../utils/read-outcome'
 
-type HandleUserMatch = {
-  id?: string
-  handle?: string
-}
-
+/** Canonical lookup for App membership administration, independent of directory eligibility. */
 export function useUserByHandle(
   handle: string | null | undefined | Ref<string | null | undefined>
 ) {
-  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
-  const { firestoreQuery } = useFirestoreRead()
-  const rawHandle = computed(() => (isRef(handle) ? handle.value : handle))
-  const rawTrimmed = computed(() => String(rawHandle.value ?? '').trim())
-  const normalizedHandle = computed(() => {
-    const raw = rawTrimmed.value
-    const withoutAt = raw.startsWith('@') ? raw.slice(1) : raw
-    return normalizeUserHandle(withoutAt)
-  })
-  const query = computed(() =>
-    normalizedHandle.value
-      ? (fsq(
-          collection(db, 'users'),
-          where('handle', '==', normalizedHandle.value),
-          fslimit(2)
-        ) as Query<HandleUserMatch>)
+  const { currentUser } = useAuth()
+  const { appId } = useFireUXConfig()
+  const normalized = computed(() =>
+    normalizeUserHandle(
+      String(unref(handle) || '')
+        .trim()
+        .replace(/^@/, '')
+    )
+  )
+  const key = computed(() =>
+    JSON.stringify([
+      'member-identity',
+      appId,
+      currentUser.value?.uid,
+      normalized.value,
+    ])
+  )
+  const state = useAsyncData(
+    key,
+    async (_app, { signal }) => {
+      const requestKey = key.value,
+        actor = currentUser.value,
+        requested = normalized.value
+      if (!actor || !requested) return { key: requestKey, user: null }
+      const token = await actor.getIdToken()
+      if (actor.uid !== currentUser.value?.uid)
+        throw new Error('The account changed.')
+      const user = await $fetch<UserIdentitySummary | null>(
+        '/api/internal/app/membership/identity',
+        {
+          signal,
+          query: { handle: requested },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      return { key: requestKey, user }
+    },
+    { server: false }
+  )
+  const user = computed(() =>
+    state.data.value?.key === key.value &&
+    !state.pending.value &&
+    !state.error.value
+      ? state.data.value.user
       : null
   )
-  const matches = firestoreQuery<HandleUserMatch>(query)
-  const userMatchRows = computed(() => matches.value)
-
-  const matchedUser = computed(() => {
-    const value = normalizedHandle.value
-    if (!value) return undefined
-    const rows = userMatchRows.value
-    if (matches.pending.value || matches.error.value || rows?.length !== 1)
-      return undefined
-    return rows.find(
-      (row) => normalizeUserHandle(String(row?.handle ?? '')) === value
-    )
-  })
-
-  const uid = computed(() => {
-    const value = String(matchedUser.value?.id || '').trim()
-    return value || null
-  })
-
-  const refs = useUserRead(uid)
-  const resolving = computed(() => {
-    const value = normalizedHandle.value
-    if (!value) return false
-    if (uid.value) return false
-    return matches.pending.value && !matches.error.value
-  })
-
-  const pending = computed(() => matches.pending.value || refs.pending.value)
-  const error = computed(
+  const pending = computed(
     () =>
-      matches.error.value ||
-      ((userMatchRows.value?.length ?? 0) > 1
-        ? new Error('User identity is not unique')
-        : null) ||
-      refs.error.value
+      state.pending.value ||
+      Boolean(state.data.value && state.data.value.key !== key.value)
   )
-  const outcome = computed(() => {
-    if (!normalizedHandle.value) return 'idle' as const
-    if (error.value) return 'error' as const
-    if (pending.value) return 'pending' as const
-    return refs.user.value && uid.value
-      ? ('ready' as const)
-      : ('empty' as const)
-  })
-  const empty = computed(() => outcome.value === 'empty')
-
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      enabled: Boolean(normalized.value && currentUser.value),
+      pending: pending.value,
+      failed: Boolean(state.error.value),
+      present: Boolean(user.value),
+    })
+  )
   return {
-    ...refs,
+    user,
+    uid: computed(() => user.value?.id || null),
+    handle: normalized,
     pending,
-    error,
+    resolving: pending,
+    error: state.error,
     outcome,
-    uid,
-    handle: normalizedHandle,
-    resolving,
-    empty,
+    empty: computed(() => outcome.value === 'empty'),
   }
 }

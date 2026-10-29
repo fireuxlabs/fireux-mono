@@ -231,7 +231,7 @@ function nativeSession(initial = {}) {
       computed,
       useAuth: () => auth,
       useFireUXConfig: () => ({ appId: 'runtime' }),
-      useAppJoinPolicy: () => ({
+      useAppRead: () => ({
         canSelfJoin: ref(true),
         pending: ref(false),
         error: ref(undefined),

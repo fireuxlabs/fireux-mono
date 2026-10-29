@@ -88,7 +88,7 @@ for (const [name, file, storage, args] of [
         [storage]: { collection: 'records' },
         SupplierStorage: { collection: 'suppliers' },
         useActivePortfolio: () => ({}),
-        usePortfolioWorkspaceChildPath: () =>
+        usePortfolioChildPath: () =>
           computed(() =>
             selected.value ? `portfolios/${selected.value}/records` : ''
           ),
@@ -119,38 +119,28 @@ for (const [name, file, storage, args] of [
   })
 }
 
-test('User reader explicitly selects identity database and exposes read state', () => {
+test('User collection uses the public projection and exposes honest read state', () => {
   const pending = ref(true),
-    error = ref(undefined)
-  let options, path
+    error = ref(null),
+    data = ref({ items: [] })
   const factory = load(
     'packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts',
     'useUserCollection',
     {
       ...common,
-      readRuntimeIdentityFirestoreDatabaseId: () => 'identity-db',
-      useFirestoreRead: (input) => {
-        options = input
-        return {
-          firestoreCollectionPage: (input) => {
-            path = input
-            return {
-              data: ref([]),
-              pending,
-              error,
-              outcome: ref('pending'),
-            }
-          },
-        }
-      },
+      resolveReadOutcome,
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useAsyncData: () => ({ data, pending, error }),
     }
   )
   const state = factory()
-  assert.equal(options.databaseId, 'identity-db')
-  assert.equal(path, 'users')
-  assert.equal(state.pending.value, true)
-  assert.deepEqual(state.users.value, [])
   assert.equal(state.outcome.value, 'pending')
+  pending.value = false
+  data.value = { items: [{ id: 'public-user', display_name: 'Public' }] }
+  assert.equal(state.count.value, 1)
+  error.value = new Error('API unavailable')
+  assert.equal(state.outcome.value, 'error')
+  assert.deepEqual(state.users.value, [])
 })
 
 test('Kitchen menu paths distinguish default scope from explicitly disabled reads', () => {
@@ -231,37 +221,19 @@ test('App parsing projects obsolete fields and rejects invalid identity', () => 
   assert.equal(parse({ ...valid, ecosystem_id: '' }, 'bad'), null)
 })
 
-test('User collection normalizes presentation just like User detail', () => {
+test('Public User identity normalization excludes private stored fields', () => {
   const normalizeUser = load(
     'packages/core/fireux-core/src/runtime/user/utils/normalize-user.ts',
     'normalizeUser',
-    { resolveUserAvatarSource: (value) => value ?? '' }
+    { resolveUserAvatarSource: (value) => value || '' }
   )
-  const source = Object.assign(
-    ref([
-      {
-        id: 'user-a',
-        display_name: '  Daniel  ',
-        handle: 'DANIEL',
-        bio: ' Hello ',
-      },
-    ]),
-    { pending: ref(false), error: ref(undefined), outcome: ref('ready') }
-  )
-  const factory = load(
-    'packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts',
-    'useUserCollection',
-    {
-      ...common,
-      normalizeUser,
-      readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
-      useFirestoreRead: () => ({
-        firestoreCollectionPage: () => ({ ...source, data: source }),
-      }),
-    }
-  )
-  const result = factory()
-  assert.equal(result.users.value[0].display_name, 'Daniel')
-  assert.equal(result.users.value[0].handle, 'daniel')
-  assert.equal(result.users.value[0].bio, 'Hello')
+  const user = normalizeUser('id', {
+    handle: 'DANIEL',
+    display_name: '  Daniel  ',
+    bio: ' Hello ',
+    private_fixture: 'PRIVATE',
+  })
+  assert.equal(user.handle, 'daniel')
+  assert.equal(user.display_name, 'Daniel')
+  assert.equal(JSON.stringify(user).includes('PRIVATE'), false)
 })

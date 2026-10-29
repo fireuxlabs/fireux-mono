@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { captureCommandScope } from '../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../composables/config/FireUXConfig'
@@ -58,6 +59,8 @@ export async function syncAppMediaToStorage(
       !Array.isArray(payload.failed)
     )
       throw new Error('App media response did not match the requested App.')
+    if (scope.isCurrent())
+      await refreshNuxtData(JSON.stringify(['app-read', appId, uid]))
     return payload as AppMediaSyncResponse
   } finally {
     scope.stop()

@@ -237,7 +237,7 @@ async function assign(storeId: string) {
   state.value = 'saving'
   try {
     await marketplace.mutateStoreMember(storeId, {
-      uid: memberUid[storeId]?.trim(),
+      uid: memberUid[storeId]?.trim() || '',
       name: '',
       role_ids: [],
       action: 'add',

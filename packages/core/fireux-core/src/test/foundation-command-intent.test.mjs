@@ -14,6 +14,7 @@ import {
 } from 'vue'
 const root = new URL('../../../../', import.meta.url)
 function load(path, name, deps) {
+  deps = { refreshNuxtData: async () => {}, ...deps }
   const source = readFileSync(new URL(path, root), 'utf8')
     .replace(/^[\s\S]*<script setup[^>]*>([\s\S]*?)<\/script>[\s\S]*$/, '$1')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')

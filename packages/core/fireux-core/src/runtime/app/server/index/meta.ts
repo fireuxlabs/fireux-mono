@@ -3,7 +3,10 @@ import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import type { FireuxMetaContent } from '../../../../config/app/meta-content'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
-import { normalizePublicImgAsset, GLOBAL_BRAND_ASSETS as brandAssets } from '../../../../utils/brandAssets'
+import {
+  normalizePublicImgAsset,
+  GLOBAL_BRAND_ASSETS as brandAssets,
+} from '../../../../utils/brandAssets'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
@@ -59,7 +62,7 @@ function toAbsoluteUrl(
 export async function readAppMeta(event: H3Event) {
   const cfg = useFireUXConfig(event)
   const runtimeConfig = useRuntimeConfig(event)
-  const meta = runtimeConfig.fireux?.meta
+  const meta: unknown = runtimeConfig.fireux?.meta
   const appDoc = await getRuntimeFirestore()
     .collection('apps')
     .doc(cfg.appId)

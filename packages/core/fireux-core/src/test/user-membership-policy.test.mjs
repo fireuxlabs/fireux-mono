@@ -88,22 +88,17 @@ function session(policy, outcome = 'ready') {
     {
       computed,
       useFireUXConfig: () => ({ appId: 'runtime', selfJoinEnabled: !policy }),
-      useAppJoinPolicy: load(
-        '../runtime/app/composables/membership/useAppJoinPolicy.ts',
-        'useAppJoinPolicy',
-        {
-          computed,
-          unref,
-          useAuth: () => auth,
-          useFirestoreRead: () => ({
-            firestoreFetchDoc: () =>
-              Object.assign(app.app, {
-                outcome: app.outcome,
-                error: app.error,
-              }),
-          }),
-        }
-      ),
+      useAppRead: () => ({
+        canSelfJoin: computed(
+          () =>
+            app.outcome.value === 'ready' &&
+            app.app.value.self_join_enabled === true
+        ),
+        pending: computed(() =>
+          ['idle', 'pending'].includes(app.outcome.value)
+        ),
+        error: app.error,
+      }),
       useAuth: () => auth,
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
       useAppUserAccess: () => ({}),

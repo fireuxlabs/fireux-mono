@@ -11,7 +11,7 @@ useHead({
   style: [
     {
       key: 'latap-theme',
-      children: laTapBerneTheme.cssVariables,
+      innerHTML: laTapBerneTheme.cssVariables,
     },
   ],
 })

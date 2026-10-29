@@ -10,7 +10,7 @@ useHead({
   style: [
     {
       key: 'bangin-coffee-theme',
-      children: banginCoffeeTheme.cssVariables,
+      innerHTML: banginCoffeeTheme.cssVariables,
     },
   ],
 })

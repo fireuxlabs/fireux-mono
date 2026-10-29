@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-26
+Updated: 2026-10-29
 Ref: ce2861c77
 Role: living context
 Scope: repository-wide
@@ -234,6 +234,13 @@ permission to edit the selected Entity. See
 contexts.
 
 ## Working and verification rules
+
+When the human delegates an agreed multi-step outcome, continue through the
+remaining authorized local steps without asking for approval after each small
+inspection or repair. Close accepted slices and reopen them only for a concrete
+regression or an explicit change of outcome. Report meaningful completed work
+and exact blockers; do not substitute repeated audits or optional symmetry
+cleanup for progress. Separate release-only gates from functional dependencies.
 
 - Preserve unrelated and concurrent work. Inspect the shared checkout before
   editing; do not switch its branch or create a worktree unless requested.

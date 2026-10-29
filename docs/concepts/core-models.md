@@ -482,21 +482,17 @@ a generated Nuxt project, a deployment, or Granite's Portfolio domain.
 
 ## App read ownership
 
-`useAppRead` owns the native canonical document read used by App CRUD,
-session identity and Shell initialization. This private binding and the raw
-`useAppJoinPolicy` binding activate only after settled Auth provides a registered,
-non-anonymous User with a UID. App membership is not a read prerequisite, so
-registered nonmembers can still initialize or join where authorized. Public
-settings and authorized public App transports keep their separate read scopes;
-the User bootstrap retains its server-owned one-shot status check. The focused
-source proof is `fireux-core/src/test/app-native-auth-scope.test.mjs`.
-The native reader's `exists` result distinguishes
-a missing document from an existing document whose fields need repair; pending
-or failed reads never trigger initialization. Failed reads hide retained App
-data. Shell observes this binding directly, without a status stream or a
-post-initialization refresh callback. Initialization and its environment checks
-mount only when the missing-App setup surface is shown. The ordinary `/api/app/status` GET remains
-for the User bootstrap's one-shot policy check.
+`useAppRead` owns one native Nuxt snapshot of the configured App through
+`/api/app/status`. Metadata and the stored self-join policy share that snapshot;
+there is no second join-policy reader. It activates after settled registered
+Auth, without requiring App membership. The server projects canonical App fields
+and excludes stored context and unrelated metadata. Its `initialized` result
+preserves existence even when presentation fields are invalid, so pending or
+failed reads never trigger initialization. Account/App changes hide old results
+immediately. App identity edits and media synchronization refresh the exact
+snapshot through native `refreshNuxtData`; other-browser changes require refresh.
+The User bootstrap retains its fresh one-shot status check during commands.
+Proof lives in `app-native-auth-scope.test.mjs` and `app-settings.test.mjs`.
 
 `useAppDetail` owns the live public HTTP detail result,
 including source changes, missing records and errors. Both Core and FireUX App
@@ -521,8 +517,9 @@ entries while their source reports an error. Handle and notification lifecycle c
 by Core `src/test/user-read-lifecycle.test.mjs`; transport-wide behavior remains
 a separate verification boundary.
 
-User read paths follow responsibility: root identity reads, including
-`useUserByHandle`, live directly under `user/composables`; profile detail and
+User read paths follow responsibility: self identity reads live under `user/composables`; `useUserByHandle` is the
+App-admin canonical identity projection used for membership management, including
+people outside the public tenant directory; profile detail and
 collection readers live under `user/composables/profile`; notification reads
 live under `user/composables/notifications`. Session composition lives under
 `user/composables/session`, private account reading under `account`, explicit
@@ -530,8 +527,12 @@ bootstrap/profile editing under `identity`, and directory policy under `director
 Nonreactive User commands and field helpers live in `user/utils`. Consumers import
 these owners directly; retired transport-based read paths have no compatibility wrappers.
 
-Tenant User directory collections and details share the server-owned current-App
-membership scope. Global Apps retain the canonical identity directory. The tenant
+All public User collections share `useUserCollection` and the bounded Users API.
+Tenant collections/details retain server-owned current-App membership eligibility;
+global Apps retain global public eligibility. Public display-name hydration uses
+the existing identity-summary projection, with a bounded batch route rather than
+raw reads of other Users. Private account details remain an owner-only native
+Firebase read. The tenant
 collection's membership cursor is independent of User handles and incomplete
 identity records; its joined membership and User reads refresh through Nuxt. Profile pair
 factories use the same ordinary API boundary. Current evidence is Core's

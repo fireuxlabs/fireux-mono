@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
 Updated: 2026-10-29
-Ref: 96c699615
+Ref: 3f46d22a2
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -442,6 +442,13 @@ public image download tokens remain bearer access. This does not revoke existing
 tokens or change live policy. Production preflight runs both local policy suites;
 production upload additionally requires exact live Firestore and Storage sources.
 See the App-owned release README and `test/storage.production.test.mjs`.
+The candidate also permits exact owner account reads, exact-App admin featured
+settings, and Kitchen-operator Menu source, draft, table-tab and promotion reads.
+Private App roots containing context require admin authority; App metadata and
+self-join policy use the safe status projection. Public people and member display
+identities use their existing server projection owners, while canonical membership
+lookup requires current App administration. These are source-only contracts, not
+an authorization to apply the candidate.
 Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized

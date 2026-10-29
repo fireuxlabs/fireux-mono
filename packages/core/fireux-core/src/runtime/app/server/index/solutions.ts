@@ -179,7 +179,7 @@ function isFireuxMetaContent(value: unknown): value is FireuxMetaContent {
 
 export function readAppSolutions(event: H3Event) {
   const runtimeConfig = useRuntimeConfig(event)
-  const meta = runtimeConfig.fireux?.meta
+  const meta: unknown = runtimeConfig.fireux?.meta
   const solutions = isFireuxMetaContent(meta)
     ? (meta.solutions || [])
         .map((solution) => normalizeSolution(solution))

@@ -50,11 +50,6 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
         resolveReadOutcome,
         resolveHttpDocumentOutcome,
         useFireUXConfig: () => ({ appId: 'tenant-a', isTenant }),
-        useUserDirectoryCollection: (appId) => {
-          assert.equal(appId, 'tenant-a')
-          tenantReads++
-          return source
-        },
         useUserCollection: () => {
           globalReads++
           return source
@@ -68,8 +63,8 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
       }
     )
     const directory = useUserDirectory()
-    assert.equal(tenantReads, isTenant ? 1 : 0)
-    assert.equal(globalReads, isTenant ? 0 : 1)
+    assert.equal(tenantReads, 0)
+    assert.equal(globalReads, 1)
     assert.deepEqual(
       directory.users.value.map((user) => user.id),
       isTenant ? ['member'] : ['self', 'member']
@@ -232,10 +227,6 @@ test('Tenant pagination follows membership cursors across missing identities wit
   await assert.rejects(h.handler({ query: { cursor: 'wrong/path' } }), {
     statusCode: 400,
   })
-  h.setScope({ kind: 'global' })
-  await assert.rejects(h.handler({ query: { cursor: 'b' } }), {
-    statusCode: 400,
-  })
 })
 
 test('Loaded tenant pages replace membership after removal, identity edits and moving cursor boundaries', async () => {
@@ -294,15 +285,16 @@ test('Tenant collection preserves live pages, honest failures and bounded load-m
       }
     },
   }
-  const { useUserDirectoryCollection } = load(
-    '../runtime/user/composables/directory/useUserDirectoryCollection.ts',
-    'useUserDirectoryCollection',
+  const { useUserCollection } = load(
+    '../runtime/user/composables/useUserCollection.ts',
+    'useUserCollection',
     {
       computed,
       ref,
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
       readPages: h.readPages,
+      useFireUXConfig: () => ({ appId: 'tenant-a' }),
       useAsyncData: (key, handler) => {
         assert.equal(key, 'user-directory:tenant-a')
         run = handler
@@ -310,7 +302,7 @@ test('Tenant collection preserves live pages, honest failures and bounded load-m
       },
     }
   )
-  const directory = useUserDirectoryCollection('tenant-a')
+  const directory = useUserCollection()
   assert.equal(directory.outcome.value, 'pending')
   await state.refresh()
   assert.deepEqual(

@@ -3,299 +3,157 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import {
-  computed,
-  effectScope,
-  nextTick,
-  ref,
-  shallowRef,
-  unref,
-  watch,
-} from 'vue'
-
-const runtime = new URL('../runtime/', import.meta.url)
-function load(path, names, deps = {}) {
-  const source = readFileSync(new URL(path, runtime), 'utf8')
+import { computed, ref, unref } from 'vue'
+import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
+function load(file, dependencies, name) {
+  const source = readFileSync(
+    new URL(`../runtime/${file}`, import.meta.url),
+    'utf8'
+  )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
-    .replaceAll('import.meta.server', 'false')
   return compileFunction(
-    `${stripTypeScriptTypes(source)};return {${names}}`,
-    Object.keys(deps)
-  )(...Object.values(deps))
+    `${stripTypeScriptTypes(source)};return ${name}`,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
 }
-const outcome = load('utils/read-outcome.ts', 'resolveReadOutcome')
-const normalization = load('app/utils/readApp.ts', 'readAppDocument')
-const appData = (patch = {}) => ({
-  id: 'runtime',
-  ecosystem_id: 'ecosystem',
-  role: 'global',
-  status: 'active',
-  name: 'App',
-  self_join_enabled: true,
-  created: { at: { seconds: 1, nanoseconds: 0 } },
-  updated: { at: { seconds: 1, nanoseconds: 0 } },
-  ...patch,
-})
-function fixture(initial = {}) {
-  const scope = effectScope(),
-    currentUser = ref(initial.user ?? null),
-    hasAuthState = ref(initial.settled ?? false)
+function fixture() {
   const auth = {
-    currentUser,
-    hasAuthState,
-    uid: computed(() => currentUser.value?.uid ?? ''),
-    isAuthenticated: computed(
-      () => !!currentUser.value && !currentUser.value.isAnonymous
-    ),
+      uid: ref('owner'),
+      isAuthenticated: ref(true),
+      hasAuthState: ref(true),
+    },
+    id = ref('app')
+  const source = {
+    data: ref(),
+    pending: ref(false),
+    error: ref(),
+    refresh: async () => {},
   }
-  const appId = ref('runtime'),
-    docCalls = [],
-    bindings = []
-  const useFirestoreRead = load(
-    'composables/fireux/firestore/operations/useFirestoreRead.ts',
-    'useFirestoreRead',
+  let execute,
+    fetches = 0,
+    response = {
+      appId: 'app',
+      initialized: true,
+      selfJoinEnabled: true,
+      app: { id: 'app', name: 'App' },
+    }
+  const use = load(
+    'app/composables/useAppRead.ts',
     {
-      ...outcome,
       computed,
-      ref,
-      shallowRef,
       unref,
-      watch,
-      useFirestoreResolver: () => () => 'owning-app-database',
-      readRuntimeFirestoreDatabaseId: () => 'owning-app-database',
-      guardFirestorePromise() {},
-      attachDevCollectionMeta: (value) => value,
-      doc: (database, path, id) => {
-        const target = { database, path, id }
-        docCalls.push(target)
-        return target
+      resolveReadOutcome,
+      useAuth: () => auth,
+      useAsyncData: (_key, handler) => {
+        execute = handler
+        return source
       },
-      useDocument: (reference) => {
-        const binding = Object.assign(ref(undefined), {
-          pending: ref(false),
-          error: ref(undefined),
-          promise: shallowRef(undefined),
-          stop() {},
-        })
-        bindings.push({ reference, binding })
-        watch(
-          reference,
-          (value) => {
-            binding.value = undefined
-            binding.pending.value = Boolean(value)
-            binding.promise.value = Promise.resolve()
-          },
-          { immediate: true }
-        )
-        return binding
+      $fetch: async (path) => {
+        assert.equal(path, '/api/app/status')
+        fetches++
+        return response
       },
-    }
-  ).useFirestoreRead
-  const deps = {
-    computed,
-    unref,
-    useAuth: () => auth,
-    useFirestoreRead,
-    ...normalization,
-  }
-  let app, policy
-  scope.run(() => {
-    app = load('app/composables/useAppRead.ts', 'useAppRead', deps).useAppRead(
-      appId
-    )
-    policy = load(
-      'app/composables/membership/useAppJoinPolicy.ts',
-      'useAppJoinPolicy',
-      deps
-    ).useAppJoinPolicy(appId)
-  })
-  const settle = (value, error) => {
-    for (const { binding } of bindings) {
-      binding.value = value
-      binding.error.value = error
-      binding.pending.value = false
-    }
-  }
+    },
+    'useAppRead'
+  )
+  const state = use(id)
   return {
-    scope,
     auth,
-    appId,
-    app,
-    policy,
-    docCalls,
-    bindings,
-    settle,
-    useFirestoreRead,
+    id,
+    source,
+    state,
+    setResponse: (value) => (response = value),
+    fetches: () => fetches,
+    run: async () => {
+      source.data.value = await execute(
+        {},
+        { signal: new AbortController().signal }
+      )
+    },
   }
 }
-for (const [name, initial] of [
-  ['unresolved Auth', { user: { uid: 'restoring' }, settled: false }],
-  ['null guest', { user: null, settled: true }],
-  [
-    'anonymous guest',
-    { user: { uid: 'guest', isAnonymous: true }, settled: true },
-  ],
-  [
-    'registered object without a UID',
-    { user: { isAnonymous: false }, settled: true },
-  ],
-])
-  test(`private App and join-policy bindings stay inactive for ${name}`, async () => {
-    const f = fixture(initial)
-    await nextTick()
-    assert.equal(
-      f.docCalls.length,
-      0,
-      'inactive App owners cannot construct a Firestore App reference'
-    )
-    assert.equal(f.app.outcome.value, 'idle')
-    assert.equal(f.app.pending.value, false)
-    assert.equal(f.app.app.value, undefined)
-    assert.equal(
-      f.app.exists.value,
-      undefined,
-      'inactive is never uninitialized'
-    )
-    assert.equal(f.policy.canSelfJoin.value, false)
-    assert.equal(f.policy.pending.value, false)
-    assert.equal(f.policy.error.value, undefined)
-    f.scope.stop()
-  })
-test('restored registered nonmember may resolve canonical App and raw join policy without an AppUser prerequisite', async () => {
-  const f = fixture({
-    user: { uid: 'new-user', isAnonymous: false },
-    settled: false,
-  })
-  assert.equal(f.docCalls.length, 0)
+test('App snapshot is inactive before registered Auth and after logout', async () => {
+  const f = fixture()
+  f.auth.hasAuthState.value = false
+  await f.run()
+  assert.equal(f.fetches(), 0)
+  assert.equal(f.state.outcome.value, 'idle')
+  assert.equal(f.state.exists.value, undefined)
   f.auth.hasAuthState.value = true
-  await nextTick()
-  assert.equal(f.docCalls.length, 2)
-  for (const call of f.docCalls)
-    assert.deepEqual(call, {
-      database: 'owning-app-database',
-      path: 'apps',
-      id: 'runtime',
-    })
-  assert.equal(f.app.outcome.value, 'pending')
-  assert.equal(f.app.exists.value, undefined)
-  f.settle(appData())
-  assert.equal(f.app.app.value.id, 'runtime')
-  assert.equal(f.app.exists.value, true)
-  assert.equal(f.policy.canSelfJoin.value, true)
-  f.scope.stop()
+  await f.run()
+  assert.equal(f.state.canSelfJoin.value, true)
+  f.auth.isAuthenticated.value = false
+  f.auth.uid.value = ''
+  assert.equal(f.state.app.value, undefined)
+  assert.equal(f.state.exists.value, undefined)
+  assert.equal(f.state.canSelfJoin.value, false)
 })
-test('authorized missing and failed reads remain distinct and only real missing enables Shell initialization', async () => {
-  const f = fixture({ user: { uid: 'user' }, settled: true })
-  await nextTick()
-  f.settle(undefined)
-  assert.equal(f.app.outcome.value, 'empty')
-  assert.equal(f.app.exists.value, false)
-  assert.equal(f.policy.canSelfJoin.value, false)
-  assert.equal(f.policy.pending.value, false)
-  const error = new Error('Permission denied')
-  f.settle(appData(), error)
-  assert.equal(f.app.outcome.value, 'error')
-  assert.equal(f.app.error.value, error)
-  assert.equal(f.app.app.value, undefined)
-  assert.equal(f.app.exists.value, undefined)
-  assert.equal(f.policy.error.value, error)
-  assert.equal(f.policy.canSelfJoin.value, false)
-  f.scope.stop()
-})
-test('raw stored join policy survives invalid App presentation and does not fabricate canonical identity', async () => {
-  const f = fixture({ user: { uid: 'new-user' }, settled: true })
-  await nextTick()
-  f.settle(appData({ name: null, media: { logo_url: null } }))
-  assert.equal(f.app.app.value, null)
-  assert.equal(f.app.outcome.value, 'empty')
-  assert.equal(
-    f.app.exists.value,
-    true,
-    'invalid existing metadata is not absent storage'
-  )
-  assert.equal(f.policy.canSelfJoin.value, true)
-  f.settle({ id: 'runtime', self_join_enabled: false })
-  assert.equal(f.policy.canSelfJoin.value, false)
-  f.scope.stop()
-})
-test('sign-out immediately masks retained App data, policy and failure before the shared binding rebinds', async () => {
-  const f = fixture({ user: { uid: 'user' }, settled: true })
-  await nextTick()
-  f.settle(appData())
-  assert.equal(f.app.app.value.name, 'App')
-  assert.equal(f.policy.canSelfJoin.value, true)
-  f.auth.currentUser.value = null
-  assert.equal(f.app.app.value, undefined)
-  assert.equal(f.app.exists.value, undefined)
-  assert.equal(f.app.outcome.value, 'idle')
-  assert.equal(f.policy.canSelfJoin.value, false)
-  assert.equal(f.policy.pending.value, false)
-  await nextTick()
-  assert.equal(
-    f.bindings.every(({ reference }) => reference.value === null),
-    true
-  )
-  f.auth.currentUser.value = { uid: 'anonymous', isAnonymous: true }
-  await nextTick()
-  assert.equal(
-    f.docCalls.length,
-    2,
-    'anonymous fallback cannot reinstall private listeners'
-  )
-  f.auth.currentUser.value = { uid: 'user' }
-  await nextTick()
-  f.settle(appData(), new Error('Old App failed'))
-  f.auth.currentUser.value = null
-  assert.equal(f.app.error.value, undefined)
-  assert.equal(f.policy.error.value, undefined)
-  f.scope.stop()
-})
-test('reactive App changes hide old App and policy synchronously, then resume exact new target', async () => {
-  const f = fixture({ user: { uid: 'user' }, settled: true })
-  await nextTick()
-  f.settle(appData())
-  f.appId.value = 'next-app'
-  assert.equal(f.app.app.value, undefined)
-  assert.equal(f.app.exists.value, undefined)
-  assert.equal(f.policy.canSelfJoin.value, false)
-  await nextTick()
-  assert.deepEqual(
-    f.docCalls.slice(-2).map(({ id }) => id),
-    ['next-app', 'next-app']
-  )
-  f.settle(appData({ id: 'next-app', name: 'Next', self_join_enabled: false }))
-  assert.equal(f.app.app.value.id, 'next-app')
-  assert.equal(f.policy.canSelfJoin.value, false)
-  f.appId.value = ''
-  assert.equal(f.app.outcome.value, 'idle')
-  assert.equal(f.app.exists.value, undefined)
-  assert.equal(f.policy.pending.value, false)
-  f.scope.stop()
-})
-test('generic public settings reader remains active for anonymous guests', async () => {
-  const f = fixture({
-    user: { uid: 'guest', isAnonymous: true },
-    settled: true,
+test('App existence and stored join policy survive invalid presentation', async () => {
+  const f = fixture()
+  f.setResponse({
+    appId: 'app',
+    initialized: true,
+    selfJoinEnabled: true,
+    app: null,
   })
-  const settings = f.scope.run(() =>
-    f.useFirestoreRead().firestoreFetchDoc('apps/runtime/settings', 'public')
-  )
-  await nextTick()
-  assert.deepEqual(f.docCalls, [
-    {
-      database: 'owning-app-database',
-      path: 'apps/runtime/settings',
-      id: 'public',
-    },
-  ])
-  f.bindings.at(-1).binding.value = {
-    id: 'public',
-    featured_kitchen_slugs: ['venue'],
+  await f.run()
+  assert.equal(f.state.exists.value, true)
+  assert.equal(f.state.outcome.value, 'empty')
+  assert.equal(f.state.canSelfJoin.value, true)
+  f.setResponse({
+    appId: 'app',
+    initialized: false,
+    selfJoinEnabled: false,
+    app: null,
+  })
+  await f.run()
+  assert.equal(f.state.exists.value, false)
+  assert.equal(f.state.canSelfJoin.value, false)
+})
+test('App/account changes immediately hide retained metadata, policy and errors', async () => {
+  const f = fixture()
+  await f.run()
+  f.auth.uid.value = 'other'
+  assert.equal(f.state.app.value, undefined)
+  assert.equal(f.state.canSelfJoin.value, false)
+  await f.run()
+  f.id.value = 'other-app'
+  assert.equal(f.state.app.value, undefined)
+  await assert.rejects(f.run(), /another App/)
+  f.source.error.value = new Error('Failed')
+  f.auth.isAuthenticated.value = false
+  assert.equal(f.state.error.value, undefined)
+})
+test('App status projection excludes stored private context and keeps truthful existence', async () => {
+  const readAppDocument = load('app/utils/readApp.ts', {}, 'readAppDocument')
+  let raw = {
+    ecosystem_id: 'misebox',
+    role: 'global',
+    status: 'active',
+    name: 'App',
+    context: 'PRIVATE',
+    project_id: 'PRIVATE',
+    created: { at: { seconds: 1, nanoseconds: 0 } },
+    updated: { at: { seconds: 1, nanoseconds: 0 } },
   }
-  f.bindings.at(-1).binding.pending.value = false
-  assert.equal(settings.outcome.value, 'ready')
-  assert.deepEqual(settings.value.featured_kitchen_slugs, ['venue'])
-  assert.equal(f.app.outcome.value, 'idle')
-  f.scope.stop()
+  const readStatus = load(
+    'app/server/index/status.ts',
+    {
+      useFireUXConfig: () => ({ appId: 'app' }),
+      isAppMediaComplete: () => false,
+      readAppDocument,
+      getRuntimeFirestore: () => ({
+        collection: () => ({
+          doc: () => ({ get: async () => ({ exists: true, data: () => raw }) }),
+        }),
+      }),
+    },
+    'readAppStatus'
+  )
+  assert.equal(JSON.stringify(await readStatus({})).includes('PRIVATE'), false)
+  raw = { ...raw, name: null }
+  const result = await readStatus({})
+  assert.equal(result.initialized, true)
+  assert.equal(result.app, null)
 })

@@ -149,8 +149,8 @@ const headerAvatarName = computed(() =>
 const headerAvatarText = computed(() => {
   const parts = headerAvatarName.value.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'U'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'U'
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase() || 'U'
 })
 
 const headerAvatarSrc = computed(() => {

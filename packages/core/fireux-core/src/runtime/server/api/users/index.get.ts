@@ -33,21 +33,30 @@ function mapUser(doc: FirebaseFirestore.DocumentSnapshot): User | null {
   return user && isUserDirectoryEligible(user) ? user : null
 }
 
-async function readGlobalCanonicalUsers(limit: number): Promise<User[]> {
-  const snapshot = await getRuntimeIdentityFirestore()
-    .collection('users')
-    .orderBy('handle')
-    .limit(limit)
-    .get()
-
-  const out: User[] = []
-  for (const doc of snapshot.docs) {
-    const dto = mapUser(doc)
-    if (!dto) continue
-    out.push(dto)
+async function readGlobalCanonicalUsers(
+  limit: number,
+  cursor: string
+): Promise<{ items: User[]; nextCursor: string | null }> {
+  const db = getRuntimeIdentityFirestore()
+  let query = db.collection('users').orderBy('handle')
+  if (cursor) {
+    const previous = await db.collection('users').doc(cursor).get()
+    if (!previous.exists || typeof previous.get('handle') !== 'string')
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'User directory cursor is invalid.',
+      })
+    query = query.startAfter(previous)
   }
-
-  return out
+  const snapshot = await query.limit(limit + 1).get()
+  const candidates = snapshot.docs.slice(0, limit)
+  return {
+    items: candidates.flatMap((doc) => {
+      const user = mapUser(doc)
+      return user ? [user] : []
+    }),
+    nextCursor: snapshot.docs.length > limit ? candidates.at(-1)!.id : null,
+  }
 }
 
 async function readTenantAppUsers(
@@ -90,17 +99,11 @@ export default defineEventHandler(async (event: H3Event) => {
     query.cursor == null
       ? ''
       : requireFirestoreDocumentId(query.cursor, 'User directory cursor')
-  if (cursor && scope.kind !== 'tenant-app') {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'This directory does not accept a cursor.',
-    })
-  }
 
   const page =
     scope.kind === 'tenant-app'
       ? await readTenantAppUsers(scope, limit, cursor)
-      : { items: await readGlobalCanonicalUsers(limit), nextCursor: null }
+      : await readGlobalCanonicalUsers(limit, cursor)
 
   const response: CollectionResponse<User> & { nextCursor: string | null } = {
     ok: true,

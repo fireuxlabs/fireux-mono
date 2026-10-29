@@ -15,7 +15,7 @@ export type UseAppSessionReturn = {
   error: ComputedRef<unknown | undefined>
 }
 
-/** Live composition. Firestore listeners remain the only runtime truth. */
+/** Compose the App projection with the owning native AppUser listener. */
 export function useAppSession(): UseAppSessionReturn {
   const { currentUser, hasAuthState } = useAuth()
   const { appId } = useFireUXConfig()
@@ -27,8 +27,15 @@ export function useAppSession(): UseAppSessionReturn {
     const value = appUserState.appUser.value
     return value && uid.value ? { id: uid.value, ...value } : null
   })
-  const pending = computed(() => !hasAuthState.value || appState.pending.value || (Boolean(uid.value) && appUserState.pending.value))
-  const error = computed<unknown | undefined>(() => appState.error.value || appUserState.error.value || undefined)
+  const pending = computed(
+    () =>
+      !hasAuthState.value ||
+      appState.pending.value ||
+      (Boolean(uid.value) && appUserState.pending.value)
+  )
+  const error = computed<unknown | undefined>(
+    () => appState.error.value || appUserState.error.value || undefined
+  )
 
   return {
     uid,

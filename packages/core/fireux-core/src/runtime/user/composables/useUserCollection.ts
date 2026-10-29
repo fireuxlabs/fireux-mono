@@ -1,28 +1,58 @@
-import { computed } from 'vue'
-import { normalizeUser } from '../utils/normalize-user'
-import type { User } from '../models/user.model.ts'
-import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
+import { useAsyncData } from 'nuxt/app'
+import { computed, ref } from 'vue'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 
-/** Streams canonical User identities from the identity database. */
+import { readPages } from '../../composables/http/readPages'
+import { resolveReadOutcome } from '../../utils/read-outcome'
+import type { CollectionPage } from '../../models/utils/directory'
+import type { User } from '../models/user.model'
+
+/** Public User pages use the existing server projection and native Nuxt refresh. */
 export function useUserCollection() {
-  const { firestoreCollectionPage } = useFirestoreRead({
-    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
-  })
-  const source = firestoreCollectionPage<User>('users')
+  const { appId } = useFireUXConfig()
+  const pageCount = ref(1)
+  const loadingMore = ref(false)
+  const state = useAsyncData<CollectionPage<User>>(
+    `user-directory:${appId}`,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return readPages(fetchRead, '/api/users?limit=25', pageCount.value)
+    }
+  )
   const users = computed(() =>
-    (source.data.value ?? []).flatMap((raw) => {
-      const user = normalizeUser(raw.id, raw)
-      return user ? [user] : []
+    state.error.value ? [] : (state.data.value?.items ?? [])
+  )
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      enabled: Boolean(appId),
+      pending: state.pending.value,
+      failed: Boolean(state.error.value),
+      present: users.value.length > 0,
     })
   )
+  const hasMore = computed(
+    () => !state.error.value && Boolean(state.data.value?.nextCursor)
+  )
+
+  async function loadMore() {
+    if (!hasMore.value || loadingMore.value || state.pending.value) return
+    loadingMore.value = true
+    pageCount.value++
+    try {
+      await state.refresh()
+      if (state.error.value) pageCount.value--
+    } finally {
+      loadingMore.value = false
+    }
+  }
+
   return {
     users,
     count: computed(() => users.value.length),
-    hasMore: source.hasMore,
-    loadMore: source.loadMore,
-    pending: source.pending,
-    error: source.error,
-    outcome: source.outcome,
+    outcome,
+    hasMore,
+    loadMore,
+    pending: state.pending,
+    error: state.error,
   }
 }

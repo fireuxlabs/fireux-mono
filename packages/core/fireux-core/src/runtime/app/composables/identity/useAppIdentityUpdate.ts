@@ -1,3 +1,4 @@
+import { refreshNuxtData } from 'nuxt/app'
 import type { Ref } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
@@ -49,6 +50,8 @@ export function useAppIdentityUpdate(app: Ref<App | null | undefined>) {
     if (payload?.ok !== true || payload.appId !== appId) {
       throw new Error('App settings response did not match the requested App.')
     }
+    if (isCurrent())
+      await refreshNuxtData(JSON.stringify(['app-read', appId, uid]))
   }
   return {
     captureIntent: capture,

@@ -92,6 +92,7 @@ service cloud.firestore {
     // Public profiles use server projections; private descendants remain denied.
     match /users/{uid} {
       allow get: if signedIn() && own(uid);
+      match /private/account { allow get: if signedIn() && own(uid); }
     }
 
     match /apps/{app} {
@@ -102,7 +103,8 @@ service cloud.firestore {
           (!('social_links' in d) || d.social_links.keys().hasOnly(['website', 'twitter', 'github', 'linkedin', 'instagram', 'facebook', 'youtube', 'email'])) &&
           (!('media' in d) || d.media.keys().hasOnly(['thumbnail_url', 'logo_url', 'wordmark_light_url', 'wordmark_dark_url', 'cover_url']));
       }
-      allow get: if knownApp(app) && (member(app) || !exists(/databases/$(database)/documents/apps/$(app)) || publicIdentity(resource.data));
+      allow get: if knownApp(app) && (admin(app) || !exists(/databases/$(database)/documents/apps/$(app)) || publicIdentity(resource.data));
+      match /settings/public { allow get: if admin(app); }
       match /users/{uid} {
         allow get: if knownApp(app) && (own(uid) || admin(app));
         allow list: if admin(app) && request.query.limit <= 100;
@@ -128,7 +130,7 @@ service cloud.firestore {
       match /{collection}/{record} {
         allow read: if collection in ['dishes', 'recipes', 'prep-items', 'stations',
           'ingredients', 'suppliers', 'supplier-ingredients', 'menus', 'orders',
-          'sales', 'team', 'roles', 'waste-events', 'tests', 'offerings'] && kitchenOperator(kitchen);
+          'sales', 'team', 'roles', 'waste-events', 'tests', 'offerings', 'menu-uploads', 'order-drafts', 'table_tabs', 'promotions'] && kitchenOperator(kitchen);
       }
       match /fulfilment/policy { allow get: if kitchenOperator(kitchen); }
       match /menus/{menu}/sections/{section} {

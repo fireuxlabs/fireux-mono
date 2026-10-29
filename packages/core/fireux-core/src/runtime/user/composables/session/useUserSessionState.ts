@@ -6,7 +6,7 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
-import { useAppJoinPolicy } from '../../../app/composables/membership/useAppJoinPolicy'
+import { useAppRead } from '../../../app/composables/useAppRead'
 import { useAppUserAccess } from '../../../app/composables/membership/useAppUserAccess'
 
 export type ActiveUserOutcome =
@@ -34,7 +34,7 @@ export function useUserSessionState(user: {
     currentUser: authUserRef,
   } = useAuth()
   const { appId } = useFireUXConfig()
-  const appPolicy = useAppJoinPolicy(appId)
+  const appPolicy = useAppRead(appId)
   const { canSelfJoin, pending: appPolicyPending } = appPolicy
   const { getProxiedAvatarUrl } = useAvatarProxy()
   const permissions = useAppUserAccess(user)

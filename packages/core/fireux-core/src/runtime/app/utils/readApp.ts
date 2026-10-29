@@ -50,7 +50,7 @@ function hasOptionalStringFields(
   )
 }
 
-function isStamp(value: unknown): boolean {
+function isStamp(value: unknown): value is App['created'] {
   if (!isRecord(value) || !isRecord(value.at)) return false
   if (
     typeof value.at.seconds !== 'number' ||
@@ -76,7 +76,8 @@ export function readAppDocument(raw: unknown, id: string): App | null {
     (raw.short_name !== undefined && typeof raw.short_name !== 'string') ||
     (raw.tagline !== undefined && typeof raw.tagline !== 'string') ||
     (raw.description !== undefined && typeof raw.description !== 'string') ||
-    (raw.self_join_enabled !== undefined && typeof raw.self_join_enabled !== 'boolean') ||
+    (raw.self_join_enabled !== undefined &&
+      typeof raw.self_join_enabled !== 'boolean') ||
     (raw.social_links !== undefined &&
       !hasOptionalStringFields(raw.social_links, SOCIAL_LINK_FIELDS)) ||
     (raw.media !== undefined &&
@@ -91,5 +92,14 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   const fields = Object.fromEntries(
     Object.entries(raw).filter(([key]) => APP_FIELDS.has(key))
   )
-  return { ...fields, id } as App
+  const projectStamp = (stamp: App['created']) => ({
+    at: { seconds: stamp.at.seconds, nanoseconds: stamp.at.nanoseconds },
+    ...(stamp.by !== undefined ? { by: stamp.by } : {}),
+  })
+  return {
+    ...fields,
+    id,
+    created: projectStamp(raw.created),
+    updated: projectStamp(raw.updated),
+  } as App
 }

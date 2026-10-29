@@ -97,10 +97,10 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - `User` uses a bounded users API so protected User support never becomes directory data.
   Public handle details use `useUserDirectoryDetail` and the existing live User
   API: global Apps retain global directory eligibility; tenant Apps require the
-  target User's valid current App membership. Both server and canonical browser
+  target User's valid current App membership. Both public and App-admin canonical
   handle resolution reject duplicate matches. The admin membership editor retains
-  `useUserByHandle`, since canonical identity lookup is separate from directory
-  eligibility and the editor may inspect a User without current App membership.
+  `useUserByHandle` through the protected current-App membership identity API,
+  since canonical identity lookup is separate from directory eligibility and the editor may inspect a User without current App membership.
   Public Profile uid aliases remain owned by the Profile resolver; User handle
   routes do not gain a uid fallback. See `user-directory-detail.test.mjs` and
   `user-read-lifecycle.test.mjs`.
