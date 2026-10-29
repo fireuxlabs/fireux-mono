@@ -1,10 +1,12 @@
-import { refreshNuxtData } from 'nuxt/app'
+import { refreshNuxtData, useNuxtApp } from 'nuxt/app'
+import type { WatchSource } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useMenuEditorScope } from '../useMenuEditorScope'
 
-export function useMenuPublication() {
+export function useMenuPublication(sources: WatchSource[] = []) {
+  const nuxtApp = useNuxtApp()
   const { currentUser } = useAuth()
-  const captureScope = useMenuEditorScope([])
+  const captureScope = useMenuEditorScope(sources)
 
   async function run(
     action: 'publish' | 'unpublish' | 'archive' | 'restore',
@@ -38,7 +40,12 @@ export function useMenuPublication() {
               String(options.method || 'GET').toUpperCase()
             )
           )
-            await refreshNuxtData()
+            await refreshNuxtData(
+              Object.keys(nuxtApp.payload.data).filter(
+                (key) =>
+                  key.startsWith('menu|') || key.startsWith('menu-collection|')
+              )
+            )
         },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },

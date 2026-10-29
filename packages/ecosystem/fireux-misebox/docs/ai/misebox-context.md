@@ -61,6 +61,13 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+The Main Misebox App explicitly installs Products for its catalogue and checkout
+capability. This is not an ecosystem-wide default for tenant Apps. Products owns
+price validation, browser-bound checkout status and the return page; see its
+[package entrypoint](../../../../extensions/fireux-products/README.md). Menu
+preparation and publication remain Kitchen/Menu responsibilities. A confirmed
+checkout is not a completed Menu Express delivery.
+
 Bären-specific operational assumptions and owner confirmation belong in
 [the Bären context](../../../../../projects/misebox/baeren-ringgenberg/docs/ai/baeren-context.md).
 They do not establish shared Misebox defaults or verified business hours.

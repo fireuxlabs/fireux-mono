@@ -51,6 +51,7 @@ function harness({
     'useMenuPublication',
     {
       useAuth: () => ({ currentUser }),
+      useNuxtApp: () => ({ payload: { data: {} } }),
       useRoute: () => ({
         get fullPath() {
           return route.value
@@ -60,14 +61,16 @@ function harness({
       useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
       useMenuEditorScope,
       $fetch: async (...args) => {
-        calls.push(['request', ...args])
+        const { onResponse, ...options } = args[1]
+        assert.equal(typeof onResponse, 'function')
+        calls.push(['request', args[0], options])
         if (failure) throw failure
         return result
       },
     }
   )
   return {
-    ...scope.run(create),
+    ...scope.run(() => create([selectedId, route])),
     calls,
     currentUser,
     selectedId,
@@ -167,9 +170,9 @@ for (const action of ['publishMenu', 'unpublishMenu', 'archiveMenu']) {
       h.stop()
     }
   })
-  test(`${action} rejects mismatched Kitchen and malformed success responses`, async () => {
+  test(`${action} rejects absent targets and malformed success responses`, async () => {
     const h = harness()
-    await assert.rejects(h[action]('other', 'm'), /selected Kitchen/)
+    await assert.rejects(h[action]('', 'm'), /targets are required/)
     assert.deepEqual(h.calls, [])
     h.stop()
     for (const result of [

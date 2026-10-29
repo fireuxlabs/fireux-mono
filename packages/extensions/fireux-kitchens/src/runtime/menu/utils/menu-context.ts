@@ -9,10 +9,7 @@ import {
 } from '../models/menu-context.model.ts'
 import type { MenuManifestBehaviour } from '../models/menu-detail.model.ts'
 import type { MenuOrderingConfig } from '../models/menu-ordering.model'
-import {
-  menuRoutePath,
-  type MenuRouteScope,
-} from './menu-route'
+import { menuRoutePath, type MenuRouteScope } from './menu-route'
 
 export type MenuContextProfile = {
   context: MenuRouteContext
@@ -161,6 +158,7 @@ export type GuestMenuSurfaceOption = {
 export function guestMenuSurfaceOptions(options: {
   behaviour?: MenuManifestBehaviour | null
   menuId: string
+  menuSlug: string
   routeScope: MenuRouteScope
   activeContext?: MenuRouteContext
   activeOfferingId?: string
@@ -174,13 +172,17 @@ export function guestMenuSurfaceOptions(options: {
     {
       value: 'generic',
       label: 'Browse',
-      to: menuRoutePath({ scope: options.routeScope, menuId }),
+      to: menuRoutePath({
+        scope: options.routeScope,
+        menuId: options.menuSlug,
+      }),
       active: options.activeContext === 'generic' && !options.activeOfferingId,
     },
   ]
   const seen = new Set<string>()
   for (const choice of choices) {
-    if (!choice.kitchen_offering_id || !choice.to) continue
+    if (choice.menu_id !== menuId || !choice.kitchen_offering_id || !choice.to)
+      continue
     if (!choice.order_type) {
       result.push({
         value: choice.value,

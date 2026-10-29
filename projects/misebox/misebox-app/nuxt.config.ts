@@ -38,6 +38,7 @@ const app: FireuxAppConfig = {
     ],
   },
   modules: [
+    'fireux-products',
     'fireux-places',
     'fireux-companies',
     'fireux-go-qr',
@@ -89,6 +90,7 @@ export default {
       ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
       : []),
     'fireux-core/layer',
+    'fireux-products/layer',
     'fireux-blogs/layer',
     'fireux-places/layer',
     'fireux-companies/layer',

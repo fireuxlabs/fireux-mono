@@ -109,6 +109,15 @@
       "trigger": "Sending the first chat message",
       "lifetime": "At most 30 days",
       "deletion": "Removed when found expired or through browser site-data controls"
+    },
+    {
+      "key": "fireux-checkout-{appId}",
+      "technology": "Encrypted HttpOnly cookie",
+      "owner": "Products extension for the current App",
+      "purpose": "Verify payment status for up to ten checkouts started by this browser",
+      "trigger": "Starting checkout or requesting checkout verification",
+      "lifetime": "At most one day",
+      "deletion": "Cookie expiry or browser site-data controls"
     }
   ],
   "thirdPartyFeatures": [

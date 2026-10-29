@@ -1,7 +1,7 @@
 # FireUX priorities
 
 Reviewed: 2026-10-29
-Source baseline: `3f46d22a2`, with verified compatibility repairs in the shared queue
+Source baseline: `901382069`, including verified compatibility repairs
 Role: consolidated priority list; recommendations, not release commitments
 
 ## How to use this list
@@ -44,9 +44,13 @@ already proved as assisted; installation, startup and initialization are explici
 operator steps, not evidence that the shared preparation is missing. Broader
 creation automation needs a concrete supported-user outcome before expansion.
 
-Keep the current compatibility repairs separate from new work in the shared
-queue. Their focused checks and six-App build/type evidence are recorded in the
-existing access review. Git save and deployment remain separately authorized.
+The compatibility repairs and execution-focus corrections are saved in
+`901382069`. Their focused checks and six-App build/type evidence remain in the
+existing access review. Menu Express is the next commercial slice: prove one
+manual delivery using existing Menu tools, then connect the purchase journey.
+Retain the bounded Collection mobile check without reopening foundations or
+making a wider ordering rollout a prerequisite for Menu Express. Git save and
+deployment remain separately authorized.
 
 ## Attack order
 
@@ -121,7 +125,7 @@ candidate now follows the existing trusted Kitchen command ownership. The shared
 originally found protected media/Storage access and raw public Product metadata
 exposure. Those local code repairs were saved in `3f46d22a2`; do not reopen them
 as unfinished implementation. The subsequent six-App compatibility pass is
-locally verified and remains in the shared uncommitted queue. Its remaining
+locally verified and saved in `901382069`. Its remaining
 legacy deployment/file classification belongs to release preparation, not a
 new foundation audit. No live policy or application was deployed.
 
@@ -138,6 +142,75 @@ Keep existing operational orders and catalogue prices outside cleanup activity.
 Entry points: [Misebox context](../../packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md),
 [Menu map](../concepts/family-menu.md), and
 [historical Menu capability audit](../archive/2026-10-workspace-cleanup/reviews/kitchen-menus-capability-audit-2026-09-14.md).
+
+## Next commercial slice — 4. Menu Express
+
+Included in the plan on 2026-10-29. Reconciles the two saved handoff commits
+`951ee6670` and `70c06e738` on `docs/misebox-business-direction-2026-10-26`,
+plus the later Kitchen SEO clarification in the **FireUX Monetization Ideas**
+conversation. This is a delivery plan, not proof that the offer is implemented.
+
+**Offer:** a one-off, done-for-you Menu setup. The customer supplies a PDF,
+photos or source link; we prepare the Menu using existing Place, Kitchen, Item,
+Section and Menu owners, obtain customer approval, publish it, and deliver the
+public link and downloadable QR. Workspace use and a subscription are optional.
+A purchase does not itself grant management of a matched Kitchen.
+
+The product distinction is simple: **Misebox Basic** supplies ordinary menu
+management and publishing; **Menu Express** prepares that foundation for the
+customer; ordering Services remain optional. Reuse the same records and commands
+rather than creating a separate Menu Express editor or data stack. Kitchen SEO
+consumes the linked Place, Menus, Sections and Items without copying ownership.
+Multilingual discovery through Sproochli remains an extension to prove, not a
+launch promise.
+
+1. **Prove one manual delivery.** Reuse or create the appropriate venue through
+   existing commands, set the currency, import and correct one Menu, obtain
+   approval, publish, and verify its public link and downloadable QR on mobile.
+   Avoid duplicate venues; keep fulfilment manual initially.
+2. **Connect purchase and delivery.** Reuse the Products catalogue and checkout.
+   Add only missing menu intake, fulfilment tracking and customer review
+   mechanics. Verify payment before showing paid/confirmed status; retries must
+   not duplicate the purchase, Kitchen or delivery. Refresh the handoff's source
+   findings before changing code: it reported checkout without a service order,
+   premature success copy and operator-only session lookup.
+3. **Run one paid pilot.** Deliver an approved Menu and working QR without
+   requiring customer Workspace entry. Record time, corrections, cost and
+   feedback; automate only the next demonstrated need.
+
+**Rehearsal progress, 2026-10-29:** a labelled two-item Menu was created through
+the normal Workspace, corrected, published, inspected at 390px, and returned to
+unpublished status. Its QR generated a valid downloadable SVG. The run exposed
+and repaired item-query bounds, broad refresh interruptions, publication intent
+scope and unrelated service links. See the [bounded delivery evidence](../reviews/menu-express-manual-delivery-2026-10-29.md).
+Browser file-chooser/download capture and a physical camera scan remain unproved;
+this was manual transcription, not a completed automated PDF import. The purchase
+and customer-approval journey remains the next implementation slice.
+
+**Checkout connection, 2026-10-29:** Misebox Main App now explicitly loads the
+existing Products module and native layer. Shared checkout validates the public
+Product boundary and remembers browser ownership through native H3 sessions.
+The return page verifies a limited Stripe status response and no longer claims
+payment from a redirect. The operator lookup remains protected. Customer intake,
+operator review, approval and webhook-backed fulfilment are still open; Core's
+guest chat storage alone does not supply an operator inbox. No live price,
+payment, webhook configuration, deployment or permission change was made.
+
+**Before sale:** settle price, turnaround, hosting/update terms and correction
+allowance. One Menu, one language and one correction round are proposed scope,
+not approved promises. Earlier CHF 390, CHF 29/month, two-language and 48-hour
+examples are not commitments. Planning does not authorize charging or deployment.
+
+**Finish line:** one complete customer/operator journey from supplied menu to
+approved publication and downloadable QR, with truthful payment/retry behaviour.
+The existing Collection pilot and assisted Ignition proof remain separate.
+
+**Later Business direction:** preserve accessible single-Kitchen Free and
+Professional offers and the previously proposed Business pricing; no price
+change is approved here. Multi-Kitchen overview, staff cover, stock transfers
+and publishing to selected locations remain later product ideas. The handoff's
+CHF 20/month Professional and CHF 100/month plus CHF 20/Kitchen Business figures
+are preserved proposals/current-direction references, not newly verified prices.
 
 ## Parked ideas — no separate active tasks
 

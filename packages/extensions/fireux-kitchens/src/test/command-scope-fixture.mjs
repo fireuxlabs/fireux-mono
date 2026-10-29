@@ -19,6 +19,7 @@ export function commandScopeDeps(deps) {
   const dispose = deps.onScopeDispose ?? deps.onBeforeUnmount ?? onScopeDispose
   return {
     useFireUXConfig: () => ({ appId: 'app' }),
+    useNuxtApp: () => ({ payload: { data: {} } }),
     useUserSession: () => ({
       appUser: ref({ role: 'user', created: { at: 'one' } }),
       appPending: ref(false),

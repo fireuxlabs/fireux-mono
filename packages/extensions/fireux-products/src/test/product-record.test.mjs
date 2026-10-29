@@ -41,7 +41,7 @@ function fixture() {
     uid = ref('user'),
     config = reactive({ appId: 'app-a', role: 'global', isTenant: false }),
     membership = {
-      appUser: ref({ role: 'user' }),
+      appUser: ref({ role: 'admin' }),
       pending: ref(false),
       error: ref(null),
     }
@@ -161,27 +161,27 @@ test('module lookup reads one matching ID or slug and only its prices, with live
   assert.equal(f.state.outcome.value, 'empty')
   assert.equal(f.pricePath, '')
 })
-test('existing public, tenant/standalone and admin-owned Product scope is preserved', () => {
+test('raw Product reader stays admin-only and App-scoped for every App role', () => {
   const f = fixture()
   f.id.value = 'hidden'
   f.settle()
-  assert.equal(f.state.read.value, null)
-  f.membership.appUser.value.role = 'admin'
-  f.settle()
   assert.equal(f.state.read.value.product.id, 'hidden')
-  f.config.appId = 'app-b'
-  f.settle()
-  assert.equal(f.state.outcome.value, 'empty')
-  f.membership.appUser.value.role = 'user'
-  f.id.value = 'chosen'
-  f.settle()
-  assert.equal(f.state.outcome.value, 'ready')
-  f.config.role = 'standalone'
-  f.settle()
-  assert.equal(f.state.outcome.value, 'empty')
+  for (const role of ['global', 'tenant', 'standalone']) {
+    f.config.role = role
+    f.config.appId = 'app-a'
+    f.settle()
+    assert.equal(f.state.outcome.value, 'ready')
+    f.config.appId = 'app-b'
+    f.settle()
+    assert.equal(f.state.outcome.value, 'empty')
+  }
   f.config.appId = 'app-a'
-  f.config.role = 'tenant'
-  f.config.isTenant = true
+  f.membership.appUser.value.role = 'user'
+  f.settle()
+  assert.equal(f.query, null)
+  assert.equal(f.state.read.value, null)
+  assert.equal(f.pricePath, '')
+  f.membership.appUser.value.role = 'dev'
   f.settle()
   assert.equal(f.state.outcome.value, 'ready')
   f.uid.value = 'another-user'

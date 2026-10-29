@@ -8,7 +8,12 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
-import { serverKitchenDishesTarget, serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenDishesTarget,
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+} from '../../../kitchen/server/mutation-targets'
 import { normalizeMenuItemPatch } from '../../utils/menu-item-patch'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
@@ -98,12 +103,21 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
         }
       }
       const target = serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)
-      const matches = await tx.query(target, {
-        field: dishId ? 'dish_id' : 'promotion_id',
-        op: '==',
-        value: dishId || promotionId,
-        limit: 401,
-      })
+      const matches: Array<{ id: string; data: Record<string, unknown> }> = []
+      let afterId: string | undefined
+      while (matches.length <= 400) {
+        const limit = Math.min(100, 401 - matches.length)
+        const page = await tx.query(target, {
+          field: dishId ? 'dish_id' : 'promotion_id',
+          op: '==',
+          value: dishId || promotionId,
+          limit,
+          ...(afterId ? { afterId } : {}),
+        })
+        matches.push(...page)
+        if (page.length < limit) break
+        afterId = page.at(-1)!.id
+      }
       if (matches.length > 400)
         throw createError({
           statusCode: 409,

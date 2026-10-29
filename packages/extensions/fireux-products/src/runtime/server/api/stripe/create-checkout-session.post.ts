@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module'
+import { useRuntimeConfig } from '#imports'
 import {
   createError,
   defineEventHandler,
@@ -6,9 +7,11 @@ import {
   readBody,
   type H3Event,
 } from 'h3'
-import { ProductPriceStorage, ProductStorage } from '../../../product/utils/product.ts'
+import { ProductPriceStorage, ProductStorage } from '../../../product/utils/product'
 import { STRIPE_API_VERSION } from '../../../product/server/integration/stripe/version'
 import { getProductsFirestore } from '../../../product/server/core/getAdmin'
+import { checkoutBuyerSession } from '../../../product/server/integration/stripe/buyer-session'
+import { publicProduct } from '../../../product/server/read'
 
 type CreateCheckoutSessionBody = {
   appId?: string
@@ -110,6 +113,7 @@ async function assertCheckoutProductAndPrice(input: {
   slug: string
   priceId: string
   mode: CheckoutMode
+  scope: { role: string; appId: string }
 }) {
   assertSafeDocumentSegment(input.appId, 'appId')
   assertSafeDocumentSegment(input.productId, 'productId')
@@ -134,6 +138,9 @@ async function assertCheckoutProductAndPrice(input: {
   }
 
   const product = productSnap.data() as Record<string, any>
+  if (!publicProduct(input.productId, product, input.scope)) {
+    throw createError({ statusCode: 404, statusMessage: 'Product not found' })
+  }
   const sourceAppId = normalizeString(product.source_app_id)
   const productSlug = normalizeString(product.slug)
 
@@ -227,10 +234,22 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  await assertCheckoutProductAndPrice({ appId, productId, slug, priceId, mode })
+  const runtime = useRuntimeConfig(event)
+  await assertCheckoutProductAndPrice({
+    appId,
+    productId,
+    slug,
+    priceId,
+    mode,
+    scope: {
+      role: runtime.public.fireux.role,
+      appId: runtime.public.fireux.id,
+    },
+  })
 
   const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
   const baseUrl = baseUrlFromEvent(event)
+  const buyer = await checkoutBuyerSession(event, secret)
 
   const session = await stripe.checkout.sessions.create({
     mode,
@@ -248,6 +267,10 @@ export default defineEventHandler(async (event: H3Event) => {
       productId,
       slug,
     },
+  })
+
+  await buyer.update({
+    checkouts: [...(buyer.data.checkouts ?? []).slice(-9), session.id],
   })
 
   return {

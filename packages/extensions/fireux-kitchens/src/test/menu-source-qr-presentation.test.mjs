@@ -138,10 +138,10 @@ test('QR targets retain publication and service eligibility boundaries', () => {
   ])
   const deps = {
     computed: Vue.computed,
+    useKitchenWorkspaceMenuSources: () => ({ menuSources: Vue.ref([]) }),
     useKitchenWorkspaceMenus: () => ({
       selectedKitchen: Vue.ref({ slug: 'venue' }),
       menus,
-      menuSources: Vue.ref([]),
       storageKitchenId: Vue.ref('kitchen-ready'),
       outcome: Vue.ref('ready'),
     }),

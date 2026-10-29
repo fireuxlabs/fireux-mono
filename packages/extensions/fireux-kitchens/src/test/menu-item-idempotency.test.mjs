@@ -80,10 +80,20 @@ function harness() {
             data: snapshot.get(t + '/' + id),
           }),
           readAll: async (t, limit) => rows(t).slice(0, limit),
-          query: async (t, q) =>
-            rows(t)
-              .filter((row) => row.data[q.field] === q.value)
-              .slice(0, q.limit),
+          query: async (t, q) => {
+            assert.ok(
+              q.limit >= 1 && q.limit <= 100,
+              'native guarded query limit'
+            )
+            return rows(t)
+              .filter(
+                (row) =>
+                  row.data[q.field] === q.value &&
+                  (!q.afterId || row.id > q.afterId)
+              )
+              .sort((a, b) => a.id.localeCompare(b.id))
+              .slice(0, q.limit)
+          },
           create: (...args) => staged.push(['create', ...args]),
           update: (...args) => staged.push(['update', ...args]),
         })
@@ -191,3 +201,18 @@ for (const reference of [{ dishId: 'd' }, { promotionId: 'p' }]) {
     assert.equal(h.writes.filter((row) => row[0] === 'create').length, 0)
   })
 }
+
+test('duplicate detection pages within the native query bound and still refuses over 400 matches', async () => {
+  const h = harness()
+  for (let index = 0; index < 401; index++) {
+    h.records.set(
+      `k/menus/m/sections/s/items/old-${String(index).padStart(3, '0')}`,
+      { dish_id: 'd', status: 'archived' }
+    )
+  }
+  await assert.rejects(
+    h.create({}, { kitchenId: 'k', menuId: 'm', sectionId: 's', dishId: 'd' }),
+    /duplicate cleanup/
+  )
+  assert.equal(h.writes.length, 0)
+})

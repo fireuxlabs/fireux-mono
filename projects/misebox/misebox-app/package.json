@@ -39,6 +39,7 @@
     "fireux-kitchens": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-places": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-sproochli": "workspace:*",
     "fireux-suppliers": "workspace:*",
     "h3": "^1.15.4",

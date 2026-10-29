@@ -44,7 +44,7 @@ function fixture({
     menuId: ref('m'),
     kitchenId: ref('k'),
     activeKitchenAppId: ref('a'),
-    canWrite: ref(true),
+    canWrite: ref(allowed),
   }
   const deps = {
     ref,
@@ -197,7 +197,10 @@ test('processing cannot dispatch without authority or credentials', async () => 
   await settle()
   await denied.api.processSource('standard')
   assert.equal(denied.calls.length, 0)
-  assert.equal(denied.api.displayError.value, 'Access denied')
+  assert.equal(
+    denied.api.displayError.value,
+    'Upload a source document and sign in before processing.'
+  )
   denied.stop()
   const waiting = fixture({ token: new Promise(() => {}) })
   await waiting.api.processSource('standard')

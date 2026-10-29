@@ -18,7 +18,11 @@
       <div class="menu-qr__code" :aria-busy="!qrReady && !qrError">
         <div
           v-show="qrReady"
-          :ref="(element) => { qrContainer = element as HTMLElement | null }"
+          :ref="
+            (element) => {
+              qrContainer = element as HTMLElement | null
+            }
+          "
           class="menu-qr__canvas"
           :aria-label="`QR code linking to ${view.menuName}`"
           data-menu-qr-image
@@ -66,6 +70,17 @@
       >
         Open menu
       </NuxtLink>
+      <UButton
+        class="menu-qr__action"
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-download"
+        :href="qrDownloadUrl || undefined"
+        download="menu-qr.svg"
+        :disabled="!qrReady"
+        data-menu-action="download"
+        label="Download QR"
+      />
       <MenuQRPrintAction :ready="qrReady" />
     </div>
   </div>
@@ -87,7 +102,7 @@ const props = defineProps<{
   >
 }>()
 const emit = defineEmits<{ error: [value: boolean] }>()
-const { qrContainer, qrReady, qrError } = useMenuQrRenderer(
+const { qrContainer, qrReady, qrError, qrDownloadUrl } = useMenuQrRenderer(
   computed(() => props.view.menuUrl),
   ref(null),
   ref(false)

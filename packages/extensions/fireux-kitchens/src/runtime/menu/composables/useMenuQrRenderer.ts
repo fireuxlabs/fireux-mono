@@ -12,13 +12,19 @@ export function useMenuQrRenderer(
   const qrContainer = ref<HTMLElement | null>(null)
   const qrReady = ref(false)
   const qrError = ref(false)
+  const qrDownloadUrl = ref('')
   let qrGeneration = 0
-  let currentQr: Pick<QRCodeStyling, 'append' | 'update'> | null = null
+  let currentQr: Pick<
+    QRCodeStyling,
+    'append' | 'update' | 'getRawData'
+  > | null = null
   type QrWatchState = readonly [string, MenuLoadFailure | null, boolean]
   onMounted(() => generateQr(menuUrl.value))
   onBeforeUnmount(() => {
     qrGeneration += 1
     currentQr = null
+    qrReady.value = false
+    qrDownloadUrl.value = ''
   })
   watch(
     () => [menuUrl.value, qrFailure.value, pending.value] as const,
@@ -26,6 +32,7 @@ export function useMenuQrRenderer(
       if (isPending || menuFailure) {
         qrGeneration += 1
         qrReady.value = false
+        qrDownloadUrl.value = ''
         qrError.value = false
         return
       }
@@ -37,6 +44,7 @@ export function useMenuQrRenderer(
   async function generateQr(url: string) {
     const generation = ++qrGeneration
     qrReady.value = false
+    qrDownloadUrl.value = ''
     qrError.value = false
 
     if (!url || qrFailure.value) return
@@ -56,7 +64,15 @@ export function useMenuQrRenderer(
         currentQr.append(qrContainer.value)
       }
 
-      if (generation === qrGeneration) qrReady.value = true
+      // The library finishes SVG rendering asynchronously. The displayed and
+      // downloaded code must both belong to this same settled destination.
+      const file = await currentQr.getRawData('svg')
+      if (generation !== qrGeneration) return
+      if (!(file instanceof Blob)) throw new Error('QR SVG is unavailable.')
+      const svg = await file.text()
+      if (generation !== qrGeneration) return
+      qrDownloadUrl.value = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+      qrReady.value = true
     } catch {
       if (generation === qrGeneration) qrError.value = true
     }
@@ -91,5 +107,5 @@ export function useMenuQrRenderer(
     }
   }
 
-  return { qrContainer, qrReady, qrError }
+  return { qrContainer, qrReady, qrError, qrDownloadUrl }
 }

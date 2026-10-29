@@ -1,4 +1,4 @@
-import { refreshNuxtData } from 'nuxt/app'
+import { refreshNuxtData, useNuxtApp } from 'nuxt/app'
 import { $fetch } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -6,6 +6,7 @@ import { useMenuEditorScope } from '../../useMenuEditorScope'
 
 /** Capture one Menu command before credentials; never retarget pending intent. */
 export function useMenuMutation() {
+  const nuxtApp = useNuxtApp()
   const { currentUser } = useAuth()
   const captureScope = useMenuEditorScope([])
   async function mutate<T>(
@@ -46,7 +47,12 @@ export function useMenuMutation() {
             String(options.method || 'GET').toUpperCase()
           )
         )
-          await refreshNuxtData()
+          await refreshNuxtData(
+            Object.keys(nuxtApp.payload.data).filter(
+              (key) =>
+                key.startsWith('menu|') || key.startsWith('menu-collection|')
+            )
+          )
       },
       method,
       headers: { Authorization: `Bearer ${token}` },

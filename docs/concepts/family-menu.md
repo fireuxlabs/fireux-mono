@@ -76,6 +76,13 @@ Menu IDs and own eligibility and serving schedules.
   artwork; without keyed artwork, a section card derives its representative
   image from that section's canonical Dish media.
 
+Dish writes, Menu content writes and publication refresh only the acquired
+`menu|` and `menu-collection|` Nuxt payload keys. They pass explicit key arrays
+to native `refreshNuxtData`; they do not refresh App/session data and interrupt
+multi-command editors. Native Firestore listeners retain their own records.
+Menu service choices are scoped to the current canonical Menu ID; a basic Menu
+does not advertise ordering entrances for other Menus in the Kitchen.
+
 ## Regular Menu publication tools
 
 The routed Menu Publishing view consumes Kitchen-owned `Workspace/Menus/Publication/Actions.vue`.
@@ -331,8 +338,11 @@ transformations and policy helpers. Order cart/input contracts live in
 `useMenuDetail` owns the public browse read/presentation lifecycle, including
 canonical SEO and language intent. The Detail composition retains its optional
 SSR readiness wait and response status.
-`useMenuQrRenderer` owns QR generation and disposal; the QR composition retains
-Menu availability and print presentation. Components use the existing named
+`useMenuQrRenderer` owns QR generation, settled SVG export and disposal; a
+destination change or disposal clears the previous download. The public QR
+composition retains Menu availability and print/download presentation. SVG
+download reuses the existing renderer rather than acquiring another Menu or
+adding a separate QR tool. Components use the existing named
 Nuxt registrations. No storage schema or publication authority changes accompany
 this organisation.
 

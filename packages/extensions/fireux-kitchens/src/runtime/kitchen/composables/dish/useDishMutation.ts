@@ -1,4 +1,4 @@
-import { refreshNuxtData } from 'nuxt/app'
+import { refreshNuxtData, useNuxtApp } from 'nuxt/app'
 import type { WatchSource } from 'vue'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { useDishEditorScope } from './useDishEditorScope'
@@ -7,6 +7,7 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 
 /** Shared credential and stale-intent boundary for the three Dish commands. */
 export function useDishMutation(ownerSources: WatchSource[] = []) {
+  const nuxtApp = useNuxtApp()
   const { currentUser } = useAuth()
   const captureIntent = useDishEditorScope(ownerSources)
   async function mutate(
@@ -48,7 +49,12 @@ export function useDishMutation(ownerSources: WatchSource[] = []) {
               String(options.method || 'GET').toUpperCase()
             )
           )
-            await refreshNuxtData()
+            await refreshNuxtData(
+              Object.keys(nuxtApp.payload.data).filter(
+                (key) =>
+                  key.startsWith('menu|') || key.startsWith('menu-collection|')
+              )
+            )
         },
         method,
         headers: { Authorization: `Bearer ${token}` },

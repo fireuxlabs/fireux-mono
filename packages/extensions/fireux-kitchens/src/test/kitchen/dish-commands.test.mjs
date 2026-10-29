@@ -754,3 +754,43 @@ test('Dish creation preserves unset, explicit zero and normal prices without cha
     assert.equal(h.writes.length, 0)
   }
 })
+
+test('Dish completion refreshes Menu projections without invalidating the editor session', async () => {
+  const currentUser = ref({ uid: 'operator', getIdToken: async () => 'token' })
+  let refreshed = []
+  const factory = load(
+    '../../runtime/kitchen/composables/dish/useDishMutation.ts',
+    {
+      watch,
+      useAuth: () => ({ currentUser }),
+      useRequireUser: async () => currentUser.value,
+      useNuxtApp: () => ({
+        payload: {
+          data: Object.fromEntries(
+            [
+              'menu|id=food',
+              'menu-collection|app=misebox',
+              '["app-read","misebox-app","operator"]',
+              'users:public',
+            ].map((key) => [key, {}])
+          ),
+        },
+      }),
+      refreshNuxtData: async (keys) => {
+        refreshed = keys
+      },
+      $fetch: async (_url, options) => {
+        await options.onResponse({ options, response: { ok: true } })
+        return { id: 'test-dish' }
+      },
+    },
+    'useDishMutation'
+  )
+  const result = await factory().mutate(
+    'POST',
+    { draft: { name: 'TEST', price: 8.5 } },
+    'k'
+  )
+  assert.equal(result.id, 'test-dish')
+  assert.deepEqual(refreshed, ['menu|id=food', 'menu-collection|app=misebox'])
+})

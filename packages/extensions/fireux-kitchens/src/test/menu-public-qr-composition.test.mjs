@@ -89,6 +89,9 @@ test('public QR composes truthful states and a printable view with a gated print
               qrContainer: Vue.ref(null),
               qrReady: Vue.ref(state === 'ready'),
               qrError: Vue.ref(state === 'error'),
+              qrDownloadUrl: Vue.ref(
+                state === 'ready' ? 'data:image/svg+xml,test' : ''
+              ),
             }
           },
         },

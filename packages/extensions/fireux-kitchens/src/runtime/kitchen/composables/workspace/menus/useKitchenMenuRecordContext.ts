@@ -158,7 +158,11 @@ function createKitchenMenuRecordContext() {
   const router = useRouter()
   const toast = useToastify()
   const captureIntent = useMenuEditorScope([kitchenId, menuSlug])
-  const publication = useMenuPublication()
+  const publication = useMenuPublication([
+    kitchenId,
+    menuId,
+    () => router.currentRoute.value.fullPath,
+  ])
   function assertCanWrite() {
     if (!canWrite.value) throw new Error('This menu is read-only.')
   }

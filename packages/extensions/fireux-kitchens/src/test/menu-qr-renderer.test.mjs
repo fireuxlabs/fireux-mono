@@ -19,6 +19,11 @@ function fixture(presentation, loader) {
     constructor(options) {
       calls.push(['create', options])
     }
+    async getRawData() {
+      return new Blob(['<svg xmlns="http://www.w3.org/2000/svg"></svg>'], {
+        type: 'image/svg+xml',
+      })
+    }
     append() {
       calls.push(['append'])
     }
@@ -28,14 +33,23 @@ function fixture(presentation, loader) {
   }
   const factory = compileFunction(
     `${stripTypeScriptTypes(source)}; return useMenuQrRenderer`,
-    ['ref', 'nextTick', 'onMounted', 'onBeforeUnmount', 'watch', 'loadQr']
+    [
+      'ref',
+      'nextTick',
+      'onMounted',
+      'onBeforeUnmount',
+      'watch',
+      'loadQr',
+      'Blob',
+    ]
   )(
     ref,
     async () => {},
     (fn) => (mount = fn),
     (fn) => (dispose = fn),
     (_get, fn) => (changed = fn),
-    loader || (async () => ({ default: QR }))
+    loader || (async () => ({ default: QR })),
+    Blob
   )
   const url = ref('https://example.test/menu')
   const api = factory(url, ref(null), ref(false), presentation)
@@ -66,6 +80,7 @@ test('public and Workspace QR consumers retain their dimensions and update exist
     const f = fixture(presentation)
     await f.mount()
     assert.equal(f.api.qrReady.value, true)
+    assert.match(decodeURIComponent(f.api.qrDownloadUrl.value), /<svg/)
     const options = f.calls[0][1]
     assert.equal(options.width, size)
     assert.equal(options.height, size)
@@ -101,5 +116,52 @@ test('QR load failure reports an error instead of remaining pending', async () =
   })
   await f.mount()
   assert.equal(f.api.qrReady.value, false)
+  assert.equal(f.api.qrError.value, true)
+})
+
+test('changing the destination hides an old download and disposal clears it', async () => {
+  const f = fixture()
+  await f.mount()
+  assert.ok(f.api.qrDownloadUrl.value)
+  f.change('https://example.test/changed')
+  assert.equal(f.api.qrReady.value, false)
+  assert.equal(f.api.qrDownloadUrl.value, '')
+  await settle()
+  f.dispose()
+  assert.equal(f.api.qrDownloadUrl.value, '')
+  assert.equal(f.api.qrReady.value, false)
+})
+test('an obsolete SVG export cannot become the current download', async () => {
+  let release
+  const exporting = new Promise((resolve) => {
+    release = resolve
+  })
+  class QR {
+    append() {}
+    update() {}
+    getRawData() {
+      return exporting
+    }
+  }
+  const f = fixture(undefined, async () => ({ default: QR }))
+  const mounting = f.mount()
+  await settle()
+  f.dispose()
+  release(new Blob(['<svg/>'], { type: 'image/svg+xml' }))
+  await mounting
+  assert.equal(f.api.qrDownloadUrl.value, '')
+  assert.equal(f.api.qrReady.value, false)
+})
+test('a failed SVG export reports failure without exposing a download', async () => {
+  const f = fixture(undefined, async () => ({
+    default: class {
+      append() {}
+      getRawData() {
+        throw new Error('export failed')
+      }
+    },
+  }))
+  await f.mount()
+  assert.equal(f.api.qrDownloadUrl.value, '')
   assert.equal(f.api.qrError.value, true)
 })

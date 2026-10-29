@@ -160,7 +160,8 @@ export function useMenuDetail(props: {
   const orderingSurfaceOptions = computed(() =>
     guestMenuSurfaceOptions({
       behaviour: detailMenu.value?.behaviour,
-      menuId: menuId.value,
+      menuId: detailMenu.value?.source.menuId || menuId.value,
+      menuSlug: menuId.value,
       routeScope: menuRouteScope.value,
       activeContext: 'generic',
       activeOfferingId: offeringId.value,

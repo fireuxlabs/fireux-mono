@@ -1,40 +1,16 @@
 <template>
   <UPage>
-    <UPageHeader
-      title="Purchase confirmed"
-      description="Your checkout has been received."
-    />
-    <UPageBody class="space-y-4">
+    <UPageHeader title="Checkout status" />
+    <UPageBody>
       <UAlert
-        color="success"
-        variant="soft"
-        title="Thank you"
-        description="Your purchase has been confirmed."
+        :color="confirmed ? 'success' : 'neutral'"
+        :title="confirmed ? 'Checkout complete' : 'Payment verification'"
+        :description="message"
       />
-
-      <UAlert
-        color="primary"
-        variant="subtle"
-        title="Payment status"
-        :description="paymentMessage"
-      />
-
-<FireDiagnosticsDebugPanel
-  object-origin="fetched"
-        launcher
-        include-route
-        v-if="sessionPayload"
-        :title="'Checkout Session (JSON)'"
-        context="products/success"
-        :objects="sessionPayload"
-  :derived="{}"
-        :default-open="false"
-      />
-
-      <div class="flex gap-3">
-        <UButton to="/products" variant="outline">Back to products</UButton>
-        <UButton v-if="productSlug" :to="`/products/${productSlug}`">View product</UButton>
-      </div>
+      <UButton v-if="sessionId" :loading="status === 'pending'" @click="refresh()">
+        Check again
+      </UButton>
+      <UButton to="/products" variant="outline">Back to products</UButton>
     </UPageBody>
   </UPage>
 </template>
@@ -44,25 +20,36 @@ import { computed } from 'vue'
 import { useFetch, useRoute } from 'nuxt/app'
 
 const route = useRoute()
-const sessionId = String(route.query.session_id || '').trim()
-const productSlug = String(route.query.product || '').trim()
-
-const { data, error } = await useFetch<{ payment_status?: string }>('/api/stripe/checkout-session', {
-  query: sessionId ? { session_id: sessionId } : undefined,
-  immediate: Boolean(sessionId),
+const sessionId = computed(() =>
+  typeof route.query.session_id === 'string' ? route.query.session_id : ''
+)
+const { data, error, status, refresh } = await useFetch<{
+  status: string | null
+  payment_status: string
+}>('/api/stripe/checkout-status', {
+  query: computed(() => ({ session_id: sessionId.value })),
+  server: false,
+  immediate: Boolean(sessionId.value),
 })
 
-const sessionPayload = computed(() => data.value || null)
-const paymentMessage = computed(() => {
+const confirmed = computed(
+  () =>
+    !error.value &&
+    data.value?.status === 'complete' &&
+    ['paid', 'no_payment_required'].includes(data.value.payment_status)
+)
+const message = computed(() => {
+  if (!sessionId.value) return 'No checkout session was provided.'
+  if (status.value === 'pending') return 'Checking your payment with Stripe.'
   if (error.value) {
-    return 'We could not verify this checkout session. Please check your payment provider.'
+    return 'This browser could not verify the checkout. Check your Stripe receipt or contact the seller before trying another payment.'
   }
-  if (!sessionId) {
-    return 'No checkout session was provided.'
+  if (confirmed.value) {
+    return data.value?.payment_status === 'paid'
+      ? 'Stripe confirms your payment. Delivery is a separate step.'
+      : 'Stripe confirms this checkout requires no payment. Delivery is a separate step.'
   }
-  if (sessionPayload.value?.payment_status === 'paid') {
-    return 'Payment confirmed.'
-  }
-  return 'Checkout received. Payment confirmation is still pending.'
+  if (data.value?.status === 'expired') return 'This checkout expired.'
+  return 'Payment is not confirmed yet. Check again before trying another payment.'
 })
 </script>

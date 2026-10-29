@@ -13,10 +13,7 @@
           : 'Withdraw this Menu from public views and keep its content for later.'
       }}
     </p>
-    <FireCopyError
-      v-if="offeringsError"
-      :message="String(offeringsError)"
-    />
+    <FireCopyError v-if="offeringsError" :message="String(offeringsError)" />
     <p v-else-if="!servicesReady" role="status" class="text-sm text-muted">
       Checking services…
     </p>
@@ -119,7 +116,7 @@ const {
   sectionsError,
 } = useKitchenMenuRecordContext()
 const { deleteMenu } = useMenuDelete()
-const { archiveMenu, restoreMenu } = useMenuPublication()
+const { archiveMenu, restoreMenu } = useMenuPublication([kitchenId, menuId])
 const confirm = ref<'archive' | 'delete' | ''>(''),
   busy = ref(false),
   error = ref('')
@@ -166,7 +163,8 @@ async function apply() {
     else await archiveMenu(kitchenId.value, menuId.value)
     if (!isCurrent()) return
     confirm.value = ''
-    if (action === 'delete') await navigateTo('/workspace/kitchen/food-and-drink/menus')
+    if (action === 'delete')
+      await navigateTo('/workspace/kitchen/food-and-drink/menus')
   } catch (cause) {
     if (isCurrent())
       error.value =
