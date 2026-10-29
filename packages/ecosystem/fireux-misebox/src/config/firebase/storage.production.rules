@@ -1,0 +1,11 @@
+rules_version = '2';
+// Production: misebox-78f9c / misebox-78f9c.appspot.com
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Browser SDK access is closed. Domain commands own uploads; public image
+    // URLs are explicit bearer links issued by those commands, not bucket access.
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

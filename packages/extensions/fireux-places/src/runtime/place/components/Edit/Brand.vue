@@ -87,7 +87,7 @@ const props = defineProps<{
   place: Place
   mutationAuthority?: PlaceMutationAuthority | null
 }>()
-const { uploadImage } = useImageStorage()
+const { uploadImage } = useImageStorage({ endpoint: '/api/places/images', fields: () => ({ app_id: props.mutationAuthority?.appId, kitchen_id: props.mutationAuthority?.kitchenId }) })
 const {
   updatePlaceImage,
   updateLogoImage,

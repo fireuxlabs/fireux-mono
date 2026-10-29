@@ -40,10 +40,14 @@ tests. Missing production Rules or tests remains a hard stop; development is
 never an implicit fallback. Run production preflight with:
 
 ```sh
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 pnpm --filter misebox-app deploy:preflight --rules-policy production
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 pnpm --filter misebox-app deploy:preflight --rules-policy production
 ```
 
-Run a local Firestore emulator on that port before production preflight. The suite accepts
+Run the native Firestore and Storage emulators with
+`packages/ecosystem/fireux-misebox/src/config/firebase/emulators.json`, project
+`demo-misebox-production-rules`, before production preflight. Start the Firebase
+CLI from a neutral temporary directory with the absolute config path; no App
+runtime emulator settings are needed. Both suites accept
 only localhost/127.0.0.1, compiles the exact ecosystem-owned
 `firestore.production.rules`, and clears fixtures only in the emulator's
 `demo-misebox-production-rules` project, named database `misebox`. It never falls
@@ -77,8 +81,11 @@ existing grants and current membership evidence, with create-only canonical
 targets and separately gated retirement. It has no network or apply mode.
 Source changes do not migrate live grants or deploy Rules. The accepted development template is
 unchanged. Blog/Product/price authoring now uses trusted commands only; their business
-schemas are not duplicated in browser-write Rules. Public Product root reads
-still require the exposure repair identified in the access review below.
+schemas are not duplicated in browser-write Rules. Raw Product roots/prices are
+admin-only; public catalogue reads use the Products-owned safe server projection.
+Protected image commands reuse existing domain authority and Core Storage helpers.
+The authored Storage candidate denies browser SDK reads/writes; intentionally
+issued public image token URLs still work. It does not revoke historical tokens.
 
 Only after separate deployment authorization:
 
@@ -87,12 +94,14 @@ pnpm --filter misebox-app deploy --rules-policy development
 # Or explicitly Hosting only:
 pnpm --filter misebox-app deploy:hosting --rules-policy development
 # Future authorized production release keeps the production gate:
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 pnpm --filter misebox-app deploy --rules-policy production
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 pnpm --filter misebox-app deploy --rules-policy production
 ```
 
 Both upload commands run the selected local preflight, then use
 `gcloud auth print-access-token` to read the existing `cloud.firestore/misebox`
-Rules release in `misebox-78f9c`. The effective live source must exactly match the
+Rules release in `misebox-78f9c`. Production also reads the pinned
+`firebase.storage/misebox-78f9c.appspot.com` release. Both effective production
+sources must match their authored candidates. The effective Firestore source must match the
 selected development or production source; a restricted live policy cannot
 satisfy development selection, and open live Rules cannot satisfy production.
 The Rules API request uses that same pinned project as `x-goog-user-project`;
@@ -115,8 +124,16 @@ still follows the backup, exact-target and read-back requirements in
 ## Access review
 
 The [2026-10-29 access review](../../../../docs/reviews/misebox-production-access-2026-10-29.json)
-is complete and does **not** approve deployment. Two release blockers remain:
-public Product roots can expose internal provisioning fields through direct
-client reads, and the Storage bucket has no reviewed restricted production
-policy covering its active upload consumers. Firestore preflight does not verify
-Storage or certify all runtime authority. Preserve the separate rollout gates.
+records the local repairs and does **not** approve deployment. The Product
+projection and protected media code blockers are closed locally. Live Firestore
+and Storage remain development-open; separate backed-up policy rollout and exact
+readback are still required. Historical download tokens and inherited/bucket IAM
+are not certified by these checks.
+
+For policy verification, stop the Misebox development server first, run the native
+Firestore and Storage emulators together with the exact authored candidates, and
+run `test/firestore.production.test.mjs` plus `test/storage.production.test.mjs`.
+The Storage suite requires localhost and proves direct upload/read/list/delete
+denials alongside explicit token URL access. Stop the emulators before restoring
+the real-data preview. Production preflight uses both emulator host variables;
+these tests do not make the application use an emulator backend.

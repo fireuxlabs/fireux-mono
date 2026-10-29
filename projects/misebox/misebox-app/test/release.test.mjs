@@ -22,6 +22,8 @@ import {
   checkOutput,
   checkRules,
   verifyLiveRules,
+  checkStorageRules,
+  verifyLiveStorageRules,
   projectId,
   validateRulesSource,
   sealOutput,
@@ -56,13 +58,18 @@ const environment = { projectId, environment: { FIREUX_AI_MODE: 'app' } }
 
 async function discoveryFixture(root) {
   const modules = resolve(root, '.output/server/node_modules')
-  await mkdir(resolve(modules, 'firebase-functions/lib/v2'), { recursive: true })
+  await mkdir(resolve(modules, 'firebase-functions/lib/v2'), {
+    recursive: true,
+  })
   await mkdir(resolve(modules, '.bin'), { recursive: true })
-  await writeFile(resolve(modules, 'firebase-functions/package.json'), JSON.stringify({
-    name: 'firebase-functions',
-    version: manifest.dependencies['firebase-functions'],
-    main: 'lib/v2/index.js',
-  }))
+  await writeFile(
+    resolve(modules, 'firebase-functions/package.json'),
+    JSON.stringify({
+      name: 'firebase-functions',
+      version: manifest.dependencies['firebase-functions'],
+      main: 'lib/v2/index.js',
+    })
+  )
   await writeFile(resolve(modules, 'firebase-functions/lib/v2/index.js'), '')
   await writeFile(resolve(modules, '.bin/firebase-functions'), '')
 }
@@ -73,20 +80,33 @@ test('uploader keeps exact App targets and absolute configuration from a neutral
     calls.push(options.cwd)
     assert.equal(command, 'npx')
     assert.deepEqual(args, [
-      '-y', 'firebase-tools@latest', 'deploy', '--project', projectId,
-      '--config', resolve(appRoot, 'firebase.json'), '--only',
+      '-y',
+      'firebase-tools@latest',
+      'deploy',
+      '--project',
+      projectId,
+      '--config',
+      resolve(appRoot, 'firebase.json'),
+      '--only',
       'functions:misebox-ssr,hosting:misebox-78f9c',
     ])
     assert.ok(options.cwd.startsWith(resolve(tmpdir(), 'misebox-upload-')))
     assert.ok(!options.cwd.startsWith(appRoot))
   })
-  await assert.rejects(readFile(resolve(calls[0], 'anything')), { code: 'ENOENT' })
-  await assert.rejects(upload('hosting', appRoot, (_command, args, options) => {
-    calls.push(options.cwd)
-    assert.equal(args.at(-1), 'hosting:misebox-78f9c')
-    throw new Error('upload failure')
-  }), /upload failure/)
-  await assert.rejects(readFile(resolve(calls[1], 'anything')), { code: 'ENOENT' })
+  await assert.rejects(readFile(resolve(calls[0], 'anything')), {
+    code: 'ENOENT',
+  })
+  await assert.rejects(
+    upload('hosting', appRoot, (_command, args, options) => {
+      calls.push(options.cwd)
+      assert.equal(args.at(-1), 'hosting:misebox-78f9c')
+      throw new Error('upload failure')
+    }),
+    /upload failure/
+  )
+  await assert.rejects(readFile(resolve(calls[1], 'anything')), {
+    code: 'ENOENT',
+  })
   await assert.rejects(upload('other'), /Use deploy or hosting/)
 })
 
@@ -196,12 +216,21 @@ test('output preparation is repeatable and preflight detects stale output/enviro
   )
   await assert.rejects(checkOutput(root), /lockfile preparation is incomplete/)
   await sealOutput(root)
-  await assert.rejects(checkOutput(root), /discovery dependencies are incomplete/)
+  await assert.rejects(
+    checkOutput(root),
+    /discovery dependencies are incomplete/
+  )
   await discoveryFixture(root)
   await checkOutput(root)
-  const binary = resolve(root, '.output/server/node_modules/.bin/firebase-functions')
+  const binary = resolve(
+    root,
+    '.output/server/node_modules/.bin/firebase-functions'
+  )
   await rm(binary)
-  await assert.rejects(checkOutput(root), /discovery dependencies are incomplete/)
+  await assert.rejects(
+    checkOutput(root),
+    /discovery dependencies are incomplete/
+  )
   await discoveryFixture(root)
   await writeFile(
     resolve(root, '.output/server/pnpm-lock.yaml'),
@@ -225,11 +254,17 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     await readFile(resolve(root, '.output/server/package.json'), 'utf8'),
     before
   )
-  const sdkDirectory = resolve(root, '.output/server/node_modules/firebase-functions')
+  const sdkDirectory = resolve(
+    root,
+    '.output/server/node_modules/firebase-functions'
+  )
   const escapedSdk = resolve(root, 'external-sdk')
   await rename(sdkDirectory, escapedSdk)
   await symlink(escapedSdk, sdkDirectory, 'dir')
-  await assert.rejects(checkOutput(root), /discovery dependencies are incomplete/)
+  await assert.rejects(
+    checkOutput(root),
+    /discovery dependencies are incomplete/
+  )
   await writeFile(
     resolve(root, 'server/firebase.runtime-env.json'),
     JSON.stringify({ projectId, environment: { FIREUX_AI_MODE: 'disabled' } })
@@ -426,6 +461,14 @@ test('native preflight selects development without running production tests; def
     resolve(repo, policyRoot, 'firestore.production.rules'),
     '// Production: misebox-78f9c / misebox\nrules_version = "2";\nservice cloud.firestore { match /databases/{database}/documents { match /{document=**} { allow read, write: if false; } } }'
   )
+  await cp(
+    resolve(sourceRepo, policyRoot, 'storage.production.rules'),
+    resolve(repo, policyRoot, 'storage.production.rules')
+  )
+  await writeFile(
+    resolve(root, 'test/storage.production.test.mjs'),
+    "console.log('storage-suite-ran')\n"
+  )
   await writeFile(
     resolve(root, 'test/firestore.production.test.mjs'),
     "console.error('production-suite-ran'); process.exitCode = 17\n"
@@ -482,5 +525,39 @@ test('native preflight selects development without running production tests; def
         { encoding: 'utf8', stdio: 'pipe', env: cliEnvironment }
       ),
     (error) => /Use --rules-policy/.test(String(error.stderr))
+  )
+})
+
+test('production Storage gate pins the bucket and rejects an open or foreign live policy', async () => {
+  const source = await checkStorageRules()
+  const calls = []
+  const read = async (path) => {
+    calls.push(path)
+    return path.includes('/releases/')
+      ? {
+          name: path,
+          rulesetName: `projects/${projectId}/rulesets/storage-reviewed`,
+        }
+      : { source: { files: [{ content: source }] } }
+  }
+  const proof = await verifyLiveStorageRules(source, read)
+  assert.equal(
+    calls[0],
+    `projects/${projectId}/releases/firebase.storage/misebox-78f9c.appspot.com`
+  )
+  assert.equal(proof.bucketName, 'misebox-78f9c.appspot.com')
+  await assert.rejects(
+    verifyLiveStorageRules(source, async (path) =>
+      path.includes('/releases/')
+        ? { rulesetName: `projects/${projectId}/rulesets/open` }
+        : { source: { files: [{ content: 'allow read, write: if true;' }] } }
+    ),
+    /do not match/
+  )
+  await assert.rejects(
+    verifyLiveStorageRules(source, async () => ({
+      rulesetName: 'projects/foreign/rulesets/unsafe',
+    })),
+    /Unexpected/
   )
 })

@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
 Updated: 2026-10-29
-Ref: 77faf3e16
+Ref: 96c699615
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -428,7 +428,20 @@ update or delete requests. This local candidate does not change the accepted
 development-open template or its deployed policy. Blog, Product and provider-price
 creation/update likewise remain with their existing trusted commands; the
 Misebox candidate does not grant parallel browser writes or duplicate their
-business schemas. Storage policy remains independently owned and reviewed.
+business schemas. Raw Product roots also remain admin-only because they contain
+provisioning state. Public collection/detail reads use Products' server projection
+in `product/server/read.ts`; native admin reads retain exact-App scope.
+
+Protected image uploads reuse Core's `server/utils/uploads/image.ts` and Storage
+helpers. Place, Ingredient, Blog, Product and Professional routes prove their
+existing domain authority before upload and again before returning an immutable
+revision URL. Image bytes are decoded and re-encoded; denied commands never fall
+back to browser uploads. Revocation removes the new unattached object. Misebox's
+separate `storage.production.rules` denies browser SDK reads/writes; intentional
+public image download tokens remain bearer access. This does not revoke existing
+tokens or change live policy. Production preflight runs both local policy suites;
+production upload additionally requires exact live Firestore and Storage sources.
+See the App-owned release README and `test/storage.production.test.mjs`.
 Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized
@@ -590,8 +603,9 @@ adapter through their local composition provider; that adapter changes client
 transport, never trusted authority. Media uploads capture this same intent before
 upload and skip obsolete attachment. New Place image/logo/wordmark/cover uploads
 use unique owned revision objects, with fixed legacy URLs still readable and
-accepted. Cancelled/failed unattached uploads are retained; no Storage cleanup or
-live migration is implied. Current command/lifetime proof lives in Suppliers'
+accepted. The protected upload command removes its new object if authority is
+revoked during processing. Other cancelled or obsolete attachments may leave
+unattached revisions; this is not a historical Storage cleanup or live migration. Current command/lifetime proof lives in Suppliers'
 `src/test/supplier-identity-{profile,scope}.test.mjs`, Properties'
 `src/test/property-identity{,-scope}.test.mjs` and Place's `identity-media.test.mjs`.
 

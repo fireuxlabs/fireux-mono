@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-10-29
-Ref: 77faf3e16
+Ref: 96c699615
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1037,9 +1037,19 @@ membership-bound Kitchen and Offering reads while keeping all Kitchen mutations
 and raw Sellable terms server-owned. The candidate has no direct browser Kitchen
 CRUD grants; existing trusted commands retain their validation and authority.
 Blog, Product and provider-price mutations also remain server-owned; their
-browser Rules grant reads only. Storage policy is a separate authority: App
-release/preflight does not review or deploy it, and a passing Firestore suite
-does not establish bucket security. Its six-App authority must pass the required
+raw Product/price reads are admin-only. Public Product collection and detail
+responses use Products' allowlisted server projection, excluding provisioning,
+provider metadata and audit identities. Public discovery and admin catalogue
+management are explicit separate reader modes.
+
+Protected Place, Ingredient, Blog, Product and Professional image uploads use
+the owning domain routes and Core's existing server Storage mechanics. They
+validate image bytes, write immutable revisions and recheck authority before
+issuing the URL. The separate authored `storage.production.rules` closes browser
+SDK access; explicit public image token URLs remain readable. Production
+preflight requires both localhost policy suites, and production upload compares
+both exact live policy sources. Neither command deploys policies. Existing
+historical tokens and inherited/bucket IAM still require their own review. Its six-App authority must pass the required
 overlapping-stale-grant access-budget regression, deleted/malformed earlier
 App grants and non-string ID denial before release. See that
 directory's README for commands and local-versus-live verification boundaries.

@@ -155,7 +155,7 @@ const galleryImages = computed(() =>
     : []
 )
 const toast = useToastify()
-const { uploadImage } = useImageStorage()
+const { uploadImage } = useImageStorage({ endpoint: '/api/places/images', fields: () => ({ app_id: props.mutationAuthority?.appId, kitchen_id: props.mutationAuthority?.kitchenId }) })
 const coverInput = ref<HTMLInputElement | null>(null)
 const galleryInput = ref<HTMLInputElement | null>(null)
 const coverUploading = ref(false)

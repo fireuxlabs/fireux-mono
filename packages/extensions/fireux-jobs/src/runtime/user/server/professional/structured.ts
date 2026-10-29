@@ -21,7 +21,7 @@ import {
 
 export type { ProfessionalStructuredField } from './structured-input.ts'
 
-function runtimeDatabases(event: H3Event) {
+export function runtimeDatabases(event: H3Event) {
   const runtime = useRuntimeConfig(event)
   const fireux = (runtime.public?.fireux ?? {}) as Record<string, unknown>
   const firebase = (runtime.public?.firebaseEcosystem?.firebase ??
@@ -56,7 +56,7 @@ function runtimeDatabases(event: H3Event) {
   }
 }
 
-function assertActiveProfessional(
+export function assertActiveProfessional(
   snapshots: FirebaseFirestore.DocumentSnapshot[]
 ): void {
   const [appSnapshot, membershipSnapshot] = snapshots

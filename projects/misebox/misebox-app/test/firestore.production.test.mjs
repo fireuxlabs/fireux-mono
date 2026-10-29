@@ -250,11 +250,14 @@ test('signed-in accounts read only their own User root, without granting collect
   denied(await write('users/profile-owner', { display_name: 'Changed' }, 'profile-owner', { mask: ['display_name'] }))
 })
 
-test('public Product queries must request published active records; authoring is exact-App admin scoped', async () => {
+test('raw Products stay private even when published; authoring is exact-App admin scoped', async () => {
   await seed('apps/baeren-ringgenberg/users/editor', { role: 'admin', created: { at: time } })
-  await seed('products/published', { visibility: 'public', active: true, source_app_id: 'baeren-ringgenberg' })
+  await seed('products/published', { visibility: 'public', active: true, source_app_id: 'baeren-ringgenberg', provisioning: { actor_uid: 'private-actor', fingerprint: 'private-request' } })
   await seed('products/unpublished', { visibility: 'app', active: false, source_app_id: 'baeren-ringgenberg' })
-  allowed(await query('products', undefined, '', { compositeFilter: { op: 'AND', filters: [eq('visibility', 'public'), eq('active', true)] } }))
+  denied(await query('products', undefined, '', { compositeFilter: { op: 'AND', filters: [eq('visibility', 'public'), eq('active', true)] } }))
+  denied(await get('products/published'))
+  denied(await get('products/published', 'operator-1'))
+  allowed(await get('products/published', 'editor'))
   allowed(await query('products', 'editor', '', eq('source_app_id', 'baeren-ringgenberg')))
   denied(await query('products', 'editor'))
   denied(await get('products/unpublished', 'operator-1'))

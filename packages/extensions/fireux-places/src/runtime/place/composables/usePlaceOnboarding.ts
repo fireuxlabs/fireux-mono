@@ -48,7 +48,7 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     ensurePlaceExists,
     previewPlaceOnboarding,
   } = usePlaceCreate()
-  const { uploadImage } = useImageStorage()
+  const { uploadImage } = useImageStorage({ endpoint: '/api/places/images', fields: () => ({ mode: 'onboarding' }) })
 
   const isExisting = computed(() => selectionKind.value === 'existing')
   const canConfigure = computed(() => preview.value?.can_configure === true)

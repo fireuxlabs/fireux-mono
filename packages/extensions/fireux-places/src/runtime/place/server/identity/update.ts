@@ -2,7 +2,10 @@ import { placeReferenceTargets } from './mutation-authority'
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
@@ -33,15 +36,19 @@ function badRequest(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
 }
 
-export async function updatePlace(
+export async function withPlaceWriter(
   event: H3Event,
   placeId: string,
-  input: PlacePatchRequest
+  input: PlacePatchRequest,
+  action: (
+    tx: GuardedServerTransaction,
+    place: Record<string, unknown>,
+    actor: { uid: string; runtimeAppId: string }
+  ) => unknown
 ) {
   const id = requireFirestoreDocumentId(placeId, 'Place id')
 
   const { uid } = await requireFirebaseBearerUser(event)
-  const requestedPatch = record(input.patch)
   const requestedAppId = text(input.app_id)
   const requestedKitchenId = text(input.kitchen_id)
   if (Boolean(requestedAppId) !== Boolean(requestedKitchenId)) {
@@ -62,7 +69,6 @@ export async function updatePlace(
     useRuntimeConfig(event).public?.fireux?.developerId
   )
   const localDeveloper = import.meta.dev && uid === configuredDeveloperId
-  const storageBucket = runtimeStorageBucketName()
   if (
     kitchenAuthority &&
     (!isFirestoreDocumentId(runtimeAppId) ||
@@ -132,11 +138,20 @@ export async function updatePlace(
       })
     }
 
-    stagePlaceUpdate(mutations, id, requestedPatch, place, {
-      uid,
-      runtimeAppId,
-      bucketName: storageBucket,
-    })
+    await action(mutations, place, { uid, runtimeAppId })
+  })
+}
+
+export async function updatePlace(
+  event: H3Event,
+  placeId: string,
+  input: PlacePatchRequest
+) {
+  const id = requireFirestoreDocumentId(placeId, 'Place id')
+  const requestedPatch = record(input.patch)
+  const bucketName = runtimeStorageBucketName()
+  await withPlaceWriter(event, id, input, (tx, place, actor) => {
+    stagePlaceUpdate(tx, id, requestedPatch, place, { ...actor, bucketName })
   })
 
   const place = await readPlace(id)

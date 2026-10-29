@@ -1,7 +1,7 @@
 {
   "reviewed": "2026-10-29",
   "role": "dated access review; not deployment authority",
-  "sourceBaseline": "77faf3e16",
+  "sourceBaseline": "96c699615",
   "scope": {
     "project": "misebox-78f9c",
     "database": "misebox",
@@ -20,7 +20,7 @@
   "releaseReady": false,
   "score": 1,
   "scoreScope": "Current live production readiness: development-open policies would permit unauthorized access if treated as production security. This is not a code-quality score.",
-  "summary": "Git queue reconciled and saved. Kitchen authority and trusted authoring boundaries were checked. Obsolete direct Blog/Product/Price writes were removed from the local candidate. Production deployment remains blocked by open Storage policy and public Product document metadata exposure. No live policy or data changed.",
+  "summary": "Product public reads and protected media blockers are closed in source and local tests. Domain commands reuse existing authority and Core upload mechanics. The production gate now requires both reviewed live policy sources, but no deployment, live policy update or live data write was performed. Live development-open permissions remain a release blocker.",
   "findings": [
     {
       "check": "Authority / unrestricted live access",
@@ -31,29 +31,32 @@
     {
       "check": "Field-level read security",
       "severity": "moderate",
-      "issue": "The local candidate permits direct public reads of active public Product roots. Product creation retains internal provisioning state on that root, including actor UID, request ID and recovery fingerprint. Client-side normalizeProduct drops those fields only after the raw document has reached the browser. A local emulator probe returned the internal field unauthenticated.",
-      "recommendation": "Use a domain-owned safe server projection for public Product collection reads, or move recovery state to a protected child with an explicitly reviewed data transition. Preserve the admin reader and creation retry contract. The existing Product detail API already normalizes its server response."
+      "issue": "The prior candidate allowed raw public Product roots containing provisioning state.",
+      "recommendation": "Closed locally: public collection/detail APIs use a shared allowlisted server projection, including safe public prices. Raw roots/prices are admin-only in the candidate. Admin Firebase readers and provider retry ownership are preserved.",
+      "status": "closed-locally"
     },
     {
       "check": "Business authority / obsolete browser writes",
       "severity": "major",
       "issue": "The prior candidate permitted direct Blog, Product and provider-price writes despite their trusted command owners. This could bypass editorial review, reservation and provider reconciliation.",
-      "recommendation": "Closed locally: direct create/update/delete is now denied, with current command tests and allow/deny regressions. Live permissions remain unchanged."
+      "recommendation": "Closed locally: direct create/update/delete is now denied, with current command tests and allow/deny regressions. Live permissions remain unchanged.",
+      "status": "closed-locally"
     },
     {
       "check": "Media ownership integration",
       "severity": "major",
-      "issue": "Place brand/gallery and Ingredient images still have direct client Storage upload consumers. There is no reviewed authored production Storage policy in this repository. Storage Rules cannot consult Kitchen grants in the named misebox database; Firebase supports their Firestore lookups only against the default database.",
-      "recommendation": "Move membership-protected media writes through the existing trusted server upload mechanics and owning domain authority. Then author/test the bucket policy for the remaining supported direct uploads and public/private reads. Do not add a parallel membership mirror or loosen bucket-wide permissions."
+      "issue": "The prior browser upload paths could not use membership-bound authority from the named misebox database in Storage Rules.",
+      "recommendation": "Closed locally: Place, Ingredient, Blog, Product and Professional image callers select protected domain commands. Core decodes/re-encodes image bytes, saves unique revisions and rechecks authority before returning a URL. The separate native-tested Storage candidate denies SDK reads/writes while explicit public image tokens work. No membership mirror or live permission change was introduced.",
+      "status": "closed-locally"
     }
   ],
   "checks": {
-    "productionPolicyTests": 24,
+    "productionPolicyTests": 26,
     "trustedBlogProductCommandTests": 16,
     "localProductDiagnostic": {
-      "scope": "local demo emulator only; source-policy diagnostic",
-      "status": 200,
-      "publicInternalMetadataReadable": true
+      "scope": "local demo emulator only; repaired source-policy regression",
+      "rawPublishedProductRead": "denied",
+      "publicServerProjection": "allowlisted; provisioning, audit identities and provider metadata excluded"
     },
     "liveGrantPrerequisites": {
       "target": "misebox-78f9c / misebox",
@@ -83,7 +86,40 @@
         "ruleset": "projects/misebox-78f9c/rulesets/c7712cc7-15ca-48f9-b30a-03d32123be70",
         "sha256": "e7268d4ddc677d4153055ae8f88111a351852f515471512bb741d0dfc3710dba"
       }
-    ]
+    ],
+    "focusedUnitTests": 56,
+    "nativeProductionPreflight": "passed locally with both demo emulators",
+    "appBuilds": [
+      "misebox-app build:release",
+      "fireux-app build"
+    ],
+    "appTypechecks": [
+      "misebox-app",
+      "fireux-app"
+    ],
+    "storagePolicy": {
+      "browserSDK": "read/list/create/overwrite/delete denied for anonymous and authenticated requests",
+      "publicImageToken": "explicit download token remains readable",
+      "deployment": "not performed"
+    },
+    "runtimeSmoke": {
+      "unsignedUploadRoutes": {
+        "places": 401,
+        "ingredients": 401,
+        "blogs": 401,
+        "professional": 401,
+        "products": 401
+      },
+      "publicProducts": {
+        "status": 200,
+        "records": 7,
+        "provisioningExposed": false
+      },
+      "realDataPreview": 200,
+      "liveWritesPerformed": false
+    },
+    "lint": "passed",
+    "ideConfiguration": "current"
   },
   "sourceEvidence": {
     "candidate": "packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules",
@@ -92,12 +128,17 @@
     "productCommand": "packages/extensions/fireux-products/src/runtime/product/server/create/command.ts",
     "publicProductCollection": "packages/extensions/fireux-products/src/runtime/product/composables/useProductCollection.ts",
     "publicProductDetail": "packages/extensions/fireux-products/src/runtime/server/api/products/[id].get.ts",
-    "directMediaExamples": [
+    "serverUploadMechanics": "packages/core/fireux-core/src/runtime/server/utils/uploads/storage.ts",
+    "storageCandidate": "packages/ecosystem/fireux-misebox/src/config/firebase/storage.production.rules",
+    "storageTests": "projects/misebox/misebox-app/test/storage.production.test.mjs",
+    "protectedMediaTests": "projects/misebox/misebox-app/test/protected-media.test.mjs",
+    "publicProductProjection": "packages/extensions/fireux-products/src/runtime/product/server/read.ts",
+    "protectedImageMechanics": "packages/core/fireux-core/src/runtime/server/utils/uploads/image.ts",
+    "protectedMediaCallers": [
       "packages/extensions/fireux-places/src/runtime/place/components/Edit/Brand.vue",
       "packages/extensions/fireux-places/src/runtime/place/components/Edit/Photos.vue",
       "packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Edit/Index.vue"
-    ],
-    "serverUploadMechanics": "packages/core/fireux-core/src/runtime/server/utils/uploads/storage.ts"
+    ]
   },
   "upstreamEvidence": [
     "https://firebase.google.com/docs/storage/security/rules-conditions#enhance_with_cloud_firestore"
@@ -109,8 +150,8 @@
     "The live grant inventory found one canonical index and one matching supported-App entry; it does not infer or create additional operator grants."
   ],
   "nextAttack": [
-    "Close protected media upload authority and test an explicit Storage candidate.",
-    "Close public Product read exposure while preserving native admin reads and provider retry ownership.",
-    "Repeat the exact release checks and independently approve policy rollout before application deployment."
+    "Review historical download-token exposure and inherited/bucket IAM before approving production policy rollout.",
+    "Separately authorize backed-up, exact-target Firestore and Storage policy rollout and readback.",
+    "Only then approve an application release; no deployment is authorized by this audit."
   ]
 }

@@ -43,6 +43,10 @@ async function author(event: H3Event, slug: string, change: (data: Record<string
     return { ok: true as const, appId, slug }
   })
 }
+/** Media uses the same App/author boundary without changing the post. */
+export function requireBlogAuthor(event: H3Event, id: unknown) {
+  return author(event, slugId(id), () => ({}))
+}
 export function createBlogPost(event: H3Event, input: unknown) {
   const source = object(input), slug = slugId(source.slug)
   const normalized = normalizeBlogPostCreate({ ...source, slug } as BlogPostCreateInput)

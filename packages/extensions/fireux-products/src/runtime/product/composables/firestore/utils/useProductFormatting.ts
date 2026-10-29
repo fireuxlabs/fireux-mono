@@ -6,7 +6,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 
 export function useProductFormatting() {
-  const { uploadImage } = useImageStorage()
+  const { uploadImage } = useImageStorage({ endpoint: '/api/products/images' })
   const { firestoreGetDoc } = useFirestoreRead()
 
   function formatProductData(product: Partial<Product>): Partial<Product> {

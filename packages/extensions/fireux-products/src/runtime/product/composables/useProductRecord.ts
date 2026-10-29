@@ -27,7 +27,7 @@ import {
 } from '../utils/normalize-product'
 import { productReadConstraints } from '../utils/product-read-constraints'
 
-/** One Product by supported ID/slug, with only that Product's live prices. */
+/** Admin Product by ID/slug, with its live prices; public details use useProductDetail. */
 export function useProductRecord(
   locator: MaybeRefOrGetter<string>,
   options: { productType?: string } = {}
@@ -41,7 +41,12 @@ export function useProductRecord(
   const source = firestoreQuery<Record<string, unknown>>(
     computed(() => {
       void uid.value
-      if (!id.value || membership.pending.value || membership.error.value)
+      if (
+        !['admin', 'dev'].includes(membership.appUser.value?.role || '') ||
+        !id.value ||
+        membership.pending.value ||
+        membership.error.value
+      )
         return null
       const filters = productReadConstraints(
         config,

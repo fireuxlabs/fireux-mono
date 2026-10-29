@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useAsyncData } from 'nuxt/app'
 import { collection, query, type Query } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
@@ -11,7 +12,32 @@ import { useAppUserRead } from 'fireux-core/runtime/app/composables/membership/u
 import { productReadConstraints } from '../utils/product-read-constraints'
 
 /** Fetches the products collection for the current runtime scope. */
-export function useProductCollection() {
+export function useProductCollection(options: { admin?: boolean } = {}) {
+  if (options.admin) return useAdminProductCollection()
+  const config = useFireUXConfig()
+  const source = useAsyncData<Product[]>(
+    `public-products:${config.role}:${config.appId}`,
+    (_app, { signal }) => $fetch('/api/products', { signal }),
+    { default: () => [] }
+  )
+  const products = computed(() => source.data.value ?? [])
+  const count = computed(() => products.value.length)
+  const { outcome } = useFirestoreCollectionState({
+    count,
+    pending: source.pending,
+    error: source.error,
+  })
+  return {
+    products,
+    count,
+    pending: source.pending,
+    error: source.error,
+    outcome,
+  }
+}
+
+/** Private catalogue reads remain native Firebase and exact-App scoped. */
+function useAdminProductCollection() {
   const fireux = useFireUXConfig()
   const db = useFirestore()
   const { uid } = useAuth()
@@ -23,7 +49,7 @@ export function useProductCollection() {
   const scopedQuery = computed<Query<Record<string, unknown>> | null>(() => {
     const root = collection(db, ProductStorage.collection)
     const constraints = productReadConstraints(fireux, canManage.value)
-    return constraints
+    return canManage.value && constraints
       ? (query(root, ...constraints) as Query<Record<string, unknown>>)
       : null
   })

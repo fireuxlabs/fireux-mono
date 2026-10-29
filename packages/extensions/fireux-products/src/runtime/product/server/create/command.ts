@@ -9,6 +9,7 @@ import { runGuardedServerTransaction, type GuardedServerTransaction } from 'fire
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readProductCreateInput } from './input'
 import { productProvisionProvider } from './provider'
+import { requireProductManager } from './authority'
 
 type Provisioning = { request_id:string; fingerprint:string; actor_uid:string; app_id:string; product_id:string; price_ids:string[]; attempted_at:Record<string,number>; complete:boolean }
 const products=defineFirestoreMutationTarget({key:'products',lane:'server',verbs:['create','update'],database:{kind:'runtime'},collectionPath:'products'})
@@ -19,7 +20,7 @@ export async function createInteractiveProduct(event:H3Event,input:unknown) {
   const {requestId,payload,prices}=readProductCreateInput(input,appId)
   const fingerprint=createHash('sha256').update(JSON.stringify({uid,appId,requestId,payload,prices})).digest('hex')
   const id=payload.slug
-  const authority=async(tx:GuardedServerTransaction)=>{const member=await tx.read(serverAppUsersTarget(appId),uid);if(!member.exists||!(['admin','dev'].includes(String(member.data?.role))||member.data?.canManageProducts===true))throw createError({statusCode:403,statusMessage:'Product management access is required.'})}
+  const authority=async(tx:GuardedServerTransaction)=>{const member=await tx.read(serverAppUsersTarget(appId),uid);requireProductManager(member)}
   const owned=async(tx:GuardedServerTransaction)=>{await authority(tx);const record=await tx.read(products,id);const state=record.data?.provisioning as Provisioning|undefined;if(!record.exists||!state||state.fingerprint!==fingerprint||state.actor_uid!==uid||state.app_id!==appId||state.request_id!==requestId)throw createError({statusCode:409,statusMessage:'This Product slug belongs to another request. Resume the original request or choose another slug.'});return state}
   const initial=await runGuardedServerTransaction({kind:'runtime'},async tx=>{
     await authority(tx);const record=await tx.read(products,id)

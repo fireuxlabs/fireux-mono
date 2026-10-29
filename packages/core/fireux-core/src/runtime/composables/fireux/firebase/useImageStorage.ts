@@ -1,4 +1,5 @@
 import { useRuntimeConfig } from '#imports'
+import { useAuth } from './useAuth'
 import {
   getDownloadURL,
   getStorage,
@@ -20,7 +21,13 @@ function getDefaultImageUrl(
  * - Uploads to Firebase Storage
  * - Returns the download URL
  */
-export function useImageStorage() {
+export function useImageStorage(
+  options: {
+    endpoint?: string
+    fields?: () => Record<string, string | null | undefined>
+  } = {}
+) {
+  const { currentUser } = useAuth()
   const runtimeConfig = useRuntimeConfig() as RuntimeConfig
   const storage = resolveStorageBucket(useFirebaseStorage(), runtimeConfig)
   const debug = (...args: unknown[]) => {
@@ -83,16 +90,33 @@ export function useImageStorage() {
     if (!path || !source) {
       throw new Error('[useImageStorage] path and source are required')
     }
-    debug('uploadImage:start', { path, sourceType: typeof source })
+    const user = currentUser.value
+    const fields = options.fields?.() ?? {}
     const blob = await toBlob(source)
-    debug('uploadImage:blob-ready', { path, size: blob.size, type: blob.type })
-    return uploadBlobToStorage(blob, path)
+    if (!options.endpoint) return uploadBlobToStorage(blob, path)
+    if (!user || currentUser.value?.uid !== user.uid)
+      throw new Error('Sign in before uploading an image.')
+    const token = await user.getIdToken()
+    if (currentUser.value?.uid !== user.uid)
+      throw new Error('The account changed during upload.')
+    const body = new FormData()
+    body.set('path', path)
+    body.set('file', blob, 'image')
+    for (const [key, value] of Object.entries(fields)) {
+      if (value != null) body.set(key, value)
+    }
+    const result = await $fetch<{ url: string }>(options.endpoint, {
+      method: 'POST',
+      body,
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (currentUser.value?.uid !== user.uid)
+      throw new Error('The account changed during upload.')
+    return result.url
   }
 
   async function uploadFromUrl(path: string, url: string): Promise<string> {
-    debug('uploadFromUrl:start', { path, url })
-    const blob = await fetchAsBlob(url)
-    return uploadBlobToStorage(blob, path)
+    return uploadImage(path, url)
   }
 
   async function getDownloadUrlForPath(path: string): Promise<string> {

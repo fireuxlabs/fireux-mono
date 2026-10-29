@@ -4,7 +4,7 @@ import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-publ
 import { ProductStorage } from '../../../utils/product.ts'
 
 export function useProductUtils() {
-  const { uploadImage } = useImageStorage()
+  const { uploadImage } = useImageStorage({ endpoint: '/api/products/images' })
   const { firestoreGetDoc } = useFirestoreRead()
 
   async function buildSlugIfUnique(

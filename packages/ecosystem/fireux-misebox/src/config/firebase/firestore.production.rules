@@ -75,10 +75,10 @@ service cloud.firestore {
       // Authoring and editorial approval belong to trusted commands.
     }
     match /products/{product} {
-      // Product roots contain the published catalogue, never payment/customer data.
+      // Raw Product roots include private provisioning state; public reads use the server projection.
       allow get: if (!exists(/databases/$(database)/documents/products/$(product)) && anyAppAdmin()) ||
-        (resource.data.visibility == 'public' && resource.data.active == true) || admin(resource.data.source_app_id);
-      allow list: if (resource.data.visibility == 'public' && resource.data.active == true) || admin(resource.data.source_app_id);
+        admin(resource.data.source_app_id);
+      allow list: if admin(resource.data.source_app_id);
       // Product creation and provider reconciliation are trusted commands.
       match /prices/{price} {
         function productAdmin() { return admin(get(/databases/$(database)/documents/products/$(product)).data.source_app_id); }

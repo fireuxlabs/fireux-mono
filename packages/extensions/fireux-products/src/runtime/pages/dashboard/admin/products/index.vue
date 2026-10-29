@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useProductCollection } from '../../../../product/composables/useProductCollection'
-const productCollection = reactive(useProductCollection())
+const productCollection = reactive(useProductCollection({ admin: true }))
 
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

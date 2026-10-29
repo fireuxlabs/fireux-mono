@@ -30,6 +30,9 @@ const readProductCreateInput = load(
   },
   'readProductCreateInput'
 )
+const requireProductManager = load('../runtime/product/server/create/authority.ts', {
+  createError, isAdminMembership: data => ['admin', 'dev'].includes(data?.role),
+}, 'requireProductManager')
 const request = {
   requestId: 'request-1',
   payload: {
@@ -72,6 +75,7 @@ function harness({ authenticated = true } = {}) {
       createError,
       requireFirestoreDocumentId,
       readProductCreateInput,
+      requireProductManager,
       useFireUXConfig: () => ({ appId: 'app' }),
       requireFirebaseBearerUser: async () => {
         if (!authenticated)

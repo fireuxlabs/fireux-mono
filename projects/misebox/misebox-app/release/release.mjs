@@ -1,6 +1,14 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { readFile, writeFile, mkdir, access, mkdtemp, rm, realpath } from 'node:fs/promises'
+import {
+  readFile,
+  writeFile,
+  mkdir,
+  access,
+  mkdtemp,
+  rm,
+  realpath,
+} from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { resolve, dirname, relative, isAbsolute } from 'node:path'
@@ -13,6 +21,8 @@ import {
 export const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const projectId = 'misebox-78f9c'
 export const databaseId = 'misebox'
+export const productionStorageRules =
+  '../../../packages/ecosystem/fireux-misebox/src/config/firebase/storage.production.rules'
 export const productionRules =
   '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules'
 export const developmentRulesTemplate =
@@ -171,12 +181,16 @@ async function checkDiscoveryDependencies(output, manifest) {
   try {
     const modules = await realpath(resolve(output, 'node_modules'))
     const sdk = await realpath(
-      createRequire(resolve(output, 'package.json')).resolve('firebase-functions')
+      createRequire(resolve(output, 'package.json')).resolve(
+        'firebase-functions'
+      )
     )
     const localPath = relative(modules, sdk)
     if (localPath.startsWith('..') || isAbsolute(localPath))
       throw new Error('Functions SDK resolved outside prepared output.')
-    const installed = await json(resolve(modules, 'firebase-functions/package.json'))
+    const installed = await json(
+      resolve(modules, 'firebase-functions/package.json')
+    )
     if (installed.version !== manifest.dependencies['firebase-functions'])
       throw new Error('Functions SDK does not match prepared manifest.')
     await access(sdk)
@@ -318,31 +332,64 @@ export async function cloudJson(
   return response.json()
 }
 
-export async function verifyLiveRules(
-  source,
-  read = cloudJson,
-  policy = 'production'
-) {
-  requireRulesPolicy(policy)
-  const release = await read(
-    `projects/${projectId}/releases/cloud.firestore/${databaseId}`
-  )
+async function verifyReleasedRules(source, releasePath, read, label) {
+  const release = await read(releasePath)
   if (!release.rulesetName?.startsWith(`projects/${projectId}/rulesets/`))
     throw new Error('Unexpected live Rules target.')
   const ruleset = await read(release.rulesetName)
   const files = ruleset.source?.files || []
   if (files.length !== 1 || digest(files[0].content) !== digest(source))
     throw new Error(
-      `Live Misebox Rules do not match the reviewed ${policy} source. App deployment is blocked.`
+      `Live Misebox Rules do not match the reviewed ${label} source. App deployment is blocked.`
     )
   return {
-    policy,
-    projectId,
-    databaseId,
     release: release.name,
     ruleset: release.rulesetName,
     sha256: digest(source),
   }
+}
+
+export async function verifyLiveRules(
+  source,
+  read = cloudJson,
+  policy = 'production'
+) {
+  requireRulesPolicy(policy)
+  const proof = await verifyReleasedRules(
+    source,
+    `projects/${projectId}/releases/cloud.firestore/${databaseId}`,
+    read,
+    policy
+  )
+  return { policy, projectId, databaseId, ...proof }
+}
+
+export async function checkStorageRules(root = appRoot) {
+  const source = await readFile(resolve(root, productionStorageRules), 'utf8')
+  const normalized = source.replace(/\/\/[^\n]*/g, '').replace(/\s/g, '')
+  if (
+    !source.includes(
+      '// Production: misebox-78f9c / misebox-78f9c.appspot.com'
+    ) ||
+    normalized !==
+      "rules_version='2';servicefirebase.storage{match/b/{bucket}/o{match/{path=**}{allowread,write:iffalse;}}}"
+  ) {
+    throw new Error(
+      'Production Storage Rules must match the reviewed server-owned policy.'
+    )
+  }
+  return source
+}
+
+export async function verifyLiveStorageRules(source, read = cloudJson) {
+  const bucketName = 'misebox-78f9c.appspot.com'
+  const proof = await verifyReleasedRules(
+    source,
+    `projects/${projectId}/releases/firebase.storage/${bucketName}`,
+    read,
+    'production Storage'
+  )
+  return { projectId, bucketName, ...proof }
 }
 
 function run(command, args, options = {}) {
@@ -361,17 +408,21 @@ function prepareDependencies() {
     '--fetch-timeout=15000',
   ])
   // Nitro traces only runtime files; Firebase deployment also needs SDK discovery.
-  run('pnpm', [
-    '--dir',
-    '.output/server',
-    'install',
-    '--prod',
-    '--frozen-lockfile',
-    '--ignore-workspace',
-    '--ignore-scripts',
-    '--fetch-retries=0',
-    '--fetch-timeout=15000',
-  ], { env: { ...process.env, CI: 'true' } })
+  run(
+    'pnpm',
+    [
+      '--dir',
+      '.output/server',
+      'install',
+      '--prod',
+      '--frozen-lockfile',
+      '--ignore-workspace',
+      '--ignore-scripts',
+      '--fetch-retries=0',
+      '--fetch-timeout=15000',
+    ],
+    { env: { ...process.env, CI: 'true' } }
+  )
 }
 
 export async function upload(command, root = appRoot, execute = run) {
@@ -380,19 +431,23 @@ export async function upload(command, root = appRoot, execute = run) {
   // A neutral directory keeps the CLI bootstrap outside the App dependency tree.
   const cwd = await mkdtemp(resolve(tmpdir(), 'misebox-upload-'))
   try {
-    execute('npx', [
-      '-y',
-      'firebase-tools@latest',
-      'deploy',
-      '--project',
-      projectId,
-      '--config',
-      resolve(root, 'firebase.json'),
-      '--only',
-      command === 'hosting'
-        ? `hosting:${projectId}`
-        : `functions:misebox-ssr,hosting:${projectId}`,
-    ], { cwd })
+    execute(
+      'npx',
+      [
+        '-y',
+        'firebase-tools@latest',
+        'deploy',
+        '--project',
+        projectId,
+        '--config',
+        resolve(root, 'firebase.json'),
+        '--only',
+        command === 'hosting'
+          ? `hosting:${projectId}`
+          : `functions:misebox-ssr,hosting:${projectId}`,
+      ],
+      { cwd }
+    )
   } finally {
     await rm(cwd, { recursive: true, force: true })
   }
@@ -420,6 +475,8 @@ export async function main(command, options = []) {
   } else if (['preflight', 'deploy', 'hosting'].includes(command)) {
     await checkOutput()
     const source = await checkRules(appRoot, policy)
+    const storageSource =
+      policy === 'production' ? await checkStorageRules() : null
     if (policy === 'production') {
       const rulesTests = resolve(appRoot, 'test/firestore.production.test.mjs')
       await access(rulesTests).catch(() => {
@@ -427,12 +484,18 @@ export async function main(command, options = []) {
           'Production allow/deny Rules tests are missing. Release is blocked.'
         )
       })
-      run(process.execPath, ['--test', rulesTests])
+      run(process.execPath, [
+        '--test',
+        rulesTests,
+        resolve(appRoot, 'test/storage.production.test.mjs'),
+      ])
     }
     if (command !== 'preflight') {
       // The selected policy must already be deployed on the exact named database.
       // This command never deploys Rules or repairs a source mismatch.
       const proof = await verifyLiveRules(source, cloudJson, policy)
+      if (storageSource)
+        proof.storage = await verifyLiveStorageRules(storageSource)
       const evidence = resolve(appRoot, '.output/release')
       await mkdir(evidence, { recursive: true })
       await writeFile(

@@ -59,7 +59,7 @@ export function useProfessionalUpdate(
     ProfessionalStorage.document,
     profile
   )
-  const { uploadImage } = useImageStorage()
+  const { uploadImage } = useImageStorage({ endpoint: '/api/internal/profiles/professional/image' })
 
   const commitUpdate = async (
     patch: Partial<Professional>,

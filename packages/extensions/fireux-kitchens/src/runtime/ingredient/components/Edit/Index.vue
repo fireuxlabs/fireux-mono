@@ -133,7 +133,7 @@ const {
   generating,
   error: generationError,
 } = useIngredientImageGeneration([() => props.ingredientId])
-const { uploadImage } = useImageStorage()
+const { uploadImage } = useImageStorage({ endpoint: '/api/ingredients/images' })
 const toast = useToastify()
 
 const saving = ref(false)

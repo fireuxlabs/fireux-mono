@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-const productCollection = reactive(useProductCollection())
+const productCollection = reactive(useProductCollection({ admin: true }))
 
 import { useDiagnosticsDriftFilter } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsDriftFilter'
 import { computed } from 'vue'

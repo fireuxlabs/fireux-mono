@@ -66,7 +66,7 @@ const uploadErrors = ref<Record<string, string>>({})
 const showProgress = computed(() => uploading.value)
 
 // Get upload service
-const { uploadImage } = useImageStorage()
+const { uploadImage } = useImageStorage({ endpoint: '/api/blogs/images' })
 
 // Expose methods for parent component
 defineExpose({
@@ -87,8 +87,8 @@ defineExpose({
       if (featuredFile) {
         try {
           results.featuredImage = await uploadImage(
-            featuredFile,
-            `blogs/${blogId}/featured.jpg`
+            `blogs/${blogId}/featured.jpg`,
+            featuredFile
           )
         } catch (error) {
           if (isCurrent()) uploadErrors.value.featured =
@@ -101,8 +101,8 @@ defineExpose({
       if (socialFile) {
         try {
           results.socialImage = await uploadImage(
-            socialFile,
-            `blogs/${blogId}/social.jpg`
+            `blogs/${blogId}/social.jpg`,
+            socialFile
           )
         } catch (error) {
           if (isCurrent()) uploadErrors.value.social =

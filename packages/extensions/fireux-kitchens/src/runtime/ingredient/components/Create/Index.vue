@@ -59,7 +59,7 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToastify()
-const { uploadImage } = useImageStorage()
+const { uploadImage } = useImageStorage({ endpoint: '/api/ingredients/images' })
 
 const submitting = ref(false)
 const imageUploading = ref(false)

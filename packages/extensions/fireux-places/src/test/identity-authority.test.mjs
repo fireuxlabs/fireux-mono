@@ -26,8 +26,16 @@ const readMembershipAccessIds = compileFunction(
 )()
 const allow = compileFunction(
   `${stripTypeScriptTypes(source)};return canKitchenEditPlace`,
-  ['isAppUserSubscription', 'readMembershipAccessIds']
-)((v) => ['free', 'premium', 'business'].includes(v), readMembershipAccessIds)
+  [
+    'isAppUserSubscription',
+    'readMembershipAccessIds',
+    'defineFirestoreReadTarget',
+  ]
+)(
+  (v) => ['free', 'premium', 'business'].includes(v),
+  readMembershipAccessIds,
+  (value) => value
+)
 const at = { seconds: 100, nanoseconds: 1 }
 const input = {
   uid: 'u',
@@ -51,9 +59,15 @@ test('missing, revoked, foreign and superseded access deny Place editing', () =>
     { membershipExists: false },
     { access: null },
     { access: { apps: { app: { ids: [], membership_created_at: at } } } },
-    { access: { apps: { app: { ids: ['other'], membership_created_at: at } } } },
     {
-      access: { apps: { app: { ids: ['p'], membership_created_at: { ...at, nanoseconds: 2 } } } },
+      access: { apps: { app: { ids: ['other'], membership_created_at: at } } },
+    },
+    {
+      access: {
+        apps: {
+          app: { ids: ['p'], membership_created_at: { ...at, nanoseconds: 2 } },
+        },
+      },
     },
     { membership: { ...input.membership, role: 'invalid' } },
     { membership: { ...input.membership, subscription: 'unknown' } },
@@ -62,20 +76,52 @@ test('missing, revoked, foreign and superseded access deny Place editing', () =>
     assert.equal(allow({ ...input, ...delta }), false)
 })
 test('malformed grants fail closed', () => {
-  assert.throws(() => allow({ ...input, access: { apps: { app: { ids: ['p'] } } } }), {
-    statusCode: 409,
-  })
+  assert.throws(
+    () => allow({ ...input, access: { apps: { app: { ids: ['p'] } } } }),
+    {
+      statusCode: 409,
+    }
+  )
 })
 
 test('Kitchen integration rejects an over-capacity App grant and never selects another App', () => {
-  assert.equal(allow({ ...input, access: { apps: { app: { ids: Array.from({length:51}, (_,i)=>i===0?'p':`k-${i}`), membership_created_at: at } } } }), false)
-  assert.equal(allow({ ...input, access: { apps: { other: { ids: ['p'], membership_created_at: at } } } }), false)
+  assert.equal(
+    allow({
+      ...input,
+      access: {
+        apps: {
+          app: {
+            ids: Array.from({ length: 51 }, (_, i) =>
+              i === 0 ? 'p' : `k-${i}`
+            ),
+            membership_created_at: at,
+          },
+        },
+      },
+    }),
+    false
+  )
+  assert.equal(
+    allow({
+      ...input,
+      access: { apps: { other: { ids: ['p'], membership_created_at: at } } },
+    }),
+    false
+  )
 })
 
 test('Kitchen integration rejects malformed envelope and unexpected grant fields', () => {
   for (const access of [
     { apps: Array.from({ length: 2 }, () => input.access.apps.app) },
     { apps: { app: { ...input.access.apps.app, role: 'admin' } } },
-    { apps: Object.fromEntries(Array.from({length:101}, (_,i)=>[i===0?'app':`a-${i}`,input.access.apps.app])) },
-  ]) assert.throws(() => allow({ ...input, access }), { statusCode: 409 })
+    {
+      apps: Object.fromEntries(
+        Array.from({ length: 101 }, (_, i) => [
+          i === 0 ? 'app' : `a-${i}`,
+          input.access.apps.app,
+        ])
+      ),
+    },
+  ])
+    assert.throws(() => allow({ ...input, access }), { statusCode: 409 })
 })
