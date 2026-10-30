@@ -96,6 +96,15 @@ QR print doorway from the same action row, using the public website origin and
 Menu route builder. Daily Menus use the separate per-date publication flow below.
 Broader destination distribution and immutable publication versions remain separate.
 
+`stagePublishKitchenMenu` exposes that same publication validation and write
+inside an existing guarded transaction. Misebox Menu Express composes it with
+its approved delivery request; there is no second Menu status writer. The
+Menu-owned `publication/review.ts` projects a bounded regular interactive Menu
+for customer review and fingerprints its text, prices, options and destination.
+It excludes internal context and explicitly rejects unsupported formats. The
+App owns customer approval and compares that revision again before publication.
+This does not create a separate immutable Menu version collection.
+
 Regular Menu Settings expose Archive as the normal removal action and list the
 services that reference the Menu, including disabled services. Archiving updates
 only Menu status/audit, withdraws public/QR reads and keeps content/service links.

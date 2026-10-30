@@ -118,6 +118,24 @@
       "trigger": "Starting checkout or requesting checkout verification",
       "lifetime": "At most one day",
       "deletion": "Cookie expiry or browser site-data controls"
+    },
+    {
+      "key": "misebox:menu-express:intake",
+      "technology": "localStorage",
+      "owner": "Misebox Main App",
+      "purpose": "Recover one menu-service submission after an interrupted request, including entered contact and source details",
+      "trigger": "Submitting a Menu Express request",
+      "lifetime": "Until successful submission, validation failure or browser site data is cleared",
+      "deletion": "Removed after success or validation failure; browser site-data controls also remove it"
+    },
+    {
+      "key": "misebox:menu-express:{requestId}",
+      "technology": "localStorage",
+      "owner": "Misebox Main App",
+      "purpose": "Recover the visitor's Menu Express request without Workspace membership",
+      "trigger": "Successful submission or explicit recovery",
+      "lifetime": "At most 30 days; expired values are removed on use",
+      "deletion": "Expiry on use or browser site-data controls"
     }
   ],
   "thirdPartyFeatures": [

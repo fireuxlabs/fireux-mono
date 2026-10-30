@@ -1806,6 +1806,9 @@ importers:
       better-sqlite3:
         specifier: ^12.6.0
         version: 12.6.0
+      firebase-admin:
+        specifier: ^12.7.0
+        version: 12.7.0
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)

@@ -61,6 +61,45 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+### Menu Express delivery
+
+The Main App owns its Menu Express request under
+`apps/{appId}/menu_express_requests/{id}`. Its
+[contract and commands](../../../../../projects/misebox/misebox-app/server/menu-express/intake.ts)
+link existing Core Conversations, Products checkout and Kitchen/Menu content.
+Intake, customer reads/actions, operator actions and payment each have a named
+App-owned command file. Their common request DTO and policy stay in `contract.ts`.
+Conversation creation, proof validation and messages compose the existing Core
+Chat transaction operations; the App does not construct their stored schema.
+The customer and operator roots compose focused recovery, source, preparation,
+review, delivery and shared conversation components. Client actions reuse Core's
+`useCommandScope` for account, request, recovery-key and disposal lifetime.
+The request does not grant Kitchen access. Operators retain current App admin/dev
+membership and the linked Kitchen's ordinary writer authority.
+
+Customer recovery reuses the linked Conversation's hashed, expiring proof.
+Corrections and approval bind to the Menu owner's customer-safe content revision.
+Publication and the delivered request state share one guarded transaction through
+`stagePublishKitchenMenu`; no separate publication writer is added. The initial
+review contract supports regular interactive Menus with individual Dishes and
+price options; daily/document Menus, promotions, deposits and add-ons fail
+explicitly. This is a bounded service, not a new universal commerce engine.
+
+Stripe payment is separate from delivery stages. The App's signature-verified
+`/api/menu-express/stripe-webhook` rechecks the provider Session and exact Product
+price before advancing payment; a browser redirect cannot confirm it. Demo
+payment is limited to labelled requests created by a current operator in local
+development, and never invokes Stripe. Price/terms, live provider configuration
+and release retain separate product authority. No source change deploys Rules.
+
+Customer source files use existing multipart and Firebase Storage primitives,
+with exact request proof on upload/download and no public download token. The
+accepted development-open Rules still prevent any production-privacy claim.
+Current checks live in the App's `test/menu-express.test.mjs`, Products' checkout
+suite and Kitchen's publication tests. Refresh these pointers when ownership or
+contracts change; demo evidence belongs in reviews, not this context.
+
+
 The Main Misebox App explicitly installs Products for its catalogue and checkout
 capability. This is not an ecosystem-wide default for tenant Apps. Products owns
 price validation, browser-bound checkout status and the return page; see its

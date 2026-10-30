@@ -191,10 +191,20 @@ and customer-approval journey remains the next implementation slice.
 existing Products module and native layer. Shared checkout validates the public
 Product boundary and remembers browser ownership through native H3 sessions.
 The return page verifies a limited Stripe status response and no longer claims
-payment from a redirect. The operator lookup remains protected. Customer intake,
-operator review, approval and webhook-backed fulfilment are still open; Core's
-guest chat storage alone does not supply an operator inbox. No live price,
+payment from a redirect. The operator lookup remains protected. That checkpoint covered checkout only; the subsequent delivery pass below adds
+the App-owned request, operator queue and customer review. No live price,
 payment, webhook configuration, deployment or permission change was made.
+
+**Whole-pipeline local proof, 2026-10-29:** one labelled demo request now runs
+through source submission/upload, separate demo payment, operator preparation,
+customer correction, revision-bound approval, atomic Menu publication and
+customer delivery links. Changing the Menu after approval was rejected before
+publication. Source download matched the supplied PDF byte-for-byte. Public Menu
+and QR were inspected at phone width; account-free recovery and reload are
+included in the delivery evidence. The test Menu remains available by private
+link, outside public discovery. Stripe signature/payment/retry behavior uses
+controlled provider fixtures; no real charge or live webhook configuration is
+claimed. See the [delivery evidence](../reviews/menu-express-manual-delivery-2026-10-29.md).
 
 **Before sale:** settle price, turnaround, hosting/update terms and correction
 allowance. One Menu, one language and one correction round are proposed scope,

@@ -95,8 +95,27 @@ test('private records before the public menu cannot hide Browse, and failed read
 })
 
 test('Menu service choices never advertise another Menu on a basic Menu page', async () => {
-  const { guestMenuSurfaceOptions } = await import(
-    '../runtime/menu/utils/menu-context.ts'
+  const { MenuRouteContexts } = await import(
+    '../runtime/menu/models/menu-context.model.ts'
+  )
+  const load = (file, dependencies, result) => {
+    const code = readFileSync(new URL(file, import.meta.url), 'utf8')
+      .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+      .replace(/^export /gm, '')
+    return compileFunction(
+      stripTypeScriptTypes(code) + `;return ${result}`,
+      Object.keys(dependencies)
+    )(...Object.values(dependencies))
+  }
+  const menuRoutePath = load(
+    '../runtime/menu/utils/menu-route.ts',
+    { MenuRouteContexts },
+    'menuRoutePath'
+  )
+  const guestMenuSurfaceOptions = load(
+    '../runtime/menu/utils/menu-context.ts',
+    { MenuRouteContexts, menuRoutePath },
+    'guestMenuSurfaceOptions'
   )
   const choices = [
     {

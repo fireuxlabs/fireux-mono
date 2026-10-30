@@ -6,6 +6,9 @@ commands and optional Stripe Checkout integration. Apps opt in through the
 
 ## Checkout boundary
 
+- `product/server/integration/stripe/checkout.ts` is the shared trusted checkout
+  command. The public route passes only catalogue input; App-owned workflows may
+  supply their server-validated return path, metadata and provider idempotency key.
 - Checkout creation validates the public Product scope and its active provider
   price before asking Stripe to create a session.
 - H3's native encrypted, HttpOnly session cookie remembers up to ten checkouts

@@ -1,4 +1,9 @@
-import { createHash, randomBytes, randomUUID, timingSafeEqual, } from 'node:crypto'
+import {
+  createHash,
+  randomBytes,
+  randomUUID,
+  timingSafeEqual,
+} from 'node:crypto'
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
@@ -7,12 +12,20 @@ import {
   ConversationMessageStorage,
   ConversationStorage,
   type ConversationParticipantType,
+  type ConversationRelatedEntity,
 } from '../../../models/operations/conversation.model'
 import { firebaseBearerUser } from '../auth/bearer'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../ids/path'
-import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
-import { serverAppConversationsTarget, serverConversationMessagesTarget, serverConversationPrivateTarget } from '../../../app/server/mutation-targets'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from '../firestore-mutations/server-transaction'
+import {
+  serverAppConversationsTarget,
+  serverConversationMessagesTarget,
+  serverConversationPrivateTarget,
+} from '../../../app/server/mutation-targets'
 import { requireChatStartBudget } from './start-rate-limit'
 
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000
@@ -96,8 +109,7 @@ async function actorFor(event: H3Event, appId: string) {
     .doc(user.uid)
     .get()
   const role = membership.data()?.role
-  const isAdmin =
-    membership.exists && (role === 'admin' || role === 'dev')
+  const isAdmin = membership.exists && (role === 'admin' || role === 'dev')
   return {
     id: user.uid,
     name: typeof user.decoded.name === 'string' ? user.decoded.name.trim() : '',
@@ -120,10 +132,10 @@ function sessionRefs(appId: string, conversationId: string) {
   }
 }
 
-function assertLiveAccess(
+function assertChatSessionAccess(
   access: Record<string, unknown> | undefined,
-  token: string,
-  isAdmin: boolean
+  token: unknown,
+  isAdmin = false
 ) {
   const expiresAt = access?.expires_at
   const expiresMillis =
@@ -131,13 +143,17 @@ function assertLiveAccess(
     typeof (expiresAt as { toMillis?: unknown }).toMillis === 'function'
       ? (expiresAt as Timestamp).toMillis()
       : 0
-  if (!expiresMillis || expiresMillis <= Date.now()) {
+  if (
+    !Number.isFinite(expiresMillis) ||
+    !expiresMillis ||
+    expiresMillis <= Date.now()
+  ) {
     throw createError({
       statusCode: 410,
       statusMessage: 'This chat session has expired.',
     })
   }
-  if (!isAdmin && !storedTokenMatches(access?.token_hash, token)) {
+  if (!isAdmin && !storedTokenMatches(access?.token_hash, accessToken(token))) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Chat session not found.',
@@ -145,48 +161,122 @@ function assertLiveAccess(
   }
 }
 
-export async function startChatSession(event: H3Event, input: StartChatInput) {
-  const { appId, appName } = useFireUXConfig(event)
-  requireChatStartBudget(event, appId)
-  const name = requiredText(input.name, 'Name', 120)
-  const email = emailAddress(input.email)
-  const body = requiredText(input.body, 'Message', 4000)
-  const sourceRoute = optionalText(input.source_route, 'Source route', 500)
-  const actor = await actorFor(event, appId)
-  const conversationId = randomUUID()
-  const messageId = randomUUID()
-  const token = randomBytes(32).toString('base64url')
-  const expiresAt = Timestamp.fromMillis(Date.now() + SESSION_LIFETIME_MS)
-  const senderName = actor.name || name
+/** Read current Conversation proof inside the caller's transaction, before writes. */
+export async function requireChatSessionAccess(
+  mutations: GuardedServerTransaction,
+  input: {
+    appId: string
+    conversationId: string
+    token?: unknown
+    isAdmin?: boolean
+    writable?: boolean
+  }
+) {
+  const [conversation, access] = await Promise.all([
+    mutations.read(
+      serverAppConversationsTarget(input.appId),
+      input.conversationId
+    ),
+    mutations.read(
+      serverConversationPrivateTarget(input.appId, input.conversationId),
+      ConversationAccessStorage.document
+    ),
+  ])
+  if (!conversation.exists || !access.exists)
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Chat session not found.',
+    })
+  assertChatSessionAccess(access.data, input.token, input.isAdmin === true)
+  const data = conversation.data || {}
+  if (input.writable && ['closed', 'archived'].includes(String(data.status)))
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'This chat is closed.',
+    })
+  return data
+}
 
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    mutations.create(serverAppConversationsTarget(appId), conversationId, {
+export type ChatActor = {
+  id: string
+  name: string
+  type: ConversationParticipantType
+}
+
+function hashChatRecoveryToken(value: unknown) {
+  return tokenHash(accessToken(value)).toString('hex')
+}
+
+/** Compose Conversation creation with a caller's authorized domain transaction. */
+export function stageChatSessionCreation(
+  mutations: GuardedServerTransaction,
+  input: {
+    appId: string
+    conversationId: string
+    token: unknown
+    contact: { name: string; email: string; company?: string }
+    actor: ChatActor
+    body: string
+    sourceRoute: string
+    relatedEntity: ConversationRelatedEntity
+  }
+) {
+  const appId = requireFirestoreDocumentId(input.appId, 'App id')
+  const conversationId = requireFirestoreDocumentId(
+    input.conversationId,
+    'Conversation id'
+  )
+  const name = requiredText(input.contact.name, 'Name', 120)
+  const email = emailAddress(input.contact.email)
+  const body = requiredText(input.body, 'Message', 4000)
+  const sourceRoute = optionalText(input.sourceRoute, 'Source route', 500)
+  const actor = input.actor
+  const recoveryHash = hashChatRecoveryToken(input.token)
+  const senderName = actor.name || name
+  const messageId = randomUUID()
+  const expiresAt = Timestamp.fromMillis(Date.now() + SESSION_LIFETIME_MS)
+  mutations.create(serverAppConversationsTarget(appId), conversationId, {
+    app_id: appId,
+    kind: 'general',
+    status: 'open',
+    related_entity: input.relatedEntity,
+    participant_ids: actor.id ? [actor.id] : [],
+    guest_contact: {
+      name,
+      email,
+      phone: '',
+      company: input.contact.company || '',
+      preferred_channel: 'chat',
+    },
+    source_route: sourceRoute,
+    last_message: {
+      body,
+      sender_id: actor.id,
+      sender_type: actor.type,
+      sender_name: senderName,
+      created_at: FieldValue.serverTimestamp(),
+    },
+    expires_at: expiresAt,
+    created: {
+      at: FieldValue.serverTimestamp(),
+      ...(actor.id ? { by: actor.id } : {}),
       app_id: appId,
-      kind: 'general',
-      status: 'open',
-      related_entity: {
-        family: 'apps',
-        id: appId,
-        path: `apps/${appId}`,
-        label: appName,
-      },
-      participant_ids: actor.id ? [actor.id] : [],
-      guest_contact: {
-        name,
-        email,
-        phone: '',
-        company: '',
-        preferred_channel: 'chat',
-      },
-      source_route: sourceRoute,
-      last_message: {
-        body,
-        sender_id: actor.id,
-        sender_type: actor.type,
-        sender_name: senderName,
-        created_at: FieldValue.serverTimestamp(),
-      },
-      expires_at: expiresAt,
+    },
+    updated: {
+      at: FieldValue.serverTimestamp(),
+      ...(actor.id ? { by: actor.id } : {}),
+    },
+  })
+  mutations.create(
+    serverConversationMessagesTarget(appId, conversationId),
+    messageId,
+    {
+      conversation_id: conversationId,
+      sender_id: actor.id,
+      sender_type: actor.type,
+      sender_name: senderName,
+      body,
+      read_by: actor.id ? [actor.id] : [],
       created: {
         at: FieldValue.serverTimestamp(),
         ...(actor.id ? { by: actor.id } : {}),
@@ -196,44 +286,104 @@ export async function startChatSession(event: H3Event, input: StartChatInput) {
         at: FieldValue.serverTimestamp(),
         ...(actor.id ? { by: actor.id } : {}),
       },
-    })
-    mutations.create(
-      serverConversationMessagesTarget(appId, conversationId),
-      messageId,
-      {
-        conversation_id: conversationId,
-        sender_id: actor.id,
-        sender_type: actor.type,
-        sender_name: senderName,
-        body,
-        read_by: actor.id ? [actor.id] : [],
-        created: {
-          at: FieldValue.serverTimestamp(),
-          ...(actor.id ? { by: actor.id } : {}),
-          app_id: appId,
-        },
-        updated: {
-          at: FieldValue.serverTimestamp(),
-          ...(actor.id ? { by: actor.id } : {}),
-        },
-      }
-    )
-    mutations.create(
-      serverConversationPrivateTarget(appId, conversationId),
-      ConversationAccessStorage.document,
-      {
-        token_hash: tokenHash(token).toString('hex'),
-        expires_at: expiresAt,
-        created_at: FieldValue.serverTimestamp(),
-      }
-    )
-  })
+    }
+  )
+  mutations.create(
+    serverConversationPrivateTarget(appId, conversationId),
+    ConversationAccessStorage.document,
+    {
+      token_hash: recoveryHash,
+      expires_at: expiresAt,
+      created_at: FieldValue.serverTimestamp(),
+    }
+  )
+  return { conversationId, expiresAt }
+}
 
+/** The caller proves current authority and conversation status before staging. */
+export function stageChatMessage(
+  mutations: GuardedServerTransaction,
+  input: {
+    appId: string
+    conversationId: string
+    actor: ChatActor
+    body: string
+    messageId?: string
+  }
+) {
+  const appId = requireFirestoreDocumentId(input.appId, 'App id')
+  const conversationId = requireFirestoreDocumentId(
+    input.conversationId,
+    'Conversation id'
+  )
+  const body = requiredText(input.body, 'Message', 4000)
+  const actor = input.actor
+  const senderName = actor.name || 'Guest'
+  const messageId = input.messageId || randomUUID()
+  const stamp = {
+    at: FieldValue.serverTimestamp(),
+    ...(actor.id ? { by: actor.id } : {}),
+  }
+  mutations.create(
+    serverConversationMessagesTarget(appId, conversationId),
+    messageId,
+    {
+      conversation_id: conversationId,
+      sender_id: actor.id,
+      sender_type: actor.type,
+      sender_name: senderName,
+      body,
+      read_by: actor.id ? [actor.id] : [],
+      created: { ...stamp, app_id: appId },
+      updated: stamp,
+    }
+  )
+  mutations.update(serverAppConversationsTarget(appId), conversationId, {
+    last_message: {
+      body,
+      sender_id: actor.id,
+      sender_type: actor.type,
+      sender_name: senderName,
+      created_at: FieldValue.serverTimestamp(),
+    },
+    updated: stamp,
+  })
+  return { messageId }
+}
+
+export async function startChatSession(event: H3Event, input: StartChatInput) {
+  const { appId, appName } = useFireUXConfig(event)
+  requireChatStartBudget(event, appId)
+  const actor = await actorFor(event, appId)
+  const conversationId = randomUUID()
+  const token = randomBytes(32).toString('base64url')
+  const result = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) =>
+      stageChatSessionCreation(mutations, {
+        appId,
+        conversationId,
+        token,
+        actor,
+        contact: {
+          name: requiredText(input.name, 'Name', 120),
+          email: emailAddress(input.email),
+        },
+        body: requiredText(input.body, 'Message', 4000),
+        sourceRoute: optionalText(input.source_route, 'Source route', 500),
+        relatedEntity: {
+          family: 'apps',
+          id: appId,
+          path: `apps/${appId}`,
+          label: appName,
+        },
+      })
+  )
   return {
     ok: true as const,
     conversation_id: conversationId,
     token,
-    expires_at: expiresAt.toDate().toISOString(),
+    expires_at: result.expiresAt.toDate().toISOString(),
   }
 }
 
@@ -258,7 +408,7 @@ export async function readChatSession(event: H3Event, input: ChatSessionInput) {
       statusMessage: 'Chat session not found.',
     })
   }
-  assertLiveAccess(access.data(), token, actor.isAdmin)
+  assertChatSessionAccess(access.data(), token, actor.isAdmin)
   const messages = await conversationRef
     .collection(ConversationMessageStorage.collection)
     .orderBy('created.at', 'asc')
@@ -304,62 +454,24 @@ export async function sendChatMessage(
   const messageId = randomUUID()
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [conversation, access] = await Promise.all([
-      mutations.read(serverAppConversationsTarget(appId), conversationId),
-      mutations.read(
-        serverConversationPrivateTarget(appId, conversationId),
-        ConversationAccessStorage.document
-      ),
-    ])
-    if (!conversation.exists || !access.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Chat session not found.',
-      })
-    }
-    assertLiveAccess(access.data, token, actor.isAdmin)
-    const conversationData = conversation.data || {}
-    if (
-      conversationData.status === 'closed' ||
-      conversationData.status === 'archived'
-    ) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'This chat is closed.',
-      })
-    }
+    const conversationData = await requireChatSessionAccess(mutations, {
+      appId,
+      conversationId,
+      token,
+      isAdmin: actor.isAdmin,
+      writable: true,
+    })
     const guestName =
       typeof conversationData.guest_contact?.name === 'string'
         ? conversationData.guest_contact.name
         : 'Guest'
     const senderName = actor.name || guestName
-    const stamp = {
-      at: FieldValue.serverTimestamp(),
-      ...(actor.id ? { by: actor.id } : {}),
-    }
-    mutations.create(
-      serverConversationMessagesTarget(appId, conversationId),
+    stageChatMessage(mutations, {
+      appId,
+      conversationId,
       messageId,
-      {
-        conversation_id: conversationId,
-        sender_id: actor.id,
-        sender_type: actor.type,
-        sender_name: senderName,
-        body,
-        read_by: actor.id ? [actor.id] : [],
-        created: { ...stamp, app_id: appId },
-        updated: stamp,
-      }
-    )
-    mutations.update(serverAppConversationsTarget(appId), conversationId, {
-      last_message: {
-        body,
-        sender_id: actor.id,
-        sender_type: actor.type,
-        sender_name: senderName,
-        created_at: FieldValue.serverTimestamp(),
-      },
-      updated: stamp,
+      actor: { ...actor, name: senderName },
+      body,
     })
   })
 

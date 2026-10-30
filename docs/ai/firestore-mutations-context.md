@@ -642,6 +642,18 @@ It never creates missing Apps or repairs relationships. Verify its offline test
 and Core's `app-context-creation.test.mjs`; live application remains separately
 authorized per migration. Source changes do not deploy running Apps.
 
+## Conversation transaction composition
+
+Core `server/utils/chat/session.ts` owns `stageChatSessionCreation`,
+`requireChatSessionAccess` and `stageChatMessage`. Its ordinary Chat entrypoints
+and Misebox Menu Express consume those operations. The calling domain proves
+its App/operator policy and composes its own record changes in the same guarded
+transaction; Core retains Conversation paths, initial records, expiring recovery
+proof, message payloads and stored-session validation. Reads precede staged
+writes. A supplied related-Entity label does not grant authority over that Entity.
+Current checks are Core's `chat-session.test.mjs` and the consuming App's
+`menu-express.test.mjs`.
+
 ## Refresh and living-context maintenance
 
 Refresh this file whenever lane ownership, target placement, allowed verbs,

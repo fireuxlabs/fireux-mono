@@ -65,6 +65,12 @@ Nuxt layouts consume their supplied content through the native layout slot.
 Use `NuxtPage` for an App or family route outlet and real parent/child routes;
 keep each outlet with its owning shell. See [layouts](../concepts/layouts.md).
 
+Composition is a completion gate. Settle ownership and composition before
+expanding behavior. A working demo or passing tests do not close a change while
+known composition gaps remain. Report composition evidence separately from
+functional evidence; correct known duplication and misplaced ownership in the
+same change rather than deferring them to a cleanup phase.
+
 Composition is the default from the first implementation. Keep parents readable
 as named responsibilities. Add a child only when it owns real behavior; small
 cohesive controls may stay local. Do not add forwarding wrappers, empty
