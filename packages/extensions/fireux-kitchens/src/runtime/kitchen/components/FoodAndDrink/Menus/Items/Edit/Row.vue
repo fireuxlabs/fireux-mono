@@ -1,22 +1,19 @@
 <template>
   <FireCollectionRow>
-    <div class="min-w-0">
-      <h3 class="text-sm font-semibold text-highlighted">{{ row.label }}</h3>
-      <span v-if="row.item.status === 'archived'" class="text-xs text-muted"
+    <div class="workspace-surface__primary">
+      <h3 class="fx-type-card-heading">{{ row.label }}</h3>
+      <span v-if="row.item.status === 'archived'" class="fx-type-caption"
         >Off menu</span
       >
     </div>
     <template #value>
-      <span
-        class="text-right text-sm text-muted whitespace-normal break-words"
-        >{{
-          row.price === undefined
-            ? 'Price not set'
-            : row.priceOptions.length
-              ? 'Multiple prices'
-              : editor.formatPrice(row.price)
-        }}</span
-      >
+      <span class="menu-item-value">{{
+        row.price === undefined
+          ? 'Price not set'
+          : row.priceOptions.length
+            ? 'Multiple prices'
+            : editor.formatPrice(row.price)
+      }}</span>
     </template>
     <template #actions>
       <UDropdownMenu :items="actions">
@@ -99,3 +96,12 @@ const actions = computed(() => [
     : []),
 ])
 </script>
+
+<style scoped>
+.menu-item-value {
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+  color: var(--ui-text-muted);
+}
+</style>

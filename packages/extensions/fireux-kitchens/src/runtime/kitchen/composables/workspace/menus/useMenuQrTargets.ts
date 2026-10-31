@@ -27,9 +27,13 @@ export function useMenuQrTargets() {
     menus,
     storageKitchenId,
     outcome: menusOutcome,
+    error: menusError,
   } = useKitchenWorkspaceMenus()
-  const { offerings, outcome: offeringsOutcome } =
-    useKitchenOfferingCollection(storageKitchenId)
+  const {
+    offerings,
+    outcome: offeringsOutcome,
+    error: offeringsError,
+  } = useKitchenOfferingCollection(storageKitchenId)
 
   const clean = (value: unknown) => String(value ?? '').trim()
   const fireux = useFireUXConfig()
@@ -192,5 +196,19 @@ export function useMenuQrTargets() {
 
     targets.push(target)
   }
-  return { menusOutcome, offeringsOutcome, menuPanels, draftSource }
+  const outcome = computed(() => {
+    const states = [menusOutcome.value, offeringsOutcome.value]
+    if (states.includes('error')) return 'error' as const
+    if (states.includes('pending')) return 'pending' as const
+    if (states.includes('idle')) return 'idle' as const
+    return 'ready' as const
+  })
+  return {
+    outcome,
+    menusOutcome,
+    offeringsOutcome,
+    menuPanels,
+    draftSource,
+    error: computed(() => menusError.value || offeringsError.value),
+  }
 }

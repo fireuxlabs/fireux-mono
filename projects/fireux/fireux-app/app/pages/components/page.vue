@@ -74,7 +74,8 @@
           <pre><code>{{ collectionExample }}</code></pre>
           <p>
             The platform route uses the same visible template inside its
-            framework container, with its own options:
+            framework container. Its App-owned usePlatformAppsPage supplies
+            platform scope, copy and SEO:
           </p>
           <pre><code>{{ platformExample }}</code></pre>
           <p>
@@ -142,9 +143,8 @@
                   <td>FireState</td>
                   <td>outcome, entity?, error?</td>
                   <td>
-                    One acquisition message. Pending, empty, missing or error;
-                    nothing for ready or idle. Errors include the shared copy
-                    control.
+                    One acquisition message. Pending, empty or error; nothing
+                    for ready or idle. Errors include the shared copy control.
                   </td>
                 </tr>
                 <tr>
@@ -250,15 +250,15 @@ const usageExample = `<UPage>
 </UPage>`
 const collectionExample = `<template>
   <UPage>
-    <AppHero :title="page.title" :description="page.description" />
+    <UPageHeader :title="page.title" :description="page.description" />
     <UPageBody>
       <FireState v-bind="page.state" />
       <AppCollection
         v-if="page.ready"
         :apps="page.apps"
-        :has-more="page.pagination.hasMore"
+        :has-more="page.pagination?.hasMore ?? false"
       />
-      <FireCollectionPagination v-bind="page.pagination" @load-more="page.loadMore" />
+      <FireCollectionPagination v-if="page.pagination" v-bind="page.pagination" @load-more="page.loadMore" />
       <FireDiagnosticsDebugPanel v-bind="page.diagnostics" />
     </UPageBody>
   </UPage>
@@ -269,16 +269,12 @@ import { useAppCollectionPage } from 'fireux-core/runtime/app/composables/useApp
 
 const page = useAppCollectionPage({ scope: 'ecosystem' })
 <\/script>`
-const platformExample = `const page = useAppCollectionPage({
-  scope: 'platform',
-  title: 'Showcase',
-  description: 'Explore the public App directory.',
-  seo,
-})
+const platformExample = `import { usePlatformAppsPage } from '../../composables/usePlatformAppsPage'
 
-The route's optional seo.jsonLdBuilder(context, apps) receives
-this reader's records. Keep the named page composition visible;
-do not start another reader for SEO.`
+const page = usePlatformAppsPage()
+
+// The App-owned composable calls useAppCollectionPage with platform scope
+// and its directory SEO policy. It reuses the acquired records for JSON-LD.`
 
 const routeExample = `<template>
   <YourNamedNavigation />

@@ -1,6 +1,6 @@
 <template>
   <WorkspaceKitchenAICapabilityInfo capability="menus" />
-  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+  <div class="fx-page-stack">
     <KitchenFoodAndDrinkMenus />
   </div>
 </template>

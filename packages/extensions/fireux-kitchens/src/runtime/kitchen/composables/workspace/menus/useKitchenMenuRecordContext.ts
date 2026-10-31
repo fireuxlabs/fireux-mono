@@ -187,13 +187,25 @@ function createKitchenMenuRecordContext() {
     return result
   }
   async function deleteMenu(...args: Parameters<typeof removal.deleteMenu>) {
-    assertCanWrite()
+    if (!canManage.value) throw new Error('This menu cannot be managed.')
     const isCurrent = captureIntent()
     const result = await removal.deleteMenu(...args)
     if (!isCurrent()) return result
     toast.add({ title: 'Menu deleted', icon: 'i-heroicons-check-circle' })
     await router.replace('/workspace/kitchen/food-and-drink/menus')
     return result
+  }
+  async function archiveMenu(
+    ...args: Parameters<typeof publication.archiveMenu>
+  ) {
+    if (!canManage.value) throw new Error('This menu cannot be managed.')
+    return publication.archiveMenu(...args)
+  }
+  async function restoreMenu(
+    ...args: Parameters<typeof publication.restoreMenu>
+  ) {
+    if (!canManage.value) throw new Error('This menu cannot be managed.')
+    return publication.restoreMenu(...args)
   }
   async function publishMenu(
     ...args: Parameters<typeof publication.publishMenu>
@@ -276,6 +288,8 @@ function createKitchenMenuRecordContext() {
     updateMenu,
     renameMenu,
     deleteMenu,
+    archiveMenu,
+    restoreMenu,
     publishMenu,
     unpublishMenu,
     createSection,

@@ -1,6 +1,8 @@
 <template>
   <section class="workspace-surface">
-    <KitchenFoodAndDrinkMenusPublicationDaily v-if="menu?.schedule === 'daily'" />
+    <KitchenFoodAndDrinkMenusPublicationDaily
+      v-if="menu?.schedule === 'daily'"
+    />
     <KitchenFoodAndDrinkMenusPublicationActions v-else />
   </section>
 </template>

@@ -4,33 +4,34 @@
     <p v-else-if="sourcePending" role="status">Loading source…</p>
     <UCard v-else-if="source && !menu">
       <template #header>
-        <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">
-            Process {{ sourceLabel }}
-          </h2>
-          <p class="text-sm text-dimmed">
+        <div class="workspace-surface workspace-surface--compact">
+          <h2 class="fx-type-card-heading">Process {{ sourceLabel }}</h2>
+          <p class="fx-type-caption">
             Convert this saved source into a review draft.
           </p>
         </div>
       </template>
 
-      <KitchenFoodAndDrinkMenusProcess />
+      <KitchenFoodAndDrinkMenusProcess :context="context" />
     </UCard>
 
     <UCard v-else-if="menu || source">
       <template #header>
-        <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">
+        <div class="workspace-surface workspace-surface--compact">
+          <h2 class="fx-type-card-heading">
             Source document and AI processing
           </h2>
-          <p class="text-sm text-dimmed">
+          <p class="fx-type-caption">
             Keep the original source separate from the published Menu.
           </p>
         </div>
       </template>
 
-      <div class="space-y-6">
-        <section v-if="menu" class="space-y-3">
+      <div class="workspace-surface">
+        <section
+          v-if="menu"
+          class="workspace-surface workspace-surface--compact"
+        >
           <KitchenFoodAndDrinkMenusCreateUpload
             :upload-id="menuId"
             :replace-existing="true"
@@ -39,12 +40,9 @@
           />
         </section>
 
-        <FireDisclosurePanel
-          title="Processing tools"
-          :default-open="false"
-        >
-          <div class="mt-4">
-            <KitchenFoodAndDrinkMenusProcess />
+        <FireDisclosurePanel title="Processing tools" :default-open="false">
+          <div class="workspace-surface workspace-surface--compact">
+            <KitchenFoodAndDrinkMenusProcess :context="context" />
           </div>
         </FireDisclosurePanel>
       </div>
@@ -64,8 +62,8 @@
 import { computed } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 
-const { menu, menuId, source, sourcePending, sourceError } =
-  useKitchenMenuRecordContext()
+const context = useKitchenMenuRecordContext()
+const { menu, menuId, source, sourcePending, sourceError } = context
 const sourceLabel = computed(() =>
   String(source.value?.source_url ? 'menu URL' : 'menu source')
 )

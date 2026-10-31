@@ -2,13 +2,11 @@
   <UCard v-if="section">
     <template #header>
       <div>
-        <h2 class="text-base font-semibold text-highlighted">
-          Choose food &amp; drinks
-        </h2>
+        <h2 class="fx-type-card-heading">Choose food &amp; drinks</h2>
       </div>
     </template>
 
-    <div class="flex flex-wrap gap-3 mb-4">
+    <div class="menu-editor-actions">
       <UInput
         v-model="query"
         aria-label="Search repertoire"
@@ -21,26 +19,23 @@
         aria-label="Repertoire category"
       />
     </div>
-    <div class="grid gap-3 md:grid-cols-[1fr_auto]">
+    <div class="menu-editor-form">
       <UFormField label="Dish">
-        <select
+        <USelect
           v-model="dishId"
           aria-label="Choose dish from repertoire"
-          class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
+          placeholder="Select a dish"
+          :items="[
+            ...availableDishes.map((dish) => ({
+              value: dish.id,
+              label: dish.name || dish.id,
+            })),
+          ]"
           :disabled="saving || !canWrite"
-        >
-          <option value="">Select a dish</option>
-          <option
-            v-for="dish in availableDishes"
-            :key="dish.id"
-            :value="dish.id"
-          >
-            {{ dish.name || dish.id }}
-          </option>
-        </select>
+        />
       </UFormField>
 
-      <div class="flex items-end">
+      <div class="menu-editor-controls">
         <UButton
           icon="i-lucide-plus"
           :loading="saving"

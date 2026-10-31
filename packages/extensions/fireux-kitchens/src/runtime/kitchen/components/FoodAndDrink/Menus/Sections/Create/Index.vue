@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="grid gap-3 rounded-lg border border-default p-3 md:grid-cols-[1fr_1fr_auto]"
-  >
+  <div class="menu-editor-form">
     <UFormField label="Section">
       <UInput
         v-model="editor.newSectionLabel"
@@ -18,7 +16,7 @@
       />
     </UFormField>
 
-    <div class="flex items-end">
+    <div class="menu-editor-controls">
       <UButton
         icon="i-lucide-plus"
         :loading="editor.savingSection"

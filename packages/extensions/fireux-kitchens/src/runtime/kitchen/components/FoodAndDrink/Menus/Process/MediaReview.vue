@@ -4,12 +4,12 @@
     title="Dish media review"
     :default-open="false"
   >
-    <div class="mt-3 space-y-4">
-      <p class="text-sm text-dimmed">
+    <div class="workspace-surface workspace-surface--compact">
+      <p class="fx-type-caption">
         Review each detected image before it can become Dish media. AI work is
         queued only where selected.
       </p>
-      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div class="workspace-surface__grid workspace-surface__grid--2">
         <UCard
           v-for="item in items.filter((entry) => entry.candidateUrl)"
           :key="item.key"
@@ -18,30 +18,25 @@
             v-if="item.candidateUrl"
             :src="item.candidateUrl"
             :alt="item.name"
-            class="aspect-square w-full rounded-lg object-contain"
+            class="menu-process-media"
           />
-          <div
-            v-else
-            class="flex aspect-square items-center justify-center rounded-lg bg-muted text-sm text-dimmed"
-          >
-            No detected image
-          </div>
-          <p class="mt-3 text-sm font-medium text-highlighted">
+          <div v-else class="menu-process-media">No detected image</div>
+          <p class="workspace-surface workspace-surface--compact">
             {{ item.name }}
           </p>
           <USelect
             v-model="decisions[item.key]"
-            class="mt-2 w-full"
+            class="workspace-surface workspace-surface--compact"
             :items="options"
           />
         </UCard>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="workspace-surface workspace-surface--compact">
         <UButton :loading="pending" :disabled="!canSave" @click="save"
           >Save media review</UButton
         >
-        <span v-if="message" class="text-sm text-success">{{ message }}</span>
-        <span v-if="error" class="text-sm text-error">{{ error }}</span>
+        <span v-if="message" class="fx-type-caption">{{ message }}</span>
+        <span v-if="error" class="fx-type-caption">{{ error }}</span>
       </div>
     </div>
   </FireDisclosurePanel>
@@ -162,3 +157,13 @@ async function save() {
   }
 }
 </script>
+
+<style scoped>
+.menu-process-media {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: var(--ui-radius);
+  background: var(--ui-bg-muted);
+}
+</style>

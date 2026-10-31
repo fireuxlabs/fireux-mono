@@ -1,7 +1,7 @@
 <template>
   <WorkspaceAI aria-label="KitchenAI · Menus" compact>
-    <p class="text-sm font-medium">KitchenAI · Menus</p>
-    <p v-if="message" role="status" class="whitespace-pre-line text-sm">
+    <p class="fx-type-card-heading">KitchenAI · Menus</p>
+    <p v-if="message" role="status" class="menu-ai-message">
       {{ message }}
     </p>
     <FireCopyError v-if="error" :message="error" />

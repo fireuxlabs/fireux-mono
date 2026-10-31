@@ -1,27 +1,21 @@
 <template>
-  <section v-if="show" class="space-y-4">
-    <UFormField
-      v-if="!existingMenuName"
-      label="Menu name"
-      required
-      class="mb-4"
-    >
+  <section v-if="show" class="fx-page-stack">
+    <UFormField v-if="!existingMenuName" label="Menu name" required>
       <UInput
         v-model="reviewedName"
         :maxlength="160"
-        class="w-full"
         :disabled="pending || blocked"
       />
     </UFormField>
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="space-y-1">
-        <p class="text-sm text-highlighted">
+    <div class="fx-page-stack">
+      <div class="fx-page-stack">
+        <p class="fx-type-body">
           {{ draftSections.length }} section(s), {{ itemsCount }} dish item(s)
         </p>
-        <p class="text-sm text-dimmed">
+        <p class="fx-type-caption">
           Creates separate dishes. Existing catalogue prices stay unchanged.
         </p>
-        <p v-if="existingMenuName" class="text-sm text-warning">
+        <p v-if="existingMenuName" class="fx-type-caption">
           Replaces this Menu's content and keeps its publication status.
         </p>
       </div>
@@ -36,16 +30,21 @@
       </UButton>
     </div>
 
-    <p v-if="message" class="mt-3 text-sm text-success">
+    <p v-if="message" class="fx-type-caption">
       {{ message }}
     </p>
     <UButton
       v-if="confirmedSlug"
-      :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(confirmedSlug)}`"
+      :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(confirmedSlug)}?kitchenId=${encodeURIComponent(kitchenId)}`"
       label="Open Menu"
-      class="mt-3"
     />
-    <FireCopyError v-if="error" :message="error" />
+    <UAlert
+      v-if="error"
+      color="error"
+      title="Menu draft was not saved"
+      :description="error"
+      ><template #actions><FireCopyError :message="error" /></template
+    ></UAlert>
   </section>
 </template>
 
@@ -76,8 +75,10 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 const records = (value: unknown) =>
   Array.isArray(value) ? value.map(record) : []
-const confirmedSlug = computed(() =>
-  text(record(confirmResult.value?.write).slug)
+const confirmedSlug = computed(
+  () =>
+    text(record(confirmResult.value?.write).slug) ||
+    text(record(sourceDraft.value.applied).slug)
 )
 const sourceDraft = computed(() => record(record(props.source).ai_draft))
 const uploadId = computed(

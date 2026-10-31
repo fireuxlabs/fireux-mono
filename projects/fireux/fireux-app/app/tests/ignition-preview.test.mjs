@@ -156,3 +156,64 @@ test('materialization resumes exact source, preserves edits and removes only a f
     code: 'ENOENT',
   })
 })
+
+test('preview edits and disposal suppress obsolete completion through the shared command scope', async () => {
+  const { reactive, ref, computed, watch, effectScope, onScopeDispose } =
+    await import('vue')
+  const { compileFunction } = await import('node:vm')
+  const { stripTypeScriptTypes } = await import('node:module')
+  const scopeCode = (
+    await readFile(
+      new URL(
+        '../../../../../packages/core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+        import.meta.url
+      ),
+      'utf8'
+    )
+  )
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  const useCommandScope = compileFunction(
+    `${stripTypeScriptTypes(scopeCode)};return useCommandScope`,
+    ['watch', 'onScopeDispose']
+  )(watch, onScopeDispose)
+  const source = (
+    await readFile(
+      new URL('../components/Ignition/Preview.vue', import.meta.url),
+      'utf8'
+    )
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const responses = []
+  const deps = {
+    reactive,
+    ref,
+    computed,
+    watch,
+    useCommandScope,
+    $fetch: () => new Promise((resolve) => responses.push(resolve)),
+  }
+  const scope = effectScope()
+  const state = scope.run(() =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)};return {input,prepare,pending,artifact,error}`,
+      Object.keys(deps)
+    )(...Object.values(deps))
+  )
+  const old = state.prepare()
+  state.input.name = 'New reviewed name'
+  const current = state.prepare()
+  responses[0]({ input: { name: 'OLD' } })
+  await old
+  assert.equal(state.artifact.value, null)
+  assert.equal(state.pending.value, true)
+  responses[1]({ input: { name: 'CURRENT' } })
+  await current
+  assert.equal(state.artifact.value.input.name, 'CURRENT')
+  const disposed = state.prepare()
+  scope.stop()
+  responses[2]({ input: { name: 'DISPOSED' } })
+  await disposed
+  assert.equal(state.artifact.value.input.name, 'CURRENT')
+})

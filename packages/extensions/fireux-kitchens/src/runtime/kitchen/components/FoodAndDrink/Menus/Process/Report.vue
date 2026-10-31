@@ -9,19 +9,22 @@
   <FireDisclosurePanel title="Import details">
     <dl
       v-if="process.showStats"
-      class="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm"
+      class="workspace-surface workspace-surface--compact"
     >
       <div v-for="stat in process.stats" :key="stat.label">
-        <dt class="text-dimmed">{{ stat.label }}</dt>
-        <dd class="font-medium">{{ stat.value }}</dd>
+        <dt class="fx-type-caption">{{ stat.label }}</dt>
+        <dd class="fx-type-card-heading">{{ stat.value }}</dd>
       </div>
     </dl>
     <FireDisclosurePanel
       v-if="process.fileResults.length || process.writeMessage"
       title="Uploaded document"
     >
-      <div class="mt-3 space-y-3 rounded-lg border border-default p-3">
-        <div v-if="process.fileResults.length" class="flex flex-wrap gap-2">
+      <div class="workspace-surface workspace-surface--compact">
+        <div
+          v-if="process.fileResults.length"
+          class="workspace-surface workspace-surface--compact"
+        >
           <UBadge
             v-for="file in process.fileResults"
             :key="file.id"
@@ -37,19 +40,19 @@
             {{ file.file_name }} · {{ file.status }}
           </UBadge>
         </div>
-        <p v-if="process.writeMessage" class="text-sm text-dimmed">
+        <p v-if="process.writeMessage" class="fx-type-caption">
           {{ process.writeMessage }}
         </p>
       </div>
     </FireDisclosurePanel>
     <FireDisclosurePanel v-if="process.flags.length" title="Review flags">
-      <ul class="mt-3 space-y-2">
+      <ul class="workspace-surface workspace-surface--compact">
         <li
           v-for="flag in process.flags"
           :key="`${flag.code}-${flag.message}`"
-          class="rounded-lg border border-default p-3 text-sm"
+          class="workspace-surface workspace-surface--compact"
         >
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="workspace-surface workspace-surface--compact">
             <UBadge
               :color="
                 flag.level === 'error'
@@ -62,7 +65,7 @@
             >
               {{ flag.code }}
             </UBadge>
-            <span class="text-highlighted">{{ flag.message }}</span>
+            <span class="fx-type-card-heading">{{ flag.message }}</span>
           </div>
         </li>
       </ul>
@@ -71,7 +74,7 @@
 </template>
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'
-import type { useMenuSourceProcess } from '../../../../composables/workspace/menus/useMenuSourceProcess'
+import type { useMenuSourceProcess } from '../../../../composables/menu/useMenuSourceProcess'
 const props = defineProps<{
   process: UnwrapNestedRefs<ReturnType<typeof useMenuSourceProcess>>
 }>()

@@ -1,14 +1,18 @@
 <template>
   <section class="menu-qr-entry">
-    <div class="space-y-1">
-      <h3 class="text-sm font-semibold text-highlighted">
+    <div class="workspace-surface workspace-surface--compact">
+      <h3 class="fx-type-card-heading">
         {{ target.label }}
       </h3>
-      <p class="text-xs text-dimmed">{{ target.description }}</p>
+      <p class="fx-type-caption">{{ target.description }}</p>
     </div>
 
     <div
-      :ref="(element) => { qrContainer = element as HTMLElement | null }"
+      :ref="
+        (element) => {
+          qrContainer = element as HTMLElement | null
+        }
+      "
       class="menu-qr-code"
       :aria-busy="!qrReady && !qrError"
       :aria-label="`QR code for ${target.label}`"

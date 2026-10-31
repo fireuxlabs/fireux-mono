@@ -257,8 +257,4 @@ const workspaceNavigation = computed(() =>
       )
     : undefined
 )
-
-const workspaceLabel = computed(
-  () => toWorkspaceFamilyLabel(workspace.value) || 'Workspace'
-)
 </script>

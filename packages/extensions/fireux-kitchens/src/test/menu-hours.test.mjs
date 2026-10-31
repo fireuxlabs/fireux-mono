@@ -1,3 +1,11 @@
+import {
+  computed,
+  ref,
+  watch,
+  effectScope,
+  onScopeDispose,
+  nextTick,
+} from 'vue'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
@@ -145,4 +153,57 @@ test('public directory and manifest project the same Menu window', async () => {
     payload.manifest.behaviour.offerings[0].hours.windows,
     expected
   )
+})
+
+test('Menu hours debounce cannot write after target change or disposal', async () => {
+  let queued,
+    writes = []
+  const context = {
+    menu: ref({ serving_hours: null }),
+    menuId: ref('menu-a'),
+    kitchenId: ref('kitchen-a'),
+    kitchenHours: ref(null),
+    timezone: ref('Europe/Zurich'),
+    canWrite: ref(true),
+    updateMenu: async (...args) => writes.push(args),
+  }
+  const { useMenuRecordHours } = loadOfferingSource(
+    'kitchen/composables/workspace/menus/useMenuRecordHours',
+    'useMenuRecordHours',
+    {
+      computed,
+      ref,
+      watch,
+      onScopeDispose,
+      useCommandScope: (sources) => () => {
+        const snapshot = sources.map((s) => s.value)
+        return () => sources.every((s, i) => s.value === snapshot[i])
+      },
+      hoursWithinParent: () => true,
+      serviceHoursSummary: () => '',
+      setTimeout: (callback) => {
+        queued = callback
+        return 1
+      },
+      clearTimeout: () => {
+        queued = undefined
+      },
+    }
+  )
+  const scope = effectScope(),
+    state = scope.run(() => useMenuRecordHours(context))
+  state.setHours(hours(['monday'], '09:00', '12:00'))
+  const obsolete = queued
+  context.menuId.value = 'menu-b'
+  obsolete()
+  await nextTick()
+  assert.equal(writes.length, 0)
+  state.setHours(hours(['tuesday'], '10:00', '13:00'))
+  queued()
+  await nextTick()
+  assert.equal(writes.length, 1)
+  assert.deepEqual(writes[0].slice(0, 2), ['kitchen-a', 'menu-b'])
+  state.setHours(hours(['wednesday'], '10:00', '13:00'))
+  scope.stop()
+  assert.equal(queued, undefined)
 })

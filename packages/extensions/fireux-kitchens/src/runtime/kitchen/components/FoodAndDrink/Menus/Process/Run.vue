@@ -1,8 +1,8 @@
 <template>
-  <p v-if="!process.source" class="text-sm text-dimmed">
+  <p v-if="!process.source" class="fx-type-caption">
     Upload the source document before processing.
   </p>
-  <p v-else-if="!process.hasDraft" class="text-sm text-dimmed">
+  <p v-else-if="!process.hasDraft" class="fx-type-caption">
     {{ process.sourceDescription }}
   </p>
   <FireDisclosurePanel
@@ -10,7 +10,7 @@
     :title="process.hasDraft ? 'Process again' : 'Process source'"
     :default-open="!process.hasDraft"
   >
-    <div class="mt-3 space-y-3">
+    <div class="workspace-surface workspace-surface--compact">
       <KitchenFoodAndDrinkMenusProcessCost
         :source="process.source"
         :menu-id="process.menuId"
@@ -21,7 +21,7 @@
         :pending-mode="process.pendingMode"
         @select="process.processSource"
       />
-      <p v-if="process.statusMessage" class="text-sm text-dimmed">
+      <p v-if="process.statusMessage" class="fx-type-caption">
         {{ process.statusMessage }}
       </p>
       <FireCopyError
@@ -33,7 +33,7 @@
 </template>
 <script setup lang="ts">
 import type { UnwrapNestedRefs } from 'vue'
-import type { useMenuSourceProcess } from '../../../../composables/workspace/menus/useMenuSourceProcess'
+import type { useMenuSourceProcess } from '../../../../composables/menu/useMenuSourceProcess'
 defineProps<{
   process: UnwrapNestedRefs<ReturnType<typeof useMenuSourceProcess>>
 }>()

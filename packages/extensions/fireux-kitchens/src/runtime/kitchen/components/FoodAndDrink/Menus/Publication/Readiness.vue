@@ -1,7 +1,10 @@
 <template>
-  <section aria-label="Publication readiness" class="mb-4 space-y-3">
+  <section
+    aria-label="Publication readiness"
+    class="workspace-surface workspace-surface--compact"
+  >
     <FireCopyError v-if="error" :message="String(error)" />
-    <p v-else-if="pending" role="status" class="text-sm text-muted">
+    <p v-else-if="pending" role="status" class="fx-type-caption">
       Checking Menu content…
     </p>
     <UAlert
@@ -18,7 +21,7 @@
           : 'Add a Dish or active meal deal to a section.'
       "
     />
-    <div class="space-y-3">
+    <div class="workspace-surface workspace-surface--compact">
       <KitchenFoodAndDrinkMenusPublicationReadinessSection
         v-for="section in sections"
         :key="section.id"

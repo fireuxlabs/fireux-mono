@@ -1,6 +1,7 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
+import type { Menu } from '../../../menu/models/menu.model'
+import type { MenuSourceUpload } from '../../../menu/utils/menu-source-upload'
 import {
   menuProcessNumberText as numberText,
   menuProcessOptionLabel as optionLabel,
@@ -8,17 +9,21 @@ import {
   menuProcessRecord as record,
   menuProcessRecords as records,
   menuProcessText as text,
-} from '../../../utils/menu-process-view'
-import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
+} from '../../utils/menu-process-view'
+import { useMenuEditorScope } from '../../../menu/composables/useMenuEditorScope'
 
-export type MenuSourceProcessContext = Pick<
-  ReturnType<typeof useKitchenMenuRecordContext>,
-  'menu' | 'source' | 'menuId' | 'kitchenId' | 'activeKitchenAppId' | 'canWrite'
->
+export type MenuSourceProcessContext = {
+  menu: Readonly<Ref<Menu | null>>
+  source: Readonly<Ref<MenuSourceUpload | null>>
+  menuId: Readonly<Ref<string>>
+  kitchenId: Readonly<Ref<string>>
+  activeKitchenAppId: Readonly<Ref<string>>
+  canWrite: Readonly<Ref<boolean>>
+}
 
-export function useMenuSourceProcess(context?: MenuSourceProcessContext) {
+export function useMenuSourceProcess(context: MenuSourceProcessContext) {
   const { menu, source, menuId, kitchenId, activeKitchenAppId, canWrite } =
-    context ?? useKitchenMenuRecordContext()
+    context
   const { currentUser } = useAuth()
   const authToken = ref('')
   const pendingMode = ref<'standard' | 'strong' | ''>('')

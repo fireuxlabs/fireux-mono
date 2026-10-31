@@ -36,5 +36,5 @@ export function usePropertyCollectionPage() {
       loadMore,
     },
   })
-  return reactive({ ...toRefs(page), properties, loadMore })
+  return reactive({ ...toRefs(page), properties })
 }

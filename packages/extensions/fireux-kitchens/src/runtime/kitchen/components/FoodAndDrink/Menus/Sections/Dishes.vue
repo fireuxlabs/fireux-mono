@@ -1,34 +1,38 @@
 <template>
-  <p v-if="pending" class="text-sm text-muted">Loading dishes…</p>
-  <FireCopyError v-else-if="error" :message="String(error)" />
-  <ul
-    v-else-if="names.length"
-    class="mt-2 space-y-1 text-base text-highlighted"
-  >
+  <p v-if="pending || dishesPending" class="fx-type-caption">Loading dishes…</p>
+  <FireCopyError
+    v-else-if="error || dishesError"
+    :message="String(error || dishesError)"
+  />
+  <ul v-else-if="names.length" class="fx-type-caption">
     <li v-for="dish in names" :key="dish.id">
       <NuxtLink
         :to="{
           path: `/workspace/kitchen/food-and-drink/items/${dish.id}`,
           query: { menu: menuSlug, section: sectionId },
         }"
-        class="hover:text-primary underline decoration-default underline-offset-4"
+        class="menu-dish-link"
         >{{ dish.name }}</NuxtLink
       >
     </li>
   </ul>
-  <p v-else class="mt-2 text-sm text-muted">No dishes selected</p>
+  <p v-else class="fx-type-caption">No dishes selected</p>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-import { useKitchenWorkspaceDishes } from '../../../../composables/workspace/dishes/useKitchenWorkspaceDishes'
+import type { Dish } from '../../../../utils/dish'
 import { useMenuSectionItemCollection } from '../../../../../menu/composables/useMenuSectionItemCollection'
-const props = defineProps<{ sectionId: string }>()
-const { kitchenId, menuId, menuSlug, rootCollection, databaseId } =
+const props = defineProps<{
+  sectionId: string
+  dishes: Dish[]
+  dishesPending: boolean
+  dishesError?: unknown
+}>()
+const { storageKitchenId, menuId, menuSlug, rootCollection, databaseId } =
   useKitchenMenuRecordContext()
-const { dishes } = useKitchenWorkspaceDishes()
 const { items, pending, error } = useMenuSectionItemCollection(
-  kitchenId,
+  storageKitchenId,
   menuId,
   toRef(props, 'sectionId'),
   { kitchenCollectionPath: rootCollection, databaseId }
@@ -37,8 +41,15 @@ const names = computed(() =>
   items.value.map((item) => ({
     id: item.dish_id,
     name:
-      dishes.value.find((dish) => dish.id === item.dish_id)?.name ||
+      props.dishes.find((dish) => dish.id === item.dish_id)?.name ||
       item.dish_id,
   }))
 )
 </script>
+
+<style scoped>
+.menu-dish-link {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+</style>

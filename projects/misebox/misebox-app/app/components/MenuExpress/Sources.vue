@@ -38,7 +38,9 @@ const props = defineProps<{
   allowUpload?: boolean
 }>()
 function selectFile(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
   if (file) void props.state.upload(file)
 }
 </script>

@@ -1,15 +1,15 @@
 <template>
-  <section v-if="process.menu || process.source" class="space-y-4">
-    <header class="space-y-1">
-      <h3 class="text-sm font-semibold text-highlighted">
+  <section v-if="process.menu || process.source" class="fx-page-stack">
+    <header class="fx-page-stack">
+      <h3 class="fx-type-card-heading">
         {{ process.hasDraft ? 'Review menu' : 'Import menu' }}
       </h3>
-      <p v-if="!process.hasDraft" class="text-sm text-dimmed">
+      <p v-if="!process.hasDraft" class="fx-type-caption">
         {{ process.processDescription }}
       </p>
     </header>
     <KitchenFoodAndDrinkMenusProcessRun :process="process" />
-    <div v-if="process.hasDraft" class="space-y-4">
+    <div v-if="process.hasDraft" class="fx-page-stack">
       <KitchenFoodAndDrinkMenusProcessReport :process="process" />
       <KitchenFoodAndDrinkMenusProcessComparison :process="process" />
       <KitchenFoodAndDrinkMenusProcessReview
@@ -30,7 +30,7 @@
       launcher
       include-route
       title="Menu process result"
-      context="Kitchen menu process · /workspace/kitchen/food-and-drink/menus/[menuId]"
+      context="Menu source processing and review result."
       :objects="process.result"
       :derived="{}"
       :default-open="false"
@@ -42,7 +42,7 @@ import { reactive } from 'vue'
 import {
   useMenuSourceProcess,
   type MenuSourceProcessContext,
-} from '../../../../composables/workspace/menus/useMenuSourceProcess'
-const props = defineProps<{ context?: MenuSourceProcessContext }>()
+} from '../../../../composables/menu/useMenuSourceProcess'
+const props = defineProps<{ context: MenuSourceProcessContext }>()
 const process = reactive(useMenuSourceProcess(props.context))
 </script>

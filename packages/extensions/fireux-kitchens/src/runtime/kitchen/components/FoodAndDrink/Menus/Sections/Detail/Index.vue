@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-4">
+  <section class="workspace-surface workspace-surface--compact">
     <UAlert
       v-if="outcome === 'denied'"
       color="warning"

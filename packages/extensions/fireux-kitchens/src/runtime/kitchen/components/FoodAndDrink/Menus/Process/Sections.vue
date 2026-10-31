@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-4">
-    <p v-if="!sections.length" class="text-sm text-dimmed">
+  <div class="workspace-surface workspace-surface--compact">
+    <p v-if="!sections.length" class="fx-type-caption">
       {{ emptyLabel }}
     </p>
 
@@ -8,29 +8,29 @@
       v-for="section in sections"
       v-else
       :key="section.label"
-      class="space-y-2"
+      class="workspace-surface workspace-surface--compact"
     >
-      <h4 class="text-xs font-semibold uppercase tracking-wide text-dimmed">
+      <h4 class="fx-type-caption">
         {{ section.label || 'Untitled section' }}
       </h4>
 
-      <div class="space-y-2">
+      <div class="workspace-surface workspace-surface--compact">
         <article
           v-for="item in section.items"
           :key="`${section.label}-${item.name}`"
-          class="border-b border-default py-3"
+          class="menu-process-item"
         >
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0 space-y-1">
-              <p class="text-sm font-medium text-highlighted">
+          <div class="menu-process-row">
+            <div class="workspace-surface workspace-surface--compact">
+              <p class="fx-type-card-heading">
                 {{ item.name || 'Untitled item' }}
               </p>
-              <p v-if="item.description" class="text-xs text-dimmed">
+              <p v-if="item.description" class="fx-type-caption">
                 {{ item.description }}
               </p>
               <div
                 v-if="item.priceOptions.length || item.addOns.length"
-                class="flex flex-wrap gap-1 pt-1"
+                class="workspace-surface workspace-surface--compact"
               >
                 <UBadge
                   v-for="option in item.priceOptions"
@@ -52,10 +52,7 @@
                 </UBadge>
               </div>
             </div>
-            <p
-              v-if="item.price"
-              class="shrink-0 text-sm font-semibold text-highlighted"
-            >
+            <p v-if="item.price" class="menu-process-price">
               {{ item.price }}
             </p>
           </div>
@@ -86,3 +83,20 @@ defineProps<{
   emptyLabel: string
 }>()
 </script>
+
+<style scoped>
+.menu-process-item {
+  padding-block: calc(var(--spacing) * 3);
+  border-bottom: 1px solid var(--ui-border);
+}
+.menu-process-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: calc(var(--spacing) * 3);
+}
+.menu-process-price {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-semibold);
+}
+</style>

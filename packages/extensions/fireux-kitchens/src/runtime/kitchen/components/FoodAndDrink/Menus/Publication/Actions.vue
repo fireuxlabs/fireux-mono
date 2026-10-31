@@ -1,10 +1,10 @@
 <template>
   <UCard v-if="menu && menu.status !== 'archived'">
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="menu-editor-actions">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
-          <p class="text-sm text-dimmed">{{ description }}</p>
+          <h2 class="fx-type-card-heading">{{ title }}</h2>
+          <p class="fx-type-caption">{{ description }}</p>
         </div>
         <UBadge :color="isPublished ? 'success' : 'neutral'" variant="soft">
           {{ menuStatus }}
@@ -12,7 +12,7 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap gap-2">
+    <div class="menu-editor-actions">
       <UButton
         v-if="!isPublished"
         icon="i-lucide-send"
@@ -62,7 +62,7 @@
         >Unpublish</UButton
       >
     </div>
-    <div v-if="errorMessage" class="mt-3 text-sm text-error">
+    <div v-if="errorMessage" class="menu-editor-error">
       <p>{{ errorMessage }}</p>
       <FireCopyError :message="errorMessage" />
     </div>
@@ -72,7 +72,7 @@
       description="Guests will no longer be able to open or order from it. Your menu, sections and prices stay saved."
     >
       <template #body
-        ><div class="flex justify-end gap-2">
+        ><div class="menu-editor-actions">
           <UButton
             color="neutral"
             variant="ghost"

@@ -1,12 +1,12 @@
 <template>
   <section
     v-if="menu && menu.schedule !== 'daily' && canManage"
-    class="space-y-3 border-t border-default pt-4"
+    class="workspace-surface workspace-surface--compact"
   >
-    <h2 class="font-semibold">
+    <h2 class="fx-type-card-heading">
       {{ archived ? 'Archived Menu' : 'Archive Menu' }}
     </h2>
-    <p class="text-sm text-muted">
+    <p class="fx-type-caption">
       {{
         archived
           ? 'Content and service links stay saved. Restore to draft when you need it again.'
@@ -14,23 +14,26 @@
       }}
     </p>
     <FireCopyError v-if="offeringsError" :message="String(offeringsError)" />
-    <p v-else-if="!servicesReady" role="status" class="text-sm text-muted">
+    <p v-else-if="!servicesReady" role="status" class="fx-type-caption">
       Checking services…
     </p>
-    <div v-else-if="affectedServices.length" class="text-sm">
-      <p class="font-medium">Affected services</p>
-      <ul class="mt-1 list-disc pl-5">
+    <div
+      v-else-if="affectedServices.length"
+      class="workspace-surface workspace-surface--compact"
+    >
+      <p class="fx-type-card-heading">Affected services</p>
+      <ul class="fx-list-stack">
         <li v-for="service in affectedServices" :key="service.id">
           {{ service.name }}{{ service.enabled ? '' : ' (disabled)' }}
         </li>
       </ul>
-      <p class="mt-2 text-muted">
+      <p class="fx-type-caption">
         These services keep their link, but cannot show this Menu while it is
         archived.
       </p>
     </div>
-    <p v-else class="text-sm text-muted">No services use this Menu.</p>
-    <div class="flex flex-wrap gap-2">
+    <p v-else class="fx-type-caption">No services use this Menu.</p>
+    <div class="menu-lifecycle__actions">
       <UButton
         :label="archived ? 'Restore to draft' : 'Archive Menu'"
         :color="archived ? 'neutral' : 'warning'"
@@ -71,7 +74,7 @@
       "
     >
       <template #body
-        ><div class="flex justify-end gap-2">
+        ><div class="menu-lifecycle__confirmation">
           <UButton
             label="Cancel"
             color="neutral"
@@ -97,10 +100,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { navigateTo } from '#imports'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-import { useMenuDelete } from '../../../../../menu/composables/firestore/mutations/useMenuDelete'
-import { useMenuPublication } from '../../../../../menu/composables/publication/useMenuPublication'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 const {
   menu,
@@ -108,6 +108,9 @@ const {
   menuSlug,
   kitchenId,
   canManage,
+  deleteMenu,
+  archiveMenu,
+  restoreMenu,
   offerings,
   offeringsOutcome,
   offeringsError,
@@ -115,8 +118,6 @@ const {
   sectionsPending,
   sectionsError,
 } = useKitchenMenuRecordContext()
-const { deleteMenu } = useMenuDelete()
-const { archiveMenu, restoreMenu } = useMenuPublication([kitchenId, menuId])
 const confirm = ref<'archive' | 'delete' | ''>(''),
   busy = ref(false),
   error = ref('')
@@ -163,8 +164,6 @@ async function apply() {
     else await archiveMenu(kitchenId.value, menuId.value)
     if (!isCurrent()) return
     confirm.value = ''
-    if (action === 'delete')
-      await navigateTo('/workspace/kitchen/food-and-drink/menus')
   } catch (cause) {
     if (isCurrent())
       error.value =
@@ -174,3 +173,15 @@ async function apply() {
   }
 }
 </script>
+
+<style scoped>
+.menu-lifecycle__actions,
+.menu-lifecycle__confirmation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+.menu-lifecycle__confirmation {
+  justify-content: end;
+}
+</style>

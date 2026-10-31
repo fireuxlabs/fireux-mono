@@ -1,5 +1,6 @@
 <template>
   <section class="fx-page-stack">
+    <MenuExpressProductSetup />
     <MenuExpressQueue @select="selected = $event" />
     <MenuExpressOperatorRequest
       v-if="selected"

@@ -22,7 +22,9 @@ function harness(options = {}) {
     canWrite = ref(true),
     currencyCode = ref('CHF'),
     selection = ref([])
-  const route = reactive({ fullPath: '/workspace/kitchen/food-and-drink/menus' }),
+  const route = reactive({
+      fullPath: '/workspace/kitchen/food-and-drink/menus',
+    }),
     config = reactive({ appId: 'app' }),
     appUser = ref({ role: 'user' })
   const calls = [],
@@ -97,16 +99,31 @@ const pdf = () =>
 test('a source-only import reuses passed context without requiring a Menu record provider', async () => {
   const scope = effectScope()
   const context = {
-    menu: ref(null), source: ref({ id: 'source-123' }), menuId: ref('source-123'),
-    kitchenId: ref('venue'), activeKitchenAppId: ref('app'), canWrite: ref(true),
+    menu: ref(null),
+    source: ref({ id: 'source-123' }),
+    menuId: ref('source-123'),
+    kitchenId: ref('venue'),
+    activeKitchenAppId: ref('app'),
+    canWrite: ref(true),
   }
-  const { useMenuSourceProcess } = loadOfferingSource('kitchen/composables/workspace/menus/useMenuSourceProcess', 'useMenuSourceProcess', {
-    computed, ref, watch,
-    useKitchenMenuRecordContext: () => { throw new Error('Unexpected record acquisition') },
-    useAuth: () => ({ currentUser: ref({ getIdToken: async () => 'token' }) }),
-    useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
-    useMenuEditorScope: () => () => () => true,
-  }, (source) => source.replace(/import\.meta\.client/g, 'true'))
+  const { useMenuSourceProcess } = loadOfferingSource(
+    'kitchen/composables/menu/useMenuSourceProcess',
+    'useMenuSourceProcess',
+    {
+      computed,
+      ref,
+      watch,
+      useKitchenMenuRecordContext: () => {
+        throw new Error('Unexpected record acquisition')
+      },
+      useAuth: () => ({
+        currentUser: ref({ getIdToken: async () => 'token' }),
+      }),
+      useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
+      useMenuEditorScope: () => () => () => true,
+    },
+    (source) => source.replace(/import\.meta\.client/g, 'true')
+  )
   const process = scope.run(() => useMenuSourceProcess(context))
   await Promise.resolve()
   assert.equal(process.source, context.source)
@@ -183,4 +200,67 @@ test('document replacement retains its explicit identity and response mismatches
   assert.match(h.upload.error.value, /did not identify/)
   assert.deepEqual(h.destinations, [])
   h.scope.stop()
+})
+
+test('an uncertain upload retries its original source identity rather than creating another source', async () => {
+  const h = harness()
+  const first = h.upload.uploadFiles([pdf()])
+  h.token.resolve('token')
+  h.response.resolve({ ok: true, id: 'unexpected-response' })
+  await first
+  await h.upload.uploadFiles([pdf()])
+  assert.equal(h.calls.length, 2)
+  assert.equal(h.calls[0][1].body.get('slug'), h.calls[1][1].body.get('slug'))
+  h.scope.stop()
+})
+
+test('URL intake retries its same source after a lost response', async () => {
+  const { readFileSync } = await import('node:fs')
+  const { compileFunction } = await import('node:vm')
+  const { stripTypeScriptTypes } = await import('node:module')
+  const source = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const calls = [],
+    destinations = []
+  let ids = 0
+  const deps = {
+    computed,
+    ref,
+    useAuth: () => ({
+      currentUser: ref({ uid: 'operator', getIdToken: async () => 'fixture' }),
+    }),
+    useKitchenMenusContextSource: () => ({
+      activeKitchenAppId: ref('app'),
+      kitchenId: ref('kitchen'),
+      canWrite: ref(true),
+      currencyCode: ref('CHF'),
+    }),
+    useRoute: () => ({ fullPath: '/menus/prepare' }),
+    useMenuEditorScope: () => () => () => true,
+    crypto: { randomUUID: () => String(++ids) },
+    $fetch: async (_url, { body }) => {
+      calls.push(body)
+      if (calls.length === 1) throw Error('Response lost')
+      return { ok: true, id: body.uploadId }
+    },
+    navigateTo: async (path) => destinations.push(path),
+  }
+  const state = compileFunction(
+    `${stripTypeScriptTypes(source)};return {save,sourceUrl,error}`,
+    Object.keys(deps)
+  )(...Object.values(deps))
+  state.sourceUrl.value = 'https://example.com/menu'
+  await state.save()
+  assert.equal(state.error.value, 'Response lost')
+  await state.save()
+  assert.equal(ids, 1)
+  assert.deepEqual(calls[0], calls[1])
+  assert.equal(destinations.length, 1)
 })

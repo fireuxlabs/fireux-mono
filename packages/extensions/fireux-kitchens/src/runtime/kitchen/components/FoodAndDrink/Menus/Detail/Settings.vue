@@ -13,7 +13,7 @@
       icon="i-lucide-badge-percent"
       color="neutral"
       variant="soft"
-      class="justify-self-start"
+      class="menu-settings__link"
     />
     <WorkspaceKitchenContext
       v-if="menu && menu.schedule !== 'daily'"
@@ -34,10 +34,11 @@ const { kitchenId, menu, canWrite } = useKitchenMenuRecordContext()
 <style scoped>
 .menu-settings {
   width: 100%;
-  max-width: 72rem;
-  margin-inline: auto;
   display: grid;
   gap: calc(var(--spacing) * 4);
+}
+.menu-settings__link {
+  justify-self: start;
 }
 .menu-settings__body {
   display: grid;
@@ -51,6 +52,9 @@ const { kitchenId, menu, canWrite } = useKitchenMenuRecordContext()
     color-mix(in srgb, var(--ui-text-highlighted) 3%, transparent);
 }
 @media (max-width: 700px) {
+  .menu-settings__link {
+    justify-self: start;
+  }
   .menu-settings__body {
     grid-template-columns: minmax(0, 1fr);
   }

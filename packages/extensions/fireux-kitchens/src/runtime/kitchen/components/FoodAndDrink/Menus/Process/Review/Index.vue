@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div class="workspace-surface workspace-surface--compact">
     <KitchenFoodAndDrinkMenusProcessMediaReview
       :source="source"
       :result="result"
@@ -16,7 +16,7 @@
       description="This draft would remove existing variants or add-ons. Reprocess or repair the draft before replacing the menu."
     />
 
-    <div class="border-t border-default pt-4">
+    <div class="workspace-surface workspace-surface--compact">
       <KitchenFoodAndDrinkMenusProcessReviewApply
         :existing-menu-name="existingMenuName"
         :source="source"

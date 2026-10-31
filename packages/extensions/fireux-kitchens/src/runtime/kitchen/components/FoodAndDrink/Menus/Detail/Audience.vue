@@ -1,30 +1,29 @@
 <template>
   <UCard v-if="menu && menu.schedule !== 'daily'">
     <template #header
-      ><h2 class="font-semibold">Audience &amp; access</h2></template
+      ><h2 class="fx-type-card-heading">Audience &amp; access</h2></template
     >
-    <div class="space-y-4">
+    <div class="workspace-surface workspace-surface--compact">
       <UFormField label="Who can view this Menu?">
         <USelect
           v-model="audience"
           :items="choices"
           :disabled="!canWrite || busy"
-          class="w-full"
         />
       </UFormField>
-      <p class="text-sm text-muted">
+      <p class="fx-type-caption">
         {{
           audience === 'private_link'
             ? 'After publishing, anyone with the link can view it. It stays off public Menu lists. The link is not password protected.'
             : 'After publishing, anyone can find it on the venue’s Menu page and public listings.'
         }}
       </p>
-      <p class="text-sm text-muted">
+      <p class="fx-type-caption">
         Protected group needs password protection and is not available yet.
       </p>
       <p
         v-if="menu.status === 'published' && changed"
-        class="text-sm text-warning"
+        class="menu-editor-warning"
       >
         Saving changes the audience of this published Menu immediately.
       </p>
@@ -34,7 +33,7 @@
         :loading="busy"
         @click="save"
       />
-      <p v-if="message" role="status" class="text-sm text-success">
+      <p v-if="message" role="status" class="menu-editor-success">
         {{ message }}
       </p>
       <FireCopyError v-if="error" :message="error" />

@@ -44,6 +44,5 @@ export function useUserCollectionPage() {
     currentUser,
     appUser,
     pending,
-    loadMore,
   })
 }

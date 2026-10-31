@@ -15,7 +15,13 @@ function load(file, result, dependencies = {}) {
 }
 const definitions = load(
   '../runtime/utils/firestore-mutations/target-definition.ts',
-  '({defineFirestoreReadTarget,defineFirestoreMutationTarget,assertFirestoreMutationVerb,assertFirestoreMutationSegment})'
+  '({defineFirestoreReadTarget,defineFirestoreMutationTarget,assertFirestoreMutationVerb,assertFirestoreMutationSegment,assertFirestoreMutationDocumentId})',
+  {
+    isFirestoreDocumentId: load(
+      '../runtime/utils/firestore-document-id.ts',
+      'isFirestoreDocumentId'
+    ),
+  }
 )
 function transaction() {
   const writes = []
@@ -88,4 +94,44 @@ test('ordinary mutation targets retain their lane and verb restrictions', async 
     () => definitions.assertFirestoreMutationVerb(target, 'server', 'delete'),
     /does not authorize/
   )
+})
+
+test('retired schema names remain blocked while legitimate document IDs remain usable', () => {
+  for (const factory of [
+    definitions.defineFirestoreReadTarget,
+    definitions.defineFirestoreMutationTarget,
+  ]) {
+    const base = {
+      key: 'source',
+      database: { kind: 'runtime' },
+      lane: 'server',
+      verbs: ['create'],
+    }
+    const path = 'kitchens/venue/menus/menu/sections/test-snacks/items'
+    assert.equal(
+      factory({ ...base, collectionPath: path }).collectionPath,
+      path
+    )
+    for (const collectionPath of [
+      'test-sources',
+      'kitchens/venue/test-sources',
+      'registry',
+    ])
+      assert.throws(() => factory({ ...base, collectionPath }), /retired/)
+    assert.throws(
+      () =>
+        factory({
+          ...base,
+          database: { kind: 'named', databaseId: 'test-runtime' },
+          collectionPath: 'kitchens',
+        }),
+      /retired/
+    )
+  }
+  assert.equal(
+    definitions.assertFirestoreMutationDocumentId('test-snacks', 'sectionId'),
+    'test-snacks'
+  )
+  for (const id of ['', 'bad/path', '.', '..', '__reserved__'])
+    assert.throws(() => definitions.assertFirestoreMutationDocumentId(id, 'id'))
 })

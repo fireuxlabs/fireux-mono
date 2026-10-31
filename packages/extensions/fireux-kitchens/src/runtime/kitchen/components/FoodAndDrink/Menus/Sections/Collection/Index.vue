@@ -1,10 +1,7 @@
 <template>
-  <div class="space-y-4">
+  <div class="workspace-surface workspace-surface--compact">
     <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
-    <FireCopyError
-      v-if="editor.statusError"
-      :message="editor.statusError"
-    />
+    <FireCopyError v-if="editor.statusError" :message="editor.statusError" />
     <KitchenFoodAndDrinkMenusSectionsCollectionSchedule
       v-if="editor.menu"
       v-model="editor.selectedDate"
@@ -19,14 +16,14 @@
 
     <UCard v-else>
       <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="menu-editor-actions">
           <div>
-            <h2 class="text-base font-semibold text-highlighted">
+            <h2 class="fx-type-card-heading">
               {{ editor.daily ? editor.formattedDate : 'Menu sections' }}
             </h2>
             <p
               v-if="editor.menu.description && !editor.daily"
-              class="text-sm text-dimmed"
+              class="fx-type-caption"
             >
               {{ editor.menu.description }}
             </p>
@@ -59,11 +56,11 @@
       <p
         v-else-if="editor.sectionsPending"
         role="status"
-        class="text-sm text-muted"
+        class="fx-type-caption"
       >
         Loading sections…
       </p>
-      <div v-else class="space-y-4">
+      <div v-else class="workspace-surface workspace-surface--compact">
         <KitchenFoodAndDrinkMenusSectionsCreate
           v-if="editor.showCreateSection"
           :editor="editor"
@@ -90,7 +87,7 @@
               : editor.visibleSections
             ).length
           "
-          class="divide-y divide-default"
+          class="menu-editor-list"
         >
           <KitchenFoodAndDrinkMenusSectionsCollectionRow
             v-for="section in editor.showArchived
@@ -102,7 +99,7 @@
           />
         </div>
 
-        <p v-else class="text-sm text-dimmed">
+        <p v-else class="fx-type-caption">
           {{
             editor.showArchived
               ? 'No archived sections.'
@@ -127,9 +124,9 @@
         <FireCopyError
           v-if="editor.statusError"
           :message="editor.statusError"
-          class="mb-3"
+          class="workspace-surface workspace-surface--compact"
         />
-        <div class="flex justify-end gap-2">
+        <div class="menu-editor-actions">
           <UButton
             color="neutral"
             variant="ghost"
@@ -157,3 +154,5 @@ import { reactive } from 'vue'
 import { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
 const editor = reactive(useMenuSectionsEditor())
 </script>
+
+<style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

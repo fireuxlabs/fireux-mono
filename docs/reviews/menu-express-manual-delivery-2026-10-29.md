@@ -64,7 +64,6 @@ customer corrections/approval and paid fulfilment are not implemented by this
 slice. Price, turnaround and hosting/update terms remain pre-sale decisions.
 A local URL/phone-width preview is not a hosted customer handoff or physical scan.
 
-
 ## Connected delivery pipeline — second pass, 29 October 2026
 
 The labelled request `336f1e24-ac18-4ea6-970c-feec0f0b5770` exercised the normal
@@ -134,7 +133,6 @@ explicitly. The QR destination is local; a physical camera scan and hosted
 customer handoff remain unproved. No Rules, IAM or live permission change was
 made. The existing development-open policy is not a production privacy claim.
 
-
 ## Composition correction
 
 The functional pass exposed composition gaps rather than closing the composition
@@ -157,7 +155,6 @@ consumers and the route-to-command chain. Functional checks separately exercise
 Core creation/message storage and failed atomic composition, closed/expired
 proof, account/request/recovery-key changes before dispatch, stale read
 completion and scope disposal, alongside the preserved delivery suite.
-
 
 Composition-pass verification: 159 focused tests passed, including the preserved
 152-check delivery boundary plus Core Chat and client-intent checks. Misebox App
@@ -216,3 +213,54 @@ and therefore uses the existing idempotent intake command. It does not discard
 an uncertain submission or create a replacement request. The 14 focused client
 and delivery tests passed, including response loss, intervening edits, restore
 and successful retry with an identical payload.
+
+## Preparation and source retry — 31 October
+
+The previous recovery checkpoint was saved and pushed as `48c9cc224`.
+Operator preparation now clears the selected Menu when its Kitchen changes and
+requires a Menu in the loaded choices before linking. Workspace editing follows
+the request's stored target rather than an uncommitted Kitchen/Menu draft. When
+the linked Menu slug has not been resolved, the action opens that Kitchen's Menu
+list instead of putting a document ID into the slug route. No extra reader,
+stored field or navigation authority was introduced.
+
+Source selection clears the native file input after capturing the chosen file,
+so a failed upload can be retried by selecting that same file. The existing
+content-addressed source command retains its deduplication. Sixteen focused
+client/delivery tests passed, including cross-Kitchen selection, linked-target
+navigation and repeat source selection. These checks exercise the component
+logic and existing commands; they do not claim a new browser upload or delivery.
+The App typecheck, formatting and diff checks passed. A read-only browser
+recheck loaded the authenticated queue and the existing delivered demo request,
+including its source, approved content, delivery links and conversation. No
+request, message, payment or publication was created or changed in that check.
+
+## Shared preparation proof — 31 October
+
+This supersedes the manual Menu-selection preparation described above. The App
+now transfers supplied bytes/URL into the existing Menus source command and
+automatically binds the request; native Workspace and service use one source
+reader and processing/review component.
+
+Real labelled demo request `7e5b7f72-f988-4ce1-876d-74e24bfb34b4` supplied a
+two-item PDF. The operator recorded demo payment (no charge), started automatic
+preparation and ran existing extraction/normalization. The source appeared in
+ordinary Workspace Menus, where the draft was created as
+`menu-express-7e5b7f72-f988-4ce1-876d-74e24bfb34b4`, slug
+`test-shared-preparation-31-october-2026`. It retained CHF 8.50 and CHF 11.00.
+The service then presented that same Menu for customer approval and delivery.
+Reload confirmed delivered; the signed-out public Menu rendered both test items.
+The Menu is explicitly TEST ONLY and private-link; venue operations were unchanged.
+Existing AI processing displayed a $0.05 usage estimate; no Stripe/customer charge
+was made. No deployment or live policy change occurred.
+
+The run exposed a Core schema/document-ID confusion rejecting `test-snacks`.
+The identifier boundary now distinguishes schema names from document IDs, with
+regression coverage. Retrying created one atomic draft successfully.
+
+Evidence crosses both entrances in one live pipeline: service intake → native
+Workspace draft → service approval/delivery. A second independent browser-native
+upload was not rehearsed; native upload/URL and service adapters are exercised
+by controlled command tests. The QR page generated its SVG and download URL after reload; no physical scan or
+printer output was claimed. All 36 focused tests and Misebox App/server typing
+checks passed. Changes remain uncommitted.

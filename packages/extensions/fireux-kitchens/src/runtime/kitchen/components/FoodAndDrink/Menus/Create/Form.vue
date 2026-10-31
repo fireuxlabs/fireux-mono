@@ -1,5 +1,8 @@
 <template>
-  <form class="space-y-3" @submit.prevent="save">
+  <form
+    class="workspace-surface workspace-surface--compact"
+    @submit.prevent="save"
+  >
     <UFormField label="Menu name"
       ><USelect
         v-if="subscription === 'free'"
@@ -12,19 +15,17 @@
         placeholder="Lunch, terrace, tasting…"
         :maxlength="160"
         :disabled="busy || !canCreateMenu"
-        class="w-full"
     /></UFormField>
     <UFormField label="Description (optional)"
       ><UTextarea
         v-model="description"
         :maxlength="800"
         :disabled="busy || !canCreateMenu"
-        class="w-full"
     /></UFormField>
-    <p v-if="menuCreateBlockedMessage" class="text-sm text-muted">
+    <p v-if="menuCreateBlockedMessage" class="fx-type-caption">
       {{ menuCreateBlockedMessage }}
     </p>
-    <div v-if="error" class="text-sm text-error">
+    <div v-if="error" class="menu-editor-error">
       <p>{{ error }}</p>
       <FireCopyError :message="error" />
     </div>

@@ -1,12 +1,12 @@
 <template>
-  <div v-if="menu" class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
+  <div v-if="menu" class="workspace-surface workspace-surface--compact">
+    <div class="menu-editor-actions">
+      <div class="menu-editor-actions">
         <UIcon
           :name="daily ? 'i-lucide-calendar-days' : 'i-lucide-book-open'"
-          class="size-5 text-primary"
+          class="menu-schedule-icon"
         />
-        <span class="font-semibold">{{
+        <span class="fx-type-card-heading">{{
           daily ? 'Daily menu' : 'Regular menu'
         }}</span>
       </div>
@@ -14,11 +14,9 @@
     <template v-if="daily">
       <KitchenFoodAndDrinkMenusSectionsCollectionWeek v-model="date" />
       <details v-if="canWrite">
-        <summary class="cursor-pointer text-sm font-medium">
-          Add selection
-        </summary>
-        <div class="mt-3">
-          <div class="flex flex-wrap items-end gap-3">
+        <summary class="menu-schedule-summary">Add selection</summary>
+        <div class="workspace-surface workspace-surface--compact">
+          <div class="menu-editor-controls">
             <UFormField label="Selection"
               ><UInput v-model="label" placeholder="Lunch, dinner or specials"
             /></UFormField>
@@ -35,10 +33,8 @@
       <details
         v-if="canWrite && sections.some((section) => section.date === date)"
       >
-        <summary class="cursor-pointer text-sm text-muted">
-          Copy to another date
-        </summary>
-        <div class="mt-3 flex flex-wrap items-end gap-2">
+        <summary class="menu-schedule-summary">Copy to another date</summary>
+        <div class="menu-editor-controls">
           <UFormField label="Copy to"
             ><UInput v-model="copyTo" type="date"
           /></UFormField>
@@ -111,3 +107,16 @@ const copyDay = async () => {
     date.value = destination
 }
 </script>
+
+<style scoped>
+.menu-schedule-icon {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  color: var(--ui-primary);
+}
+.menu-schedule-summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}
+</style>

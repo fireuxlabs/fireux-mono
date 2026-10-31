@@ -1,7 +1,7 @@
 <template>
-  <section aria-labelledby="capability-library-heading" class="space-y-6">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <h2 id="capability-library-heading" class="text-2xl font-semibold">
+  <section aria-labelledby="capability-library-heading" class="fx-page-stack">
+    <div class="fx-page-stack">
+      <h2 id="capability-library-heading" class="fx-type-section-title">
         Business capabilities
       </h2>
       <UFormField label="Filter capabilities">
@@ -12,11 +12,11 @@
         />
       </UFormField>
     </div>
-    <p class="text-muted">
+    <p class="fx-type-description">
       Source reviewed, not release certified. Each capability keeps its data,
       actions and authority with its owner.
     </p>
-    <p role="status" class="text-sm text-muted">
+    <p role="status" class="fx-type-caption">
       {{ filtered.length }} capabilities
     </p>
     <UPageGrid v-if="filtered.length">
@@ -27,10 +27,8 @@
         :description="capability.description"
         :icon="capability.icon"
       >
-        <UBadge color="neutral" variant="subtle" class="self-start">{{
-          capability.state
-        }}</UBadge>
-        <p class="text-sm text-muted">{{ capability.boundary }}</p>
+        <UBadge color="neutral" variant="subtle">{{ capability.state }}</UBadge>
+        <p class="fx-type-caption">{{ capability.boundary }}</p>
         <template #footer>
           <UButton
             :to="sourceUrl(capability.source)"

@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-3">
-    <form class="grid gap-3 md:grid-cols-[1fr_auto]" @submit.prevent="save">
+  <div class="workspace-surface">
+    <form class="workspace-surface" @submit.prevent="save">
       <UFormField label="Menu URL">
         <UInput
           v-model="sourceUrl"
@@ -10,7 +10,7 @@
         />
       </UFormField>
 
-      <div class="flex items-end">
+      <div class="fx-page-stack">
         <UButton
           type="submit"
           icon="i-lucide-link"
@@ -22,7 +22,7 @@
       </div>
     </form>
 
-    <p v-if="!currencyCode" class="text-sm text-warning">
+    <p v-if="!currencyCode" class="fx-type-caption">
       Set the Place currency before importing a menu.
     </p>
     <FireCopyError v-if="error" :message="error" />
@@ -41,6 +41,7 @@ const { currentUser } = useAuth()
 const sourceUrl = ref('')
 const pending = ref(false)
 const error = ref('')
+const newSourceId = ref('')
 
 const canSave = computed(() =>
   Boolean(
@@ -59,6 +60,7 @@ const captureScope = useMenuEditorScope(
   [activeKitchenAppId, kitchenId, canWrite, sourceUrl, () => route.fullPath],
   () => {
     pending.value = false
+    newSourceId.value = ''
     error.value = ''
   }
 )
@@ -70,7 +72,7 @@ async function save() {
   const body = {
     appId: activeKitchenAppId.value,
     kitchenId: kitchenId.value,
-    uploadId: `source-${crypto.randomUUID()}`,
+    uploadId: (newSourceId.value ||= `source-${crypto.randomUUID()}`),
     sourceUrl: sourceUrl.value,
   }
   pending.value = true
@@ -80,14 +82,19 @@ async function save() {
     const token = await user.getIdToken()
     if (!isCurrent() || currentUser.value?.uid !== user.uid) return
     // Creation stage 1: save a source only. The real kitchen menu is created after AI review + confirm.
-    await $fetch('/api/workspace/kitchen/menus/source-url', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      body,
-    })
+    const result = await $fetch<{ ok: boolean; id: string }>(
+      '/api/workspace/kitchen/menus/source-url',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        body,
+      }
+    )
 
+    if (result?.ok !== true || result.id !== body.uploadId)
+      throw new Error('The response did not identify the saved Menu source.')
     if (!isCurrent()) return
     await navigateTo(
       `/workspace/kitchen/food-and-drink/menus/uploads/${encodeURIComponent(body.uploadId)}`

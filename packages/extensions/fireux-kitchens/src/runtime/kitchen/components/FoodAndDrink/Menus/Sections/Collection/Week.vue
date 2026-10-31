@@ -1,6 +1,9 @@
 <template>
-  <div class="space-y-3" aria-label="Choose Menu date">
-    <div class="flex flex-wrap items-center gap-2">
+  <div
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Choose Menu date"
+  >
+    <div class="menu-week__controls">
       <UButton
         icon="i-lucide-chevron-left"
         aria-label="Previous week"
@@ -25,31 +28,22 @@
         @click="date = timezone ? menuLocalDate(timezone) : ''"
       />
     </div>
-    <div class="grid grid-cols-7 gap-1" aria-label="Menu week">
+    <div class="menu-week" aria-label="Menu week">
       <button
         v-for="day in week"
         :key="day"
         type="button"
         :aria-pressed="day === date"
-        :class="[
-          'rounded-xl border p-2 text-center transition-colors',
-          day === date
-            ? 'border-primary bg-primary/10 text-primary'
-            : 'border-default hover:bg-elevated',
-        ]"
+        class="menu-week__day"
         @click="date = day"
       >
-        <span class="block text-xs">{{ weekday(day) }}</span>
-        <span class="block text-lg font-semibold">{{
-          Number(day.slice(-2))
-        }}</span>
+        <span class="menu-week__weekday">{{ weekday(day) }}</span>
+        <span class="menu-week__date">{{ Number(day.slice(-2)) }}</span>
         <span
-          :class="[
-            'mx-auto mt-1 block size-1.5 rounded-full',
+          class="menu-week__marker"
+          :data-has-selections="
             sections.some((section) => section.date === day)
-              ? 'bg-primary'
-              : 'bg-transparent',
-          ]"
+          "
         />
       </button>
     </div>
@@ -81,3 +75,53 @@ const weekday = (day: string) =>
     timeZone: 'UTC',
   })
 </script>
+
+<style scoped>
+.menu-week__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+.menu-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--spacing);
+}
+.menu-week__day {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: calc(var(--spacing) * 2);
+  text-align: center;
+  cursor: pointer;
+}
+.menu-week__day:hover {
+  background: var(--ui-bg-elevated);
+}
+.menu-week__day[aria-pressed='true'] {
+  border-color: var(--ui-primary);
+  background: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  color: var(--ui-primary);
+}
+.menu-week__weekday,
+.menu-week__date {
+  display: block;
+}
+.menu-week__weekday {
+  font-size: var(--text-xs);
+}
+.menu-week__date {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+}
+.menu-week__marker {
+  display: block;
+  margin: var(--spacing) auto 0;
+  inline-size: calc(var(--spacing) * 1.5);
+  block-size: calc(var(--spacing) * 1.5);
+  border-radius: 50%;
+}
+.menu-week__marker[data-has-selections='true'] {
+  background: var(--ui-primary);
+}
+</style>

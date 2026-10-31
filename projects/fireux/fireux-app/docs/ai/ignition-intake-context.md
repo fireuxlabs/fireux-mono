@@ -32,15 +32,15 @@ operating scope; it is not evidence of automatic generation or shipped capabilit
 
 This is the single named family definition for the current Ignition direction:
 
-| Brand | Agreed product statement |
-| --- | --- |
-| Misebox | Misebox is a kitchen management operating system. |
-| Granite | Granite is a property portfolio operating system. |
-| BuenoHost | BuenoHost is a property hosting operating system. |
-| Bringli | Bringli is a supplier and local distribution operating system. |
-| Werkbox | Werkbox is a practical services operating system. |
-| External dog brand, unnamed | [Brand] is a dog grooming operating system. |
-| External cat brand, unnamed | [Brand] is a cat grooming operating system. |
+| Brand                       | Agreed product statement                                       |
+| --------------------------- | -------------------------------------------------------------- |
+| Misebox                     | Misebox is a kitchen management operating system.              |
+| Granite                     | Granite is a property portfolio operating system.              |
+| BuenoHost                   | BuenoHost is a property hosting operating system.              |
+| Bringli                     | Bringli is a supplier and local distribution operating system. |
+| Werkbox                     | Werkbox is a practical services operating system.              |
+| External dog brand, unnamed | [Brand] is a dog grooming operating system.                    |
+| External cat brand, unnamed | [Brand] is a cat grooming operating system.                    |
 
 Sharer and Apps That Slap are outside this Ignition product family. This scope
 choice does not remove their packages, Apps or existing ownership. It is not a
@@ -57,8 +57,8 @@ repeatable execution and completed product journeys. Misebox remains a separate
 product-finishing track and reference source, not a product to rebuild for this proof.
 
 The current public intake offer remains sourced from `app/content/meta/source.ts`;
-the shared platform explanation is Core-owned
-`packages/core/fireux-core/src/runtime/utils/platform-context.ts`. Neither the
+the FireUX public platform explanation is App-owned
+`projects/fireux/fireux-app/shared/platform-context.ts`. Neither the
 family statements nor an intake status change authorize publication or deployment.
 
 ## Current source and boundaries
@@ -78,7 +78,9 @@ Paths below are relative to this App:
   `shared/ignition-preview.ts`; the operator CLI in `ignition/prepare.mjs` uses
   that same preparation function. The App owns this concrete source recipe,
   not Core or a new neutral template registry. It reuses Kitchen demo data,
-  Core AppShell/configuration and the existing trusted initializer.
+  Core AppShell/configuration and the existing trusted initializer. Preview
+  completion follows Core `useCommandScope` for input changes and disposal;
+  the form does not maintain a separate command-epoch implementation.
 - Website preparation returns a source artifact only. Filesystem materialization,
   dependency installation, native Nuxt startup and authenticated Core initialization
   are explicit operator steps. No public shell execution, credential copy,

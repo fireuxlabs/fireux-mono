@@ -1,16 +1,16 @@
 <template>
   <div
     v-if="!hidden && report.result.issues.length"
-    class="border-l-2 border-warning pl-3"
+    class="menu-readiness-issue"
   >
     <NuxtLink
       :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menuSlug)}/${encodeURIComponent(section.id)}`"
-      class="text-sm font-medium"
+      class="fx-type-card-heading"
       >{{ section.label || 'Section' }}</NuxtLink
     >
-    <ul class="mt-1 space-y-1 text-sm text-muted">
+    <ul class="fx-type-caption">
       <li v-for="issue in report.result.issues" :key="issue.itemId">
-        <span class="text-highlighted">{{ issue.name }}</span> —
+        <span class="fx-type-caption">{{ issue.name }}</span> —
         {{ issue.reason }}
       </li>
     </ul>

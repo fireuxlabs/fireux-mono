@@ -156,6 +156,22 @@ function fixture() {
       published++
     },
   }
+  const savedSources = []
+  const { prepareRequest } = load(
+    '../server/menu-express/preparation.ts',
+    {
+      ...dependencies,
+      downloadStorageFile: async () => ({
+        buffer: Buffer.from('%PDF-TEST source'),
+      }),
+      saveKitchenMenuSource: async (source) => {
+        savedSources.push(source)
+        return { ok: true, id: source.uploadId }
+      },
+    },
+    'prepareRequest'
+  )
+  dependencies.prepareRequest = prepareRequest
   const requests = {
     ...contract,
     ...load('../server/menu-express/intake.ts', dependencies, 'createRequest'),
@@ -184,6 +200,7 @@ function fixture() {
   }
   return {
     ...requests,
+    savedSources,
     input,
     records,
     transaction,
@@ -225,16 +242,16 @@ test('whole demo delivery: intake retry, correction, approval, changed-content r
     f.operatorAction(admin, id, {
       action: 'prepare',
       kitchenId: 'kitchen',
-      menuId: 'menu',
     }),
     /Payment/
   )
   await f.operatorAction(admin, id, { action: 'demo-payment' })
-  await f.operatorAction(admin, id, {
+  const preparation = await f.operatorAction(admin, id, {
     action: 'prepare',
     kitchenId: 'kitchen',
-    menuId: 'menu',
   })
+  assert.equal(preparation.target.menuId, `menu-express-${id}`)
+  assert.equal(f.savedSources[0].uploadId, preparation.target.menuId)
   await f.operatorAction(admin, id, { action: 'review' })
   await f.customerAction({}, id, {
     token,
@@ -305,7 +322,6 @@ test('customer approval rechecks current content and rejects expiry', async () =
   await f.operatorAction(admin, id, {
     action: 'prepare',
     kitchenId: 'kitchen',
-    menuId: 'menu',
   })
   await f.operatorAction(admin, id, { action: 'review' })
   f.setRevision('changed')
@@ -418,7 +434,6 @@ test('verified provider callback is idempotent; unpaid and mismatched sessions n
       f.operatorAction({ admin: true }, id, {
         action: 'prepare',
         kitchenId: 'kitchen',
-        menuId: 'menu',
       }),
       /Payment/
     )

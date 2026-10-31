@@ -1,6 +1,6 @@
 <template>
   <FireCollectionRow>
-    <div class="min-w-0 flex-1">
+    <div class="workspace-surface__primary">
       <FireFormsEditableSimpleField
         class="menu-section-name-field"
         :label="editor.displaySectionLabel(section)"
@@ -17,12 +17,15 @@
         :validation-function="editor.validateSectionLabel"
         :update="(value) => editor.saveSectionLabel(section.id, value)"
       />
-      <p v-if="section.description" class="text-sm text-dimmed">
+      <p v-if="section.description" class="fx-type-caption">
         {{ section.description }}
       </p>
       <KitchenFoodAndDrinkMenusSectionsDishes
         v-if="editor.daily"
         :section-id="section.id"
+        :dishes="editor.previewDishes.dishes"
+        :dishes-pending="editor.previewDishes.pending"
+        :dishes-error="editor.previewDishes.error"
       />
     </div>
     <template #actions>

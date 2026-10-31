@@ -1,16 +1,32 @@
 <template>
-  <section v-if="menu" :key="menu.id" class="menu-editor" aria-label="Menu details">
+  <section
+    v-if="menu"
+    :key="menu.id"
+    class="menu-editor"
+    aria-label="Menu details"
+  >
     <div class="menu-settings-fields">
       <FireFormsEditableSimpleField
         label="Name"
         :value="menu.name"
         :maxlength="120"
         :disabled="!canRename"
-        :disabled-message="canWrite ? 'Plus is required to rename a Menu.' : 'This Menu is read-only.'"
+        :disabled-message="
+          canWrite
+            ? 'Plus is required to rename a Menu.'
+            : 'This Menu is read-only.'
+        "
         :validation-function="validateName"
         :update="rename"
       />
-      <UButton v-if="canWrite && !canRename" to="/pricing" label="Upgrade to rename" color="neutral" variant="link" class="menu-settings-fields__upgrade" />
+      <UButton
+        v-if="canWrite && !canRename"
+        to="/pricing"
+        label="Upgrade to rename"
+        color="neutral"
+        variant="link"
+        class="menu-settings-fields__upgrade"
+      />
       <FireFormsEditableSimpleField
         label="Internal name (optional)"
         :value="menu.internal_name || ''"
@@ -44,45 +60,31 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-const { menu, menuId, menuSlug, kitchenId, canWrite, subscription, updateMenu, renameMenu } = useKitchenMenuRecordContext()
-const captureScope = useMenuEditorScope([kitchenId, menuId, menuSlug])
-const canRename = computed(() => canWrite.value && ['premium', 'business'].includes(subscription.value))
-const validateName = (value: string) => ({ isValid: Boolean(value.trim()), message: 'Menu name is required.' })
-const validateOrder = (value: string) => ({ isValid: Boolean(value.trim()) && Number.isSafeInteger(Number(value)), message: 'Enter a whole number.' })
-async function rename(name: string) {
-  if (!canRename.value || !menuId.value) throw new Error('Plus and Kitchen write access are required to rename a Menu.')
-  const targetKitchen = kitchenId.value
-  const targetId = menuId.value
-  const isCurrent = captureScope()
-  try { await renameMenu(targetKitchen, targetId, name.trim()) }
-  catch (error) { if (!isCurrent()) return; throw error }
-
-}
-async function updateInternalName(value: string) {
-  if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
-  const isCurrent = captureScope()
-  try { await updateMenu(kitchenId.value, menuId.value, { internal_name: value.trim() }) }
-  catch (error) { if (!isCurrent()) return; throw error }
-}
-async function updateDescription(value: string) {
-  if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
-  const isCurrent = captureScope()
-  try { await updateMenu(kitchenId.value, menuId.value, { description: value.trim() }) }
-  catch (error) { if (!isCurrent()) return; throw error }
-}
-async function updateOrder(value: string) {
-  if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
-  if (!validateOrder(value).isValid) throw new Error('Enter a whole number.')
-  const isCurrent = captureScope()
-  try { await updateMenu(kitchenId.value, menuId.value, { sort_order: Number(value) }) }
-  catch (error) { if (!isCurrent()) return; throw error }
-}
+import { useMenuRecordMetadata } from '../../../../composables/workspace/menus/useMenuRecordMetadata'
+const {
+  menu,
+  canWrite,
+  canRename,
+  validateName,
+  validateOrder,
+  rename,
+  updateInternalName,
+  updateDescription,
+  updateOrder,
+} = useMenuRecordMetadata(useKitchenMenuRecordContext())
 </script>
 <style scoped>
-.menu-editor { padding: clamp(1rem, 2vw, 1.5rem); min-width: 0; }
-.menu-settings-fields { display: grid; gap: calc(var(--spacing) * 4); }
-.menu-settings-fields__upgrade { justify-self: start; padding: 0; }
+.menu-editor {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  min-width: 0;
+}
+.menu-settings-fields {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+}
+.menu-settings-fields__upgrade {
+  justify-self: start;
+  padding: 0;
+}
 </style>

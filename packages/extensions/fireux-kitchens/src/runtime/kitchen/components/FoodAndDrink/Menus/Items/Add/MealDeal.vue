@@ -1,7 +1,7 @@
 <template>
   <UCard v-if="section && menu?.schedule !== 'daily'">
     <template #header
-      ><h2 class="text-base font-semibold">Add a meal deal</h2></template
+      ><h2 class="fx-type-card-heading">Add a meal deal</h2></template
     >
     <FireCopyError
       v-if="promotions.error.value"
@@ -10,19 +10,20 @@
     <p v-else-if="promotions.pending.value" role="status">
       Loading meal deals…
     </p>
-    <div v-else class="flex flex-wrap items-end gap-3">
+    <div v-else class="menu-editor-controls">
       <UFormField label="Meal deal">
-        <select
+        <USelect
           v-model="promotionId"
           aria-label="Choose meal deal"
+          placeholder="Select a meal deal"
+          :items="[
+            ...available.map((deal) => ({
+              value: deal.id,
+              label: deal.name + (deal.status === 'paused' ? ' (paused)' : ''),
+            })),
+          ]"
           :disabled="saving || !canWrite"
-          class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm"
-        >
-          <option value="">Select a meal deal</option>
-          <option v-for="deal in available" :key="deal.id" :value="deal.id">
-            {{ deal.name }}{{ deal.status === 'paused' ? ' (paused)' : '' }}
-          </option>
-        </select>
+        />
       </UFormField>
       <UButton
         icon="i-lucide-plus"

@@ -9,13 +9,15 @@ import { readKitchenMenuReview } from 'fireux-kitchens/runtime/menu/server/publi
 import { stagePublishKitchenMenu } from 'fireux-kitchens/runtime/menu/server/publication/publish'
 import type { MenuExpressRequest } from '../../shared/types/menu-express'
 import { operator, assertOperator } from './authority'
-import { dto, fail, requestId, requirePaid, text } from './contract'
+import { prepareRequest } from './preparation'
+import { dto, fail, requestId, requirePaid } from './contract'
 
 export async function operatorAction(
   event: H3Event,
   rawId: unknown,
   input: Record<string, unknown>
 ) {
+  if (input.action === 'prepare') return prepareRequest(event, rawId, input)
   const id = requestId(rawId),
     actor = await operator(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
@@ -41,13 +43,7 @@ export async function operatorAction(
         if (input.action === 'deliver') return request
         fail('Delivered requests cannot be edited.', 409)
       }
-      const selected =
-        input.action === 'prepare'
-          ? {
-              kitchenId: text(input.kitchenId, 'Kitchen id', 200),
-              menuId: text(input.menuId, 'Menu id', 200),
-            }
-          : request.target
+      const selected = request.target
       if (
         !selected ||
         Object.values(selected).some((value) => value.includes('/'))
@@ -58,16 +54,7 @@ export async function operatorAction(
         actor.uid,
         tx
       )
-      if (input.action === 'prepare') {
-        await readKitchenMenuReview(tx, selected.kitchenId, selected.menuId)
-        changes = {
-          target: selected,
-          stage: 'preparing',
-          review: null,
-          approval: null,
-          updatedAt,
-        }
-      } else if (input.action === 'review') {
+      if (input.action === 'review') {
         const review = await readKitchenMenuReview(
           tx,
           selected.kitchenId,

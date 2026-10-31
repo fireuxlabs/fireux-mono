@@ -1,18 +1,18 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="min-w-0 space-y-1">
-          <h2 class="truncate text-base font-semibold text-highlighted">
+      <div class="menu-editor-actions">
+        <div class="workspace-surface workspace-surface--compact">
+          <h2 class="fx-type-card-heading">
             {{ panel.label }}
           </h2>
-          <p v-if="panel.description" class="text-sm text-dimmed">
+          <p v-if="panel.description" class="fx-type-caption">
             {{ panel.description }}
           </p>
-          <p class="text-sm text-dimmed">{{ panel.summary }}</p>
+          <p class="fx-type-caption">{{ panel.summary }}</p>
         </div>
 
-        <div class="flex flex-wrap items-center justify-end gap-2">
+        <div class="menu-editor-actions">
           <UBadge :color="statusColor(panel.status)" variant="soft">
             {{ panel.status }}
           </UBadge>
@@ -41,7 +41,7 @@
       description="Publish this menu before creating QR entry points."
     />
 
-    <div v-else class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+    <div v-else class="workspace-surface__grid workspace-surface__grid--2">
       <KitchenFoodAndDrinkMenusQRTarget
         v-for="target in panel.targets"
         :key="target.id"

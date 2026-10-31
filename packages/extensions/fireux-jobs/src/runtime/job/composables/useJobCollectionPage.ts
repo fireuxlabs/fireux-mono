@@ -39,5 +39,5 @@ export function useJobCollectionPage() {
       loadMore,
     },
   })
-  return reactive({ ...toRefs(page), jobs, loadMore })
+  return reactive({ ...toRefs(page), jobs })
 }

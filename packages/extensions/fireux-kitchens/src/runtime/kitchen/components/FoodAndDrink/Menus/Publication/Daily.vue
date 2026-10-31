@@ -1,12 +1,12 @@
 <template>
   <UCard v-if="menu">
     <template #header>
-      <h2 class="text-base font-semibold">Publish a date</h2>
-      <p class="text-sm text-muted">
+      <h2 class="fx-type-card-heading">Publish a date</h2>
+      <p class="fx-type-caption">
         Guests see today's published selections at the same Menu and QR link.
       </p>
     </template>
-    <div class="space-y-4">
+    <div class="workspace-surface workspace-surface--compact">
       <UFormField
         label="Menu date"
         :help="
@@ -15,26 +15,23 @@
       >
         <UInput v-model="date" type="date" />
       </UFormField>
-      <FireCopyError
-        v-if="sectionsError"
-        :message="String(sectionsError)"
-      />
+      <FireCopyError v-if="sectionsError" :message="String(sectionsError)" />
       <p v-else-if="sectionsPending" role="status">Loading selections…</p>
       <template v-else>
         <UBadge :color="published ? 'success' : 'neutral'">{{
           published ? 'Published for this date' : 'Private for this date'
         }}</UBadge>
-        <ul v-if="selectedSections.length" class="list-disc pl-5">
+        <ul v-if="selectedSections.length" class="fx-list-stack">
           <li v-for="section in selectedSections" :key="section.id">
             {{ section.label }}
           </li>
         </ul>
         <p v-else>No selections saved for this date.</p>
       </template>
-      <p class="text-sm text-muted">
+      <p class="fx-type-caption">
         Browse only. Changes to published selections appear live.
       </p>
-      <div class="flex flex-wrap gap-2">
+      <div class="menu-editor-actions">
         <UButton
           label="Review selections"
           color="neutral"
@@ -84,7 +81,7 @@
           variant="soft"
         />
       </div>
-      <p v-if="message" class="text-sm text-success" role="status">
+      <p v-if="message" class="menu-editor-success" role="status">
         {{ message }}
       </p>
       <FireCopyError v-if="error" :message="error" />
@@ -95,7 +92,7 @@
       description="Only this date's selections will be hidden. Other published dates and the stable Menu link stay available."
     >
       <template #body>
-        <div class="flex justify-end gap-2">
+        <div class="menu-editor-actions">
           <UButton
             label="Cancel"
             color="neutral"

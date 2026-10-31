@@ -1,7 +1,10 @@
 <template>
-  <section aria-label="Menu suggestions" class="space-y-2">
-    <h2 class="text-sm font-semibold text-muted">More Menu ideas</h2>
-    <div class="flex flex-wrap gap-2">
+  <section
+    aria-label="Menu suggestions"
+    class="workspace-surface workspace-surface--compact"
+  >
+    <h2 class="fx-type-card-heading">More Menu ideas</h2>
+    <div class="menu-editor-actions">
       <UButton
         v-for="name in suggestions"
         :key="name"
@@ -14,7 +17,7 @@
         @click="hasPlus && create(name)"
       />
     </div>
-    <p v-if="!hasPlus" class="text-sm text-muted">
+    <p v-if="!hasPlus" class="fx-type-caption">
       Plus unlocks additional Menus.
     </p>
     <FireCopyError v-if="error" :message="error" />

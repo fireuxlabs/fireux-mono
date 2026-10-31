@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../firestore-document-id.ts'
 import type {
   FirestoreDatabasePlacement,
   FirestoreReadTarget,
@@ -42,6 +43,17 @@ export function assertFirestoreMutationSegment(
   return segment
 }
 
+/** Document identities are values, not collection/database schema names. */
+export function assertFirestoreMutationDocumentId(
+  value: string,
+  label: string
+): string {
+  const id = String(value || '').trim()
+  if (!isFirestoreDocumentId(id))
+    throw new Error(`${label} must be one Firestore path segment.`)
+  return id
+}
+
 export function defineFirestoreMutationTarget<
   const Key extends string,
   const Lane extends FirestoreMutationLane,
@@ -55,7 +67,11 @@ export function defineFirestoreMutationTarget<
 }): FirestoreMutationTarget<Key, Lane, Verb> {
   const collectionPath = input.collectionPath
     .split('/')
-    .map((part) => assertFirestoreMutationSegment(part, 'collectionPath'))
+    .map((part, index) =>
+      index % 2
+        ? assertFirestoreMutationDocumentId(part, 'documentId')
+        : assertFirestoreMutationSegment(part, 'collectionPath')
+    )
     .join('/')
   if (input.database.kind === 'default' && input.lane === 'client') {
     throw new Error(
@@ -107,9 +123,16 @@ export function defineFirestoreReadTarget(
 ): FirestoreReadTarget {
   const collectionPath = input.collectionPath
     .split('/')
-    .map((part) => assertFirestoreMutationSegment(part, 'collectionPath'))
+    .map((part, index) =>
+      index % 2
+        ? assertFirestoreMutationDocumentId(part, 'documentId')
+        : assertFirestoreMutationSegment(part, 'collectionPath')
+    )
     .join('/')
-  if (input.database.kind === 'named' || input.database.kind === 'local-sproochli')
+  if (
+    input.database.kind === 'named' ||
+    input.database.kind === 'local-sproochli'
+  )
     assertFirestoreMutationSegment(input.database.databaseId, 'databaseId')
   return Object.freeze({ ...input, collectionPath })
 }

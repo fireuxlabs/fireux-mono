@@ -3,7 +3,7 @@
     v-model:open="createOpen"
     title="Create Menu"
     description="Upload a PDF or photos, paste a menu URL, or start blank."
-    :ui="{ content: 'sm:max-w-4xl', description: 'sr-only' }"
+    class="menu-editor-dialog menu-editor-dialog--create"
   >
     <template #body><KitchenFoodAndDrinkMenusCreate /></template>
   </UModal>

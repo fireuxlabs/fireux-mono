@@ -21,13 +21,14 @@
     title="Menus could not be loaded"
   >
     <template #description
-      ><FireCopyError
-        :message="String(error || 'Menus could not be loaded.')"
+      ><FireCopyError :message="String(error || 'Menus could not be loaded.')"
     /></template>
   </UAlert>
   <template v-else>
     <KitchenFoodAndDrinkMenusCollectionList />
-    <KitchenFoodAndDrinkMenusCollectionSuggestions class="mt-6" />
+    <KitchenFoodAndDrinkMenusCollectionSuggestions
+      class="workspace-surface workspace-surface--compact"
+    />
     <p v-if="menuCreateBlockedMessage" class="fx-type-caption">
       {{ menuCreateBlockedMessage }}
     </p>
@@ -39,18 +40,24 @@
 import { watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
-const {
-  derived,
-  error,
-  actions,
-  menuCreateBlockedMessage,
-} = useKitchenMenusContext()
+const { derived, error, actions, menuCreateBlockedMessage } =
+  useKitchenMenusContext()
 const route = useRoute()
 const router = useRouter()
-watch(() => [route.query.create, derived.value.capability.primitives.create.available], () => {
-  if (route.query.create === '1' && derived.value.capability.primitives.create.available) {
-    actions.openCreate()
-    void router.replace({ query: { ...route.query, create: undefined } })
-  }
-}, { immediate: true })
+watch(
+  () => [
+    route.query.create,
+    derived.value.capability.primitives.create.available,
+  ],
+  () => {
+    if (
+      route.query.create === '1' &&
+      derived.value.capability.primitives.create.available
+    ) {
+      actions.openCreate()
+      void router.replace({ query: { ...route.query, create: undefined } })
+    }
+  },
+  { immediate: true }
+)
 </script>

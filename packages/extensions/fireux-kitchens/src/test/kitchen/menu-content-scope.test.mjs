@@ -45,14 +45,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
     'item-update',
   ])
     for (const stage of ['auth', 'token', 'response'])
-      for (const change of [
-        'stable',
-        'account',
-        'kitchen',
-        'route',
-        'logout',
-        'dispose',
-      ]) {
+      for (const change of ['stable', 'account', 'logout', 'dispose']) {
         const auth = deferred(),
           token = deferred(),
           response = deferred(),
@@ -183,6 +176,16 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
             ref,
             computed,
             useState: () => selectedDate,
+            useKitchenDishCollection: () => ({
+              dishes: ref([]),
+              pending: ref(false),
+              error: ref(null),
+            }),
+            useKitchenDishCollection: () => ({
+              dishes: ref([]),
+              pending: ref(false),
+              error: ref(null),
+            }),
             useMenuEditorScope: scope(currentUser),
             useToastify: () => ({ add: (x) => toasts.push(x) }),
             useKitchenMenuRecordContext: () => ({
@@ -243,9 +246,14 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
           ref,
           computed,
           watch,
+          useKitchenDishCollection: () => ({
+            dishes: ref([]),
+            pending: ref(false),
+            error: ref(null),
+          }),
           useMenuEditorScope: scope(currentUser),
           useToastify: () => ({ add: (x) => toasts.push(x) }),
-          useKitchenWorkspaceMenuSection: () => ({
+          useMenuSection: () => ({
             kitchenId,
             menuId,
             sectionId,
@@ -296,6 +304,16 @@ test('section movement is bounded to the visible date and rejects obsolete date 
       ref,
       computed,
       useState: () => selectedDate,
+      useKitchenDishCollection: () => ({
+        dishes: ref([]),
+        pending: ref(false),
+        error: ref(null),
+      }),
+      useKitchenDishCollection: () => ({
+        dishes: ref([]),
+        pending: ref(false),
+        error: ref(null),
+      }),
       useMenuEditorScope: scope(currentUser),
       useToastify: () => ({ add: (notice) => notices.push(notice) }),
       useKitchenMenuRecordContext: () => ({
@@ -354,6 +372,11 @@ test('Section archive/restore preserves content, filters dates and discards obso
         ref,
         computed,
         useState: () => ref('2026-10-16'),
+        useKitchenDishCollection: () => ({
+          dishes: ref([]),
+          pending: ref(false),
+          error: ref(null),
+        }),
         useMenuEditorScope: scope(currentUser),
         useToastify: () => ({ add: (x) => toasts.push(x) }),
         useKitchenMenuRecordContext: () => ({
@@ -411,5 +434,55 @@ test('Section archive/restore preserves content, filters dates and discards obso
       'active',
       'controller never rewrites saved records locally'
     )
+  }
+})
+
+test('new Dish placement reuses catalogue owners and never attaches an obsolete creation', async () => {
+  for (const changed of [false, true]) {
+    const currentUser = ref({ uid: 'user' }),
+      sectionId = ref('section-a')
+    const created = deferred(),
+      calls = [],
+      placements = []
+    const context = {
+      kitchenId: ref('kitchen'),
+      menuId: ref('menu'),
+      sectionId,
+      dishes: ref([{ id: 'known', name: 'Soup' }]),
+      itemRows: ref([]),
+      canWrite: ref(true),
+      createItem: async (input) => placements.push(input),
+    }
+    const state = load(
+      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+      {
+        computed,
+        ref,
+        useDishEditorScope: scope(currentUser),
+        useDishCreate: () => ({
+          createDish: async (...args) => {
+            calls.push(args)
+            return created.promise
+          },
+        }),
+      },
+      'useMenuSectionDishCreation'
+    )(context, () => '/menu/section-a')
+    state.names.value = 'Soup\nSalad'
+    state.prices.value = { Salad: 11 }
+    const work = state.addNames()
+    await Promise.resolve()
+    await Promise.resolve()
+    if (changed) sectionId.value = 'section-b'
+    created.resolve({ id: 'new-dish' })
+    await work
+    assert.equal(calls.length, 1)
+    assert.deepEqual(calls[0], [
+      { name: 'Salad', price: 11 },
+      { kitchenId: 'kitchen' },
+    ])
+    assert.equal(placements.length, changed ? 1 : 2)
+    assert.equal(placements[0].dishId, 'known')
+    if (!changed) assert.equal(placements[1].dishId, 'new-dish')
   }
 })

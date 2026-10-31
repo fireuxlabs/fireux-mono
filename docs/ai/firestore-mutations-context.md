@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-29
+Updated: 2026-10-31
 Ref: 3f46d22a2
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -642,6 +642,16 @@ It never creates missing Apps or repairs relationships. Verify its offline test
 and Core's `app-context-creation.test.mjs`; live application remains separately
 authorized per migration. Source changes do not deploy running Apps.
 
+## Product catalogue creation
+
+Products' `product/server/create/command.ts` accepts an explicit empty price
+list for catalogue-only creation. It retains current App manager authority,
+validated payload, request fingerprint and conflict checks, and creates the
+Product atomically without loading a payment provider. Non-empty prices retain
+the existing provider reservation/retry and final catalogue/price transaction.
+A catalogue entry does not itself establish a payable offer. Current checks live
+in Products' `product-create.test.mjs`.
+
 ## Conversation transaction composition
 
 Core `server/utils/chat/session.ts` owns `stageChatSessionCreation`,
@@ -661,3 +671,13 @@ transaction authority, retired names, or enforcement source changes. Check
 current target definitions, runtime touchpoints, real consumers and available
 source-owned tests first. Keep temporary task progress and file-by-file migration
 status out of this context; no deleted guard serves as an executable inventory.
+
+### Schema names and document identities
+
+Core’s `utils/firestore-mutations/target-definition.ts` applies retired-name
+guards to database/collection schema positions. Document positions use the
+existing `isFirestoreDocumentId` predicate through
+`assertFirestoreMutationDocumentId`; legitimate IDs such as `test-snacks` do not
+become retired collection names. Lane, verb and authority checks remain intact.
+Kitchen source preparation reuses `menu/server/source/save.ts`, with authority
+checked before Storage and rechecked in the source-write transaction.

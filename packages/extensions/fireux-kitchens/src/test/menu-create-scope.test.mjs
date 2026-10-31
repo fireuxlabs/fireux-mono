@@ -72,14 +72,19 @@ test('captures payload and retains explicit Kitchen independently of workspace s
   await Promise.resolve()
   h.resolveToken('token')
   await pending
-  assert.deepEqual(h.calls[0], [
-    '/api/workspace/kitchen/menus',
-    {
-      method: 'POST',
-      headers: { Authorization: 'Bearer token' },
-      body: { name: 'Food', kitchenId: 'explicit' },
-    },
-  ])
+  const [path, { onResponse, ...options }] = h.calls[0]
+  assert.equal(typeof onResponse, 'function')
+  assert.deepEqual(
+    [path, options],
+    [
+      '/api/workspace/kitchen/menus',
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer token' },
+        body: { name: 'Food', kitchenId: 'explicit' },
+      },
+    ]
+  )
   h.scope.stop()
 })
 test('rejects changed implicit Kitchen/account during either credential wait', async () => {

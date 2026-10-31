@@ -3,7 +3,7 @@
     <UButton label="Add items" icon="i-lucide-plus" @click="open = true" />
     <UModal v-model:open="open" title="Add items" :description="section.label">
       <template #body>
-        <div class="space-y-4">
+        <div class="workspace-surface workspace-surface--compact">
           <UTabs
             v-model="mode"
             :items="modes"

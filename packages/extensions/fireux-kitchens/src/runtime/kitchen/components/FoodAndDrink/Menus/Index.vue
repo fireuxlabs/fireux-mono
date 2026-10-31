@@ -1,17 +1,22 @@
 <template>
-  <section v-if="storageKitchenId" class="grid gap-6" aria-label="Menus">
+  <section v-if="storageKitchenId" class="fx-page-stack" aria-label="Menus">
+    <UButton
+      to="/workspace/kitchen/food-and-drink/menus/prepare"
+      icon="i-lucide-file-scan"
+      variant="outline"
+      >Prepare a Menu from a source</UButton
+    >
     <KitchenFoodAndDrinkMenusCollection />
     <FireDisclosurePanel title="KitchenAI" :default-open="false">
       <KitchenFoodAndDrinkMenusAi />
     </FireDisclosurePanel>
   </section>
-  <FireStateCard
-    v-else-if="outcome === 'error'"
-    state="error"
-    title="Kitchen unavailable"
-    :description="String(error || 'Your Kitchen could not be loaded.')"
+  <FireState
+    v-else-if="outcome === 'error' || outcome === 'pending'"
+    :outcome="outcome"
+    entity="Kitchen"
+    :error="error"
   />
-  <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
   <UAlert
     v-else-if="outcome === 'empty'"
     color="neutral"
@@ -33,3 +38,5 @@ import { useKitchenMenusContext } from '../../../composables/workspace/menus/use
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const { storageKitchenId, outcome, error } = useKitchenMenusContext()
 </script>
+
+<style src="../../../../menu/assets/styles/menu-editor.css"></style>

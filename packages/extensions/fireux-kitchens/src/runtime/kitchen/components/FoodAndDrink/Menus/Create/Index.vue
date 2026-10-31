@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="workspace-surface workspace-surface--compact">
     <UTabs
       v-model="method"
       :items="methods"

@@ -1,26 +1,25 @@
 <template>
   <UContainer>
-    <UPage class="mx-auto max-w-3xl">
+    <UPage>
       <UPageHeader
         headline="FireUX Ignition"
         title="Start with your industry."
         description="Shape the platform, its operating Workspace and the Apps your customers will use."
       />
       <UPageBody>
-      <UButton
-        to="/ignite-preview"
-        label="Try the assisted Menu starting App"
-        color="neutral"
-        variant="soft"
-      />
+        <UButton
+          to="/ignite-preview"
+          label="Try the assisted Menu starting App"
+          color="neutral"
+          variant="soft"
+        />
         <UCard>
-          <form class="space-y-6" @submit.prevent="prepare">
+          <form class="fx-page-stack" @submit.prevent="prepare">
             <UFormField label="Your idea" required>
               <UTextarea
                 v-model="idea"
                 :maxlength="2000"
                 :rows="5"
-                class="w-full"
                 required
                 placeholder="Describe the industry and what its businesses need to do."
               />
@@ -29,7 +28,6 @@
               <UInput
                 v-model="audience"
                 :maxlength="300"
-                class="w-full"
                 placeholder="Business owners, their teams and customers"
               />
             </UFormField>
@@ -38,7 +36,6 @@
                 v-model="firstJob"
                 :maxlength="1000"
                 :rows="3"
-                class="w-full"
                 placeholder="For example: book a treatment and manage it through pickup."
               />
             </UFormField>
@@ -52,19 +49,19 @@
         </UCard>
         <UCard v-if="brief" aria-live="polite">
           <template #header
-            ><h2 class="text-xl font-semibold">
+            ><h2 class="fx-type-section-title">
               Your starting brief
             </h2></template
           >
-          <p class="whitespace-pre-wrap">{{ brief }}</p>
+          <pre class="fx-type-body">{{ brief }}</pre>
           <template #footer>
-            <div class="space-y-3">
+            <div class="fx-page-stack">
               <UButton
                 :to="enquiry"
                 label="Discuss this with FireUX"
                 trailing-icon="i-lucide-mail"
               />
-              <p class="text-sm text-muted">
+              <p class="fx-type-caption">
                 Opens an email draft. Scope, delivery and pricing are agreed
                 with FireUX. This brief has not been submitted or saved.
               </p>

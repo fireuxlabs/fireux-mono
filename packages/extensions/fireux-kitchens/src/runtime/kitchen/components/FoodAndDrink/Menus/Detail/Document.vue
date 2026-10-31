@@ -1,10 +1,14 @@
 <template>
-  <section v-if="menu" class="space-y-4" aria-label="Menu document">
+  <section
+    v-if="menu"
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Menu document"
+  >
     <UCard v-if="menu.doc?.url">
       <template #header
-        ><h2 class="font-semibold">Current document</h2></template
+        ><h2 class="fx-type-card-heading">Current document</h2></template
       >
-      <p class="mb-3 text-sm text-muted">{{ menu.doc.name }}</p>
+      <p class="fx-type-caption">{{ menu.doc.name }}</p>
       <UButton
         :to="menu.doc.url"
         target="_blank"

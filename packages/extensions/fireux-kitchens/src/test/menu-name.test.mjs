@@ -91,13 +91,13 @@ test('Free rename is denied while duplicate display names preserve stable URLs',
 test('Workspace rename passes stable target to the surviving Record owner', async () => {
   const component = readFileSync(
     new URL(
-      '../runtime/kitchen/components/FoodAndDrink/Menus/Edit/Details.vue',
+      '../runtime/kitchen/composables/workspace/menus/useMenuRecordMetadata.ts',
       import.meta.url
     ),
     'utf8'
   )
   const renameSource = component.match(
-    /async function rename\(name: string\)[\s\S]*?(?=\nasync function updateDescription)/
+    /async function rename\(name: string\)[\s\S]*?(?=\n\s*async function updateDescription)/
   )[0]
   const calls = [],
     destinations = []
@@ -125,11 +125,25 @@ test('Workspace rename passes stable target to the surviving Record owner', asyn
 
 test('internal name edits preserve the public name and stable route', async () => {
   const { normalizeMenuMetadataPatch, updateKitchenMenu, writes } = harness()
-  assert.deepEqual(normalizeMenuMetadataPatch({ internal_name: ' Takeaway drinks ' }), { internal_name: 'Takeaway drinks' })
-  assert.deepEqual(normalizeMenuMetadataPatch({ internal_name: '  ' }), { internal_name: '' })
+  assert.deepEqual(
+    normalizeMenuMetadataPatch({ internal_name: ' Takeaway drinks ' }),
+    { internal_name: 'Takeaway drinks' }
+  )
+  assert.deepEqual(normalizeMenuMetadataPatch({ internal_name: '  ' }), {
+    internal_name: '',
+  })
   assert.throws(() => normalizeMenuMetadataPatch({ internal_name: 42 }))
-  assert.throws(() => normalizeMenuMetadataPatch({ internal_name: 'a'.repeat(161) }))
-  await updateKitchenMenu({}, { kitchenId: 'k', menuId: 'm', changes: { internal_name: 'Takeaway drinks' } })
+  assert.throws(() =>
+    normalizeMenuMetadataPatch({ internal_name: 'a'.repeat(161) })
+  )
+  await updateKitchenMenu(
+    {},
+    {
+      kitchenId: 'k',
+      menuId: 'm',
+      changes: { internal_name: 'Takeaway drinks' },
+    }
+  )
   assert.equal(writes[0][2].internal_name, 'Takeaway drinks')
   assert.ok(!Object.hasOwn(writes[0][2], 'name'))
   assert.ok(!Object.hasOwn(writes[0][2], 'slug'))

@@ -1,6 +1,6 @@
 <template>
   <section aria-label="Menus">
-    <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
+    <div v-if="pending" class="fx-type-caption">Loading menus...</div>
 
     <template v-else>
       <WorkspaceKitchenCollectionToolbar
@@ -16,17 +16,20 @@
         color="neutral"
         variant="ghost"
         size="sm"
-        class="mt-2"
+        class="workspace-surface workspace-surface--compact"
         @click="showArchived = !showArchived"
       />
-      <div v-if="filteredMenus.length" class="mt-4 grid gap-6">
+      <div
+        v-if="filteredMenus.length"
+        class="workspace-surface workspace-surface--compact"
+      >
         <section
           v-for="group in groups"
           :key="group.label"
           :aria-label="group.label"
-          class="grid gap-2"
+          class="workspace-surface workspace-surface--compact"
         >
-          <h2 class="text-sm font-semibold text-muted">{{ group.label }}</h2>
+          <h2 class="fx-type-card-heading">{{ group.label }}</h2>
           <WorkspaceKitchenCollectionRow
             v-for="menu in group.menus"
             :key="menu.id"
@@ -53,7 +56,7 @@
       </div>
       <UAlert
         v-else-if="menus.length"
-        class="mt-4"
+        class="workspace-surface workspace-surface--compact"
         color="neutral"
         title="No matching menus"
       />

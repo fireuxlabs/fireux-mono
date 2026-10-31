@@ -190,6 +190,8 @@ function fixture(realInjection = false) {
     useMenuPublication: () => ({
       publishMenu: command('publish'),
       unpublishMenu: command('unpublish'),
+      archiveMenu: command('archive'),
+      restoreMenu: command('restore'),
     }),
   }
   const api = load(
@@ -390,4 +392,21 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
     () => independent.useKitchenMenuRecordContext(),
     /not available/
   )
+})
+
+test('record lifecycle commands share management authority independently of content entitlement', async () => {
+  const f = fixture(),
+    state = f.provideKitchenMenuRecordContext()
+  f.session.appUser.value.role = 'viewer'
+  for (const action of ['archiveMenu', 'restoreMenu', 'deleteMenu'])
+    await assert.rejects(
+      state[action]('kitchen-a', 'menu-a'),
+      /cannot be managed/
+    )
+  assert.equal(f.writes.length, 0)
+  f.session.appUser.value.role = 'user'
+  await state.archiveMenu('kitchen-a', 'menu-a')
+  await state.restoreMenu('kitchen-a', 'menu-a')
+  await state.deleteMenu('kitchen-a', 'menu-a')
+  assert.equal(f.writes.length, 3)
 })

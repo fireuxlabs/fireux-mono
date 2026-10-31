@@ -1,7 +1,7 @@
 <template>
-  <div class="menu-items-editor space-y-4">
+  <div class="menu-items-editor workspace-surface workspace-surface--compact">
     <FireCopyError v-if="editor.moveError" :message="editor.moveError" />
-    <div class="flex items-center justify-between gap-3">
+    <div class="menu-editor-actions">
       <UButton
         :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(editor.menuSlug)}`"
         @click="editor.rememberView(editor.menuSlug, 'content', $event)"
@@ -30,15 +30,15 @@
 
     <UCard v-else>
       <template #header>
-        <FireCollectionRow as="div" :style="{ paddingBlock: 0 }">
+        <FireCollectionRow as="div" class="menu-item-heading">
           <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-base font-semibold text-highlighted">
+            <div class="menu-editor-actions">
+              <h2 class="fx-type-card-heading">
                 {{ editor.section.label }}
               </h2>
               <span
                 v-if="!editor.itemsPending && !editor.itemsError"
-                class="text-center text-xs text-muted"
+                class="fx-type-caption"
                 :aria-label="`${editor.itemRows.length} items`"
                 >{{ editor.itemRows.length }}</span
               >
@@ -49,21 +49,21 @@
               variant="soft"
               >Archived section</UBadge
             >
-            <p v-if="editor.section.date" class="mt-1 text-sm text-muted">
+            <p v-if="editor.section.date" class="fx-type-caption">
               {{ editor.section.date }}
             </p>
           </div>
           <template #value>
             <span
               v-if="editor.currencyCode"
-              class="text-right text-xs text-muted"
+              class="menu-item-value"
               :aria-label="`Prices in ${editor.currencyCode}`"
               >{{ editor.currencyCode }}</span
             >
             <span v-else aria-hidden="true" />
           </template>
           <template #actions
-            ><span class="size-8" aria-hidden="true"
+            ><span class="menu-item-action-placeholder" aria-hidden="true"
           /></template>
         </FireCollectionRow>
       </template>
@@ -73,7 +73,7 @@
         :message="String(editor.itemsError)"
       />
       <p v-else-if="editor.itemsPending" role="status">Loading items…</p>
-      <div v-else-if="editor.itemRows.length" class="divide-y divide-default">
+      <div v-else-if="editor.itemRows.length" class="menu-editor-list">
         <KitchenFoodAndDrinkMenusItemsEditRow
           v-for="row in editor.itemRows"
           :key="row.id"
@@ -82,7 +82,7 @@
         />
       </div>
 
-      <p v-else class="text-sm text-dimmed">
+      <p v-else class="fx-type-caption">
         No entries have been added to this section yet.
       </p>
     </UCard>
@@ -96,8 +96,24 @@ const editor = reactive(useMenuSectionItemsEditor())
 </script>
 
 <style scoped>
+.menu-item-value {
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+  color: var(--ui-text-muted);
+}
+.menu-item-action-placeholder {
+  inline-size: 2rem;
+  block-size: 2rem;
+}
+.menu-item-heading {
+  padding-block: 0;
+}
+
 .menu-items-editor {
   --collection-row-value-width: 5.5rem;
   --collection-row-actions-width: 2rem;
 }
 </style>
+
+<style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

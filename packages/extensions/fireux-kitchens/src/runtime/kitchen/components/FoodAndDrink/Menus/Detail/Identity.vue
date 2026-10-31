@@ -8,10 +8,12 @@
   <div v-else-if="menu" class="menu-heading-region">
     <header class="menu-heading">
       <div class="menu-identity-bar">
-        <h1 class="menu-identity-bar__name">{{ menu.internal_name || menu.name || menu.id }}</h1>
+        <h1 class="menu-identity-bar__name">
+          {{ menu.internal_name || menu.name || menu.id }}
+        </h1>
         <span
           v-if="currencyCode"
-          class="text-sm text-muted"
+          class="fx-type-caption"
           :aria-label="`Prices in ${currencyCode}`"
           >{{ currencyCode }}</span
         >

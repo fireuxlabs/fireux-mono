@@ -25,6 +25,7 @@ export function useMenuSourceUpload(
   const { currentUser } = useAuth()
   const route = useRoute()
   const pending = ref(false)
+  const newSourceId = ref('')
   const error = ref('')
   const message = ref('')
   const uploadId = computed(() =>
@@ -48,6 +49,7 @@ export function useMenuSourceUpload(
     ],
     () => {
       pending.value = false
+      newSourceId.value = ''
       error.value = ''
       message.value = ''
     }
@@ -58,7 +60,8 @@ export function useMenuSourceUpload(
     const current = capture(),
       user = currentUser.value
     const files = [...selected]
-    const id = uploadId.value || `source-${crypto.randomUUID()}`
+    const id =
+      uploadId.value || (newSourceId.value ||= `source-${crypto.randomUUID()}`)
     const query = {
       appId: activeKitchenAppId.value,
       kitchenId: kitchenId.value,

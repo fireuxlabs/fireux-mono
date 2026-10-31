@@ -195,16 +195,22 @@ test('section parent provides one state to all editing controls without injectin
     debug: ref({}),
   }
   const state = load(
-    'kitchen/composables/workspace/menus/useKitchenWorkspaceMenuSection.ts',
-    'provideKitchenWorkspaceMenuSection,useKitchenWorkspaceMenuSection',
+    'menu/composables/useMenuSection.ts',
+    'provideMenuSection,useMenuSection',
     {
       computed,
+      toValue: (x) =>
+        x && typeof x === 'object' && 'value' in x ? x.value : x,
       inject,
       provide,
       useKitchenMenuRecordContext: () => {
         throw new Error('Parent must pass its own Menu state')
       },
-      useKitchenWorkspaceDishes: () => ({ dishes: ref([]) }),
+      useKitchenDishCollection: () => ({
+        dishes: ref([]),
+        pending: ref(false),
+        error: ref(null),
+      }),
       useKitchenChildCollection: () => {
         acquisitions++
         return { items: ref([]), pending: ref(false), error: ref(null) }
@@ -222,19 +228,24 @@ test('section parent provides one state to all editing controls without injectin
   let parent
   const child = {
     setup() {
-      assert.equal(state.useKitchenWorkspaceMenuSection(), parent)
+      assert.equal(state.useMenuSection(), parent)
       return () => h('span', 'control')
     },
   }
   const app = createSSRApp({
     setup() {
-      parent = state.provideKitchenWorkspaceMenuSection(menuState)
+      parent = state.provideMenuSection(menuState, ref('s'))
       assert.equal(parent.section.value.status, 'archived')
       return () => h('div', [h(child), h(child), h(child)])
     },
   })
   await renderToString(app)
   assert.equal(acquisitions, 1)
+  parent.canWrite.value = false
+  await assert.rejects(
+    parent.removeItem('k', 'm', 's', 'item', () => true),
+    /read-only/
+  )
 })
 
 test('meal-deal group and Dish copy use existing translation fields without translating prices', async () => {
@@ -314,7 +325,7 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
     ref,
     computed,
     watch,
-    useKitchenWorkspaceMenuSection: () => context,
+    useMenuSection: () => context,
     useMenuEditorScope: () => () => () => current,
     useToastify: () => ({ add: (notice) => notices.push(notice) }),
   }
@@ -420,16 +431,18 @@ for (const state of ['missing', 'archived']) {
   })
 }
 
-
 test('public Menu omits an unpriced item, keeps other entries and displays explicit zero', async () => {
   const f = fixture()
   delete f.records.get('kitchens/k/dishes/d').price
   const before = structuredClone(f.records)
   const sections = await f.read()
-  assert.equal(sections[0].items.some(item => item.id === 'dish'), false)
-  assert.ok(sections[0].items.some(item => item.id === 'deal'))
+  assert.equal(
+    sections[0].items.some((item) => item.id === 'dish'),
+    false
+  )
+  assert.ok(sections[0].items.some((item) => item.id === 'deal'))
   assert.deepEqual(f.records, before)
   f.records.get('kitchens/k/dishes/d').price = 0
   const priced = await f.read()
-  assert.equal(priced[0].items.find(item => item.id === 'dish').price, 0)
+  assert.equal(priced[0].items.find((item) => item.id === 'dish').price, 0)
 })

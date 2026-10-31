@@ -1,9 +1,9 @@
 <template>
   <UCard>
-    <div class="flex flex-wrap items-start justify-between gap-3">
-      <div class="space-y-1">
-        <p class="text-sm font-medium text-highlighted">AI cost estimate</p>
-        <p class="text-sm text-dimmed">
+    <div class="menu-process-row">
+      <div class="workspace-surface workspace-surface--compact">
+        <p class="fx-type-card-heading">AI cost estimate</p>
+        <p class="fx-type-caption">
           This will be recorded against the selected kitchen when you confirm.
         </p>
       </div>
@@ -15,7 +15,7 @@
 
     <UAlert
       v-if="sourceLabel === 'photo'"
-      class="mt-4"
+      class="workspace-surface workspace-surface--compact"
       color="neutral"
       variant="soft"
       icon="i-lucide-file-text"
@@ -23,14 +23,14 @@
       description="Photos are harder for AI to read, so they use a stronger model. If you have a clear PDF version of the same menu, it will usually cost less to process."
     />
 
-    <div class="mt-4 grid gap-3 md:grid-cols-2">
+    <div class="workspace-surface__grid workspace-surface__grid--2">
       <UPageCard
         title="Recommended"
         :description="standardDescription"
         variant="soft"
       >
-        <div class="space-y-3">
-          <p class="text-2xl font-semibold text-highlighted">
+        <div class="workspace-surface workspace-surface--compact">
+          <p class="fx-type-card-heading">
             {{ standardAmount }}
           </p>
           <UButton
@@ -50,8 +50,8 @@
         :description="strongDescription"
         variant="soft"
       >
-        <div class="space-y-3">
-          <p class="text-2xl font-semibold text-highlighted">
+        <div class="workspace-surface workspace-surface--compact">
+          <p class="fx-type-card-heading">
             {{ strongAmount }}
           </p>
           <UButton
@@ -68,13 +68,14 @@
       </UPageCard>
     </div>
 
-    <UCard v-if="selectedMode" class="mt-4">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="space-y-1">
-          <p class="text-sm font-medium text-highlighted">
-            Confirm {{ selectedLabel }}
-          </p>
-          <p class="text-sm text-dimmed">
+    <UCard
+      v-if="selectedMode"
+      class="workspace-surface workspace-surface--compact"
+    >
+      <div class="menu-process-row">
+        <div class="workspace-surface workspace-surface--compact">
+          <p class="fx-type-card-heading">Confirm {{ selectedLabel }}</p>
+          <p class="fx-type-caption">
             {{ selectedAmount }} will be recorded against this kitchen when
             processing starts.
           </p>
@@ -90,8 +91,10 @@
       </div>
     </UCard>
 
-    <p v-if="pending" class="mt-3 text-sm text-dimmed">Estimating AI cost...</p>
-    <p v-else-if="error" class="mt-3 text-sm text-warning">
+    <p v-if="pending" class="workspace-surface workspace-surface--compact">
+      Estimating AI cost...
+    </p>
+    <p v-else-if="error" class="fx-type-caption">
       {{ error }}
     </p>
   </UCard>
@@ -247,3 +250,13 @@ async function refreshEstimate() {
   }
 }
 </script>
+
+<style scoped>
+.menu-process-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: start;
+  gap: calc(var(--spacing) * 3);
+}
+</style>

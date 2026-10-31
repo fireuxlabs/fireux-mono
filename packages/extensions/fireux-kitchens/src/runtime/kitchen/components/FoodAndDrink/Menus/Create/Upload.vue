@@ -1,6 +1,9 @@
 <template>
-  <form class="space-y-4" @submit.prevent="uploadFiles(files || [])">
-    <p v-if="description" class="text-sm text-muted">{{ description }}</p>
+  <form
+    class="workspace-surface workspace-surface--compact"
+    @submit.prevent="uploadFiles(files || [])"
+  >
+    <p v-if="description" class="fx-type-caption">{{ description }}</p>
     <UFileUpload
       v-model="selection"
       label="Choose a PDF or photos"
@@ -9,13 +12,12 @@
       :multiple="!document"
       :disabled="pending || !canWrite"
       variant="area"
-      class="w-full"
     />
-    <p v-if="!currencyCode" class="text-sm text-warning">
+    <p v-if="!currencyCode" class="menu-editor-warning">
       Set the Place currency before importing a menu.
     </p>
-    <p v-if="error" role="alert" class="text-sm text-error">{{ error }}</p>
-    <p v-if="message" role="status" class="text-sm text-muted">{{ message }}</p>
+    <p v-if="error" role="alert" class="menu-editor-error">{{ error }}</p>
+    <p v-if="message" role="status" class="fx-type-caption">{{ message }}</p>
     <UButton
       type="submit"
       :label="ctaLabel || 'Upload menu'"

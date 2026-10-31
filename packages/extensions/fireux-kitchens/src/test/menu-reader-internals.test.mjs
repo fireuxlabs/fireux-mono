@@ -114,6 +114,11 @@ async function render(path, state) {
     props: ['message'],
     setup: (props) => () => h('p', props.message),
   })
+  app.component('FireState', {
+    props: ['outcome', 'error'],
+    setup: (props) => () =>
+      h('p', String(props.error?.message || props.outcome)),
+  })
   app.component('FireStateCard', {
     props: ['title'],
     setup: (props) => () => h('p', props.title),
@@ -355,7 +360,20 @@ function collectionFixture() {
     sourcesPending,
     sourcesError,
     menuRows,
-    api: owner.run(create),
+    api: owner.run(() => {
+      const menus = create()
+      const sources = load(
+        'kitchen/composables/workspace/menus/useKitchenWorkspaceMenuSources.ts',
+        'useKitchenWorkspaceMenuSources',
+        deps
+      )()
+      return {
+        ...menus,
+        ...sources,
+        outcome: menus.outcome,
+        menuSourcesOutcome: sources.outcome,
+      }
+    }),
     get menuPath() {
       return menuPath.value
     },
@@ -450,39 +468,28 @@ for (const outcome of ['pending', 'error', 'empty'])
     )
     assert.ok(
       outcome === 'pending'
-        ? /loading/i.test(html)
+        ? /loading|pending/i.test(html)
         : html.includes(
-            outcome === 'error' ? 'Kitchen unavailable' : 'Kitchen not found'
+            outcome === 'error' ? 'Kitchen failed' : 'Kitchen not found'
           ),
       html
     )
     assert.ok(!html.includes('Choose a kitchen</p>'), html)
   })
 
-for (const state of ['pending', 'error', 'empty'])
-  test(`uploaded Menu source ${state} has truthful detail feedback`, async () => {
+for (const outcome of ['pending', 'error', 'empty'])
+  test(`uploaded Menu source ${outcome} has truthful shared preparation feedback`, async () => {
     const html = await render(
-      'kitchen/components/FoodAndDrink/Menus/Uploads/Detail/Index.vue',
+      'kitchen/components/FoodAndDrink/Menus/Preparation.vue',
       {
-        source: null,
-        breadcrumbItems: [],
-        debug: {},
-        menuSourcesPending: state === 'pending' || state === 'error',
-        menuSourcesError:
-          state === 'error' ? new Error('Sources failed') : null,
+        outcome,
+        error: outcome === 'error' ? new Error('Sources failed') : null,
       }
     )
-    if (state === 'empty')
-      assert.ok(html.includes('Menu source not found'), html)
-    else {
-      assert.ok(!html.includes('Menu source not found'), html)
-      assert.ok(
-        state === 'pending'
-          ? html.includes('Loading menu source')
-          : html.includes('Sources failed'),
-        html
-      )
-    }
+    assert.ok(
+      html.includes(outcome === 'error' ? 'Sources failed' : outcome),
+      html
+    )
   })
 
 test('Archived section view keeps an exit after the last section is restored', async () => {

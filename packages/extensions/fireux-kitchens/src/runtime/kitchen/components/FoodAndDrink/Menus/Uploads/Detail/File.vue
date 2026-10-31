@@ -1,10 +1,10 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="menu-editor-actions">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">Source file</h2>
-          <p class="text-sm text-dimmed">
+          <h2 class="fx-type-card-heading">Source file</h2>
+          <p class="fx-type-caption">
             Review the saved source before turning it into a structured menu.
           </p>
         </div>
@@ -32,13 +32,13 @@
       v-else-if="source.file_kind === 'photo' && source.file_url"
       :src="source.file_url"
       :alt="source.file_name || source.id"
-      class="max-h-[70vh] w-full rounded-lg object-contain"
+      class="menu-source-photo"
     />
     <iframe
       v-else-if="source.file_url"
       :src="source.file_url"
       :title="source.file_name || source.id"
-      class="h-[70vh] w-full rounded-lg border border-default"
+      class="menu-source-document"
     />
     <UAlert
       v-else
@@ -48,7 +48,10 @@
       description="This upload record does not have a file URL."
     />
 
-    <div v-if="files.length > 1" class="mt-4 grid gap-2">
+    <div
+      v-if="files.length > 1"
+      class="workspace-surface workspace-surface--compact"
+    >
       <UButton
         v-for="file in files"
         :key="file.storage_path || file.file_url"
@@ -58,7 +61,7 @@
         color="neutral"
         variant="soft"
         icon="i-lucide-file-image"
-        class="justify-start"
+        class="menu-source-file-link"
       >
         {{ file.file_name || 'Menu source file' }}
       </UButton>

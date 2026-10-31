@@ -1,6 +1,6 @@
 <template>
-  <form class="space-y-4" @submit.prevent="start">
-    <UCard class="shadow-xl">
+  <form class="fx-page-stack" @submit.prevent="start">
+    <UCard>
       <UFormField label="What industry are you building for?">
         <UTextarea
           v-model="idea"
@@ -8,14 +8,11 @@
           :rows="3"
           :maxlength="2000"
           autoresize
-          class="w-full"
           required
         />
       </UFormField>
-      <div class="mt-4 flex items-center justify-between gap-4">
-        <span class="text-sm text-muted"
-          >Start with the business you know.</span
-        >
+      <div class="fx-page-stack">
+        <span class="fx-type-caption">Start with the business you know.</span>
         <UButton
           type="submit"
           label="Start Ignition"
@@ -24,10 +21,7 @@
         />
       </div>
     </UCard>
-    <div
-      class="flex flex-wrap justify-center gap-2"
-      aria-label="Example industries"
-    >
+    <div class="fx-page-stack" aria-label="Example industries">
       <UButton
         v-for="example in examples"
         :key="example.label"

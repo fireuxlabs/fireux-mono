@@ -3,13 +3,13 @@
     title="An app builder. An industry foundation."
     description="Lovable helps you build an app with AI. FireUX is designed to give your industry SaaS a shared operating model."
   >
-    <div class="grid gap-6 md:grid-cols-2">
+    <UPageGrid>
       <UPageCard
         title="Lovable"
         description="Describe the app you want to build."
         icon="i-lucide-message-square"
       >
-        <ul class="space-y-3 text-muted">
+        <ul class="fx-list-stack">
           <li>Build and refine a custom application through conversation.</li>
           <li>Add backend data, accounts, integrations and payments.</li>
           <li>Shape the business workflows around your project.</li>
@@ -30,7 +30,7 @@
         description="Start with how an industry works."
         icon="i-lucide-flame"
       >
-        <ul class="space-y-3 text-muted">
+        <ul class="fx-list-stack">
           <li>An operating Workspace as the starting point.</li>
           <li>
             Connected business capabilities, composed with your industry's
@@ -50,8 +50,8 @@
           />
         </template>
       </UPageCard>
-    </div>
-    <p class="text-sm text-muted">
+    </UPageGrid>
+    <p class="fx-type-caption">
       Lovable can build SaaS too. Our direction is to make the operating
       foundation reusable across industry products, with Ignition guiding their
       assembly.

@@ -19,7 +19,12 @@ const menus = [
     status: 'published',
     description: 'Pizza and tapas',
     kitchen: { name: 'Bären' },
-    source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'food' },
+    source: {
+      app_id: 'a',
+      kitchen_id: 'k',
+      kitchen_slug: 'baren',
+      menu_id: 'food',
+    },
     contexts: ['delivery'],
   },
   {
@@ -27,7 +32,12 @@ const menus = [
     name: 'Our cellar',
     status: 'published',
     kitchen: { name: 'Bären' },
-    source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'drinks' },
+    source: {
+      app_id: 'a',
+      kitchen_id: 'k',
+      kitchen_slug: 'baren',
+      menu_id: 'drinks',
+    },
   },
   {
     id: 'pdf',
@@ -35,14 +45,24 @@ const menus = [
     status: 'published',
     description: 'Bären',
     kind: 'doc',
-    source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'pdf' },
+    source: {
+      app_id: 'a',
+      kitchen_id: 'k',
+      kitchen_slug: 'baren',
+      menu_id: 'pdf',
+    },
   },
   {
     id: 'other',
     name: 'Food',
     status: 'published',
     kitchen: { name: 'Bären' },
-    source: { app_id: 'b', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'food' },
+    source: {
+      app_id: 'b',
+      kitchen_id: 'k',
+      kitchen_slug: 'baren',
+      menu_id: 'food',
+    },
   },
 ]
 const base = { query: '', service: 'all' }
@@ -88,6 +108,8 @@ const project = compileFunction(
     'readKitchenMenuOrdering',
     'menuSourceFromData',
     'readKitchenPublicOfferings',
+    'constrainMenuOfferings',
+    'publicMenuOrderTypes',
   ]
 )(
   ({ contentType }) => (contentType === 'application/pdf' ? 'pdf' : 'document'),
@@ -95,20 +117,45 @@ const project = compileFunction(
   () => [],
   () => null,
   (d) => d.source || {},
+  () => [],
+  (value) => value || [],
   () => []
 )
 test('discovery projects canonical Kitchen Menus and rejects unowned or unpublished records', () => {
   const scope = { appId: 'a', kitchenId: 'k', kitchenSlug: 'baren' }
-  const document = { id: 'food', data: { name: 'Food', slug: 'food', format: 'interactive', status: 'published' } }
+  const document = {
+    id: 'food',
+    data: {
+      name: 'Food',
+      slug: 'food',
+      format: 'interactive',
+      status: 'published',
+    },
+  }
   assert.equal(project(document, null), null)
   for (const status of ['draft', 'archived'])
-    assert.equal(project({ ...document, data: { ...document.data, status } }, scope), null)
+    assert.equal(
+      project({ ...document, data: { ...document.data, status } }, scope),
+      null
+    )
   const entry = project(document, scope)
   assert.equal(entry.id, 'food')
   assert.equal(entry.kind, 'menu')
   assert.equal(entry.source.kitchen_id, 'k')
   assert.equal(entry.source.menu_id, 'food')
-  const doc = project({ id: 'wine', data: { name: 'Wine', slug: 'wine', status: 'published', format: 'document', doc: { type: 'application/pdf' } } }, scope)
+  const doc = project(
+    {
+      id: 'wine',
+      data: {
+        name: 'Wine',
+        slug: 'wine',
+        status: 'published',
+        format: 'document',
+        doc: { type: 'application/pdf' },
+      },
+    },
+    scope
+  )
   assert.equal(doc.kind, 'doc')
   assert.equal(doc.file_kind, 'pdf')
 })
@@ -124,7 +171,12 @@ test('offering action uses the canonical venue slug and documents open directly'
 })
 
 test('Menus inside a Kitchen group follow sort_order with stable ties', () => {
-  const source = { app_id: 'app', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'm' }
+  const source = {
+    app_id: 'app',
+    kitchen_id: 'k',
+    kitchen_slug: 'baren',
+    menu_id: 'm',
+  }
   const entries = [
     { id: 'later', name: 'Later', source, sort_order: 20 },
     { id: 'first', name: 'First', source, sort_order: 10 },
@@ -141,8 +193,27 @@ test('Menus inside a Kitchen group follow sort_order with stable ties', () => {
 
 test('canonical Menus provide their own sort order and document format', () => {
   const scope = { appId: 'a', kitchenId: 'k', kitchenSlug: 'baren' }
-  assert.equal(project({ id: 'food', data: { status: 'published', format: 'interactive', sort_order: 10 } }, scope).sort_order, 10)
-  const doc = project({ id: 'wine', data: { status: 'published', format: 'document', doc: { type: 'application/pdf' } } }, scope)
+  assert.equal(
+    project(
+      {
+        id: 'food',
+        data: { status: 'published', format: 'interactive', sort_order: 10 },
+      },
+      scope
+    ).sort_order,
+    10
+  )
+  const doc = project(
+    {
+      id: 'wine',
+      data: {
+        status: 'published',
+        format: 'document',
+        doc: { type: 'application/pdf' },
+      },
+    },
+    scope
+  )
   assert.equal(doc.kind, 'doc')
   assert.equal(doc.file_kind, 'pdf')
 })
@@ -160,7 +231,12 @@ test('private and protected Menus never enter scoped or global discovery, includ
       data: {
         status: 'published',
         name: 'Wedding',
-        source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'm' },
+        source: {
+          app_id: 'a',
+          kitchen_id: 'k',
+          kitchen_slug: 'baren',
+          menu_id: 'm',
+        },
       },
     }
     assert.equal(
@@ -172,22 +248,50 @@ test('private and protected Menus never enter scoped or global discovery, includ
 
 test('directory exposes enabled room-service schedules without changing public order types', () => {
   const projectRoomMenu = compileFunction(
-    stripTypeScriptTypes(projectionSource) + '; return projectMenuDirectoryEntry',
-    ['documentKindFromFile', 'readRecordString', 'guestDiscoverableMenuContexts', 'readKitchenMenuOrdering', 'menuSourceFromData', 'readKitchenPublicOfferings', 'publicMenuOrderTypes']
+    stripTypeScriptTypes(projectionSource) +
+      '; return projectMenuDirectoryEntry',
+    [
+      'documentKindFromFile',
+      'readRecordString',
+      'guestDiscoverableMenuContexts',
+      'readKitchenMenuOrdering',
+      'menuSourceFromData',
+      'readKitchenPublicOfferings',
+      'publicMenuOrderTypes',
+      'constrainMenuOfferings',
+    ]
   )(
     () => 'document',
-    (record, key) => typeof record[key] === 'string' ? record[key] : '',
+    (record, key) => (typeof record[key] === 'string' ? record[key] : ''),
     () => [],
-    () => ({ order_types: [
-      { type: 'room_service', kitchen_offering_id: 'rooms', kitchen_offering_name: 'Evening' },
-      { type: 'room_service', kitchen_offering_id: 'paused', availability: { paused: true } },
-      { type: 'pre_order', kitchen_offering_id: 'preorder' },
-    ] }),
+    () => ({
+      order_types: [
+        {
+          type: 'room_service',
+          kitchen_offering_id: 'rooms',
+          kitchen_offering_name: 'Evening',
+        },
+        {
+          type: 'room_service',
+          kitchen_offering_id: 'paused',
+          availability: { paused: true },
+        },
+        { type: 'pre_order', kitchen_offering_id: 'preorder' },
+      ],
+    }),
     () => ({}),
     () => [{ id: 'rooms', paused: false, hours: { windows: [{}] } }],
     () => [],
+    (value) => value || []
   )
-  const result = projectRoomMenu({ id: 'main', data: { status: 'published', slug: 'main', name: 'Main' } }, { kitchenId: 'k', appId: 'a' }, {})
-  assert.deepEqual(result.offering_options.map((option) => option.kitchen_offering_id), ['rooms'])
+  const result = projectRoomMenu(
+    { id: 'main', data: { status: 'published', slug: 'main', name: 'Main' } },
+    { kitchenId: 'k', appId: 'a' },
+    {}
+  )
+  assert.deepEqual(
+    result.offering_options.map((option) => option.kitchen_offering_id),
+    ['rooms']
+  )
   assert.equal(result.offerings[0].id, 'rooms')
 })

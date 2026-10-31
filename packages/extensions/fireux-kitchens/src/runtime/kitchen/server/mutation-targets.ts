@@ -1,11 +1,11 @@
 import {
   ALL_FIRESTORE_MUTATION_VERBS,
-  assertFirestoreMutationSegment,
+  assertFirestoreMutationDocumentId,
   defineFirestoreMutationTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 
 const verbs = ALL_FIRESTORE_MUTATION_VERBS
-const segment = assertFirestoreMutationSegment
+const segment = assertFirestoreMutationDocumentId
 
 export const KITCHEN_MUTATION_TARGETS = Object.freeze({
   kitchens: defineFirestoreMutationTarget({

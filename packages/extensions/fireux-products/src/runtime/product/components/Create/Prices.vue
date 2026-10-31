@@ -1,10 +1,14 @@
 <template>
   <div class="prices-fields">
+    <p class="fx-type-caption">
+      Prices are optional. Leave them empty for a catalogue-only Product; adding
+      prices configures checkout with the payment provider.
+    </p>
     <ProductCreatePrice
       v-for="(_, index) in prices"
       :key="index"
       :index="index"
-      :show-remove="prices.length > 1"
+      show-remove
       @remove="removePrice(index)"
       @move-to-top="movePriceToTop(index)"
     />
@@ -15,7 +19,7 @@
         size="md"
         color="primary"
         variant="solid"
-        class="font-bold rounded-full"
+        label="Add price"
         @click="addPrice"
       />
     </div>

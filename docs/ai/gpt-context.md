@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-29
+Updated: 2026-10-31
 Ref: ce2861c77
 Role: living context
 Scope: repository-wide
@@ -70,6 +70,10 @@ expanding behavior. A working demo or passing tests do not close a change while
 known composition gaps remain. Report composition evidence separately from
 functional evidence; correct known duplication and misplaced ownership in the
 same change rather than deferring them to a cleanup phase.
+
+Unshipped implementations follow the same current contract regardless of age.
+Do not preserve conflicting shapes as older/newer variants or add compatibility
+adapters for a completed migration without a proved external compatibility need.
 
 Composition is the default from the first implementation. Keep parents readable
 as named responsibilities. Add a child only when it owns real behavior; small
@@ -235,7 +239,13 @@ industry software. Public product copy, scoped App work and branded App
 requests retain their distinct owners and routes. Use current fields, states,
 commands and pages as evidence; a proposal or connected source is not a shipped
 capability. Feature entitlement belongs to the acting User, separately from
-permission to edit the selected Entity. See
+permission to edit the selected Entity.
+A public Product packages a domain capability; it does not become the owner of
+the underlying tool. Workspace may expose that same capability directly with
+richer domain configuration, without requiring purchase of the public service.
+Product intake, commercial terms and delivery stay above the shared tool.
+Existing access and resource-usage policies still apply; this is not unlimited
+provider usage or an automatic grant of editing authority. See
 [product language](../concepts/product-language.md) and the routed product
 contexts.
 

@@ -31,11 +31,11 @@
           description="People → Offering → Demand → Work → Delivery → Money → Repeat"
           icon="i-lucide-repeat-2"
         >
-          <p class="text-muted">
+          <p class="fx-type-description">
             This is the reference journey we intend to connect. It is not a
             claim that an end-to-end neutral business app is already delivered.
           </p>
-          <p class="text-muted">
+          <p class="fx-type-description">
             Blank is the existing industry-neutral Workspace reference. Misebox
             supplies an industry example. A separate industry is needed to prove
             which business contracts transfer.

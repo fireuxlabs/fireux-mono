@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto grid w-full max-w-6xl min-w-0 gap-4">
+  <section class="workspace-surface">
     <KitchenFoodAndDrinkMenusDetailHeader />
     <UAlert
       v-if="outcome === 'denied'"
@@ -19,7 +19,12 @@
       color="neutral"
       :title="selectedKitchen ? 'Menu not found' : 'Kitchen not found'"
     />
-    <div v-else :key="`${recordScope}/${menu.id}`" :aria-label="viewLabel">
+    <div
+      v-else
+      :key="`${recordScope}/${menu.id}`"
+      class="workspace-surface"
+      :aria-label="viewLabel"
+    >
       <UAlert
         v-if="!canWrite"
         color="neutral"
@@ -29,14 +34,12 @@
             ? 'Daily specials require Plus'
             : 'Read-only Menu'
         "
-        class="mb-4"
       />
       <UAlert
         v-if="menu.status === 'archived'"
         title="Archived Menu"
         description="This Menu is no longer public. Restore it to draft in Settings when you need it again."
         color="neutral"
-        class="mb-4"
       />
       <KitchenFoodAndDrinkMenusPublicationReadiness
         v-if="
@@ -97,3 +100,5 @@ const viewLabel = computed(
     })[view.value]
 )
 </script>
+
+<style src="../../../../../menu/assets/styles/menu-editor.css"></style>

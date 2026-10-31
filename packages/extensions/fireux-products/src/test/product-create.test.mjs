@@ -30,9 +30,14 @@ const readProductCreateInput = load(
   },
   'readProductCreateInput'
 )
-const requireProductManager = load('../runtime/product/server/create/authority.ts', {
-  createError, isAdminMembership: data => ['admin', 'dev'].includes(data?.role),
-}, 'requireProductManager')
+const requireProductManager = load(
+  '../runtime/product/server/create/authority.ts',
+  {
+    createError,
+    isAdminMembership: (data) => ['admin', 'dev'].includes(data?.role),
+  },
+  'requireProductManager'
+)
 const request = {
   requestId: 'request-1',
   payload: {
@@ -240,7 +245,6 @@ test('Creation body allowlist validates fields, prices and preserves zero price'
     { ...request, extra: true },
     { ...request, payload: { ...request.payload, created: {} } },
     { ...request, payload: { ...request.payload, active: 'yes' } },
-    { ...request, priceInputs: [] },
     { ...request, priceInputs: [{ currency: 'chf', unit_amount: -1 }] },
     {
       ...request,
@@ -342,4 +346,22 @@ test('Price creation rejects unauthenticated authors before writes or provider c
   assert.equal(h.calls.length, 0)
   assert.equal(h.effects.size, 0)
   assert.equal(h.records.has('products/service'), false)
+})
+
+test('Catalogue-only Product creates without contacting the payment provider and remains idempotent', async () => {
+  const h = harness()
+  const catalogue = { ...request, priceInputs: [] }
+  await h.create({}, catalogue)
+  assert.equal(h.calls.length, 0)
+  assert.equal(h.effects.size, 0)
+  const product = h.records.get('products/service')
+  assert.equal(product.active, true)
+  assert.equal(product.visibility, 'public')
+  assert.equal(product.provisioning.complete, true)
+  await h.create({}, catalogue)
+  assert.equal(h.records.size, 2)
+  assert.equal(h.calls.length, 0)
+  await assert.rejects(h.create({}, { ...catalogue, requestId: 'other' }), {
+    statusCode: 409,
+  })
 })

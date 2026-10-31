@@ -15,12 +15,13 @@ import {
   provide,
   type MaybeRefOrGetter,
   type InjectionKey,
+  type Ref,
 } from 'vue'
 import type { Dish } from '../../kitchen/utils/dish.ts'
 import { type MenuItem } from '../utils/menu-item.ts'
 import type { MenuSection } from '../utils/menu-section.ts'
 import { useKitchenDishCollection } from '../../kitchen/composables/useKitchenDishCollection'
-import type { useKitchenMenuRecordContext } from '../../kitchen/composables/workspace/menus/useKitchenMenuRecordContext'
+import type { Menu } from '../models/menu.model'
 import { useDishUpdate } from '../../kitchen/composables/dish/useDishUpdate'
 import { useMenuSectionItemCollection } from './useMenuSectionItemCollection'
 import { useMenuItemMutations } from './firestore/mutations/useMenuItemMutations'
@@ -43,11 +44,29 @@ export type MenuSectionItemRow = {
   priceOptions: DishPriceOption[]
 }
 
+/** Explicit Menu input; this capability does not acquire Workspace state. */
+export type MenuSectionSource = {
+  menu: Readonly<Ref<Menu | null>>
+  menuId: Readonly<Ref<string>>
+  menuSlug: Readonly<Ref<string>>
+  kitchenId: Readonly<Ref<string>>
+  storageKitchenId: Readonly<Ref<string>>
+  rootCollection: Readonly<Ref<string>>
+  databaseId: Readonly<Ref<string>>
+  allSections: Readonly<Ref<MenuSection[]>>
+  sectionsPending: Readonly<Ref<boolean>>
+  sectionsError: Readonly<Ref<unknown>>
+  pending: Readonly<Ref<boolean>>
+  canWrite: Readonly<Ref<boolean>>
+  currencyCode: Readonly<Ref<string>>
+  debug: Readonly<Ref<Record<string, unknown>>>
+}
+
 const sectionContext: InjectionKey<ReturnType<typeof createMenuSectionState>> =
   Symbol('menu-section')
 
 export function provideMenuSection(
-  menuState: ReturnType<typeof useKitchenMenuRecordContext>,
+  menuState: MenuSectionSource,
   sectionId: MaybeRefOrGetter<string>
 ) {
   const state = createMenuSectionState(menuState, sectionId)
@@ -62,7 +81,7 @@ export function useMenuSection() {
 }
 
 function createMenuSectionState(
-  menuState: ReturnType<typeof useKitchenMenuRecordContext>,
+  menuState: MenuSectionSource,
   requestedSectionId: MaybeRefOrGetter<string>
 ) {
   const dishState = useKitchenDishCollection(menuState.storageKitchenId, {
@@ -164,6 +183,13 @@ function createMenuSectionState(
     return itemMutations.archiveItem(...args)
   }
 
+  async function removeItem(
+    ...args: Parameters<typeof itemMutations.removeItem>
+  ) {
+    assertCanWrite()
+    return itemMutations.removeItem(...args)
+  }
+
   async function moveItem(...args: Parameters<typeof itemMutations.moveItem>) {
     assertCanWrite()
     return itemMutations.moveItem(...args)
@@ -180,7 +206,7 @@ function createMenuSectionState(
     ...menuState,
     createItem,
     updateItem,
-    removeItem: itemMutations.removeItem,
+    removeItem,
     archiveItem,
     moveItem,
     updateDish,

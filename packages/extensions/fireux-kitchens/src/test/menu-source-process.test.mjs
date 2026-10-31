@@ -14,7 +14,7 @@ import {
 import * as view from '../runtime/kitchen/utils/menu-process-view.ts'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/composables/workspace/menus/useMenuSourceProcess.ts',
+    '../runtime/kitchen/composables/menu/useMenuSourceProcess.ts',
     import.meta.url
   ),
   'utf8'
@@ -47,6 +47,7 @@ function fixture({
     canWrite: ref(allowed),
   }
   const deps = {
+    context,
     ref,
     computed,
     watch,
@@ -97,7 +98,7 @@ function fixture({
   }
   const api = owner.run(() =>
     compileFunction(
-      `${stripTypeScriptTypes(source)}; return useMenuSourceProcess()`,
+      `${stripTypeScriptTypes(source)}; return useMenuSourceProcess(context)`,
       Object.keys(deps)
     )(...Object.values(deps))
   )

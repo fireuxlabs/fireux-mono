@@ -37,5 +37,5 @@ export function usePortfolioCollectionPage() {
       loadMore,
     },
   })
-  return reactive({ ...toRefs(page), portfolios, loadMore })
+  return reactive({ ...toRefs(page), portfolios })
 }

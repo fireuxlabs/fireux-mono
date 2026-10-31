@@ -1,6 +1,6 @@
 # Menu family
 
-Updated: 2026-10-14
+Updated: 2026-10-31
 Ref: a2bd21763
 Role: map, not canon
 
@@ -21,14 +21,14 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 
 ## Family in one view
 
-| Concept | Identity | Job |
-| --- | --- | --- |
-| Menu | Kitchen-scoped | One interactive or document Menu: name, slug, publication, audience and format |
-| MenuSection | Menu-scoped | Groups Dish and meal-deal placements |
-| MenuItem | Section-scoped | Dish or meal-deal reference, availability and display order |
-| Dish | Kitchen-scoped | Food/drink identity, normal price, options, extras and preparation |
-| Promotion | Kitchen-scoped | Dish offers or meal deals with set price, choices and supplements |
-| MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu |
+| Concept          | Identity       | Job                                                                            |
+| ---------------- | -------------- | ------------------------------------------------------------------------------ |
+| Menu             | Kitchen-scoped | One interactive or document Menu: name, slug, publication, audience and format |
+| MenuSection      | Menu-scoped    | Groups Dish and meal-deal placements                                           |
+| MenuItem         | Section-scoped | Dish or meal-deal reference, availability and display order                    |
+| Dish             | Kitchen-scoped | Food/drink identity, normal price, options, extras and preparation             |
+| Promotion        | Kitchen-scoped | Dish offers or meal deals with set price, choices and supplements              |
+| MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
 
 `menu/models/menu.model.ts` is the sole stored Menu model.
 `menu/models/menu-storage.model.ts` owns `kitchens/{kitchenId}/menus/{menuId}`.
@@ -119,11 +119,11 @@ protect the publication boundary; they do not prove live operator acceptance.
 
 ## Menu doorways
 
-| Scope             | Index                           | Detail                                   | Why it differs                                                                                 |
-| ----------------- | ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Global discovery | `/menus` | Links to Kitchen-directory detail | Reads authoritative Kitchen Menus directly |
+| Scope             | Index                          | Detail                                   | Why it differs                                                                                 |
+| ----------------- | ------------------------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Global discovery  | `/menus`                       | Links to Kitchen-directory detail        | Reads authoritative Kitchen Menus directly                                                     |
 | Kitchen directory | `/kitchens/<kitchenSlug>/menu` | `/kitchens/<kitchenSlug>/menus/<menuId>` | Explicit Kitchen namespace in a multi-Kitchen App                                              |
-| Tenant            | `/menus`                        | `/<menuId>`                              | The tenant config supplies the bounded Kitchen, so repeating the Kitchen slug adds no identity |
+| Tenant            | `/menus`                       | `/<menuId>`                              | The tenant config supplies the bounded Kitchen, so repeating the Kitchen slug adds no identity |
 
 Global discovery uses the `menus` collection group, accepting only exact
 `kitchens/{id}/menus/{id}` paths. It filters unpublished/nonpublic Menus and
@@ -643,3 +643,74 @@ The visible Workspace capability is Services. The Menus navigation group and
 `/menu-setup` overview exclude Recipes and Ingredients, which are children of
 Prep & Production. The Food & drink index follows the same metadata; recipe
 and ingredient routes keep their domain readers and commands.
+
+## Shared Menu preparation
+
+Kitchen’s `FoodAndDrink/Menus/Prepare.vue` composes existing upload/URL controls,
+source collection and Menu/QR destinations. The `menus/prepare.vue` route supplies
+ordinary Workspace context, without a Product or purchase prerequisite.
+
+`Menus/Preparation.vue` and `useKitchenMenuPreparation` own one explicit source
+read and reuse the existing processing/review controls. Native source detail and
+Misebox’s service operator compose this same component. The source command is
+`menu/server/source/save.ts`; upload and URL Nitro routes are adapters to it.
+Exact retries preserve the source and applied Menu; changed input cannot silently
+overwrite an existing source. Authority is checked before Storage and at commit.
+
+The App-owned Menu Express adapter transfers supplied bytes or URL into that
+command and binds its request to `menu-express-{requestId}`. The existing draft
+command uses that source identity as its Menu identity. Customer contact,
+approval and delivery remain App responsibilities. Native Menus has no service,
+Product or payment dependency. No manual download/re-upload/linking is needed.
+
+Source review uses the Workspace frame’s breadcrumbs. Applied drafts retain
+`ai_draft.applied.slug` for navigation after reload. Relevant checks include
+Kitchen’s `menu-source-upload.test.mjs`, `menu-source-qr-presentation.test.mjs`,
+`menu-process-composition.test.mjs` and Misebox’s `menu-preparation.test.mjs`.
+
+The shared processor lives in `kitchen/composables/menu/useMenuSourceProcess.ts`
+and requires explicit source/Menu context. It imports no Workspace record owner
+and starts no reader. The Workspace Menu source view supplies its existing
+record context; shared preparation supplies its explicit source reader. Report,
+comparison and run controls consume that single processor. Menu Express keeps
+its intake, customer approval and delivery outside this lower boundary.
+
+### Existing record editor
+
+`Menus/Detail/Index.vue` provides the routed record context once and composes
+Settings, content, publication and source surfaces. Metadata controls consume
+`useMenuRecordMetadata`; serving-hours controls consume `useMenuRecordHours`.
+Both take narrow explicit inputs from the existing context and acquire no data.
+The hours owner retains debounce, scope cancellation and failure restoration.
+Record context owns the shared update/rename/publication/lifecycle command
+instances and post-delete navigation. The removal panel owns confirmation and
+readiness presentation, without creating a second command or navigation owner.
+Management authority governs archive/restore/delete; the existing content
+entitlement separately governs editing daily content. Trusted commands remain
+the final authority.
+
+### Section and Item editing
+
+The Section route provides one Menu record state and one `useMenuSection` state.
+The lower Section capability accepts the explicit `MenuSectionSource` contract;
+it imports no Workspace owner. It owns the Dish/promotion/item readers and
+guarded placement commands shared by every add/edit control.
+`useMenuSectionItemsEditor` and `useMenuSectionsEditor` own their respective
+editing lifecycle. `useMenuSectionDishCreation` composes existing Dish creation
+and Section placement, with captured target and stale-completion protection.
+The visible add, row, create and schedule controls consume these owners.
+
+Daily Section previews share the Sections editor’s single Dish catalogue source;
+each preview owns only its Section-item read. Catalogue pending/error state is
+passed with the records rather than silently showing unresolved names.
+The Items/Sections controls use native Nuxt UI inputs and semantic styles.
+`menu/assets/styles/menu-editor.css`, consumed by the Items/Sections parent components,
+owns their shared editing arrangements; the seven-day picker keeps only its
+specialist calendar geometry locally. No alternate registration or legacy
+implementation remains for these controls.
+
+The Menus composition roots consume the shared editor stylesheet for collection,
+creation, source preparation, record editing and QR presentation. State feedback
+uses Core FireState; the QR coordinator owns its combined read outcome and error
+facts without relabelling idle as pending. Menu Express does not own or duplicate
+this lower presentation or data lifecycle.

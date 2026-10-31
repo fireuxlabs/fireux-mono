@@ -19,6 +19,7 @@ const load = (file, deps, result) => {
   const code = readFileSync(new URL(file, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replaceAll('import.meta.client', 'true')
+    .replaceAll('import.meta.dev', 'true')
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(code)};return ${result}`,
@@ -219,18 +220,35 @@ test('a failed write stays failed and never attempts a follow-up read', async ()
 })
 
 function intakeFixture(dependencies) {
+  const useMenuExpressIntake = load(
+    '../app/composables/useMenuExpressIntake.ts',
+    dependencies,
+    'useMenuExpressIntake'
+  )
+  return useMenuExpressIntake()
+}
+
+test('source upload releases the native file selection so the same file can be retried', () => {
   const source = readFileSync(
-    new URL('../app/components/MenuExpress/Intake.vue', import.meta.url),
+    new URL('../app/components/MenuExpress/Sources.vue', import.meta.url),
     'utf8'
   )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-    .replaceAll('import.meta.dev', 'true')
-  return compileFunction(
-    `${stripTypeScriptTypes(source)};return {form,submit,error,pendingInput,restoreSubmission}`,
-    Object.keys(dependencies)
-  )(...Object.values(dependencies))
-}
+    .replace(/const props = defineProps<[\s\S]*?>\(\)/, '')
+  const calls = []
+  const selectFile = compileFunction(
+    `${stripTypeScriptTypes(source)};return selectFile`,
+    ['props']
+  )({ state: { upload: (file) => calls.push(file) } })
+  const file = { name: 'TEST-menu.pdf' }
+  const input = { files: [file], value: 'TEST-menu.pdf' }
+  selectFile({ target: input })
+  assert.equal(input.value, '')
+  input.value = 'TEST-menu.pdf'
+  selectFile({ target: input })
+  assert.deepEqual(calls, [file, file])
+})
 
 test('interrupted intake restores original details and retries the same request identity', async () => {
   const storage = new Map(),

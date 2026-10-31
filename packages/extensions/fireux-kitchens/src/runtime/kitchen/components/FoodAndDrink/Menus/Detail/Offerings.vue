@@ -2,15 +2,15 @@
   <section
     v-if="menu && !pending && !error && selectedKitchen"
     id="menu-offerings"
-    class="space-y-4 py-4"
+    class="workspace-surface workspace-surface--compact"
     aria-labelledby="menu-offerings-title"
   >
-    <header class="flex flex-wrap items-center justify-between gap-3">
+    <header class="menu-editor-actions">
       <div>
-        <h2 id="menu-offerings-title" class="text-lg font-semibold">
+        <h2 id="menu-offerings-title" class="fx-type-card-heading">
           Linked offerings
         </h2>
-        <p class="text-sm text-muted">Kitchen offerings using this Menu.</p>
+        <p class="fx-type-caption">Kitchen offerings using this Menu.</p>
       </div>
       <UButton
         to="/workspace/kitchen/food-and-drink/services"
@@ -20,38 +20,29 @@
         trailing-icon="i-lucide-arrow-up-right"
       />
     </header>
-    <FireStateCard
+    <FireState
       v-if="!['ready', 'empty'].includes(offeringsOutcome)"
-      :state="
-        offeringsOutcome === 'pending'
-          ? 'loading'
-          : offeringsOutcome === 'error'
-            ? 'error'
-            : 'empty'
-      "
-      :title="
-        offeringsOutcome === 'pending'
-          ? 'Loading offerings'
-          : 'Offerings unavailable'
-      "
+      :outcome="offeringsOutcome"
+      :error="offeringsError"
+      entity="offerings"
     />
-    <p v-else-if="!entries.length" class="text-sm text-muted">
+    <p v-else-if="!entries.length" class="fx-type-caption">
       This Menu is not linked to a offering.
     </p>
-    <p v-if="menu.schedule === 'daily'" class="text-sm text-muted">
+    <p v-if="menu.schedule === 'daily'" class="fx-type-caption">
       Daily Menus support browsing. Ordering is not available for daily
       selections.
     </p>
-    <p v-else-if="menu.doc?.url.trim()" class="text-sm text-muted">
+    <p v-else-if="menu.doc?.url.trim()" class="fx-type-caption">
       Document Menus support browsing. Ordering needs items and prices.
     </p>
-    <p v-else-if="menu.status !== 'published'" class="text-sm text-muted">
+    <p v-else-if="menu.status !== 'published'" class="fx-type-caption">
       Publish this Menu before guests can use it in a offering.
     </p>
     <UCard v-for="entry in entries" :key="entry.id">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <h3 class="font-semibold">{{ entry.label }}</h3>
+      <div class="menu-editor-actions">
+        <div class="menu-editor-actions">
+          <h3 class="fx-type-card-heading">{{ entry.label }}</h3>
           <UBadge
             :color="entry.state === 'Enabled' ? 'success' : 'neutral'"
             variant="subtle"
@@ -67,13 +58,13 @@
           trailing-icon="i-lucide-chevron-right"
         />
       </div>
-      <ul class="mt-3 divide-y divide-default">
+      <ul class="menu-editor-list">
         <li
           v-for="interaction in entry.interactions"
           :key="interaction.type"
-          class="flex flex-wrap items-center justify-between gap-3 py-2"
+          class="menu-editor-actions"
         >
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="menu-editor-actions">
             <span>{{ interaction.label }}</span>
             <UBadge
               :color="interaction.state === 'Paused' ? 'warning' : 'neutral'"
@@ -82,10 +73,10 @@
             >
             <span
               v-if="entry.state === 'Off' && interaction.state === 'Enabled'"
-              class="text-xs text-muted"
+              class="fx-type-caption"
               >Offering is off</span
             >
-            <span v-if="interaction.diagnostic" class="text-xs text-muted"
+            <span v-if="interaction.diagnostic" class="fx-type-caption"
               >Customer flow not ready</span
             >
           </div>
@@ -123,8 +114,15 @@ import {
 } from '../../../../../menu/utils/menu-route'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
 import { menuOfferingSummaries } from '../../../../utils/menu-offering-summary'
-const { menu, selectedKitchen, pending, error, offerings, offeringsOutcome } =
-  useKitchenMenuRecordContext()
+const {
+  menu,
+  selectedKitchen,
+  pending,
+  error,
+  offerings,
+  offeringsOutcome,
+  offeringsError,
+} = useKitchenMenuRecordContext()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
 const entries = computed(() =>

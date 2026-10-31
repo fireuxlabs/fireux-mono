@@ -73,6 +73,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type {
   IgnitionPreview,
   IgnitionPreviewInput,
@@ -87,13 +88,13 @@ const input = reactive<IgnitionPreviewInput>({
 const artifact = ref<IgnitionPreview | null>(null)
 const pending = ref(false)
 const error = ref('')
-let revision = 0
+const captureIntent = useCommandScope([() => JSON.stringify(input)])
 watch(
   input,
   () => {
-    revision++
     artifact.value = null
     error.value = ''
+    pending.value = false
   },
   { flush: 'sync' }
 )
@@ -104,7 +105,7 @@ const downloadUrl = computed(() =>
 )
 async function prepare() {
   if (pending.value) return
-  const sent = revision
+  const isCurrent = captureIntent()
   pending.value = true
   error.value = ''
   try {
@@ -114,14 +115,14 @@ async function prepare() {
       retry: 0,
       timeout: 15000,
     })
-    if (sent === revision) artifact.value = result
+    if (isCurrent()) artifact.value = result
   } catch (caught: any) {
-    if (sent === revision)
+    if (isCurrent())
       error.value =
         caught?.data?.statusMessage ||
         'Please try preparing the starting App again.'
   } finally {
-    pending.value = false
+    if (isCurrent()) pending.value = false
   }
 }
 </script>

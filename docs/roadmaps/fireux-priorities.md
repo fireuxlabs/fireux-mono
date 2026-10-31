@@ -1,7 +1,7 @@
 # FireUX priorities
 
-Reviewed: 2026-10-29
-Source baseline: `901382069`, including verified compatibility repairs
+Reviewed: 2026-10-31
+Source baseline: `48c9cc224`, plus the current Menu Express composition pass
 Role: consolidated priority list; recommendations, not release commitments
 
 ## How to use this list
@@ -37,30 +37,34 @@ completed, reviewable outcome or a specific blocker requiring human input.
 Do not turn an optional polish item or a release-only decision into a dependency
 for functionality work.
 
-The next functional proof is the Collection customer/operator journey on a
-narrow screen, retaining the existing desktop order evidence. Then address only
-reproduced journey failures. Ignition's supported Menu starting-App path is
-already proved as assisted; installation, startup and initialization are explicit
-operator steps, not evidence that the shared preparation is missing. Broader
-creation automation needs a concrete supported-user outcome before expansion.
+The user's current sequence is:
 
-The compatibility repairs and execution-focus corrections are saved in
-`901382069`. Their focused checks and six-App build/type evidence remain in the
-existing access review. Menu Express is the next commercial slice: prove one
-manual delivery using existing Menu tools, then connect the purchase journey.
-Retain the bounded Collection mobile check without reopening foundations or
-making a wider ordering rollout a prerequisite for Menu Express. Git save and
-deployment remain separately authorized.
+1. Check the last seven days' additions for clean composition and ownership.
+2. Establish Menu Express as a Misebox Product.
+3. Expose the same preparation mechanics in Kitchen Workspace without a purchase.
+
+The [31 October review](../reviews/seven-day-composition-2026-10-31.md) records
+the 196-file structural inventory, repairs, actual catalogue creation and local
+Product/Workspace checks. Menu Express now has a public catalogue record with
+no prices; its App page links the service intake and internal Kitchen entrance.
+The internal entrance composes existing Kitchen source, review, publication
+and QR owners. It does not require a service request or payment.
+
+Stripe is parked at the user's request. Account organisation remains later.
+No deployment or live permission change is authorised. The original attack
+order below remains the broader programme; it is not a reason to reopen the
+accepted foundation or bypass the current user-selected sequence. Save requests
+and release authority remain separate.
 
 ## Attack order
 
-| Priority | Work | Finish line |
-| --- | --- | --- |
-| 1 | Accept the shared shape | Project/Kitchen Identity and the existing Apps collection chain have clear shared/domain owners, readable composition and justified differences |
-| 2 | Prove the bounded behaviour | Relevant read/edit, error, scope-change and session checks pass or have explicit remaining limits; the accepted slice is reviewable |
-| 3 | Define one creation contract | Codex and the FireUX App are clients of one proposed workflow, with agreed inputs, outputs, authority, step owners and recovery |
-| 4 | Prove that shared path | One bounded example exercises the actual mechanics from both entrances; manual intervention and post-creation development are identified |
-| 5 | Release a deliberately selected product | Its complete customer journey, access policy, hosting and operator acceptance are verified for the exact release scope |
+| Priority | Work                                    | Finish line                                                                                                                                     |
+| -------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1        | Accept the shared shape                 | Project/Kitchen Identity and the existing Apps collection chain have clear shared/domain owners, readable composition and justified differences |
+| 2        | Prove the bounded behaviour             | Relevant read/edit, error, scope-change and session checks pass or have explicit remaining limits; the accepted slice is reviewable             |
+| 3        | Define one creation contract            | Codex and the FireUX App are clients of one proposed workflow, with agreed inputs, outputs, authority, step owners and recovery                 |
+| 4        | Prove that shared path                  | One bounded example exercises the actual mechanics from both entrances; manual intervention and post-creation development are identified        |
+| 5        | Release a deliberately selected product | Its complete customer journey, access policy, hosting and operator acceptance are verified for the exact release scope                          |
 
 Priorities 1–2 close the current foundation phase. Priority 3 begins only after
 that acceptance. Agreeing the one-path destination does not promote its
@@ -232,16 +236,16 @@ are preserved proposals/current-direction references, not newly verified prices.
 
 ## Parked ideas — no separate active tasks
 
-| Idea | Reopen only when |
-| --- | --- |
+| Idea                                                                          | Reopen only when                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | External dog App, then separate cat App; extract only proved shared behaviour | The independent industry proof is explicitly promoted under task 2. Preserve the [pilot](../archive/2026-10-workspace-cleanup/roadmaps/dog-grooming-booking-pilot.md) and [bakery/plumbing comparison](../archive/2026-10-workspace-cleanup/roadmaps/industry-capability-stress-test.md); neither is implemented proof. |
-| Neutral business loop and wider capability catalogue | A concrete consumer needs the next missing capability; avoid a second universal business framework. |
-| More narrative context fields and Ecosystem editing/AI use | An actual editor or AI consumer needs them. Reuse the existing owning-document/private-User contract. |
-| Cross-ecosystem account connections | A real cross-App journey needs them; follow the existing [context](../ai/account-connections-context.md). |
-| Further client Apps, ecosystem expansion and Werkbox migration | A client/product outcome is deliberately selected. Refresh old billing, infrastructure and migration evidence first. |
-| Bike Tours production domain, indexing and search measurement | The client approves a launch scope. Keep Ben/Interlaken Bike Tours distinct from Yellow Velo; see [client notes](../notes/interlaken-bike-client-discussions.md). |
-| Service-layer article and other learning posts | Source claims are refreshed and the draft receives editorial review; see [recovered draft](../archive/2026-10-workspace-cleanup/drafts/service-layer/article.md). |
-| Old audit findings, naming questions and uninitialised roots | Current source reproduces a relevant gap. Historical inventories are leads, not newly assigned jobs. |
+| Neutral business loop and wider capability catalogue                          | A concrete consumer needs the next missing capability; avoid a second universal business framework.                                                                                                                                                                                                                     |
+| More narrative context fields and Ecosystem editing/AI use                    | An actual editor or AI consumer needs them. Reuse the existing owning-document/private-User contract.                                                                                                                                                                                                                   |
+| Cross-ecosystem account connections                                           | A real cross-App journey needs them; follow the existing [context](../ai/account-connections-context.md).                                                                                                                                                                                                               |
+| Further client Apps, ecosystem expansion and Werkbox migration                | A client/product outcome is deliberately selected. Refresh old billing, infrastructure and migration evidence first.                                                                                                                                                                                                    |
+| Bike Tours production domain, indexing and search measurement                 | The client approves a launch scope. Keep Ben/Interlaken Bike Tours distinct from Yellow Velo; see [client notes](../notes/interlaken-bike-client-discussions.md).                                                                                                                                                       |
+| Service-layer article and other learning posts                                | Source claims are refreshed and the draft receives editorial review; see [recovered draft](../archive/2026-10-workspace-cleanup/drafts/service-layer/article.md).                                                                                                                                                       |
+| Old audit findings, naming questions and uninitialised roots                  | Current source reproduces a relevant gap. Historical inventories are leads, not newly assigned jobs.                                                                                                                                                                                                                    |
 
 ## Maintenance
 
@@ -250,3 +254,12 @@ delivery specifications in their owner or the archive until promoted. Record
 stable architecture decisions in existing contexts/maps, not this task list.
 The [cleanup index](../reviews/codex-workspace-cleanup-2026-10-25.md) preserves
 chat provenance and recovery information without expanding the active queue.
+
+### Shared Menus preparation — 31 October
+
+Native Kitchen Workspace and the Menu Express Product now share source saving,
+processing and draft confirmation. The service adapter automatically transfers
+the supplied source and binds the Menu; manual download/re-upload/linking is
+removed. One labelled live demo crossed both entrances and reached customer
+approval, delivery and public Menu reload. See the existing Menu Express review
+for exact evidence and limits. Stripe and deployment remain parked.

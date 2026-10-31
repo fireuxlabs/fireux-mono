@@ -1,20 +1,13 @@
 <template>
-  <section class="space-y-4">
-    <FireStateCard
+  <section class="workspace-surface workspace-surface--compact">
+    <FireState
       v-if="
         !['ready', 'empty'].includes(qr.menusOutcome) ||
         !['ready', 'empty'].includes(qr.offeringsOutcome)
       "
-      :state="
-        qr.menusOutcome === 'error' || qr.offeringsOutcome === 'error'
-          ? 'error'
-          : 'loading'
-      "
-      :title="
-        qr.menusOutcome === 'error' || qr.offeringsOutcome === 'error'
-          ? 'Menu entry points unavailable'
-          : 'Loading Menu entry points'
-      "
+      :outcome="qr.outcome"
+      :error="qr.error"
+      entity="Menu entry points"
     />
     <UAlert
       v-else-if="!qr.menuPanels.length && qr.draftSource"
@@ -55,3 +48,5 @@ import { reactive } from 'vue'
 import { useMenuQrTargets } from '../../../../composables/workspace/menus/useMenuQrTargets'
 const qr = reactive(useMenuQrTargets())
 </script>
+
+<style src="../../../../../menu/assets/styles/menu-editor.css"></style>

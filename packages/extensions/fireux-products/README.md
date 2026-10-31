@@ -31,3 +31,9 @@ source under `src/runtime/product` and `src/runtime/server/api/stripe`.
 Run the source-owned checks with
 `node --test packages/extensions/fireux-products/src/test/*.test.mjs` from the
 repository root, plus the consuming App's generated Nuxt typechecks.
+
+Catalogue-only creation uses the same trusted Product command with an explicit
+empty `priceInputs` array. It validates and creates the catalogue record atomically
+without loading a payment provider. Non-empty prices retain the existing provider
+reservation, retry and final catalogue/price transaction. A catalogue record is
+not a payable offer until a provider price is deliberately configured.

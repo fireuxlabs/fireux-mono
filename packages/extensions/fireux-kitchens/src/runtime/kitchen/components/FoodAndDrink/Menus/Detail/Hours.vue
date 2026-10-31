@@ -6,10 +6,10 @@
       menu.format !== 'document' &&
       !menu.doc?.url
     "
-    class="space-y-4 border-t border-default py-4"
+    class="workspace-surface workspace-surface--compact"
   >
-    <h2 class="text-lg font-semibold">Menu availability</h2>
-    <p class="text-sm text-muted">
+    <h2 class="fx-type-card-heading">Menu availability</h2>
+    <p class="fx-type-caption">
       These times apply wherever this Menu is used. Each service can narrow them
       further.
     </p>
@@ -22,8 +22,8 @@
       :disabled="!canWrite || busy || !timezone"
       @update:model-value="setMode($event === 'custom')"
     />
-    <div class="space-y-1 text-sm text-muted">
-      <p class="font-medium">Within Kitchen service hours</p>
+    <div class="workspace-surface workspace-surface--compact">
+      <p class="fx-type-card-heading">Within Kitchen service hours</p>
       <p v-for="line in serviceHoursSummary(kitchenHours)" :key="line">
         {{ line }}
       </p>
@@ -45,7 +45,7 @@
       :disabled="!canWrite || busy"
       @update="setHours"
     />
-    <p v-if="busy" role="status" class="text-sm text-muted">Updating…</p>
+    <p v-if="busy" role="status" class="fx-type-caption">Updating…</p>
     <UAlert
       v-if="error"
       color="error"
@@ -55,91 +55,20 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, onScopeDispose, ref, watch } from 'vue'
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import type { WeekdayTimeWindowsConfig } from '../../../../../models/shared/weekday-time.model'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-import {
-  hoursWithinParent,
-  serviceHoursSummary,
-} from '../../../../utils/service-hours'
+import { useMenuRecordHours } from '../../../../composables/workspace/menus/useMenuRecordHours'
 const {
   menu,
-  menuId,
-  kitchenId,
+  canWrite,
   kitchenHours,
   timezone,
-  canWrite,
-  updateMenu,
-} = useKitchenMenuRecordContext()
-const custom = ref(false)
-const hours = ref<WeekdayTimeWindowsConfig | null>(null)
-const busy = ref(false)
-const error = ref('')
-let timer: ReturnType<typeof setTimeout> | undefined
-const capture = useCommandScope([kitchenId, menuId, canWrite])
-const conflict = computed(() =>
-  Boolean(
-    custom.value &&
-      hours.value?.windows.length &&
-      !hoursWithinParent(hours.value, kitchenHours.value)
-  )
-)
-watch(
-  () => menu.value?.serving_hours,
-  (value) => {
-    if (busy.value || timer) return
-    custom.value = Boolean(value)
-    hours.value = value || null
-  },
-  { immediate: true, deep: true }
-)
-watch([kitchenId, menuId, canWrite], () => {
-  clearTimeout(timer)
-  timer = undefined
-  busy.value = false
-  error.value = ''
-})
-onScopeDispose(() => clearTimeout(timer))
-const empty = (): WeekdayTimeWindowsConfig => ({
-  source: 'custom',
-  timezone: timezone.value,
-  windows: [],
-})
-async function persist(value: WeekdayTimeWindowsConfig | null) {
-  if (!canWrite.value || busy.value) return
-  const current = capture(),
-    kitchen = kitchenId.value,
-    id = menuId.value
-  busy.value = true
-  error.value = ''
-  try {
-    await updateMenu(kitchen, id, { serving_hours: value })
-  } catch (cause) {
-    if (current()) {
-      error.value = cause instanceof Error ? cause.message : 'Please try again.'
-      custom.value = Boolean(menu.value?.serving_hours)
-      hours.value = menu.value?.serving_hours || null
-    }
-  } finally {
-    if (current()) busy.value = false
-  }
-}
-function setMode(value: boolean) {
-  clearTimeout(timer)
-  timer = undefined
-  custom.value = value
-  hours.value = value ? empty() : null
-  void persist(hours.value)
-}
-function setHours(value: WeekdayTimeWindowsConfig | null) {
-  hours.value = value || empty()
-  clearTimeout(timer)
-  const current = capture(),
-    next = hours.value
-  timer = setTimeout(() => {
-    timer = undefined
-    if (current()) void persist(next)
-  }, 500)
-}
+  custom,
+  hours,
+  busy,
+  error,
+  conflict,
+  setMode,
+  setHours,
+  serviceHoursSummary,
+} = useMenuRecordHours(useKitchenMenuRecordContext())
 </script>

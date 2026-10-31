@@ -3,7 +3,7 @@
     v-model:open="readOpen"
     title="Menus"
     description="Read Menus in this Kitchen."
-    :ui="{ content: 'sm:max-w-4xl' }"
+    class="menu-editor-dialog"
   >
     <template #body><KitchenFoodAndDrinkMenusCollectionList /></template>
   </UModal>
