@@ -179,3 +179,40 @@ Fresh screenshots are `composition-customer-verified.png` and
 Only two labelled messages were appended to the existing demo Conversation.
 No new delivery request, repeated publication, deployment, Rules or live
 permission change was needed for this recheck.
+
+## Stripe provider verification — 30 October
+
+The composed delivery checkpoint is saved as `56c06b581` and pushed to main.
+The subsequent real test-checkout attempt stopped at provider authentication:
+the installed Stripe CLI's existing test credential is expired. The connected
+Stripe tool exposes only the live FIReUX account; the Misebox App has no test
+key configured. No live credential was substituted and no Product, price,
+Checkout Session or webhook registration was created.
+
+The 13 focused Menu Express and Products checkout tests passed again, including
+signed callback validation, duplicate notification handling, mismatched/unpaid
+session rejection and interrupted-checkout retry. These remain fixture evidence,
+not a completed hosted Stripe test payment. Resume with renewed test-mode access,
+then exercise checkout and local signed webhook delivery for the same request.
+
+## Customer retry correction — 30 October
+
+Stripe work is parked at the user's request. A separate customer/operator pass
+found that a successful write followed by a failed refresh returned failure to
+the sender. The shared request controller now preserves the successful save,
+shows an explicit saved-but-refresh-failed notice and asks for refresh rather
+than resubmission. This lets Conversation clear the successfully sent draft;
+actions and source uploads use the same boundary. Rejected writes still fail
+without attempting a refresh, and existing stale-context checks remain active.
+The 13 focused client and delivery tests passed, including the new failed-refresh
+and failed-write regressions. This pass uses controlled transport failures;
+it does not claim exactly-once delivery after an ambiguous write response.
+
+The next intake pass adds a visible restore action for an interrupted submission.
+Editing the form after a lost response no longer leaves the customer with only
+an instruction to restore details and no control to do it. Restore uses the
+retained original input; retry preserves the same request ID and recovery proof
+and therefore uses the existing idempotent intake command. It does not discard
+an uncertain submission or create a replacement request. The 14 focused client
+and delivery tests passed, including response loss, intervening edits, restore
+and successful retry with an identical payload.

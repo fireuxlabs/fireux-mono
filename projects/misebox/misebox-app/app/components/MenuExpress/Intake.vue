@@ -1,5 +1,18 @@
 <template>
   <form class="fx-page-stack" @submit.prevent="submit">
+    <UAlert
+      v-if="pendingInput"
+      title="Previous submission awaiting confirmation"
+      description="Retry with the original details to recover the same request. This will not create a second request."
+    />
+    <UButton
+      v-if="pendingInput"
+      type="button"
+      variant="outline"
+      :disabled="busy"
+      @click="restoreSubmission"
+      >Restore submitted details</UButton
+    >
     <UFormField label="Your name" required
       ><UInput v-model="form.name" required maxlength="120"
     /></UFormField>
@@ -59,11 +72,20 @@ const captureIntent = useCommandScope([
 ])
 const busy = ref(false),
   error = ref('')
+const pendingInput = ref<typeof form | null>(null)
 const draftKey = 'misebox:menu-express:intake'
+function restoreSubmission() {
+  if (!pendingInput.value || busy.value) return
+  Object.assign(form, pendingInput.value)
+  error.value = ''
+}
 onMounted(() => {
   try {
     const saved = JSON.parse(localStorage.getItem(draftKey) || 'null')
-    if (saved?.input) Object.assign(form, saved.input)
+    if (saved?.input) {
+      pendingInput.value = saved.input
+      restoreSubmission()
+    }
   } catch {
     localStorage.removeItem(draftKey)
   }
@@ -88,9 +110,10 @@ async function submit() {
       }
       localStorage.setItem(draftKey, JSON.stringify(saved))
     }
+    pendingInput.value = saved.input
     if (JSON.stringify(saved.input) !== JSON.stringify(snapshot))
       throw new Error(
-        'A submission is awaiting recovery. Restore your previous details and retry before starting another request.'
+        'Use “Restore submitted details”, then submit again to recover your previous request.'
       )
     const headers =
       user && !user.isAnonymous
@@ -115,11 +138,14 @@ async function submit() {
       })
     )
     localStorage.removeItem(draftKey)
+    pendingInput.value = null
     await navigateTo(`/menu-express/${saved.id}`)
   } catch (cause: any) {
     if (isCurrent()) {
-      if (cause?.statusCode === 400 || cause?.status === 400)
+      if (cause?.statusCode === 400 || cause?.status === 400) {
         localStorage.removeItem(draftKey)
+        pendingInput.value = null
+      }
       error.value = cause?.data?.statusMessage || cause.message
     }
   } finally {

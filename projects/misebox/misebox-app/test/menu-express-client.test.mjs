@@ -187,10 +187,38 @@ test('scope disposal stops later dispatch and normal recovery still uses one rea
   f.scope.stop()
 })
 
-test('an obsolete intake validation failure cannot clear a later draft', async () => {
-  const started = deferred(),
-    response = deferred(),
-    storage = new Map()
+test('a committed message or action stays successful when its follow-up read fails', async () => {
+  for (const save of [
+    (state) => state.send('TEST message'),
+    (state) => state.act('approve'),
+  ]) {
+    const f = fixture()
+    const saved = save(f.state)
+    await f.requestStarted.promise
+    f.response.resolve({ success: true })
+    await f.nextRequestStarted.promise
+    f.nextResponse.reject(new Error('Read transport unavailable'))
+    assert.equal(await saved, true)
+    assert.match(f.state.error.value, /change was saved/)
+    assert.match(f.state.error.value, /do not submit it again/)
+    assert.equal(f.state.busy.value, false)
+    assert.equal(f.calls.length, 2)
+    f.scope.stop()
+  }
+})
+
+test('a failed write stays failed and never attempts a follow-up read', async () => {
+  const f = fixture()
+  const sent = f.state.send('TEST message')
+  await f.requestStarted.promise
+  f.response.reject(new Error('Write rejected'))
+  assert.equal(await sent, false)
+  assert.equal(f.state.error.value, 'Write rejected')
+  assert.equal(f.calls.length, 1)
+  f.scope.stop()
+})
+
+function intakeFixture(dependencies) {
   const source = readFileSync(
     new URL('../app/components/MenuExpress/Intake.vue', import.meta.url),
     'utf8'
@@ -198,6 +226,65 @@ test('an obsolete intake validation failure cannot clear a later draft', async (
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replaceAll('import.meta.dev', 'true')
+  return compileFunction(
+    `${stripTypeScriptTypes(source)};return {form,submit,error,pendingInput,restoreSubmission}`,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
+}
+
+test('interrupted intake restores original details and retries the same request identity', async () => {
+  const storage = new Map(),
+    calls = [],
+    destinations = []
+  const scope = effectScope()
+  const state = scope.run(() =>
+    intakeFixture({
+      ref,
+      reactive,
+      onMounted() {},
+      useCommandScope,
+      useAuth: () => ({ currentUser: shallowRef(null) }),
+      crypto: webcrypto,
+      localStorage: {
+        getItem: (key) => storage.get(key) || null,
+        setItem: (key, value) => storage.set(key, value),
+        removeItem: (key) => storage.delete(key),
+      },
+      $fetch: async (_path, options) => {
+        calls.push(options.body)
+        if (calls.length === 1) throw new Error('Response lost')
+        return { id: options.body.id }
+      },
+      navigateTo: async (path) => destinations.push(path),
+    })
+  )
+  Object.assign(state.form, {
+    name: 'TEST',
+    email: 'test@example.com',
+    venue: 'Original',
+    location: 'Test',
+  })
+  await state.submit()
+  assert.equal(state.error.value, 'Response lost')
+  state.form.venue = 'Changed after interruption'
+  await state.submit()
+  assert.equal(calls.length, 1)
+  assert.match(state.error.value, /Restore submitted details/)
+  state.restoreSubmission()
+  assert.equal(state.form.venue, 'Original')
+  await state.submit()
+  assert.equal(calls.length, 2)
+  assert.deepEqual(calls[1], calls[0])
+  assert.deepEqual(destinations, [`/menu-express/${calls[0].id}`])
+  assert.equal(state.pendingInput.value, null)
+  assert.equal(storage.has('misebox:menu-express:intake'), false)
+  scope.stop()
+})
+
+test('an obsolete intake validation failure cannot clear a later draft', async () => {
+  const started = deferred(),
+    response = deferred(),
+    storage = new Map()
   const dependencies = {
     ref,
     reactive,
@@ -219,12 +306,7 @@ test('an obsolete intake validation failure cannot clear a later draft', async (
     },
   }
   const scope = effectScope()
-  const state = scope.run(() =>
-    compileFunction(
-      `${stripTypeScriptTypes(source)};return {form,submit,error}`,
-      Object.keys(dependencies)
-    )(...Object.values(dependencies))
-  )
+  const state = scope.run(() => intakeFixture(dependencies))
   Object.assign(state.form, {
     name: 'TEST',
     email: 'test@example.com',

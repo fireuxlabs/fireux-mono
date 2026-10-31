@@ -115,6 +115,16 @@ export function useMenuExpressRequest(
     messages.value = result.messages
   }
   const reload = () => run(load)
+  async function refreshAfterSave(isCurrent: () => boolean) {
+    if (!isCurrent()) return
+    try {
+      await load()
+    } catch {
+      if (isCurrent())
+        error.value =
+          'Your change was saved, but the latest request could not be loaded. Refresh the request; do not submit it again.'
+    }
+  }
   const recover = () =>
     run(async (isCurrent) => {
       await load()
@@ -136,7 +146,7 @@ export function useMenuExpressRequest(
         operator,
         revision: request.value?.review?.revision,
       })
-      if (isCurrent()) await load()
+      await refreshAfterSave(isCurrent)
     })
   const checkout = () =>
     run(async (isCurrent) => {
@@ -155,7 +165,7 @@ export function useMenuExpressRequest(
         token: token.value,
         body,
       })
-      if (isCurrent()) await load()
+      await refreshAfterSave(isCurrent)
     })
   const upload = (file: File) =>
     run(async (isCurrent) => {
@@ -166,7 +176,7 @@ export function useMenuExpressRequest(
         method: 'POST',
         body,
       })
-      if (isCurrent()) await load()
+      await refreshAfterSave(isCurrent)
     })
   const download = (sourceId: string, name: string) =>
     run(async (isCurrent) => {

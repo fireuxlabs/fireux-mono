@@ -211,6 +211,14 @@ allowance. One Menu, one language and one correction round are proposed scope,
 not approved promises. Earlier CHF 390, CHF 29/month, two-language and 48-hour
 examples are not commitments. Planning does not authorize charging or deployment.
 
+**Stripe ownership, after pipeline proof:** use the existing FireUX test setup
+for this verification. Before real sales, assign Stripe accounts and App
+configuration to the actual selling business and payment recipient; organise
+ecosystem/App ownership then, rather than creating an account for every App by
+default. Keep test and live credentials, prices and webhook configuration
+separate. No account reorganisation, real charge or deployment is authorised by
+the current test run.
+
 **Finish line:** one complete customer/operator journey from supplied menu to
 approved publication and downloadable QR, with truthful payment/retry behaviour.
 The existing Collection pilot and assisted Ignition proof remain separate.
