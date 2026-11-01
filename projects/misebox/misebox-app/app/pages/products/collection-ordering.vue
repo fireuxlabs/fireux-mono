@@ -9,7 +9,7 @@
         @retry="refresh"
       />
       <template v-if="product">
-        <ProductDetailHeader :product="product" />
+        <ProductSurface :product="product" />
         <CollectionOrderingOffer />
       </template>
     </UPageBody>

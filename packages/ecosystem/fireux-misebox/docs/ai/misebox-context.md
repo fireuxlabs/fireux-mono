@@ -68,6 +68,11 @@ same tier selection and Product collection; Free appears only as the default
 plan. Menu Express and Collection Ordering remain saved domain-backed offers.
 Misebox does not expose Core's Managed or branded-App packages as its own plans.
 This presentation does not establish Stripe billing or entitlement activation.
+Products `Surface.vue` owns saved offer copy, benefits, optional image/domain
+preview, terms and primary action. Kitchen `Offers/Preview.vue` owns illustrative
+Menu and Collection previews. Misebox `Products/Services.vue` selects offers,
+order and destinations. Catalogue and detail pages reuse this surface; Menu
+Express detail leads directly to its existing request form without a charge.
 
 ### Menu Express delivery
 

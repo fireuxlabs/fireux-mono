@@ -5,8 +5,8 @@
   </UPage>
 </template>
 <script setup lang="ts">
-const route = useRoute()
-const id = computed(() => String(route.params.id || ''))
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+const id = useRouteParam('id')
 definePageMeta({ title: 'Menu request', layout: 'default' })
 useSeoMeta({
   title: 'Your menu request · Misebox',

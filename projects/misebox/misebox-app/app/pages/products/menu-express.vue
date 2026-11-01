@@ -9,13 +9,20 @@
         @retry="refresh"
       />
       <template v-if="product">
-        <ProductDetailHeader :product="product" />
+        <ProductSurface
+          :product="product"
+          primary
+          :action="{ label: 'Send us your menu', to: '/menu-express' }"
+          :preview-component="KitchenOffersPreview"
+          :preview-props="{ kind: 'menu' }"
+        />
         <MenuExpressOffer />
       </template>
     </UPageBody>
   </UPage>
 </template>
 <script setup lang="ts">
+import KitchenOffersPreview from 'fireux-kitchens/runtime/kitchen/components/Offers/Preview.vue'
 import { useProductDetail } from 'fireux-products/runtime/product/composables/useProductDetail'
 definePageMeta({
   layout: 'default',

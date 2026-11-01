@@ -1,16 +1,15 @@
 <template>
-  <AppPricingCatalogue :tiers="tiers" />
   <UPage>
+    <ProductsPlans :tiers="tiers" primary />
     <UPageBody>
       <FireState
         :outcome="catalogue.outcome"
         entity="Products"
         :error="catalogue.error"
       />
-      <ProductCollection
+      <ProductsServices
         v-if="catalogue.outcome === 'ready'"
         :products="catalogue.products"
-        :show-header="false"
       />
     </UPageBody>
   </UPage>

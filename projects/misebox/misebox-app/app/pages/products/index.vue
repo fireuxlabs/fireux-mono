@@ -1,26 +1,30 @@
 <template>
   <UPage>
-    <UPageHeader title="Products" />
+    <UPageHero
+      headline="Misebox for food businesses"
+      title="Good food. Less friction."
+      description="Get your menu online. Take Collection orders. Bring the work together in your Kitchen."
+      :links="[
+        {
+          label: 'Explore the tools',
+          to: '#services',
+          trailingIcon: 'i-lucide-arrow-down',
+        },
+        { label: 'Compare plans', to: '#plans', variant: 'outline' },
+      ]"
+    />
     <UPageBody>
-      <UPageGrid>
-        <UPageCard
-          v-for="plan in plans"
-          :key="plan.id"
-          :title="plan.title"
-          :description="plan.description"
-          :to="plan.to"
-        />
-      </UPageGrid>
       <FireState
         :outcome="catalogue.outcome"
         entity="Products"
         :error="catalogue.error"
       />
-      <ProductCollection
+      <ProductsServices
         v-if="catalogue.outcome === 'ready'"
+        id="services"
         :products="catalogue.products"
-        :show-header="false"
       />
+      <ProductsPlans id="plans" :tiers="plans" />
     </UPageBody>
   </UPage>
 </template>
