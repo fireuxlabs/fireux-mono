@@ -1,4 +1,8 @@
 <template>
+  <UPageSection
+    title="Who it is for"
+    description="For restaurant, café and hotel teams who want help turning an existing menu into a digital Menu and QR."
+  />
   <UPageSection title="How Menu Express works">
     <UPageGrid>
       <UPageCard
@@ -33,5 +37,11 @@
         variant: 'outline',
       },
     ]"
+  />
+  <UButton
+    to="/products"
+    label="Browse all products"
+    color="neutral"
+    variant="outline"
   />
 </template>

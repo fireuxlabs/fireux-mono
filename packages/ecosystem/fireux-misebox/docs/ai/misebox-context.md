@@ -61,6 +61,14 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+The Main App's `/products` composes Pro and Business from App-owned
+`useMiseboxPricing`, which selects Core's shared tiers, alongside the existing
+Products reader and collection without a type filter. `/pricing` consumes the
+same tier selection and Product collection; Free appears only as the default
+plan. Menu Express and Collection Ordering remain saved domain-backed offers.
+Misebox does not expose Core's Managed or branded-App packages as its own plans.
+This presentation does not establish Stripe billing or entitlement activation.
+
 ### Menu Express delivery
 
 The Misebox catalogue Product is `products/menu-express`, authored through the

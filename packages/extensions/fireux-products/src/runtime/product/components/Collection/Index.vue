@@ -1,6 +1,10 @@
 <template>
   <section class="entity-collection product-collection">
-    <FireCollectionHeader :title="title" :description="description">
+    <FireCollectionHeader
+      v-if="showHeader"
+      :title="title"
+      :description="description"
+    >
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -89,6 +93,7 @@ const props = withDefaults(
     description?: string
     link?: boolean
     searchPlaceholder?: string
+    showHeader?: boolean
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
@@ -99,6 +104,7 @@ const props = withDefaults(
     description: 'Browse product records available to this runtime.',
     link: true,
     searchPlaceholder: 'Search products…',
+    showHeader: true,
     showSearch: true,
     showVariantToggle: true,
     showCount: true,

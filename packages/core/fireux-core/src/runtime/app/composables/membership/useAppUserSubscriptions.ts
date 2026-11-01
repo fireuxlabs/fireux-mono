@@ -12,7 +12,7 @@ const subscriptions = [
   },
   {
     id: 'premium',
-    label: 'Professional',
+    label: 'Pro',
     icon: 'i-lucide-crown',
     color: 'warning',
   },

@@ -72,7 +72,7 @@ export function usePricing(profile: PricingProfile) {
         ],
         included: profile.free,
         notIncluded: [
-          `Complete Professional ${workspaceName.value} capabilities`,
+          `Complete Pro ${workspaceName.value} capabilities`,
           `Multiple ${entities}`,
           'A separate branded App',
         ],
@@ -83,7 +83,7 @@ export function usePricing(profile: PricingProfile) {
       {
         id: 'professional',
         eyebrow: `${appName.value} pricing`,
-        title: 'Professional',
+        title: 'Pro',
         description: `Operate one ${entity} with the complete self-managed ${workspaceName.value}.`,
         price: chf(prices.professionalEntityMonthly),
         billingCycle: '/month',
@@ -99,7 +99,7 @@ export function usePricing(profile: PricingProfile) {
           'A separate branded App',
         ],
         priceNote: `Includes one fully enabled ${entity}.`,
-        nextStep: `Choose Professional to operate one complete ${entity}.`,
+        nextStep: `Choose Pro to operate one complete ${entity}.`,
         to: '/pricing/professional',
       },
       {
@@ -110,12 +110,12 @@ export function usePricing(profile: PricingProfile) {
         price: chf(prices.businessMonthly),
         billingCycle: '/month',
         features: [
-          'Everything in Professional',
+          'Everything in Pro',
           `Multiple ${entities}`,
           `${chf(prices.professionalEntityMonthly)} per ${entity} each month`,
         ],
         included: [
-          'Everything in Professional',
+          'Everything in Pro',
           `Multi-${entity} operating access`,
           `Separate Team authority for each ${entity}`,
           `Add ${entities} for ${chf(prices.professionalEntityMonthly)} each per month`,
@@ -140,7 +140,7 @@ export function usePricing(profile: PricingProfile) {
         price: chf(prices.managedMonthly),
         billingCycle: '/month',
         features: [
-          'Add to Professional or Business',
+          'Add to Pro or Business',
           `Select the ${entities} to manage`,
           `${chf(prices.professionalEntityMonthly)} per managed ${entity} each month`,
         ],
@@ -150,7 +150,7 @@ export function usePricing(profile: PricingProfile) {
           `Management for selected ${entities}`,
         ],
         notIncluded: [
-          'The underlying Professional or Business subscription',
+          'The underlying Pro or Business subscription',
           'Unlimited operational work',
           'New capabilities, integrations, or product development',
         ],

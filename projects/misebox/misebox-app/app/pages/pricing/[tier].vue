@@ -14,12 +14,10 @@ definePageMeta({
   layout: 'landing',
   validate: (route) =>
     route.name === 'pricing-tier' &&
-    ['free', 'professional', 'business', 'managed', 'your-app'].includes(
-      String(route.params.tier)
-    ),
+    ['free', 'professional', 'business'].includes(String(route.params.tier)),
 })
 useSeoMeta({
   title: () =>
-    `${tierId.value.charAt(0).toUpperCase()}${tierId.value.slice(1)} pricing · Misebox`,
+    `${tiers.value.find((tier) => tier.id === tierId.value)?.title || 'Plan'} pricing · Misebox`,
 })
 </script>

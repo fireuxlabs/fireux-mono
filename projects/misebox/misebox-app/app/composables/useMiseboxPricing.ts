@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import {
   usePricing,
   type PricingProfile,
@@ -5,6 +6,8 @@ import {
 
 const miseboxPricingProfile = {
   appName: 'Misebox',
+  includesManaged: false,
+  includesEcosystemTier: false,
   contactEmail: 'misebox@misebox.app',
   workspaceName: 'Kitchen Workspace',
   entityName: 'Kitchen',
@@ -24,5 +27,14 @@ const miseboxPricingProfile = {
 } as const satisfies PricingProfile
 
 export function useMiseboxPricing() {
-  return usePricing(miseboxPricingProfile)
+  const pricing = usePricing(miseboxPricingProfile)
+  const tiers = computed(() =>
+    pricing.tiers.value.filter((tier) =>
+      ['free', 'professional', 'business'].includes(tier.id)
+    )
+  )
+  const products = computed(() =>
+    tiers.value.filter((tier) => tier.id !== 'free')
+  )
+  return { ...pricing, tiers, products }
 }

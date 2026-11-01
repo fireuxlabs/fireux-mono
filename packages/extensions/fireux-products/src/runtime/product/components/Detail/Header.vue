@@ -5,11 +5,9 @@
       <h1 class="product-title">{{ display(product?.name) }}</h1>
       <p class="product-summary">{{ display(product?.description) }}</p>
     </div>
-    <div class="product-price">
+    <div v-if="defaultPrice" class="product-price">
       <span class="price-label">{{ priceLabel(defaultPrice) }}</span>
-      <span class="price-value">{{
-        formatDefaultPrice(defaultPrice) || 'Custom'
-      }}</span>
+      <span class="price-value">{{ formatDefaultPrice(defaultPrice) }}</span>
     </div>
   </header>
 </template>
