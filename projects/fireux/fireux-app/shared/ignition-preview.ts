@@ -1,9 +1,10 @@
 import manifest from '../package.json' with { type: 'json' }
+import workspace from '../../../../package.json' with { type: 'json' }
 import type { IgnitionBrief } from 'fireux-ignite/runtime/models/ignition'
 
 export type IgnitionPreviewInput = { id: string; name: string; outcome: string }
 
-/** One supported assisted starting App; no model call, write or provisioning. */
+/** Prepare one Ecosystem and its main App; provider credentials stay operator-owned. */
 export function prepareIgnitionPreview(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('Supply an App id, name and purpose.')
@@ -18,46 +19,48 @@ export function prepareIgnitionPreview(value: unknown) {
   const name = (input.name as string).trim()
   const outcome = (input.outcome as string).trim()
   if (
-    !/^[a-z][a-z0-9-]{2,62}$/.test(id) ||
+    !/^[a-z][a-z0-9-]{2,58}$/.test(id) ||
     ['fireux-app', 'fireux-template'].includes(id)
   )
     throw new Error(
-      'Use a new App id: 3–63 lowercase letters, digits or hyphens.'
+      'Use a new App id: 3–59 lowercase letters, digits or hyphens.'
     )
   if (!name || name.length > 80 || !outcome || outcome.length > 2000)
     throw new Error(
       'Add an App name (up to 80 characters) and purpose (up to 2,000).'
     )
 
+  const appId = `${id}-app`
+  const packageName = `fireux-${id}`
   const brief: IgnitionBrief = {
     id,
-    industry: 'Food service — read-only Menu starting App',
+    industry: 'Industry SaaS foundation',
     outcome,
-    actors: ['Guest'],
+    actors: ['Operator', 'Member'],
     requirements: [
       {
-        id: 'browse-menu',
-        need: 'Browse the existing fictional Kitchen Menu.',
+        id: 'main-app',
+        need: 'Operate an Ecosystem main App with shared SaaS foundations.',
         acceptance:
-          'The starting App renders the canonical Menu catalogue from Kitchen demo data without creating Orders.',
+          'The main App uses Core identity, initialization, authentication and shared Free, Pro and Business plans.',
       },
     ],
   }
   const identity = {
-    ecosystem: 'fireux',
-    projectId: 'fireux',
-    ecosystemId: 'fireux',
-    id,
+    ecosystem: id,
+    projectId: id,
+    ecosystemId: id,
+    id: appId,
     name,
     shortName: name,
-    role: 'tenant',
-    selfJoinEnabled: false,
-    context: `TEST PREVIEW. ${outcome} This bounded assisted App uses read-only Kitchen demo data; it does not accept orders or claim general industry generation.`,
-    modules: ['fireux-kitchens'],
+    role: 'global',
+    selfJoinEnabled: true,
+    context: outcome,
+    modules: ['fireux-products'],
     extends: [
-      'fireux-fireux/layer',
+      `${packageName}/layer`,
       'fireux-blogs/layer',
-      'fireux-kitchens/layer',
+      'fireux-products/layer',
     ],
     seo: {
       siteUrl: 'http://localhost:3048',
@@ -76,12 +79,12 @@ export function prepareIgnitionPreview(value: unknown) {
     dependencies[key] = manifest.dependencies[key]
   for (const key of [
     'fireux-core',
-    'fireux-fireux',
     'fireux-blogs',
-    'fireux-kitchens',
+    'fireux-products',
     'fireux-ignite',
   ])
     dependencies[key] = 'workspace:*'
+  dependencies[packageName] = 'workspace:*'
   dependencies['@vite-pwa/nuxt'] = manifest.devDependencies['@vite-pwa/nuxt']
   dependencies['@iconify-json/lucide'] =
     manifest.devDependencies['@iconify-json/lucide']
@@ -89,15 +92,13 @@ export function prepareIgnitionPreview(value: unknown) {
     'package.json':
       JSON.stringify(
         {
-          name: id,
+          name: appId,
           private: true,
           type: 'module',
           scripts: {
-            dev: 'APP_DOMAIN=http://localhost:3048 nuxi dev --port 3048 --dotenv ../fireux-app/.env',
-            build:
-              'APP_DOMAIN=http://localhost:3048 nuxi build --dotenv ../fireux-app/.env',
-            typecheck:
-              'APP_DOMAIN=http://localhost:3048 nuxi typecheck --dotenv ../fireux-app/.env',
+            dev: 'APP_DOMAIN=http://localhost:3048 nuxi dev --port 3048',
+            build: 'APP_DOMAIN=http://localhost:3048 nuxi build',
+            typecheck: 'APP_DOMAIN=http://localhost:3048 nuxi typecheck',
           },
           dependencies,
         },
@@ -120,47 +121,107 @@ export function prepareIgnitionPreview(value: unknown) {
         2
       ) + '\n',
     'app/app.vue': '<template>\n  <AppShell />\n</template>\n',
-    'app/meta.ts': `import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'\n\nexport const metaContent = defineFireuxMeta(${JSON.stringify({ app: { id, name, ecosystem: 'fireux' }, copy: { big_personality: 'Menu Preview', headline: 'Read-only Menu starting App', positioning_html: 'A bounded FireUX starting App using fictional Kitchen data.', promise_html: 'Browse the existing Menu catalogue.', workspace_bridge_html: 'Created through the shared assisted Ignition preparation path.' }, seo: { title: name, description: outcome } }, null, 2)})\n`,
+    'app/meta.ts': `import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'\n\nexport const metaContent = defineFireuxMeta(${JSON.stringify({ app: { id: appId, name, ecosystem: id }, copy: { headline: name, positioning_html: '', promise_html: '', workspace_bridge_html: '' }, seo: { title: name, description: outcome } }, null, 2)})\n`,
     'app/ignition/brief.ts': `import type { IgnitionBrief } from 'fireux-ignite/runtime/models/ignition'\n\nexport const name = ${JSON.stringify(name)}\nexport const brief: IgnitionBrief = ${JSON.stringify(brief, null, 2)}\n`,
     'app/pages/index.vue': `<template>
   <UPage>
     <UPageHeader :title="name" :description="brief.outcome" />
-    <UPageBody>
-      <UAlert title="Read-only Menu demo" description="Fictional Kitchen data. This starting App does not place orders." color="neutral" />
-      <MenuDetailCatalogue
-        :sections="menu.content.sections"
-        :currency-code="menu.presentation.currencyCode"
-        :currency-format="menu.presentation.currencyFormat"
-        :copy="copy"
-      />
-    </UPageBody>
+    <UPageBody><UButton to="/pricing" label="Plans" /></UPageBody>
   </UPage>
 </template>
-
 <script setup lang="ts">
-import { featuredMenuDemoManifest as menu } from 'fireux-kitchens/runtime/kitchen/demo/presentation/index'
-import { resolveMenuBrowseSurfaceCopy } from 'fireux-kitchens/runtime/menu/utils/menu-surface-copy'
-import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { brief, name } from '../ignition/brief'
-const copy = resolveMenuBrowseSurfaceCopy()
-useSeo({ title: name, description: brief.outcome, path: '/' })
 </script>
 `,
+    'app/pages/pricing/index.vue': `<template><AppPricingCatalogue :tiers="tiers" /></template>
+<script setup lang="ts">
+import { usePricing } from 'fireux-core/runtime/app/composables/pricing/usePricing'
+import { computed } from 'vue'
+import { name } from '../../ignition/brief'
+const pricing = usePricing({
+  appName: name, contactEmail: '', workspaceName: 'Workspace',
+  entityName: 'workspace', entityPluralName: 'workspaces',
+  free: ['Start with the Free tier'], professional: ['Pro workspace capabilities'],
+  includesManaged: false, includesEcosystemTier: false,
+})
+const tiers = computed(() => pricing.tiers.value.filter(tier => ['free', 'professional', 'business'].includes(tier.id)))
+</script>
+`,
+    '.env.example': `APP_DOMAIN=http://localhost:3048
+NUXT_FIREBASE_APP_ID=
+NUXT_FIREBASE_API_KEY=
+FIREBASE_PROJECT_ID=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_STORAGE_BUCKET=
+FIREBASE_MESSAGING_SENDER_ID=
+FIREBASE_DATABASE_ID=${id}
+FIREBASE_REGION=europe-west1
+DEVELOPER_ID=
+STRIPE_SECRET_KEY=
+NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+`,
   }
+  const ecosystemFiles: Record<string, string> = {
+    'package.json':
+      JSON.stringify(
+        {
+          name: packageName,
+          version: '0.1.0',
+          private: true,
+          type: 'module',
+          main: './src/module.ts',
+          types: './src/module.ts',
+          exports: {
+            '.': './src/module.ts',
+            './layer': './src/runtime/nuxt.config.ts',
+          },
+          dependencies: {
+            'fireux-core': 'workspace:*',
+            '@nuxt/kit': workspace.devDependencies['@nuxt/kit'],
+          },
+        },
+        null,
+        2
+      ) + '\n',
+    'src/module.ts': `import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
+import { ecosystemConfig } from './config/firebase/ecosystem.config'
+export default defineNuxtModule({ meta: { name: ${JSON.stringify(packageName)} }, setup(_options, nuxt) {
+  configureFireuxEcosystemModule(createResolver(import.meta.url), nuxt, { ecosystem: ecosystemConfig })
+} })
+`,
+    'src/runtime/nuxt.config.ts': `export default { extends: ['fireux-core/layer'], srcDir: '.', serverDir: './server', dir: { pages: 'pages', layouts: 'layouts', middleware: 'middleware' } }\n`,
+    'src/config/firebase/ecosystem.config.ts': `import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
+const required = (key: string) => { const value = process.env[key]?.trim(); if (!value) throw new Error('Configure ' + key + ' for this Ecosystem.'); return value }
+export const ecosystemConfig = {
+  id: ${JSON.stringify(packageName)}, name: ${JSON.stringify(name)}, description: ${JSON.stringify(outcome)},
+  firebase: { apiKey: required('NUXT_FIREBASE_API_KEY'), projectId: required('FIREBASE_PROJECT_ID'),
+    authDomain: required('FIREBASE_AUTH_DOMAIN'), storageBucket: required('FIREBASE_STORAGE_BUCKET'),
+    messagingSenderId: required('FIREBASE_MESSAGING_SENDER_ID'), databaseId: required('FIREBASE_DATABASE_ID') },
+  ssr: { region: required('FIREBASE_REGION') },
+} satisfies FireuxEcosystemConfig
+`,
+  }
+
   return {
     input: { id, name, outcome },
     brief,
     files,
+    ecosystem: {
+      sourcePath: `packages/ecosystem/${packageName}`,
+      files: ecosystemFiles,
+    },
     assets: {
       source: 'projects/templates/fireux-template/public/img/app',
       destination: 'public/img/app',
     },
-    sourcePath: `projects/fireux/${id}`,
+    sourcePath: `projects/${id}/${appId}`,
     previewUrl: 'http://localhost:3048',
     manualSteps: [
       'Materialize the source and neutral starter artwork inside the FireUX workspace without overwriting an existing App. Replace placeholder artwork before branding or release.',
-      'Install the workspace dependencies, then run the App’s native dev command. It reuses the existing FireUX development environment through Nuxt’s --dotenv option; no credentials are copied into the artifact.',
-      'Open the generated App, sign in as its configured developer, and use Core’s Initialize App control after verifying the exact App and Ecosystem identity.',
+      'Create or connect the business Firebase project and web App using Firebase tools. Create its named database, enable authentication and configure its bucket. Populate the generated .env from .env.example; no existing credentials are inherited.',
+      'Install dependencies, start the main App, and initialize its canonical Ecosystem and App through the trusted owners. Connect the selling business Stripe account and verified webhook before enabling paid checkout. Shared plan presentation is not proof of payment entitlements.',
     ],
   }
 }

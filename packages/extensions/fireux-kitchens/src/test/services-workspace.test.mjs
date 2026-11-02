@@ -42,7 +42,9 @@ function fixture() {
       'createKitchenServicesContext()',
       {
         ...Vue,
-        useKitchenOfferings: () => {
+        useKitchenWorkspace: () => ({ id: source.kitchenId }),
+        useKitchenOfferings: (kitchenId) => {
+          assert.equal(kitchenId, source.kitchenId)
           acquisitions++
           return source
         },

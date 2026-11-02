@@ -1,12 +1,12 @@
 <template>
   <section class="ignition-preview">
     <UAlert
-      title="One supported example"
-      description="This prepares source for a read-only Menu App inside the FireUX workspace. An operator installs and starts it. It does not deploy, provision Firebase or generate arbitrary industry software."
+      title="Ecosystem and main App"
+      description="Prepare an Ecosystem and its main App with shared plans. Provider accounts and credentials are configured explicitly; nothing is deployed."
       color="neutral"
     />
     <form class="ignition-preview__form" @submit.prevent="prepare">
-      <UFormField label="New App id" required>
+      <UFormField label="Ecosystem id" required>
         <UInput
           v-model="input.id"
           class="ignition-preview__input"
@@ -31,7 +31,7 @@
           :rows="3"
         />
       </UFormField>
-      <UButton type="submit" label="Prepare starting App" :loading="pending" />
+      <UButton type="submit" label="Prepare Ecosystem" :loading="pending" />
     </form>
     <UAlert
       v-if="error"
@@ -40,7 +40,7 @@
       :description="error"
     />
     <UCard v-if="artifact" aria-live="polite">
-      <h2>Starting App source prepared</h2>
+      <h2>Ecosystem source prepared</h2>
       <p>{{ artifact.input.name }} · {{ artifact.sourcePath }}</p>
       <p>
         The same preparation command is available to Codex. No files or database
@@ -51,6 +51,7 @@
           {{ path }}
         </li>
       </ul>
+      <p>{{ artifact.ecosystem.sourcePath }}</p>
       <UButton
         :href="downloadUrl"
         :download="`${artifact.input.id}.ignition.json`"
@@ -80,10 +81,9 @@ import type {
 } from '../../../shared/ignition-preview'
 
 const input = reactive<IgnitionPreviewInput>({
-  id: 'ignition-menu-demo',
-  name: 'Ignition Menu Demo',
-  outcome:
-    'Let guests browse the existing fictional Kitchen Menu in a normal FireUX App.',
+  id: 'ignition-proof',
+  name: 'Ignition Proof',
+  outcome: 'Create an Ecosystem main App with shared SaaS foundations.',
 })
 const artifact = ref<IgnitionPreview | null>(null)
 const pending = ref(false)

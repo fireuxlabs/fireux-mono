@@ -1,6 +1,7 @@
-import { defineKitchenTeamTool } from './types'
+import { defineFireuxCommandTool } from 'fireux-core/runtime/tools/types'
+import type { KitchenTeamToolDefinition } from './types'
 
-export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
+export const kitchenTeamMemberDeleteTool = defineFireuxCommandTool({
   id: 'kitchen.team.delete-member',
   mode: 'write',
   risk: 'write',
@@ -9,8 +10,7 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
     target: 'WorkspaceTeamMemberDocument',
     instruction:
       'Remove an existing Kitchen Team member, revoke pending invitations.',
-    outcome:
-      'Removes the roster entry and revokes pending invitations.',
+    outcome: 'Removes the roster entry and revokes pending invitations.',
     constraints: [],
   },
   inputSchema: {
@@ -23,16 +23,13 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
   },
   ai: {
     baked: {
-      purpose:
-        'Remove a member from the Kitchen roster.',
+      purpose: 'Remove a member from the Kitchen roster.',
       knows: ['The selected Kitchen, selected member and current link state.'],
       constraints: [
         'Keep the linked User account and workspace association unchanged.',
         'Do not proceed without explicit confirmation.',
       ],
-      evidence: [
-        'Return the removed member identity and removal outcome.',
-      ],
+      evidence: ['Return the removed member identity and removal outcome.'],
     },
     runtime: {
       accepted: true,
@@ -51,4 +48,4 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
     agent: { callable: true },
   },
   result: { kind: 'mutation' },
-})
+} satisfies KitchenTeamToolDefinition)

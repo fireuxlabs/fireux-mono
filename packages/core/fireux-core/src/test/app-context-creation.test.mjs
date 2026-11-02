@@ -12,10 +12,21 @@ function load(path, returned, dependencies = {}) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
-function fixture() {
+function fixture({ global = false } = {}) {
   const records = new Map([['users/operator', {}]])
   const writes = []
   const target = (collectionPath) => ({ collectionPath })
+  const snapshot = (path) => ({
+    exists: records.has(path),
+    data: () => records.get(path),
+    get: (key) => records.get(path)?.[key],
+  })
+  const database = {
+    collection: (path) => ({
+      doc: (id) => ({ get: async () => snapshot(`${path}/${id}`) }),
+    }),
+    doc: (path) => ({ get: async () => snapshot(path) }),
+  }
   const run = load(
     '../runtime/app/server/initialization/initialize.ts',
     'initializeRuntimeApp',
@@ -24,11 +35,12 @@ function fixture() {
         Object.assign(new Error(value.statusMessage), value),
       FieldValue: { serverTimestamp: () => 'now' },
       APP_MUTATION_TARGETS: { runtimeApps: target('apps') },
-USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
+      USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       serverAppUsersTarget: (id) => target(`apps/${id}/users`),
-      getRuntimeIdentityFirestore: () => {
-        throw new Error('Unexpected identity read')
-      },
+      getRuntimeIdentityFirestore: () => database,
+      getRuntimeFirestore: () => database,
+      requireFirestoreDocumentId: (value) => value,
+      ECOSYSTEM_MUTATION_TARGETS: { ecosystems: target('ecosystems') },
       runGuardedServerTransaction: async (_, action) =>
         action({
           read: async (owner, id) => ({
@@ -56,15 +68,17 @@ USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
   const input = {
     uid: 'operator',
     config: {
-      appId: 'example',
-      ecosystemId: 'fireux',
-      role: 'tenant',
+      appId: global ? 'example-app' : 'example',
+      ecosystemId: global ? 'example' : 'fireux',
+      projectId: global ? 'example' : 'fireux',
+      role: global ? 'global' : 'tenant',
       appName: 'Example',
       appShortName: 'Example',
       selfJoinEnabled: false,
     },
     appDatabaseId: 'fireux',
     identityDatabaseId: 'fireux',
+    ecosystem: { name: 'Example Ecosystem', description: 'Reviewed purpose' },
     context: '  Reviewed App background  ',
   }
   return { run, input, records, writes }
@@ -83,6 +97,40 @@ test('configured creation rejects structured or oversized context before writing
   for (const context of [{ notes: 'x' }, 'x'.repeat(32001)])
     await assert.rejects(f.run({ ...f.input, context }), /must be text/)
   assert.equal(f.writes.length, 0)
+})
+test('global main App initialization creates the canonical Ecosystem and preserves later edits', async () => {
+  const f = fixture({ global: true })
+  const first = await f.run(f.input)
+  assert.equal(first.appCreated, true)
+  assert.equal(first.ecosystemCreated, true)
+  assert.deepEqual(f.records.get('ecosystems/example'), {
+    project_id: 'example',
+    status: 'active',
+    name: 'Example Ecosystem',
+    description: 'Reviewed purpose',
+    image_url: '',
+    created: { at: 'now', by: 'operator' },
+    updated: { at: 'now', by: 'operator' },
+  })
+
+  f.records.get('ecosystems/example').name = 'Operator edit'
+  const second = await f.run(f.input)
+  assert.equal(second.appCreated, false)
+  assert.equal(second.ecosystemCreated, false)
+  assert.equal(f.records.get('ecosystems/example').name, 'Operator edit')
+})
+test('Ecosystem bootstrap is limited to matching main Apps and rejects Project conflicts before App writes', async () => {
+  const tenant = fixture()
+  assert.equal((await tenant.run(tenant.input)).ecosystemCreated, false)
+  assert.equal(tenant.records.has('ecosystems/fireux'), false)
+
+  const conflict = fixture({ global: true })
+  conflict.records.set('ecosystems/example', { project_id: 'another-project' })
+  await assert.rejects(
+    conflict.run(conflict.input),
+    /does not match runtime projectId/
+  )
+  assert.equal(conflict.writes.length, 0)
 })
 test('App context seed uses the private runtime branch', () => {
   const { setRuntime } = load('../config/app/runtime.ts', '({ setRuntime })')

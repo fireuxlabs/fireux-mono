@@ -1,19 +1,24 @@
 <template>
   <UPage>
-    <UPageHero
-      headline="Misebox for food businesses"
-      title="Good food. Less friction."
-      description="Get your menu online. Take Collection orders. Bring the work together in your Kitchen."
-      :links="[
-        {
-          label: 'Explore the tools',
-          to: '#services',
-          trailingIcon: 'i-lucide-arrow-down',
-        },
-        { label: 'Compare plans', to: '#plans', variant: 'outline' },
-      ]"
+    <UPageHeader
+      title="A menu online. A Kitchen in control."
+      description="Choose help with your menu, or run the tools yourself in Kitchen Workspace."
     />
     <UPageBody>
+      <UPageGrid class="product-choices">
+        <UPageCard
+          title="Have your menu prepared"
+          description="We turn your PDF or photos into a reviewed digital menu. Quoted separately."
+          icon="i-lucide-file-check"
+          to="#services"
+        />
+        <UPageCard
+          title="Use the tools yourself"
+          description="Prepare Menus and manage Collection orders. No separate service purchase; your plan limits and Kitchen access apply."
+          icon="i-lucide-panels-top-left"
+          to="#plans"
+        />
+      </UPageGrid>
       <FireState
         :outcome="catalogue.outcome"
         entity="Products"
@@ -32,7 +37,7 @@
 import { reactive } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
 
-const { products: plans } = useMiseboxPricing()
+const { tiers: plans } = useMiseboxPricing()
 const catalogue = reactive(useProductCollection())
 definePageMeta({
   layout: 'default',
@@ -54,3 +59,14 @@ useSeoMeta({
   description: 'Pro, Business, Menu Express and Collection Ordering.',
 })
 </script>
+
+<style scoped>
+.product-choices {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 640px) {
+  .product-choices {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

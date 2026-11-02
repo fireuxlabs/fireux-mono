@@ -28,16 +28,24 @@ test('one deterministic source result retains reviewed purpose, framework owners
   assert.match(artifact.files['app/app.vue'], /AppShell/)
   assert.match(artifact.files['nuxt.config.ts'], /defineFireuxConfig/)
   assert.match(artifact.files['nuxt.config.ts'], /noindexPaths/)
-  assert.match(artifact.files['app/pages/index.vue'], /MenuDetailCatalogue/)
+  assert.match(artifact.files['nuxt.config.ts'], /global/)
+  assert.match(artifact.files['nuxt.config.ts'], /fireux-blogs\/layer/)
+  assert.match(artifact.files['nuxt.config.ts'], /fireux-products\/layer/)
+  assert.match(artifact.files['app/pages/pricing/index.vue'], /usePricing/)
   assert.match(
-    artifact.files['app/pages/index.vue'],
-    /kitchen\/demo\/presentation/
+    artifact.ecosystem.files['src/module.ts'],
+    /configureFireuxEcosystemModule/
   )
-  assert.ok(
-    !Object.keys(artifact.files).some((path) =>
-      /server|\.env|firebase\.json/.test(path)
-    )
+  assert.ok(!artifact.files['package.json'].includes('../fireux-app/.env'))
+  assert.match(
+    artifact.ecosystem.files['src/config/firebase/ecosystem.config.ts'],
+    /name: "Menu proof"/
   )
+  assert.match(
+    artifact.ecosystem.files['src/config/firebase/ecosystem.config.ts'],
+    /description: "Browse the existing fictional Menu\."/
+  )
+  assert.match(artifact.files['.env.example'], /STRIPE_SECRET_KEY=\n/)
   assert.equal(
     JSON.parse(artifact.files['package.json']).dependencies['fireux-ignite'],
     'workspace:*'
@@ -72,9 +80,11 @@ test('reviewed strings cannot terminate or inject the generated Vue script', () 
     name: text,
     outcome: text,
   })
-  const source = artifact.files['app/pages/index.vue']
-  assert.deepEqual(parse(source).errors, [])
-  assert.ok(!source.includes(text))
+  for (const [path, source] of Object.entries(artifact.files)) {
+    if (!path.endsWith('.vue')) continue
+    assert.deepEqual(parse(source).errors, [])
+    assert.ok(!source.includes(text))
+  }
   assert.match(artifact.files['app/ignition/brief.ts'], /injected/)
 })
 
@@ -120,6 +130,10 @@ test('materialization resumes exact source, preserves edits and removes only a f
     'package.json',
   ])
     await cp(new URL(`../../${path}`, import.meta.url), resolve(host, path))
+  await cp(
+    new URL('../../../../../package.json', import.meta.url),
+    resolve(root, 'package.json')
+  )
   const assets = resolve(
     root,
     'projects/templates/fireux-template/public/img/app'

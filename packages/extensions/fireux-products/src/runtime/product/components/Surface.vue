@@ -9,19 +9,24 @@
     :features="benefits"
     :links="links"
   >
-    <div v-if="previewComponent" class="product-surface-preview">
-      <component :is="previewComponent" v-bind="previewProps" />
+    <div
+      v-if="previewComponent || image || price || terms"
+      class="product-surface-media"
+    >
+      <div v-if="previewComponent" class="product-surface-preview">
+        <component :is="previewComponent" v-bind="previewProps" />
+      </div>
+      <img
+        v-else-if="image"
+        class="product-surface-image"
+        :src="image.url"
+        :alt="image.alt || product.name"
+        loading="lazy"
+      />
+      <p v-if="price || terms" class="product-surface-terms">
+        {{ price }}<span v-if="price && terms"> · </span>{{ terms }}
+      </p>
     </div>
-    <img
-      v-else-if="image"
-      class="product-surface-image"
-      :src="image.url"
-      :alt="image.alt || product.name"
-      loading="lazy"
-    />
-    <p v-if="price || terms" class="product-surface-terms">
-      {{ price }}<span v-if="price && terms"> · </span>{{ terms }}
-    </p>
   </UPageSection>
 </template>
 <script setup lang="ts">
@@ -60,6 +65,11 @@ const image = computed(
 )
 </script>
 <style scoped>
+.product-surface-media {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 .product-surface-preview {
   padding: clamp(1.5rem, 5vw, 3rem);
   border-radius: 2rem;

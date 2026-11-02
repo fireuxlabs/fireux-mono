@@ -1,6 +1,6 @@
 # FireUX App Ignition intake context
 
-Updated: 2026-10-28
+Updated: 2026-11-01
 Ref: cf2413355
 Role: living context
 Scope: FireUX App Ignition requests and private delivery tracking
@@ -73,21 +73,23 @@ industry-platform enquiry.
 
 Paths below are relative to this App:
 
-- `/ignite-preview` is a separate, explicitly bounded assisted Menu starting-App
-  entrance. Its form and `server/api/ignition/preview.post.ts` use
-  `shared/ignition-preview.ts`; the operator CLI in `ignition/prepare.mjs` uses
-  that same preparation function. The App owns this concrete source recipe,
-  not Core or a new neutral template registry. It reuses Kitchen demo data,
-  Core AppShell/configuration and the existing trusted initializer. Preview
-  completion follows Core `useCommandScope` for input changes and disposal;
-  the form does not maintain a separate command-epoch implementation.
-- Website preparation returns a source artifact only. Filesystem materialization,
-  dependency installation, native Nuxt startup and authenticated Core initialization
-  are explicit operator steps. No public shell execution, credential copy,
-  provider provisioning or deployment is added. Repeating an identical artifact
-  preserves source; changed/stale artifacts and operator edits are not overwritten.
-  The [operator entrypoint](../../ignition/README.md) and
-  `app/tests/ignition-preview.test.mjs` own current commands and checks.
+- `/ignite-preview` prepares an Ecosystem package and its global main App through
+  `shared/ignition-preview.ts`. The operator CLI `ignition/prepare.mjs` uses the
+  same artifact and materializes both owners without overwriting existing edits.
+  Core owns AppShell, ecosystem wiring, App initialization and plan presentation;
+  Products owns catalogue and Checkout integration. Generated provider environment
+  values are blank and never inherit FireUX credentials. Input completion retains
+  Core `useCommandScope` disposal and stale-response checks.
+- Core initialization creates the canonical Ecosystem identity only for a global
+  main App whose project and Ecosystem IDs match and whose App ID is `<id>-app`.
+  It preserves an existing matching Ecosystem and uses the guarded identity
+  mutation owner. Source preparation still does not provision Firebase or Stripe
+  resources, deploy, or charge a customer. Paid subscription-to-Core-tier
+  reconciliation remains unimplemented, so generated Free/Pro/Business plan
+  presentation does not establish billing readiness. Missing provider
+  configuration fails explicitly. See the
+  [operator entrypoint](../../ignition/README.md) and
+  `app/tests/ignition-preview.test.mjs` for source and recovery behavior.
 - This supported source-workspace example does not turn the general industry
   email enquiry or the priced Conversation queue into an automatic creator.
   Their offer, authority and storage boundaries remain distinct.

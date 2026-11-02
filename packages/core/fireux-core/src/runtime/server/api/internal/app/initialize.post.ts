@@ -8,6 +8,9 @@ export default defineEventHandler(async (event) => {
   const { uid } = await requireDevDeveloper(event)
   const config = useFireUXConfig(event)
   const runtime = useRuntimeConfig(event)
+  const ecosystem = runtime.public?.firebaseEcosystem as
+    | Record<string, unknown>
+    | undefined
   const firebase = runtime.public?.firebaseEcosystem?.firebase as
     | Record<string, unknown>
     | undefined
@@ -21,6 +24,10 @@ export default defineEventHandler(async (event) => {
     config,
     appDatabaseId,
     identityDatabaseId,
+    ecosystem: {
+      name: String(ecosystem?.name || ''),
+      description: String(ecosystem?.description || ''),
+    },
     context: runtime.fireux?.initialAppContext,
   })
 })

@@ -5,6 +5,18 @@
       ⚠️ That name is already used for another product in this workspace. Please
       choose a more unique name.
     </p>
+    <UFormField
+      label="Catalogue visibility"
+      description="Public Products appear in this App's customer catalogue. App-only Products stay in management."
+    >
+      <USelect
+        v-model="product.visibility"
+        :items="[
+          { label: 'App only', value: 'app' },
+          { label: 'Public', value: 'public' },
+        ]"
+      />
+    </UFormField>
     <UInput v-model="product.tagline" placeholder="Tagline (short)" />
     <UTextarea
       v-model="product.description"

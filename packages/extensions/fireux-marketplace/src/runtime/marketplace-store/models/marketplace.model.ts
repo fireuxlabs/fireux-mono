@@ -14,11 +14,11 @@ export const MarketplaceStoreStorage = {
 export const MarketplaceStoreEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'MarketplaceStore',
-  family: ['commerce', 'workspace-entity'],
+  family: ['commerce'],
   identity: 'root',
   authority: 'domain-database',
   appSupport: 'none',
-  workspace: true,
+  workspace: false,
   root: MarketplaceStoreStorage.path,
   notes: [
     'Store identity is root-owned even when management names an App.',

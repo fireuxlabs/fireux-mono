@@ -1,39 +1,42 @@
-# Assisted Ignition preview
+# Ecosystem Ignition preparation
 
-One supported example: a read-only Menu starting App using Kitchen's existing
-demo data. This is workspace source assembly, not arbitrary industry generation.
+The FireUX App `/ignite-preview` and Codex `ignition:prepare` use the same
+`shared/ignition-preview.ts` preparation function. Input is an Ecosystem `id`,
+`name` and reviewed `outcome`. Output includes:
 
-The FireUX App's `/ignite-preview` form calls `/api/ignition/preview`. Codex's
-`ignition:prepare` command calls the same `shared/ignition-preview.ts` function.
-Both produce the same reviewed brief, source files, neutral artwork reference,
-App identity, preview address and manual steps. No credentials are in the artifact.
-
-From the repository root:
+- `packages/ecosystem/fireux-<id>` using Core ecosystem wiring and Firebase binding.
+- `projects/<id>/<id>-app` with global role, Core AppShell and shared plan presentation.
+- An empty `.env.example` for the business Firebase and Stripe configuration.
 
 ```sh
-pnpm --filter fireux-app ignition:prepare /path/to/reviewed-brief-or-artifact.json
-pnpm --filter fireux-app ignition:prepare /path/to/reviewed-brief-or-artifact.json --write
-pnpm install --ignore-scripts
-pnpm --filter <generated-app-id> dev
+pnpm --filter fireux-app ignition:prepare /path/to/brief.json
+pnpm --filter fireux-app ignition:prepare /path/to/brief.json --write
 ```
 
-The direct brief contains `id`, `name` and `outcome` strings. A downloaded artifact
-is also accepted; changed or stale source is rejected before writing. An identical
-existing output resumes without rewriting it. Operator edits and incomplete
-outputs require inspection; there is no force/overwrite mode. Failed first writes
-remove only their newly created output.
+The CLI verifies downloaded artifacts, checks both owners before writing, resumes
+identical outputs and never overwrites operator development. Failed writes remove
+only newly created outputs. Both paths remain inside the repository workspace.
+No provider credentials are copied from FireUX.
 
-The generated App uses native Nuxt, Core AppShell, App metadata/SEO, and Kitchen's
-Menu catalogue and fictional fixtures. Its commands use Nuxt's `--dotenv` option
-to reuse the existing FireUX development environment. Port 3048 supports one local
-preview at a time. Sign in as the configured developer, review the exact identity
-and use Core's existing Initialize App control. Initialization and media sync keep
-their current trusted commands and authority; no new database is provisioned.
+## Provider setup boundary
 
-Neutral starter artwork is placeholder content to replace before branding or
-release. This path does not submit the separate paid intake, interpret arbitrary
-ideas, execute public shell commands, deploy an App or prove an independent SaaS.
+Create or select the selling business Firebase project and web App using native
+Firebase tooling. Configure its named Firestore database, Authentication and
+Storage, then populate the generated environment locally. Use existing credential
+management for Admin access; never commit private keys. Install dependencies and
+start the App through native Nuxt commands. No deployment command is generated.
 
-Checks: `app/tests/ignition-preview.test.mjs`, host/generated App typechecks,
-the generated App's native build, and a browser check of preparation, initialization
-and reload. Core initialization tests retain their own scope/retry coverage.
+Connect the selling business Stripe account through the existing Product/Checkout
+owners. Separate Apps sold by the same business may share that account. Independent
+businesses must not silently inherit FireUX live credentials. Provider verification,
+commercial prices and a signed subscription webhook must be ready before paid
+plans are enabled. The Firebase Stripe extension is not a generated dependency.
+
+**Current limits:** source preparation and paired materialization are implemented.
+Provider project/account creation, canonical Ecosystem bootstrap and shared paid
+subscription-to-entitlement reconciliation are not executed by this command.
+Core Initialize App requires an existing canonical Ecosystem. Shared plan display
+is not paid billing readiness. This path does not claim arbitrary industry software
+creation, operational domain acceptance or a deployed SaaS.
+
+Checks: `app/tests/ignition-preview.test.mjs` and the FireUX App typecheck.

@@ -1,3 +1,5 @@
+import type { FireuxCommandToolDefinition } from 'fireux-core/runtime/tools/types'
+
 export const kitchenWasteEventRecordTool = {
   id: 'kitchen.waste.record-event',
   mode: 'write',
@@ -56,4 +58,4 @@ export const kitchenWasteEventRecordTool = {
     agent: { callable: false },
   },
   result: { kind: 'object' },
-} as const
+} as const satisfies FireuxCommandToolDefinition

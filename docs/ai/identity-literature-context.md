@@ -83,6 +83,14 @@ shared public-language or pricing seam applies to them.
   an Apps section only when their public collection contains more than one
   active child App after excluding the Main App; the heading is only
   `<App name>'s Apps`.
+- Customer-facing Products use the existing `/products` catalogue and supported
+  `/products/<slug>` offers. FireUX App supplies its framework framing over
+  Products' existing reader and collection; its Misebox link leads to that App's
+  own catalogue. Saved Product ownership and database scope stay with each App.
+  Audience, outcome and Workspace-use copy belong on the owning offer surface.
+  Future Product concepts stay in the roadmap until a real offer is established;
+  do not add a parallel literature directory or static catalogue of working
+  Products. Catalogue presentation does not execute tools or grant entitlement.
 - Each Main App owns its product nouns, Workspace name, capability limits,
   imagery, actions, and working routes.
 - Identity and Team are Workspace capabilities where the source-backed family

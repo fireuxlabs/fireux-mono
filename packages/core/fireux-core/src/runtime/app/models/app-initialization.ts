@@ -3,6 +3,7 @@ export type AppInitializationResult = {
   appId: string
   userId: string
   appCreated: boolean
+  ecosystemCreated: boolean
   membershipCreated: boolean
   membershipUpdated: boolean
 }

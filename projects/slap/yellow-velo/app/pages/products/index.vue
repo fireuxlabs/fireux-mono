@@ -4,7 +4,7 @@
       <UContainer class="yv-shop-hero__inner">
         <div class="yv-shop-hero__copy">
           <p class="yv-eyebrow">Yellow Velo · Interlaken</p>
-          <h1>Good bikes.<br>Great stuff.</h1>
+          <h1>Good bikes.<br />Great stuff.</h1>
           <p>
             Vintage racers, rebuilt mountain bikes, hard-working components,
             proper apparel, and the small things that make a ride better.
@@ -59,14 +59,19 @@
           <p class="yv-eyebrow">{{ activeCategoryLabel }}</p>
           <h2>
             {{ filteredProducts.length }}
-            {{ filteredProducts.length === 1 ? 'thing' : 'things' }} worth riding with
+            {{ filteredProducts.length === 1 ? 'thing' : 'things' }} worth
+            riding with
           </h2>
         </div>
         <p>Prices and availability follow the Yellow Velo shop.</p>
       </div>
 
       <div v-if="pending" class="yv-product-grid" aria-label="Loading products">
-        <USkeleton v-for="index in 8" :key="index" class="h-[28rem] rounded-none" />
+        <USkeleton
+          v-for="index in 8"
+          :key="index"
+          class="yv-product-skeleton"
+        />
       </div>
 
       <FireStateCard
@@ -93,7 +98,7 @@
               :src="entry.product.main_image"
               :alt="entry.product.name"
               loading="lazy"
-            >
+            />
             <span>{{ primaryCategory(entry.product) }}</span>
           </div>
           <div class="yv-product-card__body">
@@ -119,13 +124,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
-import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
 import type { Product } from 'fireux-products/runtime/product/models/product.model'
 import type { ProductPrice } from 'fireux-products/runtime/product/models/product-price.model'
-import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
-import { joinProductRead } from 'fireux-products/runtime/product/utils/normalize-product'
 
 definePageMeta({
   layout: 'landing',
@@ -148,27 +150,17 @@ useSeoMeta({
     'Shop Yellow Velo bicycles, tyres, components, apparel, bags, tools, frames, forks, and accessories.',
 })
 
-const fetched = useProductCollection()
-const { fetchProductPrices } = useProductPrices()
-const productReads = ref<ProductRead[]>([])
-watch(
-  fetched.products,
-  async (products) => {
-    productReads.value = await Promise.all(
-      products.map(async (product) =>
-        joinProductRead(product, await fetchProductPrices(product.id))
-      )
-    )
-  },
-  { immediate: true }
-)
+const fetched = useProductCollection({ prices: true })
+const { productReads } = fetched
 const pending = computed(() => fetched.pending.value)
 const error = computed(() => fetched.error.value)
 const search = ref('')
 const route = useRoute()
 const requestedCategory = String(route.query.category || '')
 const activeCategory = ref(
-  ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(requestedCategory)
+  ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(
+    requestedCategory
+  )
     ? requestedCategory
     : 'all'
 )
@@ -187,25 +179,28 @@ const productCategories = (product: Product) => {
 }
 
 const categories = computed(() =>
-  categoryDefinitions.map(category => ({
+  categoryDefinitions.map((category) => ({
     ...category,
-    count: category.value === 'all'
-      ? productReads.value.length
-      : productReads.value.filter(({ product }) =>
-          productCategories(product).includes(category.value)
-        ).length,
+    count:
+      category.value === 'all'
+        ? productReads.value.length
+        : productReads.value.filter(({ product }) =>
+            productCategories(product).includes(category.value)
+          ).length,
   }))
 )
 
-const bicycleCount = computed(() =>
-  productReads.value.filter(({ product }) =>
-    productCategories(product).includes('Bicycles')
-  ).length
+const bicycleCount = computed(
+  () =>
+    productReads.value.filter(({ product }) =>
+      productCategories(product).includes('Bicycles')
+    ).length
 )
 
-const activeCategoryLabel = computed(() =>
-  categories.value.find(category => category.value === activeCategory.value)?.label
-    ?? 'Everything'
+const activeCategoryLabel = computed(
+  () =>
+    categories.value.find((category) => category.value === activeCategory.value)
+      ?.label ?? 'Everything'
 )
 
 const filteredProducts = computed(() => {
@@ -214,7 +209,8 @@ const filteredProducts = computed(() => {
     const product = entry.product
     const categories = productCategories(product)
     const matchesCategory =
-      activeCategory.value === 'all' || categories.includes(activeCategory.value)
+      activeCategory.value === 'all' ||
+      categories.includes(activeCategory.value)
     if (!matchesCategory) return false
     if (!query) return true
     return [
@@ -222,19 +218,30 @@ const filteredProducts = computed(() => {
       product.description,
       ...(categories || []),
       ...product.brands,
-    ].join(' ').toLowerCase().includes(query)
+    ]
+      .join(' ')
+      .toLowerCase()
+      .includes(query)
   })
 })
 
 const primaryCategory = (product: Product) => {
   const categories = productCategories(product)
-  return categories.find(category =>
-    ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(category)
-  ) || categories[0] || 'Shop'
+  return (
+    categories.find((category) =>
+      ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(
+        category
+      )
+    ) ||
+    categories[0] ||
+    'Shop'
+  )
 }
 
 const productSummary = (product: Product) => {
-  const summary = String(product.description || '').replace(/\s+/g, ' ').trim()
+  const summary = String(product.description || '')
+    .replace(/\s+/g, ' ')
+    .trim()
   return summary.length > 116 ? `${summary.slice(0, 113).trimEnd()}…` : summary
 }
 

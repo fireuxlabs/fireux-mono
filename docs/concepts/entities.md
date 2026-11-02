@@ -61,7 +61,7 @@ Every declaration made with `defineFireuxEntity()` answers these axes:
 | `identity`   | root, parent-scoped, none, to-confirm                                                                       | Where does canonical identity live?              |
 | `authority`  | App database, domain database, identity database, ecosystem identity database, FireUX control plane, parent | Who owns lifecycle truth?                        |
 | `appSupport` | none, membership record, profile delta, to-confirm                                                          | What genuine App-owned support may accompany it? |
-| `workspace`  | boolean                                                                                                     | Does it expose a Workspace surface?                        |
+| `workspace`  | boolean                                                                                                     | Does it expose a Workspace surface?              |
 | `parent`     | optional Entity name                                                                                        | Which Entity owns a parent-scoped declaration?   |
 
 A root Entity document is its canonical readable Entity. Information that
@@ -82,14 +82,13 @@ it is not proof that every row still has a consumed declaration:
 | Project          | system, workspace entity    | root           | FireUX control plane        | none              | yes       |
 | Job              | content                     | root           | domain database             | none              | no        |
 | Place            | place                       | root           | domain database             | none              | no        |
-| MarketplaceStore | commerce, workspace entity  | root           | domain database             | none              | yes       |
+| MarketplaceStore | commerce                    | root           | domain database             | none              | no        |
 | Kitchen          | kitchen, workspace entity   | root           | domain database             | none              | yes       |
-| KitchenMenu      | menu, kitchen               | Kitchen-scoped | parent                      | none              | no        |
+| Menu             | menu, kitchen               | Kitchen-scoped | parent                      | none              | no        |
 | Recipe           | kitchen                     | Kitchen-scoped | parent                      | none              | no        |
 | KitchenPrepItem  | kitchen                     | Kitchen-scoped | parent                      | none              | no        |
 | Dish             | kitchen, menu               | Kitchen-scoped | parent                      | none              | no        |
 | KitchenOrder     | kitchen, ordering           | Kitchen-scoped | parent                      | none              | no        |
-| Menu             | menu                        | root           | domain database             | none              | no        |
 | Supplier         | supplier, workspace entity  | root           | domain database             | none              | yes       |
 | Portfolio        | portfolio, workspace entity | root           | domain database             | none              | yes       |
 | Property         | property, workspace entity  | root           | domain database             | none              | yes       |
@@ -100,7 +99,7 @@ The current declared Records are:
 | ----------------- | ---------------- | -------------------------------------------------------------------------- |
 | Company           | Place            | It is an exact same-id role marker; Place owns identity and location truth |
 | MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                               |
-| MenuSection       | KitchenMenu      | It groups MenuItem records inside one Menu                                 |
+| MenuSection       | Menu             | It groups MenuItem records inside one Menu                                 |
 | MenuItem          | MenuSection      | It is one parent-owned catalogue row                                       |
 | KitchenSale       | KitchenOrder     | It is the immutable one-to-one result of Order completion                  |
 | CustomerProfile   | User             | It stores User-owned ordering preferences, not another person identity     |
@@ -117,7 +116,7 @@ a runtime mega-registry to make this map executable.
 
 ### Entities with Workspace surfaces
 
-Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store expose
+Project, Kitchen, Supplier, Portfolio and Property expose
 Workspace management surfaces. They remain domain Entities, not instances of a
 second Workspace Entity model. The declaration's `workspace` boolean describes
 surface availability; it does not create another data or authority layer.
@@ -198,11 +197,12 @@ User identities. Root `User.app_ids` is denormalized identity metadata, not
 tenant-directory selection authority, and tenant detail routes apply the same
 membership decision as their list.
 
-### Root doorway plus scoped source
+### Kitchen-owned Menu identity
 
-Menu is a root doorway. KitchenMenu is a distinct Kitchen-scoped Entity
-that owns structured content. A Menu may point to a KitchenMenu; publishing does
-not turn them into one identity or justify copying the scoped tree into root.
+Menu is one Kitchen-scoped Entity at `kitchens/{kitchenId}/menus/{menuId}`.
+Its publication command updates that same record; public routes project it
+without creating a second root Menu identity. See [Menu family](family-menu.md)
+and `menu/models/menu-storage.model.ts` in `fireux-kitchens`.
 
 ### Parent-owned records
 
@@ -347,10 +347,10 @@ Directory and Entity Detail family maps.
 
 | Difference                                                     | State      | Required direction                                                                                                                                                                                   |
 | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Existing domain concepts exceed this descriptive map          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                                       |
+| Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                                       |
 | Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                                  |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
-| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration  |
+| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration |
 | Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                                  |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
 | Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |

@@ -25,15 +25,14 @@ still needed to remove unexplained drift.
 The exact Workspace surface and Capability lists live once in the source-backed
 map in `workspace.md`. The family deltas are:
 
-| Member            | Status and reason                                                                                                                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no domain capabilities, but is not an ecosystem-installed product Workspace |
-| Kitchen           | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                       |
-| Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                        |
-| Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                                                          |
-| Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                                                              |
-| Project           | `accepted`: FireUX control-plane root with Team authority and trusted empty-shell Create                                                                                                          |
-| Marketplace Store | `accepted`: root Workspace ownership is declared now; its Workspace surface remains future product work                                                                                           |
+| Member    | Status and reason                                                                                                                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blank     | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no domain capabilities, but is not an ecosystem-installed product Workspace |
+| Kitchen   | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                       |
+| Supplier  | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                        |
+| Portfolio | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                                                          |
+| Property  | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                                                              |
+| Project   | `accepted`: FireUX control-plane root with Team authority and trusted empty-shell Create                                                                                                          |
 
 ## Team edits and the selected Entity
 

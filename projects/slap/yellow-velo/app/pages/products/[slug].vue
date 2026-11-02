@@ -57,28 +57,20 @@
 </template>
 
 <script setup lang="ts">
-import { useAsyncData } from 'nuxt/app'
+import { useProductDetail } from 'fireux-products/runtime/product/composables/useProductDetail'
 
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductSeo } from 'fireux-products/runtime/product/composables/useProductSeo'
-import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
 
 definePageMeta({
   layout: 'landing',
 })
 
 const route = useRoute()
-const slug = readRouteParam(route.params.slug)
-const { data: read } = await useAsyncData(
-  `yellow-velo-product-${slug}`,
-  async (_nuxtApp, { signal }) => {
-    const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-    return fetchRead<ProductRead>(`/api/products/${encodeURIComponent(slug)}`)
-  }
-)
-const product = computed(() => read.value?.product || null)
-const defaultPrice = computed(() => read.value?.defaultPrice || null)
+const id = computed(() => readRouteParam(route.params.slug))
+const { product, defaultPrice, ready } = useProductDetail(id)
+await ready
 
 useProductSeo(product, defaultPrice)
 

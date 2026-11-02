@@ -1,8 +1,8 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Prepare a FireUX starting App"
-      description="Prove the assisted Ignition path with the existing read-only Kitchen Menu demo."
+      title="Prepare your Ecosystem"
+      description="An Ecosystem and its main App, using shared FireUX foundations."
     />
     <UPageBody><IgnitionPreview /></UPageBody>
   </UPage>

@@ -92,6 +92,38 @@ selection, CHF 13 basket and the closed-hours submission guard without changing
 its saved hours or writing an order. Hardware deployment, actual customer
 handover, provider payment and release remain outside this local proof.
 
+Collection Ordering is the second bounded Product composition after Menu Express.
+Its saved `collection-ordering` catalogue record and App-owned offer reuse the
+existing Kitchen Services, public Collection menu and Orders board. No new
+execution layer, Product purchase dependency or provider price was introduced.
+Products live in the existing catalogue (`/products`) and saved Product records;
+App-specific offer pages compose supported domain entrances. The 25 obsolete Bären
+drink Products and their 25 manual default prices were retired after exact canonical
+Dish/price/placement verification and a managed Product/price backup. Canonical
+Kitchen records remain unchanged; the Main App no longer filters the catalogue.
+The operational plan and recovery instructions live with the named migration tool.
+
+| Candidate                | Existing owner to reuse                    | Current standing                                                                |
+| ------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| Menu Express             | Kitchen Menus preparation/publication      | Existing Product and delivery workflow                                          |
+| Collection Ordering      | Kitchen Services, Menu checkout and Orders | Second Product; combined demo-command proof                                     |
+| QR Menu setup            | Kitchen Menus publication and QR           | Future packaging idea; no separate Product proved                               |
+| Property booking page    | Property Reservations/Calendar             | Future idea; full customer journey must be inspected                            |
+| Supplier catalogue setup | Supplier Catalogue/Items and Products      | Future idea; no delivery pipeline claimed                                       |
+| Branded starting App     | Existing Ignition preparation              | Existing assisted mechanism; future offer packaging needs its own bounded proof |
+
+The future concepts retain their audience and intended result here:
+
+| Concept                  | Audience                                           | Intended result                                                                           | Next proof                                                                                                        |
+| ------------------------ | -------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| QR Menu setup            | Venue teams helping guests open a Menu             | Select and review a Menu, publish it and check its QR on a guest phone                    | Establish the packaged service and its scope over existing Menu/QR tools                                          |
+| Property booking page    | Independent hosts and small property teams         | Present the stay, let guests choose dates, and manage the resulting requests/reservations | Prove availability and one guest-to-host reservation journey before offering it                                   |
+| Supplier catalogue setup | Suppliers and distributors serving business buyers | Present product details, pack sizes and terms, with updates managed once in Workspace     | Prove one buyer-facing catalogue and its update workflow                                                          |
+| Branded starting App     | Founders and business teams                        | Agree a focused App scope and inspect a starting preview                                  | Establish offer packaging over existing Ignition mechanics; installation, development and release remain explicit |
+
+Future candidates are roadmap ideas, not claims of available or released products.
+Stripe remains parked and deployment is not authorized.
+
 ## Attack order
 
 | Priority | Work                                    | Finish line                                                                                                                                     |
@@ -299,3 +331,91 @@ the supplied source and binds the Menu; manual download/re-upload/linking is
 removed. One labelled live demo crossed both entrances and reached customer
 approval, delivery and public Menu reload. See the existing Menu Express review
 for exact evidence and limits. Stripe and deployment remain parked.
+
+## SaaS plan and billing reconciliation — 1 November 2026
+
+The agreed main-App catalogue is Pro, Business and domain-backed offers (Misebox:
+Menu Express and Collection Ordering). Free is the default tier. Tenant Apps do
+not sell separate SaaS plans. Core display now says Pro; existing stored
+`premium` and pricing-route `professional` identities are not yet migrated. The
+shared Workspace upgrade prompt is restricted to global Apps.
+
+Read-only Stripe inspection found one connected live FIReUX account. Charges are
+enabled, but payouts are disabled with outstanding identity-verification
+requirements. Its enabled webhook points to the existing Firebase Stripe
+extension; subscription updated/deleted events are absent. No account settings,
+webhooks, Products or charges were changed by this inspection.
+
+Remaining work: settle one tier identity across stored memberships and pricing;
+connect verified billing lifecycle to main-App entitlements; replace the two
+disconnected Misebox plan records through the normal Product owner; verify
+expiry/cancellation and tenant scope. Do not treat a checkout redirect as a grant.
+
+Ignition currently produces a bounded tenant preview using existing development
+infrastructure. Independent business provisioning is not implemented. A generated
+App must not silently inherit FireUX live payment credentials. Stripe account
+ownership follows the selling business; Firebase project/database binding follows
+the deployed product's isolation and ownership. Account creation and verification
+remain explicit operator steps until an actual provisioning owner exists.
+
+### Firebase Stripe extension retirement audit
+
+Read-only inspection on 1 November 2026 found the `firestore-stripe-payments`
+instance active in `fireux-2005`: Auth customer creation/deletion, Firestore
+checkout creation/customer deletion, callable portal creation and webhook handling.
+The checkout/customer deletion triggers target `(default)/customers`, not the
+current named-database Product owners. The default database has zero Customers,
+Products, subscriptions, payments and checkout sessions. The named `fireux`
+database has seven Products but no Customers, subscriptions, payments or checkout
+sessions. The connected live FIReUX Stripe account has zero subscriptions of any
+status, with complete pagination. No current repository caller of the extension
+checkout/customer/subscription paths was found. This does not inspect historical
+deployed App bundles or prove there are no Stripe Customers or one-time payments.
+
+Recommendation: retire the extension and its old enabled Stripe webhook together
+in an explicitly authorized infrastructure change. Preserve existing billing data;
+do not cancel subscriptions, delete Stripe Customers or remove secrets shared with
+current Apps. Capture exact instance configuration (excluding secret values),
+function inventory and webhook settings before uninstall. Confirm new Auth users
+no longer create Stripe Customers and current named Product reads still work.
+There is no consumed local wrapper to delete or reason to build a replacement
+catalogue sync. Current Product commands own Product/price creation and Checkout
+Sessions; Misebox `server/api/menu-express/stripe-webhook.post.ts` owns signed
+Menu Express payment confirmation. Main-App subscription lifecycle/entitlement
+handling remains unfinished and must be completed before paid SaaS plans launch.
+No extension, webhook or deployed function was modified by this audit.
+
+### Ecosystem source preparation
+
+Ignition source preparation now emits an Ecosystem package and global main App
+through the same App/CLI function. The paired materializer preserves existing
+source and rolls back only new output on failure. Firebase binding uses explicit
+required environment values, and the App does not inherit FireUX credentials.
+Generated pricing composes Core's three shared SaaS tiers. Provider provisioning,
+canonical Ecosystem bootstrap and paid subscription reconciliation remain open;
+these artifacts must not be described as a fully initialized independent SaaS.
+
+## Product to Workspace stress pass — 2 November 2026
+
+Menu Express guest intake/recovery, correction, approval, changed-content rejection
+and delivery/reload retain their token-scoped request owner; no Workspace
+adoption is required to receive the delivered Menu/QR. Existing-user preparation
+now chooses from Kitchen-owned authorised targets rather than a raw ID or an
+early snapshot. The same saved Kitchen/Menu target is retained, and attempts to
+rebind an existing request to another authorised Kitchen are rejected. Late target
+loading, unsettled reads and removed choices have focused client regression checks.
+
+Collection Product/customer/Workspace fixtures exercise canonical Menu prices,
+retry without duplicate Orders, the operator board and fulfilment transitions.
+Product purchase is not required; service readiness, current Kitchen access and
+plan limits retain their existing owners. The current Workspace tier regression
+now consumes `useKitchenWorkspace`, replacing a retired Index reference. Changing
+tiers does not truncate saved Kitchens or change selection.
+
+Pro/Business remain enquiry entrances; paid activation/cancellation is not proved
+and subscription reconciliation remains with the Ignition/billing task. Guest
+Menu delivery is proved with controlled fixtures, not a new paid live order.
+Self-service adoption of an operator-prepared Kitchen is not an implemented
+ownership transfer, so no adoption invitation was added. Existing membership and
+Kitchen authority must own any future grant; a request recovery token is not a
+Workspace grant. No deployment, provider charge or live record mutation occurred.

@@ -1,6 +1,7 @@
-import { defineKitchenTeamTool } from './types'
+import { defineFireuxCommandTool } from 'fireux-core/runtime/tools/types'
+import type { KitchenTeamToolDefinition } from './types'
 
-export const kitchenTeamMembersReadTool = defineKitchenTeamTool({
+export const kitchenTeamMembersReadTool = defineFireuxCommandTool({
   id: 'kitchen.team.read-members',
   mode: 'read',
   risk: 'read',
@@ -38,4 +39,4 @@ export const kitchenTeamMembersReadTool = defineKitchenTeamTool({
     agent: { callable: true },
   },
   result: { kind: 'collection' },
-})
+} satisfies KitchenTeamToolDefinition)

@@ -1,16 +1,15 @@
-import { defineKitchenTeamTool } from './types'
+import { defineFireuxCommandTool } from 'fireux-core/runtime/tools/types'
+import type { KitchenTeamToolDefinition } from './types'
 
-export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
+export const kitchenTeamMemberUpdateTool = defineFireuxCommandTool({
   id: 'kitchen.team.update-member',
   mode: 'write',
   risk: 'write',
   confirmation: 'required',
   context: {
     target: 'WorkspaceTeamMemberDocument',
-    instruction:
-      'Update the name of an existing Kitchen Team member.',
-    outcome:
-      'Preserves member identity while updating the supported name.',
+    instruction: 'Update the name of an existing Kitchen Team member.',
+    outcome: 'Preserves member identity while updating the supported name.',
     constraints: ['Linked account names are managed on the account.'],
   },
   inputSchema: {
@@ -43,8 +42,7 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   },
   ai: {
     baked: {
-      purpose:
-        'Update the supported name for selected Kitchen Team members.',
+      purpose: 'Update the supported name for selected Kitchen Team members.',
       knows: [
         'The selected Kitchen, current member identities and proposed names.',
       ],
@@ -72,4 +70,4 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
     agent: { callable: true },
   },
   result: { kind: 'mutation' },
-})
+} satisfies KitchenTeamToolDefinition)

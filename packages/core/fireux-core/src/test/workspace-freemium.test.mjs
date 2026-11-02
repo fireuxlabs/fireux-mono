@@ -43,6 +43,7 @@ test('Freemium is shown only for free plans at top or discovery, with configured
     error: ref(undefined),
   }
   const config = {
+    isGlobal: true,
     subscriptionCapacity: {
       kitchen: { free: 1, premium: 1, business: null },
       'kitchen.test': { free: 2, premium: 10, business: null },
@@ -61,7 +62,7 @@ test('Freemium is shown only for free plans at top or discovery, with configured
   let card = make()
   assert.equal(card.visible.value, true)
   assert.match(card.currentAllowance.value, /2 Test records remaining/)
-  assert.match(card.upgradeAllowance.value, /Professional supports up to 10/)
+  assert.match(card.upgradeAllowance.value, /Pro supports up to 10/)
   session.appUser.value.subscription = 'premium'
   assert.equal(card.visible.value, false)
   props.placement = 'bottom'
@@ -83,6 +84,9 @@ test('Freemium is shown only for free plans at top or discovery, with configured
     card.upgradeAllowance.value,
     /Business supports unlimited workspaces/
   )
+  config.isGlobal = false
+  assert.equal(card.visible.value, false)
+  config.isGlobal = true
   session.pending.value = true
   assert.equal(card.visible.value, false)
 })

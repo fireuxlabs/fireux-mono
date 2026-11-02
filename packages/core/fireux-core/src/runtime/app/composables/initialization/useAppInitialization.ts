@@ -44,11 +44,15 @@ export function useAppInitialization(): AppInitializationState {
   const actionPending = ref(false)
   const proceedError = ref<string | null>(null)
   let runSequence = 0
-  watch(context, () => {
-    runSequence += 1
-    actionPending.value = false
-    proceedError.value = null
-  }, { flush: 'sync' })
+  watch(
+    context,
+    () => {
+      runSequence += 1
+      actionPending.value = false
+      proceedError.value = null
+    },
+    { flush: 'sync' }
+  )
 
   const { data, pending, error, refresh: refreshEnv } = useAppEnvCheck()
 
@@ -60,10 +64,16 @@ export function useAppInitialization(): AppInitializationState {
   })
 
   const envPending = computed(() => Boolean(pending.value))
-  const canProceed = computed(() => Boolean(
-    currentUser.value?.uid && coreUser.value && !userPending.value &&
-    !envPending.value && !envError.value && env.value?.isValid
-  ))
+  const canProceed = computed(() =>
+    Boolean(
+      currentUser.value?.uid &&
+        coreUser.value &&
+        !userPending.value &&
+        !envPending.value &&
+        !envError.value &&
+        env.value?.isValid
+    )
+  )
 
   const onRefreshEnv = () => {
     void refreshEnv()
@@ -90,11 +100,15 @@ export function useAppInitialization(): AppInitializationState {
       await refreshEnv()
       if (!isCurrent()) return
       toast.success(
-        result.appCreated
-          ? 'App initialized.'
-          : result.membershipCreated || result.membershipUpdated
-            ? 'App access repaired.'
-            : 'App is ready.'
+        result.ecosystemCreated
+          ? result.appCreated
+            ? 'Ecosystem and App initialized.'
+            : 'Ecosystem setup repaired.'
+          : result.appCreated
+            ? 'App initialized.'
+            : result.membershipCreated || result.membershipUpdated
+              ? 'App access repaired.'
+              : 'App is ready.'
       )
     } catch (e) {
       if (!isCurrent()) return

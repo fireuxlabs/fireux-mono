@@ -20,7 +20,7 @@ sections or items. Run with existing gcloud credentials and a trusted system CA.
    Review the reported issues and exact field changes. Do not overwrite an old
    plan directory.
 3. Ensure the matching runtime is running. Apply with `apply --directory ...
-   --confirm <plan-sha256> --export-operation <full-operation-name>`.
+--confirm <plan-sha256> --export-operation <full-operation-name>`.
    The command checks the completed export, source hash and every record version
    before one atomic commit. Repeating the same apply skips exact postimages.
 4. Run `verify --directory ...` to compare every complete postimage. Retain the
@@ -77,7 +77,6 @@ The tools below target the retired root-array intermediate shape. They do not
 convert to the current Offering children and must not be applied to the current
 runtime as its migration procedure.
 
-
 `named-services.py` replaces exactly one Kitchen's old `ordering.services` with
 the root `services` array. The historical `kitchen-ordering.py` remains a separate
 Menu-to-Kitchen migration; it is not a prerequisite runner for this cutover.
@@ -100,7 +99,7 @@ or browse-only services can have no hours. Already migrated valid records skip
 unchanged; exact postimage replay also skips unchanged.
 
 1. Run `python3 named-services.py plan --kitchen-id <exact-id> --directory
-   <fresh-private-directory>`. The directory must be mode `0700`. Review the
+<fresh-private-directory>`. The directory must be mode `0700`. Review the
    protected complete preimages, exact changes, issue list and printed plan hash.
 2. Before apply, retain a successfully completed managed export of `kitchens`
    (also `places` when used by this plan) to
@@ -108,7 +107,7 @@ unchanged; exact postimage replay also skips unchanged.
    This tool does not create exports or choose a different backup destination.
 3. Ensure the matching named-services runtime is running and old writers have
    stopped. Apply with `python3 named-services.py apply --directory <directory>
-   --confirm <plan-sha256> --export-operation <full-operation-name>`.
+--confirm <plan-sha256> --export-operation <full-operation-name>`.
    Source and plan hashes, a reconstruction from protected preimages, export
    completion/destination/scope, full preimages and update times must match.
    The existing guarded writer performs one atomic root update; linked Place
@@ -204,3 +203,48 @@ and current memberships immediately before any future application, validate the
 proposed entries with the Kitchen domain reader, and verify complete canonical
 postimages before retiring old grants. No runtime fallback reads old paths.
 `test_kitchen_access.py` covers preservation, conflicts and invalid authority.
+
+## Bären drink Product retirement
+
+`retire-baeren-drink-products.py` is the exact, bounded operation for the 25
+obsolete `baeren-ringgenberg-*` root Products and their 25 `prices/default`
+children in `misebox-78f9c/misebox`. It never changes Kitchen Dishes, Menu
+placements, orders, Stripe or permissions. Canonical drink prices, bottle deposits
+and cocktail size options remain with Dishes.
+
+The plan checks seed provenance, exact ownership, manual price identity, canonical
+Dish prices/deposits, published placements, unexpected descendants and known
+Product-reference fields. Apply binds the source hash and plan hash, requires a
+completed managed export, and transactionally rechecks all preimage versions and
+references before exactly 50 compare-and-delete writes. This is an operational
+tool, not a generic writer.
+
+The executed plan and full raw preimages are protected and ignored by Git:
+`temp/migrations/drink-product-retirement-20261101-v2/`. Durable recovery copies
+and the managed Product/price export are at:
+`gs://misebox-78f9c-firestore-migrations/drink-product-retirement-20261101-v2/`.
+The bucket's project number was verified against Misebox before export. The
+`retirement-artifacts/` prefix contains the exact plan, preimages, source and
+export receipt. Do not put raw backups into Git.
+
+Plan SHA-256:
+`942f6cca4ac4de760035b6f2e2ef9611fb23193ff885ba6a34e0f81188d4a995`.
+Managed export operation:
+`projects/misebox-78f9c/databases/misebox/operations/ASBmY2E0ZWQ2ZDk1ZTktYzE4Yi05OTU0LWVlZDMtNzA3YjY3NDEkGnNlbmlsZXBpcAkKMxI`.
+
+Run readback with `python3 tools/misebox-migrations/retire-baeren-drink-products.py
+verify --directory temp/migrations/drink-product-retirement-20261101-v2`.
+Recovery is a separately authorized operation: use the retained exact source with
+`restore`, the same directory, `--confirm` plan hash and `--export-operation` above.
+Restore atomically creates only the 50 preimages and refuses to overwrite any
+existing document. It verifies restored fields afterward. Do not rerun an apply
+with an uncertain network outcome; inspect its attempt/commit receipts and run
+readback first. Managed export provides independent recovery if local artifacts
+are lost; exact create-only restoration is narrower than a database-wide import.
+
+Known reference coverage is limited to the fields listed in the tool across
+Items, Ingredients, Dishes, submitted Orders, drafts, historical Orders and Sales.
+It does not claim to discover external bookmarks or arbitrary unknown fields.
+Offline safety checks:
+`python3 -m unittest discover -s tools/misebox-migrations -p
+ 'test_retire_baeren_drink_products.py'`.

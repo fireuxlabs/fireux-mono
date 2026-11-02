@@ -4,23 +4,59 @@ import { collection, query, type Query } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { ProductStorage, type Product } from '../utils/product.ts'
-import { normalizeProduct } from '../utils/normalize-product.ts'
+import {
+  ProductStorage,
+  type Product,
+  type ProductRead,
+} from '../utils/product.ts'
+import {
+  joinProductRead,
+  normalizeProduct,
+} from '../utils/normalize-product.ts'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppUserRead } from 'fireux-core/runtime/app/composables/membership/useAppUserRead'
 import { productReadConstraints } from '../utils/product-read-constraints'
 
-/** Fetches the products collection for the current runtime scope. */
-export function useProductCollection(options: { admin?: boolean } = {}) {
-  if (options.admin) return useAdminProductCollection()
+/** One reader owns the complete requested catalogue, including optional prices. */
+export function useProductCollection(options: {
+  admin: true
+}): ReturnType<typeof useAdminProductCollection>
+export function useProductCollection(options?: {
+  admin?: false
+  prices?: boolean
+}): ReturnType<typeof usePublicProductCollection>
+export function useProductCollection(
+  options: { admin?: boolean; prices?: boolean } = {}
+) {
+  return options.admin
+    ? useAdminProductCollection()
+    : usePublicProductCollection(options.prices ?? false)
+}
+
+function usePublicProductCollection(prices: boolean) {
   const config = useFireUXConfig()
-  const source = useAsyncData<Product[]>(
-    `public-products:${config.role}:${config.appId}`,
-    (_app, { signal }) => $fetch('/api/products', { signal }),
+  const source = useAsyncData<ProductRead[]>(
+    `public-products:${config.role}:${config.appId}:${prices ? 'prices' : 'records'}`,
+    async (_app, { signal }) => {
+      const products = await $fetch<Product[]>('/api/products', { signal })
+      if (!prices)
+        return products.map((product) => joinProductRead(product, []))
+      return Promise.all(
+        products.map((product) =>
+          $fetch<ProductRead>(
+            `/api/products/${encodeURIComponent(product.id)}`,
+            { signal }
+          )
+        )
+      )
+    },
     { default: () => [] }
   )
-  const products = computed(() => source.data.value ?? [])
+  const productReads = computed(() => source.data.value ?? [])
+  const products = computed(() =>
+    productReads.value.map((read) => read.product)
+  )
   const count = computed(() => products.value.length)
   const { outcome } = useFirestoreCollectionState({
     count,
@@ -29,6 +65,7 @@ export function useProductCollection(options: { admin?: boolean } = {}) {
   })
   return {
     products,
+    productReads,
     count,
     pending: source.pending,
     error: source.error,

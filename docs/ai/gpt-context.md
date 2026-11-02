@@ -240,6 +240,11 @@ requests retain their distinct owners and routes. Use current fields, states,
 commands and pages as evidence; a proposal or connected source is not a shipped
 capability. Feature entitlement belongs to the acting User, separately from
 permission to edit the selected Entity.
+SaaS plan offers belong to Ecosystem main Apps, not tenant Apps. Core supplies
+the shared Free, Pro and Business presentation and capacity mechanics; stored
+subscription IDs currently remain free, premium and business. Do not rename
+stored IDs without inspecting and migrating their membership consumers. A shared
+tier is not evidence of paid billing or cross-App entitlement reconciliation.
 A public Product packages a domain capability; it does not become the owner of
 the underlying tool. Workspace may expose that same capability directly with
 richer domain configuration, without requiring purchase of the public service.

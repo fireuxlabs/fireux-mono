@@ -1,6 +1,7 @@
-import { defineKitchenTeamTool } from './types'
+import { defineFireuxCommandTool } from 'fireux-core/runtime/tools/types'
+import type { KitchenTeamToolDefinition } from './types'
 
-export const kitchenTeamMembersRemoveTool = defineKitchenTeamTool({
+export const kitchenTeamMembersRemoveTool = defineFireuxCommandTool({
   id: 'kitchen.team.remove-members',
   mode: 'write',
   risk: 'destructive',
@@ -11,9 +12,7 @@ export const kitchenTeamMembersRemoveTool = defineKitchenTeamTool({
       'Remove several existing Kitchen Team members while preserving explicitly named people.',
     outcome:
       'Removes each selected roster entry and revokes pending invitations.',
-    constraints: [
-      'Every affected member must be shown before confirmation.',
-    ],
+    constraints: ['Every affected member must be shown before confirmation.'],
   },
   inputSchema: {
     type: 'object',
@@ -51,4 +50,4 @@ export const kitchenTeamMembersRemoveTool = defineKitchenTeamTool({
     agent: { callable: true },
   },
   result: { kind: 'mutation' },
-})
+} satisfies KitchenTeamToolDefinition)

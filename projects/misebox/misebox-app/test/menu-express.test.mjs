@@ -149,7 +149,8 @@ function fixture() {
     requireChatStartBudget() {},
     readChatSession: async () => ({ messages: [] }),
     requireKitchenWriterAccount: async (input) => {
-      if (input.kitchenId !== 'kitchen') fail('Foreign Kitchen', 403)
+      if (!['kitchen', 'another-kitchen'].includes(input.kitchenId))
+        fail('Foreign Kitchen', 403)
     },
     readKitchenMenuReview: async () => review(),
     stagePublishKitchenMenu: async () => {
@@ -252,6 +253,18 @@ test('whole demo delivery: intake retry, correction, approval, changed-content r
   })
   assert.equal(preparation.target.menuId, `menu-express-${id}`)
   assert.equal(f.savedSources[0].uploadId, preparation.target.menuId)
+  await assert.rejects(
+    f.operatorAction(admin, id, {
+      action: 'prepare',
+      kitchenId: 'another-kitchen',
+    }),
+    /another preparation/
+  )
+  assert.equal(
+    (await f.readRequest({}, id, { token })).request.target.kitchenId,
+    'kitchen'
+  )
+
   await f.operatorAction(admin, id, { action: 'review' })
   await f.customerAction({}, id, {
     token,

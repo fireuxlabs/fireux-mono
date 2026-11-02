@@ -1,11 +1,28 @@
 <template>
   <section class="workspace-surface" aria-label="Menu Express preparation">
     <template v-if="!state.request?.target">
+      <FireState
+        :outcome="targets.outcome"
+        entity="Kitchens"
+        :error="targets.error"
+      />
       <UFormField
-        label="Kitchen ID"
-        description="Choose the Kitchen this Menu belongs to. The request’s supplied files or link are transferred automatically."
-        ><UInput v-model="kitchenId"
-      /></UFormField>
+        label="Prepare in Kitchen"
+        description="Choose an existing Kitchen you can manage. Source files transfer automatically; this does not create another Kitchen."
+      >
+        <USelect
+          v-model="kitchenId"
+          :items="kitchenOptions"
+          placeholder="Choose a Kitchen"
+          :disabled="targets.outcome !== 'ready' || state.busy"
+        />
+      </UFormField>
+      <UButton
+        v-if="targets.outcome === 'empty'"
+        to="/workspace/kitchen"
+        variant="outline"
+        >Open Kitchen Workspace</UButton
+      >
       <UButton
         :loading="state.busy"
         :disabled="!kitchenId || state.request?.payment.status !== 'paid'"
@@ -31,12 +48,32 @@
   </section>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { useKitchenTargets } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenTargets'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type { MenuExpressRequestView } from '../../composables/useMenuExpressRequest'
 defineProps<{
   state: Pick<MenuExpressRequestView, 'request' | 'busy' | 'act'>
 }>()
 const { selectedId } = useWorkspace('kitchen')
-const kitchenId = ref(selectedId.value || '')
+const targets = reactive(useKitchenTargets())
+const chosenId = ref('')
+const kitchenOptions = computed(() =>
+  targets.kitchens.map((kitchen) => ({
+    label: kitchen.name || 'Unnamed Kitchen',
+    value: kitchen.id,
+  }))
+)
+const kitchenId = computed({
+  get: () => {
+    if (targets.outcome !== 'ready') return ''
+    const ids = targets.kitchens.map((kitchen) => kitchen.id)
+    if (ids.includes(chosenId.value)) return chosenId.value
+    if (ids.includes(selectedId.value)) return selectedId.value
+    return ids.length === 1 ? ids[0]! : ''
+  },
+  set: (id: string) => {
+    chosenId.value = id
+  },
+})
 </script>

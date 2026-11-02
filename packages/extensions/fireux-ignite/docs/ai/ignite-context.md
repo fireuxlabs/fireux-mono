@@ -1,6 +1,6 @@
 # FireUX Ignite context
 
-Updated: 2026-10-28
+Updated: 2026-11-01
 Ref: cf2413355
 Role: living context
 Scope: reusable FireUX app ignition and reconciliation
@@ -31,12 +31,18 @@ may retain their intake policies while converging on these shared mechanics.
 Creation delivers an agreed working starting App. Post-creation development
 extends that App through its existing owners. A repair repeatedly needed after
 creation belongs back with the shared creation step or foundation that owns it.
-The FireUX App owns a bounded assisted Menu-preview source recipe, consumed by
-its website and operator CLI. See its [intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md)
+The FireUX App owns a bounded Ecosystem/main-App source recipe, consumed by its
+website and operator CLI through the same preparation function. It prepares a
+global main App with Core AppShell, a Free/Pro/Business plan presentation, and
+blank provider environment values. Core initialization creates the canonical
+Ecosystem record for this main-App shape through its guarded identity mutation;
+it does not provision Firebase or Stripe resources or reconcile paid
+subscriptions. This supported foundation is not a claim of general industry
+generation or a completed paid-billing journey. See its [intake
+context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md)
 and [operator entrypoint](../../../../../projects/fireux/fireux-app/ignition/README.md).
-This does not make the neutral package an executor or prove general industry
-generation. Prove each supported path through its actual commands and preview
-before claiming it is shared. The
+Prove each supported path through its actual commands and preview before
+claiming it is shared. The
 [priority list](../../../../../docs/roadmaps/fireux-priorities.md) gates this work
 after acceptance of the current foundation slice.
 
@@ -116,6 +122,8 @@ research, crawl sites, generate pages or certify rankings automatically.
 - `src/runtime/utils/reconcile-ignition.ts`: declared coverage and dependency validation.
 - `src/test/reconciliation.test.mjs`: absent-proposal, invalid-reference, cycle, evidence and reference-source checks.
 - `src/test/package-artifact.test.mjs`: packed root/subpath exports execute under plain Node outside the workspace.
+- FireUX App `shared/ignition-preview.ts`, `ignition/prepare.mjs` and `app/tests/ignition-preview.test.mjs`: one source recipe and its website/CLI materialization contract.
+- Core `runtime/app/server/initialization/initialize.ts` and `src/test/app-context-creation.test.mjs`: guarded, idempotent canonical Ecosystem bootstrap for a global main App.
 - [App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md): concrete FireUX App request and delivery owner.
 
 ## Refresh and verification
@@ -131,7 +139,7 @@ proof, and must not be bypassed to manufacture it.
 
 Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
 
-Run the package tests and typecheck, and the consuming App check when contracts change. External consumer proofs install versioned artifacts in an independent directory without monorepo aliases or workspace links. Local tarball acceptance is distinct from public publication, authenticated domain behaviour and release. Keep source-reviewed, checks-passed and journey-proved evidence separate. Generation, automated implementation, independent sibling acceptance and release are separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
+Run the package tests and typecheck, and the consuming App check when contracts change. For the FireUX source recipe, also materialize a disposable generated App and typecheck it; this catches missing native layers or workspace dependencies. External consumer proofs install versioned artifacts in an independent directory without monorepo aliases or workspace links. Local tarball acceptance is distinct from public publication, authenticated domain behaviour and release. Keep source-reviewed, checks-passed and journey-proved evidence separate. General industry generation, paid subscription reconciliation, independent sibling acceptance and release remain separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
 
 ## App context at creation
 

@@ -62,6 +62,11 @@ presentation contract only when maintained App consumers prove the shared shape.
 Shared transitions remain Core-owned; presentation does not change domain or
 infrastructure ownership.
 
+Yellow Velo keeps its shop presentation and filtering App-owned. Catalogue
+and optional price acquisition use Products' `useProductCollection`; detail
+lifecycle uses `useProductDetail`. Routes do not independently join price reads
+or reproduce Product acquisition state.
+
 ## Authority and current source
 
 Use this order:

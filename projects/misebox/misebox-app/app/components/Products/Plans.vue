@@ -2,8 +2,8 @@
   <UPageSection
     :as="{ title: primary ? 'h1' : 'h2' }"
     headline="Kitchen Workspace"
-    title="Run your Kitchen. Your way."
-    description="Start free. Choose the plan that fits your operation."
+    title="Run it yourself in Workspace."
+    description="Start Free. Upgrade for a complete Kitchen Workspace or multiple Kitchens."
   >
     <UPricingPlans>
       <UPricingPlan

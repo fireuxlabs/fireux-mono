@@ -341,3 +341,51 @@ test('an obsolete intake validation failure cannot clear a later draft', async (
   assert.equal(state.error.value, '')
   scope.stop()
 })
+
+test('preparation resolves late Kitchen choices and never keeps a removed or unsettled target', () => {
+  const source = readFileSync(
+    new URL('../app/components/MenuExpress/Preparation.vue', import.meta.url),
+    'utf8'
+  )
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const selectedId = ref('existing')
+  const targets = reactive({ kitchens: [], outcome: 'pending', error: null })
+  const state = compileFunction(
+    `${stripTypeScriptTypes(source)}; return { kitchenId, kitchenOptions }`,
+    [
+      'computed',
+      'reactive',
+      'ref',
+      'defineProps',
+      'useWorkspace',
+      'useKitchenTargets',
+    ]
+  )(
+    computed,
+    reactive,
+    ref,
+    () => ({}),
+    () => ({ selectedId }),
+    () => targets
+  )
+  assert.equal(state.kitchenId.value, '')
+  targets.kitchens = [
+    { id: 'existing', name: 'Existing Kitchen' },
+    { id: 'second', name: 'Second Kitchen' },
+  ]
+  targets.outcome = 'ready'
+  assert.equal(state.kitchenId.value, 'existing')
+  state.kitchenId.value = 'second'
+  assert.equal(state.kitchenId.value, 'second')
+  targets.outcome = 'pending'
+  assert.equal(state.kitchenId.value, '')
+  targets.kitchens = [{ id: 'existing', name: 'Existing Kitchen' }]
+  targets.outcome = 'ready'
+  assert.equal(state.kitchenId.value, 'existing')
+  targets.kitchens = []
+  targets.outcome = 'empty'
+  assert.equal(state.kitchenId.value, '')
+  assert.deepEqual(state.kitchenOptions.value, [])
+})

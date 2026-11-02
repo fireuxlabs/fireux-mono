@@ -20,7 +20,7 @@ const definition = (path, name, deps = {}) =>
   evaluate(
     read(path),
     {
-      defineKitchenTeamTool: (x) => x,
+      defineFireuxCommandTool: (x) => x,
       defineFireuxDomainTool: (x) => x,
       defineFireuxCompoundTool: (x) => x,
       ...deps,
@@ -106,7 +106,9 @@ test('human action directory excludes agent-only destructive/read tools and uses
       assert.equal(item.actionLabel, 'Open menu import')
     }
   assert.ok(
-    existsSync(new URL('pages/workspace/kitchen/food-and-drink/menus/index.vue', runtime))
+    existsSync(
+      new URL('pages/workspace/kitchen/food-and-drink/menus/index.vue', runtime)
+    )
   )
 })
 test('rendered catalogue labels agent-only tools without a destructive action link', async () => {

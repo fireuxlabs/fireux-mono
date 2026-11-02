@@ -20,6 +20,13 @@
 <script setup lang="ts">
 const areas = [
   {
+    title: 'Products',
+    description:
+      'Browse App, template and module offers, with a route to Misebox’s Kitchen products.',
+    icon: 'i-lucide-box',
+    to: '/products',
+  },
+  {
     title: 'Docs',
     description: 'Understand the framework and work from the source workspace.',
     icon: 'i-lucide-book-open',

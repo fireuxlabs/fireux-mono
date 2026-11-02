@@ -63,18 +63,51 @@ sources and Rules-only verification boundary.
 
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects Core's shared tiers, alongside the existing
-Products reader and collection without a type filter. `/pricing` consumes the
+Products reader without a type filter. App-owned `Products/Services.vue` selects the two offers, order, actions and
+Kitchen-owned `KitchenOffersPreview` variants. Products' shared `ProductSurface`
+renders saved copy, available benefits, optional image/preview, terms and action
+on catalogue and detail routes. No Product IDs or Kitchen language live in that
+shared surface. `Products/Plans.vue` composes
+native Nuxt UI pricing controls from Core tier data. `/pricing` consumes the
 same tier selection and Product collection; Free appears only as the default
 plan. Menu Express and Collection Ordering remain saved domain-backed offers.
 Misebox does not expose Core's Managed or branded-App packages as its own plans.
-This presentation does not establish Stripe billing or entitlement activation.
-Products `Surface.vue` owns saved offer copy, benefits, optional image/domain
-preview, terms and primary action. Kitchen `Offers/Preview.vue` owns illustrative
-Menu and Collection previews. Misebox `Products/Services.vue` selects offers,
-order and destinations. Catalogue and detail pages reuse this surface; Menu
-Express detail leads directly to its existing request form without a charge.
+The catalogue separates quoted Menu Express preparation from direct Workspace
+use. Collection Ordering is a Kitchen capability without a separate Product
+purchase; Kitchen access, plan limits and service readiness still apply. Free is
+visible in the shared plan comparison, not a separately sold Product.
+This presentation does not establish Stripe billing or entitlement activation. Root Products are App catalogue offers; Kitchen food and
+drinks belong to Kitchen Dishes, Menu placements and their ordering snapshots.
+Stripe identifiers describe payment integration, not domain ownership. The named
+operational tool `tools/misebox-migrations/retire-baeren-drink-products.py` guards
+the exact retired seed duplicates and create-only recovery from retained preimages;
+it is not a runtime writer or a generic migration API.
+
+### Collection Ordering Product
+
+The Main App's `/products/collection-ordering` reads the saved catalogue Product
+through Products' `useProductDetail` and composes its shared header with the
+App-owned `CollectionOrdering/Offer.vue`. The offer links existing Kitchen
+Services and Orders surfaces; it owns no ordering reader, command, purchase
+entitlement or fulfilment state.
+
+Kitchen Services owns activation, Menu selection and serving hours. The public
+Collection menu uses `useServiceCheckout` and Kitchen's `useOrderExchange`;
+the Workspace order board consumes the same Order submission/exchange owners.
+Products' catalogue-only creation supports an empty price list and no payment
+provider call. Product purchase is not a prerequisite for direct Kitchen use.
+The combined fixture proof in Kitchen's `kitchen/order-submission.test.mjs`
+exercises canonical Menu pricing, duplicate retry, board visibility, operator
+transitions and customer reload. Browser/operational acceptance remains distinct
+from that fixture evidence. No separate Collection Product execution layer exists.
 
 ### Menu Express delivery
+
+Operator preparation consumes Kitchen-owned `useKitchenTargets` for a named,
+authorised Kitchen choice. It does not accept a manually entered Kitchen ID or
+create another Kitchen. Unsettled/removed choices cannot supply a target; the
+trusted preparation command still checks current Kitchen writer authority and
+retains the request’s exact Kitchen/Menu binding.
 
 The Misebox catalogue Product is `products/menu-express`, authored through the
 existing Products create command from the App-owned

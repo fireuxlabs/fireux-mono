@@ -4,8 +4,12 @@ import type { FireUXConfig } from '../../composables/config/FireUXConfig'
 import type { AppInitializationResult } from '../../models/app-initialization'
 import { APP_MUTATION_TARGETS, serverAppUsersTarget } from '../mutation-targets'
 import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
-import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
+import {
+  getRuntimeFirestore,
+  getRuntimeIdentityFirestore,
+} from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
+import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
   countTransactionAdmins,
   initialMembership,
@@ -15,6 +19,7 @@ import {
 } from '../app-user/command-contract'
 import { reconcileUserAppReference } from '../app-user/user-reference'
 import { reconcileAppEcosystemReference } from '../relationships/ecosystem-reference'
+import { ECOSYSTEM_MUTATION_TARGETS } from '../../../ecosystem/server/mutation-targets'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -22,6 +27,7 @@ type InitializeRuntimeAppInput = {
   appDatabaseId: string
   identityDatabaseId: string
   context?: string
+  ecosystem: { name: string; description: string }
 }
 
 function conflict(statusMessage: string): never {
@@ -82,6 +88,112 @@ function assertExistingAppMatchesRuntime(
   }
 }
 
+function mainEcosystemBootstrap(input: InitializeRuntimeAppInput) {
+  const { config } = input
+  if (
+    config.role !== 'global' ||
+    config.projectId !== config.ecosystemId ||
+    config.appId !== `${config.ecosystemId}-app`
+  )
+    return null
+
+  const ecosystemId = requireFirestoreDocumentId(
+      config.ecosystemId,
+      'Ecosystem id'
+    ),
+    projectId = requireFirestoreDocumentId(config.projectId, 'Project id'),
+    name = String(input.ecosystem.name || '').trim(),
+    description = String(input.ecosystem.description || '').trim()
+
+  if (!name || name.length > 120 || description.length > 2000) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'The main App Ecosystem identity is invalid.',
+    })
+  }
+
+  return { ecosystemId, projectId, name, description }
+}
+
+async function ensureMainEcosystem(input: {
+  uid: string
+  identityDatabaseId: string
+  appDatabaseId: string
+  identityUserExists: boolean
+  appConfig: InitializeRuntimeAppInput['config']
+  ecosystem: InitializeRuntimeAppInput['ecosystem']
+}) {
+  const bootstrapInput: InitializeRuntimeAppInput = {
+    uid: input.uid,
+    config: input.appConfig,
+    appDatabaseId: input.appDatabaseId,
+    identityDatabaseId: input.identityDatabaseId,
+    ecosystem: input.ecosystem,
+  }
+  const identity = mainEcosystemBootstrap(bootstrapInput)
+  if (!identity) return false
+
+  const database = getRuntimeIdentityFirestore(input.identityDatabaseId),
+    ecosystemRef = database.collection('ecosystems').doc(identity.ecosystemId),
+    existing = await ecosystemRef.get()
+  if (existing.exists) {
+    if (String(existing.get('project_id') || '').trim() !== identity.projectId)
+      conflict('The existing Ecosystem does not match runtime projectId.')
+    return false
+  }
+
+  if (!input.identityUserExists) {
+    const user = await database.collection('users').doc(input.uid).get()
+    if (!user.exists) conflict('The User record does not exist.')
+  }
+
+  const app = await getRuntimeFirestore(input.appDatabaseId)
+    .collection('apps')
+    .doc(input.appConfig.appId)
+    .get()
+  if (app.exists) {
+    assertExistingAppMatchesRuntime(app.data() ?? {}, input.appConfig)
+  } else {
+    const membership = await getRuntimeFirestore(input.appDatabaseId)
+      .doc(`apps/${input.appConfig.appId}/users/${input.uid}`)
+      .get()
+    if (membership.exists)
+      conflict('An App membership exists without its canonical App record.')
+  }
+
+  return runGuardedServerTransaction(
+    { kind: 'identity' },
+    async (mutations) => {
+      const ecosystem = await mutations.read(
+        ECOSYSTEM_MUTATION_TARGETS.ecosystems,
+        identity.ecosystemId
+      )
+      if (ecosystem.exists) {
+        if (
+          String(ecosystem.data?.project_id || '').trim() !== identity.projectId
+        )
+          conflict('The existing Ecosystem does not match runtime projectId.')
+        return false
+      }
+      const now = FieldValue.serverTimestamp()
+      mutations.create(
+        ECOSYSTEM_MUTATION_TARGETS.ecosystems,
+        identity.ecosystemId,
+        {
+          project_id: identity.projectId,
+          status: 'active',
+          name: identity.name,
+          description: identity.description,
+          image_url: '',
+          created: { at: now, by: input.uid },
+          updated: { at: now, by: input.uid },
+        }
+      )
+      return true
+    }
+  )
+}
+
 export async function initializeRuntimeApp(
   input: InitializeRuntimeAppInput
 ): Promise<AppInitializationResult> {
@@ -96,6 +208,7 @@ export async function initializeRuntimeApp(
     })
   const context = input.context?.trim() || ''
   const sameDatabase = input.appDatabaseId === input.identityDatabaseId
+  let identityUserExists = false
 
   if (!sameDatabase) {
     const identityUser = await getRuntimeIdentityFirestore(
@@ -105,7 +218,17 @@ export async function initializeRuntimeApp(
       .doc(uid)
       .get()
     if (!identityUser.exists) conflict('The User record does not exist.')
+    identityUserExists = true
   }
+
+  const ecosystemCreated = await ensureMainEcosystem({
+    uid,
+    identityDatabaseId: input.identityDatabaseId,
+    appDatabaseId: input.appDatabaseId,
+    identityUserExists,
+    appConfig: config,
+    ecosystem: input.ecosystem,
+  })
 
   const apps = APP_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(config.appId)
@@ -185,5 +308,5 @@ export async function initializeRuntimeApp(
     appDatabaseId: input.appDatabaseId,
     identityDatabaseId: input.identityDatabaseId,
   })
-  return result
+  return { ...result, ecosystemCreated }
 }

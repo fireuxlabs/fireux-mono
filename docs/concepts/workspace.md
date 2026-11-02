@@ -203,7 +203,6 @@ system. Notifications remain User-owned shared presentation.
 | Project              | Shared foundation with FireUX control-plane capabilities; capability placement still uses Workspace folders.                |
 | Supplier             | Shared foundation with Supplier-owned catalogue work; capability placement still uses Workspace folders.                    |
 | Blank                | App-local development harness, not a complete industry product.                                                             |
-| Marketplace Store    | Workspace root ownership declared; working Workspace surface remains future work.                                           |
 
 Use [the family map](family-workspace-entity.md) for exact accepted differences,
 authority boundaries and proving checks. A shared foundation does not establish

@@ -1,3 +1,4 @@
+/** Discovery descriptions reference implementation; they do not register an executor. */
 export type FireuxSearchIntent = {
   phrase: string
   kind: 'problem' | 'solution' | 'implementation' | 'integration' | 'product'
@@ -100,6 +101,48 @@ export function defineFireuxDomainTool<
 
 export function defineFireuxCompoundTool<
   const T extends FireuxCompoundToolDefinition,
+>(tool: T): T {
+  return tool
+}
+
+/** Input and presentation contract for a command-backed tool; authority stays with its domain executor. */
+export type FireuxCommandToolDefinition = {
+  id: string
+  primitive?: string
+  mode: 'read' | 'write'
+  risk: 'read' | 'write' | 'destructive'
+  confirmation: 'none' | 'required'
+  context: {
+    target: string
+    instruction: string
+    outcome: string
+    constraints?: readonly string[]
+  }
+  inputSchema: Record<string, unknown>
+  ai?: FireuxToolAiContext
+  surfaces: {
+    human:
+      | false
+      | {
+          placement: 'toolbar'
+          group: 'create' | 'update'
+          label: string
+          description: string
+          icon: string
+        }
+    agent: {
+      callable: boolean
+    }
+  }
+  result?: {
+    kind: 'object' | 'collection' | 'share-link' | 'mutation'
+    primaryAction?: 'copy'
+    label?: string
+  }
+}
+
+export function defineFireuxCommandTool<
+  const T extends FireuxCommandToolDefinition,
 >(tool: T): T {
   return tool
 }

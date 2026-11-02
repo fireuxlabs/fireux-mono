@@ -35,8 +35,17 @@ Workspace
             └── record reads and writes
 ```
 
-A visible control is not mutation authority. AI receives the same registered
-Tools as the human surface and never gains a parallel write path.
+A visible control is not mutation authority. Human and agent entrances reuse
+the same domain commands; an agent receives only tools registered with a real
+executor. Descriptive capability inventories do not establish callability.
+
+Core `runtime/tools/types.ts` distinguishes discovery descriptions (primitive,
+domain and compound references) from `FireuxCommandToolDefinition`, the input,
+confirmation and presentation contract reused by Kitchen Team and Waste.
+Definitions do not execute or authorize anything. Team's existing server registry
+owns its executors; Waste's existing command consumes its schema. Menu's catalogue
+is consumed by the Kitchen tool directory as workflow documentation, without
+claiming standalone agent invocation.
 
 ## Responsibility, persistence and service orchestration
 
@@ -127,8 +136,8 @@ component rule, mandatory controller layer or forwarding scaffold is introduced.
 4. **Domain meaning and authority.** The domain owns models, validation, storage
    and protected commands. Upper surfaces consume supported readers and tools;
    UI location never changes data ownership.
-5. **Honest read states.** Keep pending, failure, missing and settled empty
-   distinct. Clear obsolete data on account, membership, Entity or destination
+5. **Honest read states.** Use the shared `idle`, `pending`, `error`, `empty` and `ready`
+   outcomes. Successful absence is `empty` for documents and collections. Clear obsolete data on account, membership, Entity or destination
    changes, and dispose live work with its owning surface.
 6. **Preserved command intent.** Capture input before asynchronous credentials,
    invalidate obsolete dispatch/completion, enforce current server authority and
@@ -146,14 +155,14 @@ component rule, mandatory controller layer or forwarding scaffold is introduced.
 
 Paths below are relative to `packages/extensions/fireux-kitchens/src/runtime`.
 
-| Surface | Named composition and controls | Shared fundamentals and accepted differences |
-| --- | --- | --- |
-| Kitchen Payments | `kitchen/components/Identity/Payments/Index.vue`, `Methods.vue` | Reuses `useKitchenFulfilment`; payment applicability controls own their focused command intent. Identity placement does not move Kitchen storage. |
-| Kitchen Delivery | `kitchen/components/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue` | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection. |
-| Services setup | `kitchen/components/FoodAndDrink/Services/Index.vue` | Reuses Offering readers/setup and the named Delivery composition outside the Orders capability. No new configuration store. |
-| Ordering library | `kitchen/components/Orders/Examples/Index.vue`, `Orders/Preview.vue`, `Orders/Success.vue` | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority. |
-| Customer ordering | `menu/components/Order/Index.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks. |
-| Order board | `kitchen/components/Orders/Board.vue` | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |
+| Surface           | Named composition and controls                                                                                           | Shared fundamentals and accepted differences                                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kitchen Payments  | `kitchen/components/Identity/Payments/Index.vue`, `Methods.vue`                                                          | Reuses `useKitchenFulfilment`; payment applicability controls own their focused command intent. Identity placement does not move Kitchen storage. |
+| Kitchen Delivery  | `kitchen/components/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue`                                                 | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection.                 |
+| Services setup    | `kitchen/components/FoodAndDrink/Services/Index.vue`                                                                     | Reuses Offering readers/setup and the named Delivery composition outside the Orders capability. No new configuration store.                       |
+| Ordering library  | `kitchen/components/Orders/Examples/Index.vue`, `Orders/Preview.vue`, `Orders/Success.vue`                               | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority.                          |
+| Customer ordering | `menu/components/Order/Index.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks.        |
+| Order board       | `kitchen/components/Orders/Board.vue`                                                                                    | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |
 
 These files are **locally aligned** with the pattern. Payments and Delivery prove
 separate named compositions within Kitchen, not a cross-industry universal
@@ -298,14 +307,14 @@ it does not assert that every existing owner is aligned.
 
 Source paths below are relative to `fireux-kitchens/src/runtime`.
 
-| Boundary | Menu publication | Customer ordering |
-| --- | --- | --- |
-| Surface | `kitchen/components/FoodAndDrink/Menus/Publication/Actions.vue` | `menu/components/Order/Index.vue` and named checkout/response children |
-| Domain rules | `menu/server/publication/validation.ts` | `menu/server/ordering.ts` resolves canonical items, prices, fulfilment and serving hours; Kitchen submission validation owns order completeness/transitions |
-| Use-case coordination | `publishKitchenMenu` in `menu/server/publication/publish.ts` | `submitKitchenOrder` in `kitchen/server/orders/submission.ts` |
-| Transaction invariant | Validate publication and update scoped Menu/public root projection together | Validate authority and canonical Menu selections; number and persist one submission together |
-| Material difference | Operator-authorized publication, including idempotent published projection | Customer/operator entrances, caller-bound idempotency, expected totals and execution state |
-| Transport | `server/api/workspace/kitchen/menus/{publish,unpublish}.post.ts` | `server/api/ordering/{menu-submit,submit,response}.post.ts` and Workspace response adapters |
+| Boundary              | Menu publication                                                       | Customer ordering                                                                                                                                           |
+| --------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Surface               | `kitchen/components/FoodAndDrink/Menus/Publication/Actions.vue`        | `menu/components/Order/Index.vue` and named checkout/response children                                                                                      |
+| Domain rules          | `menu/server/publication/validation.ts`                                | `menu/server/ordering.ts` resolves canonical items, prices, fulfilment and serving hours; Kitchen submission validation owns order completeness/transitions |
+| Use-case coordination | `publishKitchenMenu` in `menu/server/publication/publish.ts`           | `submitKitchenOrder` in `kitchen/server/orders/submission.ts`                                                                                               |
+| Transaction invariant | Validate publication and update the same scoped Menu record            | Validate authority and canonical Menu selections; number and persist one submission together                                                                |
+| Material difference   | Operator-authorized publication, including idempotent published status | Customer/operator entrances, caller-bound idempotency, expected totals and execution state                                                                  |
+| Transport             | `server/api/workspace/kitchen/menus/{publish,unpublish}.post.ts`       | `server/api/ordering/{menu-submit,submit,response}.post.ts` and Workspace response adapters                                                                 |
 
 The surviving invariant is **named owner surface → domain-owned lifecycle →
 trusted use-case coordination → participating domain rules**, with authority

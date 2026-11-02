@@ -1,6 +1,7 @@
-import { defineKitchenTeamTool } from './types'
+import { defineFireuxCommandTool } from 'fireux-core/runtime/tools/types'
+import type { KitchenTeamToolDefinition } from './types'
 
-export const kitchenTeamMemberInvitationCreateTool = defineKitchenTeamTool({
+export const kitchenTeamMemberInvitationCreateTool = defineFireuxCommandTool({
   id: 'kitchen.team.create-invitation',
   mode: 'write',
   risk: 'write',
@@ -52,4 +53,4 @@ export const kitchenTeamMemberInvitationCreateTool = defineKitchenTeamTool({
     primaryAction: 'copy',
     label: 'Copy invitation link',
   },
-})
+} satisfies KitchenTeamToolDefinition)

@@ -43,6 +43,7 @@ const config = useFireUXConfig()
 const plan = computed(() => session.appUser.value?.subscription || 'free')
 const visible = computed(
   () =>
+    config.isGlobal &&
     !session.pending.value &&
     !session.error.value &&
     (props.capability !== 'test' || props.usedCount !== undefined) &&
@@ -50,7 +51,11 @@ const visible = computed(
     (props.placement === 'top' || props.placement === 'discovery')
 )
 const planLabel = computed(() =>
-  plan.value === 'premium' ? 'Professional' : plan.value === 'business' ? 'Business' : 'Free'
+  plan.value === 'premium'
+    ? 'Pro'
+    : plan.value === 'business'
+      ? 'Business'
+      : 'Free'
 )
 const scopedCapacity = computed(() =>
   props.capability
@@ -74,7 +79,7 @@ const upgrade = computed(() => {
   return 'premium'
 })
 const upgradeLabel = computed(() =>
-  upgrade.value === 'business' ? 'Business' : 'Professional'
+  upgrade.value === 'business' ? 'Business' : 'Pro'
 )
 function allowance(limit: number | null | undefined) {
   return limit === null

@@ -1,7 +1,8 @@
-import { defineKitchenTeamTool } from './types'
+import { defineFireuxCommandTool } from 'fireux-core/runtime/tools/types'
+import type { KitchenTeamToolDefinition } from './types'
 import { workspaceTeamMemberCreatePrimitive } from 'fireux-core/runtime/workspace/tools/team/create-member'
 
-export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
+export const kitchenTeamMemberCreateTool = defineFireuxCommandTool({
   id: 'kitchen.team.create-member',
   primitive: workspaceTeamMemberCreatePrimitive.id,
   mode: 'write',
@@ -58,4 +59,4 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
     agent: { callable: true },
   },
   result: { kind: 'object' },
-})
+} satisfies KitchenTeamToolDefinition)
