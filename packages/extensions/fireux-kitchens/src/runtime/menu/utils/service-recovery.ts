@@ -1,7 +1,11 @@
 import type { ServiceBasketLine } from './service-basket'
-import { collectionOrder, collectionSelections } from './collection-checkout'
+import {
+  serviceOrder,
+  serviceSelections,
+  type MenuCheckoutService,
+} from './service-checkout'
 
-type CollectionSession = {
+type ServiceSession = {
   lines: ServiceBasketLine[]
   name: string
   phone: string
@@ -17,9 +21,10 @@ const minor = (value: unknown): value is number =>
   Number.isSafeInteger(value) && Number(value) >= 0
 
 /** Discard malformed local data; restored amounts never replace server price validation. */
-export function readCollectionSession(
-  raw: string | null
-): CollectionSession | null {
+export function readServiceSession(
+  raw: string | null,
+  service: MenuCheckoutService = 'collection'
+): ServiceSession | null {
   if (!raw || raw.length > 500000) return null
   try {
     const saved = JSON.parse(raw)
@@ -62,7 +67,7 @@ export function readCollectionSession(
       )
         return null
     }
-    const session = saved as CollectionSession
+    const session = saved as ServiceSession
     if (session.attempt !== null) {
       const attempt = session.attempt
       if (
@@ -77,13 +82,14 @@ export function readCollectionSession(
       const expected = {
         menuId: first.source.menuSlug || first.source.menuId,
         kitchenSlug: attempt.kitchenSlug,
-        order: collectionOrder(
+        order: serviceOrder(
           session.lines,
           attempt.order.id,
           session.name,
-          session.phone
+          session.phone,
+          service
         ),
-        selections: collectionSelections(session.lines),
+        selections: serviceSelections(session.lines),
         expectedTotal:
           session.lines.reduce(
             (total, line) => total + line.unitMinor * line.choices.quantity,

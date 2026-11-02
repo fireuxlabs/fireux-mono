@@ -1,6 +1,11 @@
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, KITCHEN_MUTATION_TARGETS } from '../../kitchen/server/mutation-targets'
+import {
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+  KITCHEN_MUTATION_TARGETS,
+} from '../../kitchen/server/mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { readKitchenOfferingsInTransaction } from '../../kitchen/server/offerings/read'
@@ -36,13 +41,11 @@ export async function resolveMenuOrderLines(
     selections: MenuOrderSelection[]
     fulfilment: Order['fulfilment']
     expectedTotal: number
+    channel?: 'website' | 'kiosk'
   },
   now = new Date()
 ) {
-  const place = await tx.read(
-    PLACE_MUTATION_TARGETS.places,
-    input.kitchenId
-  )
+  const place = await tx.read(PLACE_MUTATION_TARGETS.places, input.kitchenId)
   const kitchen = await tx.read(
     KITCHEN_MUTATION_TARGETS.kitchens,
     input.kitchenId
@@ -93,15 +96,20 @@ export async function resolveMenuOrderLines(
       )
       .filter((row) => row.collection_timing !== 'next_day')
     const ordering = kitchenMenuOrdering(scoped, menuId)
+    const channel = input.channel || 'website'
     const orderType =
-      input.fulfilment === 'on_site' ? 'dine_in' : input.fulfilment
+      input.fulfilment === 'on_site'
+        ? channel === 'kiosk'
+          ? 'eat_in'
+          : 'dine_in'
+        : input.fulfilment
     if (
-      !publicMenuOrderTypes(ordering).some(
+      !publicMenuOrderTypes(ordering, channel).some(
         (config) => config.type === orderType
       )
     )
       return fail('This menu does not currently offer this service.')
-    if (!publicMenuServiceOpen(ordering, String(orderType), now))
+    if (!publicMenuServiceOpen(ordering, String(orderType), now, channel))
       return fail(
         'This service is closed. Please order during its serving hours.'
       )
@@ -130,7 +138,11 @@ export async function resolveMenuOrderLines(
         selection.itemId,
         promotionDay(hours.timezone, now)
       )
-      if (!['collection', 'delivery'].includes(String(input.fulfilment)))
+      if (
+        !['collection', 'delivery', 'takeaway'].includes(
+          String(input.fulfilment)
+        )
+      )
         delete item.bottleDeposit
       const resolved = serviceBasketLine(
         {

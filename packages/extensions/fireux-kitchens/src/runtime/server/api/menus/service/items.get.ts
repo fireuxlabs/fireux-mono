@@ -9,11 +9,13 @@ import { readMenuDirectoryPage } from '../../../../menu/server/index/read'
 import { menuServiceOfferings } from '../../../../menu/utils/service-menu'
 import { type MenuServiceSource } from '../../../../menu/utils/service-sections'
 import type { MenuDetailPayload } from '../../../../menu/models/menu-detail.model'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')
 
   const kitchenSlug = String(getQuery(event).kitchenSlug || '').trim()
+  const { isTenant } = useFireUXConfig(event)
   if (!kitchenSlug)
     throw createError({
       statusCode: 400,
@@ -25,7 +27,9 @@ export default defineEventHandler(async (event) => {
     service !== 'collection' &&
     service !== 'delivery' &&
     service !== 'table' &&
-    service !== 'room_service'
+    service !== 'room_service' &&
+    service !== 'eat_in' &&
+    service !== 'takeaway'
   )
     throw createError({
       statusCode: 400,
@@ -35,12 +39,20 @@ export default defineEventHandler(async (event) => {
   let cursor: string | null = null
   do {
     const page = await readMenuDirectoryPage({
-      kitchenSlug,
+      kitchenSlug: isTenant ? undefined : kitchenSlug,
       offering,
       service,
       cursor,
       limit: 50,
     })
+    if (
+      isTenant &&
+      (page.scope.kind !== 'tenant' || page.scope.kitchenSlug !== kitchenSlug)
+    )
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Kitchen Menu not found.',
+      })
     const entries = await Promise.all(
       page.items
         .filter((menu) => menu.kind !== 'doc')
@@ -48,10 +60,13 @@ export default defineEventHandler(async (event) => {
           const payload = await event.$fetch<MenuDetailPayload>(
             `/api/menus/${encodeURIComponent(menu.slug || menu.id)}`,
             {
-              query: { kitchenSlug },
+              query: isTenant ? {} : { kitchenSlug },
               headers: { accept: 'application/json' },
             }
           )
+          if (payload.kind === 'manifest' && service === 'eat_in')
+            for (const section of payload.manifest.content.sections)
+              for (const item of section.items) delete item.bottleDeposit
           return payload.kind === 'manifest'
             ? {
                 manifest: payload.manifest,

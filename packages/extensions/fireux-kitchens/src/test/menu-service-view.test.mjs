@@ -392,7 +392,7 @@ test('delivery pagination skips collection-only menus without losing later match
   assert.equal(calls[1].service, 'delivery')
 })
 
-test('service item endpoint carries Delivery through every page and excludes documents', async () => {
+test('service items paginate, respect tenant scope and retain the correct Kiosk bottle policy', async () => {
   const handlerSource = readFileSync(
     new URL(
       '../runtime/server/api/menus/service/items.get.ts',
@@ -404,6 +404,8 @@ test('service item endpoint carries Delivery through every page and excludes doc
     .replace('export default', 'const handler =')
   const calls = [],
     fetched = []
+  const query = { kitchenSlug: 'venue', service: 'delivery' }
+  let tenant = false
   const pages = [
     {
       items: [
@@ -423,27 +425,32 @@ test('service item endpoint carries Delivery through every page and excludes doc
       'readMenuDirectoryPage',
       'menuServiceOfferings',
       'serviceSections',
+      'useFireUXConfig',
     ]
   )(
     (read) => read,
-    () => ({ kitchenSlug: 'venue', service: 'delivery' }),
+    () => query,
     (error) => new Error(error.statusMessage),
     async (input) => {
       calls.push(input)
       return pages.shift()
     },
     menuServiceOfferings,
-    serviceSections
+    serviceSections,
+    () => ({ isTenant: tenant })
   )
-  const result = await handler({
+  const event = {
     $fetch: async (url, options) => {
       fetched.push({ url, options })
+      const manifest = sourceMenu(url, 'Food', ['shared']).manifest
+      manifest.content.sections[0].items[0].bottleDeposit = 10
       return {
         kind: 'manifest',
-        manifest: sourceMenu(url, 'Food', ['shared']).manifest,
+        manifest,
       }
     },
-  })
+  }
+  const result = await handler(event)
   assert.equal(fetched.length, 2)
   assert.deepEqual(
     calls.map((input) => input.service),
@@ -457,6 +464,34 @@ test('service item endpoint carries Delivery through every page and excludes doc
     ['delivery']
   )
   assert.equal(fetched[0].options.query.kitchenSlug, 'venue')
+  tenant = true
+  for (const mode of ['eat_in', 'takeaway']) {
+    query.service = mode
+    const kiosk = menu('Counter')
+    kiosk.offering_options = [{ type: mode, kitchen_offering_id: 'collection' }]
+    pages.push({
+      scope: { kind: 'tenant', kitchenSlug: 'venue' },
+      items: [kiosk],
+      nextCursor: null,
+    })
+    const result = await handler(event)
+    assert.equal(calls.at(-1).kitchenSlug, undefined)
+    assert.deepEqual(fetched.at(-1).options.query, {})
+    assert.equal(result.sources[0].offerings.length, 1)
+    assert.equal(
+      result.sources[0].manifest.content.sections[0].items[0].bottleDeposit,
+      mode === 'eat_in' ? undefined : 10
+    )
+  }
+  query.kitchenSlug = 'foreign'
+  pages.push({
+    scope: { kind: 'tenant', kitchenSlug: 'venue' },
+    items: [menu()],
+    nextCursor: null,
+  })
+  const before = fetched.length
+  await assert.rejects(handler(event), /Kitchen Menu not found/)
+  assert.equal(fetched.length, before)
 })
 
 test('At your table uses dine-in eligibility and only its serving times', () => {
@@ -478,6 +513,33 @@ test('At your table uses dine-in eligibility and only its serving times', () => 
     assert.equal(menuServiceOfferings(value, 'collection').length, 1)
   }
   assert.deepEqual(menuServiceOfferings(menu(), 'table'), [])
+})
+
+test('Kiosk modes select their own eligible Menu options without borrowing website services', async () => {
+  const eatIn = menu('Eat in food')
+  eatIn.offerings = [{ id: 'kiosk', paused: false, hours: { windows: [{}] } }]
+  eatIn.offering_options = [{ type: 'eat_in', kitchen_offering_id: 'kiosk' }]
+  const takeaway = {
+    ...structuredClone(eatIn),
+    name: 'Takeaway food',
+    offering_options: [{ type: 'takeaway', kitchen_offering_id: 'kiosk' }],
+  }
+  assert.equal(menuServiceOfferings(eatIn, 'eat_in').length, 1)
+  assert.equal(menuServiceOfferings(eatIn, 'takeaway').length, 0)
+  assert.equal(menuServiceOfferings(eatIn, 'collection').length, 0)
+  const result = await load(
+    [
+      { items: [eatIn], nextCursor: 'next' },
+      { items: [takeaway], nextCursor: null },
+    ],
+    []
+  )({ service: 'takeaway', limit: 1 })
+  assert.deepEqual(
+    result.items.map((row) => row.name),
+    ['Takeaway food']
+  )
+  takeaway.offering_options[0].paused = true
+  assert.deepEqual(menuServiceOfferings(takeaway, 'takeaway'), [])
 })
 test('table pagination excludes collection-only menus and retains later dine-in matches', async () => {
   const tables = menu('Lunch')

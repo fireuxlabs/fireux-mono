@@ -86,7 +86,10 @@ published Kitchen/Menu target, and `menu/server/ordering.ts` re-reads selected
 Menu/Section/Item/Dish/Sellable records inside the guarded writing transaction.
 The transaction also re-reads Kitchen offerings and requires the selected public
 service to be enabled, unpaused and linked to that Menu with configured hours
-(and table QR for table orders). The server supplies item-name and pricing snapshots; changed catalogue totals
+(and table QR for table orders). Kiosk Menu submissions require the App-declared
+kiosk channel and the exact enabled Eat in/Takeaway mode with that Menu selected.
+They reuse the same canonical transaction, pricing, numbering and caller-owned
+retry contract; they gain no operator or payment authority. The server supplies item-name and pricing snapshots; changed catalogue totals
 fail for review. The generic basic Order remains separate from Menu selections
 and commercial snapshots.
 

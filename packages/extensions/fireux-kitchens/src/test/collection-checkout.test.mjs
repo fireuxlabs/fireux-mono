@@ -4,7 +4,15 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { computed, ref, toValue, watch, effectScope } from 'vue'
+import {
+  computed,
+  ref,
+  toValue,
+  watch,
+  effectScope,
+  nextTick,
+  onScopeDispose,
+} from 'vue'
 import {
   loadOfferingSource,
   testKitchenHours,
@@ -71,7 +79,7 @@ const ordering = makeMenuOrdering({
   serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
   kitchenPromotionsTarget: (k) => target(`kitchens/${k}/promotions`),
   PLACE_MUTATION_TARGETS: { places: target('places') },
-KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
+  KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
   readPlaceCurrencyCode: (place) => place.currency,
   readKitchenOfferingsInTransaction: async (tx) => tx.offerings,
 })
@@ -297,8 +305,8 @@ test('standalone dish offers use the serving weekday without changing the normal
 })
 
 const helpers = loadOfferingSource(
-  'menu/utils/collection-checkout',
-  'collectionOrder,collectionSelections'
+  'menu/utils/service-checkout',
+  'serviceOrder,serviceSelections'
 )
 const basketReader = loadOfferingSource(
   'menu/composables/useServiceBasket',
@@ -326,18 +334,21 @@ function checkoutHarness(options = {}) {
     responses = [...(options.responses || [])],
     mounts = [],
     storage = options.storage || new Map(),
-    currentUser = options.currentUser || ref({ uid: 'customer' }),
+    currentUser =
+      options.currentUser || ref({ uid: 'customer', isAnonymous: true }),
     kitchenSlug = options.kitchenSlug || ref('venue'),
     entryId = options.entryId || ref('')
   const onMounted = (callback) => mounts.push(callback)
+  const timeouts = new Map()
+  let timeoutId = 0
   const sessionReader = loadOfferingSource(
-    'menu/utils/collection-recovery',
-    'readCollectionSession',
+    'menu/utils/service-recovery',
+    'readServiceSession',
     helpers
   )
   const recoveryReader = loadOfferingSource(
-    'menu/composables/useCollectionRecovery',
-    'useCollectionRecovery',
+    'menu/composables/useServiceRecovery',
+    'useServiceRecovery',
     {
       computed,
       ref,
@@ -356,9 +367,9 @@ function checkoutHarness(options = {}) {
     failureStatus = ref(0),
     version = ref(0)
   let basket, checkout
-  const { useCollectionCheckout } = loadOfferingSource(
-    'menu/composables/useCollectionCheckout',
-    'useCollectionCheckout',
+  const { useServiceCheckout } = loadOfferingSource(
+    'menu/composables/useServiceCheckout',
+    'useServiceCheckout',
     {
       computed,
       ref,
@@ -366,15 +377,26 @@ function checkoutHarness(options = {}) {
       onMounted,
       setInterval: () => 0,
       clearInterval() {},
+      setTimeout: (callback, delay) => {
+        const id = ++timeoutId
+        timeouts.set(id, { callback, delay })
+        return id
+      },
+      clearTimeout: (id) => timeouts.delete(id),
       ...recoveryReader,
-      useFireUXConfig: () => ({ appId: 'app' }),
-      onScopeDispose() {},
+      useFireUXConfig: () => ({
+        appId: 'app',
+        isTenant: options.tenant || false,
+      }),
+      onScopeDispose,
       ...helpers,
       ...orderPolicy,
       ...checkoutBasket,
       useAuth: () => ({ currentUser }),
       useRuntimeConfig: () => ({
-        public: { ordering: { channels: ['website'] } },
+        public: {
+          ordering: { channels: options.channels || ['website', 'kiosk'] },
+        },
       }),
       useKitchenOfferingNow: () => ({ now: ref(monday) }),
       readOpeningHoursStatus: () => ({ open: true }),
@@ -400,12 +422,13 @@ function checkoutHarness(options = {}) {
     basket = basketReader.useServiceBasket(offers, ready)
     if (options.seed !== false)
       basket.add(offer, { optionId: '', extraIds: [], groups: {}, quantity: 1 })
-    checkout = useCollectionCheckout({
+    checkout = useServiceCheckout({
       basket,
       offers,
       ready,
       kitchenSlug,
       entryId,
+      service: options.service,
     })
     for (const mount of mounts) mount()
     if (options.seed !== false) {
@@ -427,6 +450,7 @@ function checkoutHarness(options = {}) {
     kitchenSlug,
     entryId,
     storage,
+    timeouts,
   }
 }
 
@@ -520,7 +544,7 @@ test('the existing command stores canonical choices once and retries without ano
       },
       defineFirestoreMutationTarget: (value) => value,
       KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
-USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
+      USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       resolveMenuOrderLines: (transaction, input) =>
         ordering.resolveMenuOrderLines(transaction, input, monday),
       serverAuditStamp: () => ({ at: 'test' }),
@@ -682,8 +706,162 @@ test('the existing endpoint carries the route slug and full multi-menu selection
   assert.equal(called.context.selections.length, 4)
   assert.equal(called.context.selections[1].menuId, 'drinks')
   assert.deepEqual(called.context.selections[3].groups, { main: ['pizza'] })
+  for (const fulfilment of ['on_site', 'takeaway']) {
+    body.order = { channel: 'kiosk', fulfilment }
+    assert.deepEqual(await handler({}), { ok: true })
+    assert.equal(called.input.order.channel, 'kiosk')
+    assert.equal(called.input.order.fulfilment, fulfilment)
+  }
+  for (const [channel, fulfilment] of [
+    ['kiosk', 'collection'],
+    ['website', 'takeaway'],
+    ['pos', 'on_site'],
+  ]) {
+    body.order = { channel, fulfilment }
+    await assert.rejects(handler({}), /supported customer ordering channel/)
+  }
   body.kitchenId = 'foreign'
-  await assert.rejects(handler({}), /website ordering channel/)
+  await assert.rejects(handler({}), /supported customer ordering channel/)
+})
+
+test('Kiosk resolves only the selected mode menus and preserves canonical takeaway deposits', async () => {
+  const { tx } = catalogue()
+  tx.offerings = [
+    {
+      ...publicService,
+      id: 'kiosk',
+      interactions: [
+        { type: 'eat_in', enabled: true, menu_ids: ['food'] },
+        { type: 'takeaway', enabled: true, menu_ids: ['drinks'] },
+      ],
+    },
+  ]
+  const drink = { ...selections[1], offeringIds: ['kiosk'] }
+  const kioskInput = {
+    ...input([drink], 14),
+    channel: 'kiosk',
+    fulfilment: 'takeaway',
+  }
+  const result = await ordering.resolveMenuOrderLines(tx, kioskInput, monday)
+  assert.equal(result.pricing.total, 14)
+  assert.match(result.lines[0].notes[0], /Bottle deposit/)
+  await assert.rejects(
+    ordering.resolveMenuOrderLines(
+      tx,
+      { ...kioskInput, fulfilment: 'on_site' },
+      monday
+    ),
+    /does not currently offer/
+  )
+  await assert.rejects(
+    ordering.resolveMenuOrderLines(
+      tx,
+      { ...kioskInput, channel: 'website' },
+      monday
+    ),
+    /does not currently offer/
+  )
+  const food = { ...selections[0], offeringIds: ['kiosk'] }
+  assert.equal(
+    (
+      await ordering.resolveMenuOrderLines(
+        tx,
+        {
+          ...kioskInput,
+          fulfilment: 'on_site',
+          selections: [food],
+          expectedTotal: 33,
+        },
+        monday
+      )
+    ).pricing.total,
+    33
+  )
+  tx.offerings[0].interactions[1].availability = { paused: true }
+  await assert.rejects(
+    ordering.resolveMenuOrderLines(tx, kioskInput, monday),
+    /does not currently offer/
+  )
+})
+
+test('Kiosk does not request customer contacts, preserves uncertain retries and resets after a receipt', async () => {
+  const state = checkoutHarness({ service: 'takeaway' })
+  try {
+    state.checkout.name.value = ''
+    state.checkout.phone.value = ''
+    assert.deepEqual(state.checkout.issues.value, [])
+    await state.checkout.submit()
+    await nextTick()
+    const sent = state.requests[0].payload
+    assert.equal(sent.order.channel, 'kiosk')
+    assert.equal(sent.order.fulfilment, 'takeaway')
+    assert.equal(sent.order.customer, undefined)
+    assert.equal(
+      state.timeouts.size,
+      0,
+      'uncertain submission must not time out into a new order'
+    )
+    state.responses.push({ order: { id: sent.order.id }, state: 'accepted' })
+    await state.checkout.submit()
+    await nextTick()
+    assert.deepEqual(state.requests[1].payload, sent)
+    const reset = [...state.timeouts.values()][0]
+    assert.equal(reset.delay, 30000)
+    state.responses.push({ order: { id: sent.order.id }, state: 'preparing' })
+    await state.checkout.refresh()
+    await nextTick()
+    assert.equal(
+      [...state.timeouts.values()][0],
+      reset,
+      'status refresh must not restart the next-customer timer'
+    )
+    reset.callback()
+    await nextTick()
+    assert.equal(state.checkout.submission.value, null)
+    assert.equal(state.checkout.resets.value, 1)
+    assert.equal(state.basket.lines.value.length, 0)
+    assert.equal(state.storage.size, 0)
+  } finally {
+    state.scope.stop()
+  }
+})
+
+test('Kiosk clears abandoned baskets, disposes timers and rejects staff or disabled channel sessions', async () => {
+  const state = checkoutHarness({ service: 'eat_in' })
+  assert.equal([...state.timeouts.values()][0].delay, 120000)
+  ;[...state.timeouts.values()][0].callback()
+  await nextTick()
+  assert.equal(state.basket.lines.value.length, 0)
+  state.scope.stop()
+  assert.equal(state.timeouts.size, 0)
+  for (const options of [
+    { currentUser: ref({ uid: 'staff', isAnonymous: false }) },
+    { channels: ['website'] },
+  ]) {
+    const blocked = checkoutHarness({ service: 'takeaway', ...options })
+    try {
+      assert.ok(blocked.checkout.issues.value.length)
+      await blocked.checkout.submit()
+      assert.equal(blocked.requests.length, 0)
+    } finally {
+      blocked.scope.stop()
+    }
+  }
+})
+
+test('tenant Kiosk submissions retain recovery context without requesting a different Kitchen scope', async () => {
+  const state = checkoutHarness({ service: 'takeaway', tenant: true })
+  try {
+    await state.checkout.submit()
+    assert.equal(state.requests[0].payload.kitchenSlug, undefined)
+    assert.equal(state.requests[0].payload.menuId, 'main-menu')
+    assert.equal(state.requests[0].payload.order.channel, 'kiosk')
+    assert.ok([...state.storage.values()][0].includes('"kitchenSlug":"venue"'))
+    await state.checkout.submit()
+    assert.deepEqual(state.requests[1].payload, state.requests[0].payload)
+  } finally {
+    state.scope.stop()
+  }
 })
 
 function loadSubmitEndpoint(dependencies) {
@@ -948,7 +1126,7 @@ test('recovery preserves variants, extras, meal supplements and both bottle choi
     await Promise.resolve()
     assert.equal(restored.basket.totalMinor.value, 6800)
     assert.deepEqual(
-      helpers.collectionSelections(restored.basket.lines.value),
+      helpers.serviceSelections(restored.basket.lines.value),
       sent.selections
     )
     await restored.checkout.submit()

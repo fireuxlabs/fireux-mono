@@ -88,6 +88,8 @@ export async function submitKitchenOrder(
   const issues = orderSubmissionIssues(order)
   if (issues.length) fail(400, issues.join(' '))
   const operator = actor.operator
+  if (menuContext && !['website', 'kiosk'].includes(order.channel))
+    fail(400, 'Choose a supported customer ordering channel.')
   if (!menuContext && !operator)
     fail(403, 'Kitchen operator context is required.')
   const fingerprint = createHash('sha256')
@@ -160,6 +162,7 @@ export async function submitKitchenOrder(
           selections: menuContext.selections,
           fulfilment: order.fulfilment,
           expectedTotal: menuContext.expectedTotal,
+          channel: order.channel === 'kiosk' ? 'kiosk' : 'website',
         })
       : null
     const counter = counterTarget(kitchenId)
@@ -174,7 +177,11 @@ export async function submitKitchenOrder(
         ...(resolved ? { lines: resolved.lines } : {}),
         number: String(next),
       }),
-      state: initialOrderSubmissionState(order),
+      // A public customer's channel choice is not Kitchen acceptance.
+      state:
+        menuContext && order.channel === 'kiosk'
+          ? ('received' as const)
+          : initialOrderSubmissionState(order),
       revision: 1,
       message: '',
       estimate_minutes: null,

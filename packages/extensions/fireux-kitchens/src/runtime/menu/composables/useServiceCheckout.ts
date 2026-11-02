@@ -1,4 +1,4 @@
-import { computed, ref, onMounted, onScopeDispose, type Ref } from 'vue'
+import { computed, ref, watch, onMounted, onScopeDispose, type Ref } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
@@ -6,25 +6,35 @@ import { useKitchenOfferingNow } from '../../kitchen/composables/useKitchenOffer
 import { readOpeningHoursStatus } from 'fireux-places/runtime/place/utils/opening-hours-status'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
 import {
-  collectionOrder,
-  collectionSelections,
-} from '../utils/collection-checkout'
+  serviceOrder,
+  serviceSelections,
+  type MenuCheckoutService,
+} from '../utils/service-checkout'
 import { serviceItemSignature } from '../utils/service-basket'
 import type { MenuServiceOffer } from '../utils/service-sections'
 import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
 import type { useServiceBasket } from './useServiceBasket'
-import { useCollectionRecovery } from './useCollectionRecovery'
+import { useServiceRecovery } from './useServiceRecovery'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
-/** One checkout over the Collection owner's basket; existing transport owns auth and scoped requests. */
-export function useCollectionCheckout(input: {
+/** One checkout over a Menu basket; existing transport owns auth and scoped requests. */
+export function useServiceCheckout(input: {
   basket: ReturnType<typeof useServiceBasket>
   offers: Ref<MenuServiceOffer[]>
   ready: Ref<boolean>
   kitchenSlug: Ref<string>
   entryId?: Ref<string>
+  service?: MenuCheckoutService
 }) {
   const { basket, offers, ready } = input
+  const service = input.service || 'collection'
+  const kiosk = service !== 'collection'
+  const label =
+    service === 'eat_in'
+      ? 'Eat in'
+      : service === 'takeaway'
+        ? 'Takeaway'
+        : 'Collection'
   const kitchenId = computed(
     () =>
       basket.lines.value[0]?.source.kitchenId ||
@@ -34,25 +44,37 @@ export function useCollectionCheckout(input: {
   const { currentUser } = useAuth()
   const transport = useOrderExchange(kitchenId, input.kitchenSlug)
   const { now } = useKitchenOfferingNow()
-  const websiteEnabled =
-    useRuntimeConfig().public.ordering?.channels?.includes('website')
+  const channelEnabled = useRuntimeConfig().public.ordering?.channels?.includes(
+    kiosk ? 'kiosk' : 'website'
+  )
   const name = ref(''),
     phone = ref('')
   const submission = ref<OrderSubmission | null>(null)
   const attempt = ref<Record<string, unknown> | null>(null)
+  const resets = ref(0)
   const locked = computed(() =>
     Boolean(attempt.value || transport.pending.value || submission.value)
   )
   const issues = computed(() => {
     if (attempt.value || submission.value) return []
     const messages = orderSubmissionIssues(
-      collectionOrder(basket.lines.value, 'pending', name.value, phone.value)
+      serviceOrder(
+        basket.lines.value,
+        'pending',
+        name.value,
+        phone.value,
+        service
+      )
     )
     if (!currentUser.value)
       messages.push(
         'Your ordering session is loading. Please try again shortly.'
       )
-    if (!websiteEnabled) messages.push('Online ordering is unavailable.')
+    if (kiosk && currentUser.value && !currentUser.value.isAnonymous)
+      messages.push(
+        'Open Kiosk in a private browser window without a staff account.'
+      )
+    if (!channelEnabled) messages.push('Ordering is unavailable.')
     if (!ready.value)
       messages.push(
         'Wait for food and drinks to reload before placing your order.'
@@ -79,7 +101,7 @@ export function useCollectionCheckout(input: {
       })
     )
       messages.push(
-        'Collection is closed for one or more items. Please order during serving hours.'
+        `${label} is closed for one or more items. Please order during serving hours.`
       )
     return messages
   })
@@ -92,20 +114,20 @@ export function useCollectionCheckout(input: {
           basket.lines.value[0]!.source.menuSlug ||
           basket.lines.value[0]!.source.menuId,
         kitchenSlug: input.kitchenSlug.value,
-        order: collectionOrder(
+        order: serviceOrder(
           basket.lines.value,
           crypto.randomUUID(),
           name.value,
-          phone.value
+          phone.value,
+          service
         ),
-        selections: collectionSelections(basket.lines.value),
+        selections: serviceSelections(basket.lines.value),
         expectedTotal: basket.totalMinor.value / 100,
       }
     const sent = attempt.value
-    const result = await transport.request(
-      '/api/ordering/menu-submit',
-      JSON.parse(JSON.stringify(sent))
-    )
+    const payload = JSON.parse(JSON.stringify(sent))
+    if (config.isTenant) delete payload.kitchenSlug
+    const result = await transport.request('/api/ordering/menu-submit', payload)
     if (attempt.value !== sent) return
     if (result && !Array.isArray(result)) {
       submission.value = result
@@ -137,8 +159,9 @@ export function useCollectionCheckout(input: {
       submission.value = result
   }
   function reset() {
-    if (transport.pending.value) return
+    if (transport.pending.value && !submission.value) return
     clearSession()
+    resets.value++
   }
   function clearSession() {
     attempt.value = null
@@ -148,10 +171,11 @@ export function useCollectionCheckout(input: {
     basket.clear()
   }
   const config = useFireUXConfig()
-  const recovery = useCollectionRecovery({
+  const recovery = useServiceRecovery({
+    service,
     key: computed(() =>
       currentUser.value?.uid
-        ? `collection:${JSON.stringify([config.appId, input.kitchenSlug.value, input.entryId?.value || '', currentUser.value.uid])}`
+        ? `checkout:${JSON.stringify([config.appId, input.kitchenSlug.value, input.entryId?.value || '', service, currentUser.value.uid])}`
         : ''
     ),
     lines: basket.lines,
@@ -173,7 +197,29 @@ export function useCollectionCheckout(input: {
       submission.value = result
   }
   let timer: ReturnType<typeof setInterval> | undefined
+  let resetTimer: ReturnType<typeof setTimeout> | undefined
+  let mounted = false
+  // A shared touchscreen must clear between customers. An unresolved submission
+  // keeps its exact retry reference; it must never be timed out into a new order.
+  function scheduleReset() {
+    if (resetTimer) clearTimeout(resetTimer)
+    resetTimer = undefined
+    if (!mounted || !kiosk || transport.pending.value) return
+    if (submission.value) resetTimer = setTimeout(reset, 30000)
+    else if (!attempt.value && basket.lines.value.length)
+      resetTimer = setTimeout(reset, 120000)
+  }
+  watch(
+    [basket.lines, attempt],
+    () => {
+      if (!submission.value) scheduleReset()
+    },
+    { deep: true }
+  )
+  watch(() => submission.value?.order.id, scheduleReset)
   onMounted(() => {
+    mounted = true
+    scheduleReset()
     timer = setInterval(() => {
       if (
         submission.value &&
@@ -183,7 +229,9 @@ export function useCollectionCheckout(input: {
     }, 4000)
   })
   onScopeDispose(() => {
+    mounted = false
     if (timer) clearInterval(timer)
+    if (resetTimer) clearTimeout(resetTimer)
   })
   const responseTitle = computed(
     () =>
@@ -221,6 +269,9 @@ export function useCollectionCheckout(input: {
     reset,
     refresh,
     recoveryError: recovery.error,
+    kiosk,
+    label,
+    resets,
     responseTitle,
     responseMessage,
   }

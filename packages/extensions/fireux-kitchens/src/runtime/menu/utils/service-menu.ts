@@ -1,6 +1,12 @@
 import type { MenuDirectoryEntry } from '../models/menu-directory.response'
 
-export type MenuService = 'collection' | 'delivery' | 'table' | 'room_service'
+export type MenuService =
+  | 'collection'
+  | 'delivery'
+  | 'table'
+  | 'room_service'
+  | 'eat_in'
+  | 'takeaway'
 
 /** Explicit enabled service options only; names never determine eligibility. */
 export function menuServiceOfferings(
@@ -19,9 +25,7 @@ export function menuServiceOfferings(
   )
   return (menu.offerings || []).filter(
     (offering) =>
-      (offeringId
-        ? offering.id === offeringId
-        : !offering.separate) &&
+      (offeringId ? offering.id === offeringId : !offering.separate) &&
       ids.has(offering.id) &&
       !offering.paused &&
       Boolean(offering.hours?.windows.length)

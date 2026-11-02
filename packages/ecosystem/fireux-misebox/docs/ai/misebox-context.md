@@ -393,7 +393,8 @@ notes for customer and operator tickets, and stored Menu selections retain the
 structured references. Pricing is snapshotted separately from
 Order facts; delivery-zone charges and payment are not yet connected.
 The previous execution stack, checkout/webhooks, kiosk sessions, tracking and
-legacy model are deleted. The new draft collection neither reads nor migrates
+legacy model are deleted. The current public Kiosk entrance uses the same
+canonical Menu submission owner as Collection; it does not restore that stack. The new draft collection neither reads nor migrates
 those stored records. Verify through `test:ordering`, the consuming App type
 check, route registration and browser checks. Controlled transaction/adapter/UI
 checks are not live Firestore write evidence.
@@ -1432,7 +1433,7 @@ index entrances redirect there. Website code targets the Kitchen's stable
 the live published Menu directory and its safe offering-option projection, excludes
 paused and unsupported interactions, and carries the exact selected offering id
 to the existing per-Menu checkout. The dedicated Collection service entrance
-separately combines eligible Menus in one basket through `useCollectionCheckout`
+separately combines eligible Menus in one basket through `useServiceCheckout`
 and the canonical multi-Menu resolver. Ordinary offering/menu edits do not require a replacement snippet.
 Kitchen-owned `components/Ordering/Setup.vue` is the shared website-ordering
 workflow in the App setup entrance and Workspace Integrations. It consumes live
@@ -1514,25 +1515,31 @@ order-abuse controls. Local HTTP origins are accepted only in development.
 `allowed-websites.test.mjs` covers origin validation, policy resolution, headers,
 framed navigation and authorized/denied mutations.
 `offering-configuration.test.mjs` and `kitchen-ordering-choices.test.mjs` cover the
-configuration and selection boundary. Kiosk device management remains in Settings.
-Kiosk and per-Menu checkout URLs use current Menu slugs while device and Offering
-references retain stable IDs. The existing Kiosk management component derives
-device rows directly from its authorized live source and distinguishes loading,
-read failure and a settled empty collection. Its actions capture exact account,
-App membership/access, Kitchen and local selection before credentials; disposal
-or changes away and back suppress obsolete navigation, refresh and feedback.
-Activation validates the returned active/current device, Menu, Offering and exact
-internally derived path through `kitchen/utils/kiosk-device.ts`.
-`test/kitchen/kiosk-client-internals.test.mjs` protects these client boundaries;
-server session policy is unchanged. Cookie-mutating activation and revocation
-share a Nuxt-app-local physical in-flight guard that survives owner/screen resets
-and disposal/remount, preventing response reordering within that app instance.
-Kiosk activation explicitly selects the named Offering and Menu; session
-authorization rechecks that binding and current
-Offering eligibility. Devices without an Offering reference require reactivation or an audited conversion. Website buttons use the configured
-App customer site origin, keeping localhost previews local. Ordering and integration
-screens preserve pending, failed and empty Menu read states. POS remains an unfinished diagnostic
-surface; it does not gain a separate backend in this cutover.
+configuration and selection boundary.
+
+The Kitchen-owned `/kitchens/<slug>/menu.kiosk` entrance composes `MenuKiosk`
+with the existing `KitchenDetailServiceMenu` and Menu Selection owners. Eat in
+and Takeaway are explicit choices over their own configured Menu sets. Public
+Menu projections and `menu/server/ordering.ts` apply the same mode eligibility,
+pause and effective serving-hour checks. The existing Menu-submit adapter accepts
+only website/collection-delivery-table or kiosk/eat-in-takeaway combinations;
+App-declared channels remain required. Kiosk orders use canonical Menu pricing,
+numbering, idempotency and the ordinary Kitchen order board. Public Kiosk
+submissions await Kitchen acceptance; a customer-selected channel grants no
+acceptance authority. Tenant adapters retain their App-bound Menu scope and
+reject a different Kitchen slug. Payment at the
+counter is separate; no payment confirmation or provider charge is created.
+
+`useServiceCheckout` owns the shared basket submission and response lifecycle.
+`useServiceRecovery` retains the exact attempt by App, Kitchen, entrance, mode
+and customer. Kiosk uses the native anonymous customer session rather than a
+staff Workspace session; its surface blocks signed-in staff accounts. A receipt
+returns to the start after 30 seconds; an abandoned basket clears after two
+minutes without changes. An unresolved submission retains its reference for
+retry and cannot be automatically discarded into another order. Loading and
+empty/error states retain the shared Menu owners. No device-pairing, payment
+terminal or retired kiosk session system is restored. Services exposes the
+current public entrance through its existing Kiosk setup.
 
 Source-only Demo fixtures author a Counter Offering with multiple interactions per
 Kitchen. They never write Firestore or put policy back onto Menu records.
@@ -2171,7 +2178,7 @@ or submit Orders. Verify replacement, cancellation, merging and stale-update
 behaviour in `menu-service-basket.test.mjs`.
 Collection required-field messages appear after that field loses focus or a
 submission attempt. `Selection/Checkout.vue` owns only this presentation timing;
-`useCollectionCheckout` retains validation and submission guards. Service and
+`useServiceCheckout` retains validation and submission guards. Service and
 catalogue blockers stay visible and disable submission immediately. Verify with
 `collection-validation-display.test.mjs` and `collection-checkout.test.mjs`.
 
@@ -2180,7 +2187,7 @@ and a focused customer `Selection/Confirmation.vue` receipt. The receipt uses
 the saved response for quantities, choices, line amounts, total, status and
 Kitchen estimates, and receives collection details from the existing public venue
 projection. It adds no reads or order writes. Update failures keep the saved
-receipt visible and expose the existing response refresh. `useCollectionCheckout` owns customer input,
+receipt visible and expose the existing response refresh. `useServiceCheckout` owns customer input,
 one immutable submission attempt and response polling through `useOrderExchange`.
 The existing `/api/ordering/menu-submit` adapter and Kitchen submission command
 accept selections across the same Kitchen's menus. Each selection retains the
@@ -2188,7 +2195,7 @@ canonical Menu/section/item IDs, choices, service IDs and expected unit amount;
 the anchor Menu route uses its stable public slug. Ambiguous failures retain the
 same reference and payload. A definite rejection checks the existing receipt
 before unlocking edits, preventing a missed success from producing another order.
-Collection recovery uses tab session storage through `useCollectionRecovery`,
+Collection recovery uses tab session storage through `useServiceRecovery`,
 scoped to App, Kitchen, Collection entrance and customer. It preserves basket
 choices, customer fields and the exact pending submission payload/reference.
 Refresh checks for a receipt without automatically submitting; unresolved retries

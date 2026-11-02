@@ -56,6 +56,42 @@ order below remains the broader programme; it is not a reason to reopen the
 accepted foundation or bypass the current user-selected sequence. Save requests
 and release authority remain separate.
 
+## Second Product and future candidates
+
+### Product programme — shared capability families
+
+The 100 imagined customer needs are discovery prompts, not validated demand or
+100 implementation plans. Group new needs under the responsible capability
+family, then name the missing Tool and one complete journey to prove. A Product
+packages those Tools; Workspace exposes the same owners directly. Do not create
+empty packages, Product records or universal workflow configuration for parked ideas.
+
+| Family | Candidate products | Shared owners and next proof |
+| --- | --- | --- |
+| Menus and dishes | Menu Express; Kitchen Setup | Existing Menus preparation, review and publication. Keep the accepted Product/Workspace slice closed unless a regression appears. |
+| Ordering and service | Collection Ordering; Kiosk Ordering; Table Ordering; Delivery Ordering; Catering Orders | Reuse Menu selection, canonical pricing, Order submission and the Kitchen board. Prove channels independently; advanced catering and delivery rules are separate gaps. |
+| Recipes and preparation | Recipe and Prep Planning | Reuse Recipes, Dishes and Prep. Prove one saved recipe-to-production journey before packaging. |
+| Stock, purchasing and suppliers | Stock and Purchasing; Supplier Catalogue | Preserve Stock, Purchasing, Receiving and Supplier catalogue ownership. Prove a purchase-to-receipt journey. |
+| Costs and performance | Menu Costing; Kitchen Performance | Derive results from authoritative Recipe/Dish costs and saved operational records; identify missing inputs before promising reports. |
+| People and venue operations | Team and Training; Food Safety | Keep Team, procedures and safety responsibilities distinct. Prove one operator workflow per offer before packaging. |
+| Business surfaces | Branded Kitchen App | Reuse the separate Ignition task and existing Kitchen capabilities; do not duplicate creation. |
+| Shared App plans | Pro; Business | Core tier mechanics and App-owned capacity. Billing activation remains separate from catalogue presentation. |
+
+**Current implementation slice: Kiosk Ordering.** The existing Kiosk Service
+configuration supplies Eat in and Takeaway Menu sets and hours. One public
+`/kitchens/<slug>/menu.kiosk` surface composes the same Menu Selection, basket,
+checkout and Order command as Collection. The existing Services screen links
+that entrance. No separate Order store, payment flow or device session layer is
+introduced. Payment is at the counter. The catalogue still contains the two
+existing domain offers; no speculative Product records are created by this pass.
+
+Focused fixtures prove both modes, canonical pricing, menu eligibility,
+duplicate-safe retries, caller-bound receipts, Kitchen board visibility and
+fulfilment transitions. Browser checks inspect the real Bären catalogue, item
+selection, CHF 13 basket and the closed-hours submission guard without changing
+its saved hours or writing an order. Hardware deployment, actual customer
+handover, provider payment and release remain outside this local proof.
+
 ## Attack order
 
 | Priority | Work                                    | Finish line                                                                                                                                     |

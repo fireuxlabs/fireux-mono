@@ -40,13 +40,17 @@ export function kitchenMenuOrdering(
   return { enabled: false, order_types }
 }
 
-/** Services supported by the public Website flow, explicitly granted by Kitchen offerings. */
+/** Channel-specific services explicitly granted by Kitchen offerings. */
 export function publicMenuOrderTypes(
-  ordering: MenuOrderingConfig
+  ordering: MenuOrderingConfig,
+  channel: 'website' | 'kiosk' = 'website'
 ): MenuOrderTypeConfig[] {
   return ordering.order_types.filter(
     (config) =>
-      ['collection', 'delivery', 'dine_in'].includes(config.type) &&
+      (channel === 'kiosk'
+        ? ['eat_in', 'takeaway']
+        : ['collection', 'delivery', 'dine_in']
+      ).includes(config.type) &&
       !config.availability?.paused &&
       tableChannelEnabled(config, 'table_qr')
   )
@@ -56,9 +60,10 @@ export function publicMenuOrderTypes(
 export function publicMenuServiceOpen(
   ordering: MenuOrderingConfig,
   type: string,
-  now = new Date()
+  now = new Date(),
+  channel: 'website' | 'kiosk' = 'website'
 ): boolean {
-  return publicMenuOrderTypes(ordering).some(
+  return publicMenuOrderTypes(ordering, channel).some(
     (config) =>
       config.type === type &&
       readWeekdayTimeOpenState(config.offering_hours?.operation_hours, now).open

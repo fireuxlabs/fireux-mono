@@ -81,6 +81,7 @@ export function projectMenuDirectoryEntry(
       ? {
           offering_options: [
             ...publicMenuOrderTypes(ordering),
+            ...publicMenuOrderTypes(ordering, 'kiosk'),
             ...ordering.order_types.filter(
               (option) =>
                 option.type === 'room_service' && !option.availability?.paused

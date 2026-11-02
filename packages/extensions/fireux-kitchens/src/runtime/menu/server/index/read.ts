@@ -1,6 +1,9 @@
 import { readMatchingMenuDishes, matchesFoodSearch } from './food-search'
 import { MenuStorage } from '../../models/menu-storage.model'
-import { menuServiceOfferings } from '../../utils/service-menu'
+import {
+  menuServiceOfferings,
+  type MenuService,
+} from '../../utils/service-menu'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -192,7 +195,9 @@ export async function readMenuDirectoryPage(
     input.service !== 'collection' &&
     input.service !== 'delivery' &&
     input.service !== 'table' &&
-    input.service !== 'room_service'
+    input.service !== 'room_service' &&
+    input.service !== 'eat_in' &&
+    input.service !== 'takeaway'
   )
     throw createError({
       statusCode: 400,
@@ -219,11 +224,7 @@ export async function readMenuDirectoryPage(
               .length > 0
           : menuServiceOfferings(
               menu,
-              input.service as
-                | 'collection'
-                | 'delivery'
-                | 'table'
-                | 'room_service',
+              input.service as MenuService,
               text(input.offering)
             ).length > 0)
     )

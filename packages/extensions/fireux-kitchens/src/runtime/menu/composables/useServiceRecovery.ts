@@ -1,10 +1,12 @@
 import { onMounted, ref, watch, type Ref } from 'vue'
 import type { ServiceBasketLine } from '../utils/service-basket'
-import { readCollectionSession } from '../utils/collection-recovery'
+import { readServiceSession } from '../utils/service-recovery'
+import type { MenuCheckoutService } from '../utils/service-checkout'
 
-/** One tab's Collection session. Catalogue and Order authority remain with their existing owners. */
-export function useCollectionRecovery(input: {
+/** One tab's checkout session. Catalogue and Order authority remain with their existing owners. */
+export function useServiceRecovery(input: {
   key: Ref<string>
+  service?: MenuCheckoutService
   lines: Ref<ServiceBasketLine[]>
   name: Ref<string>
   phone: Ref<string>
@@ -46,7 +48,8 @@ export function useCollectionRecovery(input: {
     if (previousKey) input.clear()
     try {
       const saved =
-        activeKey && readCollectionSession(sessionStorage.getItem(activeKey))
+        activeKey &&
+        readServiceSession(sessionStorage.getItem(activeKey), input.service)
       if (saved && !previousKey) input.clear()
       if (saved) {
         input.lines.value = saved.lines

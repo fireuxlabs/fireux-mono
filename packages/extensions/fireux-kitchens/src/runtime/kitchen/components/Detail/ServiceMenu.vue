@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section class="service-menu">
     <KitchenDetailMenuHeader
       v-if="presentation"
       :venue="presentation"
@@ -11,7 +11,7 @@
       v-if="
         presentation && (service === 'collection' || service === 'delivery')
       "
-      class="flex flex-wrap items-center justify-between gap-3"
+      class="service-menu__navigation"
     >
       <KitchenDetailMenuServices
         :kitchen-slug="kitchenSlug"
@@ -34,29 +34,33 @@
     />
     <p
       v-if="presentation && service === 'room_service' && roomNumber"
-      class="text-lg font-medium"
+      class="service-menu__location"
       data-room-context
     >
       Room {{ roomNumber }}
     </p>
     <p
       v-if="presentation && service === 'table' && tableNumber"
-      class="text-lg font-medium"
+      class="service-menu__location"
       data-table-context
     >
       Table {{ tableNumber }}
     </p>
     <p
       v-if="selectedOffering?.collection_timing === 'next_day'"
-      class="text-sm text-muted"
+      class="service-menu__status"
     >
       Order today for collection from tomorrow, during the hours below.
     </p>
     <template v-if="presentation">
-      <p v-if="menus.pending.value" role="status" class="text-sm text-muted">
+      <p v-if="menus.pending.value" role="status" class="service-menu__status">
         Loading food and drinks…
       </p>
-      <div v-else-if="menus.error.value" role="alert" class="space-y-2">
+      <div
+        v-else-if="menus.error.value"
+        role="alert"
+        class="service-menu__error"
+      >
         <p>Food and drinks could not be loaded. Please try again.</p>
         <FireCopyError :message="String(menus.error.value)" />
         <UButton
@@ -67,15 +71,12 @@
         />
       </div>
       <MenuServiceCatalogue
-        v-else-if="sections.length && service !== 'collection'"
+        v-else-if="sections.length && !checkoutService"
         :sections="sections"
         :service-label="serviceLabel"
         :style="styleVars"
       />
-      <p
-        v-else-if="service !== 'collection'"
-        class="rounded-xl border border-default p-5 text-muted"
-      >
+      <p v-else-if="!checkoutService" class="service-menu__empty">
         {{
           service === 'table'
             ? 'No food or drinks are available at your table.'
@@ -86,13 +87,15 @@
       </p>
     </template>
     <MenuSelection
-      v-if="service === 'collection'"
-      :key="kitchenSlug + ':' + offeringId"
+      v-if="checkoutService"
+      :key="kitchenSlug + ':' + offeringId + ':' + service"
       :sections="sections"
       :kitchen-slug="kitchenSlug"
       :entry-id="offeringId"
       :venue="presentation"
       :currency-code="currencyCode"
+      :service="checkoutService"
+      @reset="emit('reset')"
       :catalogue-ready="
         Boolean(presentation) && !menus.pending.value && !menus.error.value
       "
@@ -120,6 +123,14 @@ const props = defineProps<{
   roomNumber?: string
   tableNumber?: string
 }>()
+const emit = defineEmits<{ reset: [] }>()
+const checkoutService = computed(() =>
+  props.service === 'collection' ||
+  props.service === 'eat_in' ||
+  props.service === 'takeaway'
+    ? props.service
+    : undefined
+)
 const slug = toRef(props, 'kitchenSlug')
 const service = toRef(props, 'service')
 const route = useRoute()
@@ -133,6 +144,11 @@ const selectedOffering = computed(() =>
 )
 const serviceLabel = computed(
   () =>
+    (service.value === 'eat_in'
+      ? 'Eat in'
+      : service.value === 'takeaway'
+        ? 'Takeaway'
+        : '') ||
     selectedOffering.value?.name ||
     (service.value === 'room_service'
       ? 'Room service'
@@ -162,7 +178,7 @@ const { styleVars } = useMenuThemeSurface()
 const { kitchen, place, presentation, outcome, refresh, statusCode, ready } =
   useKitchenDetail(slug)
 const currencyCode = computed(() =>
-  service.value === 'collection' || service.value === 'delivery'
+  checkoutService.value || service.value === 'delivery'
     ? readPlaceCurrencyCode(place.value)
     : ''
 )
@@ -178,6 +194,8 @@ useSeoMeta({
     `${serviceLabel.value} food and drinks from ${presentation.value?.display_name || 'this kitchen'}. Browse the menu and current serving times.`,
   robots: () =>
     service.value === 'room_service' ||
+    service.value === 'eat_in' ||
+    service.value === 'takeaway' ||
     service.value === 'table' ||
     statusCode.value ||
     menus.error.value
@@ -185,3 +203,35 @@ useSeoMeta({
       : undefined,
 })
 </script>
+
+<style scoped>
+.service-menu {
+  display: grid;
+  gap: 1.5rem;
+}
+.service-menu__navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.service-menu__location {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+.service-menu__status {
+  font-size: 0.875rem;
+  color: var(--ui-text-muted);
+}
+.service-menu__error {
+  display: grid;
+  gap: 0.5rem;
+}
+.service-menu__empty {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: 1.25rem;
+  color: var(--ui-text-muted);
+}
+</style>

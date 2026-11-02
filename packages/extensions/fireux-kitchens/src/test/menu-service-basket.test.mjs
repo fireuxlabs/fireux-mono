@@ -332,6 +332,8 @@ test('Collection keeps the same basket through refresh, error, empty recovery an
     setup: () => ({
       presentation,
       service: 'collection',
+      checkoutService: 'collection',
+      emit() {},
       kitchenSlug,
       offeringId,
       venuePath: '/kitchens/venue',

@@ -140,7 +140,8 @@ export default defineEventHandler(async (event) => {
     if (menuContext === 'kiosk')
       throw createError({
         statusCode: 410,
-        statusMessage: 'Kiosk ordering is being rebuilt.',
+        statusMessage:
+          'Per-Menu Kiosk URLs are not supported. Use the Kitchen Kiosk entrance.',
       })
     return await readKitchenMenu(
       target,

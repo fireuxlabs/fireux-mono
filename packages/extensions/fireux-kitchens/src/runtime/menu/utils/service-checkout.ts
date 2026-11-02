@@ -2,7 +2,9 @@ import type { ServiceBasketLine } from './service-basket'
 import type { MenuOrderSelection } from '../models/menu-order-selection.model'
 import type { Order } from '../../kitchen/models/order.model'
 
-export function collectionSelections(
+export type MenuCheckoutService = 'collection' | 'eat_in' | 'takeaway'
+
+export function serviceSelections(
   lines: ServiceBasketLine[]
 ): MenuOrderSelection[] {
   return lines.map((line) => ({
@@ -23,18 +25,21 @@ export function collectionSelections(
     expectedUnitMinor: line.unitMinor,
   }))
 }
-export function collectionOrder(
+export function serviceOrder(
   lines: ServiceBasketLine[],
   id: string,
   name: string,
-  phone: string
+  phone: string,
+  service: MenuCheckoutService = 'collection'
 ): Order {
   return {
     id,
     number: '',
-    channel: 'website',
-    fulfilment: 'collection',
-    customer: { name: name.trim(), phone: phone.trim() },
+    channel: service === 'collection' ? 'website' : 'kiosk',
+    fulfilment: service === 'eat_in' ? 'on_site' : service,
+    ...(service === 'collection'
+      ? { customer: { name: name.trim(), phone: phone.trim() } }
+      : {}),
     lines: lines.map((line, index) => ({
       id: `line-${index + 1}`,
       item: { id: line.itemId, name: line.name },

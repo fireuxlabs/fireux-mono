@@ -1,4 +1,8 @@
-import { publicMenuOrderTypes } from './kitchen/offering-test-helpers.mjs'
+import {
+  publicMenuOrderTypes,
+  normalizeKitchenOfferings,
+} from './kitchen/offering-test-helpers.mjs'
+import { weekdayHoursConstraints } from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -113,7 +117,10 @@ test('same-named offerings retain distinct identities and tenant routes', () => 
     choice.offerings.map((row) => row.id),
     ['early', 'late']
   )
-  assert.equal(choice.offerings[1].menus[0].to, '/food.collection?offering=late')
+  assert.equal(
+    choice.offerings[1].menus[0].to,
+    '/food.collection?offering=late'
+  )
 })
 test('stable website button targets Kitchen rather than a current Menu or service', () => {
   const url = kitchenWebsiteOrderUrl({ origin: 'https://misebox.app', scope })
@@ -146,11 +153,23 @@ test('stable website button targets Kitchen rather than a current Menu or servic
 })
 
 test('public menu projection hides paused entrances and private operational settings', () => {
+  const timeCore = load('utils/weekday-time-core', 'weekdayTimeCore')
+  const { weekdayTimeConfig } = load(
+    'utils/weekday-time-config',
+    'weekdayTimeConfig',
+    timeCore
+  )
+  const menuHours = load('menu/utils/menu-hours', 'constrainMenuOfferings', {
+    normalizeKitchenOfferings,
+    readWeekdayTimeWindowsConfig: weekdayTimeConfig.readWindowsConfig,
+    ...weekdayHoursConstraints,
+  })
   const project = load(
     'menu/server/index/projection',
     'projectMenuDirectoryEntry',
     {
       publicMenuOrderTypes,
+      ...menuHours,
       documentKindFromFile: () => 'pdf',
       readRecordString: (data, key) =>
         typeof data[key] === 'string' ? data[key] : '',

@@ -7,7 +7,10 @@
       aria-atomic="true"
     >
       <p class="text-sm text-muted">
-        Collection order #{{ submission.order.number }}
+        {{
+          submission.order.channel === 'kiosk' ? 'Order' : 'Collection order'
+        }}
+        #{{ submission.order.number }}
       </p>
       <h3 class="text-xl font-semibold">{{ responseTitle }}</h3>
       <p>{{ responseMessage }}</p>

@@ -399,7 +399,7 @@ endpoint and Order adapters retain their own policy reads. Order selection, cart
 lines and submission belong to those consumers, not the read-only item model.
 `menu-public-slug.test.mjs` verifies catalogue resolution without a fulfilment read.
 
-## Collection checkout
+## Service checkout
 
 Collection's Menu-owned Selection composition retains one local basket across
 catalogue refreshes and errors and composes a focused checkout. The existing
@@ -413,11 +413,11 @@ remain in structured saved selections; canonical Order line notes carry the
 choices to the customer response and Kitchen ticket. Normal catalogue records
 are read, never repriced or written by checkout.
 
-`useCollectionCheckout` reuses scoped Order exchange for submission and responses,
+`useServiceCheckout` reuses scoped Order exchange for submission and responses,
 freezes an unresolved attempt for idempotent retry and checks for an existing
-receipt before permitting edits after a rejection. `useCollectionRecovery` saves
+receipt before permitting edits after a rejection. `useServiceRecovery` saves
 the basket, customer fields and immutable attempt in tab session storage, scoped
-by App, Kitchen, Collection entrance and customer. Refresh restores selections
+by App, Kitchen, entrance, service mode and customer. Refresh restores selections
 without silently repricing them, then checks the existing response for a saved
 attempt; restoration never submits. Current catalogue readiness and stale-item
 checks still gate new attempts. Reset removes the saved session. Malformed local
@@ -435,6 +435,14 @@ Verify `collection-confirmation.test.mjs`, `collection-checkout.test.mjs`,
 `menu-service-basket.test.mjs`, existing
 Order submission/flow and ticket checks. These fixture tests are not evidence of
 live submission or physical fulfilment.
+
+Kiosk's `/kitchens/<slug>/menu.kiosk` uses the same Selection, basket, checkout,
+recovery and canonical Order command. Its `MenuKiosk` composition owns the
+Eat in/Takeaway choice. Services retain the mode-specific Menu sets. Kiosk
+collects no customer contact details, uses a guest browser, and clears receipts
+between customers; unresolved submissions retain their retry reference. Payment
+at the counter is separate from Order state. See the
+[Ordering boundary](order-processing-kitchen-fulfilment.md).
 
 ## Safe Dish removal
 

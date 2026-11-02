@@ -1,12 +1,22 @@
 <template>
-  <div class="space-y-6 pb-24">
+  <div class="menu-selection">
+    <UButton
+      v-if="checkout.kiosk && !checkout.locked"
+      label="Start again"
+      color="neutral"
+      variant="soft"
+      @click="checkout.reset"
+    />
     <template v-if="catalogueReady">
       <KitchenDetailOfferingTimes
         :offerings="offerings"
         compact
         :show-names="false"
       />
-      <nav class="flex flex-wrap gap-2" aria-label="Collection sections">
+      <nav
+        :aria-label="`${checkout.label} sections`"
+        class="menu-selection__sections"
+      >
         <UButton
           v-for="(section, index) in sections"
           :key="section.key"
@@ -23,14 +33,11 @@
         :money="money"
         @select="itemEditor.select"
       />
-      <p
-        v-if="!sections.length"
-        class="rounded-xl border border-default p-5 text-muted"
-      >
-        No food or drinks are available for collection.
+      <p v-if="!sections.length" class="menu-selection__empty">
+        No food or drinks are available for {{ checkout.label.toLowerCase() }}.
       </p>
     </template>
-    <div v-if="basket.count.value" class="collection-basket-bar">
+    <div v-if="basket.count.value" class="menu-selection__basket-bar">
       <UButton
         :label="
           checkout.submission
@@ -66,12 +73,10 @@
     </UModal>
     <UModal
       v-model:open="basketOpen"
-      :title="
-        checkout.submission ? 'Your Collection order' : 'Your Collection basket'
-      "
+      :title="checkout.submission ? 'Your order' : 'Your basket'"
       :description="
         checkout.submission
-          ? 'Order confirmation and collection details.'
+          ? 'Order confirmation and details.'
           : 'Review your food and drinks.'
       "
     >
@@ -93,7 +98,7 @@
           v-if="basket.count.value || checkout.submission"
           :flow="checkout"
           :venue="venue"
-          class="mt-6"
+          class="menu-selection__checkout"
         />
       </template>
     </UModal>
@@ -101,9 +106,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, reactive, toRef, watch } from 'vue'
-import { useCollectionCheckout } from '../../composables/useCollectionCheckout'
+import { useServiceCheckout } from '../../composables/useServiceCheckout'
 import type { MenuServiceSection } from '../../utils/service-sections'
 import { serviceItemSignature } from '../../utils/service-basket'
+import type { MenuCheckoutService } from '../../utils/service-checkout'
 import { useServiceBasket } from '../../composables/useServiceBasket'
 import { useServiceItemEditor } from '../../composables/useServiceItemEditor'
 import type { KitchenDetailPresentation } from '../../../kitchen/models/kitchen-detail.response'
@@ -115,7 +121,9 @@ const props = defineProps<{
   entryId?: string
   currencyCode: string
   catalogueReady: boolean
+  service?: MenuCheckoutService
 }>()
+const emit = defineEmits<{ reset: [] }>()
 const offers = computed(() =>
   props.sections.flatMap((section) =>
     section.items.flatMap((row) => [row, ...row.alternatives])
@@ -130,13 +138,18 @@ const offerings = computed(() => [
 ])
 const basket = useServiceBasket(offers, () => props.catalogueReady)
 const checkout = reactive(
-  useCollectionCheckout({
+  useServiceCheckout({
     basket,
     offers,
     ready: toRef(props, 'catalogueReady'),
     kitchenSlug: toRef(props, 'kitchenSlug'),
     entryId: toRef(() => props.entryId || ''),
+    service: props.service,
   })
+)
+watch(
+  () => checkout.resets,
+  () => emit('reset')
 )
 const basketOpen = ref(false)
 const itemEditor = reactive(
@@ -171,7 +184,26 @@ const money = (value: number) =>
       })
 </script>
 <style scoped>
-.collection-basket-bar {
+.menu-selection {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 6rem;
+}
+.menu-selection__sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.menu-selection__empty {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: 1.25rem;
+  color: var(--ui-text-muted);
+}
+.menu-selection__checkout {
+  margin-top: 1.5rem;
+}
+.menu-selection__basket-bar {
   position: fixed;
   bottom: max(1rem, env(safe-area-inset-bottom));
   left: 50%;

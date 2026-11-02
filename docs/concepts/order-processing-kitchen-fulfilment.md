@@ -21,8 +21,8 @@ source and executable checks establish implementation.
   authentication or customer identity. Optional `fulfilment` records
   `on_site`, `takeaway`, `collection` or `delivery` separately from channel; Takeaway and
   collection remain distinct; timing is not inferred into the Order. The local kiosk specimen supplies
-  an initially empty fulfilment string until a choice is made. The real kiosk
-  entrance still needs to settle this required choice before submission. This does not implement fulfilment execution. Trusted actor
+  an initially empty fulfilment string until a choice is made. The public Kiosk
+  entrance requires Eat in or Takeaway before selecting items. This does not implement fulfilment execution. Trusted actor
   authority and audit metadata remain separate. Draft storage uses null for
   absent context so updates can explicitly clear previously saved values;
   readers omit absent context from the domain Order.
@@ -81,12 +81,12 @@ source and executable checks establish implementation.
 - `server/orders/submission.ts` owns guarded submission, numbering, idempotency,
   operator response and customer-scoped reads. Records live in
   `kitchens/{id}/submitted-orders`; the old Orders collection is untouched.
-  There is no test flag or separate test-order mode. Public Website targets use the published Menu resolver for the exact tenant
+  There is no test flag or separate test-order mode. Public Website and Kiosk targets use the published Menu resolver for the exact tenant
   or directory Kitchen. Tenant ownership is rechecked in the writing transaction.
   Generic submissions, including POS/Kiosk, require current Kitchen authority;
   anonymous customers cannot bypass canonical Menu resolution.
-- POS/Kiosk and table Website orders auto-accept. Website collection/delivery
-  await acceptance or rejection; rejection requires a reason. Accepted orders
+- Operator POS/Kiosk and table Website orders auto-accept. Public Menu Kiosk
+  and Website collection/delivery await acceptance or rejection; rejection requires a reason. Accepted orders
   progress through preparing, ready and completed with exact revisions.
 - `Workspace/Orders/Board.vue` combines persisted open orders (including empty
   ones) and the protected submitted-order reader. `/workspace/kitchen/orders/board`
@@ -109,10 +109,13 @@ source and executable checks establish implementation.
   Changed totals require review; order facts remain separate from the pricing
   and Menu-selection snapshot. No browser-authored price becomes authoritative.
 - No payment, delivery-zone fee calculation, driver dispatch or production deployment is implied.
-  Anonymous Website sessions can read only their own submitted response through
-  the trusted endpoint; they do not receive operator access. Public self-service
-  kiosk device authority is not yet provisioned; Kiosk submission currently
-  requires an authorized operator.
+  Anonymous customer sessions can read only their own submitted response through
+  the trusted endpoint; they do not receive operator access. The public Kiosk
+  entrance reuses Menu Selection and `useServiceCheckout`, with explicit Eat in
+  or Takeaway mode eligibility. It does not restore device pairing or kiosk
+  session authority. Its receipt resets after 30 seconds and an abandoned
+  basket after two minutes without changes; uncertain submissions stay locked
+  to their exact retry reference. Kiosk payment remains at the counter.
 
 ## Domain boundary
 
@@ -154,7 +157,7 @@ Services configures the existing service choices and their menus and serving tim
 Library stage previews share `Orders/Examples/Preview.vue`; success presentation is
 `Orders/Examples/Success.vue`, with local example state and shared validation retained.
 
-Public Collection, Delivery and Table submissions require a currently open,
+Public Collection, Delivery, Table and Kiosk submissions require a currently open,
 menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`
 reuses the existing weekday-time evaluator on both the customer page and inside
 `menu/server/ordering.ts` before any new-order write. The server clock is authoritative;

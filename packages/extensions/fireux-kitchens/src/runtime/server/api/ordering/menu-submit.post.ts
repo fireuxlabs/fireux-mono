@@ -27,14 +27,21 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Menu order is invalid.',
     })
   const target = await resolveMenuTarget(body.menuId, body.kitchenSlug)
+  const channel = body.order?.channel
+  const fulfilments =
+    channel === 'kiosk'
+      ? ['on_site', 'takeaway']
+      : channel === 'website'
+        ? ['collection', 'delivery', 'on_site']
+        : []
   if (
     body.kitchenId !== target.kitchenId ||
-    !['collection', 'delivery', 'on_site'].includes(body.order?.fulfilment) ||
-    body.order?.channel !== 'website'
+    !fulfilments.includes(body.order?.fulfilment)
   )
     throw createError({
       statusCode: 400,
-      statusMessage: 'Use the website ordering channel.',
+      statusMessage:
+        'Choose a supported customer ordering channel and fulfilment.',
     })
   const selections = readMenuOrderSelections(body.selections)
   return submitKitchenOrderRequest(
