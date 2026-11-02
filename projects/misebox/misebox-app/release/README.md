@@ -90,12 +90,14 @@ issued public image token URLs still work. It does not revoke historical tokens.
 Only after separate deployment authorization:
 
 ```sh
-pnpm --filter misebox-app deploy --rules-policy development
+pnpm --filter misebox-app run deploy --rules-policy development
 # Or explicitly Hosting only:
 pnpm --filter misebox-app deploy:hosting --rules-policy development
 # Future authorized production release keeps the production gate:
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 pnpm --filter misebox-app deploy --rules-policy production
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199 pnpm --filter misebox-app run deploy --rules-policy production
 ```
+
+Use `run deploy` explicitly: `pnpm deploy` is a separate package-manager command.
 
 Both upload commands run the selected local preflight, then use
 `gcloud auth print-access-token` to read the existing `cloud.firestore/misebox`
