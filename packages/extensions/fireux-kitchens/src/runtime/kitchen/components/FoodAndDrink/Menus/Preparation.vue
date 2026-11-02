@@ -17,6 +17,7 @@
   </section>
 </template>
 <script setup lang="ts">
+import '../../../../menu/assets/styles/menu-editor.css'
 import { computed } from 'vue'
 import { useKitchenMenuPreparation } from '../../../composables/menu/useKitchenMenuPreparation'
 const props = defineProps<{ kitchenId: string; sourceId: string }>()
@@ -38,5 +39,3 @@ const files = computed(() =>
       : []
 )
 </script>
-
-<style src="../../../../menu/assets/styles/menu-editor.css"></style>

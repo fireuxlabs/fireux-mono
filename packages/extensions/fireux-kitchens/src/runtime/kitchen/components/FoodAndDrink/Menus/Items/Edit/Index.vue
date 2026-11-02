@@ -90,6 +90,7 @@
 </template>
 
 <script setup lang="ts">
+import '../../../../../../menu/assets/styles/menu-editor.css'
 import { reactive } from 'vue'
 import { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
 const editor = reactive(useMenuSectionItemsEditor())
@@ -115,5 +116,3 @@ const editor = reactive(useMenuSectionItemsEditor())
   --collection-row-actions-width: 2rem;
 }
 </style>
-
-<style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

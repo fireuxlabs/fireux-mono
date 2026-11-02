@@ -24,6 +24,7 @@
   </section>
 </template>
 <script setup lang="ts">
+import '../../../../menu/assets/styles/menu-editor.css'
 import { computed } from 'vue'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import { useKitchenWorkspaceMenuSources } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuSources'
@@ -41,5 +42,3 @@ const sources = computed(() =>
   }))
 )
 </script>
-
-<style src="../../../../menu/assets/styles/menu-editor.css"></style>
