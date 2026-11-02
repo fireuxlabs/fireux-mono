@@ -9,7 +9,7 @@ import type { RouteLocationNormalized } from 'vue-router'
 
 // The Main App owns its public and Workspace origins; domain authority is unchanged.
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
-  const requestUrl = useRequestURL()
+  const requestUrl = useRequestURL({ xForwardedHost: true, xForwardedProto: true })
   const hostname = requestUrl.hostname.toLowerCase()
   if (to.path === '/') {
     const workspaceOrigin =

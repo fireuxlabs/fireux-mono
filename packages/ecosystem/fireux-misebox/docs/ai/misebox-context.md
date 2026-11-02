@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-10-31
-Ref: 3f46d22a2
+Updated: 2026-11-02
+Ref: 6a0fa0d06
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -60,6 +60,11 @@ future deliberate release. See `firestore-mutations-context.md` for the owning
 sources and Rules-only verification boundary.
 
 ## Apps and Workspace
+
+Main App host selection and Workspace noindex/cache headers use native Nuxt/H3
+forwarded host and protocol options behind Firebase Hosting. The internal Cloud
+Run origin must not determine whether `/` renders public discovery or Kitchen
+Workspace. This is App presentation policy, not data authority.
 
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects Core's shared tiers, alongside the existing

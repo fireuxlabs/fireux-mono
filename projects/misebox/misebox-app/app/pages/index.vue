@@ -11,7 +11,7 @@ import KitchenHome from '../components/Workspace/KitchenHome.vue'
 import LandingPublic from '../components/Landing/Public.vue'
 
 const isWorkspaceHost =
-  useRequestURL().origin === useFireUXConfig().workspaceConfig.kitchen?.origin
+  useRequestURL({ xForwardedHost: true, xForwardedProto: true }).origin === useFireUXConfig().workspaceConfig.kitchen?.origin
 
 definePageMeta({
   layout: false,

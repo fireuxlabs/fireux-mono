@@ -1,7 +1,7 @@
 import { defineEventHandler, getRequestURL, setHeader } from 'h3'
 
 export default defineEventHandler((event) => {
-  const url = getRequestURL(event)
+  const url = getRequestURL(event, { xForwardedHost: true, xForwardedProto: true })
   const hostname = url.hostname.toLowerCase()
   if (
     hostname === 'workspace.misebox.app' ||

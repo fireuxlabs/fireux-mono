@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { getRequestURL } from 'h3'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
@@ -209,4 +210,32 @@ test('Misebox route registration removes both retired homes while retaining capa
     pages.map((page) => page.path),
     ['/', '/workspace/kitchen/food-and-drink/menus', '/workspace/kitchen/team']
   )
+})
+
+
+test('Firebase forwarded origin drives the Workspace root and indexing policy', () => {
+  const event = {
+    node: { req: { headers: {
+      host: 'miseboxapp-example.a.run.app',
+      'x-forwarded-host': 'workspace.misebox.app',
+      'x-forwarded-proto': 'https',
+    } } },
+    path: '/',
+  }
+  const config = { public: { fireux: { workspaceConfig: { kitchen: { origin: 'https://workspace.misebox.app' } } } } }
+  const meta = {}
+  const handler = compileFunction(body(routeSource), [
+    'defineNuxtRouteMiddleware', 'navigateTo', 'useRequestURL', 'useRuntimeConfig', 'createError',
+  ])(fn => fn, () => { throw Error('Unexpected redirect') }, options => getRequestURL(event, options), () => config, details => Object.assign(new Error(details.statusMessage), details))
+  handler({ path: '/', fullPath: '/', meta })
+  assert.equal(meta.workspacePage, true)
+  const page = readFileSync(new URL('../pages/index.vue', import.meta.url), 'utf8')
+  const expression = page.match(/const isWorkspaceHost\s*=([\s\S]*?)definePageMeta/)[1]
+  const workspacePage = compileFunction(`return (${expression.trim()})`, ['useRequestURL', 'useFireUXConfig'])(options => getRequestURL(event, options), () => config.public.fireux)
+  assert.equal(workspacePage, true)
+  const headers = {}
+  const indexing = compileFunction(body(serverSource), ['defineEventHandler', 'getRequestURL', 'setHeader'])(fn => fn, getRequestURL, (_event, key, value) => { headers[key] = value })
+  indexing(event)
+  assert.equal(headers['Cache-Control'], 'no-store')
+  assert.equal(headers['X-Robots-Tag'], 'noindex, nofollow')
 })
