@@ -27,6 +27,8 @@ export const productionRules =
   '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules'
 export const developmentRulesTemplate =
   '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules'
+export const runtimeInstallPolicy =
+  "packages:\n  - '.'\nallowBuilds:\n  '@firebase/util': true\n  protobufjs: true\n  vue-demi: true\n"
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'))
 export const digest = (value) =>
   createHash('sha256').update(value).digest('hex')
@@ -127,7 +129,7 @@ export async function prepare(root = appRoot) {
   })
   await writeFile(
     resolve(output, 'pnpm-workspace.yaml'),
-    "packages:\n  - '.'\n"
+    runtimeInstallPolicy
   )
   await writeFile(
     resolve(output, 'fireux-release.json'),

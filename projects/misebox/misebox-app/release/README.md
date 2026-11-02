@@ -19,6 +19,9 @@ from the frozen lockfile with lifecycle scripts disabled; preflight checks the
 local SDK version, entrypoint and discovery executable. The preparation
 removes build-machine-specific Sharp/esbuild binaries from direct dependencies;
 their owning packages select the deployment platform's binaries during install.
+The isolated runtime install policy permits only the already-approved
+`@firebase/util`, `protobufjs` and `vue-demi` install hooks; it does not allow all
+dependency scripts. Local preparation still disables lifecycle scripts.
 It copies only `server/firebase.runtime-env.json` into the function environment,
 not the development `.env`. Provider secrets must be configured separately.
 `prepare:firebase-output` repeats preparation after an existing production build.

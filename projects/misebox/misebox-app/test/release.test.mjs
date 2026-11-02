@@ -210,6 +210,11 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     "export { handler as miseboxApp } from './handler.mjs'"
   )
   await prepare(root)
+  const installPolicy = await readFile(resolve(root, '.output/server/pnpm-workspace.yaml'), 'utf8')
+  assert.match(installPolicy, /'@firebase\/util': true/)
+  assert.match(installPolicy, /protobufjs: true/)
+  assert.match(installPolicy, /vue-demi: true/)
+  assert.doesNotMatch(installPolicy, /dangerouslyAllowAllBuilds|strictDepBuilds:\s*false/)
   await writeFile(
     resolve(root, '.output/server/pnpm-lock.yaml'),
     'lockfileVersion: 9.0\n'
