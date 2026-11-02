@@ -14,7 +14,9 @@ pnpm --filter misebox-app deploy:preflight --rules-policy development
 `build:release` builds the Firebase Gen 2 / Node 22 output with the Misebox public
 origin, then prepares its production manifest, lockfile and complete isolated production
 dependencies. Nitro’s traced files alone do not include the full Firebase SDK
-discovery entrypoint and executable required by deployment. Preparation installs
+discovery entrypoint and executable required by deployment. The App manifest
+also pins the Google Functions Framework explicitly; preparation includes it and
+preflight verifies its installed version and executable before upload. Preparation installs
 from the frozen lockfile with lifecycle scripts disabled; preflight checks the
 local SDK version, entrypoint and discovery executable. The preparation
 removes build-machine-specific Sharp/esbuild binaries from direct dependencies;

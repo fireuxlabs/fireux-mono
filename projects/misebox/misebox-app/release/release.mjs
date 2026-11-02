@@ -55,8 +55,11 @@ export function validateConfig(config) {
     )
 }
 
-export function prepareManifest(manifest) {
-  const dependencies = { ...manifest.dependencies }
+export function prepareManifest(manifest, runtimeDependencies = manifest.dependencies) {
+  const dependencies = {
+    ...manifest.dependencies,
+    '@google-cloud/functions-framework': runtimeDependencies?.['@google-cloud/functions-framework'],
+  }
   for (const [name, version] of Object.entries(dependencies)) {
     if (
       typeof version !== 'string' ||
@@ -68,7 +71,7 @@ export function prepareManifest(manifest) {
     if (name.startsWith('@img/') || name.startsWith('@esbuild/'))
       delete dependencies[name]
   }
-  for (const name of ['firebase-admin', 'firebase-functions']) {
+  for (const name of ['firebase-admin', 'firebase-functions', '@google-cloud/functions-framework']) {
     if (!dependencies[name])
       throw new Error(`Missing production dependency: ${name}`)
   }
@@ -116,7 +119,8 @@ export async function prepare(root = appRoot) {
     throw new Error(
       'Build output does not export miseboxApp. Run build:release first.'
     )
-  const manifest = prepareManifest(await json(resolve(output, 'package.json')))
+  const sourceManifest = await json(resolve(root, 'package.json'))
+  const manifest = prepareManifest(await json(resolve(output, 'package.json')), sourceManifest.dependencies)
   const environment = runtimeEnvironment(
     await json(resolve(root, 'server/firebase.runtime-env.json'))
   )
@@ -197,6 +201,10 @@ async function checkDiscoveryDependencies(output, manifest) {
       throw new Error('Functions SDK does not match prepared manifest.')
     await access(sdk)
     await access(resolve(modules, '.bin/firebase-functions'))
+    const framework = await json(resolve(modules, '@google-cloud/functions-framework/package.json'))
+    if (framework.version !== manifest.dependencies['@google-cloud/functions-framework'])
+      throw new Error('Functions Framework does not match prepared manifest.')
+    await access(resolve(modules, '.bin/functions-framework'))
   } catch (cause) {
     throw new Error(
       'Firebase discovery dependencies are incomplete. Run prepare:firebase-output again.',

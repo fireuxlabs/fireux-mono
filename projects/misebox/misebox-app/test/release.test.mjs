@@ -48,6 +48,7 @@ const config = {
 }
 const manifest = {
   dependencies: {
+    '@google-cloud/functions-framework': '5.0.5',
     'firebase-admin': '12.7.0',
     'firebase-functions': '6.3.2',
     sharp: '0.35.3',
@@ -72,6 +73,9 @@ async function discoveryFixture(root) {
   )
   await writeFile(resolve(modules, 'firebase-functions/lib/v2/index.js'), '')
   await writeFile(resolve(modules, '.bin/firebase-functions'), '')
+  await mkdir(resolve(modules, '@google-cloud/functions-framework'), { recursive: true })
+  await writeFile(resolve(modules, '@google-cloud/functions-framework/package.json'), JSON.stringify({ version: manifest.dependencies['@google-cloud/functions-framework'] }))
+  await writeFile(resolve(modules, '.bin/functions-framework'), '')
 }
 
 test('uploader keeps exact App targets and absolute configuration from a neutral directory', async () => {
@@ -150,6 +154,8 @@ test('output keeps runtime dependencies but delegates native binaries to the dep
   const result = prepareManifest(manifest)
   assert.equal(result.main, 'index.mjs')
   assert.equal(result.engines.node, '22')
+  assert.equal(result.dependencies['@google-cloud/functions-framework'], '5.0.5')
+  assert.throws(() => prepareManifest(manifest, {}), /Non-portable production dependency/)
   assert.equal(result.dependencies.sharp, '0.35.3')
   assert.equal(result.dependencies['@img/sharp-darwin-arm64'], undefined)
   assert.throws(() =>
@@ -209,6 +215,7 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     resolve(root, '.output/server/index.mjs'),
     "export { handler as miseboxApp } from './handler.mjs'"
   )
+  await writeFile(resolve(root, 'package.json'), JSON.stringify(manifest))
   await prepare(root)
   const installPolicy = await readFile(resolve(root, '.output/server/pnpm-workspace.yaml'), 'utf8')
   assert.match(installPolicy, /'@firebase\/util': true/)
@@ -253,6 +260,7 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     resolve(root, '.output/server/package.json'),
     'utf8'
   )
+  await writeFile(resolve(root, 'package.json'), JSON.stringify(manifest))
   await prepare(root)
   await sealOutput(root)
   assert.equal(
@@ -494,6 +502,7 @@ test('native preflight selects development without running production tests; def
     resolve(root, '.output/server/index.mjs'),
     "export { handler as miseboxApp } from './handler.mjs'"
   )
+  await writeFile(resolve(root, 'package.json'), JSON.stringify(manifest))
   await prepare(root)
   await writeFile(
     resolve(root, '.output/server/pnpm-lock.yaml'),
