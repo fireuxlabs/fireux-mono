@@ -1,7 +1,7 @@
 # Apps That Slap context
 
-Updated: 2026-10-21
-Ref: 53fa40ee6
+Updated: 2026-11-02
+Ref: 4141961e7
 Role: living context
 Scope: Apps That Slap ecosystem identity, admission, routing, and reusable presentation boundary
 
@@ -94,7 +94,9 @@ changes; keep candidate lists and migration plans out of living context.
 - If an App changes ecosystem, separately verify its manifest, Nuxt config,
   Firebase/database authority, dependencies, brand assets, and affected routes.
   Check that its deployment command still has an implementation before use;
-  the removed deployment wrappers have no supported repository replacement.
+  Nuxt/Firebase artifact mechanics now live in `tools/firebase-release`;
+  App targets, reviewed runtime environment and release policy remain explicit.
+  Backend provisioning and Rules deployment remain separate.
   Presentation consumption alone requires none of those ownership changes.
 
 ## Living-context maintenance

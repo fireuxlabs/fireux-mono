@@ -40,7 +40,7 @@ export function useMenuSourceUpload(
       kitchenId,
       activeKitchenAppId,
       canWrite,
-      currencyCode,
+      () => (document.value ? '' : currencyCode.value),
       uploadId,
       document,
       replaceExisting,
@@ -84,7 +84,7 @@ export function useMenuSourceUpload(
           )
       }
       assertCurrent()
-      if (!currencyCode.value)
+      if (!document.value && !currencyCode.value)
         throw new Error('Set the Place currency before importing a menu.')
       if (!files.length || files.some((file) => !(file instanceof File)))
         throw new Error('Choose a PDF or photos of your menu.')

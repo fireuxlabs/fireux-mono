@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import * as shared from '../../../../tools/firebase-release/output.mjs'
 import { execFileSync } from 'node:child_process'
 import {
   readFile,
@@ -7,11 +7,9 @@ import {
   access,
   mkdtemp,
   rm,
-  realpath,
 } from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
-import { resolve, dirname, relative, isAbsolute } from 'node:path'
+import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   composeFirestoreRules,
@@ -27,11 +25,8 @@ export const productionRules =
   '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules'
 export const developmentRulesTemplate =
   '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules'
-export const runtimeInstallPolicy =
-  "packages:\n  - '.'\nallowBuilds:\n  '@firebase/util': true\n  protobufjs: true\n  vue-demi: true\n"
+export const { runtimeInstallPolicy, digest } = shared
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'))
-export const digest = (value) =>
-  createHash('sha256').update(value).digest('hex')
 
 export function validateConfig(config) {
   const functions = config.functions
@@ -55,175 +50,29 @@ export function validateConfig(config) {
     )
 }
 
-export function prepareManifest(manifest, runtimeDependencies = manifest.dependencies) {
-  const dependencies = {
-    ...manifest.dependencies,
-    '@google-cloud/functions-framework': runtimeDependencies?.['@google-cloud/functions-framework'],
-  }
-  for (const [name, version] of Object.entries(dependencies)) {
-    if (
-      typeof version !== 'string' ||
-      /^(workspace:|link:|file:)/.test(version)
-    )
-      throw new Error(`Non-portable production dependency: ${name}`)
-    // Sharp/esbuild select Linux binaries during the Cloud Build install.
-    // Nitro may have traced the build machine's native package into dependencies.
-    if (name.startsWith('@img/') || name.startsWith('@esbuild/'))
-      delete dependencies[name]
-  }
-  for (const name of ['firebase-admin', 'firebase-functions', '@google-cloud/functions-framework']) {
-    if (!dependencies[name])
-      throw new Error(`Missing production dependency: ${name}`)
-  }
-  return {
-    name: 'misebox-app-prod',
-    private: true,
-    type: 'module',
-    main: 'index.mjs',
-    engines: { node: '22' },
-    dependencies,
-  }
+// App target and Rules authority remain here; artifact mechanics are shared.
+export function prepareManifest(
+  manifest,
+  runtimeDependencies = manifest.dependencies
+) {
+  return shared.prepareManifest(
+    manifest,
+    runtimeDependencies,
+    'misebox-app-prod'
+  )
 }
-
 export function runtimeEnvironment(config) {
-  if (
-    config.projectId !== projectId ||
-    !config.environment ||
-    typeof config.environment !== 'object'
-  )
-    throw new Error('Runtime environment must target Misebox.')
-  return (
-    Object.entries(config.environment)
-      .map(([name, value]) => {
-        if (
-          !/^[A-Z][A-Z0-9_]*$/.test(name) ||
-          typeof value !== 'string' ||
-          /[\r\n\0]/.test(value)
-        )
-          throw new Error(`Invalid runtime environment entry: ${name}`)
-        return `${name}=${JSON.stringify(value)}`
-      })
-      .join('\n') + '\n'
-  )
+  return shared.runtimeEnvironment(config, projectId)
 }
-
 export async function prepare(root = appRoot) {
   validateConfig(await json(resolve(root, 'firebase.json')))
-  const output = resolve(root, '.output/server')
-  const entry = await readFile(resolve(output, 'index.mjs'), 'utf8')
-  if (
-    !/\bas miseboxApp\b|\bexport\s+(?:const|function)\s+miseboxApp\b/.test(
-      entry
-    )
-  )
-    throw new Error(
-      'Build output does not export miseboxApp. Run build:release first.'
-    )
-  const sourceManifest = await json(resolve(root, 'package.json'))
-  const manifest = prepareManifest(await json(resolve(output, 'package.json')), sourceManifest.dependencies)
-  const environment = runtimeEnvironment(
-    await json(resolve(root, 'server/firebase.runtime-env.json'))
-  )
-  await writeFile(
-    resolve(output, 'package.json'),
-    JSON.stringify(manifest, null, 2) + '\n'
-  )
-  await writeFile(resolve(output, `.env.${projectId}`), environment, {
-    mode: 0o600,
-  })
-  await writeFile(
-    resolve(output, 'pnpm-workspace.yaml'),
-    runtimeInstallPolicy
-  )
-  await writeFile(
-    resolve(output, 'fireux-release.json'),
-    JSON.stringify(
-      {
-        projectId,
-        entry: digest(entry),
-        manifest: digest(JSON.stringify(manifest)),
-        environment: digest(environment),
-      },
-      null,
-      2
-    ) + '\n'
-  )
-  return manifest
+  return shared.prepareOutput(root, { projectId })
 }
-
 export async function checkOutput(root = appRoot) {
   validateConfig(await json(resolve(root, 'firebase.json')))
-  const output = resolve(root, '.output/server')
-  const marker = await json(resolve(output, 'fireux-release.json'))
-  const lockfile = await readFile(resolve(output, 'pnpm-lock.yaml'), 'utf8')
-  if (!marker.lockfile || marker.lockfile !== digest(lockfile))
-    throw new Error('Production lockfile preparation is incomplete or stale.')
-  const manifest = await json(resolve(output, 'package.json'))
-  const entry = await readFile(resolve(output, 'index.mjs'), 'utf8')
-  const environment = await readFile(
-    resolve(output, `.env.${projectId}`),
-    'utf8'
-  )
-  if (
-    marker.projectId !== projectId ||
-    marker.entry !== digest(entry) ||
-    marker.manifest !== digest(JSON.stringify(manifest)) ||
-    marker.environment !== digest(environment) ||
-    environment !==
-      runtimeEnvironment(
-        await json(resolve(root, 'server/firebase.runtime-env.json'))
-      )
-  )
-    throw new Error(
-      'Prepared output changed or is stale. Run prepare:firebase-output again.'
-    )
-  if (JSON.stringify(prepareManifest(manifest)) !== JSON.stringify(manifest))
-    throw new Error('Production manifest is not portable.')
-  await checkDiscoveryDependencies(output, manifest)
-  await access(resolve(root, '.output/public/_nuxt'))
+  return shared.checkOutput(root, { projectId })
 }
-
-async function checkDiscoveryDependencies(output, manifest) {
-  try {
-    const modules = await realpath(resolve(output, 'node_modules'))
-    const sdk = await realpath(
-      createRequire(resolve(output, 'package.json')).resolve(
-        'firebase-functions'
-      )
-    )
-    const localPath = relative(modules, sdk)
-    if (localPath.startsWith('..') || isAbsolute(localPath))
-      throw new Error('Functions SDK resolved outside prepared output.')
-    const installed = await json(
-      resolve(modules, 'firebase-functions/package.json')
-    )
-    if (installed.version !== manifest.dependencies['firebase-functions'])
-      throw new Error('Functions SDK does not match prepared manifest.')
-    await access(sdk)
-    await access(resolve(modules, '.bin/firebase-functions'))
-    const framework = await json(resolve(modules, '@google-cloud/functions-framework/package.json'))
-    if (framework.version !== manifest.dependencies['@google-cloud/functions-framework'])
-      throw new Error('Functions Framework does not match prepared manifest.')
-    await access(resolve(modules, '.bin/functions-framework'))
-  } catch (cause) {
-    throw new Error(
-      'Firebase discovery dependencies are incomplete. Run prepare:firebase-output again.',
-      { cause }
-    )
-  }
-}
-
-export async function sealOutput(root = appRoot) {
-  const output = resolve(root, '.output/server')
-  const marker = await json(resolve(output, 'fireux-release.json'))
-  marker.lockfile = digest(
-    await readFile(resolve(output, 'pnpm-lock.yaml'), 'utf8')
-  )
-  await writeFile(
-    resolve(output, 'fireux-release.json'),
-    JSON.stringify(marker, null, 2) + '\n'
-  )
-}
+export const sealOutput = (root = appRoot) => shared.sealOutput(root)
 
 export function parseRulesPolicyOptions(options = []) {
   if (options.length === 0) return 'production'
@@ -407,32 +256,7 @@ function run(command, args, options = {}) {
 }
 
 function prepareDependencies() {
-  run('pnpm', [
-    '--dir',
-    '.output/server',
-    'install',
-    '--lockfile-only',
-    '--ignore-workspace',
-    '--ignore-scripts',
-    '--fetch-retries=0',
-    '--fetch-timeout=15000',
-  ])
-  // Nitro traces only runtime files; Firebase deployment also needs SDK discovery.
-  run(
-    'pnpm',
-    [
-      '--dir',
-      '.output/server',
-      'install',
-      '--prod',
-      '--frozen-lockfile',
-      '--ignore-workspace',
-      '--ignore-scripts',
-      '--fetch-retries=0',
-      '--fetch-timeout=15000',
-    ],
-    { env: { ...process.env, CI: 'true' } }
-  )
+  shared.installOutput(appRoot)
 }
 
 export async function upload(command, root = appRoot, execute = run) {
@@ -466,10 +290,18 @@ export async function upload(command, root = appRoot, execute = run) {
 export async function main(command, options = []) {
   const policy = parseRulesPolicyOptions(options)
   if (command === 'build') {
+    const config = await json(resolve(appRoot, 'firebase.json'))
+    validateConfig(config)
+    const target = shared.inspectTarget(config)
+    run(process.execPath, [
+      resolve(appRoot, '../../../packages/core/fireux-core/build/config.mjs'),
+    ])
     run('pnpm', ['exec', 'nuxi', 'build'], {
       env: {
         ...process.env,
         NODE_ENV: 'production',
+        NUXT_DEV: 'false',
+        NITRO_FIREBASE_REGION: target.region,
         APP_DOMAIN: 'https://misebox.app',
       },
     })

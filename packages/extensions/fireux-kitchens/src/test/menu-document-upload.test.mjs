@@ -14,12 +14,11 @@ const source = stripTypeScriptTypes(
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
   .replace('export default ', 'return ')
-function harness({ files = [{}], denied = false, updateFails = false } = {}) {
+function harness({ files = [{}], denied = false, saveFails = false } = {}) {
   const calls = []
   const dependencies = {
     defineEventHandler: (fn) => fn,
     createError: (value) => new Error(value.statusMessage),
-    randomUUID: () => 'unique-file-scope',
     setKitchenMenuUploadCors: () => {},
     requireKitchenMenuUploadUser: async () => 'actor',
     readKitchenMenuUploadRequest: async () => ({
@@ -31,20 +30,17 @@ function harness({ files = [{}], denied = false, updateFails = false } = {}) {
     assertKitchenMenuUploadAccess: async () => {
       if (denied) throw new Error('Denied')
     },
-    saveKitchenMenuUploadFiles: async (input) => {
-      calls.push(['upload', input])
-      return [
-        {
-          fileUrl: 'https://files/menu.pdf',
-          fileName: 'menu.pdf',
-          contentType: 'application/pdf',
-          objectPath: 'unique/menu.pdf',
+    saveKitchenDocumentMenu: async (_event, input) => {
+      calls.push(['save', input])
+      if (saveFails) throw new Error('Changed authority')
+      return {
+        menuId: 'menu',
+        document: {
+          url: 'https://files/menu.pdf',
+          name: 'menu.pdf',
+          type: 'application/pdf',
         },
-      ]
-    },
-    updateKitchenMenu: async (_event, input) => {
-      if (updateFails) throw new Error('Changed authority')
-      calls.push(['update', input])
+      }
     },
   }
   return {
@@ -55,21 +51,25 @@ function harness({ files = [{}], denied = false, updateFails = false } = {}) {
     )(...Object.values(dependencies)),
   }
 }
-test('document upload attaches one file through the Menu command without overwriting the old file', async () => {
+test('Workspace document upload delegates once to the shared Menu file command and preserves its response', async () => {
   const h = harness()
-  await h.run({})
-  assert.equal(h.calls[0][1].uploadId, 'unique-file-scope')
-  assert.deepEqual(h.calls[1][1], {
-    kitchenId: 'kitchen',
-    menuId: 'menu',
-    changes: {
-      doc: {
-        url: 'https://files/menu.pdf',
-        name: 'menu.pdf',
-        type: 'application/pdf',
-        storage_path: 'unique/menu.pdf',
+  const result = await h.run({})
+  assert.deepEqual(h.calls, [
+    [
+      'save',
+      {
+        kitchenId: 'kitchen',
+        menuId: 'menu',
+        files: [{}],
       },
-    },
+    ],
+  ])
+  assert.deepEqual(result, {
+    ok: true,
+    id: 'menu',
+    url: 'https://files/menu.pdf',
+    file_name: 'menu.pdf',
+    file_type: 'application/pdf',
   })
 })
 test('denied access and multiple files cannot upload or attach', async () => {
@@ -79,8 +79,8 @@ test('denied access and multiple files cannot upload or attach', async () => {
     assert.deepEqual(h.calls, [])
   }
 })
-test('changed command authority reports failure after upload without deleting the previous file', async () => {
-  const h = harness({ updateFails: true })
+test('a shared command failure remains a failure at the Workspace adapter', async () => {
+  const h = harness({ saveFails: true })
   await assert.rejects(h.run({}), /Changed authority/)
   assert.equal(h.calls.length, 1)
 })

@@ -1,6 +1,6 @@
 # Menu family
 
-Updated: 2026-10-31
+Updated: 2026-11-02
 Ref: a2bd21763
 Role: map, not canon
 
@@ -99,11 +99,23 @@ Broader destination distribution and immutable publication versions remain separ
 `stagePublishKitchenMenu` exposes that same publication validation and write
 inside an existing guarded transaction. Misebox Menu Express composes it with
 its approved delivery request; there is no second Menu status writer. The
-Menu-owned `publication/review.ts` projects a bounded regular interactive Menu
-for customer review and fingerprints its text, prices, options and destination.
-It excludes internal context and explicitly rejects unsupported formats. The
+Menu-owned `publication/review.ts` projects a bounded regular document or
+interactive Menu for customer review. It fingerprints document attachment and
+public metadata, or structured text, prices, options and destination.
+It excludes internal context and Storage paths and rejects unsupported content. The
 App owns customer approval and compares that revision again before publication.
 This does not create a separate immutable Menu version collection.
+
+Free document hosting composes `menu/server/document/{authority,read,save}.ts`.
+Its self-service and Workspace entrances use the same document file writer and
+normal Menu/Place records. Guest hosting reuses the existing guest Kitchen and
+its Main Menu, binding the recovery claim to that one Menu. Upload, preview and
+explicit publication require no extraction, request or payment. Replacement
+checks the acquired revision and changes only the attachment; Menu identity,
+route slugs and QR target remain stable. The existing Menu viewer and QR page
+render the result. Structured content cannot be overwritten by this tool.
+Account adoption consumes guest proof; ordinary Kitchen authority then applies.
+See `menu-document-self-service.test.mjs` and `menu-document-self-service-scope.test.mjs`.
 
 Regular Menu Settings expose Archive as the normal removal action and list the
 services that reference the Menu, including disabled services. Archiving updates
@@ -161,6 +173,12 @@ changing route grammar. The former `scripts/` guard suite is removed.
 Menu formats are `interactive` and `document`. Creating either requires a
 Kitchen; generic URL-to-QR remains a separate Go QR tool, not a Menu record.
 
+The basic document surface is `menu/components/Document.vue` (`MenuDocument`),
+with one `useMenuDocument` controller for selection, file preview, publication
+and recovery. It reuses Kitchen creation, the existing document viewer and
+`menu/server/document` commands; result markup and its local styles stay in that
+component rather than adding forwarding components or a separate tool model.
+
 Create Menu exposes PDF or photos, Menu URL, and Start blank as separate methods.
 URL imports open source review without requiring a Menu name first.
 File ingestion uses a native file picker and the Kitchen-owned `useMenuSourceUpload`
@@ -173,6 +191,13 @@ confirmed creation. See `menu-source-upload.test.mjs` and `menu-import-name.test
 AI extraction produces reviewable candidate content. It does not become
 Menu, Dish media, or published Menu truth until the owning Kitchen flow
 validates and commits it.
+For a single saved PDF/image, `menu/server/source/document.ts` can instead create
+a draft document Menu without extraction or Dish creation. It reuses
+`stageCreateKitchenMenu` for creation policy, capacity and the Menu write, and
+commits the source's `menu_id` link in that transaction. The attachment uses an
+immutable revision through existing upload helpers. The shared preparation view
+offers this choice in Workspace and Menu Express, while the existing Menu viewer,
+publication and QR owners supply the resulting online Menu.
 Review completion replaces its saved process map without a nested delete marker;
 `menu-ai-review-save.test.mjs` validates that update with the real Firestore SDK
 without committing it. Import planning gives each Menu source its own deterministic

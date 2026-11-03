@@ -24,6 +24,7 @@ function component(relative, dependencies = {}) {
   const exports = {}
   compileFunction(code, ['require', 'exports'])((id) => {
     if (dependencies[id]) return dependencies[id]
+    if (id.endsWith('.css')) return {}
     assert.equal(id, 'vue')
     return Vue
   }, exports)

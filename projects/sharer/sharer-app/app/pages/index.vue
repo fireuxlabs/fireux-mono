@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-const requestUrl = useRequestURL()
+const requestUrl = useRequestURL({ xForwardedHost: true, xForwardedProto: true })
 const kjordiUrl = ['localhost', '127.0.0.1', '::1'].includes(requestUrl.hostname)
   ? 'http://localhost:3034'
   : 'https://kjordi.web.app'

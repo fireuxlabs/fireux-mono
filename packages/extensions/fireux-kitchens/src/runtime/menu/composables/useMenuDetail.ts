@@ -12,7 +12,11 @@ import {
 import { useMenu } from './useMenu'
 import { useMenuThemeSurface } from './useMenuThemeSurface'
 import { resolveMenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
-import { menuCanonicalPath, type MenuRouteScope } from '../utils/menu-route'
+import {
+  menuCanonicalPath,
+  menuDocumentFilePath,
+  type MenuRouteScope,
+} from '../utils/menu-route'
 import { guestMenuSurfaceOptions } from '../utils/menu-context'
 
 export function useMenuDetail(props: {
@@ -176,11 +180,10 @@ export function useMenuDetail(props: {
     const file = documentMenu.value?.file
     if (!file?.storage_path || !menuId.value) return file?.url || ''
 
-    const query = new URLSearchParams()
-    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
-    const qs = query.toString()
-
-    return `/api/menus/${encodeURIComponent(menuId.value)}/file${qs ? `?${qs}` : ''}`
+    return menuDocumentFilePath({
+      menuId: menuId.value,
+      kitchenSlug: kitchenSlug.value,
+    })
   })
   const { className: themeClassName, styleVars: themeStyleVars } =
     useMenuThemeSurface({

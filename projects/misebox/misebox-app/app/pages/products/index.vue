@@ -2,19 +2,19 @@
   <UPage>
     <UPageHeader
       title="A menu online. A Kitchen in control."
-      description="Choose help with your menu, or run the tools yourself in Kitchen Workspace."
+      description="Host your menu for free, or manage Menus and orders in Kitchen Workspace."
     />
     <UPageBody>
       <UPageGrid class="product-choices">
         <UPageCard
-          title="Have your menu prepared"
-          description="We turn your PDF or photos into a reviewed digital menu. Quoted separately."
+          title="Menu Hosting"
+          description="Upload a PDF or image. Get your online menu link and QR for free."
           icon="i-lucide-file-check"
-          to="#services"
+          to="/menu-express"
         />
         <UPageCard
-          title="Use the tools yourself"
-          description="Prepare Menus and manage Collection orders. No separate service purchase; your plan limits and Kitchen access apply."
+          title="Kitchen Workspace"
+          description="Manage Menus and Collection orders with your Kitchen tools."
           icon="i-lucide-panels-top-left"
           to="#plans"
         />
@@ -56,7 +56,7 @@ definePageMeta({
 })
 useSeoMeta({
   title: 'Products · Misebox',
-  description: 'Pro, Business, Menu Express and Collection Ordering.',
+  description: 'Pro, Business, Menu Hosting and Collection Ordering.',
 })
 </script>
 

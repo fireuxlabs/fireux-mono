@@ -20,7 +20,8 @@
     "fireux-slap": "workspace:*",
     "fireux-blogs": "workspace:*",
     "@nuxt/icon": "2.5.1",
-    "firebase-functions": "^6.3.2"
+    "firebase-functions": "^6.3.2",
+    "@google-cloud/functions-framework": "5.0.5"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1"

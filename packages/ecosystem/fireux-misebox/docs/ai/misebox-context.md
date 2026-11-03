@@ -61,6 +61,15 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+Misebox is a connected Kitchen operating system. A Product packages a Tool or
+group of Tools for individual use; Workspace is the connected environment for
+managing the Kitchen and those same Tools together. Product fulfilment does not
+grant Kitchen management or require customer Workspace adoption. Software
+ownership means one responsible implementation, separately from access authority.
+Exact Product bundles, Workspace coverage and commercial tier boundaries require
+product decisions; do not infer unlimited coverage. Managed is parked and, if
+revisited, extends Workspace rather than each individual Product.
+
 Main App host selection and Workspace noindex/cache headers use native Nuxt/H3
 forwarded host and protocol options behind Firebase Hosting. The internal Cloud
 Run origin must not determine whether `/` renders public discovery or Kitchen
@@ -75,10 +84,10 @@ on catalogue and detail routes. No Product IDs or Kitchen language live in that
 shared surface. `Products/Plans.vue` composes
 native Nuxt UI pricing controls from Core tier data. `/pricing` consumes the
 same tier selection and Product collection; Free appears only as the default
-plan. Menu Express and Collection Ordering remain saved domain-backed offers.
+plan. Menu Hosting and Collection Ordering remain saved domain-backed offers.
 Misebox does not expose Core's Managed or branded-App packages as its own plans.
-The catalogue separates quoted Menu Express preparation from direct Workspace
-use. Collection Ordering is a Kitchen capability without a separate Product
+The catalogue offers Menu Hosting for free, alongside direct
+Workspace use. Collection Ordering is a Kitchen capability without a separate Product
 purchase; Kitchen access, plan limits and service readiness still apply. Free is
 visible in the shared plan comparison, not a separately sold Product.
 This presentation does not establish Stripe billing or entitlement activation. Root Products are App catalogue offers; Kitchen food and
@@ -106,7 +115,52 @@ exercises canonical Menu pricing, duplicate retry, board visibility, operator
 transitions and customer reload. Browser/operational acceptance remains distinct
 from that fixture evidence. No separate Collection Product execution layer exists.
 
-### Menu Express delivery
+### Menu Hosting and structured preparation
+
+The basic uploaded-document service is named **Menu Hosting**, including its
+public navigation, SEO and catalogue copy. Current route and catalogue identifiers
+retain `menu-express`; an existing Product is renamed rather than duplicated.
+That identifier does not define additional Product packaging or require
+structured preparation. The separate preparation request flow retains its own
+Menu Express terminology and existing records.
+
+The minimum Menu Hosting result is an uploaded document hosted as an online Menu
+with its link and QR. Manual reconstruction, Dish extraction and customer
+Workspace adoption are not prerequisites for that result. Existing structured
+preparation remains available; its existence does not settle AI's future Product
+responsibility or commercial packaging.
+
+The Main App's `/menu-express` composes the Menu-owned `MenuDocument` tool:
+upload one PDF/image, preview, publish and later replace with the same Menu and QR.
+`menu/components/Document.vue` owns this small surface and its result markup;
+`useMenuDocument` owns its state and workflow. Both reuse existing Kitchen and
+Menu owners without a separate target controller or result wrapper.
+There is no request, quote, payment, operator approval or Conversation in this basic
+flow. `menu/server/document` owns its scoped reader, recovery authority and shared
+file writer; Workspace's document-upload adapter consumes that same writer.
+`stagePublishKitchenMenu` remains the publication owner. It stages the document
+attachment and published state together, retaining the Menu id and slugs.
+
+Guest publishing reuses existing guest Kitchen creation and the browser's saved
+Kitchen recovery proof. It uses the existing Main Menu instead of creating extra
+Menus or an AppUser. The claim pins that one document Menu; it cannot edit other
+Kitchen content or overwrite structured sections. A private recovery link can
+restore the key in another browser. The public Menu URL and QR never contain it.
+Account adoption consumes guest authority; subsequent edits require current
+account access. Signed-in Kitchen users keep their normal authority and targets.
+Native file previews use the existing Menu document viewer. Concurrent replacement
+is revision-checked; failed uploads remove only a verified unattached revision.
+Published previews reuse the existing Menu file HTTP adapter and shared route
+grammar, avoiding browser dependence on Storage CORS. That mutable file endpoint
+uses `no-store`, so a replacement cannot retain an old cached attachment. The
+result's optional Workspace entrance reuses Core's configured origin and exact
+Kitchen selection. Account readers prefer active Main, then another active Menu;
+guest recovery remains pinned to its original Menu.
+
+Source-owned proof lives in `menu-document-self-service.test.mjs`, covering
+guest creation, publish, reload, replacement, QR identity, recovery, revocation and
+failure. The separate structured request entrance is `/menu-express/prepare`;
+the request and payment contracts below apply there, not to free document hosting.
 
 Operator preparation consumes Kitchen-owned `useKitchenTargets` for a named,
 authorised Kitchen choice. It does not accept a manually entered Kitchen ID or
@@ -116,10 +170,12 @@ retains the request’s exact Kitchen/Menu binding.
 
 The Misebox catalogue Product is `products/menu-express`, authored through the
 existing Products create command from the App-owned
-`shared/menu-express-product.ts` offer. Its App-specific Product page composes
-Products' public reader and header with the service intake and a self-service
-Kitchen entrance. A catalogue-only Product has no provider price and performs
-no payment provisioning; no price or delivery-time promise is implied.
+`shared/menu-express-product.ts` offer. The catalogue's `/products/menu-express`
+doorway opens the canonical `/menu-express` tool through native Nuxt navigation;
+it does not present a second request or quotation page. The existing catalogue
+surface retains Product identity and the explicit free action/terms. A
+catalogue-only Product has no provider price and performs
+no payment provisioning. Basic PDF/image hosting is explicitly free.
 
 Kitchen Workspace's `/workspace/kitchen/food-and-drink/menus/prepare` is the
 internal entrance to the existing Kitchen upload/URL, saved-source processing,
@@ -132,6 +188,15 @@ its deterministic source/Menu identity. Operators use the same
 download, re-upload or manual Menu linking is required. The service
 request owns customer contact/approval/delivery tracking; it does not replace
 Kitchen's preparation or publication commands.
+For a single saved PDF/image, `menu/server/source/document.ts` creates an ordinary
+draft document Menu through `stageCreateKitchenMenu`. Workspace and Menu Express
+compose this same choice in `KitchenFoodAndDrinkMenusPreparation`; structured
+extraction remains a separate choice there. The source and Menu link are committed
+together. The published attachment gets an immutable copy through the existing
+Storage upload helper, so replacing an import source cannot remove it. Source
+changes and revoked authority stop attachment; unsuccessful attempts remove their
+unattached revision. Multiple source files and URL inputs continue through their
+existing preparation Tools rather than silently losing content.
 The existing Menu record editor provides its record context once. Metadata and
 hours controls consume `useMenuRecordMetadata` and `useMenuRecordHours` with
 explicit context; lifecycle controls reuse the record owner’s commands and
@@ -164,8 +229,10 @@ Customer recovery reuses the linked Conversation's hashed, expiring proof.
 Corrections and approval bind to the Menu owner's customer-safe content revision.
 Publication and the delivered request state share one guarded transaction through
 `stagePublishKitchenMenu`; no separate publication writer is added. The initial
-review contract supports regular interactive Menus with individual Dishes and
-price options; daily/document Menus, promotions, deposits and add-ons fail
+review contract supports document Menus and regular interactive Menus with
+individual Dishes and price options. Document review uses the existing Menu viewer,
+omits internal Storage paths and fingerprints the exact attachment URL and public
+metadata. Daily Menus, promotions, deposits and add-ons fail
 explicitly. This is a bounded service, not a new universal commerce engine.
 
 Stripe payment is separate from delivery stages. The App's signature-verified
@@ -179,7 +246,7 @@ Customer source files use existing multipart and Firebase Storage primitives,
 with exact request proof on upload/download and no public download token. The
 accepted development-open Rules still prevent any production-privacy claim.
 Current checks live in the App's `test/menu-express.test.mjs`, Products' checkout
-suite and Kitchen's publication tests. Refresh these pointers when ownership or
+suite and Kitchen's `menu-document-preparation.test.mjs` and publication tests. Refresh these pointers when ownership or
 contracts change; demo evidence belongs in reviews, not this context.
 
 The Main Misebox App explicitly installs Products for its catalogue and checkout
@@ -948,7 +1015,9 @@ deadline and is removed from the browser only after successful adoption. Clearin
 browser site data (including ending a private session) removes this recovery
 proof. The original authenticated anonymous session can reissue an unconsumed
 key; after that identity is replaced, recovery requires the retained key. It is
-not account-independent recovery from another device.
+not general Kitchen management from another device. The scoped document tool
+can restore the retained key to replace its one pinned Menu from another browser;
+this does not grant Workspace or account access.
 
 After User/AppUser provisioning, `useKitchenAnonymousAdoption` invokes the
 Kitchen-owned `server/index/onboarding/connect-guest.ts` action from Landing or

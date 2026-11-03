@@ -2,6 +2,20 @@
 export type GuestKitchenClaim = { kitchenId: string; secret: string }
 const key = (appId: string) => `fireux-kitchen-claim:${appId}`
 
+export function restoreGuestKitchenClaim(
+  appId: string,
+  value: GuestKitchenClaim
+) {
+  if (!import.meta.client) return
+  if (
+    !value.kitchenId ||
+    value.kitchenId.includes('/') ||
+    !/^[a-f0-9]{64}$/.test(value.secret)
+  )
+    throw new Error('The Menu recovery link is invalid.')
+  localStorage.setItem(key(appId), JSON.stringify(value))
+}
+
 export function readGuestKitchenClaim(appId: string): GuestKitchenClaim | null {
   if (!import.meta.client) return null
   try {

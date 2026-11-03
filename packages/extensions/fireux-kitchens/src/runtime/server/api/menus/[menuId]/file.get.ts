@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {
     'Content-Type': contentType,
     'Content-Disposition': `inline; filename="${safeFileName}"`,
-    'Cache-Control': 'public, max-age=300',
+    'Cache-Control': 'no-store',
   })
 
   return saved.buffer

@@ -13,7 +13,7 @@
       :disabled="pending || !canWrite"
       variant="area"
     />
-    <p v-if="!currencyCode" class="menu-editor-warning">
+    <p v-if="!document && !currencyCode" class="menu-editor-warning">
       Set the Place currency before importing a menu.
     </p>
     <p v-if="error" role="alert" class="menu-editor-error">{{ error }}</p>
@@ -23,7 +23,9 @@
       :label="ctaLabel || 'Upload menu'"
       icon="i-lucide-upload"
       :loading="pending"
-      :disabled="pending || !canWrite || !currencyCode || !files.length"
+      :disabled="
+        pending || !canWrite || (!document && !currencyCode) || !files.length
+      "
     />
   </form>
 </template>

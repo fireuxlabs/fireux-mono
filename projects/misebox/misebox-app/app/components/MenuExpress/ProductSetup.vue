@@ -1,17 +1,17 @@
 <template>
-  <section class="fx-page-stack" aria-label="Menu Express catalogue">
+  <section class="fx-page-stack" aria-label="Menu Hosting catalogue">
     <UButton to="/products/menu-express" variant="outline"
-      >View Menu Express product</UButton
+      >View Menu Hosting product</UButton
     >
     <FireState
       :outcome="outcome"
-      entity="Menu Express Product"
+      entity="Menu Hosting Product"
       :error="readError"
       retryable
       @retry="refresh"
     />
     <UButton v-if="outcome === 'empty' && !saved" :loading="busy" @click="setup"
-      >Set up Menu Express catalogue entry</UButton
+      >Set up Menu Hosting catalogue entry</UButton
     >
     <p class="fx-type-caption">
       Creates the Misebox Product without a Stripe price or charge. Existing
@@ -24,7 +24,7 @@
       :description="error"
     />
     <p v-if="saved || product" role="status">
-      Menu Express is in the Misebox catalogue.
+      Menu Hosting is in the Misebox catalogue.
     </p>
   </section>
 </template>

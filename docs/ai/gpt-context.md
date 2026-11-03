@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-10-31
-Ref: ce2861c77
+Updated: 2026-11-02
+Ref: 4141961e7
 Role: living context
 Scope: repository-wide
 
@@ -265,6 +265,9 @@ cleanup for progress. Separate release-only gates from functional dependencies.
 
 - Preserve unrelated and concurrent work. Inspect the shared checkout before
   editing; do not switch its branch or create a worktree unless requested.
+- Shared Firebase artifact tooling lives in `tools/firebase-release`; App manifests
+  retain explicit targets and build origins, and App-owned policy gates retain
+  release authority. It never deploys Rules or provisions Auth. See the tool README.
 - Never stage, commit, push, deploy or modify live data without user
   authorization for that action. gitsave stages shared work and requires an
   explicit save request.

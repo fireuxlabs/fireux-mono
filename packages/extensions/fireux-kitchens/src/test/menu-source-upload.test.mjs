@@ -202,6 +202,20 @@ test('document replacement retains its explicit identity and response mismatches
   h.scope.stop()
 })
 
+test('document attachment needs no currency; structured import still requires one', async () => {
+  for (const document of [true, false]) {
+    const h = harness({ document, uploadId: 'existing-menu' })
+    h.currencyCode.value = ''
+    const pending = h.upload.uploadFiles([pdf()])
+    h.token.resolve('token')
+    h.response.resolve({ ok: true, id: 'existing-menu' })
+    await pending
+    assert.equal(h.calls.length, document ? 1 : 0)
+    assert.equal(Boolean(h.upload.error.value), !document)
+    h.scope.stop()
+  }
+})
+
 test('an uncertain upload retries its original source identity rather than creating another source', async () => {
   const h = harness()
   const first = h.upload.uploadFiles([pdf()])

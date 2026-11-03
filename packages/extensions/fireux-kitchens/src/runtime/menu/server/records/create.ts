@@ -1,5 +1,8 @@
 import { createError, type H3Event } from 'h3'
-import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readKitchenMutationActor } from '../../../kitchen/server/core/mutation-authority'
@@ -29,45 +32,61 @@ export async function createKitchenMenu(event: H3Event, input: unknown) {
   const { name, slug } = menuNameAndSlug(event, value.name)
   const menuId = randomUUID()
   const actor = await readKitchenMutationActor(event)
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    const access = await requireMenuCreationCapacity(tx, actor, kitchenId)
-    if (
-      value.schedule === 'daily' &&
-      !['premium', 'business'].includes(access.subscription)
-    )
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Daily menus require Plus.',
-      })
-    if (!readPlaceCurrencyCode(access.placeData))
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'Set the Kitchen currency before creating menus.',
-      })
-    if (
-      access.subscription === 'free' &&
-      !['main', 'food', 'drinks'].includes(slug)
-    )
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Custom Menu names require Plus.',
-      })
-    const canonicalName =
-      access.subscription === 'free'
-        ? slug === 'main'
-          ? 'Main'
-          : slug === 'food'
-            ? 'Food'
-            : 'Drinks'
-        : name
-    await requireAvailableMenuSlug(tx, kitchenId, slug)
-    const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
-    tx.create(serverKitchenMenusTarget(kitchenId), menuId, {
-      ...buildMenuPayload(value, canonicalName),
-      slug,
-      created: stamp,
-      updated: stamp,
+  return runGuardedServerTransaction({ kind: 'runtime' }, (tx) =>
+    stageCreateKitchenMenu(tx, actor, { kitchenId, menuId, name, slug, value })
+  )
+}
+
+/** Shared creation policy for ordinary creation and saved-source preparation. */
+export async function stageCreateKitchenMenu(
+  tx: GuardedServerTransaction,
+  actor: Awaited<ReturnType<typeof readKitchenMutationActor>>,
+  input: {
+    kitchenId: string
+    menuId: string
+    name: string
+    slug: string
+    value: MenuCreateInput
+  }
+) {
+  const { kitchenId, menuId, name, slug, value } = input
+  const access = await requireMenuCreationCapacity(tx, actor, kitchenId)
+  if (
+    value.schedule === 'daily' &&
+    !['premium', 'business'].includes(access.subscription)
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Daily menus require Plus.',
     })
+  if (!readPlaceCurrencyCode(access.placeData))
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Set the Kitchen currency before creating menus.',
+    })
+  if (
+    access.subscription === 'free' &&
+    !['main', 'food', 'drinks'].includes(slug)
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Custom Menu names require Plus.',
+    })
+  const canonicalName =
+    access.subscription === 'free'
+      ? slug === 'main'
+        ? 'Main'
+        : slug === 'food'
+          ? 'Food'
+          : 'Drinks'
+      : name
+  await requireAvailableMenuSlug(tx, kitchenId, slug)
+  const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
+  tx.create(serverKitchenMenusTarget(kitchenId), menuId, {
+    ...buildMenuPayload(value, canonicalName),
+    slug,
+    created: stamp,
+    updated: stamp,
   })
   return { created: true, id: menuId, slug, kitchenId }
 }

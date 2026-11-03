@@ -1,4 +1,5 @@
 import type { PublicKitchenPromotion } from '../../kitchen/models/promotion.model'
+import type { MenuDocument, MenuStatus } from './menu.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
@@ -147,3 +148,19 @@ export type MenuDetailPayload =
       kind: 'manifest'
       manifest: MenuManifest
     }
+
+/** Authorised document-Menu management read; public diners use MenuDetailPayload. */
+export type MenuDocumentRead = {
+  kitchenId: string
+  menuId: string
+  venue: string
+  name: string
+  status: MenuStatus
+  revision: string
+  acceptsDocument: boolean
+  document: Pick<MenuDocument, 'url' | 'name' | 'type'> | null
+  previewUrl: string
+  menuPath: string
+  qrPath: string
+  menus: Array<{ value: string; label: string }>
+}

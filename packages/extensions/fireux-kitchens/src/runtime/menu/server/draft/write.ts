@@ -10,7 +10,10 @@ import type { DocumentData } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenDishesTarget, serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenDishesTarget,
+  serverKitchenMenusTarget,
+} from '../../../kitchen/server/mutation-targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import type { normalizeKitchenMenuDraftSections } from './sections'
 import { planKitchenMenuDraft } from './plan'
@@ -69,6 +72,12 @@ export async function writeKitchenMenuDraft(input: {
             input.kitchenId
           )
       const existing = record(menu.data || {})
+      if (existing.format === 'document' || record(existing.doc).url)
+        throw createError({
+          statusCode: 409,
+          statusMessage:
+            'This is a document Menu. Create a separate interactive Menu for structured content.',
+        })
       const status = text(existing.status) || 'draft'
       const description = text(existing.description)
       let name = text(existing.name) || text(input.name)

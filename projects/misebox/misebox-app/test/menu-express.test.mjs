@@ -64,33 +64,44 @@ const chat = load(
   'stageChatSessionCreation,stageChatMessage,requireChatSessionAccess,assertChatSessionAccess,hashChatRecoveryToken'
 )
 
-function fixture() {
+function fixture(format = 'interactive') {
   const records = new Map(),
     fail = contract.fail
   let revision = 'review-a',
     published = 0
   const review = () => ({
+    format,
     revision,
     name: 'TEST Demo Menu',
     description: 'Do not sell',
-    currency: 'CHF',
     kitchenSlug: 'demo-kitchen',
     menuSlug: 'test-menu',
-    sections: [
-      {
-        id: 'section',
-        label: 'Snacks',
-        items: [
-          {
-            id: 'item',
-            name: 'TEST soup',
-            description: 'Tomato',
-            price: 8.5,
-            options: [],
+    ...(format === 'document'
+      ? {
+          document: {
+            url: 'https://files.example/menu.pdf',
+            name: 'menu.pdf',
+            type: 'application/pdf',
           },
-        ],
-      },
-    ],
+        }
+      : {
+          currency: 'CHF',
+          sections: [
+            {
+              id: 'section',
+              label: 'Snacks',
+              items: [
+                {
+                  id: 'item',
+                  name: 'TEST soup',
+                  description: 'Tomato',
+                  price: 8.5,
+                  options: [],
+                },
+              ],
+            },
+          ],
+        }),
   })
   const key = (target, id) => `${target.collectionPath}/${id}`
   const transaction = async (_, work) => {
@@ -213,109 +224,111 @@ function fixture() {
   }
 }
 
-test('whole demo delivery: intake retry, correction, approval, changed-content rejection, delivery and reload', async () => {
-  const f = fixture(),
-    admin = { admin: true }
-  assert.equal((await f.createRequest(admin, f.input)).stage, 'received')
-  await f.createRequest(admin, f.input)
-  assert.equal(
-    [...f.records.keys()].filter((k) => k.includes('menu_express_requests'))
-      .length,
-    1
-  )
-  assert.equal(
-    [...f.records.keys()].filter((k) => /conversations\/[^/]+$/.test(k)).length,
-    1
-  )
-  await assert.rejects(
-    f.createRequest(admin, { ...f.input, venue: 'Changed' }),
-    /different submission/
-  )
-  await assert.rejects(
-    f.readRequest({}, id, { token: 'b'.repeat(64) }),
-    /not found/
-  )
-  await assert.rejects(
-    f.operatorAction({}, id, { action: 'demo-payment' }),
-    /Denied/
-  )
-  await assert.rejects(
-    f.operatorAction(admin, id, {
+for (const format of ['interactive', 'document'])
+  test(`whole ${format} demo delivery: intake retry, correction, approval, changed-content rejection, delivery and reload`, async () => {
+    const f = fixture(format),
+      admin = { admin: true }
+    assert.equal((await f.createRequest(admin, f.input)).stage, 'received')
+    await f.createRequest(admin, f.input)
+    assert.equal(
+      [...f.records.keys()].filter((k) => k.includes('menu_express_requests'))
+        .length,
+      1
+    )
+    assert.equal(
+      [...f.records.keys()].filter((k) => /conversations\/[^/]+$/.test(k))
+        .length,
+      1
+    )
+    await assert.rejects(
+      f.createRequest(admin, { ...f.input, venue: 'Changed' }),
+      /different submission/
+    )
+    await assert.rejects(
+      f.readRequest({}, id, { token: 'b'.repeat(64) }),
+      /not found/
+    )
+    await assert.rejects(
+      f.operatorAction({}, id, { action: 'demo-payment' }),
+      /Denied/
+    )
+    await assert.rejects(
+      f.operatorAction(admin, id, {
+        action: 'prepare',
+        kitchenId: 'kitchen',
+      }),
+      /Payment/
+    )
+    await f.operatorAction(admin, id, { action: 'demo-payment' })
+    const preparation = await f.operatorAction(admin, id, {
       action: 'prepare',
       kitchenId: 'kitchen',
-    }),
-    /Payment/
-  )
-  await f.operatorAction(admin, id, { action: 'demo-payment' })
-  const preparation = await f.operatorAction(admin, id, {
-    action: 'prepare',
-    kitchenId: 'kitchen',
-  })
-  assert.equal(preparation.target.menuId, `menu-express-${id}`)
-  assert.equal(f.savedSources[0].uploadId, preparation.target.menuId)
-  await assert.rejects(
-    f.operatorAction(admin, id, {
-      action: 'prepare',
-      kitchenId: 'another-kitchen',
-    }),
-    /another preparation/
-  )
-  assert.equal(
-    (await f.readRequest({}, id, { token })).request.target.kitchenId,
-    'kitchen'
-  )
+    })
+    assert.equal(preparation.target.menuId, `menu-express-${id}`)
+    assert.equal(f.savedSources[0].uploadId, preparation.target.menuId)
+    await assert.rejects(
+      f.operatorAction(admin, id, {
+        action: 'prepare',
+        kitchenId: 'another-kitchen',
+      }),
+      /another preparation/
+    )
+    assert.equal(
+      (await f.readRequest({}, id, { token })).request.target.kitchenId,
+      'kitchen'
+    )
 
-  await f.operatorAction(admin, id, { action: 'review' })
-  await f.customerAction({}, id, {
-    token,
-    action: 'correction',
-    revision: 'review-a',
-    note: 'TEST fix soup description',
-  })
-  assert.equal(
-    (await f.readRequest({}, id, { token })).request.stage,
-    'preparing'
-  )
-  f.setRevision('review-b')
-  await f.operatorAction(admin, id, { action: 'review' })
-  await assert.rejects(
-    f.customerAction({}, id, {
+    await f.operatorAction(admin, id, { action: 'review' })
+    await f.customerAction({}, id, {
+      token,
+      action: 'correction',
+      revision: 'review-a',
+      note: 'TEST fix soup description',
+    })
+    assert.equal(
+      (await f.readRequest({}, id, { token })).request.stage,
+      'preparing'
+    )
+    f.setRevision('review-b')
+    await f.operatorAction(admin, id, { action: 'review' })
+    await assert.rejects(
+      f.customerAction({}, id, {
+        token,
+        action: 'approve',
+        revision: 'review-a',
+      }),
+      /review has changed/
+    )
+    await f.customerAction({}, id, {
       token,
       action: 'approve',
-      revision: 'review-a',
-    }),
-    /review has changed/
-  )
-  await f.customerAction({}, id, {
-    token,
-    action: 'approve',
-    revision: 'review-b',
+      revision: 'review-b',
+    })
+    f.setRevision('review-c')
+    await assert.rejects(
+      f.operatorAction(admin, id, { action: 'deliver' }),
+      /changed after approval/
+    )
+    assert.equal(f.published(), 0)
+    await f.operatorAction(admin, id, { action: 'review' })
+    await f.customerAction({}, id, {
+      token,
+      action: 'approve',
+      revision: 'review-c',
+    })
+    const result = await f.operatorAction(admin, id, { action: 'deliver' })
+    assert.equal(result.stage, 'delivered')
+    assert.equal(
+      result.delivery.qrPath,
+      '/kitchens/demo-kitchen/menus/test-menu/qr'
+    )
+    await f.operatorAction(admin, id, { action: 'deliver' })
+    assert.equal(f.published(), 1)
+    assert.equal(
+      (await f.readRequest({}, id, { token })).request.stage,
+      'delivered'
+    )
   })
-  f.setRevision('review-c')
-  await assert.rejects(
-    f.operatorAction(admin, id, { action: 'deliver' }),
-    /changed after approval/
-  )
-  assert.equal(f.published(), 0)
-  await f.operatorAction(admin, id, { action: 'review' })
-  await f.customerAction({}, id, {
-    token,
-    action: 'approve',
-    revision: 'review-c',
-  })
-  const result = await f.operatorAction(admin, id, { action: 'deliver' })
-  assert.equal(result.stage, 'delivered')
-  assert.equal(
-    result.delivery.qrPath,
-    '/kitchens/demo-kitchen/menus/test-menu/qr'
-  )
-  await f.operatorAction(admin, id, { action: 'deliver' })
-  assert.equal(f.published(), 1)
-  assert.equal(
-    (await f.readRequest({}, id, { token })).request.stage,
-    'delivered'
-  )
-})
 
 test('demo flag is operator-only and a non-demo request cannot receive demo payment', async () => {
   const f = fixture()
@@ -570,6 +583,11 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
         price_options: [],
         add_ons: [],
       }),
+      normalizeMenuDocument: load(
+        '../../../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-metadata.ts',
+        {},
+        'normalizeMenuDocument'
+      ).normalizeMenuDocument,
     },
     'readKitchenMenuReview'
   )
@@ -588,7 +606,32 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
   rows.get('kitchens/kitchen/menus/menu').format = 'document'
   await assert.rejects(
     readKitchenMenuReview(tx, 'kitchen', 'menu'),
-    /regular interactive Menu/
+    /valid Menu document/
+  )
+  const menu = rows.get('kitchens/kitchen/menus/menu')
+  menu.doc = {
+    url: 'https://files.example/menu.pdf',
+    name: 'menu.pdf',
+    type: 'application/pdf',
+    storage_path: 'kitchens/kitchen/private-internal-path',
+  }
+  const document = await readKitchenMenuReview(tx, 'kitchen', 'menu')
+  assert.equal(document.format, 'document')
+  assert.equal(document.document.url, menu.doc.url)
+  assert.equal('sections' in document, false)
+  assert.equal(
+    JSON.stringify(document).includes('private-internal-path'),
+    false
+  )
+  menu.doc.url = 'https://files.example/replacement.pdf'
+  assert.notEqual(
+    (await readKitchenMenuReview(tx, 'kitchen', 'menu')).revision,
+    document.revision
+  )
+  menu.schedule = 'daily'
+  await assert.rejects(
+    readKitchenMenuReview(tx, 'kitchen', 'menu'),
+    /regular Menu/
   )
 })
 

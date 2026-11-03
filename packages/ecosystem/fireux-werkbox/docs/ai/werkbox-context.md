@@ -1,7 +1,7 @@
 # Werkbox GPT Context
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-11-02
+Ref: 4141961e7
 Role: living context
 Scope: Werkbox ecosystem and Apps
 
@@ -107,8 +107,10 @@ remembered implementations are not authority.
   and selects the shared Core open-development fragment. Adjacent domain Rules
   fragments are retained inactive policy, not current access protection. Follow
   `docs/ai/firestore-mutations-context.md` for backup, exact-target deployment
-  verification, the unavailable rendering/release tooling, and the
-  required shipping-policy replacement.
+  verification and the required shipping-policy replacement. Nuxt/Firebase App
+  artifacts use `tools/firebase-release` with App-owned targets, origins and
+  reviewed runtime environments; backend provisioning and Rules deployment
+  remain separate.
 
 ## Living context
 

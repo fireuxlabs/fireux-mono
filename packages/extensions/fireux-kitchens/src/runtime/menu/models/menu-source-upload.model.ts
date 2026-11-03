@@ -35,4 +35,5 @@ export type MenuSourceUpload = FireuxStamped & {
   files: MenuSourceUploadFile[]
   files_count: number
   status: MenuSourceUploadStatus
+  menu_id?: string
 }

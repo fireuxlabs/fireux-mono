@@ -7,11 +7,12 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
-    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project fireux-2005 --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --auth-domains holzworm-fireux-2005.web.app --app-domain https://holzworm-fireux-2005.web.app --verify-text \"Lasergravur auf Holz.\"",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --only hosting --auth-domains holzworm-fireux-2005.web.app --app-domain https://holzworm-fireux-2005.web.app --verify-text \"Lasergravur auf Holz.\"",
-    "check:env": "node ../../../scripts/check-env.mjs"
+    "prepare:firebase-output": "node ../../../tools/firebase-release/cli.mjs prepare --project fireux-2005 --config firebase.json",
+    "deploy:preflight": "node ../../../tools/firebase-release/cli.mjs preflight --project fireux-2005 --config firebase.json --rules-template ../../../packages/ecosystem/fireux-fireux/src/config/firebase/firestore.template.rules --rules-databases fireux,holzworm",
+    "deploy": "node ../../../tools/firebase-release/cli.mjs deploy --project fireux-2005 --config firebase.json --rules-template ../../../packages/ecosystem/fireux-fireux/src/config/firebase/firestore.template.rules --rules-databases fireux,holzworm",
+    "deploy:hosting": "node ../../../tools/firebase-release/cli.mjs hosting --project fireux-2005 --config firebase.json --rules-template ../../../packages/ecosystem/fireux-fireux/src/config/firebase/firestore.template.rules --rules-databases fireux,holzworm",
+    "check:env": "node ../../../tools/firebase-release/cli.mjs env --project fireux-2005 --config firebase.json",
+    "build:release": "node ../../../tools/firebase-release/cli.mjs build --project fireux-2005 --config firebase.json --app-domain https://holzworm-fireux-2005.web.app"
   },
   "dependencies": {
     "@nuxt/icon": "2.5.1",
@@ -21,7 +22,8 @@
     "fireux-fireux": "workspace:*",
     "nuxt": "4.6.1",
     "vue": "3.5.43",
-    "vue-router": "5.4.0"
+    "vue-router": "5.4.0",
+    "@google-cloud/functions-framework": "5.0.5"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1",

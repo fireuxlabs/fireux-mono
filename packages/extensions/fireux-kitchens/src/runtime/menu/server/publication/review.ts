@@ -11,8 +11,20 @@ import {
 } from '../../../kitchen/server/mutation-targets'
 import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import type { KitchenMenuReview } from '../../models/menu-review.model'
+import { normalizeMenuDocument } from '../../utils/menu-metadata'
 
-/** Customer-safe review of one regular interactive Menu, within its writer's transaction. */
+function fingerprint<T extends KitchenMenuReview>(review: T): T {
+  const serialized = JSON.stringify(review)
+  if (Buffer.byteLength(serialized) > 700_000)
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'This Menu is too large for a Menu Express review.',
+    })
+  review.revision = createHash('sha256').update(serialized).digest('hex')
+  return review
+}
+
+/** Customer-safe review of one regular Menu, within its writer's transaction. */
 export async function readKitchenMenuReview(
   tx: GuardedServerTransaction,
   kitchenId: string,
@@ -29,16 +41,57 @@ export async function readKitchenMenuReview(
     !place.exists ||
     !data ||
     data.status === 'archived' ||
-    data.format !== 'interactive' ||
+    !['interactive', 'document'].includes(data.format) ||
     data.schedule === 'daily' ||
     (data.audience &&
       !['public', 'private_link'].includes(String(data.audience)))
   )
     throw createError({
       statusCode: 409,
-      statusMessage:
-        'Choose an active regular interactive Menu for this delivery.',
+      statusMessage: 'Choose an active regular Menu for this delivery.',
     })
+  const identity = {
+    revision: '',
+    name: String(data.name || ''),
+    description: String(data.description || ''),
+    kitchenSlug: String(kitchen.data?.identity?.slug || ''),
+    menuSlug: String(data.slug || ''),
+  }
+  if (!identity.kitchenSlug || !identity.menuSlug)
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Menu needs public slugs before review.',
+    })
+  if (data.format === 'document' || data.doc?.url) {
+    let document
+    try {
+      document = normalizeMenuDocument(data.doc)
+    } catch {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Upload a valid Menu document before review.',
+      })
+    }
+    if (
+      !document.url ||
+      !['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(
+        document.type || ''
+      )
+    )
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Upload a PDF or image Menu before review.',
+      })
+    return fingerprint({
+      ...identity,
+      format: 'document',
+      document: {
+        url: document.url,
+        name: document.name || identity.name,
+        type: document.type!,
+      },
+    })
+  }
   const currency = String(place.data?.default_currency_code || '')
   if (!/^[A-Z]{3}$/.test(currency))
     throw createError({
@@ -54,13 +107,10 @@ export async function readKitchenMenuReview(
       statusCode: 409,
       statusMessage: 'Menu Express supports up to 100 sections.',
     })
-  const result: KitchenMenuReview = {
-    revision: '',
-    name: String(data.name || ''),
-    description: String(data.description || ''),
+  const result: Extract<KitchenMenuReview, { format: 'interactive' }> = {
+    ...identity,
+    format: 'interactive',
     currency,
-    kitchenSlug: String(kitchen.data?.identity?.slug || ''),
-    menuSlug: String(data.slug || ''),
     sections: [],
   }
   for (const section of sections
@@ -79,7 +129,7 @@ export async function readKitchenMenuReview(
         statusCode: 409,
         statusMessage: 'Menu Express supports up to 100 items per section.',
       })
-    const items: KitchenMenuReview['sections'][number]['items'] = []
+    const items: (typeof result.sections)[number]['items'] = []
     for (const row of rows
       .filter((r) => r.data.status !== 'archived')
       .sort(
@@ -132,14 +182,7 @@ export async function readKitchenMenuReview(
       statusCode: 409,
       statusMessage: 'Menu needs content and public slugs before review.',
     })
-  const serialized = JSON.stringify(result)
-  if (Buffer.byteLength(serialized) > 700_000)
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'This Menu is too large for a Menu Express review.',
-    })
-  result.revision = createHash('sha256').update(serialized).digest('hex')
-  return result
+  return fingerprint(result)
 }
 
 export async function readKitchenMenuReviewChoices(
@@ -151,7 +194,7 @@ export async function readKitchenMenuReviewChoices(
     .filter(
       (record) =>
         record.data.status !== 'archived' &&
-        record.data.format === 'interactive' &&
+        ['interactive', 'document'].includes(record.data.format) &&
         record.data.schedule !== 'daily'
     )
     .map((record) => ({

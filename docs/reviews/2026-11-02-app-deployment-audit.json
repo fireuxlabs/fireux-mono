@@ -1,0 +1,946 @@
+{
+  "date": "2026-11-02",
+  "scope": "All App manifests and Firebase targets; local audit only, no deployments.",
+  "apps": [
+    {
+      "app": "projects/bringli/bringli-app",
+      "projectId": "bringli-b0517",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": true,
+      "buildOrigin": "https://bringli.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "bringli",
+        "codebase": "bringli-ssr",
+        "entryPoint": "bringliApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/bringli/bringli-app",
+        "passed": true,
+        "entryPoint": "bringliApp",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/buenohost/ausfinn-apartments",
+      "projectId": "buenohost-ecosystem",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://ausfinn-apartments.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "ausfinn-apartments",
+        "codebase": "ausfinn-apartments-ssr",
+        "entryPoint": "ausfinnApartments",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/buenohost/ausfinn-apartments",
+        "passed": true,
+        "entryPoint": "ausfinnApartments",
+        "region": "europe-west6"
+      },
+      "releaseRegionFix": "App Firebase target overrides the native default during release builds."
+    },
+    {
+      "app": "projects/buenohost/book-with-nats",
+      "projectId": "buenohost-ecosystem",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://book-with-nats-buenohost.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "book-with-nats-buenohost",
+        "codebase": "book-with-nats-ssr",
+        "entryPoint": "bookWithNats",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/buenohost/book-with-nats",
+        "passed": true,
+        "entryPoint": "bookWithNats",
+        "region": "europe-west6"
+      },
+      "releaseRegionFix": "App Firebase target overrides the native default during release builds."
+    },
+    {
+      "app": "projects/buenohost/buenohost-app",
+      "projectId": "buenohost-ecosystem",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://buenohost-app.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "buenohost-app",
+        "codebase": "buenohost-ssr",
+        "entryPoint": "buenohost",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/buenohost/buenohost-app",
+        "passed": true,
+        "entryPoint": "buenohost",
+        "region": "europe-west6"
+      },
+      "releaseRegionFix": "App Firebase target overrides the native default during release builds.",
+      "localProductionBuild": "passed in isolated snapshot with declared release region; native Nitro target metadata verified"
+    },
+    {
+      "app": "projects/fireux/find-my-seo-app",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://find-my-seo.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "find-my-seo",
+        "codebase": "find-my-seo-ssr",
+        "entryPoint": "findMySeoApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/find-my-seo-app",
+        "passed": true,
+        "entryPoint": "findMySeoApp",
+        "region": "europe-west1"
+      },
+      "policyReadbackDatabases": [
+        "fireux",
+        "find-my-seo"
+      ]
+    },
+    {
+      "app": "projects/fireux/fireux-app",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": true,
+      "buildOrigin": "https://fireux.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "fireux",
+        "codebase": "fireux-ssr",
+        "entryPoint": "fireuxApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/fireux-app",
+        "passed": true,
+        "entryPoint": "fireuxApp",
+        "region": "europe-west1"
+      },
+      "localProductionBuild": "passed in isolated snapshot with declared release region; native Nitro target metadata verified"
+    },
+    {
+      "app": "projects/fireux/fireux-blank",
+      "projectId": null,
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "removed dangling environment checker (no App release target)"
+      ],
+      "retiredProvisioningFlags": false,
+      "readiness": "No deployment command enabled; retain current starter/prototype scope.",
+      "hasReleaseCommand": false,
+      "target": {
+        "site": "fireux-blank",
+        "codebase": "fireux-blank-ssr",
+        "entryPoint": "fireuxBlank",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/fireux-blank",
+        "passed": true,
+        "entryPoint": "fireuxBlank",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/fireux/go-qr",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://go-qr.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "go-qr",
+        "codebase": "go-qr-ssr",
+        "entryPoint": "goQr",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/go-qr",
+        "passed": true,
+        "entryPoint": "goQr",
+        "region": "europe-west1"
+      },
+      "policyReadbackDatabases": [
+        "fireux",
+        "go-qr"
+      ]
+    },
+    {
+      "app": "projects/fireux/holzworm",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": true,
+      "buildOrigin": "https://holzworm-fireux-2005.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "holzworm-fireux-2005",
+        "codebase": "holzworm-ssr",
+        "entryPoint": "holzworm",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/holzworm",
+        "passed": true,
+        "entryPoint": "holzworm",
+        "region": "europe-west1"
+      },
+      "policyReadbackDatabases": [
+        "fireux",
+        "holzworm"
+      ]
+    },
+    {
+      "app": "projects/fireux/ignition-menu-demo",
+      "projectId": null,
+      "firebaseConfigured": false,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [],
+      "retiredProvisioningFlags": false,
+      "readiness": "No deployment command enabled; retain current starter/prototype scope.",
+      "hasReleaseCommand": false
+    },
+    {
+      "app": "projects/fireux/lifeguard-community",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting"
+      ],
+      "retiredProvisioningFlags": true,
+      "buildOrigin": "https://lifeguard-community-fireux-2005.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "lifeguard-community-fireux-2005",
+        "codebase": "lifeguard-community-ssr",
+        "entryPoint": "lifeguardCommunity",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/lifeguard-community",
+        "passed": true,
+        "entryPoint": "lifeguardCommunity",
+        "region": "europe-west1"
+      },
+      "policyReadbackDatabases": [
+        "fireux",
+        "lifeguard-community"
+      ]
+    },
+    {
+      "app": "projects/fireux/sproochli",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": true,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://sproochli.web.app",
+      "readiness": "reviewed environment present; local verification required before release",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "sproochli",
+        "codebase": "sproochli-ssr",
+        "entryPoint": "sproochli",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/sproochli",
+        "passed": true,
+        "entryPoint": "sproochli",
+        "region": "europe-west1"
+      },
+      "policyReadbackDatabases": [
+        "fireux",
+        "sproochli"
+      ],
+      "localProductionBuild": "passed in isolated snapshot with declared release region; native Nitro target metadata verified",
+      "localArtifactAndDevelopmentPreflight": "passed; no live upload or Rules readback performed"
+    },
+    {
+      "app": "projects/fireux/tenant",
+      "projectId": "fireux-2005",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": true,
+      "buildOrigin": "https://metalbar.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "metalbar",
+        "codebase": "fireux-tenant-ssr",
+        "entryPoint": "fireuxTenant",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/fireux/tenant",
+        "passed": true,
+        "entryPoint": "fireuxTenant",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/granite/granite-app",
+      "projectId": "granite-ecosystem",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://granite-os.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "granite-os",
+        "codebase": "granite-ssr",
+        "entryPoint": "graniteApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/granite/granite-app",
+        "passed": true,
+        "entryPoint": "graniteApp",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/misebox/baeren-ringgenberg",
+      "projectId": "misebox-78f9c",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://baeren-ringgenberg.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "baeren-ringgenberg",
+        "codebase": "baeren-ringgenberg-ssr",
+        "entryPoint": "baerenRinggenberg",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/misebox/baeren-ringgenberg",
+        "passed": true,
+        "entryPoint": "baerenRinggenberg",
+        "region": "europe-west6"
+      },
+      "localProductionBuild": "passed in isolated snapshot with declared release region; native Nitro target metadata verified"
+    },
+    {
+      "app": "projects/misebox/bangin-coffee",
+      "projectId": "misebox-78f9c",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://bangin-coffee.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "bangin-coffee",
+        "codebase": "bangin-coffee-ssr",
+        "entryPoint": "banginCoffee",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/misebox/bangin-coffee",
+        "passed": true,
+        "entryPoint": "banginCoffee",
+        "region": "europe-west6"
+      }
+    },
+    {
+      "app": "projects/misebox/friiites",
+      "projectId": "misebox-78f9c",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://friiites.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "friiites",
+        "codebase": "friiites-ssr",
+        "entryPoint": "friiites",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/misebox/friiites",
+        "passed": true,
+        "entryPoint": "friiites",
+        "region": "europe-west6"
+      }
+    },
+    {
+      "app": "projects/misebox/interlaken-essen",
+      "projectId": "misebox-78f9c",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": true,
+      "buildOrigin": "https://interlaken-essen.misebox.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "interlaken-essen",
+        "codebase": "interlaken-essen-ssr",
+        "entryPoint": "interlakenEssen",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/misebox/interlaken-essen",
+        "passed": true,
+        "entryPoint": "interlakenEssen",
+        "region": "europe-west6"
+      }
+    },
+    {
+      "app": "projects/misebox/la-tap-berne",
+      "projectId": "misebox-78f9c",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://tapberne.misebox.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "tapberne",
+        "codebase": "la-tap-berne-ssr",
+        "entryPoint": "laTapBerne",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/misebox/la-tap-berne",
+        "passed": true,
+        "entryPoint": "laTapBerne",
+        "region": "europe-west6"
+      }
+    },
+    {
+      "app": "projects/misebox/misebox-app",
+      "projectId": "misebox-78f9c",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": true,
+      "changes": [],
+      "retiredProvisioningFlags": false,
+      "readiness": "reviewed environment present; local verification required before release",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "misebox-78f9c",
+        "codebase": "misebox-ssr",
+        "entryPoint": "miseboxApp",
+        "region": "europe-west6",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/misebox/misebox-app",
+        "passed": true,
+        "entryPoint": "miseboxApp",
+        "region": "europe-west6"
+      },
+      "localProductionBuild": "passed in isolated snapshot with declared release region; native Nitro target metadata verified",
+      "localArtifactAndDevelopmentPreflight": "passed; no live upload or Rules readback performed"
+    },
+    {
+      "app": "projects/sharer/kjordi",
+      "projectId": "sharer-ecosystem",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://kjordi.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "kjordi",
+        "codebase": "kjordi-ssr",
+        "entryPoint": "kjordi",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/sharer/kjordi",
+        "passed": true,
+        "entryPoint": "kjordi",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/sharer/sharer-app",
+      "projectId": "sharer-ecosystem",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://sharify.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "sharify",
+        "codebase": "sharer-ssr",
+        "entryPoint": "sharerApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/sharer/sharer-app",
+        "passed": true,
+        "entryPoint": "sharerApp",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/slap/interlaken-bike-tours",
+      "projectId": null,
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency"
+      ],
+      "retiredProvisioningFlags": false,
+      "readiness": "No deployment command enabled; retain current starter/prototype scope.",
+      "hasReleaseCommand": false,
+      "target": {
+        "site": "interlaken-bike-tours-prototype",
+        "codebase": "interlaken-bike-tours-ssr",
+        "entryPoint": "interlakenBikeTours",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/slap/interlaken-bike-tours",
+        "passed": true,
+        "entryPoint": "interlakenBikeTours",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/slap/slap-app",
+      "projectId": "slap-45389",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://slapme.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "slapme",
+        "codebase": "slap-ssr",
+        "entryPoint": "slapApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/slap/slap-app",
+        "passed": true,
+        "entryPoint": "slapApp",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/slap/yellow-velo",
+      "projectId": "slap-45389",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://yellowvelo.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "yellowvelo",
+        "codebase": "yellow-velo-ssr",
+        "entryPoint": "yellowVelo",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/slap/yellow-velo",
+        "passed": true,
+        "entryPoint": "yellowVelo",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/templates/fireux-template",
+      "projectId": null,
+      "firebaseConfigured": false,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "removed dangling environment checker (no App release target)",
+        "removed dangling preparation alias; starter has no Firebase release target"
+      ],
+      "retiredProvisioningFlags": false,
+      "readiness": "No deployment command enabled; retain current starter/prototype scope.",
+      "hasReleaseCommand": false
+    },
+    {
+      "app": "projects/werkbox/richies-reinigung",
+      "projectId": "cleanbox-f15bc",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://richies-reinigung.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "richies-reinigung",
+        "codebase": "richies-reinigung-ssr",
+        "entryPoint": "richiesReinigung",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/werkbox/richies-reinigung",
+        "passed": true,
+        "entryPoint": "richiesReinigung",
+        "region": "europe-west1"
+      }
+    },
+    {
+      "app": "projects/werkbox/werkbox-app",
+      "projectId": "cleanbox-f15bc",
+      "firebaseConfigured": true,
+      "reviewedRuntimeEnvironment": false,
+      "changes": [
+        "Functions Framework runtime dependency",
+        "prepare:firebase-output",
+        "deploy:preflight",
+        "deploy",
+        "deploy:hosting",
+        "check:env"
+      ],
+      "retiredProvisioningFlags": false,
+      "buildOrigin": "https://cleanbox.web.app",
+      "readiness": "missing reviewed server/firebase.runtime-env.json; release blocked",
+      "hasReleaseCommand": true,
+      "target": {
+        "site": "cleanbox",
+        "codebase": "cleanbox-ssr",
+        "entryPoint": "cleanboxApp",
+        "region": "europe-west1",
+        "runtime": "nodejs22"
+      },
+      "resolvedReleaseConfig": {
+        "app": "projects/werkbox/werkbox-app",
+        "passed": true,
+        "entryPoint": "cleanboxApp",
+        "region": "europe-west1"
+      }
+    }
+  ],
+  "sourceBaseline": "4141961e7 plus the local deployment changes; isolated builds exclude concurrent Menu feature work",
+  "sharedFindings": [
+    {
+      "finding": "25 of 28 App manifests referenced removed root deployment/environment scripts",
+      "resolution": "Existing release commands use tools/firebase-release; dead aliases were removed from unconfigured starters without enabling deployment."
+    },
+    {
+      "finding": "Firebase function artifacts need complete local SDK discovery and an explicit Functions Framework dependency",
+      "resolution": "Configured SSR Apps pin the framework in their own manifests; shared preparation installs a frozen isolated production artifact and verifies discovery binaries."
+    },
+    {
+      "finding": "Local development origin and mode could affect release builds",
+      "resolution": "Release builds set production mode, disable NUXT_DEV and use each App-owned public HTTPS origin."
+    },
+    {
+      "finding": "Three BuenoHost Firebase Hosting rewrites use europe-west6 while the native Core default is europe-west1",
+      "resolution": "Release builds take the region from App Firebase configuration. Preparation and preflight verify native Nitro metadata and reject mismatches."
+    },
+    {
+      "finding": "Five standalone FireUX Apps have an App database as well as the Ecosystem identity database",
+      "resolution": "Their explicit development-policy readback scopes include both databases."
+    },
+    {
+      "finding": "Forwarded-host handling was missing in FireUX Workspace presentation, Core PWA manifest and three App presentation paths",
+      "resolution": "Use native Nuxt/H3 forwarded-origin options. Authentication and data authority are unchanged."
+    },
+    {
+      "finding": "Repeated unscoped Menu stylesheet imports previously broke release builds",
+      "resolution": "The prior shared Menu fix is retained and checked through the tenant production build. Remaining repeated scoped styles do not reproduce that defect."
+    }
+  ],
+  "verification": {
+    "allAppManifests": 28,
+    "resolvedConfiguredAppTargets": 26,
+    "focusedTestsPassed": 64,
+    "lint": "passed",
+    "format": "passed",
+    "workspaceFrozenInstall": "passed in isolated snapshot",
+    "ideConfiguration": "current",
+    "diffWhitespace": "passed",
+    "remoteDeployments": 0,
+    "remoteDataOrPolicyWrites": 0,
+    "limits": [
+      "All 28 Apps were inventoried; full production builds are representative, not all 28.",
+      "24 configured Apps lack reviewed server/firebase.runtime-env.json files. No development environment was copied into any source runtime configuration.",
+      "Generic production releases still require App-owned reviewed policy gates; explicit development release policy is not shipping approval.",
+      "No live route checks or Firebase resource verification were performed during this local-only pass."
+    ],
+    "productionBuildApps": [
+      "projects/fireux/sproochli",
+      "projects/fireux/fireux-app",
+      "projects/misebox/baeren-ringgenberg",
+      "projects/buenohost/buenohost-app",
+      "projects/misebox/misebox-app"
+    ],
+    "completeArtifactAndLocalDevelopmentPreflightApps": [
+      "projects/fireux/sproochli",
+      "projects/misebox/misebox-app"
+    ],
+    "buildEvidence": {
+      "projects/fireux/sproochli": {
+        "preset": "firebase",
+        "nuxtVersion": "4.6.1",
+        "function": "sproochli",
+        "region": "europe-west1",
+        "httpsRegion": "europe-west1",
+        "nodeVersion": "22"
+      },
+      "projects/fireux/fireux-app": {
+        "preset": "firebase",
+        "nuxtVersion": "4.6.1",
+        "function": "fireuxApp",
+        "region": "europe-west1",
+        "httpsRegion": "europe-west1",
+        "nodeVersion": "22"
+      },
+      "projects/misebox/baeren-ringgenberg": {
+        "preset": "firebase",
+        "nuxtVersion": "4.6.1",
+        "function": "baerenRinggenberg",
+        "region": "europe-west6",
+        "httpsRegion": "europe-west6",
+        "nodeVersion": "22"
+      },
+      "projects/buenohost/buenohost-app": {
+        "preset": "firebase",
+        "nuxtVersion": "4.6.1",
+        "function": "buenohost",
+        "region": "europe-west6",
+        "httpsRegion": "europe-west6",
+        "nodeVersion": "22"
+      },
+      "projects/misebox/misebox-app": {
+        "preset": "firebase",
+        "nuxtVersion": "4.6.1",
+        "function": "miseboxApp",
+        "region": "europe-west6",
+        "httpsRegion": "europe-west6",
+        "nodeVersion": "22"
+      }
+    }
+  }
+}

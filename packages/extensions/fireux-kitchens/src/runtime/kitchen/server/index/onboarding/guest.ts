@@ -3,7 +3,11 @@ import type { H3Event } from 'h3'
 import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import {
+  KITCHEN_MUTATION_TARGETS,
+  serverKitchenMenusTarget,
+  serverKitchenTeamMembersTarget,
+} from '../../mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
@@ -14,7 +18,10 @@ import { fail, readKitchenOnboardingRequest } from './request'
 
 /** One real, unpublished Kitchen per anonymous identity; no AppUser is fabricated. */
 export async function startGuestKitchen(event: H3Event, input: unknown) {
-  const body = readKitchenOnboardingRequest(input, ['claim_secret'])
+  const body = readKitchenOnboardingRequest(input, ['claim_secret', 'name'])
+  const venueName = typeof body.name === 'string' ? body.name.trim() : ''
+  if (body.name !== undefined && (!venueName || venueName.length > 120))
+    fail(400, 'Venue name must be 1–120 characters.')
   const secretHash = hashGuestKitchenSecret(body.claim_secret)
   const { uid, decoded } = await requireFirebaseBearerUser(
     event,
@@ -55,7 +62,7 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
         fail(409, 'This guest Kitchen could not be resumed.')
     } else {
       const created = serverAuditStamp({ by: uid, appId: policy.appId })
-      const name = `kitchen-${id.slice(0, 6)}`
+      const name = venueName || `kitchen-${id.slice(0, 6)}`
       tx.create(PLACE_MUTATION_TARGETS.places, id, {
         name,
         slug: id.toLowerCase(),

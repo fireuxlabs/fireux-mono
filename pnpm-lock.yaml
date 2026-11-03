@@ -777,6 +777,9 @@ importers:
 
   projects/bringli/bringli-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -820,6 +823,9 @@ importers:
 
   projects/buenohost/ausfinn-apartments:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -866,6 +872,9 @@ importers:
 
   projects/buenohost/book-with-nats:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -912,6 +921,9 @@ importers:
 
   projects/buenohost/buenohost-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -967,6 +979,9 @@ importers:
 
   projects/fireux/find-my-seo-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1016,6 +1031,9 @@ importers:
 
   projects/fireux/fireux-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/content':
         specifier: 3.6.3
         version: 3.6.3(@nuxt/schema@4.6.1)(better-sqlite3@12.6.0)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(magic-string@1.4.3)(magicast@0.5.5)(mlly@1.8.2)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))
@@ -1095,6 +1113,9 @@ importers:
 
   projects/fireux/fireux-blank:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1138,6 +1159,9 @@ importers:
 
   projects/fireux/go-qr:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1202,6 +1226,9 @@ importers:
 
   projects/fireux/holzworm:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1275,6 +1302,9 @@ importers:
 
   projects/fireux/lifeguard-community:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1312,6 +1342,9 @@ importers:
 
   projects/fireux/sproochli:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1373,6 +1406,9 @@ importers:
 
   projects/fireux/tenant:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1410,6 +1446,9 @@ importers:
 
   projects/granite/granite-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@iconify-json/heroicons':
         specifier: ^1.2.2
         version: 1.2.2
@@ -1471,6 +1510,9 @@ importers:
 
   projects/misebox/baeren-ringgenberg:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1541,6 +1583,9 @@ importers:
 
   projects/misebox/bangin-coffee:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1587,6 +1632,9 @@ importers:
 
   projects/misebox/friiites:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1651,6 +1699,9 @@ importers:
 
   projects/misebox/interlaken-essen:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1718,6 +1769,9 @@ importers:
 
   projects/misebox/la-tap-berne:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1882,6 +1936,9 @@ importers:
 
   projects/sharer/kjordi:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1919,6 +1976,9 @@ importers:
 
   projects/sharer/sharer-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1953,6 +2013,9 @@ importers:
 
   projects/slap/interlaken-bike-tours:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -1990,6 +2053,9 @@ importers:
 
   projects/slap/slap-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -2027,6 +2093,9 @@ importers:
 
   projects/slap/yellow-velo:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -2110,6 +2179,9 @@ importers:
 
   projects/werkbox/richies-reinigung:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))
@@ -2156,6 +2228,9 @@ importers:
 
   projects/werkbox/werkbox-app:
     dependencies:
+      '@google-cloud/functions-framework':
+        specifier: 5.0.5
+        version: 5.0.5
       '@nuxt/icon':
         specifier: 2.5.1
         version: 2.5.1(@nuxt/schema@4.6.1)(confbox@0.3.1)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(rolldown@1.2.14)(unplugin@3.4.0(esbuild@0.28.0)(rolldown@1.2.14)(rollup@4.60.4)(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1)))(vite@8.3.4(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.2))

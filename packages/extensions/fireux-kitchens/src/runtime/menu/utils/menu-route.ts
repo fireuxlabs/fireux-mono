@@ -30,6 +30,19 @@ export const directoryMenuRouteScope = (
   kitchenSlug: text(kitchenSlug),
 })
 
+export function menuDocumentFilePath(options: {
+  menuId: unknown
+  kitchenSlug?: unknown
+}) {
+  const menuId = segment(options.menuId)
+  if (!menuId) return ''
+  const query = new URLSearchParams()
+  if (text(options.kitchenSlug))
+    query.set('kitchenSlug', text(options.kitchenSlug))
+  const suffix = query.toString()
+  return `/api/menus/${menuId}/file${suffix ? `?${suffix}` : ''}`
+}
+
 export function menuRouteIndexPath(
   scope: MenuRouteScope,
   context: 'generic' | 'collection' | 'delivery' = 'generic'

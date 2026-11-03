@@ -1,11 +1,9 @@
 import { defineEventHandler, createError } from 'h3'
-import { randomUUID } from 'node:crypto'
-import { updateKitchenMenu } from '../../../../../menu/server/records/update'
+import { saveKitchenDocumentMenu } from '../../../../../menu/server/document/save'
 import {
   assertKitchenMenuUploadAccess,
   readKitchenMenuUploadRequest,
   requireKitchenMenuUploadUser,
-  saveKitchenMenuUploadFiles,
   setKitchenMenuUploadCors,
 } from '../../../../../menu/server/source/uploads'
 
@@ -20,31 +18,16 @@ export default defineEventHandler(async (event) => {
       statusCode: 400,
       statusMessage: 'Choose one PDF or image for this Menu.',
     })
-  const menuId = request.uploadId
-  // Retain the previous published file until the metadata command succeeds.
-  const [file] = await saveKitchenMenuUploadFiles({
-    ...request,
-    uploadId: randomUUID(),
-  })
-  if (!file)
-    throw createError({ statusCode: 502, statusMessage: 'The Menu document was not uploaded. Please try again.' })
-  await updateKitchenMenu(event, {
+  const saved = await saveKitchenDocumentMenu(event, {
     kitchenId: request.kitchenId,
-    menuId,
-    changes: {
-      doc: {
-        url: file.fileUrl,
-        name: file.fileName,
-        type: file.contentType,
-        storage_path: file.objectPath,
-      },
-    },
+    menuId: request.uploadId,
+    files: request.files,
   })
   return {
     ok: true,
-    id: menuId,
-    url: file.fileUrl,
-    file_name: file.fileName,
-    file_type: file.contentType,
+    id: saved.menuId,
+    url: saved.document!.url,
+    file_name: saved.document!.name,
+    file_type: saved.document!.type,
   }
 })

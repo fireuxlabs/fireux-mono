@@ -96,7 +96,21 @@ function creation() {
     '../runtime/kitchen/composables/firestore/useKitchenCreate.ts',
     'useKitchenCreate',
     {
+      computed,
       useCommandScope,
+      useKitchenAccess: () => ({
+        ids: ref([]),
+        outcome: ref('ready'),
+        pending: ref(false),
+        error: ref(null),
+      }),
+      useWorkspaceCreation: () => ({
+        canCreate: ref(true),
+        showUpgrade: ref(false),
+        creationEnabled: ref(true),
+      }),
+      kitchenCapacity: {},
+      resolveKitchenAllowance: () => ({ canAdd: true, showUpgrade: false }),
       useAuth: () => ({ currentUser: user }),
       useAppSession: () => session,
       useFireUXConfig: () => config,
@@ -269,11 +283,23 @@ function selection() {
     states = new Map(),
     navigations = []
   const create = load(
-    '../runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
-    'useKitchenWorkspaceIndex',
+    '../runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
+    'useKitchenWorkspace',
     {
       computed,
       watch,
+      defineWorkspace: (factory) => factory,
+      useKitchenAccess: () => ({
+        ids: computed(() => source.kitchens.value.map((kitchen) => kitchen.id)),
+        outcome: source.outcome,
+      }),
+      useKitchenRead: (readId) => ({
+        kitchen: computed(() => ({ id: readId.value })),
+        place: computed(() => ({ id: readId.value })),
+        outcome: source.outcome,
+        placeOutcome: source.outcome,
+      }),
+      useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
       useCommandScope,
       useWorkspaceEntryCta: () => ({
         workspaceEntryPath: ref('/workspace/kitchen'),
@@ -298,7 +324,7 @@ function selection() {
         },
         reconcile: () => {},
       }),
-      useKitchenWorkspaceKitchens: () => source,
+      useKitchenTargets: () => source,
       useAppSession: () => session,
       resolveAppUserAccess: () => ({}),
       kitchenWorkspaceSwitchPath: () =>
@@ -319,7 +345,7 @@ function selection() {
     selectedId,
     navigation,
     navigations,
-    nextIndex: () => scope.run(create),
+    nextWorkspace: () => scope.run(create),
     flow: scope.run(create),
   }
 }
@@ -365,7 +391,7 @@ test('Kitchen switch accepts only a settled accessible Kitchen', async () => {
 for (const separate of [false, true])
   test(`the latest Kitchen choice wins across ${separate ? 'separate' : 'one'} selectors`, async () => {
     const h = selection(),
-      second = separate ? h.nextIndex() : h.flow
+      second = separate ? h.nextWorkspace() : h.flow
     const old = h.flow.select('second'),
       latest = second.select('third')
     h.navigations[0].resolve()
@@ -379,7 +405,7 @@ for (const separate of [false, true])
 test('reselecting the current Kitchen cancels a pending switch', async () => {
   const h = selection(),
     old = h.flow.select('second')
-  await h.nextIndex().select('first')
+  await h.nextWorkspace().select('first')
   h.navigation.resolve()
   await old
   assert.equal(h.selectedId.value, 'first')

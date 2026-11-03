@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-10-09
-Ref: 57d034087
+Updated: 2026-11-02
+Ref: 4141961e7
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -139,9 +139,10 @@ or availability locking changes, refresh this file against current source.
 Verify direct App dependencies, module/layer registration, brand assets,
 Reservation command authority and availability locking through source review
 and relevant tests, plus affected App preparation/build and route checks.
-The brand renderer, guard suite, Rules renderer and release tools are removed;
-there is no supported repository replacement for those rendering/release
-commands. Before an authorized deployment, establish the exact Firebase target,
+The brand renderer, former guard suite and Rules deployment wrappers remain
+removed. Nuxt/Firebase App artifacts use `tools/firebase-release`; App manifests
+own targets and build origins, and each App requires a reviewed runtime environment.
+This does not provision backend resources or deploy Rules. Before an authorized deployment, establish the exact Firebase target,
 compile/test the intended Rules, retain the current release and source, and
 read back the deployed source as required by the mutation context. The current
 Rules deliberately allow public reads and writes for development; Reservation data is therefore not protected from direct clients.

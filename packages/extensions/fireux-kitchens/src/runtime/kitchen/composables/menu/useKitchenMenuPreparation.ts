@@ -6,6 +6,7 @@ import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../menu/utils/menu-source-upload'
+import type { Menu } from '../../../menu/models/menu.model'
 
 /** One scoped source and processing context, independent of purchase or route. */
 export function useKitchenMenuPreparation(input: {
@@ -42,11 +43,27 @@ export function useKitchenMenuPreparation(input: {
   const source = computed(() =>
     outcome.value === 'ready' ? (read.value ?? null) : null
   )
+  const linkedMenuId = computed(() => source.value?.menu_id || '')
+  const menuRead = useFirestoreRead().firestoreFetchDoc<Menu>(
+    computed(() =>
+      allowed.value && linkedMenuId.value
+        ? `kitchens/${kitchenId.value}/menus`
+        : ''
+    ),
+    linkedMenuId
+  )
   return {
     outcome,
-    error: computed(() => access.error.value || read.error.value),
+    menuOutcome: menuRead.outcome,
+    error: computed(
+      () => access.error.value || read.error.value || menuRead.error.value
+    ),
     context: {
-      menu: computed(() => null),
+      menu: computed(() =>
+        allowed.value && menuRead.outcome.value === 'ready'
+          ? (menuRead.value ?? null)
+          : null
+      ),
       source,
       menuId: sourceId,
       kitchenId,

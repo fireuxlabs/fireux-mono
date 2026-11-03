@@ -163,7 +163,7 @@ async function loadPdf() {
 .menu-document-pdf {
   min-width: 0;
   overflow: hidden;
-  border-radius: var(--menu-radius);
+  border-radius: var(--menu-radius, var(--ui-radius));
   background: #fff;
 }
 

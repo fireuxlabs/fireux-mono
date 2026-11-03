@@ -14,7 +14,7 @@ const JOBS_HOSTNAMES = new Set([
 const JOBS_PUBLIC_ROUTE = /^\/(?:jobs|professionals|agents)(?:\/|$)/
 
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
-  const hostname = useRequestURL().hostname.toLowerCase()
+  const hostname = useRequestURL({ xForwardedHost: true, xForwardedProto: true }).hostname.toLowerCase()
   if (!JOBS_HOSTNAMES.has(hostname)) return
 
   if (to.path === '/') {

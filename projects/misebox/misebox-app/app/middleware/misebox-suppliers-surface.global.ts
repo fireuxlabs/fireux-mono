@@ -10,7 +10,7 @@ const SUPPLIER_HOSTNAMES = new Set([
 ])
 
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
-  const hostname = useRequestURL().hostname.toLowerCase()
+  const hostname = useRequestURL({ xForwardedHost: true, xForwardedProto: true }).hostname.toLowerCase()
   if (!SUPPLIER_HOSTNAMES.has(hostname)) return
 
   const path = to.path === '/' ? '/' : to.fullPath

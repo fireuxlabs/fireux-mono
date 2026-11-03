@@ -7,13 +7,14 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
-    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project buenohost-ecosystem --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project buenohost-ecosystem --config firebase.json",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project buenohost-ecosystem --config firebase.json",
-    "check:env": "node ../../../scripts/check-env.mjs",
+    "prepare:firebase-output": "node ../../../tools/firebase-release/cli.mjs prepare --project buenohost-ecosystem --config firebase.json",
+    "deploy:preflight": "node ../../../tools/firebase-release/cli.mjs preflight --project buenohost-ecosystem --config firebase.json --rules-template ../../../packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules",
+    "deploy": "node ../../../tools/firebase-release/cli.mjs deploy --project buenohost-ecosystem --config firebase.json --rules-template ../../../packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules",
+    "deploy:hosting": "node ../../../tools/firebase-release/cli.mjs hosting --project buenohost-ecosystem --config firebase.json --rules-template ../../../packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules",
+    "check:env": "node ../../../tools/firebase-release/cli.mjs env --project buenohost-ecosystem --config firebase.json",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt app/.nuxt .output dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist",
+    "build:release": "node ../../../tools/firebase-release/cli.mjs build --project buenohost-ecosystem --config firebase.json --app-domain https://book-with-nats-buenohost.web.app"
   },
   "dependencies": {
     "@nuxt/icon": "2.5.1",
@@ -26,7 +27,8 @@
     "vue": "3.5.43",
     "vue-router": "5.4.0",
     "fireux-properties": "workspace:*",
-    "fireux-reservations": "workspace:*"
+    "fireux-reservations": "workspace:*",
+    "@google-cloud/functions-framework": "5.0.5"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.62",

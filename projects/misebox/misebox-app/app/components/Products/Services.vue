@@ -22,8 +22,8 @@ const selections = [
     id: 'menu-express',
     kind: 'menu' as const,
     terms:
-      'Separate preparation service. Scope, price and delivery terms are agreed before purchase. Sending a request does not charge you.',
-    action: { label: 'Get my menu online', to: '/products/menu-express' },
+      'Free PDF or image menu hosting. Publish it yourself and keep the same link and QR when you replace your document.',
+    action: { label: 'Upload my menu — free', to: '/menu-express' },
   },
   {
     id: 'collection-ordering',

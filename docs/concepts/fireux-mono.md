@@ -1,7 +1,7 @@
 # FireUX Mono repository map
 
-Updated: 2026-10-26
-Ref: cf2413355
+Updated: 2026-11-02
+Ref: 4141961e7
 Role: map, not canon
 
 ## Purpose and navigation
@@ -71,6 +71,9 @@ brand or folder name alone.
   reuse this discovery; App manifests remain the command and port owners.
 - tools/ide owns focused local checks and generated VS Code workspace, task and
   launch configuration. See [the IDE workflow](../../tools/ide/README.md).
+- `tools/firebase-release` owns shared Nuxt/Firebase artifact preparation and local
+  preflight mechanics. App manifests own targets, build origins and release policy;
+  Misebox retains its stricter App-owned Rules gates. See [release tooling](../../tools/firebase-release/README.md).
 - Generated Nuxt output, dist and node_modules are not authored source.
 
 Use [pnpm](pnpm.md) for current commands and workspace checks. Root scripts and

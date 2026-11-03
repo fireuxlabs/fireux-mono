@@ -51,7 +51,7 @@ export default defineEventHandler((event) => {
   const workspaceConfig = fireux.workspaceConfig as
     | Record<string, { origin?: string }>
     | undefined
-  const requestOrigin = getRequestURL(event).origin
+  const requestOrigin = getRequestURL(event, { xForwardedHost: true, xForwardedProto: true }).origin
   const workspaceSurface =
     query.surface === 'workspace' &&
     enabledFamilies.some((family) => {

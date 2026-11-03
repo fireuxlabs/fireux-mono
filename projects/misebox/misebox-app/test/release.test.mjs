@@ -44,7 +44,20 @@ const config = {
       entryPoint: 'miseboxApp',
     },
   ],
-  hosting: { site: projectId, public: '.output/public' },
+  hosting: {
+    site: projectId,
+    public: '.output/public',
+    rewrites: [
+      {
+        source: '**',
+        function: {
+          functionId: 'miseboxApp',
+          codebase: 'misebox-ssr',
+          region: 'europe-west6',
+        },
+      },
+    ],
+  },
 }
 const manifest = {
   dependencies: {
@@ -73,8 +86,15 @@ async function discoveryFixture(root) {
   )
   await writeFile(resolve(modules, 'firebase-functions/lib/v2/index.js'), '')
   await writeFile(resolve(modules, '.bin/firebase-functions'), '')
-  await mkdir(resolve(modules, '@google-cloud/functions-framework'), { recursive: true })
-  await writeFile(resolve(modules, '@google-cloud/functions-framework/package.json'), JSON.stringify({ version: manifest.dependencies['@google-cloud/functions-framework'] }))
+  await mkdir(resolve(modules, '@google-cloud/functions-framework'), {
+    recursive: true,
+  })
+  await writeFile(
+    resolve(modules, '@google-cloud/functions-framework/package.json'),
+    JSON.stringify({
+      version: manifest.dependencies['@google-cloud/functions-framework'],
+    })
+  )
   await writeFile(resolve(modules, '.bin/functions-framework'), '')
 }
 
@@ -154,8 +174,14 @@ test('output keeps runtime dependencies but delegates native binaries to the dep
   const result = prepareManifest(manifest)
   assert.equal(result.main, 'index.mjs')
   assert.equal(result.engines.node, '22')
-  assert.equal(result.dependencies['@google-cloud/functions-framework'], '5.0.5')
-  assert.throws(() => prepareManifest(manifest, {}), /Non-portable production dependency/)
+  assert.equal(
+    result.dependencies['@google-cloud/functions-framework'],
+    '5.0.5'
+  )
+  assert.throws(
+    () => prepareManifest(manifest, {}),
+    /Non-portable production dependency/
+  )
   assert.equal(result.dependencies.sharp, '0.35.3')
   assert.equal(result.dependencies['@img/sharp-darwin-arm64'], undefined)
   assert.throws(() =>
@@ -201,6 +227,21 @@ test('output preparation is repeatable and preflight detects stale output/enviro
   t.after(() => rm(root, { recursive: true, force: true }))
   await mkdir(resolve(root, '.output/server'), { recursive: true })
   await mkdir(resolve(root, '.output/public/_nuxt'), { recursive: true })
+  await writeFile(
+    resolve(root, '.output/nitro.json'),
+    JSON.stringify({
+      preset: 'firebase',
+      config: {
+        firebase: {
+          gen: 2,
+          nodeVersion: '22',
+          serverFunctionName: 'miseboxApp',
+          region: 'europe-west6',
+          httpsOptions: { region: 'europe-west6' },
+        },
+      },
+    })
+  )
   await mkdir(resolve(root, 'server'))
   await writeFile(resolve(root, 'firebase.json'), JSON.stringify(config))
   await writeFile(
@@ -215,13 +256,22 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     resolve(root, '.output/server/index.mjs'),
     "export { handler as miseboxApp } from './handler.mjs'"
   )
-  await writeFile(resolve(root, 'package.json'), JSON.stringify(manifest))
+  await writeFile(
+    resolve(root, 'package.json'),
+    JSON.stringify({ name: 'misebox-app', ...manifest })
+  )
   await prepare(root)
-  const installPolicy = await readFile(resolve(root, '.output/server/pnpm-workspace.yaml'), 'utf8')
+  const installPolicy = await readFile(
+    resolve(root, '.output/server/pnpm-workspace.yaml'),
+    'utf8'
+  )
   assert.match(installPolicy, /'@firebase\/util': true/)
   assert.match(installPolicy, /protobufjs: true/)
   assert.match(installPolicy, /vue-demi: true/)
-  assert.doesNotMatch(installPolicy, /dangerouslyAllowAllBuilds|strictDepBuilds:\s*false/)
+  assert.doesNotMatch(
+    installPolicy,
+    /dangerouslyAllowAllBuilds|strictDepBuilds:\s*false/
+  )
   await writeFile(
     resolve(root, '.output/server/pnpm-lock.yaml'),
     'lockfileVersion: 9.0\n'
@@ -260,7 +310,10 @@ test('output preparation is repeatable and preflight detects stale output/enviro
     resolve(root, '.output/server/package.json'),
     'utf8'
   )
-  await writeFile(resolve(root, 'package.json'), JSON.stringify(manifest))
+  await writeFile(
+    resolve(root, 'package.json'),
+    JSON.stringify({ name: 'misebox-app', ...manifest })
+  )
   await prepare(root)
   await sealOutput(root)
   assert.equal(
@@ -460,6 +513,11 @@ test('native preflight selects development without running production tests; def
     resolve(root, 'release/release.mjs')
   )
   const sourceRepo = resolve(appRoot, '../../..')
+  await cp(
+    resolve(sourceRepo, 'tools/firebase-release'),
+    resolve(repo, 'tools/firebase-release'),
+    { recursive: true }
+  )
   const coreRules = 'packages/core/fireux-core/src/config/firebase/rules'
   await cp(resolve(sourceRepo, coreRules), resolve(repo, coreRules), {
     recursive: true,
@@ -488,6 +546,21 @@ test('native preflight selects development without running production tests; def
   )
   await mkdir(resolve(root, '.output/server'), { recursive: true })
   await mkdir(resolve(root, '.output/public/_nuxt'), { recursive: true })
+  await writeFile(
+    resolve(root, '.output/nitro.json'),
+    JSON.stringify({
+      preset: 'firebase',
+      config: {
+        firebase: {
+          gen: 2,
+          nodeVersion: '22',
+          serverFunctionName: 'miseboxApp',
+          region: 'europe-west6',
+          httpsOptions: { region: 'europe-west6' },
+        },
+      },
+    })
+  )
   await mkdir(resolve(root, 'server'))
   await writeFile(resolve(root, 'firebase.json'), JSON.stringify(config))
   await writeFile(
@@ -502,7 +575,10 @@ test('native preflight selects development without running production tests; def
     resolve(root, '.output/server/index.mjs'),
     "export { handler as miseboxApp } from './handler.mjs'"
   )
-  await writeFile(resolve(root, 'package.json'), JSON.stringify(manifest))
+  await writeFile(
+    resolve(root, 'package.json'),
+    JSON.stringify({ name: 'misebox-app', ...manifest })
+  )
   await prepare(root)
   await writeFile(
     resolve(root, '.output/server/pnpm-lock.yaml'),

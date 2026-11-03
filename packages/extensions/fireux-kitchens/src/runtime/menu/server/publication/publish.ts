@@ -7,12 +7,20 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
 import { requireKitchenWriterAccount } from '../../../kitchen/server/core/operator-access'
 import { assertKitchenMenuCanPublish } from './validation'
+import {
+  requireMenuDocumentAuthority,
+  assertMenuAcceptsDocument,
+} from '../document/authority'
+import type { MenuDocument } from '../../models/menu.model'
+import type { DocumentData } from 'firebase-admin/firestore'
 
 type PublishKitchenMenuInput = {
   appId: string
   kitchenId: string
   menuId: string
   uid: string
+  document?: MenuDocument
+  claimSecret?: string
 }
 
 export function publishKitchenMenu(input: PublishKitchenMenuInput) {
@@ -25,11 +33,21 @@ export async function stagePublishKitchenMenu(
   tx: GuardedServerTransaction,
   input: PublishKitchenMenuInput
 ) {
-  await requireKitchenWriterAccount(input, input.uid, tx)
   const target = serverKitchenMenusTarget(input.kitchenId)
-  const menu = await tx.read(target, input.menuId)
+  const documentTarget = input.document
+    ? await requireMenuDocumentAuthority(tx, input)
+    : null
+  if (!documentTarget) await requireKitchenWriterAccount(input, input.uid, tx)
+  else assertMenuAcceptsDocument(documentTarget)
+  const menu = documentTarget
+    ? { exists: true, data: documentTarget.menu.data }
+    : await tx.read(target, input.menuId)
   if (!menu.exists) throw new Error('Menu not found.')
-  const menuData = menu.data || {}
+  const menuData: DocumentData = {
+    ...(menu.data || {}),
+    ...(input.document ? { format: 'document', doc: input.document } : {}),
+    ...(documentTarget?.guest ? { audience: 'private_link' } : {}),
+  }
   if (menuData.status === 'archived')
     throw createError({
       statusCode: 409,
@@ -37,13 +55,19 @@ export async function stagePublishKitchenMenu(
     })
   await assertKitchenMenuCanPublish(tx, { ...input, menuData })
   const stamp =
-    menuData.status === 'published' && menuData.updated
+    !input.document && menuData.status === 'published' && menuData.updated
       ? menuData.updated
       : serverAuditStamp({ by: input.uid, appId: input.appId })
-  if (menuData.status !== 'published')
+  if (documentTarget?.claimTarget)
+    tx.update(documentTarget.claimTarget, 'guest', {
+      document_menu_id: input.menuId,
+    })
+  if (menuData.status !== 'published' || input.document)
     tx.update(target, input.menuId, {
       status: 'published',
       updated: stamp,
+      ...(input.document ? { format: 'document', doc: input.document } : {}),
+      ...(documentTarget?.guest ? { audience: 'private_link' } : {}),
     })
   return { menuId: input.menuId }
 }

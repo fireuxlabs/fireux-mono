@@ -38,6 +38,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Misebox',
   description:
-    'Free, Pro and Business plans, Menu Express and Collection Ordering.',
+    'Free, Pro and Business plans, Menu Hosting and Collection Ordering.',
 })
 </script>

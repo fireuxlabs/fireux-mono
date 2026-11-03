@@ -2,7 +2,24 @@
   <section class="workspace-surface" aria-label="Menu preparation">
     <FireState :outcome="outcome" entity="Menu source" :error="error" />
     <template v-if="outcome === 'ready'">
+      <FireState
+        v-if="context.source.value?.menu_id && !context.menu.value"
+        :outcome="menuOutcome"
+        entity="Prepared Menu"
+        :error="error"
+      />
+      <KitchenFoodAndDrinkMenusPreparationDocument
+        v-if="
+          !context.source.value?.menu_id ||
+          context.menu.value?.format === 'document'
+        "
+        :context="context"
+      />
       <KitchenFoodAndDrinkMenusProcess
+        v-if="
+          !context.source.value?.menu_id ||
+          context.menu.value?.format === 'interactive'
+        "
         :key="`${kitchenId}/${sourceId}`"
         :context="context"
       />
@@ -21,7 +38,7 @@ import '../../../../menu/assets/styles/menu-editor.css'
 import { computed } from 'vue'
 import { useKitchenMenuPreparation } from '../../../composables/menu/useKitchenMenuPreparation'
 const props = defineProps<{ kitchenId: string; sourceId: string }>()
-const { context, outcome, error } = useKitchenMenuPreparation({
+const { context, outcome, menuOutcome, error } = useKitchenMenuPreparation({
   kitchenId: () => props.kitchenId,
   sourceId: () => props.sourceId,
 })

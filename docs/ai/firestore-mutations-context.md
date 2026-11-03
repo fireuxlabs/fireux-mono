@@ -157,6 +157,20 @@ another account access or restore a revoked membership. See the Misebox context
 and Kitchen's onboarding `guest.ts`/`connect-guest.ts`; this does not broaden other
 domains or override the accepted development Rules boundary.
 
+Menus' `menu/server/document` composes this existing claim for one scoped document
+Menu. Before account adoption, its retained secret can read and replace the
+guest's pinned Main Menu from another browser. It grants no other Kitchen, Menu,
+Team or account mutation. The file command verifies proof before Storage and again
+in the writing transaction; it refuses structured content and stale document
+revisions. Workspace uses the same document file writer with ordinary current
+membership/access instead. Publication stays with `stagePublishKitchenMenu`, which
+stages the immutable attachment, published state and claim's Menu binding together.
+No new request, Product, account or payment record is needed for basic hosting.
+Claim adoption consumes this guest authority; later writes require account access.
+The proof is private recovery material, never part of the public Menu URL or QR.
+Source-owned checks are `menu-document-self-service.test.mjs` and its scope suite.
+This is local command behavior, not a Rules or App deployment.
+
 Project Landing separately supports anonymous create/resume through the FireUX
 ecosystem's `project/server/index/create.ts`, exposed by its App's thin route. The verified UID fixes the canonical Project id;
 the transaction creates only the root, or resumes an existing canonical nested

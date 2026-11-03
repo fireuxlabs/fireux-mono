@@ -7,13 +7,14 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
-    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project granite-ecosystem --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project granite-ecosystem --config firebase.json",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project granite-ecosystem --config firebase.json",
-    "check:env": "node ../../../scripts/check-env.mjs",
+    "prepare:firebase-output": "node ../../../tools/firebase-release/cli.mjs prepare --project granite-ecosystem --config firebase.json",
+    "deploy:preflight": "node ../../../tools/firebase-release/cli.mjs preflight --project granite-ecosystem --config firebase.json --rules-template ../../../packages/ecosystem/fireux-granite/src/config/firebase/firestore.template.rules",
+    "deploy": "node ../../../tools/firebase-release/cli.mjs deploy --project granite-ecosystem --config firebase.json --rules-template ../../../packages/ecosystem/fireux-granite/src/config/firebase/firestore.template.rules",
+    "deploy:hosting": "node ../../../tools/firebase-release/cli.mjs hosting --project granite-ecosystem --config firebase.json --rules-template ../../../packages/ecosystem/fireux-granite/src/config/firebase/firestore.template.rules",
+    "check:env": "node ../../../tools/firebase-release/cli.mjs env --project granite-ecosystem --config firebase.json",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt app/.nuxt .output dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist",
+    "build:release": "node ../../../tools/firebase-release/cli.mjs build --project granite-ecosystem --config firebase.json --app-domain https://granite-os.web.app"
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.2",
@@ -32,7 +33,8 @@
     "vue-router": "5.4.0",
     "fireux-compliance": "workspace:*",
     "fireux-documents": "workspace:*",
-    "fireux-tasks": "workspace:*"
+    "fireux-tasks": "workspace:*",
+    "@google-cloud/functions-framework": "5.0.5"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1",

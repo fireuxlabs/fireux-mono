@@ -1,7 +1,7 @@
 # pnpm concept map
 
-Updated: 2026-10-26
-Ref: cf2413355
+Updated: 2026-11-02
+Ref: 4141961e7
 Role: map, not canon
 
 ## Purpose
@@ -49,9 +49,10 @@ workspaces from App manifests; `pnpm ide:check` detects drift. See the
 
 Inspect `package.json` for the exact current command. The former `scripts/`
 commands, smoke wrappers, registry synchronization, and guard suite are removed.
-App-local deployment commands may still reference that deleted tooling; verify
-those targets before deployment rather than treating the command name as proof
-that a deployment path exists.
+Nuxt/Firebase App artifact mechanics now live in [release tooling](../../tools/firebase-release/README.md).
+App manifests retain targets, public build origins and explicit release policy.
+Missing reviewed server configuration or an App-owned production gate remains
+a release gap; a command name is not evidence of deployment readiness.
 
 ## Verification
 

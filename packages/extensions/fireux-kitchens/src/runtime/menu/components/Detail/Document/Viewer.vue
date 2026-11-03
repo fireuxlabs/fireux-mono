@@ -52,7 +52,8 @@ import { computed, ref, watch } from 'vue'
 import type { MenuDocumentPayload } from '../../../models/menu-detail.model.ts'
 
 const props = defineProps<{
-  menu: MenuDocumentPayload
+  menu: Pick<MenuDocumentPayload, 'name' | 'file'> &
+    Partial<Pick<MenuDocumentPayload, 'fileKind'>>
   menuId: string
   documentUrl?: string
   fileUrl?: string
@@ -120,9 +121,10 @@ watch(displayUrl, () => {
   justify-items: center;
   margin: 0;
   padding: calc(var(--spacing) * 8);
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-  border-radius: var(--menu-radius);
-  color: var(--menu-muted);
+  border: 1px solid
+    color-mix(in srgb, var(--menu-text, var(--ui-text)) 16%, transparent);
+  border-radius: var(--menu-radius, var(--ui-radius));
+  color: var(--menu-muted, var(--ui-text-muted));
   text-align: center;
 }
 
@@ -131,7 +133,7 @@ watch(displayUrl, () => {
 }
 
 .menu-document__kind {
-  color: var(--menu-muted);
+  color: var(--menu-muted, var(--ui-text-muted));
   font-size: 0.72rem;
   font-weight: var(--font-weight-black);
   letter-spacing: 0.14em;
@@ -141,8 +143,8 @@ watch(displayUrl, () => {
 .menu-document__file-name {
   max-width: 34rem;
   margin-top: 0.6rem !important;
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
+  color: var(--menu-title, var(--ui-text-highlighted));
+  font-family: var(--menu-title-font, inherit);
   font-size: clamp(1.35rem, 4vw, 2rem);
   font-weight: var(--font-weight-extrabold);
   overflow-wrap: anywhere;
@@ -150,7 +152,7 @@ watch(displayUrl, () => {
 
 .menu-document__preview-copy {
   margin-top: 0.7rem !important;
-  color: var(--menu-muted);
+  color: var(--menu-muted, var(--ui-text-muted));
   line-height: 1.55;
 }
 
@@ -161,9 +163,9 @@ watch(displayUrl, () => {
   justify-self: center;
   gap: 0.45rem;
   padding: 0.65rem 0.9rem;
-  border-radius: var(--menu-radius-control);
-  background: var(--menu-primary);
-  color: var(--menu-bg);
+  border-radius: var(--menu-radius-control, var(--ui-radius));
+  background: var(--menu-primary, var(--ui-primary));
+  color: var(--menu-bg, var(--ui-bg));
   font-weight: var(--font-weight-extrabold);
   text-decoration: none;
 }
@@ -173,7 +175,7 @@ watch(displayUrl, () => {
 }
 
 .menu-document__open:focus-visible {
-  outline: 2px solid var(--menu-secondary);
+  outline: 2px solid var(--menu-secondary, var(--ui-primary));
   outline-offset: 3px;
 }
 </style>

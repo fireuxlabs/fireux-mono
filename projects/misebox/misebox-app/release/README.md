@@ -1,7 +1,10 @@
 # Misebox App release
 
 This directory owns the Main App's release commands. It does not deploy Firestore
-or Storage Rules, migrate records, or release tenant Apps.
+or Storage Rules, migrate records, or release tenant Apps. Portable artifact
+preparation is shared with other Apps through
+[`tools/firebase-release`](../../../../tools/firebase-release/README.md); this
+App retains its exact targets and Rules gates.
 
 From the repository root:
 
