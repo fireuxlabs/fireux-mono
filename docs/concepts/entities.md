@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-10-03
-Ref: 2807ceca9
+Updated: 2026-11-03
+Ref: a0433bb2b
 Role: map, not canon
 
 ## Purpose
@@ -35,6 +35,32 @@ and is not an exhaustive executable inventory.
 
 A collection, route, model, id, or component does not prove Entity status.
 Firestore stores FireUX concepts; it does not decide what an Entity is.
+
+## Shared record foundation
+
+Core's [`FireuxEntity`](../../packages/core/fireux-core/src/runtime/models/utils/entity.model.ts)
+is the common record foundation used by Menu, Kitchen, Project, App and
+Ecosystem:
+
+| Field      | Meaning                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------ |
+| `id`       | Document identity supplied by the reader from its path; not copied into new stored bodies. |
+| `context?` | Internal working notes; public projections omit them.                                      |
+| `created`  | Audit stamp: `at`, optional `by`, optional `app_id`.                                       |
+| `updated`  | Audit stamp: `at`, optional `by`.                                                          |
+
+The existing Core [stamp types](../../packages/core/fireux-core/src/runtime/models/utils/stamps.model.ts)
+own the audit shape. Audit provenance is not permission to edit a record.
+Domain models add their own fields: Menu owns publication and format; Kitchen
+owns its operational identity and settings while Place owns venue facts; Project
+owns its project identity and exact guest-resume authority; App owns product
+identity and Ecosystem relationship; Ecosystem owns product grouping and its
+Project relationship. Names, slugs, statuses, Workspace selection and child
+collections are not universal base fields. Public summaries use explicit
+projections rather than pretending to be complete canonical records. AppUser is
+an App-owned relationship Record, so it composes `FireuxStamps` without taking
+root Entity identity or context. User identity remains its separate profile
+shape.
 
 ## Entity checkpoint
 

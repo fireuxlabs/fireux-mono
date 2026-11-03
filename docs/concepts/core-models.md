@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-10-09
-Ref: e5d8cf8d5
+Updated: 2026-11-03
+Ref: a0433bb2b
 Role: map, not canon
 
 ## Purpose
@@ -243,8 +243,8 @@ named database.
 The FireUX platform App index reads canonical Apps from each registered named
 database through one trusted server boundary. Its configured targets are
 infrastructure routing, not stored App identity. `useEcosystemApps(id)` reads
-the matching parent-scoped endpoint. Both expose `App[]`; no second App domain
-model is required for directory transport.
+the matching parent-scoped endpoint. Both expose `AppPublicSummary[]`, which
+omits private context, membership policy and audit stamps.
 
 `AppUser` takes both identities from its path
 `apps/{appId}/users/{uid}`. The document stores membership facts and its
@@ -358,6 +358,13 @@ stamps, and entity declarations are shared model utilities, not core records.
 | `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                                             | Generic Core vocabulary without another domain consumer |
 
 ## Entity model file shape
+
+The shared [record foundation](entities.md#shared-record-foundation) lives in
+Core's `runtime/models/utils/entity.model.ts`. Menu, Kitchen, Project, App and
+Ecosystem compose `FireuxEntity` with their domain fields; public summaries
+select only their public contract. AppUser shares `FireuxStamps` as an
+App-owned relationship Record. Entity declarations in that file describe
+classification and remain separate from the record foundation.
 
 Each entity model file owns a distinct domain contract. Stored records,
 transport responses, presentation and configuration remain distinguishable;

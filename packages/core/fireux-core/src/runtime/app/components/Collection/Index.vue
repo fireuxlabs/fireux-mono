@@ -38,13 +38,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppView } from '../../composables/useAppView'
-import type { App } from '../../models/app.model'
+import type { AppPublicSummary } from '../../models/app.model'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 
-const props = defineProps<{ apps: App[]; hasMore?: boolean }>()
+const props = defineProps<{ apps: AppPublicSummary[]; hasMore?: boolean }>()
 const { toCard: makeCard } = useAppView()
 const { query, visibleItems, visibleCount } = useCollectionSearch<
-  App,
+  AppPublicSummary,
   NonNullable<ReturnType<typeof makeCard>>
 >({
   items: computed(() => props.apps),

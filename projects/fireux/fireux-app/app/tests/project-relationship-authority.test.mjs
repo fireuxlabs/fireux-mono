@@ -16,6 +16,10 @@ function load(path, result, deps = {}) {
     Object.keys(deps)
   )(...Object.values(deps))
 }
+const toEcosystemPublicSummary = load(
+  core + 'ecosystem/server/identity/read.ts',
+  'toEcosystemPublicSummary'
+)
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const readMembershipAccessIds = load(
@@ -23,7 +27,7 @@ const readMembershipAccessIds = load(
   'readMembershipAccessIds'
 )
 const requireWorkspaceEntityMemberRole = load(
-  core + 'server/utils/workspace-entity/onboarding-authority.ts',
+  core + 'workspace/server/entity/onboarding-authority.ts',
   'requireWorkspaceEntityMemberRole',
   { createError }
 )
@@ -65,7 +69,7 @@ const authority = load(
   }
 )
 const mechanics = load(
-  core + 'server/utils/workspace-team/members.ts',
+  core + 'workspace/server/team/members.ts',
   '{createTeamMember, updateTeamMembers, deleteTeamMember}',
   {
     createError,
@@ -74,7 +78,7 @@ const mechanics = load(
   }
 )
 const roles = load(
-  core + 'server/utils/workspace-team/roles.ts',
+  core + 'workspace/server/team/roles.ts',
   'teamRolesCommand',
   {
     createError,
@@ -311,10 +315,17 @@ test('Project access cannot claim an existing App or an Ecosystem belonging else
 })
 
 test('Project Ecosystem relationship uses owning records even when the hub copy disagrees', async () => {
+  const at = { seconds: 1, nanoseconds: 0 }
   const calls = [],
     ownerRecords = [
-      { id: 'mine', project_id: 'project', status: 'inactive' },
-      { id: 'foreign', project_id: 'other', status: 'active' },
+      {
+        id: 'mine', project_id: 'project', status: 'inactive', name: 'Mine',
+        description: '', image_url: '', created: { at }, updated: { at },
+      },
+      {
+        id: 'foreign', project_id: 'other', status: 'active', name: 'Foreign',
+        description: '', image_url: '', created: { at }, updated: { at },
+      },
     ]
   const read = load(app + 'ecosystem/read.ts', 'readProjectEcosystems', {
     requireProjectOperator: async () => ({
@@ -329,11 +340,17 @@ test('Project Ecosystem relationship uses owning records even when the hub copy 
       calls.push(options)
       return ownerRecords
     },
+    toEcosystemPublicSummary,
   })
   const result = await read({}, 'project')
   assert.deepEqual(result, {
     project_id: 'project',
-    ecosystems: [ownerRecords[0]],
+    ecosystems: [
+      {
+        id: 'mine', project_id: 'project', status: 'inactive', name: 'Mine',
+        description: '', image_url: '',
+      },
+    ],
   })
   assert.deepEqual(calls, [{ activeOnly: false }])
 })
@@ -359,11 +376,16 @@ test('Unauthorized and unavailable owning Ecosystems cannot become a partial or 
   await assert.rejects(failed({}, 'project'), /unavailable/)
 })
 test('Owning Ecosystem reads admit inactive management records without making them public', async () => {
+  const at = { seconds: 1, nanoseconds: 0 }
   let value = {
     project_id: 'project',
     name: 'Example',
     status: 'inactive',
-    id: 'forged',
+    description: 'Example details',
+    image_url: '',
+    context: 'Private operator notes',
+    created: { at, app_id: 'project-creator' },
+    updated: { at },
   }
   const db = {
     collection: () => ({
@@ -378,7 +400,21 @@ test('Owning Ecosystem reads admit inactive management records without making th
     { createError, requireFirestoreDocumentId }
   )
   await assert.rejects(read('eco', db), { statusCode: 404 })
-  assert.equal((await read('eco', db, { activeOnly: false })).id, 'eco')
+  const ecosystem = await read('eco', db, { activeOnly: false })
+  assert.equal(ecosystem.id, 'eco')
+  assert.equal(ecosystem.context, undefined)
+  assert.equal(ecosystem.created.app_id, 'project-creator')
+  assert.deepEqual(
+    toEcosystemPublicSummary(ecosystem),
+    {
+      id: 'eco',
+      project_id: 'project',
+      status: 'inactive',
+      name: 'Example',
+      description: 'Example details',
+      image_url: '',
+    }
+  )
   value.status = 'unknown'
   await assert.rejects(read('eco', db, { activeOnly: false }), {
     statusCode: 404,

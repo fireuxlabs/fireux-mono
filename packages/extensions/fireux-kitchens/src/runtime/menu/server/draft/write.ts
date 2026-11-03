@@ -111,7 +111,7 @@ export async function writeKitchenMenuDraft(input: {
         format: 'interactive',
         sort_order: Number(existing.sort_order || 0),
         created: record(existing.created).at ? existing.created : stamp,
-        updated: stamp,
+        updated: serverAuditStamp({ by: input.uid }),
         ...(description ? { description } : {}),
       }
       const plannedDishes = plannedSections.flatMap((section) => section.items)

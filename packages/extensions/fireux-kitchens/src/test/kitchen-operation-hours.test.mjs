@@ -130,7 +130,7 @@ test('Kitchen hours command authorizes first and writes only its schedule and au
     'kitchen',
     {
       'orders.operation_hours': custom,
-      updated: { by: 'operator', appId: 'misebox-app' },
+      updated: { by: 'operator' },
     },
   ])
   await api.updateKitchenOperationHours(

@@ -1,4 +1,4 @@
-import type { App } from '../models/app.model.ts'
+import type { App, AppPublicSummary } from '../models/app.model.ts'
 
 const APP_FIELDS = new Set([
   'ecosystem_id',
@@ -50,7 +50,7 @@ function hasOptionalStringFields(
   )
 }
 
-function isStamp(value: unknown): value is App['created'] {
+function isStamp(value: unknown, allowAppId = false): value is App['created'] {
   if (!isRecord(value) || !isRecord(value.at)) return false
   if (
     typeof value.at.seconds !== 'number' ||
@@ -59,8 +59,12 @@ function isStamp(value: unknown): value is App['created'] {
     return false
   }
   return (
-    Object.keys(value).every((key) => key === 'at' || key === 'by') &&
-    (value.by === undefined || typeof value.by === 'string')
+    Object.keys(value).every(
+      (key) => key === 'at' || key === 'by' || (allowAppId && key === 'app_id')
+    ) &&
+    (value.by === undefined || typeof value.by === 'string') &&
+    (value.app_id === undefined ||
+      (allowAppId && typeof value.app_id === 'string'))
   )
 }
 
@@ -82,7 +86,7 @@ export function readAppDocument(raw: unknown, id: string): App | null {
       !hasOptionalStringFields(raw.social_links, SOCIAL_LINK_FIELDS)) ||
     (raw.media !== undefined &&
       !hasOptionalStringFields(raw.media, MEDIA_FIELDS)) ||
-    !isStamp(raw.created) ||
+    !isStamp(raw.created, true) ||
     !isStamp(raw.updated)
   ) {
     return null
@@ -92,14 +96,37 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   const fields = Object.fromEntries(
     Object.entries(raw).filter(([key]) => APP_FIELDS.has(key))
   )
-  const projectStamp = (stamp: App['created']) => ({
+  const projectCreatedStamp = (stamp: App['created']) => ({
+    at: { seconds: stamp.at.seconds, nanoseconds: stamp.at.nanoseconds },
+    ...(stamp.by !== undefined ? { by: stamp.by } : {}),
+    ...(stamp.app_id !== undefined ? { app_id: stamp.app_id } : {}),
+  })
+  const projectUpdatedStamp = (stamp: App['updated']) => ({
     at: { seconds: stamp.at.seconds, nanoseconds: stamp.at.nanoseconds },
     ...(stamp.by !== undefined ? { by: stamp.by } : {}),
   })
   return {
     ...fields,
     id,
-    created: projectStamp(raw.created),
-    updated: projectStamp(raw.updated),
+    created: projectCreatedStamp(raw.created),
+    updated: projectUpdatedStamp(raw.updated),
   } as App
+}
+
+/** Project an App for public directories, detail pages and relationship views. */
+export function toAppPublicSummary(app: App): AppPublicSummary {
+  return {
+    id: app.id,
+    ecosystem_id: app.ecosystem_id,
+    role: app.role,
+    status: app.status,
+    name: app.name,
+    ...(app.short_name !== undefined ? { short_name: app.short_name } : {}),
+    ...(app.tagline !== undefined ? { tagline: app.tagline } : {}),
+    ...(app.description !== undefined ? { description: app.description } : {}),
+    ...(app.social_links !== undefined
+      ? { social_links: app.social_links }
+      : {}),
+    ...(app.media !== undefined ? { media: app.media } : {}),
+  }
 }

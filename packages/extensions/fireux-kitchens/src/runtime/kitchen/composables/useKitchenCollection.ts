@@ -3,9 +3,9 @@ import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 
 import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { Kitchen } from '../models/kitchen.model.ts'
+import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
 
-export type KitchenCollectionRecord = Kitchen & {
+export type KitchenCollectionRecord = KitchenPublicSummary & {
   place: Place
   service_labels?: string[]
   has_published_menu?: boolean

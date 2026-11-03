@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-03
+Ref: a0433bb2b
 Role: living context
 Scope: repository-wide
 
@@ -160,6 +160,13 @@ mandatory utility folders; use native framework/platform primitives where no
 FireUX rule is required. See the runtime filesystem map.
 
 ## Entities, Workspace and data authority
+
+Core's `FireuxEntity` supplies only record identity, optional internal context
+and the existing creation/update stamps. Menu, Kitchen, Project, App and
+Ecosystem compose this foundation with their domain fields. AppUser is an
+App-owned relationship Record and shares `FireuxStamps` without claiming root
+Entity identity or context. Public summaries are projections, not complete
+canonical records. See [the shared record foundation](../concepts/entities.md#shared-record-foundation).
 
 A root Firestore collection can establish an Entity family when its model,
 authority, routes and behavior prove that contract. The Entity owns its data,

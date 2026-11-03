@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-02
-Ref: 6a0fa0d06
+Updated: 2026-11-03
+Ref: a0433bb2b
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -649,6 +649,15 @@ when those Workspaces gain actual nested groups, respecting explicit capability
 route contracts such as Kitchen Menus.
 
 ## Kitchen and Place
+
+Kitchen and Menu compose Core's `FireuxEntity` foundation with domain fields.
+Kitchen creation commands supply both audit stamps; Demo Kitchens use their
+existing deterministic stamps. Kitchen's public HTTP readers return the
+allowlisted `KitchenPublicSummary`, excluding context and audit provenance,
+while Workspace's canonical reader retains the full Kitchen. See
+[the shared foundation](../../../../../docs/concepts/entities.md#shared-record-foundation)
+and `kitchen/models/kitchen.model.ts` for the exact contracts. This source
+contract does not establish the stamp coverage of existing live records.
 
 `kitchen/utils/kitchen-presentation.ts` owns the shared Place-backed Kitchen
 presentation (branding, currency and Kitchen palette). Kitchen identity and Menu

@@ -86,7 +86,7 @@ import {
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
-import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { AppPublicSummary } from 'fireux-core/runtime/app/models/app.model'
 import { useEcosystemApps } from 'fireux-core/runtime/ecosystem/composables/useEcosystemApps'
 
 definePageMeta({
@@ -102,18 +102,18 @@ const { data } = await useAsyncData<PlatformDirectoryResponse>(
   { server: true, lazy: false }
 )
 const { apps } = useEcosystemApps('cleanbox')
-const publishedApps = computed<App[]>(() =>
+const publishedApps = computed<AppPublicSummary[]>(() =>
   apps.value
     .filter(
-      (app: App) => app.status === 'active' && app.ecosystem_id === 'cleanbox'
+      (app: AppPublicSummary) => app.status === 'active' && app.ecosystem_id === 'cleanbox'
     )
-    .sort((left: App, right: App) => {
+    .sort((left: AppPublicSummary, right: AppPublicSummary) => {
       if (left.role === 'global') return -1
       if (right.role === 'global') return 1
       return left.name.localeCompare(right.name)
     })
 )
-const appSummary = (app: App) =>
+const appSummary = (app: AppPublicSummary) =>
   app.tagline ||
   app.description ||
   `${app.name} is a published ${app.role === 'global' ? 'main App' : 'tenant App'} in the Werkbox Ecosystem.`

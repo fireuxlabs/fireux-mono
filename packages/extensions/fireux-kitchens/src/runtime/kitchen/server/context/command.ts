@@ -3,7 +3,11 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenDishesTarget } from '../mutation-targets'
+import {
+  KITCHEN_MUTATION_TARGETS,
+  serverKitchenMenusTarget,
+  serverKitchenDishesTarget,
+} from '../mutation-targets'
 import { recipeTarget } from '../recipes/record-input'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import {
@@ -105,7 +109,7 @@ export async function kitchenRecordContext(
     const next = (value.context as string).trim()
     tx.update(target, id, {
       context: next,
-      updated: serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId }),
+      updated: serverAuditStamp({ by: actor.uid }),
     })
     return { context: next }
   })

@@ -1,6 +1,6 @@
 import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import { type App } from '../models/app.model.ts'
+import type { AppPublicSummary } from '../models/app.model.ts'
 import { resolveAppMediaForView } from '../utils/app-media'
 import { useColorMode } from '#imports'
 
@@ -40,10 +40,10 @@ export type AppCard = {
     // Always safe to render (empty string if none)
     wordmarkUrl: string
 
-  socialLinks: App['social_links']
+  socialLinks: AppPublicSummary['social_links']
 }
 
-function safeMedia(app: App) {
+function safeMedia(app: AppPublicSummary) {
   return (
     app.media ?? {
       thumbnail_url: '',
@@ -55,7 +55,7 @@ function safeMedia(app: App) {
   )
 }
 
-function makeAvatarText(app: App): string {
+function makeAvatarText(app: AppPublicSummary): string {
   const source = safeString(app.short_name || app.name || app.id)
   if (!source) return ''
 
@@ -67,12 +67,12 @@ function makeAvatarText(app: App): string {
     .join('')
 }
 
-export function useAppView(
-  appRef?: Ref<App | null | undefined>
+export function useAppView<T extends AppPublicSummary>(
+  appRef?: Ref<T | null | undefined>
 ) {
   const resolvedMode = useColorMode()
 
-  function resolveWordmarkUrl(app: App): string {
+  function resolveWordmarkUrl(app: AppPublicSummary): string {
     const media = resolveAppMediaForView(safeMedia(app), {
       owningAppBundle: false,
     })
@@ -81,7 +81,7 @@ export function useAppView(
       : media.wordmarkLightUrl
   }
 
-  function map(app: App): AppCard {
+  function map(app: AppPublicSummary): AppCard {
     const media = resolveAppMediaForView(safeMedia(app), {
       owningAppBundle: false,
     })
@@ -130,7 +130,7 @@ export function useAppView(
   }
 
   function toCard(
-    target?: App | null | undefined
+    target?: AppPublicSummary | null | undefined
   ): AppCard | null {
     const app = target ?? appRef?.value ?? null
     if (!app) return null

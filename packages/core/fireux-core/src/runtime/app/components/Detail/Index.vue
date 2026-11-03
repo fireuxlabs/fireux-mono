@@ -68,9 +68,9 @@ import { computed } from 'vue'
 import { useSeo } from '../../../composables/fireux/seo/useSeo'
 import { useAppView } from '../../composables/useAppView'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import type { App } from '../../models/app.model'
+import type { AppPublicSummary } from '../../models/app.model'
 
-const props = defineProps<{ app: App }>()
+const props = defineProps<{ app: AppPublicSummary }>()
 const config = useFireUXConfig()
 const { toCard } = useAppView()
 const card = computed(() => toCard(props.app)!)

@@ -1,3 +1,5 @@
+import type { FireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+
 export const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const
 export type KitchenIdentitySource = (typeof KITCHEN_IDENTITY_SOURCES)[number]
 
@@ -10,11 +12,10 @@ export type KitchenIdentity = {
   visibility: boolean
 }
 
-export type Kitchen = {
-  id: string
-  /** Internal operator background; omitted from public projections. */
-  context?: string
+export type Kitchen = FireuxEntity & {
   identity: KitchenIdentity
   services?: { title?: string; item_images?: boolean }
   tables?: { count: number }
 }
+/** Public Kitchen facts; Place owns the establishment identity. */
+export type KitchenPublicSummary = Pick<Kitchen, 'id' | 'identity' | 'services'>

@@ -131,6 +131,9 @@ test('new management root gets the same defaults', async () => {
   const h = harness({ exists: false })
   await h.run()
   assert.equal(h.writes.filter((x) => x.target === 'kitchens').length, 1)
+  const root = h.writes.find((x) => x.target === 'kitchens').data
+  assert.deepEqual(root.created, { by: 'actor', appId: 'app' })
+  assert.deepEqual(root.updated, { by: 'actor' })
   assert.equal(h.writes.filter((x) => x.target === 'menus').length, 2)
 })
 test('existing customized and archived Menus are preserved without adding missing starters', async () => {

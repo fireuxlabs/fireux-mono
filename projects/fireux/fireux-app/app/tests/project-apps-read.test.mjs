@@ -70,6 +70,7 @@ function reader({ invalid = false, forbidden = false } = {}) {
       createError: (input) =>
         Object.assign(new Error(input.statusMessage), input),
       readAppDocument: (data, id) => (invalid ? null : { ...data, id }),
+      toAppPublicSummary: (app) => app,
     }),
     appCollectionPage: loadAppRead('appCollectionPage', {
       createError: (input) => new Error(input.statusMessage),

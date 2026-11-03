@@ -77,7 +77,7 @@ export async function updateKitchenOperationHours(
       })
     tx.update(KITCHEN_MUTATION_TARGETS.kitchens, requested.kitchenId, {
       'orders.operation_hours': requested.hours ?? FieldValue.delete(),
-      updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),
+      updated: serverAuditStamp({ by: actor.uid }),
     })
   })
   return { ok: true as const, kitchenId: requested.kitchenId }

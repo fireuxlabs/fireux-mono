@@ -31,10 +31,23 @@ test('canonical Identity is nested, keeps unknown origin unknown, and excludes P
   const identity = { slug: 'venue', status: 'active', visibility: true }
   const value = normalizeKitchen(
     'p',
-    { identity, slug: 'obsolete', currency: 'CHF', name: 'shadow' },
+    {
+      identity,
+      slug: 'obsolete',
+      currency: 'CHF',
+      name: 'shadow',
+      context: 'Internal notes',
+      created: { at: { seconds: 1, nanoseconds: 0 }, by: 'operator' },
+      updated: { at: { seconds: 2, nanoseconds: 0 }, by: 'operator' },
+    },
     place
   )
-  assert.deepEqual(value, { id: 'p', identity, services: { title: 'Food & drinks' }, place })
+  assert.deepEqual(value, {
+    id: 'p',
+    identity,
+    services: { title: 'Food & drinks' },
+    place,
+  })
   assert.equal(readKitchenVisibility({ identity, visibility: false }), true)
   assert.equal(
     normalizeKitchen(
@@ -58,8 +71,13 @@ test('Kitchen editor accepts only supported dot paths and preserves sibling Iden
       }),
     }
   )
-  assert.deepEqual(parseKitchenUpdate({ 'services.title': ' Pizza & drinks ' }), { 'services.title': 'Pizza & drinks' })
-  assert.deepEqual(parseKitchenUpdate({ 'services.title': '' }), { 'services.title': 'Food & drinks' })
+  assert.deepEqual(
+    parseKitchenUpdate({ 'services.title': ' Pizza & drinks ' }),
+    { 'services.title': 'Pizza & drinks' }
+  )
+  assert.deepEqual(parseKitchenUpdate({ 'services.title': '' }), {
+    'services.title': 'Food & drinks',
+  })
   assert.throws(() => parseKitchenUpdate({ 'services.title': 42 }))
   assert.throws(() => parseKitchenUpdate({ 'services.title': 'a'.repeat(121) }))
   assert.deepEqual(parseKitchenUpdate({ 'identity.visibility': false }), {
@@ -112,9 +130,16 @@ test('joined presentation retains canonical Identity and reads currency only fro
     visibility: false,
   }
   const view = useKitchenInterface().surface({
-    kitchen: { id: 'p', identity, currency: 'CHF', services: {
-      title: 'Food & drinks', item_images: true, private_legacy_field: 'excluded',
-    } },
+    kitchen: {
+      id: 'p',
+      identity,
+      currency: 'CHF',
+      services: {
+        title: 'Food & drinks',
+        item_images: true,
+        private_legacy_field: 'excluded',
+      },
+    },
     place: {
       name: 'Shared venue',
       slug: 'place-url',
@@ -166,8 +191,12 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
       serverKitchenMenusTarget: () => 'menus',
       runGuardedServerTransaction: async (_, run) => run(tx),
       KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
-      serverAuditStamp: () => ({ by: 'guest', app_id: 'app' }),
+      PLACE_MUTATION_TARGETS: { places: 'places' },
+      serverAuditStamp: ({ by, appId }) => ({
+        at: { seconds: 1, nanoseconds: 0 },
+        by,
+        ...(appId ? { app_id: appId } : {}),
+      }),
       buildKitchenTeamMemberRecord: (v) => v,
       createKitchenSystemMenus() {},
       createDefaultKitchenStation() {},
@@ -181,6 +210,15 @@ PLACE_MUTATION_TARGETS: { places: 'places' },
   })
   const kitchen = writes.find(([owner]) => owner === 'kitchens')[2]
   const place = writes.find(([owner]) => owner === 'places')[2]
+  assert.deepEqual(kitchen.created, {
+    at: { seconds: 1, nanoseconds: 0 },
+    by: 'guest',
+    app_id: 'app',
+  })
+  assert.deepEqual(kitchen.updated, {
+    at: { seconds: 1, nanoseconds: 0 },
+    by: 'guest',
+  })
   assert.deepEqual(kitchen.identity, {
     source: 'user',
     slug: 'guest',
@@ -223,7 +261,8 @@ test('Kitchen presentation reads shared Place currency, with no Kitchen fallback
     'GBP'
   )
   assert.equal(
-    readKitchenPresentation({ currency: 'CHF' }, { name: 'Venue' }).currencyCode,
+    readKitchenPresentation({ currency: 'CHF' }, { name: 'Venue' })
+      .currencyCode,
     ''
   )
 })

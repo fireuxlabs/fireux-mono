@@ -10,9 +10,13 @@ import {
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
-import { readAppDocument } from '../../../app/utils/readApp.ts'
+import {
+  readAppDocument,
+  toAppPublicSummary,
+} from '../../../app/utils/readApp.ts'
 import { asTrimmedString } from '../../utils/projection/normalize'
 import type { DetailResponse } from '../../../models/utils/directory'
+import type { AppPublicSummary } from '../../../app/models/app.model'
 
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')
@@ -57,10 +61,10 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const response: DetailResponse<typeof app> = {
+  const response: DetailResponse<AppPublicSummary> = {
     ok: true,
     generatedAt: new Date().toISOString(),
-    item: app,
+    item: toAppPublicSummary(app),
   }
 
   return response

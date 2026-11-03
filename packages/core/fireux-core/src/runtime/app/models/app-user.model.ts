@@ -1,4 +1,4 @@
-import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { FireuxStamps } from '../../models/utils/stamps.model'
 
 export const APP_USER_ROLES = ['user', 'admin', 'dev'] as const
 export type AppUserRole = (typeof APP_USER_ROLES)[number]
@@ -17,17 +17,9 @@ export function isAppUserSubscription(
 }
 
 /** Membership of one User in one App. Domains own their own access records. */
-export type AppUser = {
+export type AppUser = FireuxStamps & {
   role: AppUserRole
   subscription: AppUserSubscription
-  created: {
-    at: FirebaseTimestamp
-    by?: string
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: string
-  }
 }
 
 /** AppUser document data paired with its Firestore document id. */

@@ -57,7 +57,7 @@ export async function stagePublishKitchenMenu(
   const stamp =
     !input.document && menuData.status === 'published' && menuData.updated
       ? menuData.updated
-      : serverAuditStamp({ by: input.uid, appId: input.appId })
+      : serverAuditStamp({ by: input.uid })
   if (documentTarget?.claimTarget)
     tx.update(documentTarget.claimTarget, 'guest', {
       document_menu_id: input.menuId,

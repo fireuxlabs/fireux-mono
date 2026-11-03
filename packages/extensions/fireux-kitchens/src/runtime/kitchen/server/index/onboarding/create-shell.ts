@@ -7,7 +7,11 @@ import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import {
+  KITCHEN_MUTATION_TARGETS,
+  serverKitchenMenusTarget,
+  serverKitchenTeamMembersTarget,
+} from '../../mutation-targets'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import {
   onboardingText as text,
@@ -135,6 +139,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId, {
         identity: { source: 'user', slug, status: 'active', visibility: true },
         created,
+        updated: serverAuditStamp({ by: current.uid }),
       })
       createKitchenSystemMenus({
         mutations,

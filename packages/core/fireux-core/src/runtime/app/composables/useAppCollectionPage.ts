@@ -8,14 +8,14 @@ import {
   type FireuxSeoBuilderContext,
   type FireuxSeoJsonLd,
 } from '../../composables/fireux/seo/useSeo'
-import type { App } from '../models/app.model'
+import type { AppPublicSummary } from '../models/app.model'
 
 export type AppCollectionPageSeo = Partial<
   Omit<UseSeoOptions, 'jsonLdBuilder'>
 > & {
   jsonLdBuilder?: (
     context: FireuxSeoBuilderContext,
-    apps: readonly App[]
+    apps: readonly AppPublicSummary[]
   ) => FireuxSeoJsonLd | null | undefined
 }
 

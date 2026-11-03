@@ -52,7 +52,7 @@ export function toEcosystemDirectoryEntry(
     name: ecosystem.name,
     description: ecosystem.description,
     image_url: ecosystem.image_url,
-    website_url: ecosystem.website_url,
+    website_url: ecosystem.website_url ?? '',
     detail_url: `/ecosystems/${encodeURIComponent(ecosystem.id)}`,
     app_count: Math.max(0, Math.trunc(appCount)),
   }

@@ -84,7 +84,7 @@ export async function publishDailyMenu(event: H3Event, input: unknown) {
       (value) => value !== date
     )
     if (published) dates.push(date)
-    const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
+    const stamp = serverAuditStamp({ by: actor.uid })
     tx.update(target, menuId, {
       status: published ? 'published' : menu.data.status,
       published_dates: dates.sort(),

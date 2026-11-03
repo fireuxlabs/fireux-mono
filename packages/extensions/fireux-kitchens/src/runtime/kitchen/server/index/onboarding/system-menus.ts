@@ -39,7 +39,6 @@ export function createKitchenSystemMenus(input: {
   kitchenId: string
   menus: Array<{ id: string }>
   created: ReturnType<typeof serverAuditStamp>
-  updated?: ReturnType<typeof serverAuditStamp>
 }) {
   if (input.menus.length) throw new Error('A Menu exists without its Kitchen.')
   for (const kind of KitchenSystemMenuKinds) {
@@ -49,7 +48,7 @@ export function createKitchenSystemMenus(input: {
       buildKitchenSystemMenu({
         kind,
         created: input.created,
-        updated: input.updated ?? input.created,
+        updated: { at: input.created.at, by: input.created.by },
       })
     )
   }

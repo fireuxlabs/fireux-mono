@@ -189,7 +189,7 @@ import type {
   EcosystemDirectoryEntry,
   PlatformDirectoryResponse,
 } from 'fireux-core/runtime/models/utils/directory'
-import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { AppPublicSummary } from 'fireux-core/runtime/app/models/app.model'
 import { useEcosystemApps } from 'fireux-core/runtime/ecosystem/composables/useEcosystemApps'
 import { miseboxEcosystemProfile } from 'fireux-misebox/runtime/content/ecosystem-profile'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
@@ -216,13 +216,13 @@ const ecosystem = computed(
         entry.status === 'active' && entry.id === 'misebox'
     ) ?? null
 )
-const publishedApps = computed<App[]>(() =>
+const publishedApps = computed<AppPublicSummary[]>(() =>
   apps.value
     .filter(
-      (entry: App) =>
+      (entry: AppPublicSummary) =>
         entry.status === 'active' && entry.ecosystem_id === 'misebox'
     )
-    .sort((left: App, right: App) => {
+    .sort((left: AppPublicSummary, right: AppPublicSummary) => {
       if (left.role === 'global') return -1
       if (right.role === 'global') return 1
       return left.name.localeCompare(right.name)
@@ -253,14 +253,14 @@ if (import.meta.server) {
   }
 }
 
-const appRoleLabel = (role: App['role'] | '') => {
+const appRoleLabel = (role: AppPublicSummary['role'] | '') => {
   if (role === 'global') return 'Ecosystem App'
   if (role === 'tenant') return 'Tenant App'
   if (role === 'standalone') return 'Standalone App'
   return 'Published App'
 }
 
-const appSummary = (app: App) =>
+const appSummary = (app: AppPublicSummary) =>
   app.tagline?.trim() ||
   app.description?.trim() ||
   `A published ${appRoleLabel(app.role)} connected to the Misebox Ecosystem.`

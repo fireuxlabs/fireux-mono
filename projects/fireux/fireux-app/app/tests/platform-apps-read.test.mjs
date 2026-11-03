@@ -72,6 +72,7 @@ function harness({ failedSource = '', standalone = false } = {}) {
     createError,
     FieldPath: { documentId: () => '__name__' },
     readAppDocument: (data, id) => ({ ...data, id }),
+    toAppPublicSummary: (app) => app,
   }
   const path =
     '../../../../../packages/core/fireux-core/src/runtime/app/server/collection/read.ts'
@@ -197,6 +198,7 @@ test('Public App detail excludes inactive and archived definitions', async () =>
         }),
       }),
       readAppDocument: (data, id) => ({ ...data, id }),
+      toAppPublicSummary: (app) => app,
     })
     assert.deepEqual(
       await read('example'),
@@ -222,6 +224,7 @@ test('Complete App reads report the correct failed source while retaining availa
       }),
     }),
     readAppDocument: (data, id) => ({ ...data, id }),
+    toAppPublicSummary: (app) => app,
     console: { warn: (...args) => warnings.push(args) },
   })
   assert.deepEqual(

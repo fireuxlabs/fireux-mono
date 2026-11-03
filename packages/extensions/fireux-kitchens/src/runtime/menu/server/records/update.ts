@@ -90,7 +90,7 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
           statusMessage: 'Menu hours must fit within Kitchen service hours.',
         })
     }
-    const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
+    const stamp = serverAuditStamp({ by: actor.uid })
     const next: Record<string, unknown> = {
       ...menu.data,
       ...changes,

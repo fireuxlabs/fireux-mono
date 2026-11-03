@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Ecosystem } from '../models/ecosystem.model.ts'
+import type { EcosystemPublicSummary } from '../models/ecosystem.model.ts'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -7,7 +7,7 @@ const excerpt = (value: unknown) =>
   text(value).replace(/\s+/g, ' ').slice(0, 180)
 
 export function buildEcosystemJsonLd(
-  ecosystem: Partial<Ecosystem> | null | undefined
+  ecosystem: Partial<EcosystemPublicSummary> | null | undefined
 ) {
   const id = text(ecosystem?.id)
   const name = text(ecosystem?.name)
@@ -24,7 +24,9 @@ export function buildEcosystemJsonLd(
 }
 
 export function useEcosystemSeo(
-  ecosystem: MaybeRefOrGetter<Partial<Ecosystem> | null | undefined>
+  ecosystem: MaybeRefOrGetter<
+    Partial<EcosystemPublicSummary> | null | undefined
+  >
 ) {
   const entry = computed(() => toValue(ecosystem))
   const id = computed(() => text(entry.value?.id))

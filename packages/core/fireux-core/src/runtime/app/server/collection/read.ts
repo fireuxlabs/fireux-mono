@@ -1,7 +1,7 @@
 import { FieldPath, type Firestore, type Query } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { readAppDocument } from '../../utils/readApp'
-import type { App } from '../../models/app.model'
+import { readAppDocument, toAppPublicSummary } from '../../utils/readApp'
+import type { AppPublicSummary } from '../../models/app.model'
 import type { CollectionPage } from '../../../models/utils/directory'
 
 const APP_PAGE_SIZE = 24
@@ -19,7 +19,10 @@ export function readAppPageInput(input: { limit?: unknown; cursor?: unknown }) {
 }
 
 /** One database query owner, reused by directory and parent relationships. */
-export async function readAppRecords(db: Firestore, scope: AppReadScope = {}) {
+export async function readAppRecords(
+  db: Firestore,
+  scope: AppReadScope = {}
+): Promise<AppPublicSummary[]> {
   let query: Query = db.collection('apps')
   if (scope.ecosystemId) query = query.where('ecosystem_id', '==', scope.ecosystemId)
   // Filter before pagination so hidden records cannot consume a public page.
@@ -31,11 +34,16 @@ export async function readAppRecords(db: Firestore, scope: AppReadScope = {}) {
   return snapshot.docs.flatMap(document => {
     const app = readAppDocument(document.data(), document.id)
     if (!app) throw createError({ statusCode: 409, statusMessage: `App ${document.id} has an invalid stored shape.` })
-    return scope.activeOnly && app.status !== 'active' ? [] : [app]
+    return scope.activeOnly && app.status !== 'active'
+      ? []
+      : [toAppPublicSummary(app)]
   })
 }
 
-export function appCollectionPage(items: App[], limit?: number): CollectionPage<App> {
+export function appCollectionPage(
+  items: AppPublicSummary[],
+  limit?: number
+): CollectionPage<AppPublicSummary> {
   const sorted = [...items].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
   if (new Set(sorted.map(app => app.id)).size !== sorted.length) {
     throw createError({ statusCode: 409, statusMessage: 'Duplicate App identities exist across databases.' })

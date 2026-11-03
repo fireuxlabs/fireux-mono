@@ -1,4 +1,4 @@
-import type { Ecosystem } from '../models/ecosystem.model.ts'
+import type { EcosystemPublicSummary } from '../models/ecosystem.model.ts'
 import type { EcosystemDirectoryEntry } from '../../models/utils/directory'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -9,7 +9,9 @@ const labelize = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
-export type EcosystemSurface = Partial<Ecosystem> | EcosystemDirectoryEntry
+export type EcosystemSurface =
+  | Partial<EcosystemPublicSummary>
+  | EcosystemDirectoryEntry
 
 export type EcosystemInterfaceInput = EcosystemSurface & {
   key?: string

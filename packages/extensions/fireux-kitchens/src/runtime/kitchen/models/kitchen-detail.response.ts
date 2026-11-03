@@ -1,7 +1,7 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { Kitchen } from './kitchen.model.ts'
+import type { KitchenPublicSummary } from './kitchen.model.ts'
 import type { KitchenPublicOffering } from './public-offering.model'
 
 export type KitchenDetailPresentation = {
@@ -39,7 +39,7 @@ export type KitchenDetailPresentation = {
 }
 
 export type KitchenDetailResponse = {
-  kitchen: Kitchen
+  kitchen: KitchenPublicSummary
   place: Place
   presentation: KitchenDetailPresentation
 }

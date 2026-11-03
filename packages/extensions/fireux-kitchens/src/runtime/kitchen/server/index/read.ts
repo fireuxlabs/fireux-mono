@@ -5,7 +5,7 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { Kitchen } from '../../models/kitchen.model.ts'
+import type { KitchenPublicSummary } from '../../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
   readKitchenRelatedRecords,
@@ -22,9 +22,15 @@ export type ReadKitchensInput = {
 }
 
 /** Server-resolved Kitchens. Every Kitchen includes its canonical same-ID Place. */
-export async function readKitchens(
-  input: ReadKitchensInput = {}
-): Promise<Array<Kitchen & { place: Place; service_labels?: string[]; has_published_menu?: boolean }>> {
+export async function readKitchens(input: ReadKitchensInput = {}): Promise<
+  Array<
+    KitchenPublicSummary & {
+      place: Place
+      service_labels?: string[]
+      has_published_menu?: boolean
+    }
+  >
+> {
   const requestedPlaceId = text(input.placeId)
   if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
     throw createError({
@@ -64,21 +70,23 @@ export async function readKitchens(
 
   const kitchens = documents
     .map((document) => resolveKitchen(document, related, scope))
-    .filter((kitchen): kitchen is Kitchen & { place: Place } =>
+    .filter((kitchen): kitchen is KitchenPublicSummary & { place: Place } =>
       Boolean(kitchen)
     )
     .filter(
       (kitchen) => input.includeHidden === true || kitchen.identity.visibility
     )
-  return Promise.all(kitchens.map(async kitchen => {
-    const [offerings, hasPublishedMenu] = await Promise.all([
-      readKitchenOfferings(db, kitchen.id),
-      hasPublishedPublicMenu(db, kitchen.id),
-    ])
-    return {
-      ...kitchen,
-      service_labels: kitchenServiceSummary(offerings),
-      has_published_menu: kitchen.identity.visibility && hasPublishedMenu,
-    }
-  }))
+  return Promise.all(
+    kitchens.map(async (kitchen) => {
+      const [offerings, hasPublishedMenu] = await Promise.all([
+        readKitchenOfferings(db, kitchen.id),
+        hasPublishedPublicMenu(db, kitchen.id),
+      ])
+      return {
+        ...kitchen,
+        service_labels: kitchenServiceSummary(offerings),
+        has_published_menu: kitchen.identity.visibility && hasPublishedMenu,
+      }
+    })
+  )
 }

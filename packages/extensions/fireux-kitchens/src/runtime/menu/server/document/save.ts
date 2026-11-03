@@ -121,7 +121,7 @@ export async function saveKitchenDocumentMenu(
           tx.update(menus, current.menu.id, {
             format: 'document',
             doc: document,
-            updated: serverAuditStamp({ by: actor.uid, appId: actor.appId }),
+            updated: serverAuditStamp({ by: actor.uid }),
           })
         }
         if (current.guest && !current.menu.data.doc?.url && input.venueName) {

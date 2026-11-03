@@ -86,7 +86,7 @@ export async function stageCreateKitchenMenu(
     ...buildMenuPayload(value, canonicalName),
     slug,
     created: stamp,
-    updated: stamp,
+    updated: serverAuditStamp({ by: actor.uid }),
   })
   return { created: true, id: menuId, slug, kitchenId }
 }

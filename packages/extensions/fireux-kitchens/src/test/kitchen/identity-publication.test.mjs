@@ -142,6 +142,7 @@ test('Kitchen-only updates use record authority inside their transaction and rej
     createError: (v) => Object.assign(new Error(v.statusMessage), v),
     requireFirestoreDocumentId: (v) => v,
     parseKitchenUpdate: (v) => v,
+    serverAuditStamp: ({ by }) => ({ at: 'server-time', by }),
     readKitchenMutationActor: async () => actor,
     runGuardedServerTransaction: async (_, run) => run(tx),
     requireKitchenRecordMutationAuthority: async (actual, a, id) => {
@@ -159,7 +160,16 @@ test('Kitchen-only updates use record authority inside their transaction and rej
   )
   assert.equal(checks[0][0], tx)
   assert.equal(checks[0][1], actor)
-  assert.deepEqual(writes, [['kitchens', 'a', { 'identity.visibility': true }]])
+  assert.deepEqual(writes, [
+    [
+      'kitchens',
+      'a',
+      {
+        'identity.visibility': true,
+        updated: { at: 'server-time', by: 'alice' },
+      },
+    ],
+  ])
   denied = true
   await assert.rejects(
     update({}, { kitchen_id: 'a', patch: { 'identity.visibility': false } }),
@@ -235,6 +245,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   async function render(status, kitchenReady) {
     const identity = {
       status: ref(status),
+      readState: ref(kitchenReady ? null : 'empty'),
       outcome: ref(kitchenReady ? 'ready' : 'idle'),
       selectedKitchen: ref(
         kitchenReady
@@ -286,6 +297,22 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       'FireDiagnosticsDebugPanel',
     ])
       app.component(name, { render: () => null })
+    const profileSource = readFileSync(
+      new URL('kitchen/components/Identity/Profile.vue', runtime),
+      'utf8'
+    )
+    app.component('KitchenIdentityProfile', {
+      props: ['identity'],
+      setup: () => ({
+        section: null,
+        sections: [],
+        publicTo: '',
+        sectionTitle: '',
+      }),
+      render: compile(
+        profileSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
+      ),
+    })
     const listingSource = readFileSync(
       new URL('kitchen/components/Identity/Listing.vue', runtime),
       'utf8'
@@ -340,7 +367,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   }
   const empty = await render('empty', false)
   assert.doesNotMatch(empty, /Show in directory|Currency/)
-  assert.match(empty, /Loading identity/)
+  assert.match(empty, /empty/)
 })
 
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {
