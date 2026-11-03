@@ -1,9 +1,6 @@
-import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { FireuxEntity } from '../../models/utils/entity.model'
 
-export type App = {
-  id: string
-  /** Internal operator background; excluded from public projections. */
-  context?: string
+export type App = FireuxEntity & {
   ecosystem_id: string
   role: 'global' | 'tenant' | 'standalone'
   status: 'active' | 'inactive' | 'archived'
@@ -29,12 +26,19 @@ export type App = {
     cover_url?: string
   }
   self_join_enabled?: boolean
-  created: {
-    at: FirebaseTimestamp
-    by?: string
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: string
-  }
 }
+
+/** Public directory/detail identity; excludes private context, policy and audit. */
+export type AppPublicSummary = Pick<
+  App,
+  | 'id'
+  | 'ecosystem_id'
+  | 'role'
+  | 'status'
+  | 'name'
+  | 'short_name'
+  | 'tagline'
+  | 'description'
+  | 'social_links'
+  | 'media'
+>
