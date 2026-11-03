@@ -107,9 +107,9 @@
 <script setup lang="ts">
 import { computed, ref, reactive, toRef, watch } from 'vue'
 import { useServiceCheckout } from '../../composables/useServiceCheckout'
-import type { MenuServiceSection } from '../../utils/service-sections'
-import { serviceItemSignature } from '../../utils/service-basket'
-import type { MenuCheckoutService } from '../../utils/service-checkout'
+import type { MenuServiceSection } from '../../utils/ordering/sections'
+import { serviceItemSignature } from '../../utils/ordering/basket'
+import type { MenuCheckoutService } from '../../utils/ordering/checkout'
 import { useServiceBasket } from '../../composables/useServiceBasket'
 import { useServiceItemEditor } from '../../composables/useServiceItemEditor'
 import type { KitchenDetailPresentation } from '../../../kitchen/models/kitchen-detail.response'

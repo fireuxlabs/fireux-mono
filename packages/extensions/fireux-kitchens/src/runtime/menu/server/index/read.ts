@@ -3,7 +3,7 @@ import { MenuStorage } from '../../models/menu-storage.model'
 import {
   menuServiceOfferings,
   type MenuService,
-} from '../../utils/service-menu'
+} from '../../utils/ordering/offerings'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'

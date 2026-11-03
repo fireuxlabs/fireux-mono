@@ -9,7 +9,7 @@
 import type { RouteLocationNormalizedGeneric } from 'vue-router'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { tableServiceTableNumber } from '../../../../menu/utils/table-service'
+import { tableServiceTableNumber } from '../../../../menu/utils/navigation/table'
 definePageMeta({
   name: 'KitchenTableServiceMenuPage',
   title: 'At your table',

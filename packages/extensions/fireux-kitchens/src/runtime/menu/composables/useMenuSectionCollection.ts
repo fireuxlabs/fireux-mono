@@ -1,6 +1,6 @@
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { computed, type Ref } from 'vue'
-import type { MenuSection } from '../utils/menu-section.ts'
+import type { MenuSection } from '../models/menu-section.model.ts'
 import { useKitchenChildCollection } from '../../kitchen/composables/useKitchenChildCollection'
 
 type Options = {

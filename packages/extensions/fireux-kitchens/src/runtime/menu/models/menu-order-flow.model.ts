@@ -1,4 +1,4 @@
-import type { MenuRouteScope } from '../utils/menu-route'
+import type { MenuRouteScope } from '../utils/navigation/route'
 import type { MenuOrderSelection } from './menu-order-selection.model'
 
 export type MenuOrderInput = {

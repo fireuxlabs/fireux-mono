@@ -5,7 +5,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
-} from '../../../menu/utils/menu-source-upload'
+} from '../../../menu/models/menu-source-upload.model'
 import type { Menu } from '../../../menu/models/menu.model'
 
 /** One scoped source and processing context, independent of purchase or route. */

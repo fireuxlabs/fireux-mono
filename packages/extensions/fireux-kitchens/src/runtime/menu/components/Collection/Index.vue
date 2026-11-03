@@ -148,8 +148,8 @@ import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts
 import {
   menuMatchesCollectionPicks,
   type MenuCollectionPick,
-} from '../../utils/menu-collection-picks'
-import { rootMenuRouteScope } from '../../utils/menu-route'
+} from '../../utils/catalogue/picks'
+import { rootMenuRouteScope } from '../../utils/navigation/route'
 
 const props = withDefaults(
   defineProps<{
@@ -246,7 +246,8 @@ const devObjects = computed(() => ({
 const devDerived = computed(() => ({
   family: 'Root Simple Collection Manager',
   source: {
-    collectionGroup: 'menus', canonicalPath: 'kitchens/{kitchenId}/menus/{menuId}',
+    collectionGroup: 'menus',
+    canonicalPath: 'kitchens/{kitchenId}/menus/{menuId}',
     relatedRecords:
       'One bounded server batch per page resolves current Kitchen identity, effective service hours, and Menu guest-ordering contexts. Detail resolves content and theme.',
   },

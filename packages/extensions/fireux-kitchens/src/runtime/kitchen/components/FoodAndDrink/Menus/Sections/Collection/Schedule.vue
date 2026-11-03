@@ -57,7 +57,7 @@ import { computed, ref } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuSchedule } from '../../../../../../menu/composables/useMenuSchedule'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
-import { isMenuDate } from '../../../../../../menu/utils/menu-date'
+import { isMenuDate } from '../../../../../../menu/utils/calendar/date'
 const date = defineModel<string>({ required: true })
 const { menu, menuId, kitchenId, sections, canWrite } =
   useKitchenMenuRecordContext()

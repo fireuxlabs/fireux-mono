@@ -18,8 +18,8 @@ import {
   type Ref,
 } from 'vue'
 import type { Dish } from '../../kitchen/utils/dish.ts'
-import { type MenuItem } from '../utils/menu-item.ts'
-import type { MenuSection } from '../utils/menu-section.ts'
+import { type MenuItem } from '../models/menu-item.model.ts'
+import type { MenuSection } from '../models/menu-section.model.ts'
 import { useKitchenDishCollection } from '../../kitchen/composables/useKitchenDishCollection'
 import type { Menu } from '../models/menu.model'
 import { useDishUpdate } from '../../kitchen/composables/dish/useDishUpdate'

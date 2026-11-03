@@ -32,7 +32,7 @@ import { useRoute } from '#imports'
 import {
   menuRouteIndexPath,
   directoryMenuRouteScope,
-} from '../../../menu/utils/menu-route'
+} from '../../../menu/utils/navigation/route'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 const props = defineProps<{

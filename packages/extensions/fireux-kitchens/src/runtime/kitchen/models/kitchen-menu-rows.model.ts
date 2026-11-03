@@ -1,11 +1,7 @@
 import type { DishPriceOption, DishAddOnOption } from './dish.model'
 import type { Dish } from '../utils/dish.ts'
-import type {
-
-  MenuItem,
-
-} from '../../menu/utils/menu-item.ts'
-import type { MenuSection } from '../../menu/utils/menu-section.ts'
+import type { MenuItem } from '../../menu/models/menu-item.model.ts'
+import type { MenuSection } from '../../menu/models/menu-section.model.ts'
 
 export type KitchenMenuItemRow = {
   id: string

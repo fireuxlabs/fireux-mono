@@ -21,7 +21,7 @@ const hours = (days, open, close) => ({
 })
 const { intersectWeekdayHours, weekdayHoursWithin } = weekdayHoursConstraints
 const { constrainMenuOfferings } = loadOfferingSource(
-  'menu/utils/menu-hours',
+  'menu/utils/ordering/hours',
   'constrainMenuOfferings',
   {
     normalizeKitchenOfferings: (rows) => structuredClone(rows),

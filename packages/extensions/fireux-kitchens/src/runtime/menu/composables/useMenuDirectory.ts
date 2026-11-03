@@ -30,7 +30,7 @@ import {
   rootMenuRouteScope,
   tenantMenuRouteScope,
   type MenuRouteScope,
-} from '../utils/menu-route'
+} from '../utils/navigation/route'
 
 export type MenuDirectoryOutcome =
   | { kind: 'loading' }

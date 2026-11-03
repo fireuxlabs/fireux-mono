@@ -1,11 +1,14 @@
 <template>
-  <MenuRouteSurface :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
+  <MenuRouteSurface
+    :menu-route-scope="menuRouteScope"
+    :route-menu-id="routeMenuId"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { directoryMenuRouteScope } from '../../../../../menu/utils/menu-route'
+import { directoryMenuRouteScope } from '../../../../../menu/utils/navigation/route'
 
 definePageMeta({
   middleware: ['menu-projection-layout', 'kitchen-embedding'],

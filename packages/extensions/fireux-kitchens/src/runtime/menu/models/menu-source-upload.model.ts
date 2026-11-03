@@ -37,3 +37,12 @@ export type MenuSourceUpload = FireuxStamped & {
   status: MenuSourceUploadStatus
   menu_id?: string
 }
+
+export const MenuSourceUploadStorage = {
+  shape: 'scoped',
+  scoped: 'kitchens/{kitchenId}/menu-uploads/{uploadId}',
+  path: 'kitchens/{kitchenId}/menu-uploads/{uploadId}',
+  collection: 'menu-uploads',
+  parent: 'kitchen',
+  idParam: 'uploadId',
+} as const

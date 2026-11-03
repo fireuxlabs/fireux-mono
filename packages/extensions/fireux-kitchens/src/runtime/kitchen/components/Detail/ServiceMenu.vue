@@ -111,11 +111,11 @@ import { setResponseStatus, useHead, useSeoMeta, useRoute } from '#imports'
 
 import { useKitchenDetail } from '../../composables/useKitchenDetail'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
-import type { MenuService } from '../../../menu/utils/service-menu'
+import type { MenuService } from '../../../menu/utils/ordering/offerings'
 import {
   serviceSections,
   type MenuServiceSource,
-} from '../../../menu/utils/service-sections'
+} from '../../../menu/utils/ordering/sections'
 import { useKitchenOfferingNow } from '../../composables/useKitchenOfferingNow'
 const props = defineProps<{
   kitchenSlug: string

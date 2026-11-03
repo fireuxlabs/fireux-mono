@@ -80,11 +80,11 @@
 </template>
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import type { MenuServiceOffer } from '../../utils/service-sections'
+import type { MenuServiceOffer } from '../../utils/ordering/sections'
 import {
   serviceBasketLine,
   type ServiceItemChoices,
-} from '../../utils/service-basket'
+} from '../../utils/ordering/basket'
 const props = defineProps<{
   offer: MenuServiceOffer
   money: (value: number) => string

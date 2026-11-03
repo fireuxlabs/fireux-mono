@@ -3,19 +3,24 @@ import {
   promotionPricedItem,
   promotionDay,
   promotionDays,
-} from '../../kitchen/utils/promotions/pricing'
+} from '../../../kitchen/utils/promotions/pricing'
 import type {
   MenuManifest,
   MenuManifestItem,
-} from '../models/menu-detail.model'
-import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
+} from '../../models/menu-detail.model.ts'
+import type { KitchenPublicOffering } from '../../../kitchen/models/public-offering.model.ts'
 
 export type MenuServiceSource = {
   manifest: MenuManifest
   offerings: KitchenPublicOffering[]
 }
 export type MenuServiceOffer = {
-  source: { kitchenId: string; menuId: string; menuSlug?: string; sectionId: string }
+  source: {
+    kitchenId: string
+    menuId: string
+    menuSlug?: string
+    sectionId: string
+  }
   item: MenuManifestItem
   presentation: MenuManifest['presentation']
   offerings: KitchenPublicOffering[]
@@ -124,7 +129,9 @@ export function serviceSections(
             source: {
               kitchenId: manifest.source.kitchenId,
               menuId: manifest.source.menuId,
-              ...(manifest.source.menuSlug ? { menuSlug: manifest.source.menuSlug } : {}),
+              ...(manifest.source.menuSlug
+                ? { menuSlug: manifest.source.menuSlug }
+                : {}),
               sectionId: section.id,
             },
             item: priced.item,

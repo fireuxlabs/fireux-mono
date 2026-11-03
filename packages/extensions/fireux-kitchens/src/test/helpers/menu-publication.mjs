@@ -5,7 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
 function load(path, name, dependencies) {
-  dependencies = {...dishPricingHelpers,...dependencies}
+  dependencies = { ...dishPricingHelpers, ...dependencies }
 
   const source = readFileSync(
     new URL(path, new URL('../', import.meta.url)),
@@ -29,18 +29,21 @@ const target = (collectionPath) => ({
 })
 const targets = {
   APP_MUTATION_TARGETS: { menus: target('menus') },
-USER_MUTATION_TARGETS: { menus: target('menus') },
-ECOSYSTEM_MUTATION_TARGETS: { menus: target('menus') },
-FIREUX_MUTATION_TARGETS: { menus: target('menus') },
-SPROOCHLI_MUTATION_TARGETS: { menus: target('menus') },
-PLACE_MUTATION_TARGETS: { menus: target('menus'), places: target('places') },
-KITCHEN_MUTATION_TARGETS: { menus: target('menus'), kitchens: target('kitchens') },
-INGREDIENT_MUTATION_TARGETS: { menus: target('menus') },
-PRODUCT_MUTATION_TARGETS: { menus: target('menus') },
-PROPERTY_MUTATION_TARGETS: { menus: target('menus') },
-PORTFOLIO_MUTATION_TARGETS: { menus: target('menus') },
-SUPPLIER_MUTATION_TARGETS: { menus: target('menus') },
-JOB_MUTATION_TARGETS: { menus: target('menus') },
+  USER_MUTATION_TARGETS: { menus: target('menus') },
+  ECOSYSTEM_MUTATION_TARGETS: { menus: target('menus') },
+  FIREUX_MUTATION_TARGETS: { menus: target('menus') },
+  SPROOCHLI_MUTATION_TARGETS: { menus: target('menus') },
+  PLACE_MUTATION_TARGETS: { menus: target('menus'), places: target('places') },
+  KITCHEN_MUTATION_TARGETS: {
+    menus: target('menus'),
+    kitchens: target('kitchens'),
+  },
+  INGREDIENT_MUTATION_TARGETS: { menus: target('menus') },
+  PRODUCT_MUTATION_TARGETS: { menus: target('menus') },
+  PROPERTY_MUTATION_TARGETS: { menus: target('menus') },
+  PORTFOLIO_MUTATION_TARGETS: { menus: target('menus') },
+  SUPPLIER_MUTATION_TARGETS: { menus: target('menus') },
+  JOB_MUTATION_TARGETS: { menus: target('menus') },
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: (app) => target('kitchen_access'),
   serverKitchenMenusTarget: (kitchen) => target(`kitchens/${kitchen}/menus`),
@@ -82,7 +85,10 @@ export function harness({ document = false, status = 'draft' } = {}) {
     ],
     [`${menuPath}/sections/s`, { status: 'active' }],
     [`${menuPath}/sections/s/items/i`, { status: 'active', dish_id: 'dish' }],
-    ['kitchens/k/dishes/dish', { name: 'Tapas', price: 12, price_options: [], add_ons: [] }],
+    [
+      'kitchens/k/dishes/dish',
+      { name: 'Tapas', price: 12, price_options: [], add_ons: [] },
+    ],
   ])
   const state = {
     signedIn: true,
@@ -257,27 +263,39 @@ export function harness({ document = false, status = 'draft' } = {}) {
     )
   )
   dependencies.normalizeMenuItemPatch = load(
-    '../runtime/menu/utils/menu-item-patch.ts',
+    '../runtime/menu/utils/records/item-patch.ts',
     'normalizeMenuItemPatch',
     dependencies
   )
-  dependencies.kitchenPromotionsTarget = kitchen => target(`kitchens/${kitchen}/promotions`)
-  Object.assign(dependencies, load('../runtime/kitchen/utils/promotions/pricing.ts', '{normalizeKitchenPromotion,promotionDishIds}', dependencies))
-  dependencies.menuPublicationReadiness = load('../runtime/menu/utils/publication-readiness.ts', 'menuPublicationReadiness', dependencies)
+  dependencies.kitchenPromotionsTarget = (kitchen) =>
+    target(`kitchens/${kitchen}/promotions`)
+  Object.assign(
+    dependencies,
+    load(
+      '../runtime/kitchen/utils/promotions/pricing.ts',
+      '{normalizeKitchenPromotion,promotionDishIds}',
+      dependencies
+    )
+  )
+  dependencies.menuPublicationReadiness = load(
+    '../runtime/menu/utils/publication-readiness.ts',
+    'menuPublicationReadiness',
+    dependencies
+  )
   dependencies.assertKitchenMenuCanPublish = load(
     '../runtime/menu/server/publication/validation.ts',
     'assertKitchenMenuCanPublish',
     dependencies
   )
   dependencies.isMenuDate = load(
-    '../runtime/menu/utils/menu-date.ts',
+    '../runtime/menu/utils/calendar/date.ts',
     'isMenuDate',
     {}
   )
   Object.assign(
     dependencies,
     load(
-      '../runtime/menu/utils/daily-menu.ts',
+      '../runtime/menu/utils/calendar/daily.ts',
       '{ menuLocalDate, publishedMenuDates, dailyMenuToday }',
       dependencies
     )

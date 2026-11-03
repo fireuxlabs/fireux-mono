@@ -14,7 +14,7 @@ import {
   parseMenuRouteTarget,
   rootMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../menu/utils/menu-route'
+} from '../../../menu/utils/navigation/route'
 
 definePageMeta({
   layout: false,

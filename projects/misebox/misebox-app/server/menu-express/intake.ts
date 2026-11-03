@@ -60,7 +60,7 @@ export async function createRequest(
       actor: { id: '', name: details.contact.name, type: 'guest' },
       contact: { ...details.contact, company: details.venue },
       body: body.slice(0, 4000),
-      sourceRoute: '/menu-express',
+      sourceRoute: '/products/menu-express/prepare',
       relatedEntity: {
         family: 'menu_express_requests',
         id,

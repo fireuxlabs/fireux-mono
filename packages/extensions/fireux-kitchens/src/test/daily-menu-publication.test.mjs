@@ -3,7 +3,7 @@ import test from 'node:test'
 import {
   menuLocalDate,
   dailyMenuToday,
-} from '../runtime/menu/utils/daily-menu.ts'
+} from '../runtime/menu/utils/calendar/daily.ts'
 import { harness, menuPath, rootPath } from './helpers/menu-publication.mjs'
 
 function dailyHarness() {

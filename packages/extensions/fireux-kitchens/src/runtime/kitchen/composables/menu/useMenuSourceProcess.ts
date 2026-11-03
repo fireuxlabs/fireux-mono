@@ -1,7 +1,7 @@
 import { computed, ref, watch, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Menu } from '../../../menu/models/menu.model'
-import type { MenuSourceUpload } from '../../../menu/utils/menu-source-upload'
+import type { MenuSourceUpload } from '../../../menu/models/menu-source-upload.model'
 import {
   menuProcessNumberText as numberText,
   menuProcessOptionLabel as optionLabel,

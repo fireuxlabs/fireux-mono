@@ -97,7 +97,7 @@ import {
   menuRouteQrPath,
   tenantMenuRouteScope,
   directoryMenuRouteScope,
-} from '../../../../../menu/utils/menu-route'
+} from '../../../../../menu/utils/navigation/route'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'

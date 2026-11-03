@@ -1,4 +1,4 @@
-import { menuLocalDate } from '../../../../menu/utils/daily-menu'
+import { menuLocalDate } from '../../../../menu/utils/calendar/daily'
 import { computed, ref } from 'vue'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useState } from '#imports'

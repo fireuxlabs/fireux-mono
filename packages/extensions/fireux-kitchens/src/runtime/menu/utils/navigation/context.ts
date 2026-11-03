@@ -1,15 +1,15 @@
 import type {
   KitchenOrderChannel,
   KitchenOrderType,
-} from '../../kitchen/models/offering-interaction-types.model'
+} from '../../../kitchen/models/offering-interaction-types.model.ts'
 import {
   MenuRouteContexts,
   type MenuRouteContext,
   type MenuSurface,
-} from '../models/menu-context.model.ts'
-import type { MenuManifestBehaviour } from '../models/menu-detail.model.ts'
-import type { MenuOrderingConfig } from '../models/menu-ordering.model'
-import { menuRoutePath, type MenuRouteScope } from './menu-route'
+} from '../../models/menu-context.model.ts'
+import type { MenuManifestBehaviour } from '../../models/menu-detail.model.ts'
+import type { MenuOrderingConfig } from '../../models/menu-ordering.model.ts'
+import { menuRoutePath, type MenuRouteScope } from './route'
 
 export type MenuContextProfile = {
   context: MenuRouteContext

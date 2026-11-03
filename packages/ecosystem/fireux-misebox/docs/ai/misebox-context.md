@@ -130,11 +130,13 @@ Workspace adoption are not prerequisites for that result. Existing structured
 preparation remains available; its existence does not settle AI's future Product
 responsibility or commercial packaging.
 
-The Main App's `/menu-express` composes the Menu-owned `MenuDocument` tool:
+The Main App's `/products/menu-express` visibly composes Menu-owned
+`MenuDocumentUpload`, `MenuDocumentPublished` and `MenuDetailDocumentViewer`:
 upload one PDF/image, preview, publish and later replace with the same Menu and QR.
-`menu/components/Document.vue` owns this small surface and its result markup;
-`useMenuDocument` owns its state and workflow. Both reuse existing Kitchen and
-Menu owners without a separate target controller or result wrapper.
+`useMenuDocument` owns workflow state. The App page owns Product copy and the
+optional Workspace invitation; Menu components contain no free-price promise or
+App navigation. It reuses existing Kitchen and Menu owners without a separate
+target controller or umbrella surface.
 There is no request, quote, payment, operator approval or Conversation in this basic
 flow. `menu/server/document` owns its scoped reader, recovery authority and shared
 file writer; Workspace's document-upload adapter consumes that same writer.
@@ -159,7 +161,7 @@ guest recovery remains pinned to its original Menu.
 
 Source-owned proof lives in `menu-document-self-service.test.mjs`, covering
 guest creation, publish, reload, replacement, QR identity, recovery, revocation and
-failure. The separate structured request entrance is `/menu-express/prepare`;
+failure. The separate structured request entrance is `/products/menu-express/prepare`;
 the request and payment contracts below apply there, not to free document hosting.
 
 Operator preparation consumes Kitchen-owned `useKitchenTargets` for a named,
@@ -171,8 +173,8 @@ retains the request’s exact Kitchen/Menu binding.
 The Misebox catalogue Product is `products/menu-express`, authored through the
 existing Products create command from the App-owned
 `shared/menu-express-product.ts` offer. The catalogue's `/products/menu-express`
-doorway opens the canonical `/menu-express` tool through native Nuxt navigation;
-it does not present a second request or quotation page. The existing catalogue
+route directly composes the document tool; it does not redirect to a second
+top-level Product route or present a request/quotation page. The existing catalogue
 surface retains Product identity and the explicit free action/terms. A
 catalogue-only Product has no provider price and performs
 no payment provisioning. Basic PDF/image hosting is explicitly free.
@@ -900,7 +902,7 @@ interaction filters use the projected supported contexts, not a promise of curre
 opening or checkout availability. Filters apply to loaded pages, with an explicit
 load-more notice. Only published, public canonical Menus enter discovery.
 
-`menu/utils/menu-discovery.ts` owns tested filtering and grouping. The public
+`menu/utils/catalogue/discovery.ts` owns tested filtering and grouping. The public
 route retains one acquisition debug panel; its presentation-only list adds none.
 Discovery cards show venue description and one offering doorway rather than
 Menu counts or a Menu list. The canonical Kitchen slug opens its public Menu
@@ -1043,7 +1045,7 @@ gate workspace access. Subscription limits remain enforced; every person counts
 toward Team capacity. Individual role restrictions are deferred for development.
 
 Menus owns its creation allowance in
-`packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-capacity.ts`:
+`packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-storage.model.ts`:
 Free allows two retained Menu records per Kitchen; Premium and Business are
 unlimited. This policy uses the acting user's actual AppUser subscription,
 separately from Kitchen membership, and is consumed by the Workspace, its AI
@@ -1505,7 +1507,7 @@ transaction retries; Offering schedule and configuration envelopes reject
 unsupported shape and scalar values before actor resolution.
 `kitchen/utils/offering-policy.ts` normalizes admitted policies for public response
 derivation; `kitchen/utils/offerings.ts` validates saved children.
-`menu/utils/menu-ordering.ts` derives each Menu's eligible ordering interactions.
+`menu/utils/ordering/availability.ts` derives each Menu's eligible ordering interactions.
 Public projections omit private notification configuration. Notification delivery,
 customer doorways, checkout, tracking and receipt execution are removed. Offering
 configuration retains its own records, authority, schedules and supported Menu
@@ -2118,7 +2120,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 
 Menu manual creation lives in `menu/server/records/create.ts` and shares
 `menu/server/creation-capacity.ts` with reviewed draft imports. Pure
-`menu/utils/menu-metadata.ts` supplies the same complete typed document and
+`menu/utils/records/metadata.ts` supplies the same complete typed document and
 description contract for creation and metadata updates. Explicit item writes
 validate numeric add-on and variant terms before forgiving display/extraction
 normalization, so malformed prices cannot become zero-priced options. These
@@ -2332,7 +2334,7 @@ Verify `dish-bottle-deposit.test.mjs` and `menu-service-basket.test.mjs`.
 `/kitchens/<slug>/menu.collection` and `/kitchens/<slug>/menu.delivery` are
 public service surfaces, not named Menus.
 The food portal Results component owns search/service controls only;
-`menu/utils/food-venue-groups.ts` derives venue cards, service actions and quiet
+`menu/utils/catalogue/venue-groups.ts` derives venue cards, service actions and quiet
 other-Menu links from the supplied directory records. Its shared result type is
 consumed directly by `Cards/FoodVenue.vue`; unused card projections are omitted.
 `Detail/ServiceMenu.vue` consumes the existing live reader through
@@ -2757,7 +2759,7 @@ several services is intersected with each service separately, so a shorter servi
 does not alter the Menu's own schedule. Parent narrowing constrains effective
 availability immediately and Workspace editors show saved schedule conflicts.
 `utils/weekday-time-constraints.ts` owns containment and intersection, including
-breaks, overnight and week boundaries. `menu/utils/menu-hours.ts` applies Menu
+breaks, overnight and week boundaries. `menu/utils/ordering/hours.ts` applies Menu
 windows to public index and payload projections. Menu Settings composes the
 focused `Detail/Hours.vue` automatic editor; the Service hours editor previews
 each selected Menu's effective availability and links to its existing record.

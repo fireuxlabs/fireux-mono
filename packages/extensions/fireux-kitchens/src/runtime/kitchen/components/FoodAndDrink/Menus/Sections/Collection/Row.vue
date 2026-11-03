@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { computed, type UnwrapNestedRefs } from 'vue'
 import type { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
-import type { MenuSection } from '../../../../../../menu/utils/menu-section'
+import type { MenuSection } from '../../../../../../menu/models/menu-section.model'
 const props = defineProps<{
   section: MenuSection
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionsEditor>>

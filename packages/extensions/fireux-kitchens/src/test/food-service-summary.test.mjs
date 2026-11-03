@@ -8,7 +8,7 @@ import {
   weekdayHoursConstraints,
 } from './offering-test-helpers.mjs'
 const constrainMenuOfferings = loadOfferingSource(
-  'menu/utils/menu-hours',
+  'menu/utils/ordering/hours',
   'constrainMenuOfferings',
   {
     normalizeKitchenOfferings: (value) => value,
@@ -54,7 +54,10 @@ test('overview lists enabled services, next opening and current serving state', 
   )
   const closed = foodServiceSummary([service], [menu], at('15:00'))[0]
   assert.equal(closed.open, false)
-  assert.equal(closed.to, '/workspace/kitchen/food-and-drink/services#service-collection')
+  assert.equal(
+    closed.to,
+    '/workspace/kitchen/food-and-drink/services#service-collection'
+  )
   assert.match(closed.label, /16:00/)
   assert.equal(
     foodServiceSummary([service], [menu], at('17:00'))[0].label,
@@ -97,14 +100,14 @@ test('separate services retain their own summary and next-day collection is not 
   assert.equal(rows[1].open, false)
 })
 
-
 test('missing setup flags come from data and do not mistake closed services for incomplete ones', () => {
   const summary = (changes, menus = [menu]) =>
     foodServiceSummary([{ ...service, ...changes }], menus, at('15:00'))[0]
   assert.deepEqual(summary({}).issues, [])
   assert.deepEqual(summary({ menu_ids: [] }).issues, ['Select menus'])
   assert.deepEqual(summary({}, []).issues, [
-    'Replace unavailable menus', 'Publish a selected menu',
+    'Replace unavailable menus',
+    'Publish a selected menu',
   ])
   assert.deepEqual(summary({}, [{ ...menu, status: 'draft' }]).issues, [
     'Publish a selected menu',
@@ -114,9 +117,12 @@ test('missing setup flags come from data and do not mistake closed services for 
   assert.equal(summary({ hours: undefined }).open, false)
 })
 
-
 test('private-link selections flag setup instead of claiming the service is serving', () => {
-  const [row] = foodServiceSummary([service], [{ ...menu, audience: 'private_link' }], at('17:00'))
+  const [row] = foodServiceSummary(
+    [service],
+    [{ ...menu, audience: 'private_link' }],
+    at('17:00')
+  )
   assert.equal(row.open, false)
   assert.equal(row.label, 'Needs setup')
   assert.ok(row.issues.includes('Replace unavailable menus'))

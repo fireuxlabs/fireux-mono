@@ -3,7 +3,7 @@ import { defineNuxtRouteMiddleware } from '#imports'
 import {
   menuRouteProjection,
   parseMenuRouteTarget,
-} from '../menu/utils/menu-route'
+} from '../menu/utils/navigation/route'
 
 export default defineNuxtRouteMiddleware(
   (to: RouteLocationNormalizedGeneric) => {

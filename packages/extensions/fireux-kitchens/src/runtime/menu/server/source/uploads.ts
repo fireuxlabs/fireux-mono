@@ -17,7 +17,7 @@ import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/uti
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import { MenuSourceUploadStorage } from '../../utils/menu-source-upload.ts'
+import { MenuSourceUploadStorage } from '../../models/menu-source-upload.model.ts'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection
 const maxFileSizeMb = 10

@@ -6,11 +6,11 @@ import {
 import {
   MenuItemDefaults,
   type MenuItem,
-} from '../../../../menu/utils/menu-item.ts'
+} from '../../../../menu/models/menu-item.model.ts'
 import {
   MenuSectionDefaults,
   type MenuSection,
-} from '../../../../menu/utils/menu-section.ts'
+} from '../../../../menu/models/menu-section.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from '../../core/fixtures'
 import type { KitchenDemoIdentity } from '../../core/types'
 

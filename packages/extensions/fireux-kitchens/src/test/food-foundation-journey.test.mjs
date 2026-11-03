@@ -27,7 +27,7 @@ const requireFirestoreDocumentId = (value) => {
 const readRecordString = (row, key) => String(row?.[key] ?? '')
 const targets = {
   KITCHEN_MUTATION_TARGETS: { kitchens: target('kitchens') },
-PLACE_MUTATION_TARGETS: { places: target('places') },
+  PLACE_MUTATION_TARGETS: { places: target('places') },
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
   serverKitchenAccessTarget: () => target('kitchen_access'),
   serverKitchenDishesTarget: (k) => target(`kitchens/${k}/dishes`),
@@ -85,7 +85,7 @@ const normalization = load(
   }
 )
 const { constrainMenuOfferings } = load(
-  'menu/utils/menu-hours',
+  'menu/utils/ordering/hours',
   'constrainMenuOfferings',
   {
     ...normalization,
@@ -94,7 +94,7 @@ const { constrainMenuOfferings } = load(
   }
 )
 const ordering = load(
-  'menu/utils/menu-ordering',
+  'menu/utils/ordering/availability',
   'kitchenMenuOrdering,publicMenuOrderTypes',
   {
     ...normalization,
@@ -111,7 +111,7 @@ const contextConstants = load(
   'MenuRouteContexts'
 )
 const contexts = load(
-  'menu/utils/menu-context',
+  'menu/utils/navigation/context',
   'guestDiscoverableMenuContexts',
   contextConstants
 )
@@ -138,11 +138,11 @@ const { projectMenuDirectoryEntry } = load(
   }
 )
 const { menuServiceOfferings } = load(
-  'menu/utils/service-menu',
+  'menu/utils/ordering/offerings',
   'menuServiceOfferings'
 )
 const { serviceSections } = load(
-  'menu/utils/service-sections',
+  'menu/utils/ordering/sections',
   'serviceSections',
   {
     readOpeningHoursStatus,
@@ -417,7 +417,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
     deps
   )
   const { normalizeMenuMetadataPatch } = load(
-    'menu/utils/menu-metadata',
+    'menu/utils/records/metadata',
     'normalizeMenuMetadataPatch',
     deps
   )

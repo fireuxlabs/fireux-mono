@@ -40,7 +40,7 @@ const requireKitchenMutationAuthority = load(
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverKitchenAccessTarget: (app) => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
     readKitchenAccessIds,
     isAppUserSubscription: (value) =>
       ['free', 'premium', 'business'].includes(value),
@@ -57,7 +57,7 @@ const utils = load(
   '({normalizeDishPriceOptions,normalizeDishAddOns})'
 )
 const normalizeMenuItemPatch = load(
-  '../../runtime/menu/utils/menu-item-patch.ts',
+  '../../runtime/menu/utils/records/item-patch.ts',
   { ...utils, normalizeSlug: (x) => String(x).toLowerCase() },
   'normalizeMenuItemPatch'
 )

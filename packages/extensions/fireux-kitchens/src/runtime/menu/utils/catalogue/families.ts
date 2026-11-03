@@ -1,4 +1,4 @@
-import type { MenuSectionLink } from './menu-section-links'
+import type { MenuSectionLink } from './section-links'
 
 export type MenuCatalogueFamilyId = 'food' | 'drinks'
 

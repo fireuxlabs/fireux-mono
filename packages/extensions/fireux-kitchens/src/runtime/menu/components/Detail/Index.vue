@@ -163,7 +163,10 @@
 
 <script setup lang="ts">
 import { setResponseStatus } from '#imports'
-import { rootMenuRouteScope, type MenuRouteScope } from '../../utils/menu-route'
+import {
+  rootMenuRouteScope,
+  type MenuRouteScope,
+} from '../../utils/navigation/route'
 import { useMenuDetail } from '../../composables/useMenuDetail'
 const props = withDefaults(
   defineProps<{

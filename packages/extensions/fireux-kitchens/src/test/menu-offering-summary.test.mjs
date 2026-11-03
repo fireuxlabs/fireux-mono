@@ -18,12 +18,12 @@ function load(path, names, dependencies = {}) {
 }
 const model = load('menu/models/menu-context.model', 'MenuRouteContexts')
 const routes = load(
-  'menu/utils/menu-route',
+  'menu/utils/navigation/route',
   'menuRoutePath, menuRouteProjection',
   model
 )
 const contexts = load(
-  'menu/utils/menu-context',
+  'menu/utils/navigation/context',
   'menuChoiceContextForOrderType',
   { ...model, ...routes }
 )
@@ -76,7 +76,10 @@ test('named offerings sharing a Menu and interaction keep distinct identities an
     rows.map((row) => row.id),
     ['breakfast', 'dinner']
   )
-  assert.equal(rows[0].configurePath, '/workspace/kitchen/food-and-drink/services')
+  assert.equal(
+    rows[0].configurePath,
+    '/workspace/kitchen/food-and-drink/services'
+  )
   assert.equal(
     rows[0].interactions[1].customerUrl,
     'http://localhost:3001/kitchens/hotel/menus/breakfast.pre_order?offering=breakfast'

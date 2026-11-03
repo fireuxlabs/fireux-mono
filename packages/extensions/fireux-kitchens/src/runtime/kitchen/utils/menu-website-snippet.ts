@@ -1,7 +1,7 @@
 import {
   menuRoutePath,
   type MenuRouteScope,
-} from '../../menu/utils/menu-route.ts'
+} from '../../menu/utils/navigation/route.ts'
 import { tableChannelEnabled } from './table-service.ts'
 import type { KitchenOffering } from '../models/offering.model'
 import type { Menu } from '../../menu/models/menu.model'

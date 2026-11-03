@@ -108,12 +108,12 @@ test('Menu service choices never advertise another Menu on a basic Menu page', a
     )(...Object.values(dependencies))
   }
   const menuRoutePath = load(
-    '../runtime/menu/utils/menu-route.ts',
+    '../runtime/menu/utils/navigation/route.ts',
     { MenuRouteContexts },
     'menuRoutePath'
   )
   const guestMenuSurfaceOptions = load(
-    '../runtime/menu/utils/menu-context.ts',
+    '../runtime/menu/utils/navigation/context.ts',
     { MenuRouteContexts, menuRoutePath },
     'guestMenuSurfaceOptions'
   )

@@ -4,7 +4,7 @@ import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
-} from '../../../../menu/utils/menu-source-upload'
+} from '../../../../menu/models/menu-source-upload.model'
 const text = (value: unknown) => String(value ?? '').trim()
 const timestampSeconds = (value: unknown) => {
   if (!value || typeof value !== 'object') return 0

@@ -13,7 +13,7 @@ import {
   normalizeMenuCreateInput,
   buildMenuPayload,
   type MenuCreateInput,
-} from '../../utils/menu-create-input'
+} from '../../utils/records/create-input'
 import { menuNameAndSlug, requireAvailableMenuSlug } from '../name'
 import { requireMenuCreationCapacity } from '../creation-capacity'
 

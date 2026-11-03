@@ -1,3 +1,4 @@
+import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Menu } from './menu.model'
@@ -41,6 +42,17 @@ export type MenuRecordCreateInput = Omit<Menu, 'created' | 'updated'>
 export type MenuUpdateInput = Partial<
   Pick<
     Menu,
-    'name' | 'internal_name' | 'description' | 'sort_order' | 'doc' | 'audience' | 'serving_hours'
+    | 'name'
+    | 'internal_name'
+    | 'description'
+    | 'sort_order'
+    | 'doc'
+    | 'audience'
+    | 'serving_hours'
   >
 >
+
+// Menu records belong to a Kitchen; the actor's account subscription governs creation only.
+export const kitchenMenuCapacity = {
+  'kitchen.menus': { free: 2, premium: null, business: null },
+} satisfies FireuxAppSubscriptionCapacity

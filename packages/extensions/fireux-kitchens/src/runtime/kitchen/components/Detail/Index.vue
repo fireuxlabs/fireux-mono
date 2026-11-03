@@ -30,7 +30,7 @@ import { computed } from 'vue'
 import {
   menuRouteIndexPath,
   directoryMenuRouteScope,
-} from '../../../menu/utils/menu-route'
+} from '../../../menu/utils/navigation/route'
 const props = defineProps<{
   place: Place
   presentation: KitchenDetailPresentation

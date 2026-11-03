@@ -1,8 +1,8 @@
-import { readWeekdayTimeOpenState } from '../../utils/weekday-time'
-import { normalizeKitchenOfferings } from '../../kitchen/utils/offering-policy'
-import { tableChannelEnabled } from '../../kitchen/utils/table-service'
-import type { MenuOrderTypeConfig } from '../models/menu-ordering.model'
-import type { MenuOrderingConfig } from '../models/menu-ordering.model'
+import { readWeekdayTimeOpenState } from '../../../utils/weekday-time'
+import { normalizeKitchenOfferings } from '../../../kitchen/utils/offering-policy'
+import { tableChannelEnabled } from '../../../kitchen/utils/table-service'
+import type { MenuOrderTypeConfig } from '../../models/menu-ordering.model.ts'
+import type { MenuOrderingConfig } from '../../models/menu-ordering.model.ts'
 
 /** Derived availability for one catalogue; stored Menu data is never an ordering authority. */
 export function kitchenMenuOrdering(

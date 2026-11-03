@@ -1,4 +1,4 @@
-import { kitchenMenuOrdering } from '../../utils/menu-ordering'
+import { kitchenMenuOrdering } from '../../utils/ordering/availability'
 import type { MenuOrderingConfig } from '../../models/menu-ordering.model'
 
 /** Derive service eligibility and serving times without loading payment or delivery policy. */

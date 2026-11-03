@@ -8,7 +8,7 @@ const compileFunction = (source, args = []) =>
     ? compileNative(source, args)
     : compileNative(source, ['setResponseHeader', ...args]).bind(null, () => {})
 const source = readFileSync(
-  new URL('../runtime/menu/utils/service-menu.ts', import.meta.url),
+  new URL('../runtime/menu/utils/ordering/offerings.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import[\s\S]*?from [^\n]+\n/gm, '')
@@ -252,7 +252,7 @@ test('unknown service does not silently fall back to Browse', async () => {
 })
 
 const projectionSource = readFileSync(
-  new URL('../runtime/menu/utils/service-sections.ts', import.meta.url),
+  new URL('../runtime/menu/utils/ordering/sections.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import[\s\S]*?from [^\n]+\n/gm, '')
@@ -605,7 +605,7 @@ test('room-service pagination retains later eligible menus', async () => {
 })
 
 const roomSource = readFileSync(
-  new URL('../runtime/menu/utils/room-service.ts', import.meta.url),
+  new URL('../runtime/menu/utils/navigation/room.ts', import.meta.url),
   'utf8'
 ).replace(/^export /gm, '')
 const { roomServiceRoomNumber, roomServiceEntrancePath } = compileFunction(
@@ -644,7 +644,7 @@ test('room entrance requires a room and preserves its label in the dedicated URL
 })
 
 const tableSource = readFileSync(
-  new URL('../runtime/menu/utils/table-service.ts', import.meta.url),
+  new URL('../runtime/menu/utils/navigation/table.ts', import.meta.url),
   'utf8'
 ).replace(/^export /gm, '')
 const { tableServiceTableNumber, tableServiceEntrancePath } = compileFunction(

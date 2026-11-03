@@ -50,7 +50,7 @@ records establish current application behaviour; the owner establishes intended
 business hours. Resolve the saved question when the owner decides.
 
 Keep Place → Kitchen → Service → Menu containment and intersection intact. Check
-[Menu hours](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-hours.ts)
+[Menu hours](../../../../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/ordering/hours.ts)
 and [service hours](../../../../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-hours.ts),
 then run `menu-hours.test.mjs`, `kitchen-operation-hours.test.mjs` and
 `kitchen/service-hours.test.mjs` under the Kitchen package's `src/test`.

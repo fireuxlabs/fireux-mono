@@ -23,8 +23,8 @@ import { useMenuPublication } from '../../../../menu/composables/publication/use
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
-} from '../../../../menu/utils/menu-source-upload'
-import { kitchenMenuOrdering } from '../../../../menu/utils/menu-ordering'
+} from '../../../../menu/models/menu-source-upload.model'
+import { kitchenMenuOrdering } from '../../../../menu/utils/ordering/availability'
 
 export type KitchenMenuRecordContext = ReturnType<
   typeof createKitchenMenuRecordContext

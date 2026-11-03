@@ -1,11 +1,11 @@
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
-import type { MenuServiceOffer } from '../utils/service-sections'
+import type { MenuServiceOffer } from '../utils/ordering/sections'
 import {
   serviceBasketLine,
   serviceItemSignature,
   type ServiceItemChoices,
   type ServiceBasketLine,
-} from '../utils/service-basket'
+} from '../utils/ordering/basket'
 
 /** Component-scoped basket; no remote writes, storage recovery or order submission. */
 export function useServiceBasket(

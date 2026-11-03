@@ -38,7 +38,7 @@ import {
   rootMenuRouteScope,
   tenantMenuRouteScope,
   type MenuRouteScope,
-} from '../utils/menu-route'
+} from '../utils/navigation/route'
 
 const props = defineProps<{
   menuRouteScope?: MenuRouteScope

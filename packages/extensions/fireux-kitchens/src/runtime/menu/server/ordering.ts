@@ -16,9 +16,9 @@ import {
   kitchenMenuOrdering,
   publicMenuOrderTypes,
   publicMenuServiceOpen,
-} from '../utils/menu-ordering'
-import { constrainMenuOfferings } from '../utils/menu-hours'
-import { serviceBasketLine } from '../utils/service-basket'
+} from '../utils/ordering/availability'
+import { constrainMenuOfferings } from '../utils/ordering/hours'
+import { serviceBasketLine } from '../utils/ordering/basket'
 import { orderItemReader } from './ordering/items'
 import { readMenuOrderSelections } from './ordering/selections'
 import type { OrderLine, Order } from '../../kitchen/models/order.model'

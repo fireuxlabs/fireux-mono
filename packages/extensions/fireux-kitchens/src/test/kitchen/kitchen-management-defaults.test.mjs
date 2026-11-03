@@ -14,10 +14,6 @@ const load = (path, names, deps = {}) =>
     Object.keys(deps)
   )(...Object.values(deps))
 const base = '../../runtime/kitchen/server/'
-const { buildKitchenSystemMenu, KitchenSystemMenuKinds } = load(
-  '../../runtime/menu/utils/kitchen-system-menus.ts',
-  'buildKitchenSystemMenu, KitchenSystemMenuKinds'
-)
 const defaults = load(
   `${base}index/onboarding/system-menus.ts`,
   'readKitchenManagementMenus, createKitchenSystemMenus',
@@ -26,8 +22,6 @@ const defaults = load(
       let n = 0
       return () => `new-${++n}`
     })(),
-    buildKitchenSystemMenu,
-    KitchenSystemMenuKinds,
   }
 )
 const station = load(
@@ -89,8 +83,8 @@ function harness({
     serverKitchenTeamMembersTarget: () => 'team',
     serverKitchenMenusTarget: () => 'menus',
     USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
-KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
     requireOnboardingMemberRole: () => 'user',
     assertKitchenOnboardingBeneficiaryAuthority: () => {},
     assertKitchenOnboardingPlaceDefaults: () => {},

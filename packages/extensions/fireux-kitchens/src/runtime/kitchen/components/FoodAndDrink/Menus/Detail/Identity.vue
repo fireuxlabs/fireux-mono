@@ -44,7 +44,7 @@ import {
   menuRoutePath,
   tenantMenuRouteScope,
   directoryMenuRouteScope,
-} from '../../../../../menu/utils/menu-route'
+} from '../../../../../menu/utils/navigation/route'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
 const { menu, menuSlug, pending, error, selectedKitchen, currencyCode } =

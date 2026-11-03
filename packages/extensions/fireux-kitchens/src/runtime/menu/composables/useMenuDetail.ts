@@ -11,13 +11,13 @@ import {
 } from 'fireux-sproochli/runtime/sproochli'
 import { useMenu } from './useMenu'
 import { useMenuThemeSurface } from './useMenuThemeSurface'
-import { resolveMenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
+import { resolveMenuBrowseSurfaceCopy } from '../utils/catalogue/surface-copy'
 import {
   menuCanonicalPath,
   menuDocumentFilePath,
   type MenuRouteScope,
-} from '../utils/menu-route'
-import { guestMenuSurfaceOptions } from '../utils/menu-context'
+} from '../utils/navigation/route'
+import { guestMenuSurfaceOptions } from '../utils/navigation/context'
 
 export function useMenuDetail(props: {
   menuId: string

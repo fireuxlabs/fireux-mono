@@ -9,7 +9,7 @@
 import type { RouteLocationNormalizedGeneric } from 'vue-router'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { roomServiceRoomNumber } from '../../../../menu/utils/room-service'
+import { roomServiceRoomNumber } from '../../../../menu/utils/navigation/room'
 definePageMeta({
   name: 'KitchenRoomServiceMenuPage',
   title: 'Room service',

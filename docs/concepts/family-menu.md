@@ -173,11 +173,21 @@ changing route grammar. The former `scripts/` guard suite is removed.
 Menu formats are `interactive` and `document`. Creating either requires a
 Kitchen; generic URL-to-QR remains a separate Go QR tool, not a Menu record.
 
-The basic document surface is `menu/components/Document.vue` (`MenuDocument`),
-with one `useMenuDocument` controller for selection, file preview, publication
-and recovery. It reuses Kitchen creation, the existing document viewer and
-`menu/server/document` commands; result markup and its local styles stay in that
-component rather than adding forwarding components or a separate tool model.
+The basic document workflow has one `useMenuDocument` controller for selection,
+file preview, publication and recovery. Pages visibly compose
+`MenuDocumentUpload`, `MenuDocumentPublished` and the existing
+`MenuDetailDocumentViewer`. Upload owns the input controls; Published owns the
+Menu/QR/recovery links and copying feedback. Product titles, commercial copy and
+optional Workspace invitations belong to the consuming App page. These controls
+reuse Kitchen creation and `menu/server/document` commands; there is no separate
+Product writer or umbrella component hiding the page composition.
+
+Menu utilities contain pure calculations grouped under `calendar`, `catalogue`,
+`navigation`, `ordering` and `records`; publication readiness remains a named
+standalone calculation. Item, Section and source-upload storage definitions live
+with their existing models. Menu storage owns its creation-capacity definition.
+Kitchen onboarding owns its Main/Drinks initialization in
+`kitchen/server/index/onboarding/system-menus.ts`.
 
 Create Menu exposes PDF or photos, Menu URL, and Start blank as separate methods.
 URL imports open source review without requiring a Menu name first.
@@ -275,7 +285,7 @@ transaction-time allowance check for manual creation and reviewed draft imports.
 The HTTP adapters call those owners directly; there is no mixed command barrel
 or forwarding compatibility entrypoint.
 
-Pure `menu/utils/menu-metadata.ts` validates and copies editable catalogue
+Pure `menu/utils/records/metadata.ts` validates and copies editable catalogue
 metadata. Creation and metadata editing share complete document metadata and
 description limits, while route-name validation stays with the trusted Menu
 name owner. Placement writes reject commercial terms; Dish commands validate
@@ -320,7 +330,7 @@ Start with:
   `runtime/kitchen/utils/dish-pricing.ts`.
 - Direct discovery: `runtime/menu/server/index/read.ts` and
   `src/test/menu-canonical-discovery.test.mjs`.
-- Route grammar: `runtime/menu/utils/menu-route.ts`.
+- Route grammar: `runtime/menu/utils/navigation/route.ts`.
 - Ownership resolution: `runtime/menu/server/ownership/target.ts`.
 - Menu Directory: `runtime/menu/composables/useMenuDirectory.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
@@ -350,7 +360,7 @@ reuse collection search. The retired `Preview/ItemOptions.vue` and
 new shared controls. Current item options remain with Detail Item and Order
 MenuItems, which have materially different read-only and selection contracts.
 
-`utils/menu-route.ts` owns root, tenant and directory Menu route scopes; Kitchen
+`utils/navigation/route.ts` owns root, tenant and directory Menu route scopes; Kitchen
 surfaces consume it rather than owning root Menu navigation. `RouteSurface.vue`
 retains only active dispatch branches. Global Menu frame tokens are explicitly
 registered from `assets/styles/menu-frame.css`; QR and section-navigation CSS are

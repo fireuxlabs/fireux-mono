@@ -1,4 +1,4 @@
-import type { MenuManifestSection } from '../models/menu-detail.model.ts'
+import type { MenuManifestSection } from '../../models/menu-detail.model.ts'
 
 export type MenuSectionLink = MenuManifestSection & {
   anchor: string

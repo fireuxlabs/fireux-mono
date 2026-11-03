@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 import { useSeoMeta } from '#imports'
-import { menuRoutePath } from '../../utils/menu-route'
+import { menuRoutePath } from '../../utils/navigation/route'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { MenuDirectoryController } from '../../composables/useMenuDirectory'

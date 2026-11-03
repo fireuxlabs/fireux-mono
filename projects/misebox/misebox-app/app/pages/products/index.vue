@@ -10,7 +10,7 @@
           title="Menu Hosting"
           description="Upload a PDF or image. Get your online menu link and QR for free."
           icon="i-lucide-file-check"
-          to="/menu-express"
+          to="/products/menu-express"
         />
         <UPageCard
           title="Kitchen Workspace"

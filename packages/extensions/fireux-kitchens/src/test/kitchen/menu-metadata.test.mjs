@@ -37,7 +37,7 @@ const requireKitchenMutationAuthority = load(
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverKitchenAccessTarget: (app) => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
     readKitchenAccessIds,
     isAppUserSubscription: (value) =>
       ['free', 'premium', 'business'].includes(value),
@@ -47,7 +47,7 @@ PLACE_MUTATION_TARGETS: { places: 'places' },
 )
 
 const metadata = load(
-  '../../runtime/menu/utils/menu-metadata.ts',
+  '../../runtime/menu/utils/records/metadata.ts',
   {},
   '({normalizeMenuMetadataPatch,normalizeMenuDocument})'
 )
@@ -97,18 +97,18 @@ function harness(tier = 'premium') {
     requireFirestoreDocumentId,
     requireKitchenMutationAuthority,
     APP_MUTATION_TARGETS: { menus: 'menus' },
-USER_MUTATION_TARGETS: { menus: 'menus' },
-ECOSYSTEM_MUTATION_TARGETS: { menus: 'menus' },
-FIREUX_MUTATION_TARGETS: { menus: 'menus' },
-SPROOCHLI_MUTATION_TARGETS: { menus: 'menus' },
-PLACE_MUTATION_TARGETS: { menus: 'menus' },
-KITCHEN_MUTATION_TARGETS: { menus: 'menus' },
-INGREDIENT_MUTATION_TARGETS: { menus: 'menus' },
-PRODUCT_MUTATION_TARGETS: { menus: 'menus' },
-PROPERTY_MUTATION_TARGETS: { menus: 'menus' },
-PORTFOLIO_MUTATION_TARGETS: { menus: 'menus' },
-SUPPLIER_MUTATION_TARGETS: { menus: 'menus' },
-JOB_MUTATION_TARGETS: { menus: 'menus' },
+    USER_MUTATION_TARGETS: { menus: 'menus' },
+    ECOSYSTEM_MUTATION_TARGETS: { menus: 'menus' },
+    FIREUX_MUTATION_TARGETS: { menus: 'menus' },
+    SPROOCHLI_MUTATION_TARGETS: { menus: 'menus' },
+    PLACE_MUTATION_TARGETS: { menus: 'menus' },
+    KITCHEN_MUTATION_TARGETS: { menus: 'menus' },
+    INGREDIENT_MUTATION_TARGETS: { menus: 'menus' },
+    PRODUCT_MUTATION_TARGETS: { menus: 'menus' },
+    PROPERTY_MUTATION_TARGETS: { menus: 'menus' },
+    PORTFOLIO_MUTATION_TARGETS: { menus: 'menus' },
+    SUPPLIER_MUTATION_TARGETS: { menus: 'menus' },
+    JOB_MUTATION_TARGETS: { menus: 'menus' },
     serverKitchenMenusTarget: (k) => `kitchens/${k}/menus`,
     serverKitchenMenuSectionsTarget: (k, m) =>
       `kitchens/${k}/menus/${m}/sections`,

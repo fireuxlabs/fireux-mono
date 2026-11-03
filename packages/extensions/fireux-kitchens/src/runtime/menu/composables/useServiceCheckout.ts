@@ -9,9 +9,9 @@ import {
   serviceOrder,
   serviceSelections,
   type MenuCheckoutService,
-} from '../utils/service-checkout'
-import { serviceItemSignature } from '../utils/service-basket'
-import type { MenuServiceOffer } from '../utils/service-sections'
+} from '../utils/ordering/checkout'
+import { serviceItemSignature } from '../utils/ordering/basket'
+import type { MenuServiceOffer } from '../utils/ordering/sections'
 import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
 import type { useServiceBasket } from './useServiceBasket'
 import { useServiceRecovery } from './useServiceRecovery'

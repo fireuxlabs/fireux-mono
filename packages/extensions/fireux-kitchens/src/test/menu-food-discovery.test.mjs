@@ -45,7 +45,7 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     type: 'collection',
   })
   const script = readFileSync(
-    new URL('../runtime/menu/utils/food-venue-groups.ts', import.meta.url),
+    new URL('../runtime/menu/utils/catalogue/venue-groups.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -101,7 +101,10 @@ test('Menu discovery retains each menu, filters services and preserves destinati
   )
   assert.equal(group([...rows, drinks])[0].title, 'Food & drinks')
   const titled = structuredClone(rows)
-  titled[0].kitchen = { ...titled[0].kitchen, services_title: 'Pizza, burgers & drinks' }
+  titled[0].kitchen = {
+    ...titled[0].kitchen,
+    services_title: 'Pizza, burgers & drinks',
+  }
   assert.equal(group(titled)[0].title, 'Pizza, burgers & drinks')
   assert.deepEqual(group([{ ...rows[0], source: {} }]), [])
   assert.equal(

@@ -111,7 +111,7 @@ import { useKitchenMenuRecordContext } from '../../../../composables/workspace/m
 import {
   directoryMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../../../menu/utils/menu-route'
+} from '../../../../../menu/utils/navigation/route'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
 import { menuOfferingSummaries } from '../../../../utils/menu-offering-summary'
 const {

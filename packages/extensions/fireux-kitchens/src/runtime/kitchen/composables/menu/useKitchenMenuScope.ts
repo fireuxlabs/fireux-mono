@@ -8,7 +8,7 @@ import type { Menu } from '../../../menu/models/menu-storage.model.ts'
 import {
   directoryMenuRouteScope,
   menuRoutePath,
-} from '../../../menu/utils/menu-route'
+} from '../../../menu/utils/navigation/route'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'

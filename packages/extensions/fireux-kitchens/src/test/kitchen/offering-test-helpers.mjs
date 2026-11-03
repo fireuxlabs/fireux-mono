@@ -62,4 +62,8 @@ export const kioskService = {
   interactions: [{ type: 'eat_in', enabled: true }],
 }
 
-export const { publicMenuOrderTypes } = load('../../runtime/menu/utils/menu-ordering.ts', 'publicMenuOrderTypes', load('../../runtime/kitchen/utils/table-service.ts', 'tableChannelEnabled'))
+export const { publicMenuOrderTypes } = load(
+  '../../runtime/menu/utils/ordering/availability.ts',
+  'publicMenuOrderTypes',
+  load('../../runtime/kitchen/utils/table-service.ts', 'tableChannelEnabled')
+)

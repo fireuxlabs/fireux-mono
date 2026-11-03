@@ -5,7 +5,7 @@ import {
   getQuery,
   getRouterParam,
 } from 'h3'
-import { dailyMenuToday } from '../../../menu/utils/daily-menu'
+import { dailyMenuToday } from '../../../menu/utils/calendar/daily'
 
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
@@ -16,8 +16,8 @@ import {
 import { buildMenuPayload } from '../../../menu/server/payload/build.ts'
 import { readKitchenMenuSections } from '../../../menu/server/manifest/sections.ts'
 import { readKitchenMenuChoices } from '../../../menu/server/manifest/choices.ts'
-import { normalizeMenuRouteContext } from '../../../menu/utils/menu-context.ts'
-import { parseMenuRouteTarget } from '../../../menu/utils/menu-route.ts'
+import { normalizeMenuRouteContext } from '../../../menu/utils/navigation/context.ts'
+import { parseMenuRouteTarget } from '../../../menu/utils/navigation/route.ts'
 import { resolveMenuTarget } from '../../../menu/server/ownership/target.ts'
 import { type ScopedMenuTarget } from '../../../menu/server/ownership/target-types.ts'
 

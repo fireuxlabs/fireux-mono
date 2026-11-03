@@ -23,7 +23,7 @@ const selections = [
     kind: 'menu' as const,
     terms:
       'Free PDF or image menu hosting. Publish it yourself and keep the same link and QR when you replace your document.',
-    action: { label: 'Upload my menu — free', to: '/menu-express' },
+    action: { label: 'Upload my menu — free', to: '/products/menu-express' },
   },
   {
     id: 'collection-ordering',

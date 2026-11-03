@@ -1,4 +1,4 @@
-import { isMenuDate } from './menu-date.ts'
+import { isMenuDate } from './date.ts'
 
 /** The linked Place owns the Kitchen's calendar timezone. No browser-local fallback. */
 export function menuLocalDate(timezone: string, now = new Date()): string {

@@ -1,4 +1,4 @@
-import type { MenuServiceOffer } from './service-sections'
+import type { MenuServiceOffer } from './sections'
 
 export type ServiceItemChoices = {
   bottle?: 'deposit' | 'exchange'

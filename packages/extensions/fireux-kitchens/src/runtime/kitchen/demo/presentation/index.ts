@@ -1,4 +1,4 @@
-import { kitchenMenuOrdering } from '../../../menu/utils/menu-ordering'
+import { kitchenMenuOrdering } from '../../../menu/utils/ordering/availability'
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: derive guest Menu presentation from the same typed Demo records used by Workspace.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: feature Garden Room and resolve Kitchen-owned payments into presentation only.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: derive explicit Menu, Kiosk and Service presentation exports.
@@ -9,7 +9,7 @@ import type {
   MenuManifestItem,
   MenuManifestSection,
 } from '../../../menu/models/menu-detail.model.ts'
-import type { MenuItem } from '../../../menu/utils/menu-item.ts'
+import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
 import {
   featuredKioskDemoScenario,
   featuredMenuDemoScenario,
@@ -83,7 +83,12 @@ export function kitchenDemoManifestSections(
         .sort((left, right) => left.sort_order - right.sort_order)
         .flatMap<MenuManifestItem>((item) => {
           const dish = dishesById.get(clean(item.dish_id))
-          if (!dish || typeof dish.price !== 'number' || !Number.isFinite(dish.price) || dish.price < 0)
+          if (
+            !dish ||
+            typeof dish.price !== 'number' ||
+            !Number.isFinite(dish.price) ||
+            dish.price < 0
+          )
             return []
 
           return [

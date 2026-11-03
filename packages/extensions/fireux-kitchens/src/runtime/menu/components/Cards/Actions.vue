@@ -23,11 +23,14 @@ import { computed } from 'vue'
 import { useRoute, useRuntimeConfig } from '#imports'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
-import { guestDiscoverableMenuSurfaceProfiles, menuContextProfile } from '../../utils/menu-context'
+import {
+  guestDiscoverableMenuSurfaceProfiles,
+  menuContextProfile,
+} from '../../utils/navigation/context'
 import {
   menuRoutePath,
   type MenuRouteScope,
-} from '../../utils/menu-route'
+} from '../../utils/navigation/route'
 
 const props = withDefaults(
   defineProps<{
@@ -44,7 +47,8 @@ const props = withDefaults(
   }
 )
 
-const websiteOrdering = useRuntimeConfig().public.ordering?.channels?.includes('website')
+const websiteOrdering =
+  useRuntimeConfig().public.ordering?.channels?.includes('website')
 const route = useRoute()
 const selectedSproochliLanguage = computed(() =>
   normalizeSproochliLanguage(route.query.sproochli)
@@ -74,26 +78,47 @@ const doorways = computed(() => {
         })
       ),
     },
-    ...(websiteOrdering ? props.offerings.flatMap((service) => {
-      if (service.paused) return []
-      const profile = service.type === 'dine_in'
-        ? menuContextProfile('table')
-        : guestDiscoverableMenuSurfaceProfiles.find(
-            ({ visibleOrderTypes }) => visibleOrderTypes.includes(service.type)
+    ...(websiteOrdering
+      ? props.offerings
+          .flatMap((service) => {
+            if (service.paused) return []
+            const profile =
+              service.type === 'dine_in'
+                ? menuContextProfile('table')
+                : guestDiscoverableMenuSurfaceProfiles.find(
+                    ({ visibleOrderTypes }) =>
+                      visibleOrderTypes.includes(service.type)
+                  )
+            if (
+              !profile ||
+              !['collection', 'delivery', 'dine_in'].includes(service.type)
+            )
+              return []
+            return [
+              {
+                context: profile.context,
+                icon: profile.icon,
+                label:
+                  service.type === 'dine_in'
+                    ? 'QR table ordering'
+                    : profile.label,
+                to: preserveSproochliLanguage(
+                  menuRoutePath({
+                    scope: props.routeScope,
+                    menuId: props.menuId,
+                    context: profile.context,
+                    offeringId: service.kitchen_offering_id,
+                  })
+                ),
+              },
+            ]
+          })
+          .filter(
+            (doorway, index, all) =>
+              all.findIndex((other) => other.context === doorway.context) ===
+              index
           )
-      if (!profile || !['collection', 'delivery', 'dine_in'].includes(service.type)) return []
-      return [{
-        context: profile.context,
-        icon: profile.icon,
-        label: service.type === 'dine_in' ? 'QR table ordering' : profile.label,
-        to: preserveSproochliLanguage(menuRoutePath({
-          scope: props.routeScope,
-          menuId: props.menuId,
-          context: profile.context,
-          offeringId: service.kitchen_offering_id,
-        })),
-      }]
-    }).filter((doorway, index, all) => all.findIndex(other => other.context === doorway.context) === index) : []),
+      : []),
   ].filter(({ to }) => Boolean(to))
 })
 </script>

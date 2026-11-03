@@ -88,7 +88,7 @@ export function useMenuExpressIntake() {
       )
       localStorage.removeItem(draftKey)
       pendingInput.value = null
-      await navigateTo(`/menu-express/${saved.id}`)
+      await navigateTo(`/products/menu-express/${saved.id}`)
     } catch (cause: any) {
       if (isCurrent()) {
         if (cause?.statusCode === 400 || cause?.status === 400) {

@@ -62,7 +62,7 @@
 import type {
   MenuServiceSection,
   MenuServiceOffer,
-} from '../../utils/service-sections'
+} from '../../utils/ordering/sections'
 defineProps<{
   disabled?: boolean
   sections: MenuServiceSection[]

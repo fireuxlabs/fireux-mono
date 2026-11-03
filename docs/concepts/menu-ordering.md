@@ -55,7 +55,7 @@ Public Website service buttons and the Menu order command derive supported
 collection, delivery and table ordering from enabled Kitchen offerings linked to
 the Menu, with a valid configured schedule and an enabled, unpaused interaction.
 Table ordering also requires the table QR channel. The App Website channel alone
-does not grant these services. `menu/utils/menu-ordering.ts` owns the shared
+does not grant these services. `menu/utils/ordering/availability.ts` owns the shared
 projection; the command re-reads offerings within the order transaction. This
 projection checks configured services; the customer flow and submission command
 separately enforce current opening times.

@@ -5,8 +5,8 @@ import {
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: derive row media only from its Dish.
 import { computed, type Ref } from 'vue'
 import type { Dish } from '../../utils/dish.ts'
-import { type MenuItem } from '../../../menu/utils/menu-item.ts'
-import type { MenuSection } from '../../../menu/utils/menu-section.ts'
+import { type MenuItem } from '../../../menu/models/menu-item.model.ts'
+import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
 import type { KitchenMenuSectionRow } from '../../models/kitchen-menu-rows.model'
 
 type MenuRowOptions = {
@@ -54,7 +54,9 @@ export function useKitchenMenuRows(options: MenuRowOptions) {
             description: text(dish?.description),
             image_url: text(record(dish).image),
             price: dish?.price,
-            ...(dish?.price === undefined ? { priceLabel: 'Price not set' } : {}),
+            ...(dish?.price === undefined
+              ? { priceLabel: 'Price not set' }
+              : {}),
             addOns: normalizeDishAddOns(record(dish).add_ons),
             priceOptions: normalizeDishPriceOptions(record(dish).price_options),
           }

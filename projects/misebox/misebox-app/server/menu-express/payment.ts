@@ -78,7 +78,7 @@ export async function startCheckout(
     event,
     { appId, productId, slug: productId, priceId, mode: 'payment' },
     {
-      returnPath: `/menu-express/${id}`,
+      returnPath: `/products/menu-express/${id}`,
       metadata: { menuExpressRequestId: id },
       idempotencyKey: `menu-express:${appId}:${id}:${attempt}`,
     }

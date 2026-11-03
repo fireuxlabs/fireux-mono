@@ -1,9 +1,9 @@
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
-import type { MenuServiceOffer } from '../utils/service-sections'
+import type { MenuServiceOffer } from '../utils/ordering/sections'
 import {
   serviceItemSignature,
   type ServiceItemChoices,
-} from '../utils/service-basket'
+} from '../utils/ordering/basket'
 import type { useServiceBasket } from './useServiceBasket'
 
 /** Local selector lifecycle. Basket replacement stays with the basket owner. */

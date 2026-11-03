@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import type { MenuDocumentRead } from '../../models/menu-detail.model'
 import type { MenuDocument } from '../../models/menu.model'
-import { menuDocumentFilePath } from '../../utils/menu-route'
+import { menuDocumentFilePath } from '../../utils/navigation/route'
 import {
   readMenuDocumentActor,
   requireMenuDocumentAuthority,

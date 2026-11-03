@@ -2,11 +2,11 @@ import { tableChannelEnabled } from './table-service.ts'
 import type { Menu } from '../../menu/models/menu.model'
 import type { KitchenOffering } from '../models/offering.model'
 import { kitchenOrderTypeLabel } from './kitchen-order-label'
-import { menuChoiceContextForOrderType } from '../../menu/utils/menu-context'
+import { menuChoiceContextForOrderType } from '../../menu/utils/navigation/context'
 import {
   menuRouteProjection,
   type MenuRouteScope,
-} from '../../menu/utils/menu-route'
+} from '../../menu/utils/navigation/route'
 import {
   menuWebsiteOrderUrl,
   websiteOrderContexts,
@@ -27,8 +27,7 @@ export function menuOfferingSummaries(input: {
       state: offering.enabled ? 'Enabled' : 'Off',
       hours: offering.hours,
       sharedMenuCount: new Set(offering.menu_ids).size,
-      configurePath:
-        '/workspace/kitchen/food-and-drink/services',
+      configurePath: '/workspace/kitchen/food-and-drink/services',
       interactions: offering.interactions.map((interaction) => {
         const context =
           interaction.type === 'browse'

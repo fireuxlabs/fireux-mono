@@ -1,5 +1,5 @@
-import type { MenuItem } from '../../../utils/menu-item'
-import { normalizeMenuItemPatch } from '../../../utils/menu-item-patch'
+import type { MenuItem } from '../../../models/menu-item.model'
+import { normalizeMenuItemPatch } from '../../../utils/records/item-patch'
 import { useMenuMutation } from './useMenuMutation'
 
 export function useMenuItemMutations() {

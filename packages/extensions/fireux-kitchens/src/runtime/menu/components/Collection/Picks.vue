@@ -20,7 +20,7 @@
 import {
   menuCollectionPickProfiles,
   type MenuCollectionPick,
-} from '../../utils/menu-collection-picks'
+} from '../../utils/catalogue/picks'
 
 const props = withDefaults(
   defineProps<{

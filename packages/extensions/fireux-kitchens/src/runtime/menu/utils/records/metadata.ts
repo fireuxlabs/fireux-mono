@@ -1,6 +1,6 @@
-import { requireOperatingHours } from '../../kitchen/utils/operating-hours'
-import type { MenuDocument } from '../models/menu.model'
-import type { MenuUpdateInput } from '../models/menu-storage.model'
+import { requireOperatingHours } from '../../../kitchen/utils/operating-hours'
+import type { MenuDocument } from '../../models/menu.model.ts'
+import type { MenuUpdateInput } from '../../models/menu-storage.model.ts'
 
 /** Editable catalogue metadata. Publication and relationships have other owners. */
 export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
@@ -34,7 +34,10 @@ export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
     result.name = value.name.trim()
   }
   if ('internal_name' in value) {
-    if (typeof value.internal_name !== 'string' || value.internal_name.trim().length > 160)
+    if (
+      typeof value.internal_name !== 'string' ||
+      value.internal_name.trim().length > 160
+    )
       throw new Error('Internal Menu name must be text up to 160 characters.')
     result.internal_name = value.internal_name.trim()
   }

@@ -96,7 +96,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { MenuServiceSection } from '../../utils/service-sections'
+import type { MenuServiceSection } from '../../utils/ordering/sections'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 defineProps<{ sections: MenuServiceSection[]; serviceLabel: string }>()
 </script>

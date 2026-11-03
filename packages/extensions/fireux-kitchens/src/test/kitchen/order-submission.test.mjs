@@ -32,7 +32,7 @@ const timeState = load(
   { ...timeCore, ...timeConfig, ...timeFormat }
 )
 const menuServices = load(
-  '../../runtime/menu/utils/menu-ordering.ts',
+  '../../runtime/menu/utils/ordering/availability.ts',
   'kitchenMenuOrdering,publicMenuOrderTypes,publicMenuServiceOpen',
   {
     normalizeKitchenOfferings,
@@ -838,7 +838,7 @@ test('exchange services use explicit actors and retain caller/App/operator bound
 
 test('Collection Product journey and Workspace board share one canonical order without a Product purchase', async () => {
   const { serviceOrder, serviceSelections } = load(
-    '../../runtime/menu/utils/service-checkout.ts',
+    '../../runtime/menu/utils/ordering/checkout.ts',
     'serviceOrder,serviceSelections'
   )
   const store = harness((tx, input) =>
@@ -922,7 +922,7 @@ test('Collection Product journey and Workspace board share one canonical order w
 
 test('Kiosk Eat in and Takeaway reach the same Workspace board with canonical pricing and caller-bound retries', async () => {
   const { serviceOrder, serviceSelections } = load(
-    '../../runtime/menu/utils/service-checkout.ts',
+    '../../runtime/menu/utils/ordering/checkout.ts',
     'serviceOrder,serviceSelections'
   )
   const offering = {

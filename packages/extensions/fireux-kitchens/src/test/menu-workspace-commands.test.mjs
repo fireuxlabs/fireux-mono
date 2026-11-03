@@ -41,15 +41,15 @@ const targets = {
   serverKitchenMenuItemsTarget: (id, menu, section) =>
     `${id}/menus/${menu}/sections/${section}/items`,
   KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+  PLACE_MUTATION_TARGETS: { places: 'places' },
 }
 const metadata = load(
-  '../runtime/menu/utils/menu-metadata.ts',
+  '../runtime/menu/utils/records/metadata.ts',
   operatingHoursPolicy,
   ['normalizeMenuMetadataPatch', 'normalizeMenuDocument']
 )
 const creationInput = load(
-  '../runtime/menu/utils/menu-create-input.ts',
+  '../runtime/menu/utils/records/create-input.ts',
   metadata,
   ['normalizeMenuCreateInput', 'buildMenuPayload']
 )
@@ -68,7 +68,7 @@ const normalizers = load('../runtime/kitchen/utils/dish-pricing.ts', {}, [
   'normalizeDishAddOns',
 ])
 const { normalizeMenuItemPatch } = load(
-  '../runtime/menu/utils/menu-item-patch.ts',
+  '../runtime/menu/utils/records/item-patch.ts',
   { ...normalizers, normalizeSlug: slug },
   ['normalizeMenuItemPatch']
 )
@@ -78,7 +78,7 @@ const capacity = load(
   ['appSubscriptionCapacity', 'hasAppSubscriptionCapacity']
 )
 const { kitchenMenuCapacity } = load(
-  '../runtime/menu/utils/menu-capacity.ts',
+  '../runtime/menu/models/menu-storage.model.ts',
   {},
   ['kitchenMenuCapacity']
 )
@@ -156,7 +156,7 @@ function harness({
     ['menuNameAndSlug', 'requireAvailableMenuSlug']
   )
   const payload = load(
-    '../runtime/menu/utils/menu-create-input.ts',
+    '../runtime/menu/utils/records/create-input.ts',
     { ...metadata, ...creationInput },
     ['buildMenuPayload']
   )
@@ -426,20 +426,21 @@ test('Free downgrade preserves custom names; duplicate display name leaves slug 
 })
 
 test('Kitchen onboarding creates two generated Menu identities with stable Main and Drinks slugs', () => {
-  const { buildKitchenSystemMenu, KitchenSystemMenuKinds } = load(
-    '../runtime/menu/utils/kitchen-system-menus.ts',
-    {},
-    ['buildKitchenSystemMenu', 'KitchenSystemMenuKinds']
-  )
   let sequence = 0
-  const { createKitchenSystemMenus } = load(
+  const {
+    createKitchenSystemMenus,
+    buildKitchenSystemMenu,
+    KitchenSystemMenuKinds,
+  } = load(
     '../runtime/kitchen/server/index/onboarding/system-menus.ts',
     {
       randomUUID: () => `stable-${++sequence}`,
-      buildKitchenSystemMenu,
-      KitchenSystemMenuKinds,
     },
-    ['createKitchenSystemMenus']
+    [
+      'createKitchenSystemMenus',
+      'buildKitchenSystemMenu',
+      'KitchenSystemMenuKinds',
+    ]
   )
   const writes = []
   const input = {

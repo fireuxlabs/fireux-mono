@@ -16,7 +16,7 @@ function harness(subscription = 'premium', duplicates = []) {
     update: (...args) => writes.push(args),
   }
   const metadataSource = readFileSync(
-    new URL('../runtime/menu/utils/menu-metadata.ts', import.meta.url),
+    new URL('../runtime/menu/utils/records/metadata.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[^\n]*\n/gm, '')

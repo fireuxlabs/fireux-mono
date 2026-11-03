@@ -22,7 +22,7 @@ export const checkoutPricing = loadOfferingSource(
   'normalizeKitchenPromotion,promotionPricedItem,promotionDay'
 )
 export const checkoutBasket = loadOfferingSource(
-  'menu/utils/service-basket',
+  'menu/utils/ordering/basket',
   'serviceBasketLine,serviceItemSignature'
 )
 export const checkoutSelections = loadOfferingSource(
@@ -48,7 +48,7 @@ export function makeMenuOrdering(deps) {
     common
   )
   const menuHours = loadOfferingSource(
-    'menu/utils/menu-hours',
+    'menu/utils/ordering/hours',
     'constrainMenuOfferings',
     {
       normalizeKitchenOfferings: (rows) => rows,

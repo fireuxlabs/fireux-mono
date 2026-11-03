@@ -9,7 +9,7 @@ import {
   menuRoutePath,
   tenantMenuRouteScope,
   type MenuRouteScope,
-} from '../../../menu/utils/menu-route'
+} from '../../../menu/utils/navigation/route'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 
@@ -68,7 +68,10 @@ export function useKitchenMenuUrl(options: {
       menuId: menuSlug,
       context,
     })
-  const menuUrl = (menuSlug: unknown, context: MenuRouteContext = 'generic') => {
+  const menuUrl = (
+    menuSlug: unknown,
+    context: MenuRouteContext = 'generic'
+  ) => {
     const path = menuPath(menuSlug, context)
     if (!path) return ''
     if (!appOrigin.value) return isCurrentApp.value ? path : ''

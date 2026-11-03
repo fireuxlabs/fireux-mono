@@ -293,7 +293,7 @@ test('interrupted intake restores original details and retries the same request 
   await state.submit()
   assert.equal(calls.length, 2)
   assert.deepEqual(calls[1], calls[0])
-  assert.deepEqual(destinations, [`/menu-express/${calls[0].id}`])
+  assert.deepEqual(destinations, [`/products/menu-express/${calls[0].id}`])
   assert.equal(state.pendingInput.value, null)
   assert.equal(storage.has('misebox:menu-express:intake'), false)
   scope.stop()

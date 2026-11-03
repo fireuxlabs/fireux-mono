@@ -11,7 +11,7 @@ import {
 } from '../../../kitchen/server/mutation-targets'
 import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import type { KitchenMenuReview } from '../../models/menu-review.model'
-import { normalizeMenuDocument } from '../../utils/menu-metadata'
+import { normalizeMenuDocument } from '../../utils/records/metadata'
 
 function fingerprint<T extends KitchenMenuReview>(review: T): T {
   const serialized = JSON.stringify(review)

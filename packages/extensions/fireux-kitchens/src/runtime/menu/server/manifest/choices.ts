@@ -5,12 +5,12 @@ import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuChoice } from '../../models/menu-ordering.model'
 import { kitchenOrderTypeLabel } from '../../../kitchen/utils/kitchen-order-label'
-import { menuChoiceContextForOrderType } from '../../utils/menu-context.ts'
+import { menuChoiceContextForOrderType } from '../../utils/navigation/context.ts'
 import {
   directoryMenuRouteScope,
   menuRoutePath,
   tenantMenuRouteScope,
-} from '../../utils/menu-route.ts'
+} from '../../utils/navigation/route.ts'
 import {
   isMenuOrderingEnabled,
   readKitchenMenuOrdering,

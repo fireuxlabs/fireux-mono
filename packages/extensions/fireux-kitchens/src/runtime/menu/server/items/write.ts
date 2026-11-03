@@ -14,7 +14,7 @@ import {
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
 } from '../../../kitchen/server/mutation-targets'
-import { normalizeMenuItemPatch } from '../../utils/menu-item-patch'
+import { normalizeMenuItemPatch } from '../../utils/records/item-patch'
 import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
 import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
 import type { MenuItem } from '../../models/menu-item.model'

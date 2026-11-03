@@ -2,8 +2,8 @@ import { setResponseStatus, useRequestURL, useSeoMeta } from '#imports'
 import { computed, ref } from 'vue'
 import { useMenu, type MenuLoadFailure } from './useMenu'
 import type { MenuRouteContext } from '../models/menu-context.model.ts'
-import type { MenuRouteScope } from '../utils/menu-route'
-import { menuManifestSupportsContext } from '../utils/menu-context'
+import type { MenuRouteScope } from '../utils/navigation/route'
+import { menuManifestSupportsContext } from '../utils/navigation/context'
 
 export type MenuQrPageInput = {
   menuId: string

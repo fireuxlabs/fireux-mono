@@ -1,7 +1,7 @@
 import {
   MenuRouteContexts,
   type MenuRouteContext,
-} from '../models/menu-context.model.ts'
+} from '../../models/menu-context.model.ts'
 
 export type MenuRouteScope =
   | { kind: 'root' }

@@ -52,7 +52,7 @@ const table = load(
   'tableChannelEnabled'
 )
 const services = loadOfferingSource(
-  'menu/utils/menu-ordering',
+  'menu/utils/ordering/availability',
   'kitchenMenuOrdering,publicMenuOrderTypes,publicMenuServiceOpen',
   {
     normalizeKitchenOfferings,
@@ -305,7 +305,7 @@ test('standalone dish offers use the serving weekday without changing the normal
 })
 
 const helpers = loadOfferingSource(
-  'menu/utils/service-checkout',
+  'menu/utils/ordering/checkout',
   'serviceOrder,serviceSelections'
 )
 const basketReader = loadOfferingSource(
@@ -342,7 +342,7 @@ function checkoutHarness(options = {}) {
   const timeouts = new Map()
   let timeoutId = 0
   const sessionReader = loadOfferingSource(
-    'menu/utils/service-recovery',
+    'menu/utils/ordering/recovery',
     'readServiceSession',
     helpers
   )

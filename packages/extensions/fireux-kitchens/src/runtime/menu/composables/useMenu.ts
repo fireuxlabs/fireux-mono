@@ -23,8 +23,8 @@ import {
   menuRoutePath,
   menuRouteQrPath,
   type MenuRouteScope,
-} from '../utils/menu-route'
-import { normalizeMenuRouteContext } from '../utils/menu-context'
+} from '../utils/navigation/route'
+import { normalizeMenuRouteContext } from '../utils/navigation/context'
 
 export type MenuRenderKind = 'document' | 'structured' | 'unavailable'
 

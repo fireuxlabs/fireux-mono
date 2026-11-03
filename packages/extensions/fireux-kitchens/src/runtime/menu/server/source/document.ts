@@ -18,7 +18,7 @@ import {
   serverKitchenMenusTarget,
   serverKitchenMenuUploadsTarget,
 } from '../../../kitchen/server/mutation-targets'
-import { normalizeMenuCreateInput } from '../../utils/menu-create-input'
+import { normalizeMenuCreateInput } from '../../utils/records/create-input'
 import { stageCreateKitchenMenu } from '../records/create'
 import { menuNameAndSlug } from '../name'
 import { saveKitchenMenuUploadFiles } from './uploads'

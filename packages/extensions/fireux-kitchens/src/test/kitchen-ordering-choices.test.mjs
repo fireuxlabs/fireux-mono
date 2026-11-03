@@ -20,7 +20,7 @@ function load(path, names, dependencies = {}) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
-const routes = load('menu/utils/menu-route', 'menuRoutePath', {
+const routes = load('menu/utils/navigation/route', 'menuRoutePath', {
   MenuRouteContexts: [
     'generic',
     'collection',
@@ -159,11 +159,15 @@ test('public menu projection hides paused entrances and private operational sett
     'weekdayTimeConfig',
     timeCore
   )
-  const menuHours = load('menu/utils/menu-hours', 'constrainMenuOfferings', {
-    normalizeKitchenOfferings,
-    readWeekdayTimeWindowsConfig: weekdayTimeConfig.readWindowsConfig,
-    ...weekdayHoursConstraints,
-  })
+  const menuHours = load(
+    'menu/utils/ordering/hours',
+    'constrainMenuOfferings',
+    {
+      normalizeKitchenOfferings,
+      readWeekdayTimeWindowsConfig: weekdayTimeConfig.readWindowsConfig,
+      ...weekdayHoursConstraints,
+    }
+  )
   const project = load(
     'menu/server/index/projection',
     'projectMenuDirectoryEntry',

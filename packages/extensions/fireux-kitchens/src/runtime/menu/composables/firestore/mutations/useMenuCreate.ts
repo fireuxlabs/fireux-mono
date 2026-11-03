@@ -7,8 +7,8 @@ import { computed, unref, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
-import type { MenuCreateInput } from '../../../utils/menu-create-input'
-export type { MenuCreateInput } from '../../../utils/menu-create-input'
+import type { MenuCreateInput } from '../../../utils/records/create-input'
+export type { MenuCreateInput } from '../../../utils/records/create-input'
 export function useMenuCreate(
   options: {
     kitchenId?: string | Ref<string | null | undefined>

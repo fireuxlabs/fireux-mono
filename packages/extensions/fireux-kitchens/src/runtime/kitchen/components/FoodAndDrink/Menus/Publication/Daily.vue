@@ -117,17 +117,17 @@ import { useKitchenMenuRecordContext } from '../../../../composables/workspace/m
 import { useMenuRecordView } from '../../../../composables/workspace/menus/useMenuRecordView'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useMenuMutation } from '../../../../../menu/composables/firestore/mutations/useMenuMutation'
-import { isMenuDate } from '../../../../../menu/utils/menu-date'
+import { isMenuDate } from '../../../../../menu/utils/calendar/date'
 import {
   menuLocalDate,
   publishedMenuDates,
-} from '../../../../../menu/utils/daily-menu'
+} from '../../../../../menu/utils/calendar/daily'
 import {
   menuRoutePath,
   menuRouteQrPath,
   tenantMenuRouteScope,
   directoryMenuRouteScope,
-} from '../../../../../menu/utils/menu-route'
+} from '../../../../../menu/utils/navigation/route'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
 const {

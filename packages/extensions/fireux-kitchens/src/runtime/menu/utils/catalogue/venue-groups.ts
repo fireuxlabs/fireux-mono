@@ -1,9 +1,9 @@
-import type { MenuDirectoryEntry } from '../models/menu-directory.response'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
   menuRoutePath,
-} from './menu-route'
+} from '../navigation/route'
 
 export const foodPortalServices = [
   { label: 'Collection', value: 'collection', icon: 'i-lucide-shopping-bag' },

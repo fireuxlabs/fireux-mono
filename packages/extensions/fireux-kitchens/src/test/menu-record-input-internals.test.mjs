@@ -7,7 +7,7 @@ import { compileFunction } from 'node:vm'
 
 const root = new URL('../', import.meta.url)
 function load(path, dependencies, names) {
-  dependencies = {...dishPricingHelpers,...dependencies}
+  dependencies = { ...dishPricingHelpers, ...dependencies }
 
   const source = readFileSync(new URL(path, root), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -19,12 +19,12 @@ function load(path, dependencies, names) {
   )(...Object.values(dependencies))
 }
 const metadata = load(
-  'runtime/menu/utils/menu-metadata.ts',
+  'runtime/menu/utils/records/metadata.ts',
   {},
   'normalizeMenuMetadataPatch, normalizeMenuDocument'
 )
 const creation = load(
-  'runtime/menu/utils/menu-create-input.ts',
+  'runtime/menu/utils/records/create-input.ts',
   metadata,
   'normalizeMenuCreateInput, buildMenuPayload'
 )
@@ -44,7 +44,11 @@ const { normalizeDishPricingPatch } = load(
   },
   'normalizeDishPricingPatch'
 )
-const { normalizeMenuItemPatch } = load('runtime/menu/utils/menu-item-patch.ts', {}, 'normalizeMenuItemPatch')
+const { normalizeMenuItemPatch } = load(
+  'runtime/menu/utils/records/item-patch.ts',
+  {},
+  'normalizeMenuItemPatch'
+)
 const doc = {
   url: 'https://example.com/menu.pdf',
   name: 'Menu',

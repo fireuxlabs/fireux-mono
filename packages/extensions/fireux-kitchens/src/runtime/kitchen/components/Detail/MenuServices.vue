@@ -39,7 +39,7 @@ import { useMenuDirectory } from '../../../menu/composables/useMenuDirectory'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
-} from '../../../menu/utils/menu-route'
+} from '../../../menu/utils/navigation/route'
 const props = defineProps<{
   kitchenSlug: string
   active?: 'collection' | 'delivery'

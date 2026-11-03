@@ -6,8 +6,8 @@ import {
 } from 'h3'
 
 import { readMenuDirectoryPage } from '../../../../menu/server/index/read'
-import { menuServiceOfferings } from '../../../../menu/utils/service-menu'
-import { type MenuServiceSource } from '../../../../menu/utils/service-sections'
+import { menuServiceOfferings } from '../../../../menu/utils/ordering/offerings'
+import { type MenuServiceSource } from '../../../../menu/utils/ordering/sections'
 import type { MenuDetailPayload } from '../../../../menu/models/menu-detail.model'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 

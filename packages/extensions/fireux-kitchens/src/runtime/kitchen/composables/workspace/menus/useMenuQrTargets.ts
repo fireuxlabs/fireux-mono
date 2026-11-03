@@ -9,12 +9,12 @@ import {
   menuRouteProjection,
   directoryMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../../menu/utils/menu-route'
+} from '../../../../menu/utils/navigation/route'
 import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
 import type { Menu } from '../../../../menu/models/menu-storage.model.ts'
 import type { MenuRouteContext } from '../../../../menu/models/menu-context.model.ts'
 import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
-import { publicMenuSurfaceProfiles } from '../../../../menu/utils/menu-context'
+import { publicMenuSurfaceProfiles } from '../../../../menu/utils/navigation/context'
 import type {
   MenuQrPanel,
   MenuQrTarget,

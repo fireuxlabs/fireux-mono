@@ -21,7 +21,7 @@ const hours = load(
   'readOpeningHoursStatus'
 )
 const { serviceSections } = load(
-  '../runtime/menu/utils/service-sections.ts',
+  '../runtime/menu/utils/ordering/sections.ts',
   'serviceSections',
   { ...pricing, ...hours }
 )

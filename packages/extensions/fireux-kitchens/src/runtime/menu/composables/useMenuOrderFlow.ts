@@ -4,7 +4,7 @@ import { useMenu } from './useMenu'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
-import { publicMenuServiceOpen } from '../utils/menu-ordering'
+import { publicMenuServiceOpen } from '../utils/ordering/availability'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
 import type {
   MenuManifestItem,
@@ -16,7 +16,10 @@ import type { MenuOrderInput, CartLine } from '../models/menu-order-flow.model'
 export function useMenuOrderFlow(props: MenuOrderInput) {
   const menu = useMenu(
     computed(() => props.menuId),
-    { routeScope: computed(() => props.routeScope), menuContext: computed(() => props.context) }
+    {
+      routeScope: computed(() => props.routeScope),
+      menuContext: computed(() => props.context),
+    }
   )
   const ordering = useRuntimeConfig().public.ordering as
     | { channels?: string[] }

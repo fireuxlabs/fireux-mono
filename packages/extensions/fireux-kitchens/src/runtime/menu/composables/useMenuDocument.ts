@@ -341,16 +341,6 @@ export function useMenuDocument() {
       if (current()) busy.value = false
     }
   }
-  async function copy(value: string) {
-    const current = capture()
-    try {
-      await navigator.clipboard.writeText(value)
-      if (current()) message.value = 'Copied.'
-    } catch {
-      if (current())
-        commandError.value = 'Copy is unavailable. Select the link and copy it.'
-    }
-  }
   return {
     kitchenId,
     kitchenChoice,
@@ -369,6 +359,5 @@ export function useMenuDocument() {
     publicUrl,
     publish,
     reload,
-    copy,
   }
 }

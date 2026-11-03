@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 const source = readFileSync(
-  new URL('../runtime/menu/utils/menu-discovery.ts', import.meta.url),
+  new URL('../runtime/menu/utils/catalogue/discovery.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import type .*\n/gm, '')

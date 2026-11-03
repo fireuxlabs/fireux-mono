@@ -35,7 +35,7 @@ const guest = load(
     fail,
   }
 )
-const metadata = load('menu/utils/menu-metadata', 'normalizeMenuDocument')
+const metadata = load('menu/utils/records/metadata', 'normalizeMenuDocument')
 
 function fixture() {
   const records = new Map(),
@@ -118,7 +118,7 @@ function fixture() {
     ...keys,
     ...guest,
     ...metadata,
-    ...load('menu/utils/menu-route', 'menuDocumentFilePath', {
+    ...load('menu/utils/navigation/route', 'menuDocumentFilePath', {
       MenuRouteContexts: ['generic'],
     }),
     createError,
@@ -191,13 +191,6 @@ function fixture() {
       })
     },
   }
-  Object.assign(
-    deps,
-    load(
-      'menu/utils/kitchen-system-menus',
-      'buildKitchenSystemMenu,KitchenSystemMenuKinds'
-    )
-  )
   Object.assign(
     deps,
     load(

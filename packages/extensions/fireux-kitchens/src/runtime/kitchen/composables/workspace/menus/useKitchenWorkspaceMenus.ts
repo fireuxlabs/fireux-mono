@@ -1,4 +1,4 @@
-import { kitchenMenuCapacity } from '../../../../menu/utils/menu-capacity'
+import { kitchenMenuCapacity } from '../../../../menu/models/menu-storage.model'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,

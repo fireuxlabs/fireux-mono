@@ -78,7 +78,7 @@
   </article>
 </template>
 <script setup lang="ts">
-import type { FoodVenueGroup } from '../../utils/food-venue-groups'
+import type { FoodVenueGroup } from '../../utils/catalogue/venue-groups'
 defineProps<{ venue: FoodVenueGroup }>()
 </script>
 <style scoped>

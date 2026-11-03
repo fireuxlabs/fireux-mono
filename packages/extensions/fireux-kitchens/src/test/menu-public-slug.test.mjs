@@ -117,7 +117,7 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
 
 test('service identity survives Menu, canonical and QR links without changing the Menu slug', () => {
   const routes = load(
-    '../runtime/menu/utils/menu-route.ts',
+    '../runtime/menu/utils/navigation/route.ts',
     '{ menuRoutePath, menuCanonicalPath, menuRouteQrPath }',
     {
       MenuRouteContexts: ['generic', 'collection'],
@@ -153,7 +153,7 @@ test('service identity survives Menu, canonical and QR links without changing th
 
 test('venue Menu entrance is singular while existing Menu and QR destinations stay stable', () => {
   const routes = load(
-    '../runtime/menu/utils/menu-route.ts',
+    '../runtime/menu/utils/navigation/route.ts',
     '{ menuRouteIndexPath, menuRoutePath, menuRouteQrPath }',
     { MenuRouteContexts: ['generic'] }
   )
@@ -219,7 +219,7 @@ test('protected group fails closed before detail or document content is assemble
 
 test('collection entrance preserves its purpose while Browse remains the venue Menu', () => {
   const path = load(
-    '../runtime/menu/utils/menu-route.ts',
+    '../runtime/menu/utils/navigation/route.ts',
     'menuRouteIndexPath',
     { MenuRouteContexts: ['generic', 'collection'] }
   )
@@ -230,7 +230,7 @@ test('collection entrance preserves its purpose while Browse remains the venue M
 
 test('delivery entrance keeps its service without changing individual Menu and QR paths', () => {
   const path = load(
-    '../runtime/menu/utils/menu-route.ts',
+    '../runtime/menu/utils/navigation/route.ts',
     'menuRouteIndexPath',
     { MenuRouteContexts: ['generic', 'collection', 'delivery'] }
   )

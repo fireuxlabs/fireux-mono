@@ -55,8 +55,8 @@ import { useKitchenMenuRecordContext } from '../../../../../composables/workspac
 import {
   isMenuDate,
   shiftMenuDate,
-} from '../../../../../../menu/utils/menu-date'
-import { menuLocalDate } from '../../../../../../menu/utils/daily-menu'
+} from '../../../../../../menu/utils/calendar/date'
+import { menuLocalDate } from '../../../../../../menu/utils/calendar/daily'
 const date = defineModel<string>({ required: true })
 const { timezone, sections } = useKitchenMenuRecordContext()
 const today = computed(() =>

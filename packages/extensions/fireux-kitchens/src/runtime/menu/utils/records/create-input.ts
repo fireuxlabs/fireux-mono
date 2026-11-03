@@ -1,5 +1,5 @@
-import type { Menu } from '../models/menu-storage.model'
-import { normalizeMenuMetadataPatch } from './menu-metadata'
+import type { Menu } from '../../models/menu-storage.model.ts'
+import { normalizeMenuMetadataPatch } from './metadata'
 export type MenuCreateInput = {
   kitchenId?: string
   name: string

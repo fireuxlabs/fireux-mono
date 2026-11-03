@@ -9,7 +9,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { stagePlaceUpdate } from 'fireux-places/runtime/place/server/identity/stage-update'
 import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
-import { normalizeMenuDocument } from '../../utils/menu-metadata'
+import { normalizeMenuDocument } from '../../utils/records/metadata'
 import {
   saveKitchenMenuUploadFiles,
   type KitchenMenuUploadFile,

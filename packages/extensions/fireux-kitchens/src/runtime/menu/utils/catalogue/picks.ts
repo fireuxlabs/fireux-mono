@@ -1,5 +1,5 @@
-import type { MenuDirectoryEntry } from '../models/menu-directory.response.ts'
-import type { MenuRouteContext } from '../models/menu-context.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
+import type { MenuRouteContext } from '../../models/menu-context.model.ts'
 
 export const MenuCollectionPickValues = [
   'delivery',

@@ -7,11 +7,11 @@ import { loadOfferingSource as load } from './offering-test-helpers.mjs'
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const metadata = load(
-  'menu/utils/menu-metadata',
+  'menu/utils/records/metadata',
   'normalizeMenuMetadataPatch,normalizeMenuDocument'
 )
 const createInput = load(
-  'menu/utils/menu-create-input',
+  'menu/utils/records/create-input',
   'normalizeMenuCreateInput,buildMenuPayload',
   metadata
 )

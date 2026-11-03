@@ -27,7 +27,7 @@ function load(path, names, context = {}) {
   )(...Object.values(context))
 }
 const policy = load(
-  'menu/utils/service-basket',
+  'menu/utils/ordering/basket',
   'serviceBasketLine,serviceItemSignature'
 )
 const { useServiceBasket } = load(

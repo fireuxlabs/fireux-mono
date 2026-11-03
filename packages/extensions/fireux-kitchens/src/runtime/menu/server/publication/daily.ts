@@ -8,8 +8,8 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
-import { isMenuDate } from '../../utils/menu-date'
-import { menuLocalDate, publishedMenuDates } from '../../utils/daily-menu'
+import { isMenuDate } from '../../utils/calendar/date'
+import { menuLocalDate, publishedMenuDates } from '../../utils/calendar/daily'
 import { assertKitchenMenuCanPublish } from './validation'
 
 export async function publishDailyMenu(event: H3Event, input: unknown) {

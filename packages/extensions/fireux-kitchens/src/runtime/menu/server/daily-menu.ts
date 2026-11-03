@@ -4,12 +4,16 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../../kitchen/server/mutation-targets'
+import {
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+} from '../../kitchen/server/mutation-targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../kitchen/server/core/mutation-authority'
-import { isMenuDate } from '../utils/menu-date'
+import { isMenuDate } from '../utils/calendar/date'
 
 export async function configureDailyMenu(
   event: H3Event,
@@ -129,7 +133,16 @@ export async function configureDailyMenu(
             tx.create(
               serverKitchenMenuItemsTarget(kitchenId, menuId, id),
               randomUUID(),
-              { kitchen_id: kitchenId, menu_id: menuId, section_id: id, dish_id: item.data.dish_id, status: 'active', sort_order: item.data.sort_order || 0, created: stamp, updated: stamp }
+              {
+                kitchen_id: kitchenId,
+                menu_id: menuId,
+                section_id: id,
+                dish_id: item.data.dish_id,
+                status: 'active',
+                sort_order: item.data.sort_order || 0,
+                created: stamp,
+                updated: stamp,
+              }
             )
           }
         }

@@ -1,9 +1,9 @@
-import type { ServiceBasketLine } from './service-basket'
+import type { ServiceBasketLine } from './basket'
 import {
   serviceOrder,
   serviceSelections,
   type MenuCheckoutService,
-} from './service-checkout'
+} from './checkout'
 
 type ServiceSession = {
   lines: ServiceBasketLine[]

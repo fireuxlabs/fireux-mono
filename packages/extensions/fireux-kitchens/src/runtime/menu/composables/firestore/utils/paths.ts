@@ -1,6 +1,9 @@
-import { normalizeString, resolveKitchenChildCollectionPath } from '../../../../kitchen/utils/kitchen-collection-path'
-import { MenuItemStorage } from '../../../utils/menu-item.ts'
-import { MenuSectionStorage } from '../../../utils/menu-section.ts'
+import {
+  normalizeString,
+  resolveKitchenChildCollectionPath,
+} from '../../../../kitchen/utils/kitchen-collection-path'
+import { MenuItemStorage } from '../../../models/menu-item.model.ts'
+import { MenuSectionStorage } from '../../../models/menu-section.model.ts'
 import { MenuStorage } from '../../../models/menu-storage.model.ts'
 
 type MenuPathOptions = {

@@ -50,7 +50,11 @@ function fixture({ guest = false, claimLock } = {}) {
     starts = [],
     revoked = [],
     storage = new Map()
-  const route = reactive({ path: '/menu-express', query: {}, hash: '' })
+  const route = reactive({
+    path: '/products/menu-express',
+    query: {},
+    hash: '',
+  })
   const currentUser = ref({
     uid: 'guest',
     isAnonymous: guest,

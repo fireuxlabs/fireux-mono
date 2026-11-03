@@ -58,7 +58,7 @@ import {
   foodVenueGroups,
   foodPortalServices,
   type FoodPortalService,
-} from '../../utils/food-venue-groups'
+} from '../../utils/catalogue/venue-groups'
 
 const props = defineProps<{
   menus: MenuDirectoryEntry[]

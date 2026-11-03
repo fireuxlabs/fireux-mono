@@ -584,7 +584,7 @@ test('Menu owner fingerprints customer-facing content, not internal context, and
         add_ons: [],
       }),
       normalizeMenuDocument: load(
-        '../../../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-metadata.ts',
+        '../../../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/records/metadata.ts',
         {},
         'normalizeMenuDocument'
       ).normalizeMenuDocument,

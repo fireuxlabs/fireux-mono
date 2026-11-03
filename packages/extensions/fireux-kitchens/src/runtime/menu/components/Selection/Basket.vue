@@ -111,7 +111,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { ServiceBasketLine } from '../../utils/service-basket'
+import type { ServiceBasketLine } from '../../utils/ordering/basket'
 defineProps<{
   disabled?: boolean
   catalogueReady: boolean

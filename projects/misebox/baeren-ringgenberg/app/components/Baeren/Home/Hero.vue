@@ -69,7 +69,7 @@
 import {
   menuRoutePath,
   tenantMenuRouteScope,
-} from 'fireux-kitchens/runtime/menu/utils/menu-route'
+} from 'fireux-kitchens/runtime/menu/utils/navigation/route'
 import { baerenRinggenbergContent } from '../../../config/content.config'
 import kitchenConfig from '../../../config/kitchen.config'
 

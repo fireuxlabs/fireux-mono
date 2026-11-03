@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { kitchenMenuCapacity } from '../utils/menu-capacity'
+import { kitchenMenuCapacity } from '../models/menu-storage.model'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,

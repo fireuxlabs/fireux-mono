@@ -14,16 +14,16 @@ function load(path, symbol, dependencies = {}) {
   )(...Object.values(dependencies))
 }
 const metadata = load(
-  '../runtime/menu/utils/menu-metadata.ts',
+  '../runtime/menu/utils/records/metadata.ts',
   '({normalizeMenuMetadataPatch, normalizeMenuDocument})'
 )
 const creation = load(
-  '../runtime/menu/utils/menu-create-input.ts',
+  '../runtime/menu/utils/records/create-input.ts',
   '({normalizeMenuCreateInput, buildMenuPayload})',
   metadata
 )
 const build = load(
-  '../runtime/menu/utils/menu-create-input.ts',
+  '../runtime/menu/utils/records/create-input.ts',
   'buildMenuPayload',
   {
     ...metadata,
@@ -32,7 +32,7 @@ const build = load(
   }
 )
 const defaultMenu = load(
-  '../runtime/menu/utils/kitchen-system-menus.ts',
+  '../runtime/kitchen/server/index/onboarding/system-menus.ts',
   'buildKitchenSystemMenu'
 )
 
@@ -108,11 +108,19 @@ const routePayload = compileFunction(
   (data) => (data.kind === 'menu' ? 'menu' : 'doc')
 )
 test('one Menu format chooses interactive content or its document', async () => {
-  const menu = { name: 'Lunch', format: 'document', doc: { url: 'https://example.com/lunch.pdf' } }
+  const menu = {
+    name: 'Lunch',
+    format: 'document',
+    doc: { url: 'https://example.com/lunch.pdf' },
+  }
   const document = await routePayload('lunch', menu, { kitchenId: 'k' })
   assert.equal(document.kind, 'document')
   assert.equal(document.data, menu)
-  const interactive = await routePayload('food', { name: 'Food', format: 'interactive' }, { kitchenId: 'k' })
+  const interactive = await routePayload(
+    'food',
+    { name: 'Food', format: 'interactive' },
+    { kitchenId: 'k' }
+  )
   assert.equal(interactive.kind, 'manifest')
 })
 
@@ -157,7 +165,20 @@ async function downloadFor(target) {
   return objectPath
 }
 test('file endpoint reads only the canonical Menu document with a publication gate', async () => {
-  const menuData = { status: 'published', doc: { storage_path: 'owned.pdf' }, file: { storage_path: 'wrong.pdf' } }
-  assert.equal(await downloadFor({ kind: 'directory-menu', menuData }), 'owned.pdf')
-  await assert.rejects(downloadFor({ kind: 'tenant-menu', menuData: { ...menuData, status: 'draft' } }), { statusCode: 404 })
+  const menuData = {
+    status: 'published',
+    doc: { storage_path: 'owned.pdf' },
+    file: { storage_path: 'wrong.pdf' },
+  }
+  assert.equal(
+    await downloadFor({ kind: 'directory-menu', menuData }),
+    'owned.pdf'
+  )
+  await assert.rejects(
+    downloadFor({
+      kind: 'tenant-menu',
+      menuData: { ...menuData, status: 'draft' },
+    }),
+    { statusCode: 404 }
+  )
 })

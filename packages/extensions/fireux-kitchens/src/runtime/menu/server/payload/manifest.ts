@@ -1,4 +1,4 @@
-import { constrainMenuOfferings } from '../../utils/menu-hours'
+import { constrainMenuOfferings } from '../../utils/ordering/hours'
 import { readMenuPromotions } from '../../../kitchen/server/promotions/read'
 import { createError } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'

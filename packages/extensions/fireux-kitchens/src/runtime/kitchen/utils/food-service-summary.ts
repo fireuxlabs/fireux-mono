@@ -1,6 +1,6 @@
 import { readOpeningHoursStatus } from 'fireux-places/runtime/place/utils/opening-hours-status'
 import type { Menu } from '../../menu/models/menu.model'
-import { constrainMenuOfferings } from '../../menu/utils/menu-hours'
+import { constrainMenuOfferings } from '../../menu/utils/ordering/hours'
 import type { KitchenOffering } from '../models/offering.model'
 import {
   kitchenOfferingOptions,
@@ -41,7 +41,9 @@ export function foodServiceSummary(
         if (!readiness.hasPublishedMenu) issues.push('Publish a selected menu')
       }
       const hoursStatus = readOpeningHoursStatus(
-        offering.hours, offering.hours?.timezone, now
+        offering.hours,
+        offering.hours?.timezone,
+        now
       )
       if (!hoursStatus.known) issues.push('Set serving hours')
       const selectionReady = readiness.canEnable && hoursStatus.known
@@ -59,7 +61,11 @@ export function foodServiceSummary(
           )[0]?.hours
           return readOpeningHoursStatus(hours, hours?.timezone, now)
         })
-      if (selectionReady && windows.length && !windows.some((window) => window.known))
+      if (
+        selectionReady &&
+        windows.length &&
+        !windows.some((window) => window.known)
+      )
         issues.push('Align menu and service hours')
       const ready = selectionReady && issues.length === 0
       const open =

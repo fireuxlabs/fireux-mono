@@ -12,7 +12,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import {
   directoryMenuRouteScope,
   parseMenuRouteTarget,
-} from '../../../../../menu/utils/menu-route'
+} from '../../../../../menu/utils/navigation/route'
 
 definePageMeta({
   layout: false,

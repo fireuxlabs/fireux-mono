@@ -67,7 +67,7 @@ const { normalizeKitchenOfferings } = load(
   }
 )
 const { kitchenMenuOrdering } = load(
-  '../runtime/menu/utils/menu-ordering.ts',
+  '../runtime/menu/utils/ordering/availability.ts',
   'kitchenMenuOrdering',
   { normalizeKitchenOfferings }
 )

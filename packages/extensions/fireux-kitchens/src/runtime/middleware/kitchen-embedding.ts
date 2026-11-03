@@ -5,7 +5,7 @@ import {
   useNuxtApp,
   useRequestEvent,
 } from '#imports'
-import { parseMenuRouteTarget } from '../menu/utils/menu-route'
+import { parseMenuRouteTarget } from '../menu/utils/navigation/route'
 import { embeddingNeedsDocumentNavigation } from '../kitchen/utils/embedding-response'
 
 export default defineNuxtRouteMiddleware(

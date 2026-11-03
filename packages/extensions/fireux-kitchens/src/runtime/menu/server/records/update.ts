@@ -7,7 +7,7 @@ import {
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
 import { serverKitchenMenusTarget } from '../../../kitchen/server/mutation-targets'
-import { normalizeMenuMetadataPatch } from '../../utils/menu-metadata'
+import { normalizeMenuMetadataPatch } from '../../utils/records/metadata'
 import type { MenuUpdateInput } from '../../models/menu-storage.model'
 import { resolveKitchenOperationHours } from '../../../kitchen/utils/kitchen-readers'
 import { hoursWithinParent } from '../../../kitchen/utils/service-hours'

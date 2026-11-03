@@ -1,7 +1,7 @@
 import { onMounted, ref, watch, type Ref } from 'vue'
-import type { ServiceBasketLine } from '../utils/service-basket'
-import { readServiceSession } from '../utils/service-recovery'
-import type { MenuCheckoutService } from '../utils/service-checkout'
+import type { ServiceBasketLine } from '../utils/ordering/basket'
+import { readServiceSession } from '../utils/ordering/recovery'
+import type { MenuCheckoutService } from '../utils/ordering/checkout'
 
 /** One tab's checkout session. Catalogue and Order authority remain with their existing owners. */
 export function useServiceRecovery(input: {

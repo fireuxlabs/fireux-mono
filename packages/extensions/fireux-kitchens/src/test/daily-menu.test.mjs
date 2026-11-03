@@ -9,7 +9,7 @@ const compile = (path) =>
     compilerOptions: { module: ts.ModuleKind.CommonJS },
   }).outputText
 const dates = { exports: {} }
-runInNewContext(compile('../runtime/menu/utils/menu-date.ts'), {
+runInNewContext(compile('../runtime/menu/utils/calendar/date.ts'), {
   exports: dates.exports,
   Date,
 })

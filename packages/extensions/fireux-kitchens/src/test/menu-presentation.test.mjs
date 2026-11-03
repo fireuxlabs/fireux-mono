@@ -24,7 +24,7 @@ const useCollectionSearch = load(
   { computed, ref }
 )
 const menuMatchesCollectionPicks = load(
-  '../runtime/menu/utils/menu-collection-picks.ts',
+  '../runtime/menu/utils/catalogue/picks.ts',
   'menuMatchesCollectionPicks',
   {}
 )
@@ -45,7 +45,9 @@ function collectionView(items) {
       withDefaults: (props, defaults) => ({ ...defaults, ...props }),
       useCollectionSearch,
       menuMatchesCollectionPicks,
-      useDiagnosticsCollectionJson: (collection) => ({ devJsonData: collection }),
+      useDiagnosticsCollectionJson: (collection) => ({
+        devJsonData: collection,
+      }),
     },
     true
   )

@@ -4,7 +4,7 @@ import {
   menuRoutePath,
   directoryMenuRouteScope,
   type MenuRouteScope,
-} from '../utils/menu-route'
+} from '../utils/navigation/route'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

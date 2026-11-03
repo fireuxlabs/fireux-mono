@@ -12,7 +12,7 @@ import {
   menuRouteQrPath,
   parseMenuRouteTarget,
   tenantMenuRouteScope,
-} from '../menu/utils/menu-route'
+} from '../menu/utils/navigation/route'
 
 export default defineNuxtRouteMiddleware(
   (to: RouteLocationNormalizedGeneric) => {

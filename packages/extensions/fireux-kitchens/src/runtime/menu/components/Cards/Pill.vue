@@ -21,7 +21,7 @@
 import { computed } from 'vue'
 import { useMenuCardPresentation } from '../../composables/useMenuCardPresentation'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
-import type { MenuRouteScope } from '../../utils/menu-route'
+import type { MenuRouteScope } from '../../utils/navigation/route'
 
 const props = defineProps<{
   menu: MenuDirectoryEntry
