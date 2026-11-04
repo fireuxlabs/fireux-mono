@@ -78,7 +78,8 @@ does not justify replacing the underlying framework mechanisms.
 ## Package and data ownership
 
 App → Ecosystem → Extension → Core is the product ownership order. Dependencies
-point down toward lower owners; not every App needs every layer.
+point down toward lower owners. Every App receives the default Blog and Product
+extensions through Core; other extension layers remain capability-specific.
 
 - Apps own deployment, routes and adapters, configuration, brand, SEO and
   App-specific product composition.

@@ -1,7 +1,7 @@
 # Apps That Slap context
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-04
+Ref: 8d44cbfef
 Role: living context
 Scope: Apps That Slap ecosystem identity, admission, routing, and reusable presentation boundary
 
@@ -39,14 +39,16 @@ away from genuine operational domains.
 
 ## Runtime composition
 
-The global and Yellow Velo Apps explicitly declare Core → Slap → Blogs → Products
-native layers in their established precedence. Slap exports its conventional
-runtime layer; domain and infrastructure registration remain in the owning
-modules. Verify both Apps when changing discovery because their App-owned pages
-and components differ.
+The global and Yellow Velo Apps compose Core → Slap → Blogs → Products in their
+established precedence. Blog and Products are Core's default App modules and
+native layers; each App declares both packages directly. Slap exports its
+conventional runtime layer; domain and infrastructure registration remain in
+the owning modules. Verify both Apps when changing discovery because their
+App-owned pages and components differ.
 
 Interlaken Bike Tours (`projects/slap/interlaken-bike-tours`) consumes Core → Slap
-→ Blogs native layers through `defineFireuxConfig`. Its App-owned `tours` layout
+→ Blogs → Products native layers through `defineFireuxConfig`; Core supplies the
+default Blog and Products registration. Its App-owned `tours` layout
 frames only the public cycling pages; Core retains shared account, management,
 initialization, SEO and PWA manifest responsibilities. The dedicated prototype
 Hosting site uses the App's Firebase SSR function. Its custom footer consumes Core's `FireLayoutsSharedPlatformFooter`; landing/detail metadata consumes Core SEO helpers, with preview indexing policy configured explicitly. The App-owned `app/ignition/search.ts` supplies its reviewed preview origin,
@@ -54,6 +56,11 @@ page metadata and sitemap policy to the brief and runtime configuration; Ignitio
 reviews this declared plan without certifying live indexation. Tour and destination content (`app/content/tours.ts` and `app/content/destinations.ts`) and external
 enquiry drafts remain App-owned. Destination routes distinguish existing rides from custom trips by enquiry; no booking domain or operator Workspace is
 implied by the runtime integration.
+
+Bike Tours owns its noindex preview release commands in its
+[App manifest](../../../../../projects/slap/interlaken-bike-tours/package.json).
+They use the shared artifact tooling with the existing Slap development Rules
+readback and the App's explicit preview target.
 
 ## Presentation boundary
 

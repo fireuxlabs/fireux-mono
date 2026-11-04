@@ -1,6 +1,6 @@
 # Interlaken bike client notes
 
-Updated: 2026-10-25
+Updated: 2026-11-04
 Status: discussion notes, not implementation specification.
 
 ## Current pointer
@@ -30,6 +30,15 @@ client distinctions, not another active backlog.
 - During the conversation, preserve substantive, implementation-relevant facts and decisions in concise GitHub project notes **without interrupting to request confirmation each time**. Do not turn casual brainstorming into requirements, and clearly label provisional ideas and unverified facts.
 - This agreement covers **documentation**; it is not blanket approval to alter application code, deploy, publish sensitive information, or take unrelated external actions.
 - ChatGPT Memory may retain useful context automatically, but GitHub notes are the explicit, reviewable record for these discussions.
+
+## Reported request
+
+- During a 2026-11-04 live discussion, the user reported that Ben wants a booking
+  system and finds it stressful managing GetYourGuide, Booking.com, Viator, and
+  other channels. The user clarified that FireUX should become the primary
+  booking platform; `fireux-bookings` is a proposed name, and TrekkSoft is a
+  competitor. Channel access, integration scope, and booking workflow still
+  need discovery.
 
 ## Next time
 

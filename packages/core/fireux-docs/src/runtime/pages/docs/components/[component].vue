@@ -32,6 +32,13 @@
           >
         </FireCreateShell>
 
+        <FireFormsEditableSimpleField
+          v-else-if="entry.slug === 'editable-text'"
+          label="Display name"
+          :value="textValue"
+          :update="updateText"
+        />
+
         <FireFormsEditableCheckbox
           v-else-if="entry.slug === 'editable-checkbox'"
           label="Public profile"
@@ -39,12 +46,17 @@
           :update="updateCheckbox"
         />
 
-        <FireFormsEditableImagePicker
-          v-else-if="entry.slug === 'editable-image-picker'"
-          initials="FX"
-          alt="Example App"
-          button-label="Choose image"
-        />
+        <template v-else-if="entry.slug === 'editable-image-picker'">
+          <FireFormsEditableImagePicker
+            initials="FX"
+            alt="Example App"
+            button-label="Choose image"
+            :update="showFilename"
+          />
+          <p v-if="selectedFilename" role="status">
+            Selected {{ selectedFilename }}
+          </p>
+        </template>
 
         <FireFormsEditableSelect
           v-else-if="entry.slug === 'editable-select'"
@@ -70,6 +82,9 @@
           </p>
         </FireOnboardingShell>
       </UPageSection>
+      <UCard v-if="entry.slug === 'editable-text'" variant="subtle">
+        <pre><code>{{ textExample }}</code></pre>
+      </UCard>
     </UPageBody>
   </UPage>
 
@@ -87,6 +102,19 @@ import { findFireuxDocsCatalogueEntry } from '../../../models/catalogue'
 const route = useRoute()
 const componentSlug = computed(() => String(route.params.component || ''))
 const entry = computed(() => findFireuxDocsCatalogueEntry(componentSlug.value))
+const textValue = ref('Example App')
+const updateText = (value: string) => {
+  textValue.value = value
+}
+const textExample = `<FireFormsEditableSimpleField
+  label="Display name"
+  :value="displayName"
+  :update="saveDisplayName"
+/>`
+const selectedFilename = ref('')
+const showFilename = (file: File) => {
+  selectedFilename.value = file.name
+}
 const checkboxValue = ref(true)
 const updateCheckbox = async (value: boolean) => {
   checkboxValue.value = value

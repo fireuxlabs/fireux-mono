@@ -13,7 +13,7 @@ import {
   loadFireuxSolutionsMarkdown,
   mergeFireuxSolutionMarkdownContent,
 } from './meta-content-loader'
-import { moduleName } from './modules'
+import { moduleName, withDefaultAppLayers } from './modules'
 import {
   configureAppModules,
   configureDashboardPanelDefaults,
@@ -38,13 +38,12 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   const layers =
     typeof app.extends === 'string' ? [app.extends] : app.extends || []
+  const coreLayers = layers.includes('fireux-core/layer')
+    ? layers
+    : [...layers, 'fireux-core/layer']
   const nuxt: NuxtConfig = {
     extends: [
-      ...new Set(
-        layers.includes('fireux-core/layer')
-          ? layers
-          : [...layers, 'fireux-core/layer']
-      ),
+      ...new Set(withDefaultAppLayers(coreLayers)),
     ] as NuxtConfig['extends'],
   }
   const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(

@@ -2,7 +2,7 @@ import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
   ecosystem: 'fireux',
-  extends: ['fireux-core/layer', 'fireux-blogs/layer', 'fireux-products/layer'],
+  extends: ['fireux-core/layer'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-template',
@@ -22,5 +22,4 @@ export default defineFireuxConfig({
     },
   },
   role: 'tenant',
-  modules: ['fireux-products'],
 })

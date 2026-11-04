@@ -40,17 +40,22 @@ export const tours = [
     name: 'Giessbach Waterfalls',
     label: 'Take the lakeside road',
     duration: '6 hours',
-    distance: null,
-    difficulty: null,
-    elevation: null,
+    distance: '30 km',
+    difficulty: 'Easy / medium',
+    elevation: '500 m',
     price: 259,
     image: '/images/waterfall.webp',
     alt: 'Water cascading down the Giessbach Falls',
     summary:
       'Turquoise Lake Brienz, the village of Iseltwald and a waterfall finale.',
     description:
-      'Follow the shore of Lake Brienz through Iseltwald to Giessbach Falls on a private e-bike ride. Ask your guide about the route, equipment and suitability when planning your day.',
-    included: [],
+      'Follow the turquoise shore of Lake Brienz through Iseltwald to Giessbach Falls. A trail leads behind the cascade, with time to take in the waterfall and lake views.',
+    included: [
+      'E-bike or regular bike',
+      'Helmet',
+      'Local professional guide',
+      'Picnic',
+    ],
     source: 'https://www.interlakenbiketours.com/giessbach-waterfalls-tour',
   },
 ] as const

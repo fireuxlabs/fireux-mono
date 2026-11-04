@@ -37,6 +37,11 @@ Implementation follows this dependency direction:
   trusted behavior.
 - Core owns proved product-neutral FireUX and Nuxt mechanics.
 
+Every FireUX App includes `fireux-blogs` and `fireux-products` by default. Core's
+App config adds both modules and native layers; every App declares both direct
+package dependencies. Apps may configure those defaults or add other extensions
+through their existing App config.
+
 An App may consume its own Ecosystem package, Core or an Extension directly.
 Ecosystems may consume Core
 and lower Extensions; Extensions may consume Core and lower Extensions. Core

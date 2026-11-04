@@ -22,9 +22,11 @@
         <p>
           FireUX Core exposes this read as <code>useAppRead()</code>. Pass the
           configured App id from <code>useFireUXConfig()</code>. It reads after
-          signed-in Auth has settled and checks that the server response
-          belongs to that App. Core registers both composables for Nuxt
-          auto-import.
+          signed-in Auth has settled and checks that the server response belongs
+          to that App. Core registers both composables for
+          <ULink to="https://nuxt.com/docs/4.x/guide/concepts/auto-imports"
+            >Nuxt auto-imports</ULink
+          >.
         </p>
         <pre><code>{{ usageExample }}</code></pre>
       </section>
@@ -67,21 +69,18 @@
       <section>
         <h2>Stored and derived values</h2>
         <p>
-          <code>status</code> is stored on the App. A page can derive a convenient
-          boolean from it. <code>outcome</code> describes the read; it is not an
-          App field.
+          <code>status</code> is stored on the App. A page can derive a
+          convenient boolean from it. <code>outcome</code> describes the read;
+          it is not an App field.
         </p>
         <pre><code>{{ derivedExample }}</code></pre>
       </section>
-
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-const usageExample = `import { computed } from 'vue'
-
-const fireux = useFireUXConfig()
+const usageExample = `const fireux = useFireUXConfig()
 const { app, outcome, refresh } = useAppRead(fireux.appId)`
 
 const derivedExample = `const isActive = computed(() => app.value?.status === 'active')`

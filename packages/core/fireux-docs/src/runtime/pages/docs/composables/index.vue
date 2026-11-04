@@ -3,15 +3,15 @@
     <UPageHeader
       headline="FireUX Library"
       title="Composables"
-      description="Focused runtime APIs for reading and using FireUX data."
+      description="Read FireUX records with the right App scope and a shared set of read outcomes."
     />
 
     <UPageBody>
-      <section>
-        <h2>App</h2>
+      <UPageSection title="Read the configured App">
         <p>
-          Start with the configured App. Its read API returns the App record and
-          the state of the read; Vue computed values remain with the consumer.
+          <code>useAppRead()</code> waits for sign-in, checks that the response
+          belongs to the configured App, and tells the page whether the read is
+          idle, pending, in error, empty, or ready.
         </p>
         <UPageGrid>
           <UPageCard
@@ -22,7 +22,16 @@
             <code>useAppRead(appId)</code>
           </UPageCard>
         </UPageGrid>
-      </section>
+      </UPageSection>
+      <p>
+        For standard request handling, see
+        <ULink to="https://nuxt.com/docs/4.x/getting-started/data-fetching"
+          >Nuxt data fetching</ULink
+        >. For how composables become available in a page, see
+        <ULink to="https://nuxt.com/docs/4.x/guide/concepts/auto-imports"
+          >Nuxt auto-imports</ULink
+        >.
+      </p>
     </UPageBody>
   </UPage>
 </template>

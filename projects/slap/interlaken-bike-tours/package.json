@@ -6,6 +6,10 @@
     "dev": "nuxt dev --port 3035 --host 127.0.0.1",
     "prepare": "nuxt prepare",
     "build": "nuxt build",
+    "build:release": "node ../../../tools/firebase-release/cli.mjs build --project slap-45389 --config firebase.json --app-domain https://interlaken-bike-tours-prototype.web.app",
+    "prepare:firebase-output": "node ../../../tools/firebase-release/cli.mjs prepare --project slap-45389 --config firebase.json",
+    "deploy:preflight": "node ../../../tools/firebase-release/cli.mjs preflight --project slap-45389 --config firebase.json --rules-policy development --rules-template ../../../packages/ecosystem/fireux-slap/src/config/firebase/firestore.template.rules",
+    "deploy:preview": "node ../../../tools/firebase-release/cli.mjs deploy --project slap-45389 --config firebase.json --rules-policy development --rules-template ../../../packages/ecosystem/fireux-slap/src/config/firebase/firestore.template.rules",
     "typecheck": "nuxt typecheck",
     "generate": "nuxt generate",
     "test:seo": "node --test tests/seo.test.mjs"
@@ -19,6 +23,7 @@
     "vue-router": "5.4.0",
     "fireux-slap": "workspace:*",
     "fireux-blogs": "workspace:*",
+    "fireux-products": "workspace:*",
     "@nuxt/icon": "2.5.1",
     "firebase-functions": "^6.3.2",
     "@google-cloud/functions-framework": "5.0.5"

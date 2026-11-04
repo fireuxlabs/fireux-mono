@@ -1,7 +1,7 @@
 # Landing templates context
 
 Updated: 2026-11-04
-Ref: 6c81e972a
+Ref: 8d44cbfef
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
 
@@ -99,8 +99,9 @@ injected owner data.
   domain, or production record.
 - `projects/templates/fireux-template` remains the neutral starter App;
   it is not the catalogue implementation or a container for presentation
-  templates. Its config declares Core, Blogs and Products native layers in
-  their established order; it does not inherit FireUX main-App runtime pages.
+  templates. Its App manifest declares Core, Blogs and Products directly; Core
+  supplies the default Blog and Products modules and native layers. It does not
+  inherit FireUX main-App runtime pages.
 - Friiites remains a Misebox tenant App and visual proving reference. Core owns
   no template-specific presentation.
 - Template injections consume canonical asset roles, never filenames unique to

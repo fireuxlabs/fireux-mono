@@ -1,7 +1,7 @@
 # Documentation system
 
 Updated: 2026-11-04
-Ref: 6c81e972a
+Ref: 8d44cbfef
 Role: map, not canon
 
 ## Purpose
@@ -118,6 +118,15 @@ Keep contributor guidance in the repository. FireUX App hosts the public
 guides and the `fireux-docs` reference. Give each API one reference, based on
 its owning package's source, and link to it from examples and patterns.
 Reviews and handoffs stay with the repository evidence.
+
+The public reference follows the parts of a Nuxt App that developers work
+with: configuration, pages, layouts, components, composables, and server
+routes. Each guide leads with what FireUX adds, shows an example, and links
+to the relevant Nuxt or Nuxt UI reference for the basics.
+Use the FireUX voice in section headings and keep guide titles easy to match
+to their Nuxt and Nuxt UI counterparts.
+Group Core component examples by the job they do. Feature controls with real
+consumers and a clear shared responsibility.
 
 ## Family maps
 

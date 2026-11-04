@@ -109,9 +109,9 @@ export const assembly = {
   learnings: [
     {
       decision:
-        'Compose the branded prototype on the native FireUX Core, Slap and Blogs layers.',
+        'Compose the branded prototype on Core and Slap with the default Blogs and Products capabilities.',
       reason:
-        'Core owns shared runtime, Firebase integration, configured App initialization and the PWA manifest. App-owned tour content and enquiry drafts add no booking storage or authority.',
+        'Core supplies Blogs and Products to every App. App-owned tour content and enquiry drafts still add no booking storage or authority.',
       owner: 'interlaken-bike-tours',
       references: ['nuxt.config.ts', 'app/ignition/brief.ts'],
     },

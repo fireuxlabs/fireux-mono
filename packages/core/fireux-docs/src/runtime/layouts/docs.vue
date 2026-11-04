@@ -17,8 +17,17 @@ defineOptions({ name: 'docs' })
 const navigation = [
   { label: 'Docs', to: '/docs', exact: true },
   { label: 'Getting started', to: '/getting-started' },
-  { label: 'Components', to: '/docs/components' },
-  { label: 'Composables', to: '/docs/composables' },
+  {
+    label: 'Fuel',
+    children: [
+      { label: 'App configuration', to: '/docs/configuration' },
+      { label: 'Pages', to: '/docs/pages' },
+      { label: 'Layouts', to: '/docs/layouts' },
+      { label: 'Components', to: '/docs/components' },
+      { label: 'Composables', to: '/docs/composables' },
+    ],
+  },
+  { label: 'Server', to: '/docs/server' },
   { label: 'Patterns', to: '/patterns' },
 ]
 </script>

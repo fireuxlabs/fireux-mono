@@ -4,20 +4,23 @@
     <section class="space-y-3" aria-labelledby="init-heading">
       <h2 id="init-heading" class="font-semibold">1. Init</h2>
       <UFormField label="Channel">
-        <FireSegmentedSelector
+        <URadioGroup
           v-model="channel"
           :items="channels"
-          label="Channel"
+          aria-label="Channel"
+          orientation="horizontal"
+          variant="table"
+          indicator="hidden"
         />
       </UFormField>
       <UFormField v-if="channel === 'website'" label="Customer">
-        <FireSegmentedSelector
+        <URadioGroup
           v-model="identity"
-          :items="[
-            { label: 'Guest', value: 'guest' },
-            { label: 'Signed in', value: 'identified' },
-          ]"
-          label="Customer"
+          :items="identityOptions"
+          aria-label="Customer"
+          orientation="horizontal"
+          variant="table"
+          indicator="hidden"
         />
       </UFormField>
       <p v-if="channel === 'pos'" class="text-sm text-muted">
@@ -41,24 +44,23 @@
         v-if="channel === 'pos' || channel === 'kiosk'"
         label="Fulfilment"
       >
-        <FireSegmentedSelector
+        <URadioGroup
           v-model="kioskChoice"
-          :items="[
-            { label: 'Eat in', value: 'on_site' },
-            { label: 'Takeaway', value: 'takeaway' },
-          ]"
-          label="Fulfilment"
+          :items="fulfilmentOptions"
+          aria-label="Fulfilment"
+          orientation="horizontal"
+          variant="table"
+          indicator="hidden"
         />
       </UFormField>
       <UFormField v-if="channel === 'website'" label="Website entrance">
-        <FireSegmentedSelector
+        <URadioGroup
           v-model="websiteEntry"
-          :items="[
-            { label: 'Collection', value: 'collection' },
-            { label: 'Delivery', value: 'delivery' },
-            { label: 'Table QR', value: 'table' },
-          ]"
-          label="Website entrance"
+          :items="websiteEntryOptions"
+          aria-label="Website entrance"
+          orientation="horizontal"
+          variant="table"
+          indicator="hidden"
         />
       </UFormField>
       <div
@@ -170,13 +172,16 @@
         v-if="submittedOrder.requested_at && channel === 'website'"
         label="Confirmation outcome"
       >
-        <FireSegmentedSelector
+        <URadioGroup
           v-model="successOutcome"
           :items="[
-            { label: 'Confirmed', value: 'confirmed' },
-            { label: 'Deposit required', value: 'deposit' },
+            { label: 'Confirmed', value: 'confirmed' as const },
+            { label: 'Deposit required', value: 'deposit' as const },
           ]"
-          label="Confirmation outcome"
+          aria-label="Confirmation outcome"
+          orientation="horizontal"
+          variant="table"
+          indicator="hidden"
         />
       </UFormField>
       <KitchenOrdersExamplesSuccess :view="successView" />
@@ -200,6 +205,19 @@ const channel = ref<'pos' | 'kiosk' | 'website'>('pos')
 const kioskChoice = ref<'' | 'on_site' | 'takeaway'>('')
 const websiteEntry = ref<'' | 'collection' | 'delivery' | 'table'>('')
 const identity = ref<'' | 'guest' | 'identified'>('')
+const fulfilmentOptions: { label: string; value: typeof kioskChoice.value }[] = [
+  { label: 'Eat in', value: 'on_site' },
+  { label: 'Takeaway', value: 'takeaway' },
+]
+const websiteEntryOptions: { label: string; value: typeof websiteEntry.value }[] = [
+  { label: 'Collection', value: 'collection' },
+  { label: 'Delivery', value: 'delivery' },
+  { label: 'Table QR', value: 'table' },
+]
+const identityOptions: { label: string; value: typeof identity.value }[] = [
+  { label: 'Guest', value: 'guest' },
+  { label: 'Signed in', value: 'identified' },
+]
 const itemsAdded = ref(false)
 const exampleLines: OrderLine[] = [
   {

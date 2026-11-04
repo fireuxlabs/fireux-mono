@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-03
-Ref: bd7ab9559
+Updated: 2026-11-04
+Ref: 8d44cbfef
 Role: map, not canon
 
 ## Purpose
@@ -63,12 +63,10 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   shared Nuxt baseline. Apps do not repeat or override
   `future.compatibilityVersion`; compatibility repairs belong to the lowest
   Core, ecosystem, or extension owner that implements the affected behavior.
-- Blog is the one universal default extension and is loaded even when an App
-  omits it from `modules`. The App still declares `fireux-blogs` directly in
-  its manifest. `modules` lists every additional extension capability and may
-  provide custom options for a default module.
-- Products are future/explicit, not an App baseline. An App loads and depends
-  on `fireux-products` only when it currently owns a real Product capability.
+- Blog and Products are universal default extensions. Core adds both modules
+  and native layers even when an App omits them from `modules` or `extends`;
+  every App declares both packages directly in its manifest. `modules` lists
+  additional extensions and may provide custom options for a default module.
   Ecosystem packages do not bundle domain extensions on an App's behalf.
 - A reusable extension owns its shared runtime integration defaults and
   environment resolution. For example, `fireux-kitchens` owns the Bringli
@@ -204,8 +202,7 @@ initialized App awaiting media publication is not an uninitialized App.
 | Difference                                                          | State      | Reason or alignment trigger                                                                                      |
 | ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | Global, tenant, and standalone roles differ                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                   |
-| Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
-| Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it        |
+| Apps receive Blog and Products by default                           | `accepted` | Core composes the shared editorial and catalogue extensions; other domain extensions remain App-specific         |
 | A tenant App pins Workspace target IDs in Nuxt config               | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                         |
 | Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                |

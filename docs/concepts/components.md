@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-04
-Ref: 6c81e972a
+Ref: 8d44cbfef
 Role: map, not canon
 
 ## Purpose and navigation
@@ -230,9 +230,10 @@ Core [MultiSelect.vue](../../packages/core/fireux-core/src/runtime/components/mo
 lists. It accepts labelled
 items, an accessible group label, optional descriptions and disabled state, and
 an array model. It owns interaction only; domains provide choices, eligibility
-and persistence. Kitchen Services menu selection is its current production
-consumer. Searchable or long lists and single selection remain separate
-responsibilities.
+and persistence. Current consumers are Kitchen Services setup, Promotions, and
+the public Menu ordering form. Use Nuxt UI `URadioGroup` for a short list with
+one choice, as the Kitchen order ticket example does. Searchable or long lists
+use Nuxt UI selection controls suited to those lists.
 
 ## Collection rows
 

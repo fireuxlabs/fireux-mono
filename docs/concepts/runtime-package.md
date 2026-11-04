@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-10-24
-Ref: 53fa40ee6
+Updated: 2026-11-04
+Ref: 8d44cbfef
 Role: map, not canon
 
 ## Package root spine
@@ -83,10 +83,10 @@ Shared rules:
 - Declare every direct runtime, server, type-only, and stylesheet dependency in
   the owning package manifest.
 - Project Apps compose packages; they do not re-own reusable package behavior.
-- `fireux-blogs` is the sole default App extension. Every App declares that
-  direct dependency even when Core adds the module automatically.
-- `fireux-products` is an explicit capability, not part of the universal App
-  baseline. Only current Product consumers declare and load it.
+- `fireux-blogs` and `fireux-products` are the default App extensions. Core
+  adds their modules and native layers; every App declares both direct
+  dependencies even when Core supplies their registration automatically.
+  Apps may configure default-module options or add other extension packages.
 - Cross-extension composition belongs in an ecosystem package or project that
   declares every participating package.
 - Do not place a nested `package.json` under `src`.
@@ -187,11 +187,8 @@ explicitly owns that layer. AI exposes a native layer for its existing conventio
 pages/server/runtime discovery, while component/provider-only Go QR and Sproochli
 modules remain module-only.
 
-FireUX App also declares the Blog and Product layers. Its optional Docs module
-and layer share an App-owned enablement decision: production or explicit local
-Docs mode. The FireUX ecosystem no longer installs that App-specific surface.
-The Docs module owns Content integration; its layer owns
-route and layout discovery.
+FireUX App declares the Blog, Product and Docs layers. The Docs layer provides
+the public reference routes and layout. Contributor guidance stays in the repo.
 
 Werkbox’s global App and tenant also declare native layers, with their distinct
 domain composition kept in the owning App configurations.
@@ -231,7 +228,7 @@ parity.
 | A package imports another extension to compose product behavior                        | `drift`      | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive         |
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
 | Runtime surface exists but is not registered                                           | `drift`      | Use the owning native layer or a necessary module hook, then verify the route/import                                    |
-| A reusable extension is added to every App without a universal product contract        | `drift`      | Keep Blog as the sole default; require every other extension, including Products, to be explicitly composed |
+| Blog or Products default registration is repeated across App configs                     | `drift`      | Keep both universal defaults in Core; App manifests declare their direct package dependencies              |
 | Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and verify registration and retired paths against consumers  |
 | Extension lane contains both primitives and domain owners                              | `accepted`   | Use the dependency-role matrix to read ownership; do not add another physical lane without a migration need |
 | A package's primary dependency role cannot be explained from current source             | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |

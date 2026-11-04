@@ -12,7 +12,7 @@
 
       <div class="flex flex-wrap gap-3">
         <UButton to="/products" color="primary">Open Products</UButton>
-        <UButton to="/blogs" variant="outline">Open Blogs</UButton>
+        <UButton to="/blog" variant="outline">Open Blogs</UButton>
       </div>
     </div>
   </UContainer>

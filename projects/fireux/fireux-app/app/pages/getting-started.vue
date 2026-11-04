@@ -3,7 +3,7 @@
     <UPage>
       <UPageHeader
         title="Getting started"
-        description="Run the starter App, then add what your product needs."
+        description="Run the FireUX starter App and see how it brings Core, Nuxt UI, and an Ecosystem together."
       >
         <template #links>
           <UButton to="/docs" label="Developer docs" />
@@ -12,23 +12,34 @@
 
       <UPageBody>
         <UPageSection id="starter" title="Run the starter">
-          <p>With the workspace dependencies installed, run this from the repository root.</p>
+          <p>
+            With the workspace dependencies installed, run this from the
+            repository root.
+          </p>
           <UCard variant="subtle">
             <pre><code>pnpm --dir projects/templates/fireux-template dev</code></pre>
           </UCard>
           <p>
-            Open <ULink to="http://localhost:3010" target="_blank">localhost:3010</ULink>
+            Open
+            <ULink to="http://localhost:3010" target="_blank"
+              >localhost:3010</ULink
+            >
             after the development server starts.
           </p>
         </UPageSection>
 
         <UPageSection title="Make it your own">
           <p>
-            Open the starter’s <code>nuxt.config.ts</code> to see its App identity,
-            Ecosystem, layers, and modules. Use your App’s approved identity and
-            backend configuration when setting up a real project.
+            The starter comes with FireUX Core and the Blogs and Products
+            layers. Open <code>nuxt.config.ts</code> to see how they fit
+            together, then set your App’s identity and backend configuration.
           </p>
           <UPageGrid>
+            <UPageCard
+              title="App configuration"
+              description="Set your App’s identity and choose its packages."
+              to="/docs/configuration"
+            />
             <UPageCard
               title="Components"
               description="See the FireUX controls you can use in your App."
@@ -39,13 +50,19 @@
               description="See how to put a page together."
               to="/patterns"
             />
-            <UPageCard
-              title="Nuxt UI"
-              description="Look up the underlying controls and theme options."
-              to="https://ui.nuxt.com/docs/getting-started"
-              target="_blank"
-            />
           </UPageGrid>
+        </UPageSection>
+
+        <UPageSection title="Framework basics">
+          <p>
+            <ULink to="https://nuxt.com/docs/4.x/getting-started/introduction">
+              Getting started with Nuxt</ULink
+            >
+            and
+            <ULink to="https://ui.nuxt.com/docs/components"
+              >Nuxt UI components</ULink
+            >.
+          </p>
         </UPageSection>
       </UPageBody>
     </UPage>

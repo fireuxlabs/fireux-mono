@@ -9,9 +9,19 @@ Apps That Slap identity consumed by `defineFireuxConfig`.
 - `pnpm typecheck`: check Vue and TypeScript sources.
 - `firebase.json`: dedicated prototype Hosting site and App-owned SSR function.
 
-Core, Slap and Blogs are registered through their native runtime layers. Core
-owns Firebase integration, shared account/management routes, configured App
-initialization, SEO and the versioned PWA manifest. App-owned public tour pages
+For the existing noindex preview, run `pnpm build:release`,
+`pnpm deploy:preflight`, then `pnpm deploy:preview`. The release build uses the
+preview's HTTPS origin and this App's Firebase web identity from the build
+environment. The preview function uses Firebase-provided runtime settings and
+the reviewed [runtime environment](server/firebase.runtime-env.json). Upload
+checks the deployed Slap development Rules against the ecosystem template before
+updating the preview's Hosting site and SSR codebase.
+
+Core and Slap are registered through the App's native runtime layers. Core's
+default App composition supplies Blogs and Products, with both packages declared
+directly in the App manifest. Core owns Firebase integration, shared
+account/management routes, configured App initialization, SEO and the versioned
+PWA manifest. App-owned public tour pages
 use the `tours` layout; shared runtime routes retain their owning layouts.
 Enquiry controls open a prepared WhatsApp/email draft; they do not persist
 bookings or send messages. No booking Workspace is implemented.
@@ -27,16 +37,18 @@ Content and bundled photos were inspected from the existing business website on
 2026-10-21. Sources: [home](https://www.interlakenbiketours.com/),
 [Panorama](https://www.interlakenbiketours.com/interlaken-panorama-tour),
 [Lauterbrunnen](https://www.interlakenbiketours.com/lauterbrunnen-valley-tour),
+[Giessbach](https://www.interlakenbiketours.com/giessbach-waterfalls-tour),
 [guide](https://www.interlakenbiketours.com/about-us), and
 [contact](https://www.interlakenbiketours.com/contact-8).
-The homepage establishes the Giessbach duration and price; unverified distance,
-elevation, difficulty and inclusions are omitted. Ratings were inconsistent across
-source pages and are not reproduced. Review facts, photography permissions,
-pricing, contact routing and policies with the operator before public release.
+The Giessbach card and detail page use the route facts from the business's
+Giessbach page. Ratings were inconsistent across source pages and are not
+reproduced. Review facts, photography permissions, pricing, contact routing
+and policies with the operator before public release.
 
-The landing composes Hero, Rides, Guide and Enquiry. Tour content has one owner in
+The landing presents the tour comparison, reasons to ride, bike rental,
+destinations, guide and enquiry. Tour content has one owner in
 `app/content/tours.ts`; cards and detail pages consume it. The enquiry component
-owns its local draft only. No reusable cycling domain is claimed or extracted.
+owns its local draft. The “Book a tour” action opens this form.
 
 PWA metadata is served by Core at `/manifest.webmanifest` from the configured
 App identity and palette; there is no competing static manifest. Icons in `public/img/app/pwa` are resized exports of the original

@@ -21,6 +21,7 @@
     "@nuxt/ui": "4.12.0",
     "fireux-bringli": "workspace:*",
     "fireux-blogs": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-companies": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-places": "workspace:*",

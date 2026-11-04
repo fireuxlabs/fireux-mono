@@ -1,6 +1,20 @@
 import type { NuxtConfig } from '@nuxt/schema'
 
-export const DEFAULT_APP_MODULES = ['fireux-blogs'] as const
+export const DEFAULT_APP_MODULES = ['fireux-blogs', 'fireux-products'] as const
+export const DEFAULT_APP_LAYERS = [
+  'fireux-blogs/layer',
+  'fireux-products/layer',
+] as const
+
+export function withDefaultAppLayers(layers: readonly string[]): string[] {
+  const appLayers = [...layers]
+  const appLayerNames = new Set(appLayers)
+  const defaults = DEFAULT_APP_LAYERS.filter(
+    (name) => !appLayerNames.has(name)
+  )
+
+  return [...appLayers, ...defaults]
+}
 
 export function moduleName(entry: unknown): string | undefined {
   if (typeof entry === 'string') return entry

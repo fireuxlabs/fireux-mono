@@ -22,6 +22,7 @@
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.3.2",
     "fireux-blogs": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-companies": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",

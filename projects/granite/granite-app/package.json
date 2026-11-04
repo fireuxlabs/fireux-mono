@@ -25,6 +25,7 @@
     "@nuxt/icon": "2.5.1",
     "@nuxt/ui": "4.12.0",
     "fireux-blogs": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-granite": "workspace:*",
     "fireux-properties": "workspace:*",

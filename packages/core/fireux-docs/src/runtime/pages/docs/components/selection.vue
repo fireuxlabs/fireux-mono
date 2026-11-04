@@ -28,26 +28,19 @@
         </UCard>
         <UTable :data="multiSelectApi" :columns="apiColumns" />
         <p>
-          For searchable or long lists, use a native Nuxt UI selection
-          component such as USelectMenu or UListbox.
+          For searchable or long lists, use a native Nuxt UI selection component
+          such as USelectMenu or UListbox.
         </p>
       </UPageSection>
 
-      <UPageSection
-        id="segmented-selector"
-        title="Segmented selector"
-        description="FireSegmentedSelector presents one choice from a compact set using Nuxt UI's radio group behavior."
-      >
-        <FireSegmentedSelector
-          v-model="selectedView"
-          label="Display mode"
-          :items="viewOptions"
-        />
-        <p>Selected: {{ selectedView }}</p>
-        <UCard variant="subtle">
-          <pre><code>{{ segmentedExample }}</code></pre>
-        </UCard>
-        <UTable :data="segmentedApi" :columns="apiColumns" />
+      <UPageSection id="segmented-selector" title="Single choice">
+        <p>
+          Use
+          <ULink to="https://ui.nuxt.com/docs/components/radio-group"
+            >Nuxt UI RadioGroup</ULink
+          >
+          when people can pick one option.
+        </p>
       </UPageSection>
     </UPageBody>
 
@@ -58,7 +51,7 @@
 <script setup lang="ts">
 const sections = [
   { label: 'Multi-select', to: '#multi-select' },
-  { label: 'Segmented selector', to: '#segmented-selector' },
+  { label: 'Single choice', to: '#segmented-selector' },
 ]
 const apiColumns = [
   { accessorKey: 'name', header: 'Input' },
@@ -70,11 +63,6 @@ const serviceOptions = [
   { label: 'Delivery', value: 'delivery' },
 ]
 const selectedServices = ref(['dine-in'])
-const viewOptions = [
-  { label: 'List', value: 'list' },
-  { label: 'Grid', value: 'grid' },
-]
-const selectedView = ref('list')
 const multiSelectExample = `<script setup lang="ts">
 const selected = ref(['dine-in'])
 const services = [
@@ -87,14 +75,6 @@ const services = [
   v-model="selected"
   label="Services"
   :items="services"
-/>`
-const segmentedExample = `<FireSegmentedSelector
-  v-model="selectedView"
-  label="Display mode"
-  :items="[
-    { label: 'List', value: 'list' },
-    { label: 'Grid', value: 'grid' }
-  ]"
 />`
 const multiSelectApi = [
   {
@@ -109,20 +89,11 @@ const multiSelectApi = [
   },
   { name: 'disabled', purpose: 'Disable all choices.' },
 ]
-const segmentedApi = [
-  { name: 'model', purpose: 'Required selected string value.' },
-  { name: 'label', purpose: 'Required accessible radio group label.' },
-  {
-    name: 'items',
-    purpose: 'Required items with label and value; each item may be disabled.',
-  },
-  { name: 'disabled', purpose: 'Disable the full group.' },
-]
 
 definePageMeta({ layout: 'docs' })
 useSeoMeta({
   title: 'Selection · FireUX components',
   description:
-    'Choose between shared FireUX selection controls for short visible lists and compact single-choice groups.',
+    'Use FireUX multi-select for short lists and Nuxt UI RadioGroup for single choices.',
 })
 </script>

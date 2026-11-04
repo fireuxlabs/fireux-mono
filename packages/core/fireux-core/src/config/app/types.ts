@@ -48,7 +48,7 @@ export type FireuxAppConfig = {
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
   role: AppRole
-  /** Extra package capability or custom options for default modules. Blog is the baseline App module; Products is explicit. */
+  /** Extra package capabilities or custom options for the default Blog and Products modules. */
   modules?: NonNullable<NuxtConfig['modules']>
   /** Native Nuxt layers, in App-owned priority order. */
   extends?: NuxtConfig['extends']

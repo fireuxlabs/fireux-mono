@@ -16,6 +16,7 @@
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
     "fireux-blogs": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-ignite": "workspace:*",
     "@vite-pwa/nuxt": "1.1.1",

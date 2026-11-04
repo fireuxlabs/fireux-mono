@@ -2,21 +2,27 @@
   <UPage>
     <UPageHeader
       title="FireUX Docs"
-      description="Learn how to build an App with FireUX."
+      description="Build a Nuxt App with FireUX, from configuration to server code."
     />
 
     <UPageBody>
-      <UPageGrid>
-        <UPageCard
-          v-for="section in sections"
-          :key="section.to"
-          :title="section.label"
-          :description="section.description"
-          :icon="section.icon"
-          :to="section.to"
-          variant="subtle"
-        />
-      </UPageGrid>
+      <UPageSection
+        v-for="group in groups"
+        :key="group.title"
+        :title="group.title"
+      >
+        <UPageGrid>
+          <UPageCard
+            v-for="guide in group.guides"
+            :key="guide.to"
+            :title="guide.label"
+            :description="guide.description"
+            :icon="guide.icon"
+            :to="guide.to"
+            variant="subtle"
+          />
+        </UPageGrid>
+      </UPageSection>
     </UPageBody>
   </UPage>
 </template>
@@ -28,36 +34,82 @@ useSeoMeta({
   description: 'Guides and reference for building Apps with FireUX.',
 })
 
-const sections = [
+const groups = [
   {
-    label: 'Getting started',
-    description: 'Open the starter App and run it locally.',
-    icon: 'i-lucide-play',
-    to: '/getting-started',
+    title: 'Ignite',
+    guides: [
+      {
+        label: 'Getting started',
+        description: 'Run the starter App locally.',
+        icon: 'i-lucide-play',
+        to: '/getting-started',
+      },
+      {
+        label: 'App configuration',
+        description: 'Set the App identity and choose its layers and modules.',
+        icon: 'i-lucide-settings-2',
+        to: '/docs/configuration',
+      },
+      {
+        label: 'Templates',
+        description: 'See what comes with the FireUX starter App.',
+        icon: 'i-lucide-layout-template',
+        to: '/templates',
+      },
+    ],
   },
   {
-    label: 'Components',
-    description: 'See what each FireUX component does and how to use it.',
-    icon: 'i-lucide-blocks',
-    to: '/docs/components',
+    title: 'Fuel',
+    guides: [
+      {
+        label: 'Pages',
+        description: 'Compose a page around one reader and shared read states.',
+        icon: 'i-lucide-file-text',
+        to: '/docs/pages',
+      },
+      {
+        label: 'Layouts',
+        description: 'See how AppShell frames site pages and Workspaces.',
+        icon: 'i-lucide-panels-top-left',
+        to: '/docs/layouts',
+      },
+      {
+        label: 'Components',
+        description: 'Use FireUX controls alongside Nuxt UI.',
+        icon: 'i-lucide-blocks',
+        to: '/docs/components',
+      },
+      {
+        label: 'Composables',
+        description: 'Read App data and handle loading and errors.',
+        icon: 'i-lucide-app-window',
+        to: '/docs/composables',
+      },
+      {
+        label: 'Server',
+        description:
+          'Return public data and check permission for protected actions.',
+        icon: 'i-lucide-server',
+        to: '/docs/server',
+      },
+    ],
   },
   {
-    label: 'Composables',
-    description: 'Read data in your App and handle loading and errors.',
-    icon: 'i-lucide-app-window',
-    to: '/docs/composables',
-  },
-  {
-    label: 'Patterns',
-    description: 'See how FireUX Apps put pages and actions together.',
-    icon: 'i-lucide-panels-top-left',
-    to: '/patterns',
-  },
-  {
-    label: 'Packages',
-    description: 'See which FireUX packages this App uses.',
-    icon: 'i-lucide-package',
-    to: '/packages',
+    title: 'Examples and packages',
+    guides: [
+      {
+        label: 'Patterns',
+        description: 'See how the parts work together.',
+        icon: 'i-lucide-panels-top-left',
+        to: '/patterns',
+      },
+      {
+        label: 'Packages',
+        description: 'See which FireUX packages this App uses.',
+        icon: 'i-lucide-package',
+        to: '/packages',
+      },
+    ],
   },
 ] as const
 </script>
