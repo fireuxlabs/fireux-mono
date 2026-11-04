@@ -75,7 +75,7 @@ server parity files are retired rather than kept as an alternate write lane.
 | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `useAppRead` / `useAppDetail` / `useAppCollection`                                  | Configured native App read versus authorized public detail/directory transport |
 | `useUserRead` / `useUserCollection` / `useUserDirectory` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail                |
-| `useEcosystemRead` / `useEcosystemCollection` / `useEcosystemDetail`                | Owning identity database read and routable public projection                   |
+| `useEcosystemDetail` / `usePublishedPlatformEcosystemDirectory`                    | Public detail and FireUX platform directory                                   |
 | `useAppUserRead` / `useAppUserMembership`                                           | App-owned membership, separate from User identity                              |
 | `useUserSession` / `useAppSession`                                                  | Explicit live read composition, not mutation facades                           |
 
@@ -301,9 +301,10 @@ identity and presentation in its named database; the local meta adds
 only the named `database_id` needed for routing. Ecosystem document ID is route
 identity, so no duplicate stored slug exists in either shape.
 
-`runtime/ecosystem/composables/useEcosystemRead.ts` owns the canonical live root read.
-Presentation and publishing workflows consume it separately; they are not
-alternate Ecosystem identities.
+Core's `runtime/ecosystem/server/identity/read.ts` owns the canonical root read.
+`useEcosystemDetail` reads the public detail endpoint. The FireUX platform
+directory derives detail links from the document ID and supplies the App count
+from related Apps.
 
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
 in the FireUX control-plane named database, each Project owns its
@@ -463,8 +464,8 @@ shared document-id cursor through `readAppRecords` and `appCollectionPage`.
 A failed source fails the page rather than advancing past unseen records.
 Small parent relationships return the full scoped collection with a null
 cursor. Sitemap and directory-count aggregation remain separately unpaged.
-The existing `useUserCollection`, `useEcosystemCollection`, and
-`useProjectCollection` retain their domain-owned live readers and outcome state;
+The existing `useUserCollection` and `useProjectCollection` retain their
+domain-owned live readers and outcome state;
 HTTP App pagination is an intentional transport difference.
 
 ### Browser creation proof

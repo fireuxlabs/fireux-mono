@@ -3,7 +3,6 @@ export type PlatformDirectoryTarget = {
   projectId: string
   ecosystemId: string
   databaseId: string
-  detailPath?: string
 }
 
 /**
@@ -55,7 +54,6 @@ export const PLATFORM_DIRECTORY_TARGETS = [
     projectId: 'cleanbox-f15bc',
     ecosystemId: 'cleanbox',
     databaseId: 'cleanbox',
-    detailPath: '/ecosystems/werkbox',
   },
 ] as const satisfies readonly PlatformDirectoryTarget[]
 

@@ -39,7 +39,6 @@ const appConfig = defineFireuxConfig({
       '/product',
       '/apps',
       '/ecosystems',
-      '/ecosystems/werkbox',
     ],
     sitemapDocuments: ['/sitemaps/directory.xml'],
     noindexPaths: ['/apps/fireux-blank'],

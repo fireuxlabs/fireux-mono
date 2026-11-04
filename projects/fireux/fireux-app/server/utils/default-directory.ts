@@ -1,9 +1,5 @@
 import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
 import { toEcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/server/directory/projection'
-import {
-  PLATFORM_DIRECTORY_TARGETS,
-  type PlatformDirectoryTarget,
-} from '../config/platform-directory-targets'
 export {
   isDirectoryAppIndexable,
   isDirectoryEcosystemIndexable,
@@ -25,18 +21,12 @@ export async function readPlatformDirectory(): Promise<PlatformDirectoryResponse
   }
 
   const ecosystems = directories
-    .map((ecosystem) => {
-      const target: PlatformDirectoryTarget | undefined =
-        PLATFORM_DIRECTORY_TARGETS.find(
-          (value) => value.ecosystemId === ecosystem.id
-        )
-      const detailUrl =
-        target?.detailPath ?? `/ecosystems/${encodeURIComponent(ecosystem.id)}`
-      return toEcosystemDirectoryEntry(ecosystem, {
+    .map((ecosystem) =>
+      toEcosystemDirectoryEntry(ecosystem, {
         appCount: appCounts.get(ecosystem.id) ?? 0,
-        detailUrl,
+        detailUrl: `/ecosystems/${encodeURIComponent(ecosystem.id)}`,
       })
-    })
+    )
     .sort((a, b) => a.name.localeCompare(b.name))
 
   return {
