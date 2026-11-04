@@ -79,8 +79,10 @@ export async function readPlatformAppCollection(
   return appCollectionPage(groups.flat(), ecosystemIds ? undefined : limit)
 }
 
-/** Fetch every canonical App document across configured ecosystem databases. */
-export async function readPlatformApps(): Promise<App[]> {
+/** Read published Apps across configured databases. Counts require complete results. */
+export async function readPlatformApps(
+  options: { requireComplete?: boolean } = {}
+): Promise<App[]> {
   const outcomes = await Promise.allSettled(
     PLATFORM_APP_TARGETS.map(async (target) => {
       const db = await getFirestoreProjectDb(
@@ -112,12 +114,14 @@ export async function readPlatformApps(): Promise<App[]> {
       : []
   })
 
-  if (!collections.length && failures.length) {
+  if (failures.length && (options.requireComplete || !collections.length)) {
     throw new AggregateError(
       outcomes.flatMap((outcome) =>
         outcome.status === 'rejected' ? [outcome.reason] : []
       ),
-      'Every platform App source failed.'
+      collections.length
+        ? 'Platform App results are incomplete.'
+        : 'Every platform App source failed.'
     )
   }
   if (failures.length) {

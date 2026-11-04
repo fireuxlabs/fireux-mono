@@ -6,8 +6,10 @@ definePageMeta({
   name: 'EcosystemExploreRedirect',
 })
 
-const ecosystemId = useRouteParam('id')
-await navigateTo(`/ecosystems/${encodeURIComponent(ecosystemId.value)}`, {
+const oldId = useRouteParam('id').value
+// The former Werkbox explore page predates the stored-ID detail route.
+const ecosystemId = oldId === 'werkbox' ? 'cleanbox' : oldId
+await navigateTo(`/ecosystems/${encodeURIComponent(ecosystemId)}`, {
   redirectCode: 301,
   replace: true,
 })

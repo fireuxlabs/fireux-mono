@@ -1,23 +1,17 @@
 import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
 import { toEcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/server/directory/projection'
-export {
-  isDirectoryAppIndexable,
-  isDirectoryEcosystemIndexable,
-} from '../../app/utils/directorySearchPolicy'
 import { readPlatformApps } from './apps'
-
 import { readPlatformEcosystems } from './ecosystems'
 
-const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
-
 export async function readPlatformDirectory(): Promise<PlatformDirectoryResponse> {
-  const directories = await readPlatformEcosystems()
-  const rawApps = await readPlatformApps()
+  const [directories, apps] = await Promise.all([
+    readPlatformEcosystems(),
+    readPlatformApps({ requireComplete: true }),
+  ])
   const appCounts = new Map<string, number>()
-  for (const raw of rawApps) {
-    const ecosystemId = text(raw.ecosystem_id)
-    if (!ecosystemId) continue
-    appCounts.set(ecosystemId, (appCounts.get(ecosystemId) || 0) + 1)
+  for (const app of apps) {
+    const ecosystemId = app.ecosystem_id.trim()
+    appCounts.set(ecosystemId, (appCounts.get(ecosystemId) ?? 0) + 1)
   }
 
   const ecosystems = directories

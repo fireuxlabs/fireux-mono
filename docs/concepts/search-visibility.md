@@ -100,8 +100,10 @@ or sitemap entry.
 
 FireUX serves Ecosystem details through `/ecosystems/[id]` using published
 records. The former `/misebox` doorway and `/ecosystems/misebox/explore`
-redirect to `/ecosystems/misebox`. Ecosystem-owned product details stay on
-their owning App. Directory summaries use the fields the owner publishes.
+redirect to `/ecosystems/misebox`. The former Werkbox explore page redirects
+to its stored-ID detail at `/ecosystems/cleanbox`. Ecosystem-owned product
+details stay on their owning App. Directory summaries use the fields the owner
+publishes.
 
 The platform relationship graph follows one rule across all Apps. FireUX
 publishes the `/apps` directory. Every App, including standalone Apps, declares a canonical Ecosystem parent;
@@ -109,8 +111,8 @@ the Ecosystem page links back to its active Apps. Runtime package selection and
 database binding remain separate from the stored relationship.
 
 FireUX owns `/sitemaps/directory.xml` for dynamic App and Ecosystem details.
-The JSON directory endpoint and XML sitemap share one bounded reader, so search
-discovery cannot bypass active-record projection rules. The App-owned sitemap
+The JSON directory endpoint and XML sitemap share the published record readers.
+The directory requires complete App results for its counts. The App-owned sitemap
 document is registered through Core's typed SEO configuration and appears in
 the sitemap index. Retired Cleanbox Ecosystem identity redirects to Werkbox and
 the FireUX Blank development harness remains `noindex` and outside the dynamic

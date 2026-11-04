@@ -127,6 +127,7 @@ import { useProjectTestRecords } from '../../../composables/useProjectTestRecord
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 
+const workspace = useProjectWorkspace()
 const relationshipId = computed(() =>
   workspace.outcome.value === 'ready' ? workspace.id.value : ''
 )
@@ -144,7 +145,6 @@ const relationshipValue = (source: RelationshipSource) =>
   ['ready', 'empty'].includes(relationshipOutcome(source))
     ? source.count.value
     : '—'
-const workspace = useProjectWorkspace()
 const team = useProjectWorkspaceHome().team
 const tests = useProjectTestRecords(workspace.id)
 const notifications = useUserNotifications()
