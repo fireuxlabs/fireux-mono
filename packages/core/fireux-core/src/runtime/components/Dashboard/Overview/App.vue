@@ -61,7 +61,7 @@
         variant="soft"
         icon="i-lucide-user-round-x"
         title="No app membership"
-        :description="missingMembershipDescription"
+        description="This app has not granted you access. Your public identity is unchanged."
       />
 
       <div v-else-if="membership">

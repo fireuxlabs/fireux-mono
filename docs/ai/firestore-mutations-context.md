@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-11-03
-Ref: 3f46d22a2
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -507,12 +507,11 @@ membership, App, route and caller form before credentials, validates the exact
 response id/action and suppresses obsolete UI completion. Displayed create
 failures are sanitized and copyable. The offline `project-identity.py` planner
 targets only `projects/fireux-2005/databases/fireux`, preserves preimages and
-revisions, and neither connects to Firestore nor applies/deletes records. Connected App ownership of
-description/image is enforced by the ecosystem connection predicate even when
-that provider is unavailable. Project implementation, canonical reads, authority and protected commands live in
-the FireUX ecosystem; App-specific cross-project discovery, remote product context
-and HTTP transport remain App-owned. Focused proof lives in the FireUX ecosystem's `project-identity.test.mjs`
-and FireUX App's `project-identity-command.test.mjs`.
+revisions, and neither connects to Firestore nor applies/deletes records.
+Project owns its name, description and image. Canonical reads and protected
+commands live in the FireUX ecosystem. FireUX App owns directory discovery
+and HTTP routes. FireUX App's `project-identity-command.test.mjs` covers the
+command with mocked transactions.
 Project Team create/update/delete and role-label commands reuse
 `fireux-fireux/runtime/project/server/authority.ts` to recheck App membership, timestamp-bound
 Project access and Project existence inside their writing transaction. Creation

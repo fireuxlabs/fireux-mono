@@ -1,9 +1,8 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Repository docs"
-      description="Current operating context and concept maps, rendered from their authoritative repository sources."
-      headline="FireUX"
+      title="FireUX Docs"
+      description="Learn how to build an App with FireUX."
     />
 
     <UPageBody>
@@ -23,56 +22,42 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: 'docs',
-  title: 'Repository docs',
+definePageMeta({ layout: 'docs', title: 'FireUX Docs' })
+useSeoMeta({
+  title: 'FireUX Docs',
+  description: 'Guides and reference for building Apps with FireUX.',
 })
 
 const sections = [
   {
-    label: 'Start',
-    description: 'Install FireUX as a Nuxt layer and add the first capability.',
+    label: 'Getting started',
+    description: 'Open the starter App and run it locally.',
     icon: 'i-lucide-play',
-    to: '/docs/concepts/app-config',
+    to: '/getting-started',
   },
   {
     label: 'Components',
-    description:
-      'Cross-industry page children, their ownership, and Nuxt UI foundations.',
+    description: 'See what each FireUX component does and how to use it.',
     icon: 'i-lucide-blocks',
     to: '/docs/components',
   },
   {
-    label: 'App composables',
-    description:
-      'Read the configured App and derive the values your page needs.',
+    label: 'Composables',
+    description: 'Read data in your App and handle loading and errors.',
     icon: 'i-lucide-app-window',
     to: '/docs/composables',
   },
   {
-    label: 'Templates',
-    description:
-      'Industry-designed page compositions built from the cross-industry library.',
+    label: 'Patterns',
+    description: 'See how FireUX Apps put pages and actions together.',
     icon: 'i-lucide-panels-top-left',
-    to: '/templates',
+    to: '/patterns',
   },
   {
-    label: 'Working agreement',
-    description: 'The short router every repository task starts from.',
-    icon: 'i-lucide-signpost',
-    to: '/docs/governance/agents',
-  },
-  {
-    label: 'Agent context',
-    description: 'Living entrypoints for repo-wide and durable scoped work.',
-    icon: 'i-lucide-bot',
-    to: '/docs/ai/gpt-context',
-  },
-  {
-    label: 'Concept maps',
-    description: 'Ownership, family language, and the current FireUX spine.',
-    icon: 'i-lucide-network',
-    to: '/docs/concepts/fireux-mono',
+    label: 'Packages',
+    description: 'See which FireUX packages this App uses.',
+    icon: 'i-lucide-package',
+    to: '/packages',
   },
 ] as const
 </script>

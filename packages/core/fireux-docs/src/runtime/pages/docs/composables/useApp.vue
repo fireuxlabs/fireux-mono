@@ -49,7 +49,7 @@
             exists. It is <code>undefined</code> until the read settles.
           </dd>
           <dt><code>exists</code></dt>
-          <dd>Whether the configured App record exists.</dd>
+          <dd>Whether the configured App has been initialized.</dd>
           <dt><code>pending</code></dt>
           <dd>Whether the current App read is in progress.</dd>
           <dt><code>error</code></dt>
@@ -74,20 +74,6 @@
         <pre><code>{{ derivedExample }}</code></pre>
       </section>
 
-      <section>
-        <h2>App fields</h2>
-        <p>
-          The returned App has <code>id</code>, <code>ecosystem_id</code>,
-          <code>role</code>, <code>status</code>, <code>name</code>,
-          <code>created</code>, and <code>updated</code>. Its optional fields are
-          <code>short_name</code>, <code>tagline</code>,
-          <code>description</code>, <code>social_links</code>, and
-          <code>media</code>. Role is <code>global</code>, <code>tenant</code>,
-          or <code>standalone</code>; status is <code>active</code> or
-          <code>inactive</code>. The read projection omits private
-          <code>context</code> and unrelated stored metadata.
-        </p>
-      </section>
     </UPageBody>
   </UPage>
 </template>

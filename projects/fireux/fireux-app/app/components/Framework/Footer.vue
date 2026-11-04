@@ -23,7 +23,7 @@ const links = [
   { label: 'Capabilities', to: '/capabilities' },
   { label: 'Product', to: '/product' },
   { label: 'Pricing', to: '/pricing' },
-  { label: 'Packages', to: '/packages' },
+  { label: 'About', to: '/about' },
   { label: 'Patterns', to: '/patterns' },
   { label: 'Legal', to: '/legal' },
 ]

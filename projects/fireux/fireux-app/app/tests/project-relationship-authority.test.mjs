@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { ECOSYSTEM_STATUSES } from '../../../../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts'
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
@@ -23,7 +24,7 @@ const readMembershipAccessIds = load(
   'readMembershipAccessIds'
 )
 const requireWorkspaceEntityMemberRole = load(
-  core + 'server/utils/workspace-entity/onboarding-authority.ts',
+  core + 'workspace/server/entity/onboarding-authority.ts',
   'requireWorkspaceEntityMemberRole',
   { createError }
 )
@@ -65,7 +66,7 @@ const authority = load(
   }
 )
 const mechanics = load(
-  core + 'server/utils/workspace-team/members.ts',
+  core + 'workspace/server/team/members.ts',
   '{createTeamMember, updateTeamMembers, deleteTeamMember}',
   {
     createError,
@@ -74,7 +75,7 @@ const mechanics = load(
   }
 )
 const roles = load(
-  core + 'server/utils/workspace-team/roles.ts',
+  core + 'workspace/server/team/roles.ts',
   'teamRolesCommand',
   {
     createError,
@@ -374,7 +375,7 @@ test('Owning Ecosystem reads admit inactive management records without making th
   const read = load(
     core + 'ecosystem/server/identity/read.ts',
     'readEcosystem',
-    { createError, requireFirestoreDocumentId }
+    { createError, requireFirestoreDocumentId, ECOSYSTEM_STATUSES }
   )
   await assert.rejects(read('eco', db), { statusCode: 404 })
   assert.equal((await read('eco', db, { activeOnly: false })).id, 'eco')

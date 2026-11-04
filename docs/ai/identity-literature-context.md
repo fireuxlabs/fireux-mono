@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-10-21
-Ref: d05ded3fd
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -35,8 +35,8 @@ shared public-language or pricing seam applies to them.
   offer, shared SaaS foundations, industry libraries and developer resources;
   the `framework` layout owns their public shell. Nuxt and Nuxt UI remain the
   technical and interface foundation. Docs leads to the
-  curated `/getting-started` guide; the conditional `/docs` viewer retains its
-  repository-reference role. Showcase reuses the public `/apps` reader. The
+  `/getting-started` guide and public `/docs` reference. Showcase reuses the
+  public `/apps` reader. The
   template overview describes the existing source starter without promoting
   paused domain previews or a package/download service. Project Workspace remains
   at `/workspace/project`, and only its Workspace host redirects root there.
@@ -79,14 +79,18 @@ shared public-language or pricing seam applies to them.
   provide an ordered subset through the shared `regionOrder` seam so its real
   product layers remain truthful without copying the renderer or inventing
   another landing framework.
-- FireUX alone owns the platform Ecosystems section. Ecosystem Main Apps show
+- FireUX alone owns the platform Ecosystems section. Its generic directory and
+  detail routes read published Ecosystem and App records. Do not import an
+  individual child Ecosystem package or use its authored package content as
+  FireUX catalogue data. Any FireUX-authored offer about a specific Ecosystem
+  remains owned by FireUX. Ecosystem Main Apps show
   an Apps section only when their public collection contains more than one
   active child App after excluding the Main App; the heading is only
   `<App name>'s Apps`.
 - Customer-facing Products use the existing `/products` catalogue and supported
   `/products/<slug>` offers. FireUX App supplies its framework framing over
-  Products' existing reader and collection; its Misebox link leads to that App's
-  own catalogue. Saved Product ownership and database scope stay with each App.
+  Products' existing reader and collection. Each App publishes its own offers
+  and reads its own Products.
   Audience, outcome and Workspace-use copy belong on the owning offer surface.
   Future Product concepts stay in the roadmap until a real offer is established;
   do not add a parallel literature directory or static catalogue of working

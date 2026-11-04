@@ -66,21 +66,9 @@ export default {
 
   runtimeConfig: {
     ...appConfig.runtimeConfig,
-    accountConnections: {
-      origin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://misebox.app'
-          : 'http://localhost:3001',
-      hubOrigin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://fireux.app'
-          : 'http://localhost:3000',
-      peerSecret: '',
-    },
     public: {
       ...appConfig.runtimeConfig?.public,
       packageComponents: {},
-      sharedSignIn: { enabled: false },
       ordering: { channels: ['pos', 'kiosk', 'website'] },
     },
   },

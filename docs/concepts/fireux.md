@@ -1,7 +1,7 @@
 # FireUX platform map
 
-Updated: 2026-10-26
-Ref: ce2861c77
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose and authority
@@ -86,6 +86,11 @@ point down toward lower owners; not every App needs every layer.
 - Extensions own domain models, Entity capabilities, data authority and trusted
   behavior.
 - Core owns shared Nuxt integration and product-neutral FireUX mechanics.
+
+FireUX App uses published Ecosystem and App records for discovery. Each child
+App owns its product pages, account and workflows. FireUX can link to those
+pages or use an ecosystem as an example. Keep child packages, catalogues and
+sign-in flows out of the host App.
 
 A Workspace, Dashboard or route is a surface over domain-owned data, not a new
 storage authority. Client Rules, trusted server IAM and domain command checks

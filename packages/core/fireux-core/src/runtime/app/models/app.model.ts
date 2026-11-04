@@ -32,18 +32,3 @@ export type App = FireuxEntity & {
     cover_url?: string
   }
 }
-
-/** Public directory/detail identity; excludes private context and audit. */
-export type AppPublicSummary = Pick<
-  App,
-  | 'id'
-  | 'ecosystem_id'
-  | 'role'
-  | 'status'
-  | 'name'
-  | 'short_name'
-  | 'tagline'
-  | 'description'
-  | 'social_links'
-  | 'media'
->

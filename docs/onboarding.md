@@ -1,6 +1,11 @@
 # Entity onboarding journeys
 
-This is the practical playbook for shared Core entity onboarding journeys.
+Role: historical working notes
+
+Use the [Workspace and Entity map](concepts/family-workspace-entity.md) for
+current onboarding and the [Main App identity context](ai/identity-literature-context.md#ownership-boundaries)
+for FireUX's public home and Project Workspace entry. The notes below retain
+earlier route, storage and command assumptions as historical evidence.
 
 ## Project onboarding boundary
 

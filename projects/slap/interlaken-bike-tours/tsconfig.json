@@ -9,7 +9,6 @@
       "fireux-core/runtime/*": [
         "../../../packages/core/fireux-core/src/runtime/*"
       ],
-      "fireux-docs": ["../../../packages/core/fireux-docs/src/module.ts"],
       "fireux-docs/*": ["../../../packages/core/fireux-docs/src/*"],
       "fireux-docs/runtime/*": [
         "../../../packages/core/fireux-docs/src/runtime/*"

@@ -12,6 +12,11 @@ useAppLandingSeo({ title: 'FireUX Patterns', description: 'Practical software pa
       <h1 class="fx-type-page-title text-3xl font-bold text-highlighted sm:text-4xl">FireUX Patterns</h1>
       <p class="text-lg text-muted">Practical software patterns, explained through real implementation: the problem, our approach, and its limits.</p>
     </header>
+    <UPageCard
+      title="Page composition"
+      description="Put a page together with Nuxt UI and FireUX components."
+      to="/patterns/page-composition"
+    />
     <UCard>
       <div class="space-y-3">
         <h2 class="text-xl font-semibold"><NuxtLink to="/patterns/one-action-many-interfaces" class="hover:underline">One action, many interfaces</NuxtLink></h2>

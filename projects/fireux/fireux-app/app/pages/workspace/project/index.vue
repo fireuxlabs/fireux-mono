@@ -6,7 +6,7 @@
   />
   <ClientOnly>
     <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
-      ><WorkspaceProjectSelector :publication="appContext.publication.value" />
+      ><WorkspaceProjectSelector />
     </UDashboardToolbar> </ClientOnly
   ><UPageHeader :title="intro.title" :description="intro.purpose" />
   <ClientOnly>
@@ -15,10 +15,7 @@
       :perform-action="performLandingAction"
       :can-prepare-app="canPrepareApp"
     />
-    <WorkspaceProject
-      ref="surface"
-      :publication="appContext.publication.value"
-    />
+    <WorkspaceProject ref="surface" />
     <WorkspaceProjectHomeExploreProjects />
     <template #fallback>
       <p role="status" class="py-6 text-muted">Loading your Workspace…</p>
@@ -31,8 +28,6 @@ const { isSignedIn } = useWorkspaceEntryState()
 import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useSeoMeta } from '#imports'
-import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
-const appContext = useProjectAppContext()
 import { computed, ref } from 'vue'
 import type { ProjectLandingIntent } from 'fireux-fireux/runtime/project/models/landing-intent'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'

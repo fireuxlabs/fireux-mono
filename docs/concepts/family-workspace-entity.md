@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-10-25
-Ref: ce2861c77
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose
@@ -310,8 +310,8 @@ Entity lifecycle and dependent-data policy are proved. Detail pages do not own
 a second mutation implementation while this family is being proved.
 Project and Kitchen Landing compose the shared `WorkspaceCapability` layout.
 Their domain Index UI owns the bounded landing projection; the data composables
-retain only their domain collection and selection binding. Project's optional
-published App identity and Kitchen's Place identity remain domain differences.
+retain only their domain collection and selection binding. Project uses its
+own identity. Kitchen uses its linked Place identity.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
 native `UPageHeader`, composes Kitchen Workspace at its Workspace origin's `/`
@@ -528,23 +528,17 @@ Test publishes only workspace id, string records and read state; full Workspace
 records are not part of its page-facing context.
 
 Project entry Update reuses the Identity editor and its bounded identity update
-controller. An App-owned composition may supply a published description/image
-projection; those fields then become read-only and Project Update writes only
-the workspace name. Unconnected Projects retain manual identity fields. Core
-receives the projection, never an App id or endpoint rule. The Identity route owns its page JSON publication;
-the reusable controller does not publish into a caller's inspector. This keeps
-the entry page's context intact when the same editor is opened from `/`.
+controller. The selected Project owns its name, description and image.
+The Identity route owns its page JSON publication, so opening the same editor
+from the entry page leaves that page's context intact.
 
 Project Identity saves through the FireUX App's named
 `fireux-fireux/runtime/project/server/identity/update.ts` command and App-owned thin PATCH adapter. Its transaction
 rereads the current App, membership, membership-bound Project access and Project
-before writing the allowlisted identity fields. The ecosystem-owned
-`project/utils/app-context-connection.ts` predicate preserves connected App field
-ownership independently of provider availability. The client adapter and editor
+before writing the allowlisted identity fields. The client adapter and editor
 invalidate obsolete account/Project intent, including same-tick round trips.
-See the FireUX ecosystem's `project-identity.test.mjs` and FireUX App's
-`project-identity-command.test.mjs`; these use mocked transport/transactions and
-are not proof of a deployed save.
+FireUX App's `project-identity-command.test.mjs` covers this path with mocked
+transport and transactions.
 
 The nine proving pages expose one small page-facing `derived` vocabulary:
 `status` and `capability`. `status` is the page lifecycle (`idle`, `loading`,
@@ -959,8 +953,8 @@ this interaction comparison is still limited to the named surfaces.
 
 | Workspace concern   | Kitchen                                                                                    | Project                                                             | Classification                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Landing display     | Kitchen joined with same-id Place; display name/image/tagline                              | Project name/image/description, optionally published App identity   | Accepted domain difference                                     |
-| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway       | Project creation; Project name and manual or published App identity | Accepted domain difference                                     |
+| Landing display     | Kitchen joined with same-id Place; display name/image/tagline                              | Project name, image and description                                 | Accepted domain difference                                     |
+| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway       | Project creation and Project Identity editor                        | Accepted domain difference                                     |
 | Test transport      | Kitchen child reader; Kitchen id in request body                                           | Project collection reader; Project id in endpoint                   | Accepted transport difference; matching simple command surface |
 | Team records        | Shared member profile enriched from linked accounts                                        | Same profile and account enrichment                                 | Shared record/interaction contract                             |
 | Team extras         | Invitation links and richer person details                                                 | Project-owned roles and identity composition                        | Domain additions; not branches in the shared layout            |
@@ -1106,8 +1100,8 @@ working landing page; Overview links to group indexes, whose mini overviews link
 to child working pages. The Kitchen group composition and collection breadcrumbs
 reuse the same explicit navigation children rather than flattening children into
 Overview or maintaining a second registry. See `workspace-navigation.test.mjs`.
-Project composes published App identity and ecosystem-owned App context;
-collection-oriented Overviews retain their own scope summaries.
+Project presents its saved identity. Collection-oriented Overviews retain
+their own scope summaries.
 Existing `WorkspaceOverview`, `WorkspaceOverviewFocus` and
 `WorkspaceOverviewMultiple` remain presentation building blocks. The
 Current domain controllers establish the shared relationship without requiring
@@ -1120,8 +1114,7 @@ Kitchen and Project Identity use named `useKitchenWorkspaceIdentity` and
 read/edit availability, explicit `readState` presentation outcomes and a reactive
 scope key; it owns no identity fields,
 validation, account association or save endpoint. Kitchen retains Place-owned
-venue fields and commands. Project retains its name and the connected App's
-published description/image boundary. Their named Identity components
+venue fields and commands. Project owns its identity fields. Their named Identity components
 compose domain readers, editors and navigation; routes supply page framing.
 
 Kitchen places Identity & brand and Team before its domain groups, with Settings
@@ -1138,14 +1131,8 @@ owns the current-value venue sections. Focused side panels
 compose the Place-owned inline editors also used by the public Place edit route. The Kitchen Workspace
 passes its explicit mutation authority. Currency remains Place-owned; Kitchen
 retains its separate palette controls; the public Place route retains Place access and return navigation.
-Project presents its profile and, when connected, a separate publication-source
-card. The connected App declares its published image fitting; Project's local
-image remains a profile photo. `project/utils/project-identity-media.ts` resolves
-the exact Project publication for Home, Navigation, selection and Identity
-previews without copying App imagery into Project storage. Pending or failed
-publication does not become an incomplete editable profile or a completion score. Both retain their bounded Identity proposal editors. Neither needs a page
-selector or large AI panel. These are single-entity presentations, not
-collection/focus layouts.
+Project Home, navigation, selection and Identity use the saved Project profile.
+Both Workspace families retain their Identity editors.
 
 Supplier, Property, Portfolio and Blank have named Identity controllers consuming
 `useWorkspaceIdentity`. Supplier reads the linked Company/same-id Place profile. Its
@@ -1299,8 +1286,8 @@ as unconnected. Named Team summary readers use the existing authorised endpoints
 Test pages and summaries reuse their domain TestRecords readers without mounting
 the editing controller or replacing Overview context. Each card has its own
 loading/error state. Identity completion measures filled editor fields: nine
-Place-owned venue fields for Kitchen and three effective fields for Project,
-including connected App description/image. This is field completion, not a
+Place-owned venue fields for Kitchen and three saved fields for Project.
+This is field completion, not a
 claim of operational readiness. Notifications remain the cross-workspace User feed.
 
 Each future capability includes its Overview summary in the same completion pass.

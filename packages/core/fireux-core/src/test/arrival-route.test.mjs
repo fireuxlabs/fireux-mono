@@ -3,7 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref, watch } from 'vue'
+import { computed, effectScope, nextTick, ref, toValue, watch } from 'vue'
 import { resolvePostAuthDestination } from '../runtime/user/utils/onboarding-route.ts'
 
 function load(path, result, deps) {
@@ -136,7 +136,7 @@ function guardHarness({
       ? '/workspace/kitchen/food-and-drink/menus'
       : kind === 'dev'
         ? '/diagnostics/users'
-        : '/dashboard/connections'
+        : '/dashboard/settings'
   const route = {
     path,
     fullPath: path + '?from=arrival#detail',
@@ -245,4 +245,45 @@ test('public arrival does not start a protected Auth check', async () => {
   const h = guardHarness()
   await h.guard({ path: '/', fullPath: '/', meta: {} })
   assert.deepEqual(h.moves, [])
+})
+
+test('Dashboard auth hydration preserves the original protected destination even if another guard already navigated', async () => {
+  const route = ref({ fullPath: '/dashboard/settings?from=account' })
+  const hasAuthState = ref(false),
+    isReady = ref(false),
+    calls = [],
+    scope = effectScope()
+  const useAuthRedirect = load(
+    '../runtime/composables/fireux/firebase/useAuthRedirect.ts',
+    'useAuthRedirect',
+    {
+      onNuxtReady: () => {},
+      useNuxtApp: () => ({ isHydrating: false }),
+      computed,
+      ref,
+      toValue,
+      watch,
+      useRouter: () => ({
+        currentRoute: route,
+        replace: async (path) => calls.push(path),
+      }),
+      useAuth: () => ({
+        isAuthenticated: ref(false),
+        isReady,
+        hasAuthState,
+        lastBindError: ref(null),
+      }),
+      resolvePostAuthDestination,
+    }
+  )
+  scope.run(() => useAuthRedirect())
+  assert.equal(calls.length, 0)
+  route.value = { fullPath: '/auth' }
+  isReady.value = true
+  hasAuthState.value = true
+  await nextTick()
+  assert.deepEqual(calls, [
+    '/auth?redirect=%2Fdashboard%2Fsettings%3Ffrom%3Daccount',
+  ])
+  scope.stop()
 })

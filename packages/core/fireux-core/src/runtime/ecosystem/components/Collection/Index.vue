@@ -30,7 +30,7 @@ import { computed } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import {
   useEcosystemView,
-  type EcosystemInterfaceInput,
+  type EcosystemDirectoryCard,
 } from '../../composables/useEcosystemView'
 import type { EcosystemDirectoryEntry } from '../../../models/utils/directory.ts'
 
@@ -38,41 +38,25 @@ const props = defineProps<{
   ecosystems: EcosystemDirectoryEntry[]
 }>()
 
-const rawCollection = computed<EcosystemInterfaceInput[]>(() =>
-  props.ecosystems.map((entry) => ({
-    ...entry,
-    href: entry.detail_url,
-    appCount: entry.app_count,
-  }))
-)
+const collection = computed(() => props.ecosystems)
 const title = 'Active Ecosystems'
 const description = 'Each Ecosystem groups Apps and belongs to one Project.'
 const searchPlaceholder = 'Search ecosystems…'
 const showCount = true
-const { interface: makeCard } = useEcosystemView()
-
-const collection = computed<EcosystemInterfaceInput[]>(() =>
-  rawCollection.value.filter((row): row is EcosystemInterfaceInput =>
-    Boolean(makeCard(row))
-  )
-)
+const { toDirectoryCard } = useEcosystemView()
 
 const { query, visibleItems, visibleCount } = useCollectionSearch<
-  EcosystemInterfaceInput,
-  NonNullable<ReturnType<typeof makeCard>>
+  EcosystemDirectoryEntry,
+  EcosystemDirectoryCard
 >({
   items: collection,
-  makeCard: (row) => makeCard(row),
+  makeCard: toDirectoryCard,
   initialVariant: 'cell',
 })
 
-const cardsFiltered = computed(() =>
-  visibleItems.value
-    .map(makeCard)
-    .filter((card): card is NonNullable<typeof card> => Boolean(card))
-)
+const cardsFiltered = computed(() => visibleItems.value.map(toDirectoryCard))
 
-const totalCount = computed(() => collection.value.length)
+const totalCount = computed(() => props.ecosystems.length)
 const showSearchInput = computed(() => totalCount.value > 15)
 const countLabel = computed(() =>
   showSearchInput.value && query.value

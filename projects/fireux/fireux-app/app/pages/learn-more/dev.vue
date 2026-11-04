@@ -35,10 +35,6 @@
             <p class="font-mono">GET/POST /api/registry · retired</p>
             <p class="text-dimmed">The mixed registry database is no longer an entity authority or public API.</p>
           </div>
-          <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/docs-manifest</p>
-            <p class="text-dimmed">Returns parsed docs manifest entries for operational documentation surfaces.</p>
-          </div>
         </div>
       </UCard>
 

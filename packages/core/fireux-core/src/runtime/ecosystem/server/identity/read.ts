@@ -2,23 +2,76 @@ import type { Firestore } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
-import type { Ecosystem } from '../../models/ecosystem.model.ts'
+import {
+  ECOSYSTEM_STATUSES,
+  type Ecosystem,
+} from '../../models/ecosystem.model.ts'
 
-const text = (value: unknown) => String(value ?? '').trim()
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isStamp(
+  value: unknown,
+  allowAppId = false
+): value is NonNullable<Ecosystem['created']> {
+  if (!isRecord(value) || !isRecord(value.at)) return false
+  if (
+    typeof value.at.seconds !== 'number' ||
+    typeof value.at.nanoseconds !== 'number'
+  ) {
+    return false
+  }
+  return (
+    Object.keys(value).every(
+      (key) =>
+        key === 'at' || key === 'by' || (allowAppId && key === 'app_id')
+    ) &&
+    (value.by === undefined || typeof value.by === 'string') &&
+    (!allowAppId ||
+      value.app_id === undefined ||
+      typeof value.app_id === 'string')
+  )
+}
 
 function canonicalEcosystem(
   id: string,
   value: unknown,
   activeOnly = true
 ): Ecosystem | null {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
-  const source = value as Record<string, unknown>
-  if (!['active', 'inactive', 'archived'].includes(text(source.status)))
+  if (!id || !isRecord(value)) return null
+  const source = value
+  const status = ECOSYSTEM_STATUSES.find(
+    (candidate) => candidate === source.status
+  )
+  if (
+    typeof source.project_id !== 'string' ||
+    !source.project_id.trim() ||
+    !status ||
+    (activeOnly && status !== 'active') ||
+    typeof source.name !== 'string' ||
+    !source.name.trim()
+  ) {
     return null
-  if (activeOnly && text(source.status) !== 'active') return null
-  if (!text(source.project_id) || !text(source.name)) return null
-  const { context: _context, ...publicSource } = source
-  return { ...publicSource, id } as unknown as Ecosystem
+  }
+
+  return {
+    id,
+    project_id: source.project_id,
+    status,
+    name: source.name,
+    ...(typeof source.description === 'string'
+      ? { description: source.description }
+      : {}),
+    ...(typeof source.image_url === 'string'
+      ? { image_url: source.image_url }
+      : {}),
+    ...(typeof source.website_url === 'string'
+      ? { website_url: source.website_url }
+      : {}),
+    ...(isStamp(source.created, true) ? { created: source.created } : {}),
+    ...(isStamp(source.updated) ? { updated: source.updated } : {}),
+  }
 }
 
 export async function readEcosystem(

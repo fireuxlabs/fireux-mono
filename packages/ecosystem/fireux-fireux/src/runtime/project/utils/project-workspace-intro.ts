@@ -11,7 +11,6 @@ type ProjectLandingFacts = {
   subscription: string
   used: number
   limit: number | null
-  publishedIdentity: boolean
 }
 
 export function projectWorkspaceIntro(
@@ -29,7 +28,7 @@ export function projectWorkspaceIntro(
     purpose: facts?.count
       ? 'Your Projects, and the work that comes next.'
       : 'Give your next idea a place to grow.',
-    data: 'These are Projects associated with your account in this app. The Project owns its records. A connected App owns its published description and image.',
+    data: 'See the Projects you can access in this app.',
     boundaries:
       'Selection opens the current Project’s capabilities. Editing a Project does not deploy its connected App.',
     access:
@@ -81,9 +80,7 @@ export function projectWorkspaceIntro(
       {
         id: 'update',
         label: 'Edit Project',
-        description: facts?.publishedIdentity
-          ? 'Edit the Project name. Description and image come from the connected App.'
-          : 'Edit the selected Project’s name, description and image.',
+        description: 'Edit the selected Project’s name, description and image.',
         available: facts?.canUpdate ?? false,
         reason: facts?.canUpdate
           ? 'Review your changes and save them explicitly.'

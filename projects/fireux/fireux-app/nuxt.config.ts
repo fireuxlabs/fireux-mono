@@ -1,9 +1,5 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
-const docsEnabled =
-  process.env.NODE_ENV === 'production' ||
-  process.env.FIREUX_DOCS_ENABLED === 'true'
-
 const appConfig = defineFireuxConfig({
   ecosystem: 'fireux',
   projectId: 'fireux',
@@ -26,13 +22,17 @@ const appConfig = defineFireuxConfig({
       '/',
       '/getting-started',
       '/components',
-      '/components/collections',
-      '/components/state-feedback',
-      '/components/selection',
-      '/components/surfaces',
-      '/components/disclosure-card',
-      '/components/diagnostics',
-      '/components/page',
+      '/docs',
+      '/docs/components',
+      '/docs/components/collections',
+      '/docs/components/state-feedback',
+      '/docs/components/selection',
+      '/docs/components/surfaces',
+      '/docs/components/disclosure-card',
+      '/docs/components/diagnostics',
+      '/docs/composables',
+      '/docs/composables/useApp',
+      '/patterns/page-composition',
       '/capabilities',
       '/theme',
       '/templates',
@@ -59,10 +59,9 @@ const appConfig = defineFireuxConfig({
         ],
       },
     ],
-    ...(docsEnabled ? ['fireux-docs'] : []),
   ],
   extends: [
-    ...(docsEnabled ? ['fireux-docs/layer'] : []),
+    'fireux-docs/layer',
     'fireux-fireux/layer',
     'fireux-blogs/layer',
     'fireux-products/layer',
@@ -88,17 +87,5 @@ export default {
   runtimeConfig: {
     ...appConfig.runtimeConfig,
     public: { ...appConfig.runtimeConfig?.public, packageComponents: {} },
-    accountConnections: {
-      origin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://fireux.app'
-          : 'http://localhost:3000',
-      miseboxOrigin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://misebox.app'
-          : 'http://localhost:3001',
-      peerSecret: '',
-      databaseId: '',
-    },
   },
 }

@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-03
-Ref: 57d034087
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose
@@ -466,7 +466,6 @@ a canonical identity reader is not a substitute for that projection.
 | Group           | Consumed responsibility                                                                                                                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `account`       | Owner-only private account reading; anonymous accounts are excluded                                                                                                                                           |
-| `connections`   | Explicitly imported optional command mechanics; linking authority stays with the hub and participant services                                                                                                 |
 | `directory`     | `useUserDirectory` applies eligibility and current-User presentation; all Apps use `useUserCollection` over the existing public Users API; the server owns global versus tenant membership scope |
 | `identity`      | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands                                                                                                                |
 | `session`       | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access                                                                          |
@@ -510,9 +509,8 @@ Unused membership admin/removal wrappers and unused email/avatar formatting
 contracts are retired. Membership execution belongs to App's `runAppUserCommand`.
 The shared `useAuthRedirect` lives with generic Firebase Auth composables and
 is imported directly; it does not depend on the User record or its fields.
-The base User composable groups are registered explicitly. Optional connection
-mechanics are directly imported by their real consumers. Utilities and models
-are not auto-import directories, and retired paths have no compatibility files.
+The base User composable groups are registered explicitly. Utilities and models
+are not auto-import directories.
 
 Tenant directory pages follow App membership document cursors before canonical
 User hydration. Missing or incomplete identities do not end pagination; every
@@ -524,14 +522,7 @@ still verify the requested handle. Core `user-directory-collection`,
 `user-directory-detail` and `user-profile-commands` tests protect these boundaries.
 
 The `profile` group's existing four-family vocabulary remains a bounded legacy
-contract used by real domain routes. This pass preserves those domain consumers;
-it does not establish that a fixed Core profile catalogue is the extension model
-for future industries. Optional cross-ecosystem account linking is a separate hub/participant service
-with its own UX and private authority store. It does not become another
-responsibility of these local readers or AppUser access.
-See the [account-connection context](../ai/account-connections-context.md) for
-current boundaries and the [archived identity roadmap](../archive/2026-10-workspace-cleanup/roadmaps/identity-and-workspaces.md#optional-cross-ecosystem-identity)
-for earlier planning.
+contract used by current domain routes.
 
 ## Kitchen presentation placement
 

@@ -59,8 +59,6 @@
           ? `${filled} of ${fields.length} identity fields filled`
           : 'Identity information is not ready.'
       "
-      :pending="props.publication?.status === 'pending'"
-      :error="props.publication?.status === 'error'"
     >
       <UProgress
         v-if="identityReady"
@@ -129,8 +127,6 @@ import { useProjectTestRecords } from '../../../composables/useProjectTestRecord
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 
-import type { ProjectPublishedIdentity } from '../../../models/published-identity'
-const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const relationshipId = computed(() =>
   workspace.outcome.value === 'ready' ? workspace.id.value : ''
 )
@@ -152,19 +148,11 @@ const workspace = useProjectWorkspace()
 const team = useProjectWorkspaceHome().team
 const tests = useProjectTestRecords(workspace.id)
 const notifications = useUserNotifications()
-const identityReady = computed(
-  () =>
-    workspace.outcome.value === 'ready' &&
-    (!props.publication || props.publication.status === 'ready')
-)
+const identityReady = computed(() => workspace.outcome.value === 'ready')
 const fields = computed(() => [
   workspace.data.value?.identity.name,
-  props.publication
-    ? props.publication.description
-    : workspace.data.value?.identity.description,
-  props.publication
-    ? props.publication.imageUrl
-    : workspace.data.value?.identity.image_url,
+  workspace.data.value?.identity.description,
+  workspace.data.value?.identity.image_url,
 ])
 const filled = computed(
   () => fields.value.filter((value) => String(value || '').trim()).length

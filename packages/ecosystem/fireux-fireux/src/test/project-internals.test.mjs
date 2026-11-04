@@ -188,7 +188,7 @@ test('Project AI captures nested input before credentials and preserves the huma
   }
   const dialog = fixture.owner.run(() =>
     load(
-      '../runtime/workspace/components/Project/Home/Intent.vue',
+      '../runtime/project/components/Workspace/Home/Intent.vue',
       '{ submit, prompt }',
       {
         ref,
@@ -287,140 +287,6 @@ for (const changed of ['revoked', 'disposed'])
     })
   }
 
-function appContextFixture() {
-  const fixture = contextSources()
-  const response = deferred(),
-    calls = []
-  const state = {
-    data: ref(null),
-    pending: ref(false),
-    error: ref(null),
-    refresh() {},
-  }
-  let handler, key
-  const dependencies = {
-    computed,
-    ref,
-    watch,
-    onScopeDispose,
-    useCommandScope,
-    useAuth: () => ({ currentUser: fixture.currentUser }),
-    useAppSession: () => fixture.session,
-    useFireUXConfig: () => fixture.config,
-    useWorkspace: () => ({ selectedId: fixture.selectedId }),
-    hasProjectAppContext: (id) => id === 'misebox',
-    useAsyncData: (requestKey, run) => {
-      key = requestKey
-      handler = run
-      return state
-    },
-    $fetch: (url, options) => {
-      calls.push({ url, options })
-      return response.promise
-    },
-  }
-  const owner = effectScope()
-  const api = owner.run(() =>
-    load(
-      '../runtime/project/composables/workspace/identity/useProjectAppContext.ts',
-      'useProjectAppContext',
-      dependencies
-    )()
-  )
-  return {
-    ...fixture,
-    calls,
-    response,
-    state,
-    owner,
-    api,
-    key,
-    run: (signal) => handler({}, { signal }),
-  }
-}
-const published = {
-  sourcePath: '/api/fireux/context/product',
-  revision: 'revision',
-  context: {},
-  identity: {
-    name: 'Misebox',
-    description: 'Published identity',
-    imageUrl: 'https://misebox.app/image.png',
-    url: 'https://misebox.app',
-  },
-}
-for (const changed of [
-  'account',
-  'membership',
-  'selection',
-  'app',
-  'disposed',
-  'cancelled',
-]) {
-  test(`Project App context stops ${changed} credentials and rejects stale cached display`, async () => {
-    const fixture = appContextFixture()
-    const abort = new AbortController()
-    fixture.state.data.value = {
-      requestKey: fixture.key.value,
-      context: published,
-    }
-    assert.equal(fixture.api.data.value.identity.name, 'Misebox')
-    const flight = fixture.run(abort.signal)
-    if (changed === 'cancelled') abort.abort()
-    else roundTrip(fixture, changed)
-    fixture.credentials.resolve('token')
-    assert.equal(await flight, null)
-    assert.equal(fixture.calls.length, 0)
-    if (changed !== 'cancelled') assert.equal(fixture.api.data.value, null)
-    fixture.owner.stop()
-  })
-}
-test('Project App context passes Nuxt cancellation and hides pending, failed and obsolete results', async () => {
-  const fixture = appContextFixture()
-  const abort = new AbortController()
-  fixture.credentials.resolve('token')
-  const flight = fixture.run(abort.signal)
-  while (!fixture.calls.length) await Promise.resolve()
-  assert.equal(fixture.calls[0].options.signal, abort.signal)
-  abort.abort()
-  fixture.response.resolve(published)
-  assert.equal(await flight, null)
-  fixture.state.data.value = {
-    requestKey: fixture.key.value,
-    context: published,
-  }
-  fixture.state.pending.value = true
-  assert.equal(fixture.api.data.value, null)
-  fixture.state.pending.value = false
-  fixture.state.error.value = new Error('Unavailable')
-  assert.equal(fixture.api.data.value, null)
-  fixture.state.error.value = null
-  assert.equal(
-    fixture.api.data.value.identity.description,
-    'Published identity'
-  )
-  roundTrip(fixture, 'membership')
-  assert.equal(fixture.api.data.value, null)
-  assert.equal(fixture.api.publication.value.description, '')
-  fixture.owner.stop()
-})
-test('Project App context preserves a current response and reports a current failure', async () => {
-  const fixture = appContextFixture()
-  fixture.credentials.resolve('token')
-  const flight = fixture.run(new AbortController().signal)
-  fixture.response.resolve(published)
-  fixture.state.data.value = await flight
-  assert.equal(fixture.api.data.value.identity.name, 'Misebox')
-  assert.equal(fixture.api.publication.value.description, 'Published identity')
-  fixture.owner.stop()
-  const failed = appContextFixture()
-  failed.credentials.resolve('token')
-  const failure = failed.run(new AbortController().signal)
-  failed.response.reject(new Error('Provider unavailable'))
-  await assert.rejects(failure, /Provider unavailable/)
-  failed.owner.stop()
-})
-
 for (const changed of ['record', 'actions'])
   for (const completion of ['success', 'error']) {
     test(`Project AI dialog preserves a new request after an old ${completion} and ${changed} round trip`, async () => {
@@ -435,7 +301,7 @@ for (const changed of ['record', 'actions'])
       const owner = effectScope()
       const dialog = owner.run(() =>
         load(
-          '../runtime/workspace/components/Project/Home/Intent.vue',
+          '../runtime/project/components/Workspace/Home/Intent.vue',
           '{ submit, prompt, message, submitting }',
           {
             ref,

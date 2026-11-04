@@ -8,12 +8,7 @@
     placement="top"
   />
   <section class="space-y-4">
-    <WorkspaceProjectOverview :publication="published.publication.value">
-      <WorkspaceProjectOverviewAppContext
-        v-if="published.connected.value"
-        @state="appContext = $event"
-      />
-    </WorkspaceProjectOverview>
+    <WorkspaceProjectOverview />
   </section>
   <WorkspaceFreemium
     family="project"
@@ -24,15 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
-import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
+import { watchEffect } from 'vue'
 import { useProjectWorkspace } from '../../../project/composables/workspace/useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import WorkspaceProjectOverviewAppContext from '../../../project/components/Workspace/Overview/AppContext.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 const workspace = useProjectWorkspace()
-const published = useProjectAppContext()
-const appContext = ref<unknown>(null)
 const pageState = useWorkspacePageState('project')
 watchEffect(() => {
   const project = workspace.data.value
@@ -41,16 +32,10 @@ watchEffect(() => {
       ? {
           id: workspace.id.value,
           name: project.identity.name,
-          description: published.publication.value
-            ? published.publication.value.description
-            : project.identity.description,
-          image_url: published.publication.value
-            ? published.publication.value.imageUrl
-            : project.identity.image_url,
-          source: published.publication.value,
+          description: project.identity.description,
+          image_url: project.identity.image_url,
         }
       : null,
-    appContext: appContext.value,
     derived: { status: workspace.outcome.value },
   })
 })

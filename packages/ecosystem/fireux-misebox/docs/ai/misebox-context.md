@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-03
-Ref: 6a0fa0d06
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1283,17 +1283,6 @@ when a stable recurring Misebox ownership, authority, language, or verification
 boundary changes. Keep task state, migration counts, fixture inventories, route
 dumps, and chat history out. Point to owning source and available tests instead.
 
-## Optional shared sign-in
-
-The Main App owns an optional FireUX account connection and custom-auth participant
-at `server/user/connections/fireux.ts`. Core Auth System still owns post-auth
-navigation; the App supplies its additional provider through the explicit slot.
-The participant authenticates the existing local account and preserves its User,
-AppUser, profile, subscription and workspace identities. There is no email-based
-merge, bulk migration or automatic membership grant. Read
-`docs/ai/account-connections-context.md` for the hub/private-store authority and
-separate activation checks. Ordinary ecosystem development Rules are unchanged.
-
 ## App product context
 
 The Misebox App owns its bounded product context at
@@ -1315,15 +1304,7 @@ a bounded description and content revision. It requires no caller credentials,
 Project relationship or Firestore read. Never project internal draft context or
 operational records into that public response automatically.
 
-FireUX Project Overview validates and displays this public response. Its internal
-page endpoint retains Project operator authorization, but the outbound public
-request carries no token. The current reader configures only the Misebox Project;
-other child Apps and generated-App template installation remain unimplemented.
-The previous draft-sharing command and UI are retired. Historical stored grants
-have no effect on public discovery.
-The public integration uses no service-account impersonation or cross-database
-access. App-owned server credentials still protect any future database-backed
-publication writer; public read access does not authorize writes.
+This publication belongs to Misebox. FireUX Project identity uses its own record.
 Development-open Rules still prevent describing stored context as private;
 this record contains only non-sensitive product background.
 

@@ -1,7 +1,7 @@
 # FireUX Mono repository map
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose and navigation
@@ -37,10 +37,14 @@ no-FireUX embed harness is a static project exception, not a reusable package.
 Implementation remains with the lowest layer that owns its complete meaning
 and authority:
 
-- An App may consume an Ecosystem, Extension or Core directly.
+- An App may consume its own Ecosystem package, Extensions or Core directly.
 - An Ecosystem may consume Extensions and Core.
 - An Extension may consume lower Extensions and Core.
 - Core depends on external libraries, not product packages.
+
+The FireUX host uses published Ecosystem and App records for discovery. See
+the [platform boundary](fireux.md#package-and-data-ownership) for child
+Ecosystem package composition.
 
 An upper layer composes, configures, frames or adapts lower-owned behavior; it
 does not copy it for a route. An Ecosystem does not need a placeholder

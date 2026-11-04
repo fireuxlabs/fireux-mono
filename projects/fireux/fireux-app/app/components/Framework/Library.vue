@@ -21,8 +21,7 @@
 const areas = [
   {
     title: 'Products',
-    description:
-      'Browse App, template and module offers, with a route to Misebox’s Kitchen products.',
+    description: 'Browse FireUX Apps, templates and modules.',
     icon: 'i-lucide-box',
     to: '/products',
   },

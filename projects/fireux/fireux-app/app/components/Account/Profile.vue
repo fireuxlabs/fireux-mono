@@ -39,13 +39,6 @@
     </UPageCard>
     <UPageCard variant="subtle">
       <UButton
-        to="/dashboard/connections"
-        label="Connected ecosystems"
-        icon="i-lucide-link"
-        color="neutral"
-        variant="soft"
-      />
-      <UButton
         to="/dashboard/settings"
         label="Settings"
         icon="i-lucide-settings"

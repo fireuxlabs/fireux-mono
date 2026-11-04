@@ -11,10 +11,7 @@
           <AppBrandWordmark size="large" class="tenant-brand__wordmark" />
         </div>
       </section>
-      <FireAuthSystem
-        ><template #providers="{ disabled, setBusy }"
-          ><AuthSharedSignIn :disabled="disabled" @busy="setBusy" /></template
-      ></FireAuthSystem>
+      <FireAuthSystem />
     </UContainer>
   </div>
 </template>

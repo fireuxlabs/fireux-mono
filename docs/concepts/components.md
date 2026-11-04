@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-10-28
-Ref: ce2861c77
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose and navigation
@@ -144,10 +144,6 @@ and Entity route boundaries.
 | Page introduction         | Entity routes compose native UPageHeader or their named Hero/Detail                                        | A record introduction, collection introduction and operational context bar have different jobs                          |
 | Transitions               | Existing Core page policy uses native route metadata                                                       | Workspace and Dashboard remain unanimated; other page policy and genuine App differences remain explicit                |
 
-The App-owned [Connected ecosystems route](../../projects/fireux/fireux-app/app/pages/dashboard/connections.vue)
-uses native UDashboardNavbar directly, bypassing the shared Dashboard Navbar's
-subscription/notification controls. The reason for that difference is unproved;
-compare it with the common Dashboard contract before treating it as an exception.
 The Kitchen [Collection Header](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Collection/Header.vue)
 supplies content titles and actions for Ingredients, Recipes, Items, Menus and
 Promotions. It derives no route breadcrumbs; Core's Workspace frame owns the
@@ -219,22 +215,13 @@ accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
 fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
-The FireUX App's [Components index](../../projects/fireux/fireux-app/app/pages/components/index.vue)
-curates reusable Core components with current consumers into Collections,
-State and feedback, Selection, Surfaces and disclosure, and Developer
-diagnostics. It does not catalogue Core's internal App, User, Workspace or
-layout implementations. Nuxt UI owns its native components and APIs; FireUX
-child pages document only the FireUX-owned component contracts. The shared
-[component navigation](../../projects/fireux/fireux-app/app/components/Framework/ComponentDocsNav.vue)
-keeps those categories consistent across child pages.
+The public [component reference](../../packages/core/fireux-docs/src/runtime/pages/docs/components/index.vue)
+documents supported FireUX controls. The FireUX App
+[playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
+links to that reference. Nuxt UI documents its own controls.
 
-[Page composition](../../projects/fireux/fireux-app/app/pages/components/page.vue)
-is a guide under a separate Guides and patterns section, not a reusable Core
-component or new Page API. It shows how routes compose native `UPage` structure
-with named domain components, including State/Pagination contracts and the
-single-reader collection pattern. Code examples do not acquire Entity records.
-The Components index remains directly in `pages/components/index.vue`; no
-custom parent shell is added.
+[Page composition](../../projects/fireux/fireux-app/app/pages/patterns/page-composition.vue)
+shows how to use native `UPage` with FireUX components and a single collection reader.
 
 ## Multiple selection
 

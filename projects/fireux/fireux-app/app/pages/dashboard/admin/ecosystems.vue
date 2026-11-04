@@ -93,33 +93,19 @@
 import { computed } from 'vue'
 import { useHead } from '#imports'
 import DashboardAdminFeaturedSlugsSelection from '../../../components/Dashboard/Admin/FeaturedSlugsSelection.vue'
-import {
-  useEcosystemView,
-  type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
+import { useEcosystemView } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import { usePlatformEcosystemDirectory } from '../../../composables/usePlatformDirectory'
 
 const { ecosystems, outcome: directoryOutcome } =
   usePlatformEcosystemDirectory()
-const { cell: ecosystemCell } = useEcosystemView()
-const clean = (value: unknown) => String(value ?? '').trim()
+const { toDirectoryCard } = useEcosystemView()
 
-const selectableRows = computed<
-  { slug: string; card: EcosystemInterfaceCard }[]
->(() =>
+const selectableRows = computed(() =>
   ecosystems.value
-    .map((ecosystem) => {
-      const slug = clean(ecosystem.id)
-      const card = ecosystemCell({
-        ...ecosystem,
-        href: ecosystem.detail_url,
-        appCount: ecosystem.app_count,
-      })
-      return slug && card ? { slug, card } : null
-    })
-    .filter((row): row is { slug: string; card: EcosystemInterfaceCard } =>
-      Boolean(row)
-    )
+    .map((ecosystem) => ({
+      slug: ecosystem.id,
+      card: toDirectoryCard(ecosystem),
+    }))
     .sort((a, b) => a.card.title.localeCompare(b.card.title))
 )
 

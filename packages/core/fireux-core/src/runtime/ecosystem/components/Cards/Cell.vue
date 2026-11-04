@@ -37,9 +37,8 @@
           </div>
         </div>
 
-        <div v-if="showMeta" class="card__tagline">
-          <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showMeta && meta" class="card__tagline">
+          <span>{{ meta }}</span>
         </div>
       </div>
     </div>

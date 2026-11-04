@@ -21,15 +21,11 @@
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import WorkspaceProjectIdentity from '../../../project/components/Workspace/Identity/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useProjectWorkspaceIdentity } from '../../../project/composables/workspace/useProjectWorkspaceIdentity'
-const appContext = useProjectAppContext()
-const identity = useProjectWorkspaceIdentity({
-  publication: appContext.publication,
-})
+const identity = useProjectWorkspaceIdentity()
 const pageState = useWorkspacePageState('project')
 watchEffect(() =>
   pageState.publish({
@@ -38,7 +34,6 @@ watchEffect(() =>
       name: identity.name.value,
       description: identity.description.value,
       imageUrl: identity.imageUrl.value,
-      source: identity.publication.value,
     },
     derived: {
       status: identity.outcome.value,

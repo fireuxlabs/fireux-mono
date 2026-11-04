@@ -56,7 +56,7 @@ test('Account loading does not publish a guessed Kitchen allowance or enable act
   )
 })
 
-test('Project allowance counts associations independently of loaded records and retains App-owned identity', () => {
+test('Project allowance counts associations independently of loaded records', () => {
   const info = projectWorkspaceIntro({
     status: 'ready',
     count: 2,
@@ -68,7 +68,6 @@ test('Project allowance counts associations independently of loaded records and 
     subscription: 'premium',
     used: 3,
     limit: 1,
-    publishedIdentity: true,
   })
   assert.equal(info.allowance?.used, 3)
   assert.match(info.allowance?.description || '', /3 associated Projects/)
@@ -78,7 +77,7 @@ test('Project allowance counts associations independently of loaded records and 
   )
   assert.match(
     info.tools?.find((tool) => tool.id === 'update')?.description || '',
-    /connected App/
+    /Project’s name, description and image/
   )
   assert.equal(
     info.tools?.find((tool) => tool.id === 'update')?.available,
@@ -103,7 +102,6 @@ test('Unconfigured Project policy does not promise that upgrading fixes creation
     subscription: 'premium',
     used: 1,
     limit: 0,
-    publishedIdentity: false,
   })
   assert.equal(info.allowance?.configured, false)
   assert.equal(info.allowance?.limit, undefined)

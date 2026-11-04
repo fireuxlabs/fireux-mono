@@ -11,11 +11,11 @@
 
 <script setup lang="ts">
 import EcosystemFeatured from './Featured.vue'
-import type { EcosystemInterfaceInput } from '../composables/useEcosystemView'
+import type { EcosystemDirectoryEntry } from '../../models/utils/directory'
 
 withDefaults(
   defineProps<{
-    collection?: EcosystemInterfaceInput[]
+    collection?: EcosystemDirectoryEntry[]
     featuredSlugs?: string[]
   }>(),
   {

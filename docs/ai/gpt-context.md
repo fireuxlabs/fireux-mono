@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: living context
 Scope: repository-wide
 
@@ -37,7 +37,8 @@ Implementation follows this dependency direction:
   trusted behavior.
 - Core owns proved product-neutral FireUX and Nuxt mechanics.
 
-An App may consume Core or an Extension directly. Ecosystems may consume Core
+An App may consume its own Ecosystem package, Core or an Extension directly.
+Ecosystems may consume Core
 and lower Extensions; Extensions may consume Core and lower Extensions. Core
 does not depend on product packages. Keep implementation with the lowest owner
 that has its complete meaning and authority. See
@@ -170,17 +171,12 @@ do not change data ownership.
 User is the person; AppUser is membership in one App. A tenant App remains an
 App role and uses the same Entity contracts. Every App declares its canonical
 Ecosystem relationship, including standalone Apps. Preserve exact owner,
-scope and lifecycle in cross-domain and account-connection flows.
+scope and lifecycle in cross-domain flows.
 
 The Workspace surface exists on arrival, even with no saved Entity. An `empty`
 read is not a missing Workspace or onboarding flag; creating a record still
 uses its owning command and authority. See
 [Workspace and Entity composition](../concepts/family-workspace-entity.md).
-
-Optional cross-ecosystem account connections preserve each Auth realm and UID
-and do not create local User, AppUser or Workspace grants. Login authority stays
-in a separate server-only store. Follow the
-[account connections context](account-connections-context.md).
 
 Direct Firestore views use the owning Firebase listener. Server-only API
 projections use native Nuxt `useAsyncData`/`useFetch`, with `refreshNuxtData`

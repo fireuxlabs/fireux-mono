@@ -249,9 +249,9 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
         candidate:
           'A Pet profile and authorised grooming history usable across Salon Apps',
         reason:
-          'A shared login is reusable; a Pet model, customer ownership and cross-Salon disclosure policy are not established by shared authentication.',
+          'Reusing a Pet profile would require its own ownership and disclosure rules across Salon Apps.',
         reuse: 'needs-implementation',
-        references: ['docs/ai/account-connections-context.md'],
+        references: ['docs/concepts/family-workspace-entity.md'],
         acceptance:
           'The owner can reuse a Pet profile, while a Salon only reads or writes information authorised for its work.',
       },
