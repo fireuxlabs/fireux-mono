@@ -1,15 +1,13 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-10 sm:py-14">
-      <div class="mx-auto max-w-5xl space-y-8">
-        <FireLandingSolutions
-          variant="hub"
-          title="What do you need a QR code for?"
-          subtitle="Pick the thing people should open, save, join, or contact after they scan."
-        />
-      </div>
-    </UContainer>
-  </main>
+  <UPage>
+    <UPageBody>
+      <FireLandingSolutions
+        variant="hub"
+        title="What do you need a QR code for?"
+        subtitle="Pick the thing people should open, save, join, or contact after they scan."
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

@@ -44,8 +44,8 @@ business logo (source: the existing site, Wix media
 `a7aafb_b2d699a1140641ed8892f9dca953c004~mv2.png`). The maskable export adds safe
 white padding. The favicon uses the existing mountain/bicycle artwork.
 
-Core `/install`, linked from the shared footer, provides native installation
-where available and manual browser instructions otherwise. Its installed status
+Core `/legal#browser-storage` gives browser installation instructions and
+contains the collapsed app-specific install and offline controls. Its installed status
 describes the current window. Offline support is a separate explicit choice:
 Core stores an App-specific preference and caches only a self-contained reconnect
 HTML page. Live App pages/data, API/auth responses and queued writes are excluded;
@@ -54,7 +54,7 @@ or cache; later visits may resume the saved choice. Disable offline support
 removes the preference, owned worker and cache, while Update and reload
 deliberately applies a waiting worker. An already-open page may retain worker
 control until reloaded or closed. Shared behavior is owned by Core
-`src/config/app/pwa.ts`, `src/runtime/utils/pwa-controller.ts`,
+`src/config/app/pwa.ts`, `src/runtime/composables/pwa/controller.ts`,
 `src/runtime/components/Pwa` and `src/test/pwa.test.mjs`.
 
 The public layout consumes Core `FireLayoutsSharedPlatformFooter` for FireUX attribution

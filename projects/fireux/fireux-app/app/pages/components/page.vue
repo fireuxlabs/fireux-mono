@@ -3,24 +3,18 @@
     <UPage>
       <template #left>
         <UPageAside>
-          <nav
-            class="page-docs__navigation"
-            aria-label="Component documentation"
-          >
-            <ULink to="/components">Components</ULink>
-            <ULink to="/components/page">Page</ULink>
-            <ULink to="https://ui.nuxt.com/docs/components" target="_blank"
-              >Nuxt UI components</ULink
-            >
-          </nav>
+          <FrameworkComponentDocsNav />
         </UPageAside>
       </template>
 
       <UBreadcrumb
-        :items="[{ label: 'Components', to: '/components' }, { label: 'Page' }]"
+        :items="[
+          { label: 'Components', to: '/components' },
+          { label: 'Page composition' },
+        ]"
       />
       <UPageHeader
-        title="Page"
+        title="Page composition"
         description="Compose a FireUX page from native Nuxt UI structure and named domain components."
       >
         <template #links>
@@ -210,20 +204,7 @@
         </section>
       </UPageBody>
 
-      <template #right>
-        <nav
-          class="page-docs__toc page-docs__navigation"
-          aria-label="On this page"
-        >
-          <p>On this page</p>
-          <ULink
-            v-for="section in sections"
-            :key="section.id"
-            :to="'#' + section.id"
-            >{{ section.label }}</ULink
-          >
-        </nav>
-      </template>
+      <template #right><UPageAnchors :links="sections" /></template>
     </UPage>
   </UContainer>
 </template>
@@ -231,16 +212,16 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'framework', requiresAuth: false })
 useSeoMeta({
-  title: 'Page · FireUX components',
+  title: 'Page composition · FireUX component guides',
   description:
     'Use native Nuxt UI Page components with FireUX composition, data and design-system conventions.',
 })
 const sections = [
-  { id: 'usage', label: 'Usage' },
-  { id: 'examples', label: 'Examples' },
-  { id: 'api', label: 'API' },
-  { id: 'data', label: 'Data and authority' },
-  { id: 'theme', label: 'Theme' },
+  { label: 'Usage', to: '#usage' },
+  { label: 'Examples', to: '#examples' },
+  { label: 'API', to: '#api' },
+  { label: 'Data and authority', to: '#data' },
+  { label: 'Theme', to: '#theme' },
 ]
 const usageExample = `<UPage>
   <UPageHeader :title="pageTitle" :description="pageDescription" />
@@ -302,20 +283,6 @@ const routeExample = `<template>
   background: var(--ui-bg-elevated);
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius);
-}
-.page-docs__navigation {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 3);
-  font-size: var(--text-sm);
-}
-.page-docs__toc {
-  position: sticky;
-  top: calc(var(--ui-header-height) + var(--spacing) * 6);
-  padding-block: calc(var(--spacing) * 6);
-}
-.page-docs__toc p {
-  font-weight: var(--font-weight-semibold);
 }
 .page-docs__table {
   overflow-x: auto;

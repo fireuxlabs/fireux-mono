@@ -1,6 +1,6 @@
 <template>
   <div class="research-grid">
-    <p class="research-reading text-sm text-muted">
+    <p class="research-reading research-copy research-muted">
       <strong>Capabilities</strong> are areas of work.
       <strong>Tools</strong> are actions within them.
       <strong>Services</strong> carry out business use cases using domain
@@ -29,10 +29,10 @@
         :workspace="demand.reconciliation.workspace"
       />
       <section class="research-grid">
-        <header class="flex flex-wrap items-center justify-between gap-3">
+        <header class="research-row research-row--spread">
           <div>
-            <h2 class="text-lg font-semibold">Start with these capabilities</h2>
-            <p class="text-sm text-muted">
+            <h2 class="research-subheading">Start with these capabilities</h2>
+            <p class="research-copy research-muted">
               Research priorities. Availability is shown separately.
             </p>
           </div>
@@ -43,7 +43,7 @@
             >Explore all {{ ordered.length }}</UButton
           >
         </header>
-        <div class="grid gap-3 lg:grid-cols-3">
+        <div class="research-columns research-columns--three">
           <button
             v-for="capability in priorities"
             :key="capability.id"
@@ -51,14 +51,14 @@
             class="research-choice"
             @click="choose(capability.id)"
           >
-            <span class="text-xs text-muted"
+            <span class="research-meta research-muted"
               >Priority {{ capability.priority?.rank }}</span
             >
             <strong>{{ capability.title }}</strong>
-            <span class="research-pill w-fit">{{
+            <span class="research-pill">{{
               readiness(capability.assessment?.implementation.status)
             }}</span>
-            <span class="text-sm text-primary">Read capability →</span>
+            <span class="research-action-link">Read capability →</span>
           </button>
         </div>
       </section>
@@ -86,48 +86,28 @@
       aria-label="Explore capabilities"
     >
       <aside class="research-grid">
-        <label class="research-grid gap-2"
-          ><span class="text-sm font-medium">Find a capability</span
-          ><input
+        <UFormField label="Find a capability">
+          <UInput
             v-model="search"
             type="search"
             placeholder="Search names, information or actions…"
-            class="research-field"
-        /></label>
+            icon="i-lucide-search"
+          />
+        </UFormField>
         <div class="research-filter-row">
-          <label class="research-grid gap-2"
-            ><span class="text-xs text-muted">Decision</span
-            ><select
-              v-model="decision"
-              class="research-field"
-              aria-label="Filter capability decisions"
-            >
-              <option value="all">All decisions</option>
-              <option v-for="value in decisions" :key="value" :value="value">
-                {{ decisionLabel(value) }}
-              </option>
-            </select></label
-          >
-          <label class="research-mobile-picker research-grid gap-2"
-            ><span class="text-xs text-muted">Capability</span
-            ><select
-              :value="selected?.id ?? ''"
+          <UFormField label="Decision">
+            <USelect v-model="decision" :items="decisionOptions" />
+          </UFormField>
+          <UFormField label="Capability" class="research-mobile-picker">
+            <USelect
+              :model-value="selected?.id ?? ''"
+              :items="capabilityOptions"
               :disabled="!filtered.length"
-              class="research-field"
-              aria-label="Choose a capability"
-              @change="selectCapability"
-            >
-              <option
-                v-for="capability in filtered"
-                :key="capability.id"
-                :value="capability.id"
-              >
-                {{ capability.title }}
-              </option>
-            </select></label
-          >
+              @update:model-value="selectCapability"
+            />
+          </UFormField>
         </div>
-        <p class="text-xs text-muted" role="status">
+        <p class="research-meta research-muted" role="status">
           {{ filtered.length }} of {{ ordered.length }} capabilities
         </p>
         <div
@@ -142,12 +122,16 @@
             :aria-current="selected?.id === capability.id ? 'true' : undefined"
             @click="selectedId = capability.id"
           >
-            <span class="flex items-start gap-2"
-              ><span v-if="capability.priority" class="text-xs text-muted pt-1"
+            <span class="research-row research-row--start"
+              ><span
+                v-if="capability.priority"
+                class="research-meta research-muted"
                 >{{ capability.priority.rank }}.</span
-              ><strong class="text-sm">{{ capability.title }}</strong></span
+              ><strong class="research-copy">{{
+                capability.title
+              }}</strong></span
             >
-            <span class="text-xs text-muted"
+            <span class="research-meta research-muted"
               >{{ decisionLabel(capability.decision) }} ·
               {{
                 readiness(capability.assessment?.implementation.status)
@@ -156,7 +140,7 @@
           </button>
         </div>
       </aside>
-      <div class="min-w-0">
+      <div class="research-min-width">
         <p v-if="!selected" class="research-card" role="status">
           No matching capabilities. Try another search or decision filter.
         </p>
@@ -167,8 +151,8 @@
           class="research-card research-grid"
           :aria-label="capability.title"
         >
-          <header class="research-grid gap-2">
-            <p class="text-xs text-muted">
+          <header class="research-grid research-grid--compact">
+            <p class="research-meta research-muted">
               {{ decisionLabel(capability.decision)
               }}<span v-if="capability.priority">
                 · Validation priority {{ capability.priority.rank }}</span
@@ -177,29 +161,31 @@
             <h2 class="research-detail-title">{{ capability.title }}</h2>
           </header>
           <section v-if="capability.definition" class="research-reading">
-            <h3 class="font-semibold mb-2">What this capability does</h3>
+            <h3 class="research-subheading">What this capability does</h3>
             <p>{{ capability.definition.purpose }}</p>
           </section>
           <details v-if="capability.definition" class="research-details">
             <summary>Information and tools</summary>
             <div class="research-detail-body research-reading">
-              <p class="text-xs text-muted">
+              <p class="research-meta research-muted">
                 Design scope. Tool availability is assessed separately under
                 What is built.
               </p>
-              <h3 class="font-semibold">Information it manages</h3>
+              <h3 class="research-label--strong">Information it manages</h3>
               <ul>
                 <li v-for="item in capability.definition.manages" :key="item">
                   {{ item }}
                 </li>
               </ul>
-              <h3 class="font-semibold">Information it uses from elsewhere</h3>
+              <h3 class="research-label--strong">
+                Information it uses from elsewhere
+              </h3>
               <ul>
                 <li v-for="item in capability.definition.uses" :key="item">
                   {{ item }}
                 </li>
               </ul>
-              <h3 class="font-semibold">Tools to support</h3>
+              <h3 class="research-label--strong">Tools to support</h3>
               <ul>
                 <li v-for="item in capability.definition.tools" :key="item">
                   {{ item }}
@@ -210,7 +196,9 @@
           <details v-if="capability.definition" class="research-details">
             <summary>Boundaries and service example</summary>
             <div class="research-detail-body research-reading">
-              <h3 class="font-semibold">Where its responsibility ends</h3>
+              <h3 class="research-label--strong">
+                Where its responsibility ends
+              </h3>
               <ul>
                 <li
                   v-for="item in capability.definition.boundaries"
@@ -219,38 +207,42 @@
                   {{ item }}
                 </li>
               </ul>
-              <h3 class="font-semibold">Example service journey</h3>
+              <h3 class="research-label--strong">Example service journey</h3>
               <p>{{ capability.definition.service_example }}</p>
-              <p class="text-xs text-muted">
+              <p class="research-meta research-muted">
                 This describes a possible use case, not a released service.
               </p>
             </div>
           </details>
           <section class="research-reading">
-            <h3 class="font-semibold mb-2">Why it matters</h3>
+            <h3 class="research-subheading">Why it matters</h3>
             <p>{{ capability.rationale }}</p>
           </section>
           <div class="research-columns" v-if="capability.assessment">
-            <section class="rounded-lg bg-elevated p-4 space-y-2">
-              <h3 class="text-sm font-semibold">Evidence of need</h3>
-              <p class="text-sm">
+            <section class="research-card research-card--muted">
+              <h3 class="research-label research-label--strong">
+                Evidence of need
+              </h3>
+              <p class="research-copy">
                 {{ capability.assessment.market.confidence }} confidence
               </p>
-              <p class="text-sm text-muted">
+              <p class="research-copy research-muted">
                 {{ capability.assessment.market.rationale }}
               </p>
             </section>
-            <section class="rounded-lg bg-elevated p-4 space-y-2">
-              <h3 class="text-sm font-semibold">What is built</h3>
-              <p class="text-sm">
+            <section class="research-card research-card--muted">
+              <h3 class="research-label research-label--strong">
+                What is built
+              </h3>
+              <p class="research-copy">
                 {{ readiness(capability.assessment.implementation.status) }}
               </p>
-              <p class="text-sm text-muted">
+              <p class="research-copy research-muted">
                 {{ capability.assessment.implementation.scope }}
               </p>
             </section>
           </div>
-          <p v-else class="text-sm text-muted">
+          <p v-else class="research-copy research-muted">
             Not assessed by this research.
           </p>
           <details
@@ -284,23 +276,23 @@
               <article
                 v-for="id in capability.source_tool_ids"
                 :key="id"
-                class="space-y-1"
+                class="research-stack research-stack--tight"
               >
-                <h3 class="font-semibold">
+                <h3 class="research-label--strong">
                   {{ toolById.get(id)?.title ?? id }}
                 </h3>
-                <p class="text-sm text-muted">
+                <p class="research-copy research-muted">
                   {{ toolById.get(id)?.outcome }}
                 </p>
               </article>
-              <p class="text-xs text-muted">
+              <p class="research-meta research-muted">
                 These are tool hypotheses, not a list of shipped actions.
               </p>
             </div>
           </details>
           <details class="research-details">
             <summary>Evidence and implementation sources</summary>
-            <div class="research-detail-body text-sm">
+            <div class="research-detail-body research-copy">
               <p>
                 <strong>Related jobs:</strong>
                 {{
@@ -328,7 +320,10 @@
                   >
                 </li>
               </ul>
-              <p v-if="capability.assessment" class="text-xs text-muted">
+              <p
+                v-if="capability.assessment"
+                class="research-meta research-muted"
+              >
                 Implementation:
                 {{ capability.assessment.implementation.status }} · assessed
                 {{ capability.assessment.implementation.assessed_at }}
@@ -338,12 +333,15 @@
                   v-for="path in capability.assessment.implementation
                     .source_paths"
                   :key="path"
-                  class="text-xs break-all"
+                  class="research-source-path research-meta"
                 >
                   <code>{{ path }}</code>
                 </li>
               </ul>
-              <p v-if="capability.research_route" class="text-xs break-all">
+              <p
+                v-if="capability.research_route"
+                class="research-source-path research-meta"
+              >
                 Deeper research: <code>{{ capability.research_route }}</code>
               </p>
             </div>
@@ -370,18 +368,18 @@
       aria-label="Workspace concept"
     >
       <header class="research-reading">
-        <h2 class="text-lg font-semibold mb-2">Proposed Workspace</h2>
-        <p class="text-sm text-muted">
+        <h2 class="research-subheading">Proposed Workspace</h2>
+        <p class="research-copy research-muted">
           {{ demand.capabilities.workspace.summary }}
         </p>
       </header>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="research-columns research-columns--three">
         <section
           v-for="group in demand.capabilities.workspace.groups"
           :key="group.label"
           class="research-card research-grid"
         >
-          <h3 class="font-semibold">{{ group.label }}</h3>
+          <h3 class="research-label--strong">{{ group.label }}</h3>
           <div v-for="item in group.items" :key="item.label">
             <button
               v-if="
@@ -389,13 +387,16 @@
                 ordered.some((c) => c.id === item.capability_id)
               "
               type="button"
-              class="text-sm text-primary text-left underline underline-offset-4"
+              class="research-inline-link"
               @click="choose(item.capability_id)"
             >
               {{ item.label }} →
             </button>
-            <p v-else class="text-sm font-medium">{{ item.label }}</p>
-            <p v-if="item.brief" class="text-xs text-muted mt-1">
+            <p v-else class="research-label">{{ item.label }}</p>
+            <p
+              v-if="item.brief"
+              class="research-meta research-muted research-meta--spaced"
+            >
               {{ item.brief }}
             </p>
           </div>
@@ -427,6 +428,13 @@ const priorities = computed(() =>
 const decisions = computed(() => [
   ...new Set(ordered.value.map((c) => c.decision)),
 ])
+const decisionOptions = computed(() => [
+  { label: 'All decisions', value: 'all' },
+  ...decisions.value.map((value) => ({
+    label: decisionLabel(value),
+    value,
+  })),
+])
 const filtered = computed(() =>
   ordered.value.filter(
     (c) =>
@@ -435,6 +443,12 @@ const filtered = computed(() =>
         .toLocaleLowerCase()
         .includes(search.value.trim().toLocaleLowerCase())
   )
+)
+const capabilityOptions = computed(() =>
+  filtered.value.map((capability) => ({
+    label: capability.title,
+    value: capability.id,
+  }))
 )
 const selected = computed(
   () =>
@@ -469,14 +483,14 @@ watch(
     selectedId.value = ''
   }
 )
-function selectCapability(event: Event) {
-  selectedId.value = (event.target as HTMLSelectElement).value
-}
 function choose(id: string) {
   search.value = ''
   decision.value = 'all'
   selectedId.value = id
   view.value = 'capabilities'
+}
+function selectCapability(id: string) {
+  selectedId.value = id
 }
 function readiness(
   status?: ResearchCapabilityAssessment['implementation']['status']

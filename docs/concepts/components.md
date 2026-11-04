@@ -92,6 +92,13 @@ slots, known runtime prerequisites and real consumer evidence. A package
 catalogue, auto-registration or visual similarity does not prove shared use.
 Use [spine.md](spine.md) to compare materially different consumers.
 
+Core [FireDisclosureCard](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosureCard.vue)
+combines Nuxt UI's native disclosure with the shared card-cell surface. Its
+consumer controls `v-model:open` when several cards share one-open-at-a-time
+state and owns the slot content. Use [FireDisclosurePanel](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosurePanel.vue)
+for a disclosure without the card-cell surface. The FireUX App exposes the
+[Disclosure Card component page](../../projects/fireux/fireux-app/app/pages/components/disclosure-card.vue).
+
 ## Workspace composition
 
 [AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
@@ -212,14 +219,22 @@ accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
 fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
-The working [Page composition showcase](../../projects/fireux/fireux-app/app/pages/components/page.vue)
-at `/components/page` extends the Nuxt UI reference for FireUX consumers, with
-Usage, Examples, API, Data and authority, and Theme sections. It uses native
-UPage side regions for component navigation and a table of contents. It keeps
-upstream component APIs upstream and documents FireUX-owned composition
-conventions and the actual State/Pagination contracts. Code examples do not
-acquire Entity records. The Components index lives at
-`pages/components/index.vue`; no custom parent shell is added.
+The FireUX App's [Components index](../../projects/fireux/fireux-app/app/pages/components/index.vue)
+curates reusable Core components with current consumers into Collections,
+State and feedback, Selection, Surfaces and disclosure, and Developer
+diagnostics. It does not catalogue Core's internal App, User, Workspace or
+layout implementations. Nuxt UI owns its native components and APIs; FireUX
+child pages document only the FireUX-owned component contracts. The shared
+[component navigation](../../projects/fireux/fireux-app/app/components/Framework/ComponentDocsNav.vue)
+keeps those categories consistent across child pages.
+
+[Page composition](../../projects/fireux/fireux-app/app/pages/components/page.vue)
+is a guide under a separate Guides and patterns section, not a reusable Core
+component or new Page API. It shows how routes compose native `UPage` structure
+with named domain components, including State/Pagination contracts and the
+single-reader collection pattern. Code examples do not acquire Entity records.
+The Components index remains directly in `pages/components/index.vue`; no
+custom parent shell is added.
 
 ## Multiple selection
 

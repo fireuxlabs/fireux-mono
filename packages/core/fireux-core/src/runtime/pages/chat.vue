@@ -72,8 +72,6 @@
 </template>
 
 <script setup lang="ts">
-import { refreshNuxtData } from 'nuxt/app'
-
 import { computed, definePageMeta, onMounted, reactive, ref } from '#imports'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
@@ -136,22 +134,77 @@ const chatMessages = computed(() =>
 )
 
 onMounted(async () => {
+  let storedText: string | null
   try {
-    const stored = JSON.parse(
-      localStorage.getItem(storageKey) || 'null'
-    ) as StoredChatSession | null
-    const expiresAt = Date.parse(String(stored?.expiresAt ?? ''))
-    if (Number.isFinite(expiresAt) && expiresAt > Date.now()) {
-      conversationId.value = String(stored?.conversationId ?? '')
-      recoveryToken.value = String(stored?.token ?? '')
-      await refreshSession()
-    } else {
-      localStorage.removeItem(storageKey)
-    }
+    storedText = localStorage.getItem(storageKey)
   } catch {
-    localStorage.removeItem(storageKey)
+    statusColor.value = 'warning'
+    statusTitle.value = 'Browser storage unavailable'
+    statusMessage.value =
+      'You can start a chat, but this browser may not save its recovery key.'
+    return
+  }
+  if (!storedText) return
+
+  let stored: StoredChatSession | null
+  try {
+    stored = JSON.parse(storedText) as StoredChatSession | null
+  } catch {
+    clearStoredSession()
+    return
+  }
+
+  const expiresAt = Date.parse(String(stored?.expiresAt ?? ''))
+  if (
+    !stored?.conversationId ||
+    !stored.token ||
+    !Number.isFinite(expiresAt) ||
+    expiresAt <= Date.now()
+  ) {
+    clearStoredSession()
+    return
+  }
+
+  conversationId.value = stored.conversationId
+  recoveryToken.value = stored.token
+
+  try {
+    await refreshSession()
+  } catch (error) {
+    const statusCode = getErrorStatusCode(error)
+    if (statusCode === 404 || statusCode === 410) {
+      clearStoredSession()
+      statusColor.value = 'warning'
+      statusTitle.value = 'Previous chat unavailable'
+      statusMessage.value =
+        'This chat has expired or is no longer available. Start a new conversation.'
+      return
+    }
+
+    statusColor.value = 'error'
+    statusTitle.value = 'Chat history could not be loaded'
+    statusMessage.value =
+      error instanceof Error ? error.message : 'Please try again.'
   }
 })
+
+function clearStoredSession() {
+  try {
+    localStorage.removeItem(storageKey)
+  } catch {
+    // Clear the in-memory session even if browser storage is unavailable.
+  }
+  conversationId.value = ''
+  recoveryToken.value = ''
+  messages.value = []
+}
+
+function getErrorStatusCode(error: unknown): number | undefined {
+  if (!error || typeof error !== 'object') return undefined
+  const value = error as { statusCode?: unknown; status?: unknown }
+  const statusCode = Number(value.statusCode ?? value.status)
+  return Number.isFinite(statusCode) ? statusCode : undefined
+}
 
 async function requestHeaders() {
   const user = currentUser.value
@@ -165,13 +218,6 @@ async function refreshSession() {
   const response = await $fetch<{
     messages: ChatMessage[]
   }>('/api/chat/session', {
-    onResponse: async ({ options, response }) => {
-      if (
-        response.ok &&
-        !['GET', 'HEAD'].includes(String(options.method || 'GET').toUpperCase())
-      )
-        await refreshNuxtData()
-    },
     method: 'POST',
     headers: await requestHeaders(),
     body: {
@@ -201,6 +247,7 @@ async function sendMessage() {
   if (!body || submitting.value) return
   if (!requireGuestDetails()) return
 
+  let recoveryKeyStored = true
   submitting.value = true
   statusMessage.value = ''
 
@@ -211,9 +258,6 @@ async function sendMessage() {
         token: string
         expires_at: string
       }>('/api/chat/start', {
-        onResponse: async ({ response }) => {
-          if (response.ok) await refreshNuxtData()
-        },
         method: 'POST',
         headers: await requestHeaders(),
         body: {
@@ -225,19 +269,20 @@ async function sendMessage() {
       })
       conversationId.value = session.conversation_id
       recoveryToken.value = session.token
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({
-          conversationId: session.conversation_id,
-          token: session.token,
-          expiresAt: session.expires_at,
-        } satisfies StoredChatSession)
-      )
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            conversationId: session.conversation_id,
+            token: session.token,
+            expiresAt: session.expires_at,
+          } satisfies StoredChatSession)
+        )
+      } catch {
+        recoveryKeyStored = false
+      }
     } else {
       await $fetch('/api/chat/message', {
-        onResponse: async ({ response }) => {
-          if (response.ok) await refreshNuxtData()
-        },
         method: 'POST',
         headers: await requestHeaders(),
         body: {
@@ -248,12 +293,31 @@ async function sendMessage() {
       })
     }
 
-    await refreshSession()
     draft.value = ''
-    statusColor.value = 'success'
+    statusColor.value = recoveryKeyStored ? 'success' : 'warning'
     statusTitle.value = 'Message sent'
-    statusMessage.value = 'Your message is stored in this private chat.'
+    statusMessage.value = recoveryKeyStored
+      ? 'Your message is stored in this private chat.'
+      : 'Your message was sent, but this browser could not save its recovery key. Keep this tab open.'
+
+    try {
+      await refreshSession()
+    } catch {
+      statusColor.value = 'warning'
+      statusMessage.value =
+        'Your message was sent, but the conversation could not be refreshed.'
+    }
   } catch (error) {
+    const statusCode = getErrorStatusCode(error)
+    if (conversationId.value && (statusCode === 404 || statusCode === 410)) {
+      clearStoredSession()
+      statusColor.value = 'warning'
+      statusTitle.value = 'Previous chat unavailable'
+      statusMessage.value =
+        'This chat has expired or is no longer available. Your message is still here; send it again to start a new conversation.'
+      return
+    }
+
     statusColor.value = 'error'
     statusTitle.value = 'Message not sent'
     statusMessage.value =

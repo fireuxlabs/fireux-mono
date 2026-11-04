@@ -93,14 +93,14 @@
                       I accept the
                       <NuxtLink
                         class="font-medium text-primary hover:underline"
-                        to="/legal/terms"
+                        to="/legal#terms"
                         target="_blank"
                         >Terms of Service</NuxtLink
                       >
                       and acknowledge the
                       <NuxtLink
                         class="font-medium text-primary hover:underline"
-                        to="/legal/privacy"
+                        to="/legal#privacy"
                         target="_blank"
                         >Privacy Policy</NuxtLink
                       >.

@@ -3,7 +3,7 @@
     <UPage>
       <UPageHeader
         title="Components"
-        description="Shared interaction patterns for industry SaaS, composed from native Nuxt UI controls."
+        description="FireUX Core components extend native Nuxt UI controls with shared product-neutral responsibilities."
       >
         <template #links>
           <UButton
@@ -17,33 +17,68 @@
         </template>
       </UPageHeader>
       <UPageBody>
-        <FrameworkPlayground />
-        <UPageGrid>
-          <UPageCard
-            title="Page composition"
-            description="The shared page foundation: Nuxt structure, named FireUX composition and domain-owned data."
-            icon="i-lucide-panels-top-left"
-            to="/components/page"
-          />
-          <UPageCard
-            title="Disclosure"
-            description="A labelled trigger, optional description and collapsible content, using Nuxt UI's state and accessibility."
-            icon="i-lucide-panel-top-open"
-          />
-          <UPageCard
-            title="State presentation"
-            description="Consistent loading, empty, missing and error outcomes with useful copy and error feedback."
-            icon="i-lucide-circle-dot"
-          />
-          <UPageCard
-            title="Editing lifecycles"
-            description="Shared save, cancel and stale-command protection. Domains keep validation and persistence authority."
-            icon="i-lucide-pencil-line"
-          />
-        </UPageGrid>
+        <UPageSection
+          title="Try the controls"
+          description="A local preview of native Nuxt UI controls and shared FireUX interactions."
+        >
+          <FrameworkPlayground />
+        </UPageSection>
+
+        <UPageSection
+          title="Core components"
+          description="Browse shared FireUX components by the responsibility they own. Nuxt UI controls and their native APIs remain documented upstream."
+        >
+          <UPageGrid>
+            <UPageCard
+              title="Collections"
+              description="Reusable cells, section headers, rows and load-more feedback."
+              icon="i-lucide-list"
+              to="/components/collections"
+            />
+            <UPageCard
+              title="State and feedback"
+              description="Shared read outcomes, empty-state cards and error copying."
+              icon="i-lucide-circle-dot"
+              to="/components/state-feedback"
+            />
+            <UPageCard
+              title="Selection"
+              description="Visible multi-select choices and compact single selection."
+              icon="i-lucide-list-checks"
+              to="/components/selection"
+            />
+            <UPageCard
+              title="Surfaces and disclosure"
+              description="Shared action surfaces and disclosure controls."
+              icon="i-lucide-panels-top-left"
+              to="/components/surfaces"
+            />
+            <UPageCard
+              title="Developer diagnostics"
+              description="Inspect passed data and derived values during development."
+              icon="i-lucide-scan-search"
+              to="/components/diagnostics"
+            />
+          </UPageGrid>
+        </UPageSection>
+
+        <UPageSection
+          title="Guides and patterns"
+          description="Composition guidance uses Core components and native Nuxt UI; it does not add another component API."
+        >
+          <UPageGrid>
+            <UPageCard
+              title="Page composition"
+              description="Compose a route from Nuxt UI page structure and named domain components."
+              icon="i-lucide-panels-top-left"
+              to="/components/page"
+            />
+          </UPageGrid>
+        </UPageSection>
+
         <UPageCTA
           title="Explore the source packages"
-          description="Package inspection shows registered components and existing specimens."
+          description="Inspect the package sources and their consumers."
           :links="[
             {
               label: 'Package library',
@@ -72,6 +107,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Components · FireUX',
   description:
-    'Explore shared FireUX interaction patterns for industry SaaS, built with native Nuxt UI controls.',
+    'Explore shared FireUX Core components, composed from native Nuxt UI controls.',
 })
 </script>

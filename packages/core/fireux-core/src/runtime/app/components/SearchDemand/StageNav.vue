@@ -1,18 +1,16 @@
 <template>
-  <nav
-    class="grid grid-cols-4 gap-1 rounded-xl border border-default bg-elevated p-1"
-    aria-label="Industry research stages"
-  >
+  <nav class="research-stage-nav" aria-label="Industry research stages">
     <UButton
       v-for="stage in stages"
       :key="stage.id"
       :to="{ path: stage.to, query: scope ? { scope } : {} }"
-      class="justify-center px-2 text-xs sm:text-sm"
+      class="research-stage-button"
       color="neutral"
       :variant="stage.id === current ? 'solid' : 'outline'"
       :aria-current="stage.id === current ? 'step' : undefined"
     >
-      <span class="hidden sm:inline">{{ stage.order }}.</span> {{ stage.label }}
+      <span class="research-stage-number">{{ stage.order }}.</span>
+      {{ stage.label }}
     </UButton>
   </nav>
 </template>
@@ -50,3 +48,4 @@ const stages = [
   },
 ] as const
 </script>
+<style scoped src="./reading.css"></style>

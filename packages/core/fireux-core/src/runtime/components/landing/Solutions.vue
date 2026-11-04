@@ -1,35 +1,15 @@
 <template>
-  <section
+  <UPageSection
     v-if="shouldRender"
-    class="landing-index-section grid min-w-0 gap-6 sm:gap-8"
+    :as="{ title: variant === 'hub' ? 'h1' : 'h2' }"
+    :title="resolvedTitle"
+    :description="resolvedSubtitle || undefined"
+    class="landing-solutions"
   >
-    <div
-      class="grid min-w-0 gap-3"
-      :class="variant === 'hub' ? 'max-w-3xl' : 'mx-auto max-w-2xl text-center'"
-    >
-      <NuxtLink
-        v-if="variant === 'hub'"
-        to="/"
-        class="w-fit text-sm font-semibold text-primary hover:underline"
-      >
-        {{ appName }}
-      </NuxtLink>
-      <UBadge v-else color="primary" variant="soft"> Solutions </UBadge>
-      <component
-        :is="variant === 'hub' ? 'h1' : 'h2'"
-        class="m-0 font-semibold tracking-normal text-highlighted"
-        :class="
-          variant === 'hub'
-            ? 'text-3xl leading-tight sm:text-4xl'
-            : 'text-3xl leading-tight'
-        "
-      >
-        {{ resolvedTitle }}
-      </component>
-      <p v-if="resolvedSubtitle" class="m-0 text-base leading-7 text-muted">
-        {{ resolvedSubtitle }}
-      </p>
-    </div>
+    <template #headline>
+      <ULink v-if="variant === 'hub'" to="/">{{ appName }}</ULink>
+      <UBadge v-else color="primary" variant="soft">Solutions</UBadge>
+    </template>
 
     <UPageGrid v-if="displayedSolutions.length">
       <UPageCard
@@ -52,10 +32,7 @@
       description="This app has not declared public solution pages."
     />
 
-    <div
-      v-if="variant === 'preview' && shouldShowMoreButton"
-      class="flex justify-center"
-    >
+    <template v-if="variant === 'preview' && shouldShowMoreButton" #footer>
       <UButton
         to="/solutions"
         color="neutral"
@@ -64,8 +41,8 @@
       >
         View all solutions
       </UButton>
-    </div>
-  </section>
+    </template>
+  </UPageSection>
 </template>
 
 <script setup lang="ts">

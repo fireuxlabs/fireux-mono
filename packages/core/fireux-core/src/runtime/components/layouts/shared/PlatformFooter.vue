@@ -6,16 +6,7 @@
       aria-label="FireUX platform information"
       class="flex flex-wrap justify-center gap-x-4 gap-y-2"
     >
-      <NuxtLink to="/install" class="hover:underline">Install app</NuxtLink>
-      <NuxtLink to="/legal/privacy" class="hover:underline"
-        >Platform privacy</NuxtLink
-      >
-      <NuxtLink to="/legal/terms" class="hover:underline"
-        >Platform terms</NuxtLink
-      >
-      <NuxtLink to="/legal/storage" class="hover:underline"
-        >Browser storage</NuxtLink
-      >
+      <NuxtLink to="/legal" class="hover:underline">Legal</NuxtLink>
     </nav>
     <a
       href="https://fireux.app"

@@ -25,6 +25,6 @@ const links = [
   { label: 'Pricing', to: '/pricing' },
   { label: 'Packages', to: '/packages' },
   { label: 'Patterns', to: '/patterns' },
-  { label: 'Install app', to: '/install' },
+  { label: 'Legal', to: '/legal' },
 ]
 </script>

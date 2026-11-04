@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <main class="auth-page-shell">
     <UContainer class="auth-page">
       <section v-if="isTenant" class="tenant-brand">
         <div class="tenant-brand__stack" :aria-label="`${appName} brand`">
@@ -13,7 +13,7 @@
       </section>
       <FireAuthSystem />
     </UContainer>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -21,15 +21,14 @@ import { definePageMeta } from '#imports'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 
 definePageMeta({
-  layout: 'auth'
+  layout: 'auth',
 })
 
 const { appName, isTenant } = useFireUXConfig()
-
 </script>
 
 <style scoped>
-.page {
+.auth-page-shell {
   min-height: 100dvh;
   display: flex;
 }

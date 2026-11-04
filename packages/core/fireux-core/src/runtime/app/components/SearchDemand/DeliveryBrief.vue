@@ -1,16 +1,18 @@
 <template>
-  <section class="research-card research-grid border-primary/30">
-    <header class="research-grid gap-2">
-      <div class="flex flex-wrap justify-between gap-2">
-        <p class="text-xs font-medium text-primary">
+  <section class="research-card research-card--featured research-grid">
+    <header class="research-grid research-grid--compact">
+      <div class="research-row research-row--spread">
+        <p class="research-meta research-highlight">
           Next delivery journey · {{ workspace }}
         </p>
         <UBadge color="neutral" variant="soft">Live proof pending</UBadge>
       </div>
       <h2 class="research-detail-title">{{ brief.title }}</h2>
-      <p class="research-reading text-sm text-muted">{{ brief.purpose }}</p>
+      <p class="research-reading research-copy research-muted">
+        {{ brief.purpose }}
+      </p>
     </header>
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="research-button-row">
       <template v-for="page in brief.pages" :key="page.path"
         ><UButton
           v-if="page.availability === 'enabled'"
@@ -37,23 +39,23 @@
         >
       </summary>
       <div class="research-detail-body research-reading">
-        <p class="text-sm text-muted">
+        <p class="research-copy research-muted">
           This journey reuses these capability settings. Saving configuration
           does not prove checkout or order delivery.
         </p>
         <article
           v-for="entry in brief.configuration"
           :key="entry.label"
-          class="space-y-2"
+          class="research-stack"
         >
-          <h3 class="font-semibold">{{ entry.label }}</h3>
-          <p class="text-xs text-muted">{{ entry.owner }}</p>
-          <ul class="text-sm">
+          <h3 class="research-label--strong">{{ entry.label }}</h3>
+          <p class="research-meta research-muted">{{ entry.owner }}</p>
+          <ul class="research-copy">
             <li v-for="setting in entry.settings" :key="setting">
               {{ setting }}
             </li>
           </ul>
-          <p class="text-sm"><strong>Tool:</strong> {{ entry.tool }}</p>
+          <p class="research-copy"><strong>Tool:</strong> {{ entry.tool }}</p>
         </article>
       </div>
     </details>
@@ -72,16 +74,16 @@
             { title: 'Trusted services', entries: brief.services },
           ]"
           :key="group.title"
-          class="space-y-4"
+          class="research-stack research-stack--loose"
         >
-          <h3 class="font-semibold">{{ group.title }}</h3>
+          <h3 class="research-label--strong">{{ group.title }}</h3>
           <article
             v-for="entry in group.entries"
             :key="entry.label"
-            class="space-y-1"
+            class="research-stack research-stack--tight"
           >
-            <p class="text-sm">{{ entry.label }}</p>
-            <p class="text-xs text-muted">
+            <p class="research-copy">{{ entry.label }}</p>
+            <p class="research-meta research-muted">
               {{
                 entry.status === 'planned'
                   ? 'To build'
@@ -101,7 +103,7 @@
         <span class="research-pill">{{ brief.acceptance.length }} checks</span>
       </summary>
       <div class="research-detail-body research-reading">
-        <ol class="text-sm">
+        <ol class="research-copy">
           <li v-for="criterion in brief.acceptance" :key="criterion">
             {{ criterion }}
           </li>
@@ -114,7 +116,7 @@
         <span class="research-pill">{{ brief.gaps.length }} gaps</span>
       </summary>
       <div class="research-detail-body research-reading">
-        <ul class="text-sm">
+        <ul class="research-copy">
           <li v-for="gap in brief.gaps" :key="gap">{{ gap }}</li>
         </ul>
       </div>
@@ -122,16 +124,20 @@
     <details class="research-details">
       <summary>Technical sources and available tests</summary>
       <div class="research-detail-body">
-        <p class="text-xs text-muted">
+        <p class="research-meta research-muted">
           Listed tests are available checks. This list does not record a passed
           run.
         </p>
-        <ul class="text-xs text-muted">
-          <li v-for="path in sourcePaths" :key="path" class="break-all">
+        <ul class="research-meta research-muted">
+          <li
+            v-for="path in sourcePaths"
+            :key="path"
+            class="research-source-path"
+          >
             <code>{{ path }}</code>
           </li>
         </ul>
-        <p v-if="!brief.checks.length" class="text-sm text-muted">
+        <p v-if="!brief.checks.length" class="research-copy research-muted">
           Journey checks still need to be established.
         </p>
       </div>

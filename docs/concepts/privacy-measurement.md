@@ -1,7 +1,7 @@
 # Privacy-first measurement
 
-Updated: 2026-10-21
-Ref: d05ded3fd
+Updated: 2026-11-04
+Ref: 7899136bf
 Role: map, not canon
 
 ## Purpose
@@ -17,11 +17,13 @@ No analytics collection is active. FireUX Core does not accept a Firebase
 measurement id. Feature storage must not introduce behavioural analytics,
 advertising identifiers or browser tracking.
 
-Core splits public authority without duplicating it:
+The single `/legal` page composes App-specific notices with three legal
+sections. Privacy opens by default; Terms and browser storage open from their
+section links. Core splits public authority without duplicating it:
 
-- `/legal/privacy` owns personal-data handling, providers, rights, and the
+- `/legal#privacy` owns personal-data handling, providers, rights, and the
   no-tracking boundary;
-- `/legal/storage` owns the exact cookies-and-browser-storage inventory;
+- `/legal#browser-storage` owns the exact cookies-and-browser-storage inventory;
 - `packages/core/fireux-core/src/config/privacy/browser-storage.json` is the
   machine-readable feature-storage inventory.
 
@@ -39,7 +41,8 @@ These feature values are not analytics identifiers and must never be consumed
 by measurement code.
 
 Fresh public visits do not register a PWA service worker or create its cache.
-Core `/install` separates native or manual browser installation from optional
+The `/legal#browser-storage` section gives the one-line browser installation
+instruction and contains a collapsed control for install prompts and optional
 offline support. Enabling offline support saves `fireux:pwa:{appId}` and
 registers the App's worker; later visits may resume that saved choice. The worker
 caches only self-contained reconnect HTML. Navigation uses the network, with
@@ -63,7 +66,7 @@ process memory; it never persists or logs a raw address.
 
 The PWA policy and verification entrypoints are Core `src/config/app/pwa.ts`,
 `src/runtime/composables/pwa/controller.ts`, `src/runtime/components/Pwa`,
-`src/runtime/pages/install.vue` and `src/test/pwa.test.mjs`.
+`src/runtime/components/Legal/BrowserStorage.vue` and `src/test/pwa.test.mjs`.
 Browser checks must separately confirm fresh-visit storage, opt-in, cache
 contents, removal and deliberate update/reload behavior.
 

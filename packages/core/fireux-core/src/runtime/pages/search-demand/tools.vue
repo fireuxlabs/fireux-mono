@@ -1,14 +1,9 @@
 <template>
   <UPage class="research-page"
     ><UPageHeader
-      :ui="{
-        root: 'py-5',
-        title: 'text-2xl sm:text-3xl',
-        description: 'text-sm mt-2',
-      }"
       title="Proposed tools"
       description="Specific actions that could help operators complete their work."
-    /><UPageBody class="mt-5 flex flex-col gap-5 space-y-0">
+    /><UPageBody class="research-page__body">
       <AppSearchDemandBriefNav :briefs="briefs" /><AppSearchDemandStageNav
         current="tools"
       />
@@ -27,37 +22,34 @@
       <template v-else>
         <section class="research-intro">
           <h2>{{ demand.domain }}</h2>
-          <p class="research-reading text-sm text-muted">
+          <p class="research-reading research-copy research-muted">
             {{ demand.tools.summary }}
           </p>
-          <p class="text-xs text-muted">
+          <p class="research-meta research-muted">
             {{ demand.tools.tools.length }} hypotheses · these are proposals,
             not shipped actions
           </p>
         </section>
-        <div class="grid gap-3 sm:grid-cols-2">
-          <label class="research-grid gap-2"
-            ><span class="text-sm font-medium">Find a tool</span
-            ><input
+        <div class="research-columns research-columns--two">
+          <UFormField label="Find a tool">
+            <UInput
               v-model="search"
               type="search"
               placeholder="Search names or outcomes…"
-              class="research-field" /></label
-          ><label class="research-grid gap-2"
-            ><span class="text-sm font-medium">Validation stage</span
-            ><select v-model="status" class="research-field">
-              <option value="all">All stages</option>
-              <option value="test-now">Test now</option>
-              <option value="research-next">Research next</option>
-              <option value="later">Later</option>
-              <option value="boundary">Outside scope</option>
-            </select></label
-          >
+              icon="i-lucide-search"
+            />
+          </UFormField>
+          <UFormField label="Validation stage">
+            <USelect v-model="status" :items="statusOptions" />
+          </UFormField>
         </div>
-        <p class="text-xs text-muted" role="status">
+        <p class="research-meta research-muted" role="status">
           {{ filtered.length }} matching tools
         </p>
-        <p v-if="!filtered.length" class="research-card text-sm text-muted">
+        <p
+          v-if="!filtered.length"
+          class="research-card research-copy research-muted"
+        >
           No matching tools. Try another search or stage.
         </p>
         <section class="research-grid" aria-label="Proposed tools">
@@ -70,26 +62,27 @@
             <summary>
               <span
                 >{{ tool.title
-                }}<span class="research-summary-copy block line-clamp-2">{{
-                  tool.outcome
-                }}</span></span
+                }}<span
+                  class="research-summary-copy research-summary-copy--clamped"
+                  >{{ tool.outcome }}</span
+                ></span
               ><span class="research-pill">{{ statusLabel(tool.status) }}</span>
             </summary>
-            <div class="research-detail-body research-reading text-sm">
+            <div class="research-detail-body research-reading research-copy">
               <p><strong>Operator job:</strong> {{ tool.operator_job }}</p>
               <p><strong>Expected outcome:</strong> {{ tool.outcome }}</p>
               <p>
                 <strong>Related jobs:</strong>
                 {{ clusterTitles(tool.source_cluster_ids) }}
               </p>
-              <p class="text-xs text-muted">
+              <p class="research-meta research-muted">
                 Research reference: {{ tool.id }}
               </p>
             </div>
           </details>
         </section>
         <footer class="research-next">
-          <p class="text-sm text-muted research-reading">
+          <p class="research-reading research-copy research-muted">
             {{ demand.tools.next_step }}
           </p>
           <UButton
@@ -121,6 +114,13 @@ const { demand, briefs, researchRoute } = useAppResearchScope(
 )
 const search = ref('')
 const status = ref('all')
+const statusOptions = [
+  { label: 'All stages', value: 'all' },
+  { label: 'Test now', value: 'test-now' },
+  { label: 'Research next', value: 'research-next' },
+  { label: 'Later', value: 'later' },
+  { label: 'Outside scope', value: 'boundary' },
+]
 watch(demand, () => {
   search.value = ''
   status.value = 'all'

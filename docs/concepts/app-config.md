@@ -100,7 +100,10 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - Authored `app/meta.ts` is pure data and may be consumed by browser or server
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
   dependencies; filesystem and Markdown loading belong to Core's config-only
-  metadata loader.
+  metadata loader. Its optional `legal.notices` are App-owned additions to
+  Core's shared `/legal` page; `readAppMeta` exposes only the validated public
+  projection. Core platform documents remain shared, and an installed extension
+  does not add legal content unless the App explicitly composes it.
 - Core `resolveWorkspaceCanCreate` owns the shared explicit-override then
   non-tenant fallback. Workspace UI and trusted entity onboarding use that same
   policy instead of repeating it inside each domain.
@@ -204,7 +207,7 @@ initialized App awaiting media publication is not an uninitialized App.
 | Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
 | Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it        |
 | A tenant App pins Workspace target IDs in Nuxt config               | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                         |
-| Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority          |
+| Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                |
 | An app disables or replaces the Core page transition globally       | `drift`    | Apps inherit the shared default; route-specific exceptions belong in page meta                                   |
 | A project app shell or stylesheet copies the shared page transition | `drift`    | Keep shared behavior in Core and route-specific exceptions in page meta                                          |

@@ -1,16 +1,11 @@
 <template>
   <UPage class="research-page">
     <UPageHeader
-      :ui="{
-        root: 'py-5',
-        title: 'text-2xl sm:text-3xl',
-        description: 'text-sm mt-2',
-      }"
       :title="`${demand?.reconciliation?.workspace ?? 'Workspace'} capability plan`"
       description="What to build, what already exists, and what needs proving."
     />
-    <UPageBody class="mt-5 flex flex-col gap-5 space-y-0">
-      <div class="grid gap-3">
+    <UPageBody class="research-page__body">
+      <div class="research-page__stages">
         <AppSearchDemandBriefNav :briefs="briefs" />
         <AppSearchDemandStageNav current="capabilities" />
       </div>

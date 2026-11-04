@@ -110,7 +110,6 @@ export type FireuxSeoSitemapsExtendContext = {
 
 const DEFAULT_DISALLOW = ['/workspace', '/admin']
 const DEFAULT_NOINDEX = [
-  '/install',
   '/auth',
   '/auth/**',
   '/workspace',

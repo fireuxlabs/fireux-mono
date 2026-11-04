@@ -38,6 +38,25 @@ export type FireuxMetaChecklistItem = {
   done?: boolean
 }
 
+export type FireuxMetaLegalSource = {
+  label: string
+  to: string
+}
+
+export type FireuxMetaLegalNotice = {
+  id: string
+  title: string
+  description: string
+  jurisdiction?: string
+  items: string[]
+  sources?: FireuxMetaLegalSource[]
+}
+
+export type FireuxMetaLegalContent = {
+  /** Public, App-specific information rendered in Core's shared Legal page. */
+  notices?: FireuxMetaLegalNotice[]
+}
+
 export type FireuxMetaOperationWorkspace = {
   /** Stable workspace key used for grouping and the /operations anchor. */
   id: string
@@ -211,6 +230,9 @@ export type FireuxMetaContent = {
   }
 
   lists?: FireuxMetaLists
+
+  /** App-owned legal additions composed into Core's shared Legal page. */
+  legal?: FireuxMetaLegalContent
 
   /**
    * Factual index of entity-specific Workspace Operations.

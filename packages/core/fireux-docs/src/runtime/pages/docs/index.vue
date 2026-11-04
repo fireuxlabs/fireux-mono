@@ -7,15 +7,17 @@
     />
 
     <UPageBody>
-      <div class="grid gap-4 md:grid-cols-2">
-        <UCard v-for="section in sections" :key="section.to" :to="section.to">
-          <div class="space-y-2">
-            <UIcon :name="section.icon" class="size-6 text-primary" />
-            <h2 class="font-semibold">{{ section.label }}</h2>
-            <p class="text-sm text-dimmed">{{ section.description }}</p>
-          </div>
-        </UCard>
-      </div>
+      <UPageGrid>
+        <UPageCard
+          v-for="section in sections"
+          :key="section.to"
+          :title="section.label"
+          :description="section.description"
+          :icon="section.icon"
+          :to="section.to"
+          variant="subtle"
+        />
+      </UPageGrid>
     </UPageBody>
   </UPage>
 </template>

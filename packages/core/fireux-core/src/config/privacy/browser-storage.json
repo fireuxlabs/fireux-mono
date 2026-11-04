@@ -16,7 +16,7 @@
       "technology": "localStorage",
       "owner": "FireUX Core for the current App",
       "purpose": "Remember the visitor's explicit offline-support choice",
-      "trigger": "Enable offline support at /install",
+      "trigger": "Choose Enable offline support on the Cookies and browser storage page",
       "lifetime": "Until offline support is disabled or browser site data is cleared",
       "deletion": "Disable offline support removes the value"
     },

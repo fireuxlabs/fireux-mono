@@ -1,14 +1,9 @@
 <template>
   <UPage class="research-page"
     ><UPageHeader
-      :ui="{
-        root: 'py-5',
-        title: 'text-2xl sm:text-3xl',
-        description: 'text-sm mt-2',
-      }"
       title="Operator jobs"
       description="What people need to accomplish, and what the evidence tells us."
-    /><UPageBody class="mt-5 flex flex-col gap-5 space-y-0">
+    /><UPageBody class="research-page__body">
       <AppSearchDemandBriefNav :briefs="briefs" /><AppSearchDemandStageNav
         current="analysis"
       />
@@ -27,17 +22,17 @@
       <template v-else>
         <section class="research-intro">
           <h2>{{ demand.domain }}</h2>
-          <p class="research-reading text-sm text-muted">
+          <p class="research-reading research-copy research-muted">
             {{ demand.analysis.summary }}
           </p>
-          <p class="text-xs text-muted">
+          <p class="research-meta research-muted">
             {{ demand.analysis.clusters.length }} jobs to explore ·
             interpretations of research
           </p>
         </section>
         <details class="research-details">
           <summary>Overall findings and scope</summary>
-          <div class="research-detail-body research-reading text-sm">
+          <div class="research-detail-body research-reading research-copy">
             <p>{{ demand.summary.conclusion }}</p>
             <ul>
               <li v-for="finding in demand.summary.findings" :key="finding">
@@ -58,20 +53,20 @@
             <summary>
               <span
                 >{{ cluster.title
-                }}<span class="research-summary-copy block">{{
+                }}<span class="research-summary-copy">{{
                   cluster.operator_job
                 }}</span></span
               ><span class="research-pill"
                 >{{ cluster.confidence }} confidence</span
               >
             </summary>
-            <div class="research-detail-body research-reading text-sm">
+            <div class="research-detail-body research-reading research-copy">
               <section>
-                <h3 class="font-semibold mb-2">What we infer</h3>
+                <h3 class="research-subheading">What we infer</h3>
                 <p>{{ cluster.interpretation }}</p>
               </section>
               <section v-if="cluster.research_gap">
-                <h3 class="font-semibold mb-2">Still to learn</h3>
+                <h3 class="research-subheading">Still to learn</h3>
                 <p>{{ cluster.research_gap }}</p>
               </section>
               <p v-if="cluster.boundary">
@@ -96,7 +91,7 @@
                       {{ query }}
                     </li>
                   </ul>
-                  <p class="text-xs text-muted">
+                  <p class="research-meta research-muted">
                     Intent: {{ cluster.intents.join(' · ') }}
                   </p>
                 </div>
@@ -105,7 +100,7 @@
           </details>
         </section>
         <footer class="research-next">
-          <p class="text-sm text-muted research-reading">
+          <p class="research-reading research-copy research-muted">
             {{ demand.analysis.next_step }}
           </p>
           <UButton

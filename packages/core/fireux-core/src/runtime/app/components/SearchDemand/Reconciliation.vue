@@ -1,14 +1,14 @@
 <template>
   <section class="research-grid">
-    <header class="research-reading space-y-2">
-      <p class="text-xs text-muted">
+    <header class="research-reading research-stack">
+      <p class="research-meta research-muted">
         {{ review.workspace }} · reviewed {{ review.reviewed_at }}
       </p>
-      <h2 class="text-lg font-semibold">
+      <h2 class="research-subheading">
         Current capabilities: what to keep and change
       </h2>
-      <p class="text-sm text-muted">{{ review.summary }}</p>
-      <p class="text-xs text-muted">
+      <p class="research-copy research-muted">{{ review.summary }}</p>
+      <p class="research-meta research-muted">
         Connected means source wiring exists. It does not mean live operator
         acceptance has passed.
       </p>
@@ -16,22 +16,26 @@
     <details class="research-details">
       <summary>Shared foundations</summary>
       <div class="research-detail-body">
-        <ul class="text-sm text-muted">
+        <ul class="research-copy research-muted">
           <li v-for="foundation in review.foundations" :key="foundation">
             {{ foundation }}
           </li>
         </ul>
       </div>
     </details>
-    <label class="research-grid gap-2 max-w-lg"
-      ><span class="text-sm font-medium">Find a current area</span
-      ><input
+    <UFormField label="Find a current area" class="research-filter">
+      <UInput
         v-model="search"
         type="search"
         placeholder="Search current capabilities…"
-        class="research-field"
-    /></label>
-    <p v-if="!filtered.length" role="status" class="text-sm text-muted">
+        icon="i-lucide-search"
+      />
+    </UFormField>
+    <p
+      v-if="!filtered.length"
+      role="status"
+      class="research-copy research-muted"
+    >
       No matching areas. Try another search.
     </p>
     <details
@@ -43,16 +47,16 @@
       <summary>
         <span
           >{{ entry.title
-          }}<span class="research-summary-copy block">{{
+          }}<span class="research-summary-copy">{{
             actionLabel(entry.action)
           }}</span></span
         ><span class="research-pill">{{ statusLabel(entry.status) }}</span>
       </summary>
       <div class="research-detail-body research-reading">
-        <p class="text-sm">{{ entry.rationale }}</p>
+        <p class="research-copy">{{ entry.rationale }}</p>
         <details class="research-details">
           <summary>Evidence and source scope</summary>
-          <div class="research-detail-body text-sm">
+          <div class="research-detail-body research-copy">
             <p>
               Research capabilities:
               {{ entry.source_capability_ids.join(', ') }}
@@ -69,12 +73,14 @@
                 >
               </li>
             </ul>
-            <p class="text-xs text-muted">Implementation: {{ entry.status }}</p>
-            <ul class="text-xs text-muted">
+            <p class="research-meta research-muted">
+              Implementation: {{ entry.status }}
+            </p>
+            <ul class="research-meta research-muted">
               <li
                 v-for="path in entry.source_paths"
                 :key="path"
-                class="break-all"
+                class="research-source-path"
               >
                 <code>{{ path }}</code>
               </li>

@@ -1,7 +1,12 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import type { FireuxMetaContent } from '../../../../config/app/meta-content'
+import type {
+  FireuxMetaContent,
+  FireuxMetaLegalContent,
+  FireuxMetaLegalNotice,
+  FireuxMetaLegalSource,
+} from '../../../../config/app/meta-content'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import {
   normalizePublicImgAsset,
@@ -33,6 +38,63 @@ function asStringArray(value: unknown): string[] {
   return value
     .map((entry) => asString(entry))
     .filter((entry): entry is string => Boolean(entry))
+}
+
+function normalizeLegalSource(value: unknown) {
+  if (!isRecord(value)) return undefined
+
+  const label = asString(value.label)
+  const to = asString(value.to)
+  if (!label || !to) return undefined
+
+  try {
+    const url = new URL(to)
+    if (url.protocol !== 'https:') return undefined
+  } catch {
+    return undefined
+  }
+
+  return { label, to }
+}
+
+function normalizeLegalNotice(
+  value: unknown
+): FireuxMetaLegalNotice | undefined {
+  if (!isRecord(value)) return undefined
+
+  const id = asString(value.id)
+  const title = asString(value.title)
+  const description = asString(value.description)
+  const items = asStringArray(value.items)
+  if (!id || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) return undefined
+  if (!title || !description || !items.length) return undefined
+
+  const jurisdiction = asString(value.jurisdiction)
+  const sources = Array.isArray(value.sources)
+    ? value.sources
+        .map((source) => normalizeLegalSource(source))
+        .filter((source): source is FireuxMetaLegalSource => Boolean(source))
+    : []
+
+  return {
+    id,
+    title,
+    description,
+    ...(jurisdiction ? { jurisdiction } : {}),
+    items,
+    ...(sources.length ? { sources } : {}),
+  }
+}
+
+function normalizeLegal(value: unknown): FireuxMetaLegalContent {
+  const notices =
+    isRecord(value) && Array.isArray(value.notices)
+      ? value.notices
+          .map((notice) => normalizeLegalNotice(notice))
+          .filter((notice): notice is FireuxMetaLegalNotice => Boolean(notice))
+      : []
+
+  return { notices }
 }
 
 function normalizeSiteUrl(input: unknown): string | undefined {
@@ -109,6 +171,7 @@ export async function readAppMeta(event: H3Event) {
       workspace_bridge_html: asString(meta.copy?.workspace_bridge_html),
       highlight_terms: asStringArray(meta.copy?.highlight_terms),
     },
+    legal: normalizeLegal(meta.legal),
     seo: {
       title: seoTitle,
       description: seoDescription,
