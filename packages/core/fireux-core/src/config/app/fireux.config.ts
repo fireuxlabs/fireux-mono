@@ -101,7 +101,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       subscriptionCapacity: app.subscriptionCapacity || {},
       domains: app.domains || [],
       profiles: app.profiles || [],
-      selfJoinEnabled: app.selfJoinEnabled === true,
       ...(app.theme ? { theme: app.theme } : {}),
     },
 

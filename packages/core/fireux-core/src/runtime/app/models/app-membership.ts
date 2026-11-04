@@ -3,41 +3,9 @@
 
 import type { AppUserRole, AppUserSubscription } from './app-user.model.ts'
 
-export const AppJoinRequestStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/join-requests/{userId}',
-  collection: 'join-requests',
-  parent: 'app',
-  idParam: 'userId',
-} as const
-
-export const AppMembershipBlockStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/membership-blocks/{userId}',
-  collection: 'membership-blocks',
-  parent: 'app',
-  idParam: 'userId',
-} as const
-
-export type AppJoinRequest = {
-  id: string
-  user_id: string
-  created: {
-    at: unknown
-    by: string
-    app_id: string
-  }
-}
-
 export type AppMembershipMutationInput =
   | { action: 'ensure-self' }
   | { action: 'bootstrap-admin' }
-  | { action: 'request-join' }
-  | {
-      action: 'review-join'
-      userId: string
-      approve: boolean
-    }
   | {
       action: 'set-role'
       userId: string
@@ -66,5 +34,4 @@ export type AppMembershipMutationResult = {
   removed?: boolean
   role?: AppUserRole
   subscription?: AppUserSubscription
-  requested?: boolean
 }

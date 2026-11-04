@@ -230,12 +230,6 @@ function nativeSession(initial = {}) {
     {
       computed,
       useAuth: () => auth,
-      useFireUXConfig: () => ({ appId: 'runtime' }),
-      useAppRead: () => ({
-        canSelfJoin: ref(true),
-        pending: ref(false),
-        error: ref(undefined),
-      }),
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
       resolveUserAvatarSource: (value) => value || '/img/ecosystem/avatar.png',
       useAppUserAccess: () => ({}),
@@ -322,7 +316,6 @@ test('settled registered nonmember resolves own User before membership exists', 
   assert.equal(f.state.currentUser.value.id, 'person')
   assert.equal(f.state.appOutcome.value, 'empty')
   assert.equal(f.state.appUser.value, null)
-  assert.equal(f.state.canSelfJoin.value, true)
   f.scope.stop()
 })
 test('authorized missing own User remains onboarding and failed own User remains an error', async () => {

@@ -64,7 +64,16 @@ function withDocsBase(items: any[] = []): any[] {
   })
 }
 
-const navigation = computed(() => withDocsBase(navigationRaw.value || []))
+const navigation = computed(() => [
+  {
+    title: 'Composables',
+    path: '/docs/composables',
+    children: [
+      { title: 'App', path: '/docs/composables/useApp' },
+    ],
+  },
+  ...withDocsBase(navigationRaw.value || []),
+])
 
 provide('navigation', navigation)
 </script>

@@ -50,7 +50,7 @@ export function projectWorkspaceIntro(
         : !facts.configured
           ? 'Project creation allowance is not configured. An upgrade is not a confirmed remedy.'
           : !known
-            ? 'Sign in to see your account allowance. Saving a new Project requires App membership.'
+            ? 'Complete User setup to get App access and see your account allowance.'
             : `${tier} · ${facts.used} associated Projects · ${facts.limit === null ? 'no subscription count limit' : `allowance ${facts.limit}`}.`,
       retained:
         'This page does not remove existing Projects when the creation allowance is reached. Editing still depends on Project access. The creation command checks Project associations when saving.',

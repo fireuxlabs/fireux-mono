@@ -24,15 +24,15 @@
       <div class="space-y-6 p-6 sm:p-10">
         <div class="flex items-center gap-4">
           <UAvatar
-            :src="card.logoUrl || card.imageUrl || undefined"
+            :src="card.logoUrl || card.thumbnailUrl || undefined"
             :text="card.avatarText"
-            :alt="card.displayName"
+            :alt="card.name"
             size="3xl"
           />
           <h1
             class="min-w-0 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl"
           >
-            {{ card.displayName }}
+            {{ card.name }}
           </h1>
         </div>
         <p v-if="card.tagline" class="text-xl text-highlighted">
@@ -53,7 +53,7 @@
           "
           trailing
           size="lg"
-          >Open {{ card.displayName }}</UButton
+          >Open {{ card.name }}</UButton
         >
         <p v-else class="text-sm text-muted">
           This app hasn’t added a public address yet.

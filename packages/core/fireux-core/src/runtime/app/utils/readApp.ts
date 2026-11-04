@@ -1,4 +1,8 @@
-import type { App } from '../models/app.model.ts'
+import {
+  APP_ROLES,
+  APP_STATUSES,
+  type App,
+} from '../models/app.model.ts'
 
 const APP_FIELDS = new Set([
   'ecosystem_id',
@@ -10,12 +14,9 @@ const APP_FIELDS = new Set([
   'description',
   'social_links',
   'media',
-  'self_join_enabled',
   'created',
   'updated',
 ])
-const APP_ROLES = new Set<App['role']>(['global', 'tenant', 'standalone'])
-const APP_STATUSES = new Set<App['status']>(['active', 'inactive', 'archived'])
 const SOCIAL_LINK_FIELDS = [
   'website',
   'twitter',
@@ -70,14 +71,12 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   if (
     typeof raw.ecosystem_id !== 'string' ||
     !raw.ecosystem_id.trim() ||
-    !APP_ROLES.has(raw.role as App['role']) ||
-    !APP_STATUSES.has(raw.status as App['status']) ||
+    !APP_ROLES.some((role) => role === raw.role) ||
+    !APP_STATUSES.some((status) => status === raw.status) ||
     typeof raw.name !== 'string' ||
     (raw.short_name !== undefined && typeof raw.short_name !== 'string') ||
     (raw.tagline !== undefined && typeof raw.tagline !== 'string') ||
     (raw.description !== undefined && typeof raw.description !== 'string') ||
-    (raw.self_join_enabled !== undefined &&
-      typeof raw.self_join_enabled !== 'boolean') ||
     (raw.social_links !== undefined &&
       !hasOptionalStringFields(raw.social_links, SOCIAL_LINK_FIELDS)) ||
     (raw.media !== undefined &&

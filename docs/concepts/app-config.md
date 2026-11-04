@@ -1,6 +1,6 @@
 # App config spine map
 
-Updated: 2026-10-07
+Updated: 2026-11-03
 Ref: bd7ab9559
 Role: map, not canon
 
@@ -36,6 +36,8 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   entries retain their declared priority above it.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
+- `role` uses `AppRole` from Core's canonical App model. App configuration and
+  runtime policy share that type instead of defining another role union.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
 - `projectId` names the canonical FireUX Project entity.
 - Required `ecosystemId` names the canonical Ecosystem entity that contains the
@@ -137,13 +139,12 @@ query/result behavior. This is a publication query seam, not mutation authority.
 - `workspaceConfig`
 - `domains`
 - `profiles`
-- `selfJoinEnabled`: initial policy seed for a new canonical App only.
-  User onboarding and bootstrap read the stored App `self_join_enabled` policy,
-  as the trusted join command does; build-time config does not gate joining
-  an existing App.
 - Navigation belongs in `app/app.config.ts`, alongside App presentation.
   Its optional `navigation.hiddenKeys` and `navigation.overrides` affect only
   inherited route presentation, never route existence or authorization.
+
+Completing User setup creates a basic AppUser. App admins can change its role
+or subscription.
 
 ## Mode differences
 

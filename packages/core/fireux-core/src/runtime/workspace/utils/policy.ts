@@ -1,7 +1,8 @@
-import type { FireuxAppRole, FireuxWorkspaceConfig } from '../../../config/app/types'
+import type { AppRole } from '../../app/models/app.model'
+import type { FireuxWorkspaceConfig } from '../../../config/app/types'
 
 export function resolveWorkspaceCanCreate(
-  role: FireuxAppRole,
+  role: AppRole,
   workspaceConfig: FireuxWorkspaceConfig,
   family: string
 ): boolean {

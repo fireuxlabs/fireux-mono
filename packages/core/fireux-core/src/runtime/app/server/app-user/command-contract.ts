@@ -12,7 +12,6 @@ import {
 import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import { serverAppUsersTarget } from '../mutation-targets'
 import type { GuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 
 export type MutationContext = {
   actorUid: string
@@ -65,11 +64,9 @@ export function requiredIdentityUserId(
   input: AppMembershipMutationInput,
   actorUid: string
 ) {
-  if (input.action === 'ensure-self' || input.action === 'bootstrap-admin')
-    return actorUid
-  if (input.action === 'review-join' && input.approve)
-    return requireFirestoreDocumentId(input.userId, 'User id')
-  return ''
+  return input.action === 'ensure-self' || input.action === 'bootstrap-admin'
+    ? actorUid
+    : ''
 }
 
 export function appGovernancePatch(actorUid: string) {
@@ -101,7 +98,6 @@ export async function countTransactionAdmins(
 export type MembershipTransactionState = {
   context: MutationContext
   mutations: GuardedServerTransaction
-  appData: DocumentData
   actorMembershipExists: boolean
   actorMembership: DocumentData | undefined
 }

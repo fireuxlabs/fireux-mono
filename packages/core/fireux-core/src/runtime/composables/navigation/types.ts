@@ -1,4 +1,4 @@
-import type { FireuxAppRole } from '../../../config/app/types'
+import type { AppRole } from '../../app/models/app.model'
 
 export interface NavVisibility {
   apps?: string[]
@@ -69,7 +69,7 @@ export interface NavItem {
   prominent?: boolean
   parked?: boolean
   roles?: string[]
-  appRole?: FireuxAppRole
+  appRole?: AppRole
   visibility?: NavVisibility
 }
 

@@ -1,9 +1,15 @@
 import type { FireuxEntity } from '../../models/utils/entity.model'
 
+export const APP_ROLES = ['global', 'tenant', 'standalone'] as const
+export type AppRole = (typeof APP_ROLES)[number]
+
+export const APP_STATUSES = ['active', 'inactive'] as const
+export type AppStatus = (typeof APP_STATUSES)[number]
+
 export type App = FireuxEntity & {
   ecosystem_id: string
-  role: 'global' | 'tenant' | 'standalone'
-  status: 'active' | 'inactive' | 'archived'
+  role: AppRole
+  status: AppStatus
   name: string
   short_name?: string
   tagline?: string
@@ -25,10 +31,9 @@ export type App = FireuxEntity & {
     wordmark_dark_url?: string
     cover_url?: string
   }
-  self_join_enabled?: boolean
 }
 
-/** Public directory/detail identity; excludes private context, policy and audit. */
+/** Public directory/detail identity; excludes private context and audit. */
 export type AppPublicSummary = Pick<
   App,
   | 'id'

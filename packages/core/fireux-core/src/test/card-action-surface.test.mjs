@@ -25,7 +25,7 @@ const ActionSurface = component('../runtime/components/Molecules/ActionSurface.v
 const cards = [
   component('../../../../extensions/fireux-products/src/runtime/product/components/Cards/Pill.vue'),
   component('../../../../extensions/fireux-suppliers/src/runtime/supplier/components/Item/Cards/Cell.vue'),
-  component('../runtime/app/components/Cards/Pill.vue'),
+  component('../runtime/app/components/Cards/Cell.vue'),
 ]
 const ULink = Vue.defineComponent({
   props: ['to', 'disabled'],
@@ -40,7 +40,13 @@ async function render(Card, props) {
 }
 for (const [i, Card] of cards.entries()) {
   test(`card ${i + 1} composes static, link and native action surfaces`, async () => {
-    const props = { title: 'Record', displayName: 'Record', to: '/record', badges: [] }
+    const props = {
+      title: 'Record',
+      displayName: 'Record',
+      name: 'Record',
+      to: '/record',
+      badges: [],
+    }
     const passive = await render(Card, props)
     assert.match(passive, /data-action-surface="static"/)
     assert.doesNotMatch(passive, /<button|<a\s/)

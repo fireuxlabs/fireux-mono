@@ -117,7 +117,6 @@ const appFieldGroups = {
     'role',
     'name',
     'short_name',
-    'self_join_enabled',
   ],
   admin: ['description'],
   system: ['id', 'created', 'updated'],

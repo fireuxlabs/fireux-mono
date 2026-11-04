@@ -41,6 +41,13 @@ const sections = [
     to: '/docs/components',
   },
   {
+    label: 'App composables',
+    description:
+      'Read the configured App and derive the values your page needs.',
+    icon: 'i-lucide-app-window',
+    to: '/docs/composables',
+  },
+  {
     label: 'Templates',
     description:
       'Industry-designed page compositions built from the cross-industry library.',

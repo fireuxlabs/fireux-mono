@@ -14,7 +14,6 @@ const appConfig = defineFireuxConfig({
   name: 'FireUX',
   shortName: 'FireUX',
   role: 'global',
-  selfJoinEnabled: true,
   workspaces: ['project'],
   subscriptionCapacity: {
     project: { free: 1, premium: 1, business: null },

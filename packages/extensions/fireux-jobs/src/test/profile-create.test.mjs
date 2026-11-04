@@ -138,7 +138,7 @@ for (const name of ['Professional', 'Agent']) {
   })
 
   test(`${name} creation stops when User bootstrap fails`, async () => {
-    const failure = new Error('Join this App before creating a profile.')
+    const failure = new Error('App access is required before creating a profile.')
     const subject = workflow(name, { bootstrapError: failure })
     await assert.rejects(subject.create(), failure)
     assert.deepEqual(subject.events, ['bootstrap'])

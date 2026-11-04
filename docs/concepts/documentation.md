@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-10-25
-Ref: 4a06df9ef
+Updated: 2026-11-03
+Ref: 4890ed683
 Role: map, not canon
 
 ## Purpose
@@ -109,11 +109,16 @@ speculative alternatives do not belong in living documentation.
 ## Viewer
 
 `fireux-docs` renders `AGENTS.md`, living contexts, and concept maps from their
-current repository locations. The host App owns the Nuxt Content source
-collection; the package owns reusable `/docs` routes. Rendered content and the
-docs manifest are views over this graph, never copied documentation authority.
-Each content source keeps the narrowest watch root that contains its files; a
-single root document must never make the App watch the whole repository.
+current repository locations. It also provides focused FireUX API reference
+pages, beginning with the [App composables reference](../../packages/core/fireux-docs/src/runtime/pages/docs/composables/useApp.vue)
+and its [Core `useAppRead` source](../../packages/core/fireux-core/src/runtime/app/composables/useAppRead.ts).
+Those pages explain current package behavior; the owning source remains
+authoritative. The host App owns the Nuxt Content source collection; the
+package owns reusable `/docs` routes and its reference pages. Rendered
+repository content and the docs manifest are views over this graph, never
+copied documentation authority. Each content source keeps the narrowest watch
+root that contains its files; a single root document must never make the App
+watch the whole repository.
 
 The FireUX host installs this docs surface in production. Ordinary local
 Workspace development leaves Nuxt Content off; set

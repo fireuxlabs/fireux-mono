@@ -27,7 +27,6 @@ const app: FireuxAppConfig = {
   },
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
-  selfJoinEnabled: true,
   seo: {
     staticPaths: [
       '/product',

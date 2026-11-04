@@ -66,7 +66,6 @@ function appPayload(
       wordmark_dark_url: '',
       cover_url: '',
     },
-    self_join_enabled: config.selfJoinEnabled,
     created: { at: now, by: uid },
     updated: { at: now, by: uid },
   }

@@ -39,12 +39,6 @@ function serverAppChildTarget(appId: string, key: string, collection: string) {
   })
 }
 
-export const serverAppJoinRequestsTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.join-requests', 'join_requests')
-
-export const serverAppMembershipBlocksTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.membership-blocks', 'membership_blocks')
-
 export const serverAppPublicSettingsTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.public-settings', 'settings')
 

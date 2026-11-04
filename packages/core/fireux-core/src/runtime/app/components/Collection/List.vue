@@ -21,9 +21,9 @@ import type { AppCard } from '../../composables/useAppView'
 const props = defineProps<{ cards: AppCard[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({
-    title: card.displayName,
+    title: card.name,
     description: card.tagline || card.description || '',
-    image: card.logoUrl || card.imageUrl,
+    image: card.logoUrl || card.thumbnailUrl,
     imageText: card.avatarText,
     to: card.to,
   }))

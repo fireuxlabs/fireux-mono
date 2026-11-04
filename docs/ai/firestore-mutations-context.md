@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-31
+Updated: 2026-11-03
 Ref: 3f46d22a2
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -260,7 +260,6 @@ records. Public meal-deal projection remains read-only.
   `useAppEnvCheck.ts` keys client-only diagnostics by App/account, passes
   request cancellation and rejects obsolete credentials/results. Verify both
   through `src/test/app-initialization-scope.test.mjs`.
-  Join review reads every required snapshot before its first transaction write.
   User private-account and avatar command functions live in `user/utils`,
   alongside canonical identity provisioning and handle transport. Profile edits
   use `user/composables/identity/useUserProfileUpdate.ts`; bootstrap uses the
@@ -462,7 +461,7 @@ See the App-owned release README and `test/storage.production.test.mjs`.
 The candidate also permits exact owner account reads, exact-App admin featured
 settings, and Kitchen-operator Menu source, draft, table-tab and promotion reads.
 Private App roots containing context require admin authority; App metadata and
-self-join policy use the safe status projection. Public people and member display
+App metadata uses the safe status projection. Public people and member display
 identities use their existing server projection owners, while canonical membership
 lookup requires current App administration. These are source-only contracts, not
 an authorization to apply the candidate.

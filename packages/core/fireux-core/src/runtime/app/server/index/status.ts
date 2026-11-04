@@ -17,8 +17,6 @@ export async function readAppStatus(event: H3Event) {
     appId,
     initialized: snapshot.exists,
     app: snapshot.exists ? readAppDocument(snapshot.data(), appId) : null,
-    selfJoinEnabled:
-      snapshot.exists && snapshot.data()?.self_join_enabled === true,
     mediaReady: snapshot.exists && isAppMediaComplete(snapshot.data()?.media),
     paletteReady: true,
   }

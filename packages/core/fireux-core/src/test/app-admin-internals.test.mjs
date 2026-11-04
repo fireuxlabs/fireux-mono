@@ -49,20 +49,14 @@ function fixture() {
     useAppUsers: () => ({
       memberships: ref([]),
       administrators: ref([]),
-      joinRequests: ref([]),
       userById: () => null,
     }),
     useUserView: () => ({ pill: () => null }),
-    useAppJoinRequests: ({ handleJoinRequests }) => ({
-      items: ref([]),
-      approve: (uid) => handleJoinRequests(uid, true),
-      reject: (uid) => handleJoinRequests(uid, false),
-    }),
   }
   const owner = effectScope()
   const api = owner.run(() =>
     compileFunction(
-      `${stripTypeScriptTypes(source)}; return { removeAdmin, setMemberSubscription, onApprove, adminActionUid, subscriptionActionUid }`,
+      `${stripTypeScriptTypes(source)}; return { removeAdmin, setMemberSubscription, adminActionUid, subscriptionActionUid }`,
       Object.keys(deps)
     )(...Object.values(deps))
   )
@@ -83,31 +77,6 @@ function invalidate(h, changed) {
     h.session.error.value = new Error('Read failed')
     h.session.error.value = null
   } else h.owner.stop()
-}
-
-for (const changed of ['account', 'app', 'membership', 'failure', 'disposed']) {
-  for (const completion of ['success', 'error']) {
-    test(`App administration suppresses ${completion} feedback after ${changed} scope changes`, async () => {
-      const h = fixture()
-      const flight = h.api.onApprove('person')
-      const result =
-        completion === 'error'
-          ? assert.rejects(flight, /Command failed/)
-          : flight
-      invalidate(h, changed)
-      if (completion === 'success')
-        h.commands[0].result.resolve({ committed: true })
-      else h.commands[0].result.reject(new Error('Command failed'))
-      await result
-      assert.deepEqual(h.notices, [])
-      assert.deepEqual(h.commands[0].input, {
-        action: 'review-join',
-        userId: 'person',
-        approve: true,
-      })
-      h.owner.stop()
-    })
-  }
 }
 
 for (const action of ['admin', 'subscription']) {

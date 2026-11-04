@@ -173,13 +173,7 @@ test('administrators beyond the member page are still read and hydrated', () => 
     }),
     useFirestoreRead: () => ({
       firestoreCollectionPage: (path, options) => ({
-        data: ref(
-          path.value.endsWith('/join-requests')
-            ? []
-            : options.constraints
-              ? [admin]
-              : [member]
-        ),
+        data: ref(options.constraints ? [admin] : [member]),
         pending: ref(false),
         error: ref(null),
         hasMore: ref(!options.constraints),

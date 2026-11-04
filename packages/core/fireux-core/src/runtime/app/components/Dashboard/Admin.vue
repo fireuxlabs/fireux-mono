@@ -25,8 +25,8 @@
     <UPageHeader :title="appDisplayName">
       <template #links>
         <UButton
-          v-if="appCard?.to"
-          :to="appCard.to"
+          v-if="appPath"
+          :to="appPath"
           label="View app"
           icon="i-lucide-external-link"
           color="neutral"
@@ -104,15 +104,15 @@ type AdminTool = {
 const fireux = useFireUXConfig()
 const router = useRouter()
 const { app, outcome: appOutcome } = useAppRead(fireux.appId)
-const { toCard: toAppCard } = useAppView(app)
-
+const { toCard } = useAppView()
 const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? (app.value ?? null) : null
 )
-const appCard = computed(() => toAppCard(appSnapshot.value))
+const appCard = computed(() => toCard(appSnapshot.value))
 const appDisplayName = computed(
-  () => appCard.value?.displayName || fireux.appName
+  () => appCard.value?.name || fireux.appName
 )
+const appPath = computed(() => appCard.value?.to)
 
 const adminTools = computed(() => {
   const seen = new Set<string>()

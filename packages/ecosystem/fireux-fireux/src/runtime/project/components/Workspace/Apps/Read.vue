@@ -29,7 +29,15 @@
 
     <div v-else-if="outcome === 'ready'" class="space-y-3">
       <div v-for="card in cards" :key="card.id" class="space-y-2">
-        <AppCardsCell v-bind="card" :link="false" />
+        <AppCardsCell
+          :to="card.to"
+          :thumbnail-url="card.thumbnailUrl"
+          :avatar-text="card.avatarText"
+          :name="card.name"
+          :badges="card.badges"
+          :tagline="card.tagline"
+          :link="false"
+        />
         <UButton variant="soft" @click="previewId = card.id">Preview {{ card.id }}</UButton>
       </div>
       <AppPreviewHtml v-if="previewApp" :app="previewApp" />

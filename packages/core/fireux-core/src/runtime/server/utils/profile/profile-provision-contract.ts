@@ -96,7 +96,7 @@ export function requireProfileProvisionAppMembership(snapshot: {
   data: DocumentData | undefined
 }) {
   if (!snapshot.exists) {
-    failProfileProvision(403, 'Join this App before creating a profile.')
+    failProfileProvision(403, 'App access is required before creating a profile.')
   }
 
   const data = snapshot.data ?? {}

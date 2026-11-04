@@ -54,7 +54,6 @@ export function prepareIgnitionPreview(value: unknown) {
     name,
     shortName: name,
     role: 'global',
-    selfJoinEnabled: true,
     context: outcome,
     modules: ['fireux-products'],
     extends: [

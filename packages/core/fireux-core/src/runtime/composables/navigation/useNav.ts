@@ -2,7 +2,7 @@ import { useAppConfig } from 'nuxt/app'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import type { FireuxAppRole } from '../../../config/app/types'
+import type { AppRole } from '../../app/models/app.model'
 import type {
   NavItem,
   NavMeta,
@@ -157,7 +157,7 @@ function buildNavItem(
     roles: normaliseRoles((route.meta as RouteMetaLike).roles),
     appRole:
       typeof (route.meta as RouteMetaLike).appRole === 'string'
-        ? ((route.meta as RouteMetaLike).appRole as FireuxAppRole)
+        ? ((route.meta as RouteMetaLike).appRole as AppRole)
         : undefined,
     visibility: normaliseNavVisibility(routeVisibility ?? nav.visibility),
   }

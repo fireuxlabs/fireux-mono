@@ -1,6 +1,6 @@
 # Core Models
 
-Updated: 2026-10-09
+Updated: 2026-11-03
 Ref: e5d8cf8d5
 Role: map, not canon
 
@@ -146,11 +146,14 @@ parity files merely to complete a nominal CRUD list.
 
 ## App dimensions: one identity, separate responsibilities
 
-An App record describes one product: its public identity, Ecosystem, role,
-availability and joining policy. It is not itself a deployed application or a
+An App record describes one product: its public identity, Ecosystem, role and
+availability. It is not itself a deployed application or a
 workspace Entity such as Kitchen. Deployment configuration selects the running
 App. AppUser relates a User to that App; tenant is an App role, not a separate
 identity model.
+
+`AppRole` and `AppStatus` are defined with the canonical App model. App config,
+readers, middleware and Workspace policy consume those same definitions.
 
 ### App fields and their visible use
 
@@ -160,8 +163,7 @@ identity model.
 | Meaning                       | optional `tagline`, `description` | App identity editor → settings command; cards prefer tagline and detail shows authored copy                                                           |
 | Artwork                       | optional `media` URLs             | App-owned local assets → trusted media sync; directory/detail consume stored images                                                                   |
 | Opening the product           | optional `social_links.website`   | App address editor updates only this nested field; another App's detail uses it as the opening URL; the current runtime uses its configured home path |
-| Classification and visibility | `ecosystem_id`, `role`, `status`  | Creation/lifecycle authority and public read filtering; not compulsory public card labels                                                             |
-| Membership policy             | optional `self_join_enabled`      | Stored App policy, consumed by onboarding and trusted joining; membership is stored separately in AppUser                                             |
+| Classification and visibility | `ecosystem_id`, `role: AppRole`, `status: AppStatus` (`active` or `inactive`) | Creation/lifecycle authority and public read filtering; only active Apps appear in public listings                                           |
 | Provenance                    | `created`, `updated`              | Trusted writes; operational metadata, not compulsory discovery content                                                                                |
 
 Core `app/components/Edit/Sections/About.vue` exposes name, tagline and
@@ -257,8 +259,8 @@ paths, grants and policies stay domain-owned. A removed/recreated membership
 cannot inherit its predecessor's grants. The stored-data migration boundary is
 in `docs/ai/firestore-mutations-context.md`; there is no legacy runtime fallback.
 Runtime membership commands write membership facts only.
-`useAppUsers` composes separately paged live member, admin-role and join-request
-queries, then hydrates only their loaded User ids. An admin outside the member
+`useAppUsers` composes separately paged live member and admin-role queries, then
+hydrates only their loaded User ids. An admin outside the member
 page remains discoverable in the admin query. `useAppUserMembership` uses the
 existing exact document reader for another person's membership and reuses the
 session for the current person's membership. Shared presentation rows live in
@@ -340,8 +342,8 @@ Team records, and AppUser membership determine which roots an App Workspace
 may expose; there is no App-nested Project access record.
 
 `UserAccount` and User notifications are private, User-scoped support records.
-They are not additional User identities. Profile bases, directory DTOs,
-stamps, and entity declarations are shared model utilities, not core records.
+They are not additional User identities. Profile bases, directory DTOs and
+stamps are shared model utilities, not core records.
 
 ## Library ownership
 
@@ -351,7 +353,7 @@ stamps, and entity declarations are shared model utilities, not core records.
 | `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                                            | App or project identity                                 |
 | `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                                           | App membership or generic profile fragments             |
 | `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                                               | Module packages or App module configuration             |
-| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, entity declarations, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
+| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, directories, and shared style vocabulary                          | Entity-owned records, access decisions, or Vue state    |
 | `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                                      | Persisted entity authority                              |
 | `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                                          | Canonical stored shape                                  |
 | `config/app`                      | Authored App composition and literature contracts                                                                                                                 | Firestore records                                       |
@@ -361,9 +363,9 @@ stamps, and entity declarations are shared model utilities, not core records.
 
 Each entity model file owns a distinct domain contract. Stored records,
 transport responses, presentation and configuration remain distinguishable;
-a collection does not require another model or metadata declaration. Retain
-only declarations with real source consumers. Runtime seed objects use the
-`Defaults` suffix; `Model` is not used for a value or an alias for an entity.
+a collection does not automatically need a separate model. Keep model types for
+real stored or transport contracts. Runtime seed objects use the `Defaults`
+suffix; `Model` is not used for a value or an alias for an entity.
 
 The former `scripts/` suite has been removed. Script and guard references in
 historical migration descriptions below are not runnable verification. Current
@@ -483,15 +485,16 @@ a generated Nuxt project, a deployment, or Granite's Portfolio domain.
 ## App read ownership
 
 `useAppRead` owns one native Nuxt snapshot of the configured App through
-`/api/app/status`. Metadata and the stored self-join policy share that snapshot;
-there is no second join-policy reader. It activates after settled registered
+`/api/app/status`. App metadata and initialization status share that snapshot.
+It activates after settled registered
 Auth, without requiring App membership. The server projects canonical App fields
 and excludes stored context and unrelated metadata. Its `initialized` result
 preserves existence even when presentation fields are invalid, so pending or
 failed reads never trigger initialization. Account/App changes hide old results
 immediately. App identity edits and media synchronization refresh the exact
 snapshot through native `refreshNuxtData`; other-browser changes require refresh.
-The User bootstrap retains its fresh one-shot status check during commands.
+User setup provisions User identity and ensures a basic AppUser membership;
+App admins control elevated roles and subscriptions.
 Proof lives in `app-native-auth-scope.test.mjs` and `app-settings.test.mjs`.
 
 `useAppDetail` owns the live public HTTP detail result,

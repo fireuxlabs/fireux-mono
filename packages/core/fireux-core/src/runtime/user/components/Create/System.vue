@@ -18,7 +18,7 @@
                   Checking your account
                 </h2>
                 <p class="mt-1 text-sm text-muted">
-                  Loading your identity and App access.
+                  Loading your account.
                 </p>
               </div>
             </template>
@@ -85,7 +85,7 @@
               <div class="mt-8">
                 <UCheckbox
                   v-model="onboardingConsentAcknowledged"
-                  :disabled="isEnsuring"
+                  :disabled="isCreatingUser"
                   :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy`"
                 >
                   <template #label>
@@ -126,40 +126,11 @@
                 block
                 icon="i-lucide-arrow-right"
                 trailing
-                :loading="isEnsuring"
-                :disabled="isEnsuring || !onboardingConsentAcknowledged"
-                @click="handleEnsure"
+                :loading="isCreatingUser"
+                :disabled="isCreatingUser || !onboardingConsentAcknowledged"
+                @click="handleCreateUser"
               >
-                {{ isEnsuring ? 'Creating profile…' : 'Continue' }}
-              </UButton>
-            </template>
-
-            <template v-else-if="requiresApp">
-              <h2 class="mt-2 text-2xl font-semibold">
-                Connect to {{ appLabel }}
-              </h2>
-              <p class="mt-2 text-sm leading-6 text-muted">
-                Join {{ appLabel }} to continue.
-              </p>
-              <UAlert
-                v-if="error"
-                class="mt-6"
-                color="error"
-                variant="subtle"
-                title="We couldn’t connect this App"
-                :description="error"
-              />
-              <FireCopyError v-if="error" :message="error" class="mt-2" />
-              <UButton
-                class="mt-8"
-                size="lg"
-                block
-                icon="i-lucide-link"
-                :loading="isEnsuring"
-                :disabled="isEnsuring"
-                @click="handleEnsure"
-              >
-                Connect to {{ appLabel }}
+                {{ isCreatingUser ? 'Creating profile…' : 'Continue' }}
               </UButton>
             </template>
 
@@ -212,7 +183,6 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../composables/session/useUserSession'
 import { useUserAccount } from '../../composables/account/useUserAccount'
-import { useUserBootstrap } from '../../composables/identity/useUserBootstrap'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
 import { resolveUserOnboardingDestination } from '../../utils/onboarding-route'
 const route = useRoute()
@@ -220,12 +190,6 @@ const router = useRouter()
 const config = useFireUXConfig()
 const { appName } = config
 const {
-  canSelfJoin,
-  appPolicyPending,
-  appPolicyError,
-  appError,
-  appOutcome,
-  appUser,
   coreError,
   coreOutcome,
   coreUser,
@@ -235,7 +199,6 @@ const {
   error: accountError,
   outcome: accountOutcome,
 } = useUserAccount()
-const { bootstrapUser } = useUserBootstrap()
 const {
   currentUser: authUser,
   hasAuthState,
@@ -244,7 +207,7 @@ const {
 } = useAuth()
 
 const error = ref<string | null>(null)
-const isEnsuring = ref(false)
+const isCreatingUser = ref(false)
 const onboardingConsentAcknowledged = ref(false)
 const intentSources = [
   () => authUser.value?.uid,
@@ -256,7 +219,7 @@ watch(
   intentSources,
   () => {
     error.value = null
-    isEnsuring.value = false
+    isCreatingUser.value = false
     onboardingConsentAcknowledged.value = false
   },
   { flush: 'sync' }
@@ -264,22 +227,14 @@ watch(
 const isLoading = computed(() => {
   if (!hasAuthState.value) return true
   if (!isAuthenticated.value) return false
-  if (appPolicyPending.value) return true
   if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending')
     return true
   if (accountOutcome.value === 'idle' || accountOutcome.value === 'pending')
     return true
-  return (
-    canSelfJoin.value &&
-    (appOutcome.value === 'idle' || appOutcome.value === 'pending')
-  )
+  return false
 })
 const readError = computed(() => {
-  const cause =
-    coreError.value ||
-    accountError.value ||
-    appPolicyError.value ||
-    (canSelfJoin.value ? appError.value : null)
+  const cause = coreError.value || accountError.value
   if (!cause) return ''
   return cause instanceof Error && cause.message.trim()
     ? cause.message.trim()
@@ -294,14 +249,6 @@ const hasCurrentAccount = computed(
 )
 const requiresUser = computed(
   () => isAuthenticated.value && (!coreUser.value || !hasCurrentAccount.value)
-)
-const requiresApp = computed(
-  () =>
-    isAuthenticated.value &&
-    Boolean(coreUser.value) &&
-    hasCurrentAccount.value &&
-    canSelfJoin.value &&
-    appOutcome.value === 'empty'
 )
 const appLabel = computed(() => appName || 'this App')
 const authEmail = computed(() => authUser.value?.email || 'Signed-in account')
@@ -320,22 +267,18 @@ const signInTarget = computed(
 const returnTarget = computed(() =>
   resolveUserOnboardingDestination(route.query.redirect)
 )
-const completionDescription = computed(() =>
-  appUser.value
-    ? `Your User is connected to ${appLabel.value}.`
-    : 'Your User is ready.'
-)
+const completionDescription = 'Your account is ready.'
 
 function reloadPage() {
   window.location.reload()
 }
 
-async function handleEnsure() {
-  if (isEnsuring.value) return
+async function handleCreateUser() {
+  if (isCreatingUser.value) return
   const isCurrent = captureIntent()
   const destination = returnTarget.value
   error.value = null
-  isEnsuring.value = true
+  isCreatingUser.value = true
   try {
     if (requiresUser.value) {
       if (!onboardingConsentAcknowledged.value)
@@ -347,8 +290,6 @@ async function handleEnsure() {
       )
       if (!provisioned)
         throw new Error('Your User could not be created. Please try again.')
-    } else if (requiresApp.value) {
-      await bootstrapUser()
     }
     if (isCurrent()) await router.replace(destination)
   } catch (cause) {
@@ -358,7 +299,7 @@ async function handleEnsure() {
         ? cause.message
         : 'Unable to complete setup. Please try again.'
   } finally {
-    if (isCurrent()) isEnsuring.value = false
+    if (isCurrent()) isCreatingUser.value = false
   }
 }
 </script>

@@ -1,52 +1,22 @@
-// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: self-create only an unprivileged runtime App membership.
-// Concurrent edit — 2026-07-20 16:37 CEST — Repo Efficiency Pass 1 of 6: distinguish fresh bootstrap from a failed App-status check.
+// Concurrent edit — 2026-11-03 — User setup ensures basic App membership.
 
-import { doc, getDoc } from 'firebase/firestore'
 import { getAuth, type User } from 'firebase/auth'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import {
-  useCurrentUser,
-  useFirestore,
-} from '../../../composables/fireux/firestore/vuefire'
+import { useCurrentUser } from '../../../composables/fireux/firestore/vuefire'
 import { getCurrentScope, type Ref } from 'vue'
 import {
   captureCommandScope,
   useCommandScope,
 } from '../../../composables/fireux/commands/useCommandScope'
-import { runAppUserCommand } from '../../../app/utils/runAppUserCommand'
 import { requireUid } from '../../../composables/fireux/firestore/utils/useEnsureCommon'
+import { runAppUserCommand } from '../../../app/utils/runAppUserCommand'
 import { provisionUserIdentity } from '../../utils/provision-user'
 import { userDisplayNameSeed } from '../../utils/display-name-seed'
 
-async function canJoinRuntimeApp(appId: string): Promise<boolean> {
-  const response = await fetch('/api/app/status', {
-    headers: { accept: 'application/json' },
-    cache: 'no-store',
-  })
-  if (!response.ok) {
-    throw new Error(`App status check failed (${response.status}).`)
-  }
-
-  const payload = (await response.json()) as {
-    appId?: unknown
-    initialized?: unknown
-    selfJoinEnabled?: unknown
-  }
-  if (
-    payload.appId !== appId ||
-    typeof payload.initialized !== 'boolean' ||
-    typeof payload.selfJoinEnabled !== 'boolean'
-  ) {
-    throw new Error('App status check returned an invalid response.')
-  }
-  return payload.initialized && payload.selfJoinEnabled
-}
-
-/** Explicit User setup may create identity and the local App membership. */
+/** Provision canonical User identity and its default AppUser membership. */
 export function useUserBootstrap(
   currentUser: Ref<User | null | undefined> = useCurrentUser()
 ) {
-  const db = useFirestore()
   const fireux = useFireUXConfig()
   const sources = [() => currentUser.value?.uid, () => fireux.appId]
   const captureLifecycle = getCurrentScope() ? useCommandScope(sources) : null
@@ -97,23 +67,16 @@ export function useUserBootstrap(
     return { created: false, ready: false }
   }
 
-  async function createUser(intendedUser?: User): Promise<{
-    createdCore: boolean
-    createdApp: boolean
-    createdAppEvent: boolean
-    appEventReady: boolean
-    id: string
-  }> {
+  async function createUser(intendedUser?: User): Promise<void> {
     const scope = captureLifecycle
       ? { isCurrent: captureLifecycle(), stop() {} }
       : captureCommandScope(sources)
     const isCurrent = scope.isCurrent
-    const { appId } = fireux
     try {
       const auth = intendedUser ?? (await requireUid()).auth
       const uid = auth.uid
       requireCurrentUser(auth, isCurrent)
-      const core = await provisionUserIdentity(
+      await provisionUserIdentity(
         uid,
         {
           displayName: userDisplayNameSeed({
@@ -126,39 +89,17 @@ export function useUserBootstrap(
         isCurrent
       )
       requireCurrentUser(auth, isCurrent)
-
-      // Sign-in should not mutate existing membership/admin roles.
-      // Only create the AppUser relationship when it is missing.
-      const membershipExists = (
-        await getDoc(doc(db, 'apps', appId, 'users', uid))
-      ).exists()
+      await runAppUserCommand({ action: 'ensure-self' }, auth)
       requireCurrentUser(auth, isCurrent)
 
-      // Read the current stored policy, including changes since this App was built.
-      // Before initialization, User creation still enables developer setup.
-      const shouldEnsureMembership =
-        membershipExists || (await canJoinRuntimeApp(appId))
-      requireCurrentUser(auth, isCurrent)
-
-      // `ensure-self` creates a missing membership and validates an existing one.
-      // Existing governance and Entity relationships remain unchanged.
-      const membership = shouldEnsureMembership
-        ? await runAppUserCommand({ action: 'ensure-self' }, auth)
-        : { created: false }
-      requireCurrentUser(auth, isCurrent)
-
-      const event =
-        membershipExists || membership.created
-          ? await ensureAppUserJoinedEvent(auth, isCurrent)
-          : { created: false, ready: false }
-      requireCurrentUser(auth, isCurrent)
-
-      return {
-        createdCore: core.created,
-        createdApp: membership.created === true,
-        createdAppEvent: event.created,
-        appEventReady: event.ready,
-        id: uid,
+      try {
+        await ensureAppUserJoinedEvent(auth, isCurrent)
+        requireCurrentUser(auth, isCurrent)
+      } catch (error) {
+        requireCurrentUser(auth, isCurrent)
+        console.warn('[useUserBootstrap] App membership event was skipped', {
+          error,
+        })
       }
     } finally {
       scope.stop()

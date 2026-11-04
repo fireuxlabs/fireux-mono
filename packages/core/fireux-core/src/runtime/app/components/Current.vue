@@ -15,7 +15,12 @@
       <AppCardsCell
         v-for="appCard in appCards"
         :key="appCard.id"
-        v-bind="appCard"
+        :to="appCard.to"
+        :thumbnail-url="appCard.thumbnailUrl"
+        :avatar-text="appCard.avatarText"
+        :name="appCard.name"
+        :badges="appCard.badges"
+        :tagline="appCard.tagline"
         link
         :show-badges="false"
       />

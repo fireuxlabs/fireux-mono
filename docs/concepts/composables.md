@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-10-28
+Updated: 2026-11-03
 Ref: 57d034087
 Role: map, not canon
 
@@ -259,7 +259,7 @@ Consumed responsibilities use meaningful groups:
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `identity`       | `useAppIdentityUpdate` edits the configured App's name, copy and social links through the authenticated settings command                            |
 | `featured`       | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                                        |
-| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists, joining policy, join requests and current-App filtering |
+| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists and current-App filtering |
 | `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow                                                            |
 | `brand`          | Reactive browser checks for required local App artwork                                                                                              |
 | `config`         | Request-aware runtime configuration normalization through `useFireUXConfig`                                                                         |
@@ -267,7 +267,7 @@ Consumed responsibilities use meaningful groups:
 
 Membership functions retain their distinct inputs and lifecycles. Subscriptions
 are part of the AppUser relationship, but their command and presentation
-responsibility is separate from membership creation and access projection.
+responsibility is separate from membership administration and access projection.
 Grouping does not require one umbrella controller or a fixed number of files.
 
 Keep nonreactive work outside `composables`:
@@ -474,13 +474,13 @@ a canonical identity reader is not a substitute for that projection.
 | `profile`       | Existing bounded User/domain-profile pair detail and directory readers                                                                                                                                        |
 
 `useUserBootstrap` captures one account/App intent before credentials and retains
-it through identity provisioning, membership reads, current join policy, the
-App-owned `ensure-self` command and event publication. Component scopes also
-invalidate that intent on disposal; calls outside a component release their
-own temporary watcher. `useAuth` supplies its current-User ref directly to
-bootstrap, avoiding recursive Auth construction. Other setup callers reuse the
-lower VueFire current-User ref. Ordinary sign-in does not invoke bootstrap.
-The Firebase Auth service remains opaque to Vue reactivity (`markRaw`): state
+it through identity provisioning, default App membership and event publication.
+Component scopes also invalidate that intent on disposal; calls outside a
+component release their own temporary watcher. `useAuth` supplies its
+current-User ref directly to bootstrap, avoiding recursive Auth construction.
+Other setup callers reuse the lower VueFire current-User ref. User setup creates
+the default AppUser; Auth sign-in itself remains read-only. The Firebase Auth
+service remains opaque to Vue reactivity (`markRaw`): state
 watchers must not traverse SDK internals such as Google's cross-origin popup.
 The [SDK boundary regression](../../packages/core/fireux-core/src/test/auth-sdk-boundary.test.mjs)
 checks that the native service remains unproxied through the Auth binding.

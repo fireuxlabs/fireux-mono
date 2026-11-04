@@ -43,8 +43,6 @@ function deferred() {
 const stages = [
   'credentials',
   'identity',
-  'membership-read',
-  'policy',
   'membership-command',
   'event-token',
   'event',
@@ -89,10 +87,8 @@ function bootstrapHarness(boundary, outsideScope = false) {
         }
       },
       useCurrentUser: () => currentUser,
-      useFirestore: () => ({}),
       useFireUXConfig: () => config,
       getAuth: () => ({ currentUser: currentUser.value }),
-      doc: () => ({}),
       requireUid: async () => {
         await pause('credentials')
         return { auth: actor }
@@ -102,10 +98,6 @@ function bootstrapHarness(boundary, outsideScope = false) {
         await pause('identity')
         return { created: true }
       },
-      getDoc: async () => {
-        await pause('membership-read')
-        return { exists: () => false }
-      },
       runAppUserCommand: async (input, supplied) => {
         assert.deepEqual(input, { action: 'ensure-self' })
         assert.equal(supplied.uid, 'A')
@@ -113,17 +105,6 @@ function bootstrapHarness(boundary, outsideScope = false) {
         return { created: true }
       },
       fetch: async (url) => {
-        if (url === '/api/app/status') {
-          await pause('policy')
-          return {
-            ok: true,
-            json: async () => ({
-              appId: 'app',
-              initialized: true,
-              selfJoinEnabled: true,
-            }),
-          }
-        }
         assert.equal(url, '/api/internal/events/user-joined')
         await pause('event')
         return { ok: true, json: async () => ({ event: { created: true } }) }
@@ -169,15 +150,9 @@ for (const boundary of stages) {
     })
   }
 }
-test('A stable bootstrap preserves User, App membership and joined-event results', async () => {
+test('A stable bootstrap provisions User identity, App membership, and its event', async () => {
   const h = bootstrapHarness('none')
-  assert.deepEqual(await h.controller.bootstrapUser(), {
-    createdCore: true,
-    createdApp: true,
-    createdAppEvent: true,
-    appEventReady: true,
-    id: 'A',
-  })
+  await h.controller.bootstrapUser()
   assert.deepEqual(h.calls, stages)
   h.scope.stop()
 })
@@ -192,7 +167,7 @@ for (const changed of [false, true]) {
     }
     h.release()
     if (changed) await assert.rejects(flight, /account changed/)
-    else assert.equal((await flight).id, 'A')
+    else await flight
     assert.equal(h.stopped(), 1)
   })
 }

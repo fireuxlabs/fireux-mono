@@ -7,11 +7,10 @@ import type { App } from '../models/app.model'
 type AppSnapshot = {
   appId: string
   initialized: boolean
-  selfJoinEnabled: boolean
   app: App | null
 }
 
-/** Current App metadata and join policy share the existing safe status projection. */
+/** Current App metadata and initialization state share the safe status projection. */
 export function useAppRead(id: MaybeRef<string | null | undefined>) {
   const { uid, isAuthenticated, hasAuthState } = useAuth()
   const targetId = computed(() =>
@@ -65,18 +64,12 @@ export function useAppRead(id: MaybeRef<string | null | undefined>) {
       present: Boolean(app.value),
     })
   )
-  const canSelfJoin = computed(
-    () =>
-      current.value?.initialized === true &&
-      current.value.selfJoinEnabled === true
-  )
   return {
     app,
     exists,
     pending,
     error,
     outcome,
-    canSelfJoin,
     refresh: source.refresh,
   }
 }

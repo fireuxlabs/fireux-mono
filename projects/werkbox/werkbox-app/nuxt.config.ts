@@ -12,7 +12,6 @@ export default defineFireuxConfig({
   role: 'global',
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
-  selfJoinEnabled: true,
   seo: {
     staticPaths: ['/categories/cleaning'],
   },

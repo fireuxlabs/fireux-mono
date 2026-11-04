@@ -1,6 +1,6 @@
 # Color Mode
 
-Updated: 2026-10-26
+Updated: 2026-11-03
 Role: map, not canon
 
 ## Purpose and authority
@@ -28,7 +28,6 @@ or activation hook sits alongside it.
 
 Core [Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue),
 [Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue),
-[useAppView](../../packages/core/fireux-core/src/runtime/app/composables/useAppView.ts),
 FireUX App [Fuel](../../projects/fireux/fireux-app/app/components/Landing/Fuel.vue)
 and the [design specimen](../../packages/core/fireux-core/src/runtime/components/Library/Design/Contracts.vue)
 consume native state. The App Shell does not bootstrap a second engine.

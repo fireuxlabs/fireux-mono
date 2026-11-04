@@ -2,8 +2,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from './meta-content'
 import type { AppTheme } from '../../types/theme'
-
-export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
+import type { AppRole } from '../../runtime/app/models/app.model'
 
 export type FireuxWorkspaceFamilyConfig = {
   /** Optional App-owned origin for this Workspace entrance. Home remains route-owned. */
@@ -48,7 +47,7 @@ export type FireuxAppConfig = {
   contactEmail?: string
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
-  role: FireuxAppRole
+  role: AppRole
   /** Extra package capability or custom options for default modules. Blog is the baseline App module; Products is explicit. */
   modules?: NonNullable<NuxtConfig['modules']>
   /** Native Nuxt layers, in App-owned priority order. */
@@ -62,8 +61,6 @@ export type FireuxAppConfig = {
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */
   profiles?: string[]
-  /** Initial App self-service membership policy; existing Apps use their stored policy. */
-  selfJoinEnabled?: boolean
   /** Whether this App installs Firebase Authentication. Defaults to true. */
   authEnabled?: boolean
   /** Secret Manager environment names attached only to this App's Firebase server function. */

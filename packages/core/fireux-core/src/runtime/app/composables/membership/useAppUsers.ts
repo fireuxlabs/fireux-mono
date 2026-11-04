@@ -1,18 +1,14 @@
 import { resolveReadOutcome } from '../../../utils/read-outcome'
 import { computed, type ComputedRef } from 'vue'
 import { where } from 'firebase/firestore'
-import type {
-  AppUserJoinRequestSummary,
-  AppUserSummary,
-} from '../../models/app-user-summary.ts'
+import type { AppUserSummary } from '../../models/app-user-summary.ts'
 import type { AppUserWithId } from '../../models/app-user.model.ts'
 import { useFireUXConfig } from '../config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useUserHydration } from '../../../user/composables/useUserHydration'
 
-type JoinRequestDocument = { id: string; user_id?: string }
-/** Live AppUser and join-request collections with exact User hydration. */
+/** Live AppUser collections with exact User hydration. */
 export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
   const { appId: configuredAppId } = useFireUXConfig()
   const appId = computed(() => configuredAppId)
@@ -26,9 +22,6 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
   const appUsersPath = computed(() =>
     active.value ? `apps/${appId.value}/users` : ''
   )
-  const joinRequestsPath = computed(() =>
-    active.value ? `apps/${appId.value}/join-requests` : ''
-  )
   const { firestoreCollectionPage } = useFirestoreRead()
   const appUsers = firestoreCollectionPage<AppUserWithId>(appUsersPath, {
     scope: uid,
@@ -37,16 +30,9 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
     scope: uid,
     constraints: [where('role', 'in', ['admin', 'dev'])],
   })
-  const requests = firestoreCollectionPage<JoinRequestDocument>(
-    joinRequestsPath,
-    { scope: uid }
-  )
   const identityIds = computed(() => [
     ...(appUsers.data.value ?? []).map((member) => member.id),
     ...(admins.data.value ?? []).map((member) => member.id),
-    ...(requests.data.value ?? []).map(
-      (request) => request.user_id || request.id
-    ),
   ])
   const identities = useUserHydration(identityIds)
   const summarize = (member: AppUserWithId): AppUserSummary => ({
@@ -58,12 +44,6 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
   const memberships = computed(() => (appUsers.data.value ?? []).map(summarize))
   const administrators = computed(() =>
     (admins.data.value ?? []).map(summarize)
-  )
-  const joinRequests = computed<AppUserJoinRequestSummary[]>(() =>
-    (requests.data.value ?? []).map((request) => {
-      const id = request.user_id || request.id
-      return { id, user: identities.userById(id) ?? null }
-    })
   )
   const usersById = computed(
     () =>
@@ -81,14 +61,12 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
       active.value &&
       (appUsers.pending.value ||
         admins.pending.value ||
-        requests.pending.value ||
         identities.pending.value)
   )
   const error = computed<unknown>(
     () =>
       appUsers.error.value ||
       admins.error.value ||
-      requests.error.value ||
       identities.error.value ||
       null
   )
@@ -106,7 +84,6 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
     administrators,
     usersById,
     userById,
-    joinRequests,
     count,
     pending,
     error,
@@ -115,7 +92,5 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
     loadMoreMembers: appUsers.loadMore,
     adminsHasMore: admins.hasMore,
     loadMoreAdmins: admins.loadMore,
-    requestsHasMore: requests.hasMore,
-    loadMoreRequests: requests.loadMore,
   }
 }

@@ -1,16 +1,15 @@
 # Entities
 
-Updated: 2026-10-03
+Updated: 2026-11-03
 Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
 
-Map how FireUX decides whether a concept is an Entity, parent-owned Record,
-embedded Shape, reusable Primitive, or organizational Bucket. Current models, readers, writers, authority and consumers establish behavior.
-Retained declarations describe classifications but do not enforce them; the
-former entity guard was removed. This map explains the classification vocabulary
-and is not an exhaustive executable inventory.
+Map how FireUX uses Entity, parent-owned Record, embedded Shape, reusable
+Primitive, and organizational Bucket. Current models, readers, writers and
+consumers establish behavior; this map is descriptive guidance, not a runtime
+registry.
 
 ## Related maps
 
@@ -50,50 +49,43 @@ Before introducing Entity ceremony, answer:
 If parent deletion makes the concept meaningless, begin with a Record or Shape.
 Promote it only when independent behavior proves the need.
 
-## Declaration axes
+## Where the facts live
 
-Every declaration made with `defineFireuxEntity()` answers these axes:
-
-| Axis         | Current vocabulary                                                                                          | Question answered                                |
-| ------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `kind`       | entity, record, shape, primitive, bucket, to-confirm                                                        | What sort of concept is it?                      |
-| `family`     | one or more named FireUX families                                                                           | Which siblings should be compared?               |
-| `identity`   | root, parent-scoped, none, to-confirm                                                                       | Where does canonical identity live?              |
-| `authority`  | App database, domain database, identity database, ecosystem identity database, FireUX control plane, parent | Who owns lifecycle truth?                        |
-| `appSupport` | none, membership record, profile delta, to-confirm                                                          | What genuine App-owned support may accompany it? |
-| `workspace`  | boolean                                                                                                     | Does it expose a Workspace surface?              |
-| `parent`     | optional Entity name                                                                                        | Which Entity owns a parent-scoped declaration?   |
+The terms above are a discussion aid; models do not need a shared
+classification object. Stored fields and paths live with their owning model.
+Readers and commands establish the actual read and write behavior. Routes and
+Workspace composition establish which surfaces exist.
 
 A root Entity document is its canonical readable Entity. Information that
 cannot be returned with that Entity must live physically under its honest
 owner, such as Auth, App access, Team, Finance, or an operational child. The
-Entity declaration does not carry a second read-classification axis.
+model does not need a second read-classification record.
 
 ## Classification map
 
-The following classification map requires comparison with current owning source;
-it is not proof that every row still has a consumed declaration:
+The following classification map is a reading aid. Current owning source
+establishes each record's actual shape and behavior:
 
-| Entity           | Family                      | Identity       | Authority                   | App support       | Workspace |
-| ---------------- | --------------------------- | -------------- | --------------------------- | ----------------- | --------- |
-| App              | core, system                | root           | App database                | none              | no        |
-| Ecosystem        | system                      | root           | Ecosystem identity database | none              | no        |
-| User             | core, identity              | root           | identity database           | membership record | no        |
-| Project          | system, workspace entity    | root           | FireUX control plane        | none              | yes       |
-| Job              | content                     | root           | domain database             | none              | no        |
-| Place            | place                       | root           | domain database             | none              | no        |
-| MarketplaceStore | commerce                    | root           | domain database             | none              | no        |
-| Kitchen          | kitchen, workspace entity   | root           | domain database             | none              | yes       |
-| Menu             | menu, kitchen               | Kitchen-scoped | parent                      | none              | no        |
-| Recipe           | kitchen                     | Kitchen-scoped | parent                      | none              | no        |
-| KitchenPrepItem  | kitchen                     | Kitchen-scoped | parent                      | none              | no        |
-| Dish             | kitchen, menu               | Kitchen-scoped | parent                      | none              | no        |
-| KitchenOrder     | kitchen, ordering           | Kitchen-scoped | parent                      | none              | no        |
-| Supplier         | supplier, workspace entity  | root           | domain database             | none              | yes       |
-| Portfolio        | portfolio, workspace entity | root           | domain database             | none              | yes       |
-| Property         | property, workspace entity  | root           | domain database             | none              | yes       |
+| Entity           | Family                      | Identity       | App support       | Workspace |
+| ---------------- | --------------------------- | -------------- | ----------------- | --------- |
+| App              | core, system                | root           | none              | no        |
+| Ecosystem        | system                      | root           | none              | no        |
+| User             | core, identity              | root           | membership record | no        |
+| Project          | system, workspace entity    | root           | none              | yes       |
+| Job              | content                     | root           | none              | no        |
+| Place            | place                       | root           | none              | no        |
+| MarketplaceStore | commerce                    | root           | none              | no        |
+| Kitchen          | kitchen, workspace entity   | root           | none              | yes       |
+| Menu             | menu, kitchen               | Kitchen-scoped | none              | no        |
+| Recipe           | kitchen                     | Kitchen-scoped | none              | no        |
+| KitchenPrepItem  | kitchen                     | Kitchen-scoped | none              | no        |
+| Dish             | kitchen, menu               | Kitchen-scoped | none              | no        |
+| KitchenOrder     | kitchen, ordering           | Kitchen-scoped | none              | no        |
+| Supplier         | supplier, workspace entity  | root           | none              | yes       |
+| Portfolio        | portfolio, workspace entity | root           | none              | yes       |
+| Property         | property, workspace entity  | root           | none              | yes       |
 
-The current declared Records are:
+Examples of parent-owned Records:
 
 | Record            | Parent           | Why it is not an Entity                                                    |
 | ----------------- | ---------------- | -------------------------------------------------------------------------- |
@@ -107,10 +99,8 @@ The current declared Records are:
 | MarketplaceOffer  | MarketplaceStore | It has no lifecycle outside its Store                                      |
 | MarketplaceOrder  | MarketplaceStore | It is operational fulfilment truth for one Store                           |
 
-The former executable matrix and its guard were removed with `scripts/`.
-Retained declarations are descriptive source only; inspect their real consumers
-and the owning model/authority before adding or retaining one. Do not recreate
-a runtime mega-registry to make this map executable.
+This map does not enforce ownership or storage behavior. Inspect the owning
+model, reader and command for those facts. Do not recreate a runtime registry.
 
 ## Confirmed relationship patterns
 
@@ -118,8 +108,8 @@ a runtime mega-registry to make this map executable.
 
 Project, Kitchen, Supplier, Portfolio and Property expose
 Workspace management surfaces. They remain domain Entities, not instances of a
-second Workspace Entity model. The declaration's `workspace` boolean describes
-surface availability; it does not create another data or authority layer.
+second Workspace Entity model. Their real routes, readers and commands establish
+the available surface; a metadata boolean would not create it.
 
 Public/detail components and Workspace components consume the same owning
 Entity's supported readers and commands, with the appropriate projections and
@@ -240,16 +230,14 @@ Entity as a privacy mechanism.
 ## Coverage boundary
 
 The repository contains domain concepts whose models, routes, or collections
-predate executable entity declarations. Examples include remaining profile
-roots outside the confirmed Chef and Driver records, generic Task concepts,
-and Blog content.
+are not described in this map. Examples include profile roots, generic Task
+concepts, and Blog content.
 
-Their existence is real; their FireUX Entity classification is not yet declared
-by the matrix. Treat each as `to-confirm` for classification work. Do not
-bulk-promote them from route or folder symmetry.
+When a concrete feature needs a classification, establish it from product
+behavior and the owning source. Do not infer it from route or folder symmetry.
 
-Ingredient is now a declared shared culinary root owned by
-`fireux-kitchens`. Kitchen and Supplier operational records reference its
+Ingredient is a shared culinary root owned by `fireux-kitchens`. Kitchen and
+Supplier operational records reference its
 stable document id and resolve the canonical Ingredient. Its
 canonical `name` is the popular name used by the shared world; language and
 translation state are not Ingredient identity.
@@ -296,7 +284,7 @@ never authority. Run
 the retired operational artifact in Git history to verify these profile,
 membership, Kitchen, and workflow joins without writing data.
 
-Product is a declared commercial root owned by `fireux-products`. It has an
+Product is a commercial root owned by `fireux-products`. It has an
 independent lifecycle, route identity, pricing children, authorship, and
 App provenance. `source_app_id` partitions tenant catalogues; `visibility`
 owns publication state while `active` independently controls commercial
@@ -347,7 +335,7 @@ Directory and Entity Detail family maps.
 
 | Difference                                                     | State      | Required direction                                                                                                                                                                                   |
 | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                                       |
+| Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                       |
 | Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                                  |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
 | Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration |
@@ -362,20 +350,20 @@ Directory and Entity Detail family maps.
 ### Now
 
 1. Require an entity checkpoint before adding model/page/composable ceremony.
-2. Keep declaration axes explicit and keep private/support/operational material
-   physically outside readable root Entities.
+2. Keep private/support/operational material outside readable root Entities;
+   do not add a shared classification registry.
 3. Keep Records and Shapes small until independent lifecycle proves promotion.
 
 ### Next
 
-1. Reconcile existing undeclared domain concepts one owning package at a time.
+1. Review ownership only when current product work needs the distinction.
 2. Complete the owner-first Workspace storage migration.
 3. Reconcile remaining duplicate `PublicX` root types with their canonical
    Entity types.
 
 ### Later
 
-1. Extend the matrix only after models, authority, and public behavior agree.
+1. Extend the map only when source proves a useful distinction.
 2. Add guard semantics only for repeated classification failures, not
    unresolved product decisions.
 
@@ -386,5 +374,5 @@ Directory and Entity Detail family maps.
 - Do not use scoped as a synonym for App ownership.
 - Do not duplicate identity into access records.
 - Do not add inverse relationship arrays by default.
-- Do not let documentation confirm a concept absent from its source
-  declaration and matrix.
+- Do not let documentation establish behavior absent from the owning model,
+  reader or command.

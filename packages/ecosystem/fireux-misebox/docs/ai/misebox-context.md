@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-11-02
+Updated: 2026-11-03
 Ref: 6a0fa0d06
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -1251,7 +1251,7 @@ both exact live policy sources. Neither command deploys policies. Historical tok
 rollout decisions. Compatibility source/evidence is recorded in the dated access
 review. The candidate supports owner-only private account reads, App-admin
 featured settings, and Kitchen-operator Menu uploads, drafts, table tabs and
-promotions. App metadata and join policy share Core's safe App-status snapshot;
+promotions. App metadata and initialization status share Core's safe App-status snapshot;
 public User directories and member display identities reuse their server
 projection owners. Canonical membership lookup remains App-admin scoped and
 independent of public tenant-directory eligibility. Its six-App authority must pass the required

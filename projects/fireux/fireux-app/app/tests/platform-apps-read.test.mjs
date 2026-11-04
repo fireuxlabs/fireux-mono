@@ -185,8 +185,8 @@ test('Ambiguous and malformed parents fail before querying', async () => {
   assert.equal(queries.length, 0)
 })
 
-test('Public App detail excludes inactive and archived definitions', async () => {
-  for (const status of ['active', 'inactive', 'archived']) {
+test('Public App detail excludes inactive definitions', async () => {
+  for (const status of ['active', 'inactive']) {
     const read = load('../../server/utils/apps.ts', 'readPlatformApp', {
       PLATFORM_APP_TARGETS: [{ projectId: 'host', databaseId: 'apps' }],
       getFirestoreProjectDb: async () => ({

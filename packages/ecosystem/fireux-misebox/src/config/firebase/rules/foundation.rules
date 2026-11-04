@@ -22,7 +22,6 @@
     // users/{uid}/notifications/{id}: owner-only notification records.
     // apps/{appId}: canonical App truth. Guests use allowlisted server DTOs;
     //   raw reads require App membership or the fixed bootstrap developer.
-    // apps/{appId}/join-requests/{uid}: owner-visible/admin-listable request.
     // apps/{appId}/users/{uid}: private membership and capability authority.
     // users/{uid}/profiles/{kind}: User-owned role profile.
     // users/{uid}/profiles/{kind}/app-state/{appId}: App-specific profile

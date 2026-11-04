@@ -284,7 +284,6 @@ test('Explicit App creation establishes its Ecosystem and only the creator’s i
   assert.equal(h.writes[0][3].ecosystem_id, 'fireux')
   assert.equal(h.writes[0][3].status, 'inactive')
   assert.equal(h.writes[0][3].context, newApp.context)
-  assert.equal(h.writes[0][3].self_join_enabled, false)
   assert.equal(h.writes[1][3].role, 'admin')
   assert.equal(h.reconciled.length, 2)
 })
@@ -458,8 +457,6 @@ PORTFOLIO_MUTATION_TARGETS: targets,
 SUPPLIER_MUTATION_TARGETS: targets,
 JOB_MUTATION_TARGETS: targets,
         serverAppUsersTarget: members,
-        serverAppJoinRequestsTarget: (id) => target(`apps/${id}/join_requests`),
-        serverAppMembershipBlocksTarget: (id) => target(`apps/${id}/blocks`),
         handleMembershipSettings: settings,
         runGuardedServerTransaction: async (placement, work) => {
           assert.deepEqual(placement, { kind: 'runtime' })

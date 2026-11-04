@@ -29,9 +29,8 @@ function load(file, result, deps = {}) {
 }
 const model = load(
   '../runtime/portfolio/models/portfolio.model.ts',
-  '({PortfolioModel,PortfolioEntity,PortfolioStorage})',
+  '({PortfolioModel,PortfolioStorage})',
   {
-    defineFireuxEntity: (v) => v,
     FireuxEntityManagementDefaults: { mode: 'root' },
   }
 )
@@ -56,8 +55,6 @@ const root = (id = 'p') => ({
   updated: stamp,
 })
 test('Portfolio canonical root nests complete descriptive Identity, rejects retired/coerced fields and keeps records independent', () => {
-  assert.equal(model.PortfolioEntity.name, 'Portfolio')
-  assert.equal(model.PortfolioEntity.root, model.PortfolioStorage.root)
   const value = root()
   assert.deepEqual(normalizePortfolio('p', value), value)
   const withoutId = root()

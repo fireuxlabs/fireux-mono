@@ -74,7 +74,6 @@ function fixture({ global = false } = {}) {
       role: global ? 'global' : 'tenant',
       appName: 'Example',
       appShortName: 'Example',
-      selfJoinEnabled: false,
     },
     appDatabaseId: 'fireux',
     identityDatabaseId: 'fireux',

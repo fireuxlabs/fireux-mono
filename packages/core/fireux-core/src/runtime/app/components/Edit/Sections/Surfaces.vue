@@ -19,10 +19,9 @@
         <AppCardsCell
           :to="appCard.to"
           :thumbnail-url="appCard.thumbnailUrl"
-          :display-name="appCard.displayName"
+          :name="appCard.name"
           :badges="appCard.badges"
           :tagline="appCard.tagline"
-          :user-count="appCard.userCount"
           :link="Boolean(appCard.to)"
           class="block"
         />
@@ -36,10 +35,9 @@
           :id="appCard.id"
           :short-name="appCard.shortName"
           :thumbnail-url="appCard.thumbnailUrl"
-          :display-name="appCard.displayName"
-          :ecosystem="appCard.ecosystem"
+          :name="appCard.name"
+          :ecosystem-id="appCard.ecosystemId"
           :tagline="appCard.tagline"
-          :user-count="appCard.userCount"
           :badges="appCard.badges"
         />
       </div>

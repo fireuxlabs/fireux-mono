@@ -1,4 +1,3 @@
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
@@ -9,7 +8,6 @@ export type SupplierCatalogueMode = 'integrated' | 'directory_only'
 
 export {
   SupplierItemDefaults,
-  SupplierItemRecord,
   SupplierItemStorage,
   type SupplierItem,
   type SupplierItemAvailabilityState,
@@ -66,17 +64,6 @@ export const SupplierTeamStorage = {
   parent: 'supplier',
   idParam: 'memberId',
 } as const
-
-export const SupplierEntity = defineFireuxEntity({
-  kind: 'entity',
-  name: 'Supplier',
-  family: ['supplier', 'workspace-entity'],
-  identity: 'root',
-  authority: 'domain-database',
-  appSupport: 'none',
-  workspace: true,
-  root: SupplierStorage.path,
-})
 
 export const SupplierDefaults = {
   id: '',
