@@ -79,8 +79,6 @@ export const ClientModel = {
   property_id: '' as string,
   property_ids: [] as string[],
   property_label: '' as string,
-  unit_id: '' as string,
-  unit_ids: [] as string[],
   lease_id: '' as string,
   lease_end_date: '' as string,
 

@@ -15,7 +15,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 const dependencyLabel = (family: string) => {
   const labels: Record<string, string> = {
-    companies: 'Company',
+    businesses: 'Business',
     jobs: 'Job',
     kitchens: 'Kitchen',
     properties: 'Property',
@@ -58,10 +58,7 @@ export async function removePlace(event: H3Event, placeId: string) {
     }
 
     const references = await Promise.all([
-      mutations.read<Record<string, unknown>>(
-        PLACE_MUTATION_TARGETS.companies,
-        id
-      ),
+      mutations.query(placeReferenceTargets.businesses, { field: 'place_ids', op: 'array-contains', value: id, limit: 1 }),
       mutations.query(placeReferenceTargets.kitchens, {
         field: 'place_id',
         op: '==',
@@ -82,7 +79,7 @@ export async function removePlace(event: H3Event, placeId: string) {
       }),
     ])
     const blockers = [
-      references[0].exists ? 'companies' : '',
+      references[0].length ? 'businesses' : '',
       references[1].length ? 'kitchens' : '',
       references[2].length ? 'properties' : '',
       references[3].length ? 'jobs' : '',

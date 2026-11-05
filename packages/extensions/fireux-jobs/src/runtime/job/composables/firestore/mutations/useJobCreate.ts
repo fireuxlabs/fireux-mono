@@ -17,7 +17,7 @@ import { useJobAuthorCommands } from '../../author/jobAuthorClient'
 import { useFireuxJobsConfig } from '../../../../composables/config/useFireuxJobsConfig'
 
 export const JobPayload = {
-  company_id: '',
+  business_id: '',
   place_id: '',
   category_id: '',
   contract_type: 'permanent',
@@ -115,11 +115,11 @@ export function useJobCreate() {
     const description = normalizeString(payload.description)
     const categoryId = resolveCategoryId(payload.category_id)
     const placeId = normalizeString(payload.place_id)
-    const companyId = normalizeString(payload.company_id)
+    const businessId = normalizeString(payload.business_id)
     const openingsCount = Number(payload.openings_count)
 
     if (!placeId) throw new Error('Place is required')
-    if (!companyId) throw new Error('Company is required')
+    if (!businessId) throw new Error('Business is required')
     if (!title) throw new Error('Title is required')
     if (!description) throw new Error('Description is required')
     if (!JOB_CONTRACT_TYPES.includes(payload.contract_type)) {
@@ -165,7 +165,7 @@ export function useJobCreate() {
     }
 
     return {
-      company_id: companyId,
+      business_id: businessId,
       place_id: placeId,
       category_id: categoryId,
       contract_type: payload.contract_type,

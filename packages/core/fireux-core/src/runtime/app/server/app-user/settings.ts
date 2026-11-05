@@ -66,7 +66,7 @@ export async function handleMembershipSettings(
       input.subscription
     )
       ? input.subscription
-      : forbidden(400, 'Subscription must be free, premium, or business.')
+      : forbidden(400, 'Subscription must be free, pro, or business.')
     if (!(await mutations.read(memberships, userId)).exists)
       forbidden(404, 'The target App membership does not exist.')
     mutations.update(memberships, userId, {

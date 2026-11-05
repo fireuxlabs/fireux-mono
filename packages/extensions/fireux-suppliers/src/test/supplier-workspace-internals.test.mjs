@@ -79,9 +79,9 @@ const surface = load(
   }
 )
 const stamp = { at: { seconds: 1, nanoseconds: 0 }, by: 'actor' }
-const root = (id = 'Supplier-A', companyId = 'Company-A') => ({
+const root = (id = 'Supplier-A', businessId = 'Business-A') => ({
   id,
-  company_id: companyId,
+  business_id: businessId,
   management: { mode: 'workspace' },
   identity: { slug: id, status: 'inactive', visibility: false },
   catalogue: { mode: 'directory_only' },
@@ -100,12 +100,14 @@ test('granted collection follows exact linked Place identity, rebinding, removal
     stopped = []
   const records = reactive({
     'suppliers/Supplier-A': root(),
-    'places/Company-A': {
+    'businesses/Business-A': { place_ids: ['Place-A'] },
+    'businesses/Business-B': { place_ids: ['Place-B'] },
+    'places/Place-A': {
       name: 'Original',
       place_type: 'non_physical',
       image_url: 'original.webp',
     },
-    'places/Company-B': {
+    'places/Place-B': {
       name: 'Replacement',
       place_type: 'non_physical',
       image_url: 'replacement.webp',
@@ -116,6 +118,7 @@ test('granted collection follows exact linked Place identity, rebinding, removal
     `${core}composables/fireux/firestore/operations/firestore-exact-doc-loader.ts`,
     'createFirestoreExactDocLoader',
     {
+      useNuxtApp: () => ({ vueApp: { runWithContext: (run) => run() } }),
       computed,
       ref,
       unref,
@@ -142,6 +145,7 @@ test('granted collection follows exact linked Place identity, rebinding, removal
       {
         computed,
         normalizePlace,
+        normalizeBusiness: (id, value) => ({ id, ...value }),
         useSupplierInterface: () => surface,
         useSupplierCollectionSelection: () => ({
           sourceMode: ref('live'),
@@ -182,39 +186,39 @@ test('granted collection follows exact linked Place identity, rebinding, removal
   assert.equal(surface.pill(api.suppliers.value[0]).imageUrl, 'original.webp')
   assert.equal(api.suppliers.value[0].identity.visibility, false)
   assert.deepEqual(api.roots.value, [normalizeSupplier('Supplier-A', root())])
-  assert.equal('company_place' in api.roots.value[0], false)
-  assert.equal(bindings.length, 2, 'both source constructors are setup-owned')
-  records['places/Company-A'].name = 'Live edit'
+  assert.equal('business_place' in api.roots.value[0], false)
+  assert.equal(bindings.length, 3, 'both source constructors are setup-owned')
+  records['places/Place-A'].name = 'Live edit'
   await flush()
   assert.equal(surface.pill(api.suppliers.value[0]).title, 'Live edit')
-  records['suppliers/Supplier-A'].company_id = 'Company-B'
+  records['suppliers/Supplier-A'].business_id = 'Business-B'
   await flush()
   assert.equal(surface.pill(api.suppliers.value[0]).title, 'Replacement')
-  assert.ok(stopped.includes('places/Company-A'))
-  assert.deepEqual(bindings[1].ids.value, ['Company-B'])
-  delete records['places/Company-B']
+  assert.ok(stopped.includes('places/Place-A'))
+  assert.deepEqual(bindings[2].ids.value, ['Place-B'])
+  delete records['places/Place-B']
   await flush()
   assert.equal(
     api.outcome.value,
     'ready',
     'a missing linked Place must not remove the granted root'
   )
-  assert.equal(api.suppliers.value[0].company_place, undefined)
-  records['places/Company-B'] = {
+  assert.equal(api.suppliers.value[0].business_place, undefined)
+  records['places/Place-B'] = {
     name: 'Reappeared',
     place_type: 'non_physical',
   }
   await flush()
   assert.equal(surface.pill(api.suppliers.value[0]).title, 'Reappeared')
-  errors['places/Company-B'] = Error('denied')
+  errors['places/Place-B'] = Error('denied')
   await flush()
   assert.equal(api.outcome.value, 'error')
   assert.deepEqual(api.suppliers.value, [])
   assert.deepEqual(api.places.value, [])
-  delete errors['places/Company-B']
+  delete errors['places/Place-B']
   await flush()
   assert.equal(api.outcome.value, 'ready')
-  records['places/Company-B'] = { name: 'Malformed', place_type: 'invalid' }
+  records['places/Place-B'] = { name: 'Malformed', place_type: 'invalid' }
   await flush()
   assert.equal(api.outcome.value, 'error')
   assert.match(api.error.value.message, /invalid linked Place/)
@@ -225,7 +229,7 @@ test('granted collection follows exact linked Place identity, rebinding, removal
   assert.deepEqual(bindings[1].ids.value, [])
   assert.ok(stopped.includes('suppliers/Supplier-A'))
   ids.value = new Set(['Supplier-A'])
-  records['places/Company-B'] = { name: 'Restored', place_type: 'non_physical' }
+  records['places/Place-B'] = { name: 'Restored', place_type: 'non_physical' }
   await flush()
   assert.equal(api.outcome.value, 'ready')
   scope.stop()
@@ -245,6 +249,7 @@ test('targeted workspace collections use a different live-data key from the publ
       {
         computed,
         normalizePlace,
+        normalizeBusiness: (id, value) => ({ id, ...value }),
         useSupplierInterface: () => surface,
         useSupplierCollectionSelection: () => ({
           sourceMode: ref('live'),
@@ -348,7 +353,7 @@ function createHarness() {
   )
   const options = {
     organizationName: 'Imkerei Thöni',
-    companyId: 'Company-A',
+    businessId: 'Business-A',
     isCurrent: scope.run(() => useCommandScope([owner]))(),
   }
   const result = {
@@ -427,14 +432,14 @@ test('Supplier creation captures the submitted fields and returns a committed re
   const h = createHarness(),
     pending = h.api.createSupplierWorkspace(h.options)
   h.options.organizationName = 'Changed'
-  h.options.companyId = 'Other'
+  h.options.businessId = 'Other'
   h.credentials.resolve(h.user)
   h.token.resolve('token')
   await drain()
   assert.equal(h.calls.length, 1)
   assert.deepEqual(h.calls[0].options.body, {
     organization_name: 'Imkerei Thöni',
-    company_id: 'Company-A',
+    business_id: 'Business-A',
   })
   h.route.fullPath = '/other'
   h.response.resolve(h.result)
@@ -495,7 +500,7 @@ test('Supplier Create passes its full draft scope into the command and suppresse
   const state = scope.run(() =>
     load(
       '../runtime/supplier/components/Create/Write.vue',
-      '({ handleCreate, organizationName, companyId, isCreating, errorMessage })',
+      '({ handleCreate, organizationName, businessId, isCreating, errorMessage })',
       {
         computed,
         ref,
@@ -525,11 +530,11 @@ test('Supplier Create passes its full draft scope into the command and suppresse
     )
   )
   state.organizationName.value = 'Original'
-  state.companyId.value = 'Company-A'
+  state.businessId.value = 'Business-A'
   const pending = state.handleCreate()
   assert.equal(typeof submitted.isCurrent, 'function')
   assert.equal(submitted.isCurrent(), true)
-  state.companyId.value = 'Company-B'
+  state.businessId.value = 'Business-B'
   assert.equal(submitted.isCurrent(), false)
   flight.resolve({ id: 'original', createdRoot: true, createdTeamMember: true })
   await pending

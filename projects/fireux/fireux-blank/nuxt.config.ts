@@ -3,6 +3,7 @@ import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 export default defineFireuxConfig({
   ecosystem: 'fireux',
   extends: ['fireux-core/layer', 'fireux-blogs/layer'],
+  modules: ['fireux-bookings'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-blank',
@@ -13,10 +14,10 @@ export default defineFireuxConfig({
   role: 'standalone',
   workspaces: ['blank'],
   subscriptionCapacity: {
-    blank: { free: 1, premium: 1, business: null },
-    'blank.team': { free: 3, premium: 7, business: null },
+    blank: { free: 1, pro: 1, business: null },
+    'blank.team': { free: 3, pro: 7, business: null },
   },
   seo: {
-    noindexPaths: ['/workspace', '/workspace/**'],
+    noindexPaths: ['/workspace', '/workspace/**', '/sandbox/**'],
   },
 })

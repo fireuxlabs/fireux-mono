@@ -5,7 +5,7 @@ import type {
   AppUserSubscription,
 } from '../models/app-user.model.ts'
 import {
-  isAppUserSubscription,
+  readAppUserSubscription,
   isAppUserRole,
 } from '../models/app-user.model.ts'
 
@@ -15,7 +15,7 @@ export type ResolvedAppUserAccess = {
   hasMembership: boolean
   hasAdminAuthority: boolean
   hasDeveloperAuthority: boolean
-  hasPremiumSubscription: boolean
+  hasProSubscription: boolean
   hasBusinessSubscription: boolean
 }
 
@@ -31,11 +31,7 @@ export function resolveAppUserAccess(
 ): ResolvedAppUserAccess {
   const value = asRecord(membership)
   const role: AppUserRole | null = isAppUserRole(value.role) ? value.role : null
-  const storedSubscription: AppUserSubscription | null = isAppUserSubscription(
-    value.subscription
-  )
-    ? value.subscription
-    : null
+  const storedSubscription = readAppUserSubscription(value.subscription)
   const hasMembership = role !== null && storedSubscription !== null
   const subscription = storedSubscription ?? 'free'
 
@@ -45,9 +41,9 @@ export function resolveAppUserAccess(
     hasMembership,
     hasAdminAuthority: hasMembership && (role === 'admin' || role === 'dev'),
     hasDeveloperAuthority: hasMembership && role === 'dev',
-    hasPremiumSubscription:
+    hasProSubscription:
       hasMembership &&
-      (subscription === 'premium' || subscription === 'business'),
+      (subscription === 'pro' || subscription === 'business'),
     hasBusinessSubscription: hasMembership && subscription === 'business',
   }
 }

@@ -80,12 +80,13 @@ Paths below are relative to this App:
   Products owns catalogue and Checkout integration. Generated provider environment
   values are blank and never inherit FireUX credentials. Input completion retains
   Core `useCommandScope` disposal and stale-response checks.
-- Core initialization creates the canonical Ecosystem identity only for a global
-  main App whose project and Ecosystem IDs match and whose App ID is `<id>-app`.
-  It preserves an existing matching Ecosystem and uses the guarded identity
-  mutation owner. Source preparation still does not provision Firebase or Stripe
-  resources, deploy, or charge a customer. Paid subscription-to-Core-tier
-  reconciliation remains unimplemented, so generated Free/Pro/Business plan
+- Core App initialization invokes the
+  [Ecosystem provisioner](../../../../../packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts)
+  only for a global main App whose Project and Ecosystem IDs match and whose App
+  ID is `<id>-app`. The provisioner preserves an existing matching Ecosystem
+  and owns the guarded identity transaction. Source preparation still does not
+  provision Firebase or Stripe resources, deploy, or charge a customer. Paid
+  subscription-to-Core-tier reconciliation remains unimplemented, so generated Free/Pro/Business plan
   presentation does not establish billing readiness. Missing provider
   configuration fails explicitly. See the
   [operator entrypoint](../../ignition/README.md) and

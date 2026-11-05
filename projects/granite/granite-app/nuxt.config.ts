@@ -24,8 +24,8 @@ export default defineFireuxConfig({
     'fireux-blogs/layer',
   ],
   subscriptionCapacity: {
-    portfolio: { free: 1, premium: 1, business: null },
-    'portfolio.team': { free: 3, premium: 7, business: null },
+    portfolio: { free: 1, pro: 1, business: null },
+    'portfolio.team': { free: 3, pro: 7, business: null },
   },
   domains: ['properties', 'portfolios'],
 })

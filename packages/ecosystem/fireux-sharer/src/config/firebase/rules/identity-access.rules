@@ -43,7 +43,7 @@
     function isReadableAppUser(data) {
       return data is map &&
         data.role in ['admin', 'user', 'dev'] &&
-        data.subscription in ['free', 'premium', 'business'];
+        data.subscription in ['free', 'pro', 'premium', 'business'];
     }
 
     match /users/{userId} {

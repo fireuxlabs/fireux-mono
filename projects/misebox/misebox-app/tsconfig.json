@@ -29,14 +29,14 @@
       "fireux-blogs/runtime/*": [
         "../../../packages/extensions/fireux-blogs/src/runtime/*"
       ],
-      "fireux-companies": [
-        "../../../packages/extensions/fireux-companies/src/module.ts"
+      "fireux-businesses": [
+        "../../../packages/extensions/fireux-businesses/src/module.ts"
       ],
-      "fireux-companies/*": [
-        "../../../packages/extensions/fireux-companies/src/*"
+      "fireux-businesses/*": [
+        "../../../packages/extensions/fireux-businesses/src/*"
       ],
-      "fireux-companies/runtime/*": [
-        "../../../packages/extensions/fireux-companies/src/runtime/*"
+      "fireux-businesses/runtime/*": [
+        "../../../packages/extensions/fireux-businesses/src/runtime/*"
       ],
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],

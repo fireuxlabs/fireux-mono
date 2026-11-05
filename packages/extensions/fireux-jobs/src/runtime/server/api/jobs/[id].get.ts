@@ -1,7 +1,7 @@
 import { defineEventHandler, setResponseHeader, setResponseHeaders } from 'h3'
 
 // Concurrent edit — 2026-07-21 12:53 CEST — Job detail: exact-load one eligible canonical Job.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-load canonical Company and Place display relationships.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-load canonical Business and Place display relationships.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: keep all-category public details enabled without a literal wildcard id.
 
 import type { JobDetailResponse } from '../../../job/models/job-collection.model.ts'

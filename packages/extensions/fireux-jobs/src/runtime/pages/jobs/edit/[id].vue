@@ -50,7 +50,7 @@
               variant="soft"
               icon="i-lucide-link-2"
               title="Employer and workplace"
-              :description="`This job remains linked to Company ${form.company_id} and Place ${form.place_id}.`"
+              :description="`This job remains linked to Business ${form.business_id} and Place ${form.place_id}.`"
             />
 
             <JobCreateBasics
@@ -164,7 +164,7 @@ const job = computed<Job | null>(() => jobRef.value)
 function editForm(source?: Job | null): JobCreateForm {
   if (!source) return { ...JobPayload }
   return {
-    company_id: source.company_id,
+    business_id: source.business_id,
     place_id: source.place_id,
     category_id: source.category_id,
     contract_type: source.contract_type,

@@ -89,6 +89,9 @@ test('Public Project profile cannot expose guest ownership, audit or unrelated p
     id: 'p',
     identity: root().identity,
   })
+  const archived = { ...root(), identity: { ...root().identity, status: 'archived' } }
+  assert.equal(readProjectDocument(archived, 'p'), null)
+  assert.equal(readProjectPublicSummary(archived, 'p'), null)
   assert.equal(
     readProjectPublicSummary(
       { ...value, identity: { ...value.identity, notes: 'private' } },

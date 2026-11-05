@@ -62,16 +62,16 @@ export const roadmapBySlug: Record<
       color: 'neutral',
     },
   ],
-  'fireux-companies': [
+  'fireux-businesses': [
     {
       title: 'Now',
-      description: 'Company list/detail pages plus create/edit flows.',
+      description: 'Business list/detail pages plus create/edit flows.',
       icon: 'i-lucide-check-circle',
       color: 'primary',
     },
     {
       title: 'Next',
-      description: 'Team pages, org charts, and richer company data.',
+      description: 'Team pages, org charts, and richer business data.',
       icon: 'i-lucide-clock-3',
       color: 'warning',
     },

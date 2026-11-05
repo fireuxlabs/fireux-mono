@@ -14,7 +14,7 @@ definePageMeta({
   layout: 'landing',
   validate: (route) =>
     route.name === 'pricing-tier' &&
-    ['free', 'professional', 'business', 'managed', 'your-app'].includes(
+    ['free', 'pro', 'business', 'managed', 'your-app'].includes(
       String(route.params.tier)
     ),
 })

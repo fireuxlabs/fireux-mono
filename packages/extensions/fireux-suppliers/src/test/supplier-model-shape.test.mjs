@@ -34,7 +34,7 @@ function load(file, result, deps = {}) {
 const stamp = { at: { seconds: 1, nanoseconds: 0 }, by: 'u' }
 const root = () => ({
   id: 's',
-  company_id: 'company',
+  business_id: 'business',
   management: { mode: 'workspace' },
   identity: { slug: 's', status: 'active', visibility: true },
   catalogue: { mode: 'directory_only' },
@@ -54,7 +54,7 @@ const surface = load(
     csv: (value) => value.join(', '),
   }
 )
-test('Supplier has exact nested configuration with Company/Place identity and separate growing records', () => {
+test('Supplier has exact nested configuration with Business/Place identity and separate growing records', () => {
   const value = normalizeSupplier('s', root())
   assert.ok(value)
   assert.deepEqual(value.delivery, { areas: ['Switzerland'] })
@@ -82,30 +82,30 @@ test('Supplier has exact nested configuration with Company/Place identity and se
     { ...root(), catalogue: { mode: 'other' } },
     { ...root(), delivery: { areas: [123] } },
     { ...root(), delivery: { areas: [''] } },
-    { ...root(), company_id: { id: 'company' } },
-    { ...root(), company_id: 'parent/child' },
+    { ...root(), business_id: { id: 'business' } },
+    { ...root(), business_id: 'parent/child' },
   ])
     assert.equal(normalizeSupplier('s', bad), null)
 })
 test('Supplier surface composes the exact linked Place without copying it onto storage fields', () => {
   const value = surface.surface({
     supplier: root(),
-    companyPlace: {
-      id: 'company',
-      name: 'Company',
+    businessPlace: {
+      id: 'business',
+      name: 'Business',
       tagline: 'Fresh food',
       short_address: 'Bern',
     },
   })
-  assert.equal(value.company_place.name, 'Company')
+  assert.equal(value.business_place.name, 'Business')
   assert.equal('name' in value, false)
   const card = surface.interface(value)
   assert.equal(card.to, '/suppliers/s')
-  assert.equal(card.title, 'Company')
+  assert.equal(card.title, 'Business')
   assert.equal(card.status, 'active')
   assert.deepEqual(card.badges, ['Switzerland'])
   assert.equal(
-    surface.surface({ supplier: root(), companyPlace: { id: 'other' } }),
+    surface.surface({ supplier: root(), businessPlace: { id: 'other' } }),
     null
   )
   assert.equal(
@@ -146,9 +146,9 @@ test('Directory uses nested eligibility, rejects malformed roots, and exact deta
           }),
         }),
       }),
-      readCompanyDetail: async (id) => {
+      readBusinessDetail: async (id) => {
         related.push(id)
-        return { company: { id }, place: { id, name: 'Company' } }
+        return { business: { id }, place: { id, name: 'Business' } }
       },
     }
   )
@@ -157,7 +157,7 @@ test('Directory uses nested eligibility, rejects malformed roots, and exact deta
     directory.suppliers.map((row) => row.id),
     ['s']
   )
-  assert.deepEqual(related, ['company'])
+  assert.deepEqual(related, ['business'])
   assert.equal(
     (await readers.readSupplier('private')).supplier.identity.visibility,
     false
@@ -262,8 +262,8 @@ test('Supplier SEO uses nested publication without confusing catalogue mode with
     '../runtime/supplier/composables/useSupplierSeo.ts',
     'buildSupplierJsonLd'
   )
-  const place = { name: 'Company', tagline: 'Supply' }
-  assert.equal(build(root(), place).name, 'Company')
+  const place = { name: 'Business', tagline: 'Supply' }
+  assert.equal(build(root(), place).name, 'Business')
   assert.equal(
     build(
       { ...root(), identity: { ...root().identity, visibility: false } },
@@ -280,7 +280,7 @@ test('Supplier SEO uses nested publication without confusing catalogue mode with
 test('Offline Supplier plan preserves old facts and produces the current canonical reader shape', () => {
   const current = root()
   const before = {
-    company_id: current.company_id,
+    business_id: current.business_id,
     management: current.management,
     created: current.created,
     updated: current.updated,
@@ -342,21 +342,21 @@ test('Supplier cards use the canonical document ID when the stored slug differs'
   }
   const value = surface.surface({
     supplier,
-    companyPlace: { id: 'company', name: 'Company' },
+    businessPlace: { id: 'business', name: 'Business' },
   })
   assert.equal(surface.interface(value).to, '/suppliers/Supplier-A')
 })
 
 test('Supplier media projection keeps logo and photo roles distinct', () => {
   const supplier = root()
-  const companyPlace = {
-    id: 'company',
+  const businessPlace = {
+    id: 'business',
     name: 'Business',
     logo_image: '/logo.png',
     image_url: '/photo.jpg',
     media_backdrop_color: '#ffffff',
   }
-  const branded = surface.interface(surface.surface({ supplier, companyPlace }))
+  const branded = surface.interface(surface.surface({ supplier, businessPlace }))
   assert.equal(branded.imageUrl, '/logo.png')
   assert.equal(branded.avatarUrl, '/logo.png')
   assert.equal(branded.imageFit, 'contain')
@@ -364,7 +364,7 @@ test('Supplier media projection keeps logo and photo roles distinct', () => {
   const photo = surface.interface(
     surface.surface({
       supplier,
-      companyPlace: { ...companyPlace, logo_image: '' },
+      businessPlace: { ...businessPlace, logo_image: '' },
     })
   )
   assert.equal(photo.imageUrl, '/photo.jpg')

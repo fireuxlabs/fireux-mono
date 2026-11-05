@@ -5,7 +5,7 @@ import type {
   AppMembershipMutationResult,
 } from '../../models/app-membership'
 import {
-  isAppUserSubscription,
+  readAppUserSubscription,
   isAppUserRole,
   type AppUserRole,
 } from '../../models/app-user.model.ts'
@@ -43,7 +43,7 @@ export function initialMembership(actorUid: string, role: AppUserRole) {
 
 export function requireCanonicalMembership(data: DocumentData) {
   if (!roleFrom(data)) forbidden(409, 'The App membership has an invalid role.')
-  if (!isAppUserSubscription(data.subscription))
+  if (!readAppUserSubscription(data.subscription))
     forbidden(409, 'The App membership has an invalid subscription.')
 }
 

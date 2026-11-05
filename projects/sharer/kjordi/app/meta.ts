@@ -14,7 +14,7 @@ export const metaContent = defineFireuxMeta({
     promise_html:
       'Kjordi keeps every current social and contact link ready in one installed App.',
     workspace_bridge_html:
-      'Kjordi is the first premium tenant App in the Sharer ecosystem.',
+      'Kjordi is the first branded tenant App in the Sharer ecosystem.',
   },
   seo: {
     title: 'Kjordi',

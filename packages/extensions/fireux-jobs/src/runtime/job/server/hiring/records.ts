@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { createError, setHeader, type H3Event } from 'h3'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import {
   DIRECT_EMPLOYMENT_TERMS_VERSION,
   JOB_APPLICATION_STATUSES,
@@ -24,7 +25,7 @@ import {
 import { canonicalJobRoot } from '../core/validation.ts'
 
 export const APPLICATION_LIMIT = 100
-export const PREMIUM_TEMPORARY_CAPACITY_LIMIT = 100
+export const PRO_TEMPORARY_CAPACITY_LIMIT = 100
 const APPLICATION_MESSAGE_LIMIT = 2_000
 const applicationStatuses = new Set<string>(JOB_APPLICATION_STATUSES)
 const engagementStatuses = new Set<string>(JOB_ENGAGEMENT_STATUSES)
@@ -98,10 +99,10 @@ export function assertAppUserSession(
   }
 }
 
-export function hasPremiumCapacity(snapshot: DocumentSnapshot): boolean {
+export function hasProCapacity(snapshot: DocumentSnapshot): boolean {
   if (!isCurrentMembership(snapshot)) return false
-  const data = snapshot.data()
-  return data?.subscription === 'premium' || data?.subscription === 'business'
+  const subscription = readAppUserSubscription(snapshot.data()?.subscription)
+  return subscription === 'pro' || subscription === 'business'
 }
 
 export function applicationDocumentId(
@@ -195,7 +196,7 @@ export function canonicalApplication(
     job_id: requiredText(source, 'job_id'),
     employer_user_id: requiredText(source, 'employer_user_id'),
     candidate_user_id: requiredText(source, 'candidate_user_id'),
-    company_id: requiredText(source, 'company_id'),
+    business_id: requiredText(source, 'business_id'),
     place_id: requiredText(source, 'place_id'),
     message,
     status: status as JobApplicationStatus,
@@ -229,7 +230,7 @@ export function canonicalEngagement(snapshot: DocumentSnapshot): JobEngagement {
     job_id: requiredText(source, 'job_id'),
     employer_user_id: requiredText(source, 'employer_user_id'),
     worker_user_id: requiredText(source, 'worker_user_id'),
-    company_id: requiredText(source, 'company_id'),
+    business_id: requiredText(source, 'business_id'),
     place_id: requiredText(source, 'place_id'),
     contract_type: contractType as JobContractType,
     management_mode: managementMode as JobManagementMode,

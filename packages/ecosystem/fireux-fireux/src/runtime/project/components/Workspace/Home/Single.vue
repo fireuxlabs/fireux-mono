@@ -14,7 +14,6 @@
       />
     </template>
     <UBadge
-      v-if="identity.selectedProject.value.identity.status"
       :color="
         identity.selectedProject.value.identity.status === 'active'
           ? 'success'
@@ -24,9 +23,7 @@
       >{{
         identity.selectedProject.value.identity.status === 'active'
           ? 'Active'
-          : identity.selectedProject.value.identity.status === 'archived'
-            ? 'Archived'
-            : 'Inactive'
+          : 'Inactive'
       }}</UBadge
     >
   </WorkspaceSingleCard>

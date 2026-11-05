@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -18,14 +19,14 @@ const check = compileFunction(
   `${stripTypeScriptTypes(source)}; return requireKitchenMutationAuthority`,
   [
     'createError',
-    'isAppUserSubscription',
+    'readAppUserSubscription',
     'serverAppUsersTarget',
     'serverKitchenTeamMembersTarget',
     'KITCHEN_MUTATION_TARGETS', 'PLACE_MUTATION_TARGETS', 'serverKitchenAccessTarget', 'readKitchenAccessIds',
   ]
 )(
   (x) => Object.assign(new Error(x.statusMessage), x),
-  (x) => ['free', 'premium', 'business'].includes(x),
+  readAppUserSubscription,
   () => 'app',
   (id) => `team:${id}`,
   { kitchens: 'kitchens' }, { places: 'places' }, () => 'access', readMembershipAccessIds
@@ -40,4 +41,23 @@ test('Kitchen tools require current membership-bound access, never legacy arrays
  await assert.rejects(check(mutations,actor,'pizza'),/association is required/)
  access={ids:['pizza'],membership_created_at:{seconds:99,nanoseconds:0}}
  await assert.rejects(check(mutations,actor,'pizza'),/association is required/)
+})
+
+test('Kitchen authority normalizes Pro and legacy Premium without changing membership or access', async () => {
+  const actor = { uid: 'operator', runtimeAppId: 'app' }
+  const stamp = { seconds: 100, nanoseconds: 0 }
+  for (const stored of ['pro', 'premium']) {
+    const membership = { role: 'user', subscription: stored, created: { at: stamp } }
+    const access = { ids: ['kitchen'], membership_created_at: stamp }
+    const mutations = {
+      read: async (target) => ({
+        exists: true,
+        data: target === 'app' ? membership : target === 'access' ? access : {},
+      }),
+    }
+    const result = await check(mutations, actor, 'kitchen')
+    assert.equal(result.subscription, 'pro')
+    assert.equal(membership.subscription, stored)
+    assert.deepEqual(access.ids, ['kitchen'])
+  }
 })

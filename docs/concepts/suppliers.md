@@ -41,8 +41,8 @@ server handlers, Firestore Rules, and executable guards remain authority.
 A marketplace is a publication and customer-order channel, not Supplier
 authority.
 
-- Supplier composes organization identity and media from its canonical Company
-  and same-id Place. Supplier owns Items, pack terms, availability, lead times
+- Supplier composes organization identity and media from its canonical Business
+  and explicitly linked Place. Supplier owns Items, pack terms, availability, lead times
   and minimum quantities.
 - A marketplace-owned listing references one `supplier_id` and selects which
   Supplier Items it publishes. It may add App-local sections, editorial copy,
@@ -75,7 +75,7 @@ adapter.
 - Product host: `projects/bringli/bringli-app/nuxt.config.ts`
 - Live Supplier detail projection:
   `supplier/composables/useSupplierDetail.ts` consumes the existing live
-  `/api/suppliers/[id]` projection for Supplier, Company and Place. It hides old
+  `/api/suppliers/[id]` projection for Supplier, Business and Place. It hides old
   scope values and failed/missing data; no secondary raw browser listeners or
   last-good identity cache participate. The route uses `SupplierDetailState`
   for pending, missing and failed outcomes.
@@ -85,14 +85,14 @@ adapter.
 
 ## Supplier root and capability configuration
 
-The root retains document identity, `company_id`, management and audit stamps.
+The root retains document identity, `business_id`, management and audit stamps.
 Small configuration follows its owning responsibility:
 
 - `identity`: slug, status and visibility;
 - `catalogue`: mode (`integrated` or `directory_only`);
 - `delivery`: areas.
 
-Company/Place owns the linked profile, media, contact and location. Team,
+Business/Place owns the linked profile, media, contact and location. Team,
 Ingredient, Item and Catalogue records retain their independent scoped identity;
 `catalogue.mode` is configuration, not the Catalogue collection. The strict
 `normalize-supplier.ts` reader rejects retired flat fields, conflicting maps and
@@ -101,7 +101,7 @@ retain the selected Supplier; a settled invalid detail is an error, not endless
 loading. Onboarding creates the nested maps and validates an existing root before
 attachment. The retired mixed root-update endpoint and unconsumed generic editor
 have no compatibility path; the supported profile tool retains its named
-Company/Place command.
+Business/Place command.
 
 Directory, public SEO and owner-mode sitemap require active and visible Identity.
 Direct detail addressability remains a separate supported policy. The sitemap

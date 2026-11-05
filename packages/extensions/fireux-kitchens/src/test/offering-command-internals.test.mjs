@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import {
   serviceHoursPolicy,
   testKitchenHours,
@@ -112,8 +113,7 @@ const authority = load(
     serverKitchenAccessTarget: () => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
 PLACE_MUTATION_TARGETS: { places: 'places' },
-    isAppUserSubscription: (value) =>
-      ['free', 'premium', 'business'].includes(value),
+    readAppUserSubscription,
   }
 )
 const hours = () => ({

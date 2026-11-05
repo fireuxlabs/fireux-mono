@@ -23,7 +23,7 @@ const app: FireuxAppConfig = {
   modules: [
     'fireux-products',
     'fireux-places',
-    'fireux-companies',
+    'fireux-businesses',
     'fireux-go-qr',
     'fireux-sproochli',
     [
@@ -54,7 +54,7 @@ export default {
     'fireux-blogs/layer',
     'fireux-products/layer',
     'fireux-places/layer',
-    'fireux-companies/layer',
+    'fireux-businesses/layer',
     'fireux-jobs/layer',
   ],
 }

@@ -30,7 +30,7 @@
             <h2 class="fx-type-card-heading">Primary entities</h2>
           </template>
           <ul class="list-disc fx-list-stack text-sm">
-            <li>Portfolio, Property, Unit, Client</li>
+            <li>Portfolio, Property, Client</li>
             <li>ComplianceRecord</li>
             <li>Document, DocumentLink, Task</li>
           </ul>

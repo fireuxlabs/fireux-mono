@@ -22,8 +22,8 @@ export function useAppUserAccess(user: {
   const subscription = computed<AppUserSubscription>(
     () => appAccess.value.subscription
   )
-  const hasPremiumSubscription = computed(
-    () => appAccess.value.hasPremiumSubscription
+  const hasProSubscription = computed(
+    () => appAccess.value.hasProSubscription
   )
   const hasBusinessSubscription = computed(
     () => appAccess.value.hasBusinessSubscription
@@ -36,7 +36,7 @@ export function useAppUserAccess(user: {
     isAdmin,
     isDeveloper,
     subscription,
-    hasPremiumSubscription,
+    hasProSubscription,
     hasBusinessSubscription,
     canOwnMultipleWorkspaces,
   }

@@ -18,7 +18,7 @@ export const validateSupplierDemoScenario = (
   )
   if (
     !scenario.appId ||
-    !scenario.supplier.company_id ||
+    !scenario.supplier.business_id ||
     scenario.supplier.identity.status !== 'active' ||
     scenario.supplier.identity.visibility !== true ||
     'place_id' in scenario.supplier ||

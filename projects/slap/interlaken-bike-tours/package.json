@@ -12,7 +12,8 @@
     "deploy:preview": "node ../../../tools/firebase-release/cli.mjs deploy --project slap-45389 --config firebase.json --rules-policy development --rules-template ../../../packages/ecosystem/fireux-slap/src/config/firebase/firestore.template.rules",
     "typecheck": "nuxt typecheck",
     "generate": "nuxt generate",
-    "test:seo": "node --test tests/seo.test.mjs"
+    "test:seo": "node --test tests/seo.test.mjs",
+    "test:bookings": "node --test tests/booking-calendar.test.mjs tests/booking-flow.test.mjs"
   },
   "dependencies": {
     "@nuxt/ui": "4.12.0",
@@ -23,10 +24,12 @@
     "vue-router": "5.4.0",
     "fireux-slap": "workspace:*",
     "fireux-blogs": "workspace:*",
+    "fireux-bookings": "workspace:*",
     "fireux-products": "workspace:*",
     "@nuxt/icon": "2.5.1",
     "firebase-functions": "^6.3.2",
-    "@google-cloud/functions-framework": "5.0.5"
+    "@google-cloud/functions-framework": "5.0.5",
+    "fireux-businesses": "workspace:*"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1"

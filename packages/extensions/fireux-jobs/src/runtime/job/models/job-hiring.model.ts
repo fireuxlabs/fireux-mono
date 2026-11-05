@@ -10,7 +10,7 @@ export type JobHiringJobSummary = {
   title: string
   contract_type: JobContractType
   management_mode: JobManagementMode
-  company_id: string
+  business_id: string
   place_id: string
 }
 

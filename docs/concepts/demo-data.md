@@ -22,7 +22,7 @@ presentation adapters define the contract; fixtures follow those owners.
 | --- | --- | --- |
 | Kitchen | [scenarios](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts) | Misebox Restaurant, Deanos and Pizza the Action; Menus, Dishes and their related operational examples |
 | Supplier | [scenarios](../../packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts) | Three Suppliers with Ingredient references, Items and Catalogues |
-| Company and Place | [linked fixtures](../../packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios.ts) | Required Supplier Company/Place relationships |
+| Business and Place | [linked fixtures](../../packages/extensions/fireux-businesses/src/runtime/business/demo/business/scenarios.ts) | Required Supplier Business/Place relationships |
 | Demo media | [URL contract](../../packages/extensions/fireux-demo/src/runtime/utils/media/misebox.ts) | Immutable owner-relative Misebox image URLs |
 
 Deanos carries the richer production and historical-order example. Its fixed
@@ -68,7 +68,7 @@ separate from operational data reads.
   Firebase, Storage or server mutation SDK.
 - Ingredient identity remains canonical. Fixtures retain stable references,
   not copied Ingredient names, taxonomy or image authority.
-- Supplier owns offers and Catalogues; Kitchen owns its usage links. Company
+- Supplier owns offers and Catalogues; Kitchen owns its usage links. Business
   and Place remain separate linked records, not duplicated Supplier identity.
 - Firebase Storage owns demo images. `fireux-demo` supplies URL construction
   only; it does not install a runtime surface or publish media.

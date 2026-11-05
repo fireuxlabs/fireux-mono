@@ -15,7 +15,7 @@ const buenoHostPricingProfile = {
     'Create a guest URL and QR code',
     'Manage the guide from the Host Workspace',
   ],
-  professional: [
+  pro: [
     'Manage multiple properties and rooms',
     'Publish property and room guides',
     'Manage reservations and the stay calendar',

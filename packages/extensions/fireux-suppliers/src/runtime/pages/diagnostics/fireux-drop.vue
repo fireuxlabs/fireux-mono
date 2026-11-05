@@ -221,8 +221,8 @@ const supplierOptions = computed(() =>
   suppliersCollection.value.map((supplier) => {
     const id = String(supplier.id || '').trim()
     const labelBase =
-      String((supplier as any)?.company_place?.short_name || '').trim() ||
-      String((supplier as any)?.company_place?.name || '').trim() ||
+      String((supplier as any)?.business_place?.short_name || '').trim() ||
+      String((supplier as any)?.business_place?.name || '').trim() ||
       id
     return {
       label: labelBase,

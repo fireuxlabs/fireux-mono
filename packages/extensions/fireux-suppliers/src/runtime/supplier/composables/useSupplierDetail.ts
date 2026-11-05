@@ -6,7 +6,7 @@ import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { Company } from 'fireux-companies/runtime/place/models/company.model'
+import type { Business } from 'fireux-businesses/runtime/business/models/business.model'
 import type { Supplier } from '../models/Supplier.model.ts'
 
 export type SupplierDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
@@ -18,7 +18,7 @@ type SupplierDetailControls = Pick<
 
 export type UseSupplierDetailReturn = SupplierDetailControls & {
   supplier: ComputedRef<Supplier | null>
-  company: ComputedRef<Company | null>
+  business: ComputedRef<Business | null>
   place: ComputedRef<Place | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
@@ -50,7 +50,7 @@ export function useSupplierDetail(
   const state = useAsyncData<{
     key: string
     supplier: Supplier
-    company: Company
+    business: Business
     place: Place
   } | null>(
     key,
@@ -61,7 +61,7 @@ export function useSupplierDetail(
       const requestKey = key.value
       const data = await fetchRead<{
         supplier: Supplier
-        company: Company
+        business: Business
         place: Place
       }>(`/api/suppliers/${encodeURIComponent(id.value)}`)
       return { ...data, key: requestKey }
@@ -80,13 +80,13 @@ export function useSupplierDetail(
     })
     return result === 'idle' ? 'empty' : result
   })
-  // The server projection already follows Supplier, Company and Place live.
+  // The server projection already follows Supplier, Business and Place live.
   // Never retain an old identity or add raw browser listeners beside it.
   const supplier = computed(() =>
     outcome.value === 'ready' ? (state.data.value?.supplier ?? null) : null
   )
-  const company = computed(() =>
-    outcome.value === 'ready' ? (state.data.value?.company ?? null) : null
+  const business = computed(() =>
+    outcome.value === 'ready' ? (state.data.value?.business ?? null) : null
   )
   const place = computed(() =>
     outcome.value === 'ready' ? (state.data.value?.place ?? null) : null
@@ -96,7 +96,7 @@ export function useSupplierDetail(
 
   return {
     supplier,
-    company,
+    business,
     place,
     ready: state.then(() => undefined),
     pending: computed(() => outcome.value === 'pending'),

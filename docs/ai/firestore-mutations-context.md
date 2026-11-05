@@ -298,6 +298,10 @@ records. Public meal-deal projection remains read-only.
   `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
   `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and
   `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
+- App initialization decides when a configured global main App can provision
+  its Ecosystem. The Ecosystem owns root validation and its guarded identity
+  transaction in
+  `packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts`.
 - App media single-image and bulk sync share the same development/developer
   command. Only known image kinds are caller inputs; App and bucket come from
   runtime authority. Missing owner artwork fails instead of borrowing a parent

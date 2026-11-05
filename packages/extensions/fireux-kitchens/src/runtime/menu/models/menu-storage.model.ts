@@ -54,5 +54,5 @@ export type MenuUpdateInput = Partial<
 
 // Menu records belong to a Kitchen; the actor's account subscription governs creation only.
 export const kitchenMenuCapacity = {
-  'kitchen.menus': { free: 2, premium: null, business: null },
+  'kitchen.menus': { free: 2, pro: null, business: null },
 } satisfies FireuxAppSubscriptionCapacity

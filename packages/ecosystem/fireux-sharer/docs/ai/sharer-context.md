@@ -1,7 +1,7 @@
 # Sharer context
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-11-05
+Ref: 71d4618ec
 Role: living context
 Scope: Sharer ecosystem identity, sharing profiles, tenant Apps, and branded PWA boundary
 
@@ -30,7 +30,7 @@ or treating a tenant App as a cosmetic profile theme.
   reported follower totals must never be described as unique audience.
 - The public profile route family is `/shared/**`; it uses no ordinary App
   layout by default. Tenant roots may select the same naked presentation.
-- A premium customer receives a genuine tenant App with its own App identity,
+- A branded-App customer receives a tenant App with its own App identity,
   PWA assets, Firebase Hosting target, and project registration.
 - Go QR remains the reusable QR provider. Sharer owns the meaning and target of
   each QR; it does not duplicate QR encoding or provider transport.

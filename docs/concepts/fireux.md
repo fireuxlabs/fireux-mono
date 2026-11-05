@@ -1,7 +1,7 @@
 # FireUX platform map
 
 Updated: 2026-11-04
-Ref: 6c81e972a
+Ref: 8d44cbfef
 Role: map, not canon
 
 ## Purpose and authority

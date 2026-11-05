@@ -16,7 +16,7 @@ export type FireuxWorkspaceConfig = Record<string, FireuxWorkspaceFamilyConfig>
 
 export type FireuxAppSubscriptionCapacityLimit = {
   free: number | null
-  premium: number | null
+  pro: number | null
   business: number | null
 }
 

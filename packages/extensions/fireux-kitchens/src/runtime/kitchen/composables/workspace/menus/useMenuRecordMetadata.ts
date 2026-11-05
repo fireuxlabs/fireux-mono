@@ -27,7 +27,7 @@ export function useMenuRecordMetadata(
   } = context
   const captureScope = useMenuEditorScope([kitchenId, menuId, menuSlug])
   const canRename = computed(
-    () => canWrite.value && ['premium', 'business'].includes(subscription.value)
+    () => canWrite.value && ['pro', 'business'].includes(subscription.value)
   )
   const validateName = (value: string) => ({
     isValid: Boolean(value.trim()),
@@ -40,7 +40,7 @@ export function useMenuRecordMetadata(
   async function rename(name: string) {
     if (!canRename.value || !menuId.value)
       throw new Error(
-        'Plus and Kitchen write access are required to rename a Menu.'
+        'Pro and Kitchen write access are required to rename a Menu.'
       )
     const targetKitchen = kitchenId.value
     const targetId = menuId.value

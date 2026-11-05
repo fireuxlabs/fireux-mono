@@ -56,7 +56,7 @@ export type Job = {
   visibility: JobVisibility
 
   /** Employer represented in this posting. */
-  company_id: string
+  business_id: string
 
   /** Canonical work location. Place owns all shared location truth. */
   place_id: string
@@ -99,7 +99,7 @@ export const JobModel = {
   owner_type: 'user',
   owner_id: '',
   visibility: 'app',
-  company_id: '',
+  business_id: '',
   place_id: '',
   category_id: '',
   contract_type: 'permanent',
@@ -126,7 +126,7 @@ export const Job = JobModel
 
 export type JobCreateInput = Pick<
   Job,
-  | 'company_id'
+  | 'business_id'
   | 'place_id'
   | 'category_id'
   | 'contract_type'

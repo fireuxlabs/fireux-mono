@@ -8,7 +8,7 @@ import { harness, menuPath, rootPath } from './helpers/menu-publication.mjs'
 
 function dailyHarness() {
   const h = harness()
-  h.records.get('apps/app/users/operator').subscription = 'premium'
+  h.records.get('apps/app/users/operator').subscription = 'pro'
   h.records.get('places/k').timezone = 'Europe/Zurich'
   h.records.get('places/k').default_currency_code = 'CHF'
   h.records.get(menuPath).schedule = 'daily'

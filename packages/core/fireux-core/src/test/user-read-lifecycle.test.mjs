@@ -73,7 +73,7 @@ test('AppUser authority is withdrawn whenever the membership read is not ready',
         hasAdminAuthority: Boolean(membership),
         hasDeveloperAuthority: Boolean(membership),
         subscription: membership?.subscription ?? 'free',
-        hasPremiumSubscription: Boolean(membership),
+        hasProSubscription: Boolean(membership),
         hasBusinessSubscription: Boolean(membership),
       }),
     }

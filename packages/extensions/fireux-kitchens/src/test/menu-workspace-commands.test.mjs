@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import {
   operatingHoursPolicy,
   serviceHoursPolicy,
@@ -11,7 +12,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 function load(relative, deps, names) {
-  deps = { ...dishPricingHelpers, ...deps }
+  deps = { readAppUserSubscription, ...dishPricingHelpers, ...deps }
 
   const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -59,7 +60,7 @@ const { requireKitchenMutationAuthority } = load(
     ...targets,
     readKitchenAccessIds: (data) => data?.ids || [],
     createError: error,
-    isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
+    readAppUserSubscription,
   },
   ['requireKitchenMutationAuthority']
 )
@@ -241,8 +242,8 @@ test('Free creation allows the second menu and blocks a third without deleting r
     assert.deepEqual(denied.calls, [])
   }
 })
-test('Premium and Business allow more than twenty menus', async () => {
-  for (const subscription of ['premium', 'business']) {
+test('Pro and Business allow more than twenty menus', async () => {
+  for (const subscription of ['pro', 'business']) {
     const h = harness({ subscription, count: 100 })
     await h.createKitchenMenu({}, { kitchenId: 'pizza', name: 'Lunch' })
     assert.equal(h.calls[0][0], 'create')
@@ -327,7 +328,7 @@ test('Unknown items, invalid paths and archived-menu unpublish fail safely', asy
   assert.deepEqual(archived.calls, [])
 })
 test('Create cannot overwrite Food or publish without validation', async () => {
-  const h = harness({ subscription: 'premium' })
+  const h = harness({ subscription: 'pro' })
   await assert.rejects(
     h.createKitchenMenu({}, { kitchenId: 'pizza', name: 'Food' }),
     /already exists/
@@ -375,12 +376,12 @@ test('Menu creation stores a generated stable identity with its separate slug an
   const custom = harness({ count: 0 })
   await assert.rejects(
     custom.createKitchenMenu({}, { kitchenId: 'pizza', name: 'Lunch' }),
-    /Plus/
+    /Pro/
   )
   assert.deepEqual(custom.calls, [])
 })
 test('trusted rename preserves public slug and record identity', async () => {
-  for (const subscription of ['premium', 'business']) {
+  for (const subscription of ['pro', 'business']) {
     const h = harness({ subscription })
     const result = await h.renameKitchenMenu(
       {},
@@ -411,12 +412,12 @@ test('Free downgrade preserves custom names; duplicate display name leaves slug 
       {},
       { kitchenId: 'pizza', menuId: 'food', name: 'Food' }
     ),
-    /Plus/
+    /Pro/
   )
   assert.equal(free.menu.name, 'Dinner Menu')
   assert.equal(free.menu.slug, 'dinner-menu')
   assert.deepEqual(free.calls, [])
-  const collision = harness({ subscription: 'premium', occupiedSlug: 'dinner' })
+  const collision = harness({ subscription: 'pro', occupiedSlug: 'dinner' })
   const result = await collision.renameKitchenMenu(
     {},
     { kitchenId: 'pizza', menuId: 'food', name: 'Dinner' }
@@ -501,15 +502,15 @@ test('placements reject pricing fields and retain organisation', async () => {
   assert.equal(h.calls[0][0], 'update')
 })
 
-for (const subscription of ['free', 'premium', 'business']) {
-  test(`Daily item editing requires Plus: ${subscription}`, async () => {
+for (const subscription of ['free', 'pro', 'business']) {
+  test(`Daily item editing requires Pro: ${subscription}`, async () => {
     const h = harness({ subscription, schedule: 'daily' })
     const request = h.updateKitchenMenuItem(
       {},
       { ...item, changes: { sort_order: 2 } }
     )
     if (subscription === 'free') {
-      await assert.rejects(request, /Daily specials require Plus/)
+      await assert.rejects(request, /Daily specials require Pro/)
       assert.equal(
         h.calls.some((call) => call[0] === 'update'),
         false

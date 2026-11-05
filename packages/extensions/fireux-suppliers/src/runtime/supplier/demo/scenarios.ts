@@ -36,16 +36,16 @@ if (new Set(coveredIngredientIds).size !== coveredIngredientIds.length) {
   )
 }
 
-const companyIds = supplierDemoScenarios.map(
-  (scenario) => scenario.supplier.company_id
+const businessIds = supplierDemoScenarios.map(
+  (scenario) => scenario.supplier.business_id
 )
 
 if (
-  companyIds.some((companyId) => !companyId) ||
-  new Set(companyIds).size !== companyIds.length
+  businessIds.some((businessId) => !businessId) ||
+  new Set(businessIds).size !== businessIds.length
 ) {
   throw new Error(
-    'Every Supplier Demo root requires one independent Company relationship.'
+    'Every Supplier Demo root requires one independent Business relationship.'
   )
 }
 

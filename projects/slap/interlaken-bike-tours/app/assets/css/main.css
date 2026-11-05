@@ -67,9 +67,7 @@
 .tour-site .tour-meta,
 .tour-site .reason-number,
 .tour-site .hero-facts,
-.tour-site .site-header nav,
-.tour-site .hero-actions a,
-.tour-site .header-book {
+.tour-site .hero-actions a {
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 650;
@@ -81,20 +79,6 @@
   display: block;
   margin-block-end: 0.9rem;
   color: var(--muted);
-}
-
-.tour-site .site-header {
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-}
-
-.tour-site .header-inner {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: clamp(1rem, 2.8vw, 2.5rem);
-  align-items: center;
-  min-height: 4.6rem;
-  padding-block: 0.85rem;
 }
 
 .tour-site .brand {
@@ -116,36 +100,22 @@
   letter-spacing: 0.2em;
 }
 
-.tour-site .site-header nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem clamp(0.9rem, 2.8vw, 2.5rem);
-}
-
-.tour-site .site-header nav a {
-  padding-block: 0.5rem;
-}
-
-.tour-site .site-header nav a:hover,
 .tour-site .back-link:hover,
 .tour-site .footer-contact a:hover {
   text-decoration: underline;
   text-underline-offset: 0.24em;
 }
 
-.tour-site .header-book,
 .tour-site .hero-actions a {
   border-radius: 0;
   white-space: nowrap;
 }
 
-.tour-site .header-book,
 .tour-site .booking-action {
   background: var(--accent);
   color: var(--night);
 }
 
-.tour-site .header-book:hover,
 .tour-site .booking-action:hover {
   background: #6ae8ec;
 }
@@ -433,6 +403,31 @@
   color: var(--muted);
 }
 
+.tour-site .destination-intro,
+.tour-site .destination-summary,
+.tour-site .destination-description {
+  max-width: 48rem;
+}
+
+.tour-site .destination-intro {
+  margin-block: 2rem;
+}
+
+.tour-site .destination-summary {
+  margin-block-start: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.tour-site .destination-detail-section {
+  margin-block-start: 3rem;
+}
+
+.tour-site .destination-rides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem;
+}
+
 .tour-site .destination-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
@@ -650,19 +645,129 @@
   list-style: disc;
 }
 
+.tour-site .booking-page {
+  max-width: 74rem;
+}
+
+.tour-site .booking-page > .back-link {
+  display: inline-block;
+  margin-block-end: 2rem;
+}
+
+.tour-site .booking-heading {
+  max-width: 44rem;
+  margin-block-end: 2.25rem;
+}
+
+.tour-site .booking-heading h1,
+.tour-site .booking-confirmation h1 {
+  margin-block-end: 1rem;
+}
+
+.tour-site .booking-heading > p:last-child {
+  max-width: 35rem;
+  font-size: 1.15rem;
+}
+
+.tour-site .booking-form {
+  display: grid;
+  gap: 1.2rem;
+  max-width: 42rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.tour-site .booking-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tour-site .booking-form .native-select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.tour-site .booking-availability {
+  min-height: 3.25rem;
+  padding: 0.8rem 1rem;
+  border-inline-start: 3px solid var(--line);
+  background: var(--paper);
+}
+
+.tour-site .booking-availability p,
+.tour-site .booking-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.tour-site .booking-availability .booking-available {
+  color: #075c44;
+  font-weight: 700;
+}
+
+.tour-site .booking-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1rem;
+  border-block: 1px solid var(--line);
+}
+
+.tour-site .booking-price strong {
+  font-size: 1.4rem;
+}
+
+.tour-site .booking-error {
+  margin: 0;
+  color: #a62c21;
+}
+
+.tour-site .booking-confirmation {
+  max-width: 52rem;
+  padding-block: clamp(2rem, 8vw, 5rem);
+}
+
+.tour-site .booking-confirmation > p:not(.eyebrow, .booking-note) {
+  max-width: 38rem;
+  font-size: 1.2rem;
+}
+
+.tour-site .booking-confirmation-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-block: 2rem;
+  padding-block: 1rem;
+  border-block: 1px solid var(--line);
+}
+
+.tour-site .booking-confirmation-details dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.tour-site .booking-confirmation-details dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.tour-site .booking-confirmation .booking-note {
+  max-width: 38rem;
+  margin-block-end: 1.5rem;
+}
+
 @media (max-width: 700px) {
-  .tour-site .header-inner {
-    grid-template-columns: 1fr auto;
-    gap: 0.55rem 1rem;
-  }
-
-  .tour-site .site-header nav {
-    grid-area: 2 / 1 / 3 / -1;
-    justify-content: space-between;
-    border-top: 1px solid var(--line);
-    padding-top: 0.3rem;
-  }
-
   .tour-site .hero {
     min-height: 36rem;
   }
@@ -689,14 +794,16 @@
   .tour-site .enquiry-grid,
   .tour-site .footer-inner,
   .tour-site .detail-heading,
-  .tour-site .detail-body {
+  .tour-site .detail-body,
+  .tour-site .booking-confirmation-details {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 420px) {
   .tour-site .reasons-grid,
-  .tour-site .form-row {
+  .tour-site .form-row,
+  .tour-site .booking-form-row {
     grid-template-columns: minmax(0, 1fr);
   }
 }

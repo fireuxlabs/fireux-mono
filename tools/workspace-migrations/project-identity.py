@@ -53,7 +53,7 @@ def propose(root, record_id):
     if not isinstance(identity, dict) or set(identity) != IDENTITY_FIELDS:
         raise ValueError('Incomplete or unsupported Project Identity fields')
     if (any(not isinstance(identity[k], str) or utf16_length(identity[k]) > limit for k, limit in LIMITS.items())
-            or not identity['name'].strip() or identity['status'] not in ['active', 'inactive', 'archived']):
+            or not identity['name'].strip() or identity['status'] not in ['active', 'inactive']):
         raise ValueError('Invalid Project Identity values')
     if 'guest_owner_uid' in after:
         owner = after['guest_owner_uid']

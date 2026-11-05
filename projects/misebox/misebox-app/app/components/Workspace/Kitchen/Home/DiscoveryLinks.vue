@@ -12,7 +12,7 @@
       <UPageCard
         id="workspace-access"
         title="Manage your Kitchen portfolio"
-        description="Start with a free Kitchen Workspace for one Kitchen. Professional also supports one Kitchen. Business operates multiple Kitchens."
+        description="Start with a free Kitchen Workspace for one Kitchen. Pro also supports one Kitchen. Business operates multiple Kitchens."
         icon="i-lucide-badge-check"
         to="/pricing"
         variant="subtle"

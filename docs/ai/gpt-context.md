@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-05
+Ref: 71d4618ec
 Role: living context
 Scope: repository-wide
 
@@ -173,6 +173,8 @@ readers, validation, permissions and protected commands. Workspace is a product
 surface over an Entity, not a storage owner. UI placement and navigation groups
 do not change data ownership.
 
+Business is an independent Workspace Entity owned by `fireux-businesses`; it replaces the former Company/Place role. Business may use Free, and optional capabilities retain their own domain owners. Place links do not own the Business lifecycle.
+
 User is the person; AppUser is membership in one App. A tenant App remains an
 App role and uses the same Entity contracts. Every App declares its canonical
 Ecosystem relationship, including standalone Apps. Preserve exact owner,
@@ -242,9 +244,13 @@ commands and pages as evidence; a proposal or connected source is not a shipped
 capability. Feature entitlement belongs to the acting User, separately from
 permission to edit the selected Entity.
 SaaS plan offers belong to Ecosystem main Apps, not tenant Apps. Core supplies
-the shared Free, Pro and Business presentation and capacity mechanics; stored
-subscription IDs currently remain free, premium and business. Do not rename
-stored IDs without inspecting and migrating their membership consumers. A shared
+the shared Free, Pro and Business presentation and capacity mechanics. Canonical
+subscription IDs are `free`, `pro` and `business`. The App-owned subscription
+reader maps legacy stored `premium` to `pro` during the explicitly staged
+migration in [App membership](../concepts/entities.md#subscription-naming-migration).
+Subscription entitlement and Business identity are separate. A Business may use
+Free. Upgrading to the Business plan must collect additional business details
+through its owning identity command once that contract is defined. A shared
 tier is not evidence of paid billing or cross-App entitlement reconciliation.
 A public Product packages a domain capability; it does not become the owner of
 the underlying tool. Workspace may expose that same capability directly with

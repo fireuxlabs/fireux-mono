@@ -175,7 +175,7 @@ const appUserRows = computed(() => {
       ): row is {
         id: string
         role: 'admin' | 'user' | 'dev'
-        subscription: 'free' | 'premium' | 'business'
+        subscription: 'free' | 'pro' | 'business'
         display_name: string
       } => Boolean(row)
     )
@@ -290,7 +290,7 @@ const makeMemberAdmin = withToast(
 const setMemberSubscription = withToast(
   async (value: {
     uid: string
-    subscription: 'free' | 'premium' | 'business'
+    subscription: 'free' | 'pro' | 'business'
   }) => {
     const isCurrent = captureIntent()
     subscriptionActionUid.value = value.uid

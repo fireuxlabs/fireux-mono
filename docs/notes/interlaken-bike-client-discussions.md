@@ -35,12 +35,31 @@ client distinctions, not another active backlog.
 
 - During a 2026-11-04 live discussion, the user reported that Ben wants a booking
   system and finds it stressful managing GetYourGuide, Booking.com, Viator, and
-  other channels. The user clarified that FireUX should become the primary
-  booking platform; `fireux-bookings` is a proposed name, and TrekkSoft is a
-  competitor. Channel access, integration scope, and booking workflow still
-  need discovery.
+  other channels. TrekkSoft was identified as a competitor. Access to these
+  channels and their integration options remain unverified.
+
+## Updated Codex handoff
+
+- The latest handoff was prepared in the separate **Audit Ben's Voice** chat on
+  2026-11-04. Its author said the GitHub update was blocked, so this summary
+  records the handoff direction here. These are reported product decisions, not
+  proof of implementation or a public launch approval.
+- Position the offer as premium, exclusive private bike tours. The audience is
+  broad; couples, families, and private groups were examples, while hotels and
+  concierges are phase two.
+- Use fixed prices and instant booking confirmation.
+- Build reusable **FireUX Bookings** (`fireux-bookings`) with Google Calendar
+  integration, using Ben's existing Interlaken Bike Tours App as the first
+  consumer. Improve that site's existing design using Ben's Base44 reference;
+  do not rebuild from scratch.
+- Focus SEO on premium private tours and destination-specific searches. The
+  handoff does not specify an autonomous SEO agent workflow or a separate
+  internal SEO product.
+- Review the current App, prior handoffs, and existing implementation before
+  changing code. Exact channel integrations, booking policies, payment scope,
+  and the Base44 reference remain to be verified.
 
 ## Next time
 
 - Recheck the current App and brief before taking further client work.
-- Ask for or record actual scope, deliverables and relationship between the two clients when discussed.
+- Keep Ben's business distinct from Yellow Velo.

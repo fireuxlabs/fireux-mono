@@ -44,6 +44,16 @@
       ],
       "fireux-products/runtime/*": [
         "../../../packages/extensions/fireux-products/src/runtime/*"
+      ],
+
+      "fireux-bookings": [
+        "../../../packages/extensions/fireux-bookings/src/module.ts"
+      ],
+      "fireux-bookings/*": [
+        "../../../packages/extensions/fireux-bookings/src/*"
+      ],
+      "fireux-bookings/runtime/*": [
+        "../../../packages/extensions/fireux-bookings/src/runtime/*"
       ]
     }
   },

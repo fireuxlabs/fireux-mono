@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -100,8 +101,7 @@ function fixture({
     }),
     requireFirebaseBearerUser: async () => ({ uid: 'user' }),
     requireFirestoreDocumentId: (value) => value,
-    isAppUserSubscription: (value) =>
-      ['free', 'pro', 'business'].includes(value),
+    readAppUserSubscription,
     PORTFOLIO_MUTATION_TARGETS: { portfolios: 'portfolios' },
     serverAppUsersTarget: () => 'memberships',
     serverPortfolioAccessTarget: (appId) => {

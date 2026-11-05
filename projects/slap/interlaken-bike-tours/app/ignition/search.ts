@@ -27,9 +27,9 @@ export const searchPlan: IgnitionSearchPlan = {
       index: false,
       sitemap: false,
       title:
-        'Private Bike & E-bike Tours in Interlaken | Interlaken Bike Tours',
+        'Premium Private Bike & E-bike Tours in Interlaken | Interlaken Bike Tours',
       description:
-        'Compare private guided bike and e-bike rides in Interlaken, Lauterbrunnen Valley and around Lake Brienz. Plan your ride directly with a local guide.',
+        'Compare premium private guided bike and e-bike rides in Interlaken, Lauterbrunnen Valley and around Lake Brienz. Plan your ride directly with a local guide.',
     },
     {
       path: '/destinations',

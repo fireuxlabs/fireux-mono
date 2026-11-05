@@ -48,7 +48,7 @@
               <p class="text-dimmed">Functional Kitchen Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/professional</p>
+              <p class="font-mono">GET /pricing/pro</p>
               <p class="text-dimmed">
                 Complete self-managed Kitchen Workspace.
               </p>

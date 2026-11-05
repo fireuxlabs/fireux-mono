@@ -26,7 +26,7 @@ export type JobApplication = {
   job_id: string
   employer_user_id: string
   candidate_user_id: string
-  company_id: string
+  business_id: string
   place_id: string
   message: string
   status: JobApplicationStatus

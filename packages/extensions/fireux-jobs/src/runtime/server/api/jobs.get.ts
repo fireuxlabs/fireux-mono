@@ -6,7 +6,7 @@ import {
 } from 'h3'
 
 // Concurrent edit — 2026-07-21 12:53 CEST — Job Directory: cursor-scan eligible roots.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: hydrate bounded canonical Company and Place relationships.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: hydrate bounded canonical Business and Place relationships.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: keep all-category public indexes enabled without a literal wildcard id.
 
 import type { JobDirectoryPage } from '../../job/models/job-collection.model.ts'

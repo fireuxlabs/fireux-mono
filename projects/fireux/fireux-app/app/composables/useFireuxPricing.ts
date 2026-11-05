@@ -19,7 +19,7 @@ const fireuxPricingProfile = {
     'Review Project users and access',
     'Use public FireUX resources',
   ],
-  professional: [
+  pro: [
     'Manage Apps connected to the Project',
     'Manage Project users, roles, and access',
     'Review App and Ecosystem status',

@@ -88,7 +88,7 @@
                   </UBadge>
                 </div>
                 <p class="mt-1 text-sm text-muted">
-                  Compare Free, Premium and Business.
+                  Compare Free, Pro and Business.
                 </p>
               </div>
               <UButton

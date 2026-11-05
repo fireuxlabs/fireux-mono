@@ -6,9 +6,14 @@ export const DEFAULT_APP_LAYERS = [
   'fireux-products/layer',
 ] as const
 
-export function withDefaultAppLayers(layers: readonly string[]): string[] {
+export function withDefaultAppLayers<TLayer>(
+  layers: readonly TLayer[]
+): Array<TLayer | (typeof DEFAULT_APP_LAYERS)[number]> {
   const appLayers = [...layers]
-  const appLayerNames = new Set(appLayers)
+  const appLayerNames = new Set<string>()
+  for (const layer of appLayers) {
+    if (typeof layer === 'string') appLayerNames.add(layer)
+  }
   const defaults = DEFAULT_APP_LAYERS.filter(
     (name) => !appLayerNames.has(name)
   )

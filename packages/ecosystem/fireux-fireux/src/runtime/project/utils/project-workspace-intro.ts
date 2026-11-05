@@ -20,8 +20,8 @@ export function projectWorkspaceIntro(
   const tier =
     facts?.subscription === 'business'
       ? 'Business'
-      : facts?.subscription === 'premium'
-        ? 'Premium'
+      : facts?.subscription === 'pro'
+        ? 'Pro'
         : 'Free'
   return {
     title: 'Project Workspace',

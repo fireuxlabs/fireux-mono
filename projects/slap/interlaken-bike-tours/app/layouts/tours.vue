@@ -1,25 +1,7 @@
 <template>
   <div class="tour-site">
     <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header">
-      <div class="header-inner wrap">
-        <NuxtLink to="/" class="brand" aria-label="Interlaken Bike Tours home"
-          >INTERLAKEN<span>BIKE TOURS</span></NuxtLink
-        >
-        <nav aria-label="Main navigation">
-          <NuxtLink to="/#tours">Tours</NuxtLink>
-          <NuxtLink to="/#rental">Bike rental</NuxtLink>
-          <NuxtLink to="/#contact">Contact</NuxtLink>
-        </nav>
-        <UButton
-          class="header-book"
-          to="/#enquire"
-          color="primary"
-          trailing-icon="i-lucide-arrow-up-right"
-          >Book a tour</UButton
-        >
-      </div>
-    </header>
+    <FireLayoutsDefaultHeader />
     <main id="main"><slot /></main>
     <footer class="site-footer">
       <div class="footer-inner wrap">
@@ -28,6 +10,12 @@
             >INTERLAKEN<span>BIKE TOURS</span></NuxtLink
           >
           <p class="footer-signoff">One guide. Your group. The whole valley.</p>
+          <nav class="footer-contact" aria-label="Bike Tours">
+            <a href="/#tours">Tours</a>
+            <a href="/#rental">Bike rental</a>
+            <a href="/#contact">Contact</a>
+            <a href="/#enquire">Enquire about a tour</a>
+          </nav>
         </div>
         <div class="footer-contact">
           <NuxtLink to="/dashboard">Your account ↗</NuxtLink>

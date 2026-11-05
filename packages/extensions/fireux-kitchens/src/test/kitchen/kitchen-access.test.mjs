@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { useCommandScope } from '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import assert from 'node:assert/strict'
 import { createHash, timingSafeEqual, webcrypto } from 'node:crypto'
@@ -351,8 +352,7 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
       }),
       KITCHEN_MUTATION_TARGETS: { kitchens: { collectionPath: 'kitchens' } },
       PLACE_MUTATION_TARGETS: { places: { collectionPath: 'places' } },
-      isAppUserSubscription: (value) =>
-        ['free', 'premium', 'business'].includes(value),
+      readAppUserSubscription,
     }
   )
   const membership = { ...member(), kitchens: ['kitchen'] }

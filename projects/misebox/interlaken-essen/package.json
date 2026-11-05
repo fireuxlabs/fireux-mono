@@ -23,7 +23,7 @@
     "firebase-functions": "^6.3.2",
     "fireux-blogs": "workspace:*",
     "fireux-products": "workspace:*",
-    "fireux-companies": "workspace:*",
+    "fireux-businesses": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-marketplace": "workspace:*",

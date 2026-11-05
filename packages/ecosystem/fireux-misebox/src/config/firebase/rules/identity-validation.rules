@@ -125,7 +125,7 @@
         value.ongoing is bool &&
         isValidBoundedString(value.responsibilities, 4000) &&
         isValidFirestoreDocumentId(value.place_id) &&
-        value.place_collection in ['', 'kitchens', 'companies'];
+        value.place_collection in ['', 'kitchens', 'businesses'];
     }
 
     function isValidLanguageItem(value) {

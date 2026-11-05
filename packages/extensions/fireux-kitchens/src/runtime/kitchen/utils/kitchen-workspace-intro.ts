@@ -21,8 +21,8 @@ export function kitchenWorkspaceIntro(
   const tier =
     allowance?.subscription === 'business'
       ? 'Business'
-      : allowance?.subscription === 'premium'
-        ? 'Premium'
+      : allowance?.subscription === 'pro'
+        ? 'Pro'
         : 'Free'
   const multiple = known && allowance?.subscription === 'business'
   const creationReason = !facts?.accountReady

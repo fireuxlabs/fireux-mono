@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -39,8 +40,7 @@ const requireKitchenMutationAuthority = load(
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
     PLACE_MUTATION_TARGETS: { places: 'places' },
     readKitchenAccessIds,
-    isAppUserSubscription: (value) =>
-      ['free', 'premium', 'business'].includes(value),
+    readAppUserSubscription,
     createError,
   },
   'requireKitchenMutationAuthority'
@@ -52,7 +52,7 @@ const metadata = load(
   '({normalizeMenuMetadataPatch,normalizeMenuDocument})'
 )
 const readRecordString = (v, k) => (typeof v?.[k] === 'string' ? v[k] : '')
-function harness(tier = 'premium') {
+function harness(tier = 'pro') {
   const at = { seconds: 1, nanoseconds: 0 },
     records = new Map([
       ['kitchens/k', { slug: 'venue' }],
@@ -241,7 +241,7 @@ test('Metadata updates only the canonical Menu atomically', async () => {
   )
   assert.deepEqual([...failed.records], snapshot)
 })
-test('Free may edit operational metadata but only Plus may rename; strict field grammar', async () => {
+test('Free may edit operational metadata but only Pro may rename; strict field grammar', async () => {
   const h = harness('free')
   await h.updateKitchenMenu(
     {},

@@ -39,7 +39,6 @@ export const PortfolioStorage = {
       'portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
     documents: 'portfolios/{portfolioId}/documents/{documentId}',
     tasks: 'portfolios/{portfolioId}/tasks/{taskId}',
-    units: 'portfolios/{portfolioId}/units/{unitId}',
   },
 } as const
 

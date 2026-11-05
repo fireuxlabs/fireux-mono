@@ -71,7 +71,8 @@ function fixture({
       role_ids: [],
     }),
     SUPPLIER_MUTATION_TARGETS: { suppliers: { database: 'db' } },
-PLACE_MUTATION_TARGETS: { companies: 'companies', places: 'places' },
+BUSINESS_MUTATION_TARGETS: { businesses: 'businesses' },
+    PLACE_MUTATION_TARGETS: { businesses: 'businesses', places: 'places' },
     serverAppUsersTarget: () => 'memberships',
     serverSupplierAccessTarget: (appId) => {
       assert.equal(appId, 'app')
@@ -79,7 +80,7 @@ PLACE_MUTATION_TARGETS: { companies: 'companies', places: 'places' },
     },
     serverSupplierTeamMembersTarget: () => 'team',
     normalizeSlug: () => 'supplier',
-    canonicalCompanyRole: () => true,
+    normalizeBusiness: (id) => ({ id, place_ids: [id] }),
     normalizePlace: () => true,
     normalizeSupplier: (id, value) => value,
     runGuardedServerTransaction: async (_, callback) =>
@@ -92,12 +93,12 @@ PLACE_MUTATION_TARGETS: { companies: 'companies', places: 'places' },
               ? { exists: Boolean(accessRecord), data: accessRecord }
               : target === 'team'
                 ? { exists: false }
-                : target === 'companies' || target === 'places'
+                : target === 'businesses' || target === 'places'
                   ? { exists: true, data: {} }
                   : {
                       exists: existing,
                       data: {
-                        company_id: 'company',
+                        business_id: 'business',
                         management: { mode: 'app', app_id: 'app' },
                         identity: {
                           slug: 'supplier',
@@ -127,7 +128,7 @@ PLACE_MUTATION_TARGETS: { companies: 'companies', places: 'places' },
         {},
         existing
           ? { supplier_id: 'supplier' }
-          : { organization_name: 'Supplier', company_id: 'company' }
+          : { organization_name: 'Supplier', business_id: 'business' }
       ),
   }
 }
@@ -210,8 +211,8 @@ test('new Supplier replaces retained access from a previous membership', async (
 test('Supplier onboarding refuses coercible text and ID objects before writes', async () => {
   for (const input of [
     { supplier_id: { id: 'supplier' } },
-    { organization_name: ['Supplier'], company_id: 'company' },
-    { organization_name: 'Supplier', company_id: 123 },
+    { organization_name: ['Supplier'], business_id: 'business' },
+    { organization_name: 'Supplier', business_id: 123 },
   ]) {
     const f = fixture()
     await assert.rejects(f.runWith(input), /must be strings/)

@@ -33,7 +33,7 @@ with the associated published Kitchen's existing panels. Its Kitchen lookup
 uses the canonical relationship, not `entity_families` labels. Other consumers
 retain the ordinary Place-only detail. Supplier public management composition in the Misebox Place route remains deferred.
 Supplier Identity separately composes these Place editors through its own trusted
-profile command, preserving the linked Company/same-id Place authority.
+profile command, preserving the linked Business/explicit Place authority.
 
 Workspace Kitchen targets use the linked Place identity. Header, sidebar, Home
 and selection avatars use `kitchen/utils/kitchen-workspace-avatar.ts`. Kitchen,

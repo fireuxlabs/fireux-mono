@@ -7,7 +7,7 @@
 
 <template>
   <div class="space-y-6">
-    <JobCreateCompany v-model:form="form" />
+    <JobCreateBusiness v-model:form="form" />
 
     <JobCreateLocation v-model:form="form" />
 

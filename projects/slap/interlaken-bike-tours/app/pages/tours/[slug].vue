@@ -48,10 +48,10 @@ useSeo({
           From <strong>CHF {{ tour.price }}</strong> / person
         </p>
         <UButton
-          :to="{ path: '/', query: { tour: tour.name }, hash: '#enquire' }"
+          :to="{ path: '/book', query: { tour: tour.slug } }"
           size="xl"
           trailing-icon="i-lucide-arrow-up-right"
-          >Enquire about this ride</UButton
+          >Book this private tour</UButton
         >
       </div>
     </div>

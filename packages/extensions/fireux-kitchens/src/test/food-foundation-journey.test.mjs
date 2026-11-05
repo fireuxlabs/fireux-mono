@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { harness } from './helpers/menu-publication.mjs'
@@ -294,8 +295,7 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
       ...targets,
       ...access,
       createError,
-      isAppUserSubscription: (value) =>
-        ['free', 'premium', 'business'].includes(value),
+      readAppUserSubscription,
     }
   )
   let sequence = 0

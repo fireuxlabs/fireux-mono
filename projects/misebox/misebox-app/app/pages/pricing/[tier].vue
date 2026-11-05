@@ -14,7 +14,7 @@ definePageMeta({
   layout: 'landing',
   validate: (route) =>
     route.name === 'pricing-tier' &&
-    ['free', 'professional', 'business'].includes(String(route.params.tier)),
+    ['free', 'pro', 'business'].includes(String(route.params.tier)),
 })
 useSeoMeta({
   title: () =>

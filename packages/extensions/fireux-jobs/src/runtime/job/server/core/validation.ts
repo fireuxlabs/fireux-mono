@@ -40,7 +40,7 @@ import {
 type JobCreateField = keyof JobCreateIntent
 
 export const JOB_CREATE_FIELDS = [
-  'company_id',
+  'business_id',
   'place_id',
   'category_id',
   'contract_type',
@@ -110,8 +110,8 @@ function normalizeCreateField(
   scope: JobServerScope
 ): JobCreateIntent[JobCreateField] {
   switch (key) {
-    case 'company_id':
-      return readJobDocumentId(value, 'Company id')
+    case 'business_id':
+      return readJobDocumentId(value, 'Business id')
     case 'place_id':
       return readJobDocumentId(value, 'Place id')
     case 'category_id':
@@ -291,7 +291,7 @@ export function canonicalJobRoot(id: string, value: unknown): Job {
     owner_type: 'user',
     owner_id: canonicalDocumentId(source.owner_id, 'owner_id'),
     visibility,
-    company_id: canonicalDocumentId(source.company_id, 'company_id'),
+    business_id: canonicalDocumentId(source.business_id, 'business_id'),
     place_id: canonicalDocumentId(source.place_id, 'place_id'),
     category_id: canonicalDocumentId(source.category_id, 'category_id'),
     contract_type: contractType,
@@ -313,8 +313,7 @@ export type JobReference = { path: string; label: string }
 export function jobReferences(job: JobCreateIntent): JobReference[] {
   const references = [
     { path: `places/${job.place_id}`, label: 'Job Place' },
-    { path: `companies/${job.company_id}`, label: 'Company' },
-    { path: `places/${job.company_id}`, label: 'Company Place' },
+    { path: `businesses/${job.business_id}`, label: 'Business' },
   ]
   return Array.from(
     new Map(references.map((reference) => [reference.path, reference])).values()

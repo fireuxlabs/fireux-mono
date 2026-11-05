@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -27,7 +28,7 @@ const readMembershipAccessIds = load(
 const managementDeps = {
   readMembershipAccessIds,
   createError,
-  isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
+  readAppUserSubscription,
   readFireuxEntityManagement: (x) => x,
   resolveFireuxEntityManagementAppId: (x) => x.app_id,
 }
@@ -41,7 +42,7 @@ const mediaUrl = (path) =>
 
 const targets = {
   suppliers: 'suppliers',
-  companies: 'companies',
+  businesses: 'businesses',
   places: 'places',
 }
 const authority = load(
@@ -55,6 +56,7 @@ ECOSYSTEM_MUTATION_TARGETS: targets,
 FIREUX_MUTATION_TARGETS: targets,
 SPROOCHLI_MUTATION_TARGETS: targets,
 PLACE_MUTATION_TARGETS: targets,
+BUSINESS_MUTATION_TARGETS: targets,
 KITCHEN_MUTATION_TARGETS: targets,
 INGREDIENT_MUTATION_TARGETS: targets,
 PRODUCT_MUTATION_TARGETS: targets,
@@ -86,6 +88,7 @@ ECOSYSTEM_MUTATION_TARGETS: targets,
 FIREUX_MUTATION_TARGETS: targets,
 SPROOCHLI_MUTATION_TARGETS: targets,
 PLACE_MUTATION_TARGETS: targets,
+BUSINESS_MUTATION_TARGETS: targets,
 KITCHEN_MUTATION_TARGETS: targets,
 INGREDIENT_MUTATION_TARGETS: targets,
 PRODUCT_MUTATION_TARGETS: targets,
@@ -115,6 +118,7 @@ ECOSYSTEM_MUTATION_TARGETS: targets,
 FIREUX_MUTATION_TARGETS: targets,
 SPROOCHLI_MUTATION_TARGETS: targets,
 PLACE_MUTATION_TARGETS: targets,
+BUSINESS_MUTATION_TARGETS: targets,
 KITCHEN_MUTATION_TARGETS: targets,
 INGREDIENT_MUTATION_TARGETS: targets,
 PRODUCT_MUTATION_TARGETS: targets,
@@ -125,17 +129,17 @@ JOB_MUTATION_TARGETS: targets,
     serverAuditStamp: (x) => ({ ...x, at: 'server' }),
   }
 )
-const projectCompany = load(
-  '../../../fireux-companies/src/runtime/place/server/company/canonical.ts',
-  'canonicalCompanyRole',
-  { isFirestoreDocumentId }
+const projectBusiness = load(
+  '../../../fireux-businesses/src/runtime/business/utils/normalize-business.ts',
+  'normalizeBusiness',
+  { isFirestoreDocumentId, readFireuxEntityManagement: (value) => value?.mode === 'root' ? value : null }
 )
 function harness() {
   const at = { seconds: 1, nanoseconds: 0 },
     writes = []
   const records = new Map([
-    ['suppliers/s', { company_id: 'venue', management: { mode: 'root' } }],
-    ['companies/venue', { created: { at }, updated: { at } }],
+    ['suppliers/s', { business_id: 'venue', management: { mode: 'root' } }],
+    ['businesses/venue', { name: 'Business', description: '', email: '', phone: '', website: '', place_ids: ['venue'], management: { mode: 'root' }, created: { at }, updated: { at } }],
     ['places/venue', { name: 'Before', timezone: 'Europe/Zurich' }],
     [
       'apps/app/users/u',
@@ -152,13 +156,15 @@ function harness() {
       requireFirestoreDocumentId,
       requireSupplierMutationAuthority: authority,
       stagePlaceUpdate,
-      projectCompany,
+      projectBusiness,
+    BUSINESS_MUTATION_TARGETS: targets,
       APP_MUTATION_TARGETS: targets,
 USER_MUTATION_TARGETS: targets,
 ECOSYSTEM_MUTATION_TARGETS: targets,
 FIREUX_MUTATION_TARGETS: targets,
 SPROOCHLI_MUTATION_TARGETS: targets,
 PLACE_MUTATION_TARGETS: targets,
+BUSINESS_MUTATION_TARGETS: targets,
 KITCHEN_MUTATION_TARGETS: targets,
 INGREDIENT_MUTATION_TARGETS: targets,
 PRODUCT_MUTATION_TARGETS: targets,
@@ -208,9 +214,9 @@ test('Supplier command edits only its linked Place using Place-owned normalizati
   ])
   assert.equal(result.supplierId, 's')
   assert.equal(result.place.id, 'venue')
-  assert.equal(h.records.get('suppliers/s').company_id, 'venue')
+  assert.equal(h.records.get('suppliers/s').business_id, 'venue')
 })
-test('Supplier rejects relinking, stale/recreated access, foreign management, missing and malformed Company/Place', async () => {
+test('Supplier rejects relinking, stale/recreated access, foreign management, missing and malformed Business/Place', async () => {
   for (const invalidate of [
     (h) => h.records.delete('apps/app/users/u'),
     (h) => (h.records.get('apps/app/users/u').created.at = { seconds: 2 }),
@@ -220,9 +226,9 @@ test('Supplier rejects relinking, stale/recreated access, foreign management, mi
         mode: 'app',
         app_id: 'foreign',
       }),
-    (h) => (h.records.get('suppliers/s').company_id = 'other'),
-    (h) => h.records.delete('companies/venue'),
-    (h) => h.records.set('companies/venue', { name: 'wrong schema' }),
+    (h) => (h.records.get('suppliers/s').business_id = 'other'),
+    (h) => h.records.delete('businesses/venue'),
+    (h) => h.records.set('businesses/venue', { name: 'wrong schema' }),
     (h) => h.records.delete('places/venue'),
   ]) {
     const h = harness()
@@ -241,7 +247,7 @@ test('Supplier Place fields exclude claims/provider metadata and validate owned 
     {},
     { claimed_by: 'u' },
     { google: {} },
-    { company_id: 'other' },
+    { business_id: 'other' },
     { image_url: mediaUrl('places/other/image') },
     { logo_image: 'https://example.test/logo' },
     { default_currency_code: 'EURO' },

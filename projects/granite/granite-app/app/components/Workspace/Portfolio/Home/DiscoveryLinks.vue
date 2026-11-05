@@ -10,7 +10,7 @@
       />
       <UPageCard
         title="Manage your Portfolio collection"
-        description="Free and Professional support one Portfolio. Business operates multiple Portfolios."
+        description="Free and Pro support one Portfolio. Business operates multiple Portfolios."
         icon="i-lucide-badge-check"
         to="/pricing"
         variant="subtle"

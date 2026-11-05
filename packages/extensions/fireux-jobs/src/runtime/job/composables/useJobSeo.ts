@@ -37,7 +37,7 @@ export function buildJobJsonLd(job: Partial<JobView> | null | undefined) {
   if (!title || !id || job?.visibility !== 'public' || job?.status !== 'open')
     return null
 
-  const companyName = clean(job.company?.short_name || job.company?.name)
+  const businessName = clean(job.business?.short_name || job.business?.name)
   const placeName = clean(job.place?.short_name || job.place?.name)
   const placeAddress = clean(job.place?.short_address)
 
@@ -47,11 +47,11 @@ export function buildJobJsonLd(job: Partial<JobView> | null | undefined) {
     title,
     description: excerpt(job.description),
     employmentType: clean(job.contract_type).replace(/_/g, ' '),
-    hiringOrganization: companyName
+    hiringOrganization: businessName
       ? {
           '@type': 'Organization',
-          name: companyName,
-          logo: clean(job.company?.image_url) || undefined,
+          name: businessName,
+          logo: clean(job.business?.image_url) || undefined,
         }
       : undefined,
     jobLocation:

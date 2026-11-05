@@ -63,7 +63,7 @@
               Shared wherever this business profile is used.
             </p>
             <UButton
-              :to="`/places/${encodeURIComponent(companyId)}`"
+              :to="`/places/${encodeURIComponent(businessId)}`"
               label="View business profile"
               icon="i-lucide-arrow-up-right"
               color="neutral"
@@ -113,7 +113,7 @@ import type { SupplierWorkspaceIdentityState } from '../../../composables/worksp
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
 const props = defineProps<{ identity: SupplierWorkspaceIdentityState }>()
 const emit = defineEmits<{ edit: [section: PlaceIdentitySection] }>()
-const { readState, companyId, name, tagline, summary, imageUrl } =
+const { readState, businessId, name, tagline, summary, imageUrl } =
   props.identity
 const media = computed(() => placeIdentityMedia(props.identity.place.value))
 const sections = computed(() => {

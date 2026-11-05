@@ -16,12 +16,33 @@ import {
 function load(relativePath, name, dependencies) {
   const source = readFileSync(new URL(relativePath, import.meta.url), 'utf8')
     .replace(/^import .* from .+\n/gm, '')
+    .replace(/\bimport\.meta\.dev\b/g, 'true')
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn ${name}`,
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+
+test('legacy capacity config normalizes to Pro and an explicit Pro limit wins', () => {
+  const normalize = load(
+    '../runtime/app/composables/config/FireUXConfig.ts',
+    'toSubscriptionCapacity',
+    {}
+  )
+  assert.deepEqual(
+    normalize({ project: { free: 1, premium: 7, business: null } }),
+    {
+      project: { free: 1, pro: 7, business: null },
+    }
+  )
+  assert.deepEqual(
+    normalize({ project: { free: 1, pro: 3, premium: 7, business: null } }),
+    {
+      project: { free: 1, pro: 3, business: null },
+    }
+  )
+})
 
 test('Freemium is shown only for free plans at top or discovery, with configured allowance copy', () => {
   const source = readFileSync(
@@ -45,8 +66,8 @@ test('Freemium is shown only for free plans at top or discovery, with configured
   const config = {
     isGlobal: true,
     subscriptionCapacity: {
-      kitchen: { free: 1, premium: 1, business: null },
-      'kitchen.test': { free: 2, premium: 10, business: null },
+      kitchen: { free: 1, pro: 1, business: null },
+      'kitchen.test': { free: 2, pro: 10, business: null },
     },
   }
   const make = () =>
@@ -63,7 +84,7 @@ test('Freemium is shown only for free plans at top or discovery, with configured
   assert.equal(card.visible.value, true)
   assert.match(card.currentAllowance.value, /2 Test records remaining/)
   assert.match(card.upgradeAllowance.value, /Pro supports up to 10/)
-  session.appUser.value.subscription = 'premium'
+  session.appUser.value.subscription = 'pro'
   assert.equal(card.visible.value, false)
   props.placement = 'bottom'
   card = make()

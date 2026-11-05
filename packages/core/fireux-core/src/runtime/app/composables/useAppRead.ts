@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { computed, unref, type MaybeRef } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { resolveReadOutcome } from '../../utils/read-outcome'
@@ -70,6 +70,6 @@ export function useAppRead(id: MaybeRef<string | null | undefined>) {
     pending,
     error,
     outcome,
-    refresh: source.refresh,
+    refresh: source.refresh as AsyncData<unknown, unknown>['refresh'],
   }
 }

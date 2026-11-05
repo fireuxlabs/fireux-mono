@@ -4,6 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import { computed, ref, unref } from 'vue'
+import { readAppUserSubscription } from '../../../../packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
 
 function load(path, names, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -31,6 +32,7 @@ function fixture({
 } = {}) {
   const writes = []
   const counts = []
+  const subscriptions = []
   const member = {
     exists: membership,
     data: {
@@ -74,11 +76,11 @@ function fixture({
       assert.equal(appId, 'app')
       return 'access'
     },
-    isAppUserSubscription: (value) =>
-      ['free', 'premium', 'business'].includes(value),
-    hasAppSubscriptionCapacity: (_config, family, _subscription, count) => {
+    readAppUserSubscription,
+    hasAppSubscriptionCapacity: (_config, family, subscription, count) => {
       assert.equal(family, 'blank')
       counts.push(count)
+      subscriptions.push(subscription)
       return capacity
     },
     randomUUID: () => 'new-blank',
@@ -104,6 +106,7 @@ function fixture({
   return {
     writes,
     counts,
+    subscriptions,
     create: () => completeBlankOnboarding({}, { name: 'New Blank' }),
     authorize: (id = 'old-blank') =>
       requireBlankMutationAuthority(tx, actor, id),
@@ -151,6 +154,21 @@ test('Blank counts current grants and replaces grants from an earlier membership
     ids: ['new-blank'],
     membership_created_at: createdAt,
   })
+})
+
+test('Blank normalizes canonical and legacy Pro memberships before capacity and mutation checks', async () => {
+  for (const subscription of ['pro', 'premium']) {
+    const creation = fixture({ subscription })
+    await creation.create()
+    assert.deepEqual(creation.subscriptions, ['pro'])
+
+    const mutation = fixture({
+      subscription,
+      accessRecord: { ids: ['old-blank'], membership_created_at: createdAt },
+    })
+    assert.equal((await mutation.authorize()).subscription, 'pro')
+    assert.equal(mutation.writes.length, 0)
+  }
 })
 
 test('Blank rejects absent grants, removed membership, invalid role and foreign management', async () => {

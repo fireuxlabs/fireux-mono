@@ -78,6 +78,7 @@ export function useKitchenSupplierFetch(
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
   const supplierNetwork = useFetch<{
     suppliers: Supplier[]
+    businesses: Array<{ id: string; place_ids: string[] }>
     places: Place[]
   }>('/api/supply/suppliers', {
     key: 'bringli-suppliers',
@@ -96,7 +97,7 @@ export function useKitchenSupplierFetch(
     )
     return (supplierNetwork.data.value?.suppliers ?? []).map((supplier) => ({
       ...supplier,
-      company_place: places.get(String(supplier.company_id || '').trim()),
+      business_place: places.get(supplierNetwork.data.value?.businesses?.find((business) => business.id === supplier.business_id)?.place_ids[0] || ''),
     })) as SupplierDoc[]
   })
 
@@ -143,11 +144,11 @@ export function useKitchenSupplierFetch(
         merged.source_supplier_id = supplierRefId
       }
 
-      const companyPlace = (canonical as any)?.company_place
+      const businessPlace = (canonical as any)?.business_place
       const resolvedName = firstNonEmpty(
         (overlay as any).name,
-        companyPlace?.short_name,
-        companyPlace?.name,
+        businessPlace?.short_name,
+        businessPlace?.name,
         supplierRefId,
         overlayId
       )

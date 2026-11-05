@@ -104,7 +104,7 @@ const subscriptionOptions: Array<{
   value: AppUserSubscription
 }> = [
   { label: 'Free', value: 'free' },
-  { label: 'Premium', value: 'premium' },
+  { label: 'Pro', value: 'pro' },
   { label: 'Business', value: 'business' },
 ]
 

@@ -1,7 +1,7 @@
 import manifest from '../../package.json'
 import package0 from 'fireux-ai/package.json'
 import package1 from 'fireux-blogs/package.json'
-import package2 from 'fireux-companies/package.json'
+import package2 from 'fireux-businesses/package.json'
 import package3 from 'fireux-core/package.json'
 import package4 from 'fireux-demo/package.json'
 import package5 from 'fireux-go-qr/package.json'
@@ -15,7 +15,7 @@ import package11 from 'fireux-suppliers/package.json'
 const packageMetadata: Record<string, { name: string; description?: string }> = {
   'fireux-ai': package0,
   'fireux-blogs': package1,
-  'fireux-companies': package2,
+  'fireux-businesses': package2,
   'fireux-core': package3,
   'fireux-demo': package4,
   'fireux-go-qr': package5,

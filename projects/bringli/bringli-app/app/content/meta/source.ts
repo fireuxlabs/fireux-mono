@@ -71,7 +71,7 @@ export const sourceMeta = {
       modulesEyebrow: 'Modules',
       modulesTitle: 'How we organize the app',
       modulesDescription:
-        'Bringli starts simple with supplier, company, and place identity to support local delivery operations.',
+        'Bringli starts simple with supplier, business, and place identity to support local delivery operations.',
       entitiesEyebrow: 'Entities',
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
@@ -132,9 +132,9 @@ export const sourceMeta = {
           entities: ['Supplier'],
         },
         {
-          name: 'fireux-companies',
-          summary: 'Company identity records for producer organizations.',
-          entities: ['Company'],
+          name: 'fireux-businesses',
+          summary: 'Business identity records for producer organizations.',
+          entities: ['Business'],
         },
         {
           name: 'fireux-places',
@@ -157,10 +157,10 @@ export const sourceMeta = {
             'supplier_product_categories',
             'supplier_delivery_areas',
           ],
-          linksTo: ['Company', 'Place', 'User'],
+          linksTo: ['Business', 'Place', 'User'],
         },
         {
-          name: 'Company',
+          name: 'Business',
           purpose: 'Organization identity record for producer businesses.',
           keyFields: ['id', 'name', 'short_name', 'place_id'],
           linksTo: ['Place', 'Supplier'],
@@ -169,13 +169,13 @@ export const sourceMeta = {
           name: 'Place',
           purpose: 'Canonical location record for producer presence and delivery area context.',
           keyFields: ['id', 'name', 'formatted_address', 'lat', 'lng'],
-          linksTo: ['Company', 'Supplier'],
+          linksTo: ['Business', 'Supplier'],
         },
         {
           name: 'User',
           purpose: 'Cross-app member identity for producer owners and operators.',
           keyFields: ['id', 'display_name', 'profiles', 'userOf', 'adminOf'],
-          linksTo: ['Supplier', 'Company'],
+          linksTo: ['Supplier', 'Business'],
         },
       ],
       routes: [
@@ -188,12 +188,12 @@ export const sourceMeta = {
     },
     relationshipMap: `
 Place
-  -> Company
+  -> Business
        -> Supplier
 
 User
   -> Supplier
-  -> Company
+  -> Business
 `,
     seo: {
       title: 'About Bringli',

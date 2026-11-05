@@ -137,7 +137,7 @@ export const sourceMeta = {
         {
           name: 'fireux-properties',
           summary: 'Portfolio structure and tenancy-facing records.',
-          entities: ['Portfolio', 'Property', 'Unit', 'Client'],
+          entities: ['Portfolio', 'Property', 'Client'],
         },
         {
           name: 'fireux-compliance',
@@ -171,19 +171,13 @@ export const sourceMeta = {
           name: 'Property',
           purpose: 'Managed property asset inside a portfolio.',
           keyFields: ['id', 'portfolio_id', 'title', 'address_label', 'estimated_value'],
-          linksTo: ['Unit', 'Client', 'ComplianceRecord', 'DocumentLink', 'Task'],
-        },
-        {
-          name: 'Unit',
-          purpose: 'Lettable or manageable unit under a property.',
-          keyFields: ['id', 'property_id', 'label', 'status', 'rent_minor'],
-          linksTo: ['Client', 'ComplianceRecord', 'DocumentLink'],
+          linksTo: ['Client', 'ComplianceRecord', 'DocumentLink', 'Task'],
         },
         {
           name: 'Client',
           purpose: 'Organization or individual client/occupier relationship record.',
           keyFields: ['id', 'display_name', 'entity_kind', 'status', 'portfolio_id'],
-          linksTo: ['Portfolio', 'Property', 'Unit', 'Task'],
+          linksTo: ['Portfolio', 'Property', 'Task'],
         },
         {
           name: 'ComplianceRecord',
@@ -205,7 +199,6 @@ export const sourceMeta = {
             'Document',
             'Portfolio',
             'Property',
-            'Unit',
             'ComplianceRecord',
             'Task',
           ],
@@ -217,7 +210,6 @@ export const sourceMeta = {
           linksTo: [
             'Portfolio',
             'Property',
-            'Unit',
             'ComplianceRecord',
             'DocumentLink',
           ],
@@ -253,14 +245,13 @@ export const sourceMeta = {
     relationshipMap: `
 Portfolio
   -> Property
-       -> Unit
        -> Client
   -> ComplianceRecord
   -> Task
 
 Document
   -> DocumentLink
-       -> Portfolio | Property | Unit | ComplianceRecord | Task
+       -> Portfolio | Property | ComplianceRecord | Task
 
 Place
   -> Company

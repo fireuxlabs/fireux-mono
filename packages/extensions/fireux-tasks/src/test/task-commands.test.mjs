@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -31,7 +32,7 @@ const requirePortfolioMutationAuthority = load(
     serverPortfolioAccessTarget: (app) => `portfolio_access/${app}/users`,
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     PORTFOLIO_MUTATION_TARGETS: { portfolios: 'portfolios' },
-    isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
+    readAppUserSubscription,
     readFireuxEntityManagement: (x) => x,
     resolveFireuxEntityManagementAppId: (x) => x.app_id,
   },

@@ -15,7 +15,7 @@ const granitePricingProfile = {
     'Use the Portfolio Workspace',
     'Review the current portfolio structure',
   ],
-  professional: [
+  pro: [
     'Manage portfolios, properties, and clients',
     'Track compliance, incidents, documents, and tasks',
     'Review portfolio financial signals',

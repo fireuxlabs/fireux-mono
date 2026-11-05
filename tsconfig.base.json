@@ -86,12 +86,12 @@
       "fireux-marketplace/runtime/*": [
         "./packages/extensions/fireux-marketplace/src/runtime/*"
       ],
-      "fireux-companies": [
-        "./packages/extensions/fireux-companies/src/module.ts"
+      "fireux-businesses": [
+        "./packages/extensions/fireux-businesses/src/module.ts"
       ],
-      "fireux-companies/*": ["./packages/extensions/fireux-companies/src/*"],
-      "fireux-companies/runtime/*": [
-        "./packages/extensions/fireux-companies/src/runtime/*"
+      "fireux-businesses/*": ["./packages/extensions/fireux-businesses/src/*"],
+      "fireux-businesses/runtime/*": [
+        "./packages/extensions/fireux-businesses/src/runtime/*"
       ],
       "fireux-compliance": [
         "./packages/extensions/fireux-compliance/src/module.ts"

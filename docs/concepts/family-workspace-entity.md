@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-05
+Ref: 71d4618ec
 Role: map, not canon
 
 ## Purpose
@@ -27,6 +27,7 @@ map in `workspace.md`. The family deltas are:
 
 | Member    | Status and reason                                                                                                                                                                                 |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Business  | `accepted`: independent business identity, optional Place links, membership-bound access and Team roster |
 | Blank     | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no domain capabilities, but is not an ecosystem-installed product Workspace |
 | Kitchen   | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                       |
 | Supplier  | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                        |
@@ -135,7 +136,7 @@ selection, enabled families or permissions. Authentication remains origin-scoped
 Kitchen exposes allowance, used count, `canAdd`, `canCreate` and `showUpgrade`
 through its domain-owned `useKitchenCreate`. Its pure
 `kitchen/utils/kitchen-capacity.ts` is also consumed by trusted onboarding:
-Free and Premium allow one associated Kitchen; Business has no subscription
+Free and Pro allow one associated Kitchen; Business has no subscription
 count limit. The existing relationship storage ceiling is separate. Counts use
 unique Kitchen associations, not other Workspace families or preview tiers.
 Creating a new Kitchen and adding an existing Kitchen both consume a new
@@ -738,7 +739,7 @@ page focus. Neither selector implicitly changes the account primary.
 
 The Kitchen selector plus doorway and Landing Create button share the actual
 account allowance exposed by `useKitchenWorkspace`; Business is not required
-when a Free or Premium account has unused capacity. Kitchen and Menus own their
+when a Free or Pro account has unused capacity. Kitchen and Menus own their
 respective pure policies, shared with their trusted commands. Other capability
 policies still use existing App-configured readers; do not infer their allowance
 or ownership from these two cutovers. Every write still requires its trusted
@@ -1135,15 +1136,15 @@ Project Home, navigation, selection and Identity use the saved Project profile.
 Both Workspace families retain their Identity editors.
 
 Supplier, Property, Portfolio and Blank have named Identity controllers consuming
-`useWorkspaceIdentity`. Supplier reads the linked Company/same-id Place profile. Its
+`useWorkspaceIdentity`. Supplier reads the linked Business and its explicit Place profile. Its
 focused profile, brand, photo, contact and location panels reuse `PlaceEdit`,
 with a Supplier-owned update adapter. Supplier identity media uses the same
 Place logo/backdrop and photo-fallback resolution as Kitchen; settled joined
 Workspace collection identity supplies its selected Overview. The public detail
 passes its existing server-projected Place into presentation rather than opening
-a second Company reader. The trusted Supplier profile command
+a second Business reader. The trusted Supplier profile command
 rechecks current membership-bound Supplier access, management and the exact
-Company/Place link in the same transaction before consuming Place's named
+Business/Place link in the same transaction before consuming Place's named
 `stagePlaceUpdate`. Place owns validation and stored profile fields; Suppliers
 owns the authority to compose them. The client adapter is not authorization.
 
@@ -1161,7 +1162,7 @@ strategy and notes). The private context remains supported descriptive metadata
 on this management page, not a new capability, role grant or public projection.
 Portfolio image editing is not introduced by this pass. The root retains only
 its id, management, audit stamps and nested `identity`; the nine descriptive
-fields live under Identity. Team, Properties, Clients, Units, Documents, Tasks
+fields live under Identity. Team, Properties, Clients, Documents, Tasks
 and Compliance retain their independent record scopes. Canonical collection
 and detail readers fail on malformed roots instead of exposing partial data
 or clearing a valid selection. The named Identity update accepts only six
@@ -1211,19 +1212,20 @@ does not fabricate categories or repeat its tagline as a second headline.
 Domain sections, linked sources, fields and commands remain local; there is no
 universal Identity document or field registry. Supplier now nests publication
 in `identity`, catalogue mode in `catalogue` and delivery areas in `delivery`,
-while Company/Place and scoped records retain their own identities. Its strict
+while Business/Place and scoped records retain their own identities. Its strict
 readers, onboarding, Demo and direct Kitchen consumers use this shape; the mixed
 root editor is retired. The offline Supplier planner preserves preimages and
-has no apply mode. Project now nests its four local profile fields under
-`identity`, while id, audit stamps and optional exact anonymous ownership stay
-at the root. Ecosystem owns `project_id`; App owns `ecosystem_id`. Team and Tests
+has no apply mode. Project nests its four local profile fields under
+`identity` and accepts `active` or `inactive` status. Id, audit stamps and
+optional exact anonymous ownership stay at the root. Ecosystem owns
+`project_id`. App owns `ecosystem_id`. Team and Tests
 remain separately managed records. Private readers reject malformed roots and
 hide partial or stale results. Creation writes this canonical shape; Identity
 updates recheck it inside the authority transaction and write sparse
 `identity.*` fields. Command inputs remain the named action's bounded fields.
 `ProjectPublicSummary` contains only id and Identity; it excludes guest authority
-and audit. Directory requires active Identity, while direct detail preserves its
-existing inactive/archived profile policy. The connected-App publication DTO
+and audit. The directory lists active Projects. Direct detail supports both
+active and inactive Projects. The connected-App publication DTO
 remains a separate presentation contract. See the ecosystem's
 `project-model-shape.test.mjs`, `project-access.test.mjs`,
 `project-directory.test.mjs`, and `project-guest.test.mjs`. The offline Project
@@ -1485,7 +1487,7 @@ domain projections hide retained rows and fields while their source is inactive,
 obsolete, loading or failed. An active read error takes precedence over another
 loading source. Public Detail readers also check their exact route identity:
 Supplier uses case-sensitive document IDs, while Kitchen uses its declared slug.
-Supplier's granted-root collection binds its linked Company Place documents at
+Supplier's granted-root collection binds its linked Business and Place documents at
 setup and projects their current identity; those fields are not copied into the
 stored Supplier root. Missing linked identity does not erase a granted Supplier.
 

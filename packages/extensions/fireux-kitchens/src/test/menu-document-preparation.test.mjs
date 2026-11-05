@@ -35,7 +35,7 @@ function server() {
   const saved = [],
     deleted = []
   let allowed = true,
-    tier = 'premium',
+    tier = 'pro',
     beforeCommit = () => {},
     afterDownload = () => {},
     failCommit = false,

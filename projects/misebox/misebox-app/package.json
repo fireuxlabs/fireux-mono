@@ -33,7 +33,7 @@
     "firebase-functions": "^6.3.2",
     "fireux-ai": "workspace:*",
     "fireux-blogs": "workspace:*",
-    "fireux-companies": "workspace:*",
+    "fireux-businesses": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-demo": "workspace:*",
     "fireux-go-qr": "workspace:*",

@@ -85,8 +85,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 
 ## Root Joined Collection Manager members
 
-- `Company` resolves its stamps-only same-id role marker to the canonical Place;
-  its remaining prefixed transport names are migration debt.
+- `Business` owns organisation identity and optionally joins explicitly linked Places.
 - `Kitchen` receives bounded canonical Kitchen and Place records. Raw Kitchen
   rows stay sparse and no longer copy shared Place fields. Only published,
   non-test Kitchens with a slug and an existing same-ID Place enter the
@@ -107,7 +106,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - `Chef`, `Driver`, `Agent`, and `Professional` use domain-owned APIs
   that join their allowlisted profile fields to canonical User identity by uid.
 - `Job` uses its bounded API to exact-validate open/published roots and join
-  safe Company and canonical work-Place display truth.
+  safe Business and canonical work-Place display truth.
 - `Ingredient` consumes `/api/ingredients`. The API exposes only the canonical
   culinary identity needed by directory browse and exact Kitchen/Supplier
   joins; raw root documents and curator writes remain server-only.
@@ -121,13 +120,12 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 ## Snapshot ownership rule
 
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
-- Company roots stay stamps-only; Company list and detail reads join the
-  same-id Place through the bounded server projection.
+- Business roots own organisation identity; location records remain Place-owned and are linked explicitly.
 - `Place` index transport pages canonical `Place[]`. Live and Demo roots use the
   same `normalizePlace` utility to complete sparse stored truth without
   manufacturing another Place type.
 - Domain parents may cascade into their domain children. Job roots do not copy
-  Company or Place display snapshots; their directory response owns the joins.
+  Business or Place display snapshots; their directory response owns the joins.
 - `User` is the only stored person identity. Profile writes and sync scripts
   must not copy it into `users/{uid}/profiles/{kind}` or `app-state/{appId}`.
 - Profile collection presentation receives the profile and canonical User
@@ -204,7 +202,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 
 ## Current source-mode snapshot
 
-- Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Driver`, `Agent`, `Professional`.
+- Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Business`, `Job`, `Product`, `Ingredient`, `Chef`, `Driver`, `Agent`, `Professional`.
 - Project has a bounded directory collection of active identity and presentation;
   selection, access, and operations remain private FireUX Workspace concerns.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
@@ -228,7 +226,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - Deliberately stored downstream snapshots must be propagated by an explicit
   sync seam. The current the retired operational artifact in Git history
   operation updates Menu display snapshots from their Kitchen/Place source; it
-  must never write Company roots.
+  must never write Business roots.
 - Its supported command is `pnpm sync:misebox-directory-card-snapshots`; it is
   dry-run-first and requires an explicit project/database, target-bound
   confirmation, protected preimage, unchanged source versions, and post-write
@@ -271,8 +269,8 @@ Root Projected Collection Managers
 | `Driver`       | `/api/drivers`                         | Server profile/User join  | Kitchen-owned allowlist excludes App-specific contact, tender, and Kitchen grant state.                                                           |
 | `Agent`        | `/api/agents`                          | Server profile/User join  | Jobs-owned allowlist includes deliberately published business contacts only.                                                                      |
 | `Professional` | `/api/professionals`                   | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                                      |
-| `Job`          | `/api/jobs`                            | Server Company/Place join | The paginated Directory joins bounded employer and work-location display truth; exact detail returns the canonical Job and named related records. |
-| `Company`      | `/api/companies`                       | Server Place join         | Exact stamps-only Company roots join the same-id canonical Place; Place display fields are never copied onto Company.                             |
+| `Job`          | `/api/jobs`                            | Server Business/Place join | The paginated Directory joins bounded employer and work-location display truth; exact detail returns the canonical Job and named related records. |
+| `Business`      | `/api/businesses`                       | Server Place join         | Independent Business roots own organisation identity and link optional Place locations.                             |
 
 Scoped/provided collection surfaces
 

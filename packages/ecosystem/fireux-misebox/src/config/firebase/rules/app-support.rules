@@ -45,7 +45,7 @@
               'updated'
             ]) &&
             data.role in ['admin', 'user', 'dev'] &&
-            data.subscription in ['free', 'premium', 'business'] &&
+            data.subscription in ['free', 'pro', 'premium', 'business'] &&
             data.onboarding_status in [
               'pending',
               'completed',

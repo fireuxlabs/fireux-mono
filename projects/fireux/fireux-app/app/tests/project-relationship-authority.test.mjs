@@ -4,6 +4,10 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ECOSYSTEM_STATUSES } from '../../../../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts'
+import {
+  isAppUserSubscription,
+  readAppUserSubscription,
+} from '../../../../../packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
@@ -29,13 +33,10 @@ const requireWorkspaceEntityMemberRole = load(
   { createError }
 )
 const isAppUserRole = load(core + 'app/models/app-user.model.ts', 'isAppUserRole')
-const isAppUserSubscription = load(
-  core + 'app/models/app-user.model.ts',
-  'isAppUserSubscription'
-)
 const capacity = load(
   core + 'app/utils/app-subscription-capacity.ts',
-  '{ hasAppSubscriptionCapacity }'
+  '{ hasAppSubscriptionCapacity }',
+  { readAppUserSubscription }
 )
 const target = (collectionPath) => ({
   collectionPath,
@@ -151,11 +152,11 @@ function harness() {
     useFireUXConfig: () => ({
       ecosystemId: 'fireux',
       subscriptionCapacity: {
-        'project.team': { free: 1, premium: 2, business: 10 },
+        'project.team': { free: 1, pro: 2, business: 10 },
       },
     }),
     ...capacity,
-    isAppUserSubscription,
+    readAppUserSubscription,
     ...mechanics,
     teamRolesCommand: roles,
     defineFirestoreMutationTarget: target,
@@ -263,6 +264,14 @@ test('Team creation fails closed on malformed current subscription', async () =>
   })
   await assert.rejects(h.commands.create(), { statusCode: 409 })
   assert.equal(h.writes.length, 0)
+})
+test('Team creation preserves Pro capacity for canonical and legacy stored memberships', async () => {
+  for (const subscription of ['pro', 'premium']) {
+    const h = harness()
+    h.records.get('apps/fireux-app/users/actor').subscription = subscription
+    await h.commands.create()
+    assert.equal(h.writes.length, 1)
+  }
 })
 const newApp = {
   id: 'new-app',
@@ -395,6 +404,7 @@ test('Project ownership and administration in another App cannot administer an e
       FieldValue: { serverTimestamp: () => 1 },
       isAppUserRole,
       isAppUserSubscription,
+      readAppUserSubscription,
       APP_MUTATION_TARGETS: targets,
 USER_MUTATION_TARGETS: targets,
 ECOSYSTEM_MUTATION_TARGETS: targets,

@@ -5,6 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, unref } from 'vue'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
 function load(file, dependencies, name) {
   const source = readFileSync(
     new URL(`../runtime/${file}`, import.meta.url),
@@ -118,7 +119,11 @@ test('App/account changes immediately hide retained metadata and errors', async 
   assert.equal(f.state.error.value, undefined)
 })
 test('App status projection excludes stored private context and keeps truthful existence', async () => {
-  const readAppDocument = load('app/utils/readApp.ts', {}, 'readAppDocument')
+  const readAppDocument = load(
+    'app/utils/readApp.ts',
+    { APP_ROLES, APP_STATUSES },
+    'readAppDocument'
+  )
   let raw = {
     ecosystem_id: 'misebox',
     role: 'global',

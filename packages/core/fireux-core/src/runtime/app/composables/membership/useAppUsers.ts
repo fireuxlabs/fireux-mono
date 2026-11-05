@@ -3,6 +3,7 @@ import { computed, type ComputedRef } from 'vue'
 import { where } from 'firebase/firestore'
 import type { AppUserSummary } from '../../models/app-user-summary.ts'
 import type { AppUserWithId } from '../../models/app-user.model.ts'
+import { readAppUserSubscription } from '../../models/app-user.model.ts'
 import { useFireUXConfig } from '../config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
@@ -38,7 +39,7 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
   const summarize = (member: AppUserWithId): AppUserSummary => ({
     id: member.id,
     role: member.role,
-    subscription: member.subscription,
+    subscription: readAppUserSubscription(member.subscription) ?? 'free',
     user: identities.userById(member.id) ?? null,
   })
   const memberships = computed(() => (appUsers.data.value ?? []).map(summarize))

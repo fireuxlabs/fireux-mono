@@ -2,6 +2,7 @@ import { useCommandScope } from '../runtime/composables/fireux/commands/useComma
 import {
   isAppUserRole,
   isAppUserSubscription,
+  readAppUserSubscription,
 } from '../runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -163,7 +164,7 @@ for (const family of [
         resolveAppUserAccess: load(
           '../runtime/app/utils/app-user-access.ts',
           'resolveAppUserAccess',
-          { isAppUserRole, isAppUserSubscription }
+          { isAppUserRole, isAppUserSubscription, readAppUserSubscription }
         ),
         useFireUXConfig: () => ({ appId: 'proving-app' }),
         useState: (key, init) => {
@@ -297,7 +298,7 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
       resolveAppUserAccess: load(
         '../runtime/app/utils/app-user-access.ts',
         'resolveAppUserAccess',
-        { isAppUserRole, isAppUserSubscription }
+        { isAppUserRole, isAppUserSubscription, readAppUserSubscription }
       ),
       useFireUXConfig: () => ({ appId: 'proving-app' }),
       useState: (key, init) => {
@@ -370,7 +371,7 @@ test('workspace creation uses only the supplied domain count and waits for acces
   const appSubscriptionCapacity = load(
     '../runtime/app/utils/app-subscription-capacity.ts',
     'appSubscriptionCapacity',
-    {}
+    { readAppUserSubscription }
   )
   const resolveWorkspaceCanCreate = load(
     '../runtime/workspace/utils/policy.ts',
@@ -385,7 +386,7 @@ test('workspace creation uses only the supplied domain count and waits for acces
   const config = {
     role: 'global',
     workspaceConfig: {},
-    subscriptionCapacity: { project: { free: 1, premium: 1, business: null } },
+    subscriptionCapacity: { project: { free: 1, pro: 1, business: null } },
   }
   const useWorkspaceCreation = load(
     '../runtime/workspace/composables/useWorkspaceCreation.ts',

@@ -4,7 +4,7 @@ import { getPlacesConfig } from './places-config'
 
 const getJobsConfig = () => ({
   enabled: true,
-  placeCollections: ['kitchens', 'companies'],
+  placeCollections: ['kitchens', 'businesses'],
 })
 
 const asRecord = (value: unknown): Record<string, any> =>

@@ -12,9 +12,9 @@ const appConfig = defineFireuxConfig({
   role: 'global',
   workspaces: ['project'],
   subscriptionCapacity: {
-    project: { free: 1, premium: 1, business: null },
-    'project.team': { free: 3, premium: 7, business: null },
-    'project.test': { free: 2, premium: 10, business: null },
+    project: { free: 1, pro: 1, business: null },
+    'project.team': { free: 3, pro: 7, business: null },
+    'project.test': { free: 2, pro: 10, business: null },
   },
   seo: {
     siteUrl: 'https://fireux.app',

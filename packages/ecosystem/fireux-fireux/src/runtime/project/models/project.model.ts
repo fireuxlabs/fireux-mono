@@ -1,6 +1,6 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-export type ProjectStatus = 'active' | 'inactive' | 'archived'
+export type ProjectStatus = 'active' | 'inactive'
 export type ProjectIdentity = {
   status: ProjectStatus
   name: string

@@ -1,6 +1,6 @@
 export const getPlacesConfig = () => ({
   enabled: true,
-  types: ['kitchens', 'companies'],
+  types: ['kitchens', 'businesses'],
   googleAutocompleteTypeFilters: {
     kitchen: [
       'restaurant',

@@ -10,7 +10,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
-import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -106,7 +106,7 @@ export async function createProject(event: H3Event, input: unknown) {
         transaction.read(memberships, uid),
         transaction.read(accessTarget, uid),
       ])
-      const subscription = membership.data?.subscription
+      const subscription = readAppUserSubscription(membership.data?.subscription)
       if (!app.exists) {
         fail(403, 'FireUX App membership is required to create a Project.')
       }
@@ -115,7 +115,7 @@ export async function createProject(event: H3Event, input: unknown) {
         role: membership.data?.role,
         entityLabel: 'Project',
       })
-      if (!isAppUserSubscription(subscription)) {
+      if (!subscription) {
         fail(409, 'The FireUX App subscription has an invalid stored shape.')
       }
 

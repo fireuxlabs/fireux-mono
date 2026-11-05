@@ -1,6 +1,6 @@
 import type { DocumentSnapshot } from 'firebase-admin/firestore'
 // Concurrent edit — 2026-07-21 13:09 CEST — Job reads: enforce source App and category scope.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-validate Jobs and join bounded Company/Place display truth.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-validate Jobs and join bounded Business/Place display truth.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: project every valid neutral category for explicit all-category Apps.
 // Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: fail closed when runtime role or tenant identity is invalid.
 import { useRuntimeConfig } from '#imports'
@@ -10,8 +10,8 @@ import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
-import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
-import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
+import { BusinessStorage } from 'fireux-businesses/runtime/business/models/business.entity'
+import { normalizeBusiness } from 'fireux-businesses/runtime/business/utils/normalize-business'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   JobDetailResponse,
@@ -40,8 +40,7 @@ export type JobReadScope = {
 }
 
 export type JobLinkedRoots = {
-  company: Record<string, unknown>
-  companyPlace: Record<string, unknown>
+  business: Record<string, unknown>
   place: Record<string, unknown>
   sourceApp: Record<string, unknown>
 }
@@ -141,28 +140,23 @@ export function projectJobDirectoryEntry(
     scope,
     linked.sourceApp
   )
-  const company = canonicalCompanyRole(job.company_id, linked.company)
-  const companyPlace = normalizePlace(job.company_id, linked.companyPlace)
+  const business = normalizeBusiness(job.business_id, linked.business)
   const place = normalizePlace(job.place_id, linked.place)
-  if (!company || !companyPlace || !place) {
+  if (!business || !place) {
     throw new Error(
-      'Canonical Job has an invalid Company or Place relationship.'
+      'Canonical Job has an invalid Business or Place relationship.'
     )
   }
 
   return {
     id: job.id,
     category_id: job.category_id,
-    company_id: job.company_id,
+    business_id: job.business_id,
     place_id: job.place_id,
     visibility: 'public',
     status: 'open',
-    company: {
-      name: companyPlace.name,
-      ...(companyPlace.short_name
-        ? { short_name: companyPlace.short_name }
-        : {}),
-      ...(companyPlace.image_url ? { image_url: companyPlace.image_url } : {}),
+    business: {
+      name: business.name,
     },
     place: {
       name: place.name,
@@ -222,11 +216,10 @@ export async function readJobDetail(
     })
   }
 
-  const [companySnapshot, companyPlaceSnapshot, placeSnapshot, sourceApp] =
+  const [businessSnapshot, placeSnapshot, sourceApp] =
     (await db
       .getAll(
-        db.collection(CompanyStorage.collection).doc(job.company_id),
-        db.collection('places').doc(job.company_id),
+        db.collection(BusinessStorage.collection).doc(job.business_id),
         db.collection('places').doc(job.place_id),
         db.collection('apps').doc(job.source_app_id)
       )
@@ -239,12 +232,10 @@ export async function readJobDetail(
       DocumentSnapshot,
       DocumentSnapshot,
       DocumentSnapshot,
-      DocumentSnapshot,
     ]
 
   if (
-    !companySnapshot.exists ||
-    !companyPlaceSnapshot.exists ||
+    !businessSnapshot.exists ||
     !placeSnapshot.exists ||
     !sourceApp.exists
   ) {
@@ -254,16 +245,12 @@ export async function readJobDetail(
     })
   }
 
-  const company = canonicalCompanyRole(
-    companySnapshot.id,
-    companySnapshot.data()
-  )
-  const companyPlace = normalizePlace(
-    companyPlaceSnapshot.id,
-    companyPlaceSnapshot.data() || {}
+  const business = normalizeBusiness(
+    businessSnapshot.id,
+    businessSnapshot.data()
   )
   const place = normalizePlace(placeSnapshot.id, placeSnapshot.data() || {})
-  if (!company || !companyPlace || !place) {
+  if (!business || !place) {
     throw createError({
       statusCode: 503,
       statusMessage: 'The published Job has invalid relationships.',
@@ -279,8 +266,7 @@ export async function readJobDetail(
 
   return {
     job,
-    company,
-    companyPlace,
+    business,
     place,
     ...(applicationDoorway ? { applicationDoorway } : {}),
   }

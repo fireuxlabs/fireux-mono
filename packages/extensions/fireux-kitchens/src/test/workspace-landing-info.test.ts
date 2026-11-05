@@ -4,11 +4,11 @@ import { kitchenWorkspaceIntro } from '../runtime/kitchen/utils/kitchen-workspac
 import { resolveKitchenAllowance } from '../runtime/kitchen/utils/kitchen-capacity.ts'
 import { projectWorkspaceIntro } from '../../../../ecosystem/fireux-fireux/src/runtime/project/utils/project-workspace-intro.ts'
 
-test('Kitchen information explains retained access and blocked creation from the same Premium facts', () => {
+test('Kitchen information explains retained access and blocked creation from the same Pro facts', () => {
   const allowance = resolveKitchenAllowance(
     {
       role: 'user',
-      subscription: 'premium',
+      subscription: 'pro',
     },
     ['one', 'two', 'three', 'four']
   )
@@ -65,7 +65,7 @@ test('Project allowance counts associations independently of loaded records', ()
     accountReady: true,
     hasAccount: true,
     configured: true,
-    subscription: 'premium',
+    subscription: 'pro',
     used: 3,
     limit: 1,
   })
@@ -99,7 +99,7 @@ test('Unconfigured Project policy does not promise that upgrading fixes creation
     accountReady: true,
     hasAccount: true,
     configured: false,
-    subscription: 'premium',
+    subscription: 'pro',
     used: 1,
     limit: 0,
   })

@@ -8,7 +8,9 @@ import { searchPlan } from './app/ignition/search'
 
 const fireux = defineFireuxConfig({
   ...identity,
-  extends: ['fireux-core/layer', 'fireux-slap/layer'],
+  extends: ['fireux-core/layer', 'fireux-slap/layer', 'fireux-businesses/layer'],
+  workspaceConfig: { business: { canCreate: true } },
+  subscriptionCapacity: { business: { free: 1, pro: 1, business: null }, 'business.team': { free: 1, pro: 5, business: 50 } },
   contactEmail: 'info@interlakenbiketours.com',
   theme: {
     palette: {

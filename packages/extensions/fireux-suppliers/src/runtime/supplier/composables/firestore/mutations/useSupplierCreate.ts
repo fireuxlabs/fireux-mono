@@ -27,7 +27,7 @@ export type SupplierCreateModeOptions = {
   mode?: FireuxEntityCreateMode
   existingRootId?: string | null
   organizationName?: string | null
-  companyId?: string | null
+  businessId?: string | null
   isCurrent?: () => boolean
 }
 
@@ -89,7 +89,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     requireCanonicalWriteSource()
     const supplierId = normalizeString(options.existingRootId)
     const organizationName = normalizeString(options.organizationName)
-    const companyId = normalizeString(options.companyId)
+    const businessId = normalizeString(options.businessId)
     const expectedId = supplierId || normalizeSlug(organizationName)
     assertCurrent()
     const user = await useRequireUser()
@@ -116,7 +116,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
           ? { supplier_id: supplierId }
           : {
               organization_name: organizationName,
-              company_id: companyId,
+              business_id: businessId,
             },
       }
     )

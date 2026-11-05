@@ -40,7 +40,7 @@ test('an associated kitchen with active Team access opens even above retained ca
     decide({
       membership: {
         role: 'user',
-        subscription: 'premium',
+        subscription: 'pro',
       },
       kitchenIds: ['kitchen', 'retained'],
     }),
@@ -66,8 +66,8 @@ test('another person roster link never grants an association', () => {
 test('existing unassociated Kitchen without Team access requires access', () => {
   assert.equal(decide({ teamMember: null }).action, 'request_access')
 })
-test('Free and Premium block both new kitchens and new associations at capacity', () => {
-  for (const subscription of ['free', 'premium']) {
+test('Free and Pro block both new kitchens and new associations at capacity', () => {
+  for (const subscription of ['free', 'pro']) {
     for (const kitchen of [null, { status: 'active' }]) {
       assert.equal(
         decide({

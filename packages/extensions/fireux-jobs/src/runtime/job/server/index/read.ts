@@ -2,7 +2,7 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
+import { BusinessStorage } from 'fireux-businesses/runtime/business/models/business.entity'
 import {
   JOB_DIRECTORY_MAX_PAGE_SIZE,
   JOB_DIRECTORY_MAX_SCAN_SIZE,
@@ -99,16 +99,15 @@ export async function readJobDirectoryPage(
     const candidates = snapshot.docs.filter((document) =>
       isJobDirectoryCandidate(document.id, document.data() || {}, scope)
     )
-    const companyIds = Array.from(
+    const businessIds = Array.from(
       new Set(
         candidates
-          .map((document) => text(document.data()?.company_id))
+          .map((document) => text(document.data()?.business_id))
           .filter(isFirestoreDocumentId)
       )
     )
     const placeIds = Array.from(
       new Set([
-        ...companyIds,
         ...candidates
           .map((document) => text(document.data()?.place_id))
           .filter(isFirestoreDocumentId),
@@ -121,11 +120,11 @@ export async function readJobDirectoryPage(
           .filter(isFirestoreDocumentId)
       )
     )
-    const [companies, places, sourceApps] = await Promise.all([
-      companyIds.length
+    const [businesses, places, sourceApps] = await Promise.all([
+      businessIds.length
         ? db.getAll(
-            ...companyIds.map((id) =>
-              db.collection(CompanyStorage.collection).doc(id)
+            ...businessIds.map((id) =>
+              db.collection(BusinessStorage.collection).doc(id)
             )
           )
         : Promise.resolve([]),
@@ -149,8 +148,8 @@ export async function readJobDirectoryPage(
         statusMessage: 'Job directory relationships could not be read.',
       })
     })
-    const companiesById = new Map(
-      companies.map((document) => [document.id, document])
+    const businessesById = new Map(
+      businesses.map((document) => [document.id, document])
     )
     const placesById = new Map(
       places.map((document) => [document.id, document])
@@ -163,14 +162,13 @@ export async function readJobDirectoryPage(
       scanned += 1
       afterId = document.id
       const data = document.data() || {}
-      const companyId = text(data.company_id)
+      const businessId = text(data.business_id)
       const placeId = text(data.place_id)
       const sourceAppId = text(data.source_app_id)
       let item: JobDirectoryPage['items'][number] | null = null
       try {
         item = projectJobDirectoryEntry(document.id, data, scope, {
-          company: companiesById.get(companyId)?.data() || {},
-          companyPlace: placesById.get(companyId)?.data() || {},
+          business: businessesById.get(businessId)?.data() || {},
           place: placesById.get(placeId)?.data() || {},
           sourceApp: sourceAppsById.get(sourceAppId)?.data() || {},
         })

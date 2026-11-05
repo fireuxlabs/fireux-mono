@@ -85,7 +85,7 @@ for (const action of ['admin', 'subscription']) {
     const run = (uid) =>
       action === 'admin'
         ? h.api.removeAdmin(uid)
-        : h.api.setMemberSubscription({ uid, subscription: 'premium' })
+        : h.api.setMemberSubscription({ uid, subscription: 'pro' })
     const pending =
       action === 'admin' ? h.api.adminActionUid : h.api.subscriptionActionUid
     const first = run('first')

@@ -187,7 +187,7 @@ test('trusted Menu create snapshots all metadata before actor credentials', asyn
       menuNameAndSlug: (_, name) => ({ name, slug: name.toLowerCase() }),
       readKitchenMutationActor: () => wait.promise,
       requireMenuCreationCapacity: async () => ({
-        subscription: 'premium',
+        subscription: 'pro',
         placeData: { currency: 'CHF' },
       }),
       readPlaceCurrencyCode: (value) => value.currency,

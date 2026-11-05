@@ -14,7 +14,7 @@ runInNewContext(compile('../runtime/menu/utils/calendar/date.ts'), {
   Date,
 })
 const menuPath = 'kitchens/k/menus/m'
-function harness(tier = 'premium') {
+function harness(tier = 'pro') {
   const records = new Map([[menuPath, { status: 'draft', schedule: 'daily' }]])
   const target = (k, m, s) =>
     `kitchens/${k}/menus${m ? `/${m}/sections${s ? `/${s}/items` : ''}` : ''}`

@@ -17,21 +17,33 @@ the reviewed [runtime environment](server/firebase.runtime-env.json). Upload
 checks the deployed Slap development Rules against the ecosystem template before
 updating the preview's Hosting site and SSR codebase.
 
-Core and Slap are registered through the App's native runtime layers. Core's
-default App composition supplies Blogs and Products, with both packages declared
-directly in the App manifest. Core owns Firebase integration, shared
+Core and Slap are registered through the App's native runtime layers. The App
+also directly registers `fireux-bookings` for its server-side Google Calendar
+adapter in `server/utils/tour-calendar.ts`. The visitor booking page checks a
+single 09:00 departure against Ben's calendar and an App-owned daily booking
+lock. It composes the shared `confirmBooking` lifecycle with App-owned storage and Calendar adapters, then inserts the Calendar event before showing an
+on-screen confirmation. Current catalog prices are fixed per person. There is
+no payment, confirmation email, cancellation flow or operator Workspace. A provider failure after event creation begins retains the pending reservation for manual reconciliation and returns its booking reference. Do not retry it until the operator has reconciled Calendar and storage.
+Google Calendar refresh credentials and the calendar id are server-only
+environment settings: `BOOKINGS_GOOGLE_CALENDAR_ID`,
+`BOOKINGS_GOOGLE_CLIENT_ID`, `BOOKINGS_GOOGLE_CLIENT_SECRET` and
+`BOOKINGS_GOOGLE_REFRESH_TOKEN`. Store secrets in the server environment, never
+browser config or committed files.
+
+Core's default App composition supplies Blogs and Products, with both packages
+declared directly in the App manifest. Core owns Firebase integration, shared
 account/management routes, configured App initialization, SEO and the versioned
 PWA manifest. App-owned public tour pages
 use the `tours` layout; shared runtime routes retain their owning layouts.
 Enquiry controls open a prepared WhatsApp/email draft; they do not persist
-bookings or send messages. No booking Workspace is implemented.
+enquiries or send messages. `/book` is the separate instant-confirmation flow.
 
 Local `.env` requires `APP_DOMAIN` and this App's `NUXT_FIREBASE_APP_ID`.
 Firebase web identity: `1:884456976096:web:a44e8e83518ee57f0d2a85`.
 Infrastructure: project `slap-45389`, database `slap`, region `europe-west1`.
 App initialization uses Core's authenticated trusted command. The configured
 App and initial developer membership are initialized in the owning database;
-operator booking journeys remain outside this visitor prototype.
+operator booking management remains outside this visitor prototype.
 
 Content and bundled photos were inspected from the existing business website on
 2026-10-21. Sources: [home](https://www.interlakenbiketours.com/),
@@ -48,7 +60,8 @@ and policies with the operator before public release.
 The landing presents the tour comparison, reasons to ride, bike rental,
 destinations, guide and enquiry. Tour content has one owner in
 `app/content/tours.ts`; cards and detail pages consume it. The enquiry component
-owns its local draft. The “Book a tour” action opens this form.
+owns its local draft for rental, bespoke and direct enquiries. Tour details and
+the homepage CTA open `/book` for fixed-price booking.
 
 PWA metadata is served by Core at `/manifest.webmanifest` from the configured
 App identity and palette; there is no competing static manifest. Icons in `public/img/app/pwa` are resized exports of the original
@@ -69,7 +82,8 @@ control until reloaded or closed. Shared behavior is owned by Core
 `src/config/app/pwa.ts`, `src/runtime/composables/pwa/controller.ts`,
 `src/runtime/components/Pwa` and `src/test/pwa.test.mjs`.
 
-The public layout consumes Core `FireLayoutsSharedPlatformFooter` for FireUX attribution
+The public layout uses the Core header, with Blog and Products available in its
+navigation. It consumes Core `FireLayoutsSharedPlatformFooter` for FireUX attribution
 and platform disclosures, and exposes the shared account entrance. Home and tour
 pages use Core SEO composables for canonical URLs, social previews and JSON-LD.
 The prototype deliberately configures noindex/disallow policy; Core filters its
@@ -89,3 +103,18 @@ After building and serving the production output locally, run `pnpm test:seo`
 These checks verify rendered canonical/noindex/social metadata, preview sitemap
 exclusion, missing-tour status, manifest identity and the generated robots file.
 They do not establish public deployment or search performance.
+
+Run `pnpm test:bookings` for the local booking/Calendar boundary checks. The
+tests use an in-memory booking store and mocked Google responses; they do not
+write the App's Firebase database or Ben's Calendar.
+
+## Business Workspace
+
+The App registers `fireux-businesses` and its native layer. The authenticated
+`/workspace/business` entrance uses Core Workspace framing and provides business
+profile/contact details, explicit Place links and the shared Team roster editor.
+Creating a Business uses current App membership, its configured capacity and an
+atomic root/Team/access command. Team roster entries do not grant account access.
+The Business can use Free. No Ben Business record is created by a source build.
+Legacy Company data requires the reviewed migration plan before releasing the
+new source against an existing Company-backed database.

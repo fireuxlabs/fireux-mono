@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-03
-Ref: 2807ceca9
+Updated: 2026-11-05
+Ref: 71d4618ec
 Role: map, not canon
 
 ## Purpose
@@ -74,6 +74,7 @@ establishes each record's actual shape and behavior:
 | Project          | system, workspace entity    | root           | none              | yes       |
 | Job              | content                     | root           | none              | no        |
 | Place            | place                       | root           | none              | no        |
+| Business         | business, workspace entity  | root           | none              | yes       |
 | MarketplaceStore | commerce                    | root           | none              | no        |
 | Kitchen          | kitchen, workspace entity   | root           | none              | yes       |
 | Menu             | menu, kitchen               | Kitchen-scoped | none              | no        |
@@ -89,7 +90,6 @@ Examples of parent-owned Records:
 
 | Record            | Parent           | Why it is not an Entity                                                    |
 | ----------------- | ---------------- | -------------------------------------------------------------------------- |
-| Company           | Place            | It is an exact same-id role marker; Place owns identity and location truth |
 | MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                               |
 | MenuSection       | Menu             | It groups MenuItem records inside one Menu                                 |
 | MenuItem          | MenuSection      | It is one parent-owned catalogue row                                       |
@@ -106,7 +106,7 @@ model, reader and command for those facts. Do not recreate a runtime registry.
 
 ### Entities with Workspace surfaces
 
-Project, Kitchen, Supplier, Portfolio and Property expose
+Business, Project, Kitchen, Supplier, Portfolio and Property expose
 Workspace management surfaces. They remain domain Entities, not instances of a
 second Workspace Entity model. Their real routes, readers and commands establish
 the available surface; a metadata boolean would not create it.
@@ -136,24 +136,18 @@ access record. A selected target must resolve one valid root, management
 relationship and the domain’s current authorization checks. A universal
 Team-record gate must not be inferred from the presence of a Workspace.
 
-### Root plus same-id role
+### Business and Place
 
-Place is the shared location Entity. Company is a root-stored, same-id Place
-role Record whose exact persisted payload is only canonical creation and update
-stamps. A Company marker is valid only with its valid same-id Place; it stores
-no copied Place identity and has no App support or independent lifecycle.
+Business is an independent Workspace Entity in `fireux-businesses`. Its root
+owns organisation identity and explicit `place_ids`; locations remain Place-owned.
+A Business can have no locations or several locations. Company is no longer an
+active separate package or role. Supplier links through `business_id` and uses the
+Business's explicitly linked Place for its location-backed profile. Job uses
+`business_id` for employer identity and its own `place_id` for the work location.
+Business subscription is an entitlement and is separate from Business identity.
 
-Live, Demo, and Test use the same Place and Company model contracts. Scenario
-wrappers may pair those roots for deterministic presentation, but they are not
-alternate entity shapes. Company reads first validate the role marker and then
-return its canonical same-id Place; they do not manufacture a second Company
-or Place.
-
-Promote Company to an independent Entity only if product behavior establishes
-legal or lifecycle truth that survives a Place, or a Company must own several
-replaceable Places. Supplier currently links through `company_id` to this
-Company role and then to the same-id Place; Supplier does not add a synonymous
-`place_id`.
+Legacy Company records require the reviewed data cutover described in
+`packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
 
 Run the retired operational artifact in Git history against an owning ecosystem
 database to verify the complete relationship without writing data.
@@ -170,14 +164,14 @@ replaces server or Rules authority.
 
 Free is the effective product default when no AppUser exists. This lets public
 Workspace surfaces present and enforce the Free experience without inventing
-identity or membership: `hasMembership` remains false, role remains absent,
-Stored `premium` and `business` subscriptions provide the product Plus feature
-level; Business adds capacity. Actual gates remain capability-owned.
+identity or membership. `hasMembership` remains false and role remains absent.
+Pro and Business subscriptions provide the Pro feature level. Business adds
+capacity. Actual gates remain capability-owned.
 
 AppUser stores App governance (`role: user | admin | dev`), subscription
-(`free | premium | business`), with no onboarding flag. A stored Dev role has
+(`free | pro | business`), with no onboarding flag. A stored Dev role has
 developer authority and explicitly intended Admin capabilities without
-implying Plus. Workspace target access lives in domain-owned records bound to
+implying Pro. Workspace target access lives in domain-owned records bound to
 App membership creation; AppUser carries no Entity indexes or selection.
 
 User readers preserve the same split. Global runtimes may enumerate
@@ -186,6 +180,31 @@ AppUser memberships for their configured App, then resolve only those canonical
 User identities. Root `User.app_ids` is denormalized identity metadata, not
 tenant-directory selection authority, and tenant detail routes apply the same
 membership decision as their list.
+
+### Subscription naming migration
+
+`readAppUserSubscription` in Core's App model reads legacy `premium` as `pro`.
+New subscription commands and App capacity configuration use `pro`. Unknown
+subscription values grant no membership authority. The authored membership
+Rules accept both names for the migration period.
+
+Roll out the dual-name Rules and readers before releasing canonical `pro`
+writers. For each authorized App database, capture exact preimages and document
+update times for `apps/{appId}/users/{uid}` records whose subscription is
+`premium`. An approved migration changes only that field to `pro`, with
+preconditions against concurrent edits. Keep role and all audit stamps,
+especially `created.at`, unchanged. Domain access is bound to that timestamp.
+Verify each postimage, entitlement and capacity result before retiring legacy
+reads or Rules allowance. Repeating an approved migration skips records
+already at `pro` and stops on conflicting updates. Source changes do not
+authorize a Rules deployment or stored-data migration.
+
+Business identity is independent of the Business plan. A Business may use Free.
+The Business upgrade must collect additional business details. Its field schema,
+record owner and relationship to the acting App membership require an accepted
+contract before an intake can write or grant entitlement. The retired Company
+records are same-id Place roles, not an existing Business intake destination.
+
 
 ### Kitchen-owned Menu identity
 
@@ -337,13 +356,13 @@ Directory and Entity Detail family maps.
 | Difference                                                     | State      | Required direction                                                                                                                                                                                   |
 | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                       |
-| Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                                  |
+| Independent Business with optional Place links | `accepted` | Business owns organisation identity and Workspace; Place owns each linked location |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
 | Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration |
 | Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                                  |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
 | Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
-| Supplier location chain                                        | `accepted` | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                                  |
+| Supplier location chain                                        | `accepted` | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                                  |
 | Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                |
 
 ## Alignment roadmap

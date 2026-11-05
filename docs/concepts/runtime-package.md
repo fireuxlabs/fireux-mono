@@ -228,7 +228,7 @@ parity.
 | A package imports another extension to compose product behavior                        | `drift`      | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive         |
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
 | Runtime surface exists but is not registered                                           | `drift`      | Use the owning native layer or a necessary module hook, then verify the route/import                                    |
-| Blog or Products default registration is repeated across App configs                     | `drift`      | Keep both universal defaults in Core; App manifests declare their direct package dependencies              |
+| A default extension is omitted from an App's composition or direct dependencies         | `drift`      | Keep Blog and Products modules/layers in Core defaults and package dependencies in each App manifest       |
 | Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and verify registration and retired paths against consumers  |
 | Extension lane contains both primitives and domain owners                              | `accepted`   | Use the dependency-role matrix to read ownership; do not add another physical lane without a migration need |
 | A package's primary dependency role cannot be explained from current source             | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |

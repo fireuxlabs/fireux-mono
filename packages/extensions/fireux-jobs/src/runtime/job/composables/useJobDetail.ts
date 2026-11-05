@@ -5,7 +5,7 @@ import { useAsyncData } from 'nuxt/app'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { Company } from 'fireux-companies/runtime/place/models/company.model'
+import type { Business } from 'fireux-businesses/runtime/business/models/business.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFireuxJobsConfig } from '../../composables/config/useFireuxJobsConfig'
 import type {
@@ -23,8 +23,7 @@ type JobDetailControls = Pick<
 
 export type UseJobDetailReturn = JobDetailControls & {
   job: ComputedRef<Job | null>
-  company: ComputedRef<Company | null>
-  companyPlace: ComputedRef<Place | null>
+  business: ComputedRef<Business | null>
   place: ComputedRef<Place | null>
   applicationDoorway: ComputedRef<JobApplicationDoorway | null>
   ready: Promise<void>
@@ -77,8 +76,7 @@ export function useJobDetail(
     return value?.job.id === id.value && !state.pending.value ? value : null
   })
   const job = computed(() => response.value?.job ?? null)
-  const company = computed(() => response.value?.company ?? null)
-  const companyPlace = computed(() => response.value?.companyPlace ?? null)
+  const business = computed(() => response.value?.business ?? null)
   const place = computed(() => response.value?.place ?? null)
   const applicationDoorway = computed(
     () => response.value?.applicationDoorway ?? null
@@ -101,8 +99,7 @@ export function useJobDetail(
 
   return {
     job,
-    company,
-    companyPlace,
+    business,
     place,
     applicationDoorway,
     ready: state.then(() => undefined),

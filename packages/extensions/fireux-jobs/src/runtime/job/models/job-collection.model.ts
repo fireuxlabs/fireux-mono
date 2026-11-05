@@ -1,4 +1,4 @@
-import type { Company } from 'fireux-companies/runtime/place/models/company.model'
+import type { Business } from 'fireux-businesses/runtime/business/models/business.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type {
   Job,
@@ -12,7 +12,7 @@ export const JOB_DIRECTORY_MAX_PAGE_SIZE = 48
 export const JOB_DIRECTORY_SCAN_BATCH_SIZE = 48
 export const JOB_DIRECTORY_MAX_SCAN_SIZE = 240
 
-export type JobCompanySummary = {
+export type JobBusinessSummary = {
   name: string
   short_name?: string
   image_url?: string
@@ -34,11 +34,11 @@ export type JobApplicationDoorway = {
 export type JobDirectoryEntry = {
   id: string
   category_id: string
-  company_id: string
+  business_id: string
   place_id: string
   visibility: 'public'
   status: 'open'
-  company: JobCompanySummary
+  business: JobBusinessSummary
   place: JobPlaceSummary
   contract_type: JobContractType
   management_mode: JobManagementMode
@@ -59,8 +59,7 @@ export type JobDirectoryPage = {
 /** Canonical Job detail plus the exact related records required by the page. */
 export type JobDetailResponse = {
   job: Job
-  company: Company
-  companyPlace: Place
+  business: Business
   place: Place
   applicationDoorway?: JobApplicationDoorway
 }

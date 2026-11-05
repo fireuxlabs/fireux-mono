@@ -6,7 +6,7 @@ import { serverBlankAccessTarget } from '../../../app/utils/blank-access'
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/app/utils/entity-management'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -53,8 +53,8 @@ export async function completeBlankOnboarding(event: H3Event, input: unknown) {
         statusCode: 403,
         statusMessage: 'Current App membership is required.',
       })
-    const subscription = member.data?.subscription
-    if (!isAppUserSubscription(subscription))
+    const subscription = readAppUserSubscription(member.data?.subscription)
+    if (!subscription)
       throw createError({
         statusCode: 409,
         statusMessage: 'Invalid subscription.',

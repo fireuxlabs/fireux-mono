@@ -17,7 +17,7 @@ export default defineFireuxConfig({
   },
   modules: [
     'fireux-places',
-    'fireux-companies',
+    'fireux-businesses',
     [
       'fireux-jobs',
       {
@@ -29,7 +29,7 @@ export default defineFireuxConfig({
     'fireux-werkbox/layer',
     'fireux-blogs/layer',
     'fireux-places/layer',
-    'fireux-companies/layer',
+    'fireux-businesses/layer',
     'fireux-jobs/layer',
   ],
 })

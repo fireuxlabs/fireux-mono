@@ -61,7 +61,7 @@ test('permanent and fixed-term hires never consume temporary capacity', () => {
     assert.equal(
       temporaryCapacityAllowsAcceptance({
         contractType,
-        hasPremiumCapacity: false,
+        hasProCapacity: false,
         activeTemporaryEngagementCount: 100,
       }),
       true
@@ -73,7 +73,7 @@ test('Free permits one concurrent temporary engagement', () => {
   assert.equal(
     temporaryCapacityAllowsAcceptance({
       contractType: 'temporary',
-      hasPremiumCapacity: false,
+      hasProCapacity: false,
       activeTemporaryEngagementCount: 0,
     }),
     true
@@ -81,18 +81,18 @@ test('Free permits one concurrent temporary engagement', () => {
   assert.equal(
     temporaryCapacityAllowsAcceptance({
       contractType: 'temporary',
-      hasPremiumCapacity: false,
+      hasProCapacity: false,
       activeTemporaryEngagementCount: 1,
     }),
     false
   )
 })
 
-test('Premium permits multiple temporary engagements within the safety bound', () => {
+test('Pro permits multiple temporary engagements within the safety bound', () => {
   assert.equal(
     temporaryCapacityAllowsAcceptance({
       contractType: 'temporary',
-      hasPremiumCapacity: true,
+      hasProCapacity: true,
       activeTemporaryEngagementCount: 12,
     }),
     true
@@ -100,7 +100,7 @@ test('Premium permits multiple temporary engagements within the safety bound', (
   assert.equal(
     temporaryCapacityAllowsAcceptance({
       contractType: 'temporary',
-      hasPremiumCapacity: true,
+      hasProCapacity: true,
       activeTemporaryEngagementCount: 100,
     }),
     false

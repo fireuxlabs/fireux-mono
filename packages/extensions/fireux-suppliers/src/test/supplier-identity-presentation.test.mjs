@@ -18,44 +18,6 @@ function load(path, result, deps) {
     Object.keys(deps)
   )(...Object.values(deps))
 }
-test('Supplier Overview presents the exact settled joined business identity, clearing it on read failure and selection changes', () => {
-  const workspace = {
-    id: ref('s'),
-    data: ref({ id: 's', company_id: 'company' }),
-    outcome: ref('ready'),
-  }
-  const joined = {
-    id: 's',
-    company_id: 'company',
-    company_place: { id: 'company', name: 'Business', logo_image: '/logo.png' },
-  }
-  const index = { collection: ref([joined]), outcome: ref('ready') }
-  const useOverview = load(
-    '../../../../core/fireux-core/src/runtime/composables/fireux/useOverview.ts',
-    'useOverview',
-    { computed }
-  )
-  const state = load(
-    'supplier/composables/useSupplierOverview.ts',
-    'useSupplierOverview()',
-    {
-      computed,
-      useOverview,
-      useSupplierWorkspace: () => workspace,
-      useSupplierWorkspaceIndex: () => index,
-    }
-  )
-  assert.equal(state.focus.value.entity.company_place.name, 'Business')
-  index.outcome.value = 'error'
-  assert.equal(state.focus.value.outcome, 'error')
-  assert.equal(state.focus.value.entity, null)
-  index.outcome.value = 'ready'
-  workspace.id.value = 'other'
-  assert.equal(state.focus.value.outcome, 'empty')
-  assert.equal(state.focus.value.entity, null)
-  workspace.outcome.value = 'pending'
-  assert.equal(state.focus.value.outcome, 'pending')
-})
 test('Supplier Home never turns a pending or failed read into a Choose prompt or stale profile', async () => {
   const path = 'supplier/components/Workspace/Home/Single.vue'
   const source = readFileSync(new URL(path, runtime), 'utf8')
@@ -106,7 +68,7 @@ test('Supplier Home never turns a pending or failed read into a Choose prompt or
   }
 })
 
-test('Supplier public identity renders the same passed Place used by SEO without a second Company reader', async () => {
+test('Supplier public identity renders the same passed Place used by SEO without a second Business reader', async () => {
   const detail = readFileSync(
     new URL('supplier/components/Detail/Index.vue', runtime),
     'utf8'
@@ -114,16 +76,16 @@ test('Supplier public identity renders the same passed Place used by SEO without
   const path = 'supplier/components/Detail/Header.vue'
   const header = readFileSync(new URL(path, runtime), 'utf8')
   assert.match(detail, /SupplierDetailHeader[^>]*:place="place"/)
-  assert.doesNotMatch(detail, /SupplierDetailCompany/)
-  assert.doesNotMatch(header, /useCompanyDetail/)
+  assert.doesNotMatch(detail, /SupplierDetailBusiness/)
+  assert.doesNotMatch(header, /useBusinessDetail/)
   const props = {
     supplier: {
       id: 'opaque-supplier-id',
-      company_id: 'opaque-company-id',
+      business_id: 'opaque-business-id',
       identity: { slug: 'old-slug' },
     },
     place: {
-      id: 'opaque-company-id',
+      id: 'opaque-business-id',
       name: 'THE BUSINESS',
       logo_image: '/business-logo.png',
     },
@@ -150,7 +112,7 @@ test('Supplier public identity renders the same passed Place used by SEO without
   })
   const html = await renderToString(app)
   assert.match(html, /THE BUSINESS/)
-  assert.doesNotMatch(html, /opaque-supplier-id|opaque-company-id|old-slug/)
+  assert.doesNotMatch(html, /opaque-supplier-id|opaque-business-id|old-slug/)
   assert.equal(seo[0], props.supplier)
   assert.equal(seo[1], props.place)
 })

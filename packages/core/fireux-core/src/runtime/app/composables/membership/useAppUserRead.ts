@@ -1,6 +1,7 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
 import type { AppUser } from '../../models/app-user.model'
+import { readAppUserSubscription } from '../../models/app-user.model'
 
 /** Live read of one AppUser through the shared Firestore reader. */
 export function useAppUserRead(
@@ -15,7 +16,10 @@ export function useAppUserRead(
   const appUser = computed<AppUser | null | undefined>(() => {
     if (!(app.value && targetId.value) || source.pending.value) return undefined
     if (source.error.value) return undefined
-    return source.value ?? null
+    const membership = source.value
+    if (!membership) return null
+    const subscription = readAppUserSubscription(membership.subscription)
+    return subscription ? { ...membership, subscription } : null
   })
   return {
     appUser,

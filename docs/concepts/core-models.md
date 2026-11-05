@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-11-03
-Ref: e5d8cf8d5
+Updated: 2026-11-05
+Ref: 71d4618ec
 Role: map, not canon
 
 ## Purpose
@@ -403,9 +403,11 @@ identity or Firestore model.
   Workspace target access follows the domain-owned record bound to that
   membership's creation timestamp; Team records own roster labels and linked people.
 - Product access resolves to Free when AppUser is absent. That effective default
-  creates neither identity nor membership. Stored `premium` and `business` values provide the product Plus feature level;
-  Business adds capacity. Each capability must prove its own gates; storage
-  vocabulary is unchanged.
+  creates neither identity nor membership. `pro` and `business` provide the Pro
+  feature level, and Business adds capacity. Legacy `premium` reads as `pro`
+  during the [subscription migration](entities.md#subscription-naming-migration).
+  Each capability must prove its own gates. Business identity remains separate
+  from the subscription tier and may use Free.
 - Nuxt config selects and composes an App; it must not silently become another
   App database. Normal runtime reads must not repair canonical identity from
   duplicated config values.

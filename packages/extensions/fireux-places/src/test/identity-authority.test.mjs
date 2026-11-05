@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -27,12 +28,12 @@ const readMembershipAccessIds = compileFunction(
 const allow = compileFunction(
   `${stripTypeScriptTypes(source)};return canKitchenEditPlace`,
   [
-    'isAppUserSubscription',
+    'readAppUserSubscription',
     'readMembershipAccessIds',
     'defineFirestoreReadTarget',
   ]
 )(
-  (v) => ['free', 'premium', 'business'].includes(v),
+  readAppUserSubscription,
   readMembershipAccessIds,
   (value) => value
 )
@@ -50,6 +51,12 @@ const input = {
 }
 test('current membership-bound Kitchen access allows Place editing', () => {
   assert.equal(allow(input), true)
+  for (const subscription of ['pro', 'premium']) {
+    assert.equal(allow({
+      ...input,
+      membership: { ...input.membership, subscription },
+    }), true)
+  }
 })
 test('missing, revoked, foreign and superseded access deny Place editing', () => {
   for (const delta of [

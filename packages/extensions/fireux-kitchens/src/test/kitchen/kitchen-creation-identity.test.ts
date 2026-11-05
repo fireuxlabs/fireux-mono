@@ -20,7 +20,7 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
     error: ref(null),
     appUser: ref({
       role: 'user',
-      subscription: 'premium',
+      subscription: 'pro',
     }),
   }
   const access = {
@@ -99,8 +99,8 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
   assert.equal(workspace.canCreate.value, false)
 })
 
-test('Premium retains four Kitchens but cannot grant a fifth', () => {
-  const membership = { role: 'user', subscription: 'premium' }
+test('Pro retains four Kitchens but cannot grant a fifth', () => {
+  const membership = { role: 'user', subscription: 'pro' }
   const ids = ['one', 'two', 'three', 'four']
   const allowance = resolveKitchenAllowance(membership, ids)
   assert.equal(allowance.used, 4)
@@ -184,8 +184,8 @@ test('onboarding grants an existing Kitchen only once', () => {
   )
 })
 
-test('Free and Premium may reopen their Kitchen but cannot connect a second', () => {
-  for (const subscription of ['free', 'premium']) {
+test('Free and Pro may reopen their Kitchen but cannot connect a second', () => {
+  for (const subscription of ['free', 'pro']) {
     const membership = { role: 'user', subscription }
     assert.deepEqual(
       resolveKitchenGrantIds(membership, ['existing'], 'existing'),

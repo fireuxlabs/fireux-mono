@@ -1,5 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -174,9 +174,9 @@ export async function mutateMarketplaceStoreMember(
       })
     }
     if (action === 'add' && !memberSnapshot.exists) {
-      const subscription = actorMembership.data?.subscription
+      const subscription = readAppUserSubscription(actorMembership.data?.subscription)
       if (
-        !isAppUserSubscription(subscription) ||
+        !subscription ||
         !hasAppSubscriptionCapacity(
           config.subscriptionCapacity,
           'marketplace-store.team',

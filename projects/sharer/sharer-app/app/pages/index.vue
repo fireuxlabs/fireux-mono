@@ -18,8 +18,8 @@
         <UButton size="lg" variant="outline" disabled>Create yours soon</UButton>
       </div>
       <p class="text-sm text-muted">
-        Free Shares carry Sharer branding. Premium businesses get their own
-        branded, installable PWA.
+        Free Shares carry Sharer branding. Businesses can get their own
+        branded, installable App.
       </p>
     </div>
   </UContainer>

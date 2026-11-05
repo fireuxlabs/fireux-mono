@@ -10,7 +10,7 @@ const app: FireuxAppConfig = {
   shortName: 'Interlaken Essen',
   role: 'tenant',
   subscriptionCapacity: {
-    'marketplace-store.team': { free: 3, premium: 7, business: null },
+    'marketplace-store.team': { free: 3, pro: 7, business: null },
   },
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
@@ -28,7 +28,7 @@ const app: FireuxAppConfig = {
     'fireux-marketplace',
     ['fireux-suppliers', { mode: 'consumer' }],
     'fireux-places',
-    'fireux-companies',
+    'fireux-businesses',
     [
       'fireux-jobs',
       {
@@ -51,7 +51,7 @@ export default {
     'fireux-core/layer',
     'fireux-blogs/layer',
     'fireux-places/layer',
-    'fireux-companies/layer',
+    'fireux-businesses/layer',
     'fireux-jobs/layer',
   ],
 }

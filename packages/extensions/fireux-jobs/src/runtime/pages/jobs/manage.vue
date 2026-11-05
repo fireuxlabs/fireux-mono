@@ -49,7 +49,7 @@
               </p>
               <p class="mt-1 text-sm text-muted">
                 Every posting is owned by this hiring profile and linked to a
-                Company and Place.
+                Business and Place.
               </p>
             </div>
             <AgentCardsPill

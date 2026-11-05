@@ -64,9 +64,9 @@ export const fireuxExtensionModules = [
     group: 'content',
   },
   {
-    id: 'fireux-companies',
-    name: 'Companies',
-    description: 'Company records and reusable company profiles.',
+    id: 'fireux-businesses',
+    name: 'Businesses',
+    description: 'Business records and reusable business profiles.',
     icon: 'i-lucide-building-2',
     group: 'business',
   },

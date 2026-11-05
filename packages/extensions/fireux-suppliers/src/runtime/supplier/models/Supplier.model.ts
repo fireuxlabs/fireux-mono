@@ -44,9 +44,9 @@ type WidenLiteral<T> = T extends string
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned item offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
- * - Supplier stays intentionally small: Company relationship, route/publication
+ * - Supplier stays intentionally small: Business relationship, route/publication
  *   state, catalogue mode, delivery areas, management, and audit stamps.
- * - Company/Place owns public identity and media. Supplier child collections
+ * - Business/Place owns public identity and media. Supplier child collections
  *   own Ingredients, Items, Catalogues, and Team; the root does not index them.
  * - Keep the owning map current when this boundary changes.
  */
@@ -68,7 +68,7 @@ export const SupplierTeamStorage = {
 export const SupplierDefaults = {
   id: '',
   management: FireuxEntityManagementDefaults,
-  company_id: '',
+  business_id: '',
   identity: {
     slug: '',
     status: 'active' as SupplierStatus,

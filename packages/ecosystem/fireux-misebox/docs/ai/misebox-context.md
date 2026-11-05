@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-05
+Ref: 71d4618ec
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1046,7 +1046,7 @@ toward Team capacity. Individual role restrictions are deferred for development.
 
 Menus owns its creation allowance in
 `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-storage.model.ts`:
-Free allows two retained Menu records per Kitchen; Premium and Business are
+Free allows two retained Menu records per Kitchen; Pro and Business are
 unlimited. This policy uses the acting user's actual AppUser subscription,
 separately from Kitchen membership, and is consumed by the Workspace, its AI
 context and trusted creation commands. It is not App Nuxt configuration.
@@ -1055,11 +1055,11 @@ unpublish remain available to associated members regardless of their tier.
 The trusted boundaries and retained legacy writers are mapped in
 `docs/concepts/menu-ordering.md`.
 
-- User-facing subscription vocabulary is Free, Professional, and Business.
+- User-facing subscription vocabulary is Free, Pro, and Business.
 - Role is separate: User, Admin, or Developer.
 - Kitchen allowance is owned by
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-capacity.ts`
-  and exposed by `useKitchenCreate`: Free and Premium allow one associated
+  and exposed by `useKitchenCreate`: Free and Pro allow one associated
   Kitchen; Business has no subscription count limit. Kitchen’s separate
   50-id access ceiling remains enforced by its domain access helper. Both new Kitchen creation and
   adding an existing Kitchen use this policy in trusted onboarding transactions.
@@ -1067,7 +1067,7 @@ The trusted boundaries and retained legacy writers are mapped in
   does not count again. UI creation uses the actual AppUser subscription and
   hides unavailable Create controls. Preview tiers do not grant capacity.
   Kitchen entry, selector, and sidebar use `useKitchenWorkspace` to show
-  one selected Kitchen for Free/Professional and the multi-Kitchen chooser for
+  one selected Kitchen for Free/Pro and the multi-Kitchen chooser for
   Business. This is presentation only: retained associations and selection are
   not truncated on downgrade. The subscription badge lets a settled App Admin
   or Developer cycle their own actual subscription through the existing
@@ -1082,7 +1082,7 @@ The trusted boundaries and retained legacy writers are mapped in
   ownership must be resolved separately rather than inferred from Kitchen or Menus.
   Directory contribution consumes no My Kitchens association.
 - Kitchen Team creation currently allows three members on Free, seven
-  on Professional, and unlimited members on Business. The trusted Team
+  on Pro, and unlimited members on Business. The trusted Team
   create command enforces the limit; temporary page selection does not alter
   Team membership or AppUser state.
   Team management controls use the Kitchen-bound availability returned by the
@@ -1205,7 +1205,7 @@ acceptance remains distinct from source inspection.
   deterministic fixtures. It never becomes Live/Test authority or writes data.
   The public demo routes are `/demo` and `/demo/menu`; the retired Kiosk and
   order-board previews have no public demo links or sitemap entries. Keep the
-  Kitchen and Supplier examples and their required Company/Place relationships
+  Kitchen and Supplier examples and their required Business/Place relationships
   with their domain owners. Ingredient presentation uses the supported public
   canonical reader, so the showroom is not an offline catalogue. Historical
   Deanos data keeps its explicit sample period and does not represent current
@@ -1405,10 +1405,10 @@ page does not adopt their ecosystem endpoint dependency. Verify with
 
 ## Menu operator entitlements
 
-Free permits two retained Menus, with Main and Drinks as new-Kitchen starters. Plus operators may rename
-Menus and have the existing unlimited Menu allowance. Professional and Business
-both map to Plus features; Business additionally permits multiple Kitchens.
-Name editing requires the acting User's Plus entitlement and Kitchen write
+Free permits two retained Menus, with Main and Drinks as new-Kitchen starters.
+Pro and Business operators may rename Menus and have the existing unlimited
+Menu allowance. Business additionally permits multiple Kitchens.
+Name editing requires the acting User's Pro entitlement and Kitchen write
 access, not a Kitchen subscription or another Team member's entitlement.
 Downgrade preserves all existing Menus and saved names; future creation and
 renaming follow the actor's current entitlement. Basic Kitchen colours remain
@@ -1737,7 +1737,7 @@ Kitchen sourcing choices use `kitchens/{kitchenId}/supplier-ingredients` with
 `supplier_id` and `ingredient_id`; the Kitchen supplier connection lives in
 `kitchens/{kitchenId}/suppliers`. These links do not establish Supplier-owned
 ingredient coverage, catalogue availability or Supplier Workspace access.
-Supplier identity resolves through its Company and same-id Place.
+Supplier identity resolves through its Business and explicitly linked Place. Business owns organisation identity; Place owns location details.
 The live Kitchen supplier directory is a Bringli consumer: identity lives in
 `bringli-b0517/bringli`, while Kitchen connections remain in
 `misebox-78f9c/misebox`. See `docs/concepts/suppliers.md` and the Kitchen
@@ -2177,7 +2177,7 @@ creation. The current physical map is in `docs/concepts/components.md` and
 the source-owned reader/scope tests. Existing context providers, Kitchen
 selection, serving checks, commands and authority remain the same owners.
 
-Daily specials editing requires the acting User's Plus entitlement, independently
+Daily specials editing requires the acting User's Pro entitlement, independently
 of Kitchen authority. Free accounts can read retained daily selections and withdraw
 published dates, but cannot create, copy, edit or publish daily content. The record
 context separates `canManage` (Kitchen authority) from `canWrite` (content editing);

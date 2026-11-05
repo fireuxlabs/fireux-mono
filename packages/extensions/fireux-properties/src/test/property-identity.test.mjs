@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -27,7 +28,7 @@ const readMembershipAccessIds = load(
 const managementDeps = {
   readMembershipAccessIds,
   createError,
-  isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
+  readAppUserSubscription,
   readFireuxEntityManagement: (x) => x,
   resolveFireuxEntityManagementAppId: (x) => x.app_id,
 }

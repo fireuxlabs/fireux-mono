@@ -1,3 +1,4 @@
+import { BUSINESS_MUTATION_TARGETS } from 'fireux-businesses/runtime/business/server/mutation-targets'
 import { normalizeSupplier } from '../../utils/normalize-supplier'
 import {
   createMembershipAccess,
@@ -27,7 +28,7 @@ import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutat
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { buildSupplierTeamMemberRecord } from '../team/member-record'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
-import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
+import { normalizeBusiness } from 'fireux-businesses/runtime/business/utils/normalize-business'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   SupplierOnboardingAction,
@@ -55,7 +56,7 @@ function request(value: unknown) {
   }
 
   const source = value as Record<string, unknown>
-  const supported = new Set(['supplier_id', 'organization_name', 'company_id'])
+  const supported = new Set(['supplier_id', 'organization_name', 'business_id'])
   const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Supplier onboarding contains unsupported field: ${unsupported}.`)
@@ -129,11 +130,11 @@ function newSupplierRoot(
   policy: RuntimePolicy,
   uid: string,
   supplierId: string,
-  companyId: string
+  businessId: string
 ): Record<string, unknown> {
   return {
     management: policy.management,
-    company_id: companyId,
+    business_id: businessId,
     identity: { slug: supplierId, status: 'active', visibility: true },
     catalogue: { mode: 'directory_only' },
     delivery: { areas: [] },
@@ -152,7 +153,7 @@ export async function completeSupplierOnboarding(
   const policy = runtimePolicy(event)
   const requestedSupplierId = text(body.supplier_id)
   const organizationName = text(body.organization_name)
-  const requestedCompanyId = text(body.company_id)
+  const requestedBusinessId = text(body.business_id)
   if (requestedSupplierId && organizationName) {
     fail(400, 'Choose either an existing Supplier or a new organization name.')
   }
@@ -162,12 +163,12 @@ export async function completeSupplierOnboarding(
   if (organizationName.length > 120) {
     fail(400, 'Organization name must contain at most 120 characters.')
   }
-  if (requestedSupplierId && requestedCompanyId) {
-    fail(400, 'An existing Supplier keeps its stored Company relationship.')
+  if (requestedSupplierId && requestedBusinessId) {
+    fail(400, 'An existing Supplier keeps its stored Business relationship.')
   }
-  const newCompanyId = requestedSupplierId
+  const newBusinessId = requestedSupplierId
     ? ''
-    : requireFirestoreDocumentId(requestedCompanyId, 'Company id')
+    : requireFirestoreDocumentId(requestedBusinessId, 'Business id')
   const supplierId = requestedSupplierId
     ? requireFirestoreDocumentId(requestedSupplierId, 'Supplier id')
     : requireFirestoreDocumentId(normalizeSlug(organizationName), 'Supplier id')
@@ -198,33 +199,18 @@ export async function completeSupplierOnboarding(
     if (root.exists && !normalizeSupplier(supplierId, root.data))
       fail(409, 'Stored Supplier source is invalid.')
     const rootData = root.exists ? root.data || {} : null
-    const companyId = rootData
+    const businessId = rootData
       ? requireFirestoreDocumentId(
-          rootData.company_id,
-          'Stored Supplier Company id'
+          rootData.business_id,
+          'Stored Supplier Business id'
         )
-      : newCompanyId
-    const [company, place] = await Promise.all([
-      mutations.read<Record<string, unknown>>(
-        PLACE_MUTATION_TARGETS.companies,
-        companyId
-      ),
-      mutations.read<Record<string, unknown>>(
-        PLACE_MUTATION_TARGETS.places,
-        companyId
-      ),
-    ])
-    if (
-      !company.exists ||
-      !canonicalCompanyRole(companyId, company.data) ||
-      !place.exists ||
-      !normalizePlace(companyId, place.data || {})
-    ) {
-      fail(
-        409,
-        'Supplier onboarding requires a valid Company and same-ID Place.'
-      )
-    }
+      : newBusinessId
+    const business = await mutations.read<Record<string, unknown>>(BUSINESS_MUTATION_TARGETS.businesses, businessId)
+    const businessRoot = business.exists ? normalizeBusiness(businessId, business.data) : null
+    const locationId = businessRoot?.place_ids[0]
+    const place = locationId ? await mutations.read(PLACE_MUTATION_TARGETS.places, locationId) : null
+    if (!businessRoot || !locationId || !place?.exists || !normalizePlace(locationId, place.data || {}))
+      fail(409, 'Supplier onboarding requires a Business with a valid linked location.')
     const supplierIds = readMembershipAccessIds(
       accessRecord.data,
       membership.data
@@ -259,7 +245,7 @@ export async function completeSupplierOnboarding(
       mutations.create(
         suppliers,
         supplierId,
-        newSupplierRoot(policy, uid, supplierId, companyId)
+        newSupplierRoot(policy, uid, supplierId, businessId)
       )
     } else {
       const management = readRootManagement(rootData || {})

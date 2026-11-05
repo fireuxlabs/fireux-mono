@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 
 DATABASE = 'projects/bringli-b0517/databases/bringli'
-ROOT_KEYS = {'id', 'company_id', 'management', 'identity', 'catalogue', 'delivery', 'created', 'updated'}
+ROOT_KEYS = {'id', 'business_id', 'management', 'identity', 'catalogue', 'delivery', 'created', 'updated'}
 OLD_KEYS = {'slug', 'status', 'visibility', 'catalogue_state', 'delivery_areas'}
 MAP_KEYS = {'identity', 'catalogue', 'delivery'}
 
@@ -41,7 +41,7 @@ def validate_configuration(root):
 def propose(root):
     if not isinstance(root, dict) or set(root) - (ROOT_KEYS | OLD_KEYS):
         raise ValueError('Unsupported Supplier root fields')
-    required = {'company_id', 'management', 'created', 'updated'}
+    required = {'business_id', 'management', 'created', 'updated'}
     if not required.issubset(root):
         raise ValueError('Incomplete Supplier relationship, management or audit fields')
     old_fields = OLD_KEYS & set(root)

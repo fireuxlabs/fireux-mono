@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -49,8 +50,7 @@ SUPPLIER_MUTATION_TARGETS: targets,
 JOB_MUTATION_TARGETS: targets,
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverSupplierAccessTarget: (app) => `supplier_access/${app}/users`,
-    isAppUserSubscription: (value) =>
-      ['free', 'premium', 'business'].includes(value),
+    readAppUserSubscription,
     readFireuxEntityManagement: (value) => value,
     resolveFireuxEntityManagementAppId: (value) => value.app_id,
   }

@@ -34,7 +34,7 @@ export type SupplierDemoCatalogueSectionSeed = {
 
 export type SupplierDemoScenarioSeed = {
   id: string
-  companyId: string
+  businessId: string
   name: string
   status: Supplier['identity']['status']
   catalogueState: Supplier['catalogue']['mode']

@@ -15,15 +15,16 @@ export const identity = {
   name: 'Interlaken Bike Tours',
   shortName: 'Bike Tours',
   role: 'tenant',
+  modules: ['fireux-businesses', 'fireux-bookings'],
   context:
-    'A customer-facing prototype replacing the existing Interlaken Bike Tours website. Visitors compare private guided rides, read practical information and prepare an enquiry to Ben through WhatsApp or email. Source: www.interlakenbiketours.com, inspected 2026-10-21. No live availability, payments, booking persistence or operator Workspace is implemented. Tour facts require operator review before release.',
+    'A customer-facing prototype for premium private guided rides. Visitors can check a single 09:00 departure against Ben’s Google Calendar and confirm one private tour per day at the catalog price per person; the App stores a booking record and the shared FireUX Bookings package owns confirmation orchestration and Calendar transport. The optional Business Workspace provides profile/contact details, linked locations and a Team roster. No payment, outbound confirmation email, cancellation flow or operator Workspace is implemented. Prices and operating capacity require operator review before release.',
 } satisfies FireuxAppConfig
 
 export const brief = {
   id: 'interlaken-bike-tours-prototype',
   industry: 'Private guided cycling tours',
   outcome:
-    'Help a visitor choose a suitable ride and prepare a direct enquiry to the guide.',
+    'Help a visitor choose a private ride, see its price and availability, and confirm a booking directly.',
   actors: ['Visitor', 'Local guide'],
   search: searchPlan,
   requirements: [
@@ -50,6 +51,12 @@ export const brief = {
       need: 'Discuss a ride, rental or bespoke trip.',
       acceptance:
         'Visitor choices produce an encoded WhatsApp or email draft without sending or storing it.',
+    },
+    {
+      id: 'book',
+      need: 'Choose an advertised private tour and confirm an available date at its fixed catalog price.',
+      acceptance:
+        'The App checks its daily booking lock and Ben’s Google Calendar, writes one confirmed booking, inserts the Calendar event, and returns an immediate on-screen confirmation. Conflicts do not create a second confirmed booking.',
     },
   ],
 } satisfies IgnitionBrief
@@ -93,6 +100,19 @@ export const assembly = {
       uses: ['rides'],
       sourcePaths: ['app/components/Landing/Enquiry.vue'],
     },
+    {
+      id: 'booking',
+      role: 'capability',
+      owner: 'interlaken-bike-tours',
+      requirements: ['book'],
+      uses: ['rides'],
+      sourcePaths: [
+        'app/pages/book.vue',
+        'server/api/bookings/',
+        'server/utils/tour-booking.ts',
+        'server/utils/tour-booking-store.ts',
+      ],
+    },
   ],
   evidence: [
     {
@@ -121,6 +141,17 @@ export const assembly = {
         'Yellow Velo is a composition reference, not a shared tour-booking domain. No second proven tour consumer supports extracting a library.',
       owner: 'interlaken-bike-tours',
       references: ['app/components/Landing/Rides.vue'],
+    },
+    {
+      decision:
+        'Use FireUX Bookings for server-side Google Calendar transport.',
+      reason:
+        'The App owns tour slots, pricing, booking records, confirmation and recovery; FireUX Bookings owns server-side Google Calendar transport and OAuth token refresh only.',
+      owner: 'interlaken-bike-tours → fireux-bookings',
+      references: [
+        'server/utils/tour-calendar.ts',
+        'packages/extensions/fireux-bookings/src/runtime/server/google-calendar.ts',
+      ],
     },
   ],
 } satisfies IgnitionAssembly

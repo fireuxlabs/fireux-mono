@@ -67,7 +67,9 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   and native layers even when an App omits them from `modules` or `extends`;
   every App declares both packages directly in its manifest. `modules` lists
   additional extensions and may provide custom options for a default module.
-  Ecosystem packages do not bundle domain extensions on an App's behalf.
+  An App may keep explicit layer positions to preserve established Nuxt
+  precedence. Ecosystem packages do not bundle domain extensions on an App's
+  behalf.
 - A reusable extension owns its shared runtime integration defaults and
   environment resolution. For example, `fireux-kitchens` owns the Bringli
   Supplier-directory configuration, `fireux-places` owns Google Maps and

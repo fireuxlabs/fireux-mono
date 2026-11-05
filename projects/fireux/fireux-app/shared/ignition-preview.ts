@@ -140,10 +140,10 @@ import { name } from '../../ignition/brief'
 const pricing = usePricing({
   appName: name, contactEmail: '', workspaceName: 'Workspace',
   entityName: 'workspace', entityPluralName: 'workspaces',
-  free: ['Start with the Free tier'], professional: ['Pro workspace capabilities'],
+  free: ['Start with the Free tier'], pro: ['Pro workspace capabilities'],
   includesManaged: false, includesEcosystemTier: false,
 })
-const tiers = computed(() => pricing.tiers.value.filter(tier => ['free', 'professional', 'business'].includes(tier.id)))
+const tiers = computed(() => pricing.tiers.value.filter(tier => ['free', 'pro', 'business'].includes(tier.id)))
 </script>
 `,
     '.env.example': `APP_DOMAIN=http://localhost:3048

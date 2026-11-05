@@ -20,11 +20,11 @@
       <div class="hero-actions">
         <UButton
           class="booking-action"
-          to="#enquire"
+          to="/book"
           size="xl"
           color="primary"
           trailing-icon="i-lucide-arrow-up-right"
-          >Book a tour</UButton
+          >Book a private tour</UButton
         >
         <UButton
           class="secondary-action"
@@ -52,7 +52,7 @@
       </div>
       <div>
         <dt>Booking</dt>
-        <dd>Ask about today</dd>
+        <dd>Instant confirmation</dd>
       </div>
     </dl>
   </section>

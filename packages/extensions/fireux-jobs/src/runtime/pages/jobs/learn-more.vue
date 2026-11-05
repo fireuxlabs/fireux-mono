@@ -24,7 +24,7 @@
             <strong class="font-medium text-highlighted"
               >Published job directory</strong
             >
-            &nbsp;— open public roles are projected with bounded Company and
+            &nbsp;— open public roles are projected with bounded Business and
             Place information.
           </li>
           <li>

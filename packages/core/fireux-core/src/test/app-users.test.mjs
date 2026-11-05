@@ -1,5 +1,6 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
+import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -31,6 +32,7 @@ test('App memberships retain missing identities and hydrate User data without fl
     loadMore() {},
   })
   const dependencies = {
+    readAppUserSubscription,
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
     computed,
@@ -74,6 +76,9 @@ test('App memberships retain missing identities and hydrate User data without fl
   identities.value.missing = { id: 'missing', display_name: 'Resolved User' }
   assert.equal(state.memberships.value[1].user.display_name, 'Resolved User')
   assert.equal(state.userById('missing').display_name, 'Resolved User')
+  members.value[0].subscription = 'premium'
+  assert.equal(state.memberships.value[0].subscription, 'pro')
+  assert.equal(members.value[0].subscription, 'premium')
 })
 
 test('one membership uses one exact read and follows viewer authority and selected person', () => {
@@ -94,6 +99,7 @@ test('one membership uses one exact read and follows viewer authority and select
   let target,
     reads = 0
   const dependencies = {
+    readAppUserSubscription,
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
     computed,
@@ -132,8 +138,8 @@ test('one membership uses one exact read and follows viewer authority and select
   assert.equal(reads, 1)
   assert.equal(target.value, 'person-a')
   assert.equal(state.membership.value.subscription, 'free')
-  rows.value['person-a'].subscription = 'premium'
-  assert.equal(state.membership.value.subscription, 'premium')
+  rows.value['person-a'].subscription = 'pro'
+  assert.equal(state.membership.value.subscription, 'pro')
   subject.value = 'absent'
   assert.equal(target.value, 'absent')
   assert.equal(state.membership.value, null)
@@ -162,6 +168,7 @@ test('administrators beyond the member page are still read and hydrated', () => 
   const admin = { id: 'z-admin', role: 'admin', subscription: 'business' }
   let hydrationIds
   const dependencies = {
+    readAppUserSubscription,
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
     computed,
@@ -279,7 +286,7 @@ test('membership feedback follows the captured person and suppresses stale succe
   for (const outcome of ['complete', 'fail']) {
     for (const change of ['subject', 'account', 'role', 'dispose']) {
       const f = subscriptionFixture()
-      const pending = f.state.setSubscription('premium')
+      const pending = f.state.setSubscription('pro')
       assert.equal(f.commands[0].userId, 'person-a')
       if (change === 'subject') {
         f.subject.value = 'person-b'
@@ -300,11 +307,11 @@ test('membership feedback follows the captured person and suppresses stale succe
 
 test('a current membership action reports its target and prevents overlapping requests', async () => {
   const f = subscriptionFixture()
-  const pending = f.state.setSubscription('premium')
+  const pending = f.state.setSubscription('pro')
   await f.state.setSubscription('business')
   assert.equal(f.commands.length, 1)
   f.complete()
   await pending
-  assert.deepEqual(f.successes, ['Person A is now premium.'])
+  assert.deepEqual(f.successes, ['Person A is now pro.'])
   f.stop()
 })

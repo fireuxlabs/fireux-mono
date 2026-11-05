@@ -8,7 +8,7 @@ import { computed, ref } from 'vue'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 
 for (const [folder, suffix] of [
-  ['catalogue', 'Catalogue'],
+  ['catalogue', 'Catalogues'],
   ['ingredients', 'Ingredients'],
   ['items', 'Items'],
 ]) {
@@ -28,7 +28,7 @@ for (const [folder, suffix] of [
       id,
       data: ref({
         id: 'a',
-        company_id: 'place-a',
+        business_id: 'place-a',
         identity: { status: 'active' },
         catalogue: { mode: 'directory_only' },
       }),

@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -42,8 +43,7 @@ const requireKitchenMutationAuthority = load(
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
     PLACE_MUTATION_TARGETS: { places: 'places' },
     readKitchenAccessIds,
-    isAppUserSubscription: (value) =>
-      ['free', 'premium', 'business'].includes(value),
+    readAppUserSubscription,
     createError,
   },
   'requireKitchenMutationAuthority'

@@ -1,6 +1,7 @@
 import {
   isAppUserRole,
   isAppUserSubscription,
+  readAppUserSubscription,
 } from '../runtime/app/models/app-user.model.ts'
 import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 import assert from 'node:assert/strict'
@@ -47,6 +48,7 @@ const contract = load(
     FieldValue: { serverTimestamp: () => ({ seconds: 123, nanoseconds: 0 }) },
     isAppUserRole,
     isAppUserSubscription,
+    readAppUserSubscription,
     USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
     serverAppUsersTarget: memberships,
   }
@@ -61,6 +63,13 @@ test('App membership retains only its role, subscription and timestamps', () => 
     updated: { at: { seconds: 123, nanoseconds: 0 }, by: 'person' },
   })
   assert.doesNotThrow(() => contract.requireCanonicalMembership(membership))
+  assert.doesNotThrow(() =>
+    contract.requireCanonicalMembership({ ...membership, subscription: 'premium' })
+  )
+  assert.throws(
+    () => contract.requireCanonicalMembership({ ...membership, subscription: 'invalid' }),
+    { statusCode: 409 }
+  )
   assert.throws(
     () =>
       contract.requireCanonicalMembership({

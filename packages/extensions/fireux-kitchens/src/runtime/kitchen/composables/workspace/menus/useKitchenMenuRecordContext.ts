@@ -119,7 +119,7 @@ function createKitchenMenuRecordContext() {
     () =>
       canManage.value &&
       (menu.value?.schedule !== 'daily' ||
-        ['premium', 'business'].includes(
+        ['pro', 'business'].includes(
           session.appUser.value?.subscription || 'free'
         ))
   )

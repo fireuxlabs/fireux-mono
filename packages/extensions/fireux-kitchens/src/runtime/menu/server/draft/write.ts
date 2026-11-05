@@ -98,7 +98,7 @@ export async function writeKitchenMenuDraft(input: {
             throw createError({
               statusCode: 403,
               statusMessage:
-                'Choose an existing Food or Drinks Menu. Creating a custom Menu requires Plus.',
+                'Choose an existing Food or Drinks Menu. Creating a custom Menu requires Pro.',
             })
           name = slug === 'food' ? 'Food' : 'Drinks'
         }

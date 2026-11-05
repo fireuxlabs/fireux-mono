@@ -31,7 +31,7 @@ export type JobEngagement = {
   job_id: string
   employer_user_id: string
   worker_user_id: string
-  company_id: string
+  business_id: string
   place_id: string
   contract_type: JobContractType
   management_mode: JobManagementMode

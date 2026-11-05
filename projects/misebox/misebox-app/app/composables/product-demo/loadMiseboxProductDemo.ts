@@ -15,7 +15,7 @@ export async function loadMiseboxProductDemo(
   const [
     scenarioModule,
     presentationModule,
-    companyModule,
+    businessModule,
     supplierModule,
     dishesModule,
     suppliersModule,
@@ -25,7 +25,7 @@ export async function loadMiseboxProductDemo(
   ] = await Promise.all([
     import('fireux-kitchens/runtime/kitchen/demo/scenarios'),
     import('fireux-kitchens/runtime/kitchen/demo/presentation/index'),
-    import('fireux-companies/runtime/place/demo/company/scenarios'),
+    import('fireux-businesses/runtime/business/demo/business/scenarios'),
     import('fireux-suppliers/runtime/supplier/demo/scenarios'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-dishes'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-suppliers'),
@@ -35,7 +35,7 @@ export async function loadMiseboxProductDemo(
   ])
   const supplierDemoWorld = projectSupplierDemoWorld({
     scenarios: supplierModule.supplierDemoScenarios,
-    companyTargets: companyModule.companyDemoTargets,
+    businessTargets: businessModule.businessDemoTargets,
   })
 
   const supplierIngredients = new Set(

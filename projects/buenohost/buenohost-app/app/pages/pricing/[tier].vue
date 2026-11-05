@@ -15,7 +15,7 @@ const tierId = computed(() => String(route.params.tier || ''))
 definePageMeta({
   layout: 'landing',
   validate: (route) =>
-    ['free', 'professional', 'business', 'managed', 'your-app'].includes(
+    ['free', 'pro', 'business', 'managed', 'your-app'].includes(
       String(route.params.tier)
     ),
 })

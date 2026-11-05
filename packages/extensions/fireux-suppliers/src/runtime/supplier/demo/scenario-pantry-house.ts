@@ -2,7 +2,7 @@ import { buildSupplierDemoScenario } from './scenario-build'
 
 export const pantryHouse = buildSupplierDemoScenario({
   id: 'pantry-house',
-  companyId: 'pantry-house-hq',
+  businessId: 'pantry-house-hq',
   name: 'Pantry House',
   status: 'active',
   catalogueState: 'integrated',
