@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppPublicSummary } from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
 
-defineProps<{ app: AppPublicSummary }>()
+defineProps<{ app: App }>()
 </script>

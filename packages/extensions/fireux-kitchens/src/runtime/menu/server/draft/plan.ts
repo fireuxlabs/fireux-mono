@@ -40,7 +40,6 @@ export function planKitchenMenuDraft(
   },
   stamp: ReturnType<typeof serverAuditStamp>
 ) {
-  const updated = { at: stamp.at, by: stamp.by }
   const sectionIds = new Set<string>()
   const dishIds = new Set<string>()
   const sproochliCacheUnits: SproochliMenuCacheImportUnit[] = []
@@ -129,7 +128,7 @@ export function planKitchenMenuDraft(
           item_kind: item.item_kind,
           kitchen_id: input.kitchenId,
           created: stamp,
-          updated,
+          updated: stamp,
           ...(text(item.description)
             ? { description: text(item.description) }
             : {}),
@@ -143,7 +142,7 @@ export function planKitchenMenuDraft(
           status: 'active',
           sort_order: itemIndex,
           created: stamp,
-          updated,
+          updated: stamp,
         } as Record<string, unknown>,
       }
     })
@@ -157,7 +156,7 @@ export function planKitchenMenuDraft(
         status: 'active',
         sort_order: sectionIndex,
         created: stamp,
-        updated,
+        updated: stamp,
       },
       items,
     }

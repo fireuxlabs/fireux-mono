@@ -10,7 +10,7 @@ import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
 } from '../models/kitchen-detail.response.ts'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+import type { Kitchen } from '../models/kitchen.model.ts'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation.ts'
 
 export type KitchenDetailOutcome =
@@ -26,7 +26,7 @@ type KitchenDetailControls = Pick<
 >
 
 export type UseKitchenDetailReturn = KitchenDetailControls & {
-  kitchen: ComputedRef<KitchenPublicSummary | null>
+  kitchen: ComputedRef<Kitchen | null>
   place: ComputedRef<Place | null>
   presentation: ComputedRef<KitchenDetailPresentation | null>
   ready: Promise<void>
@@ -69,7 +69,7 @@ export function useKitchenDetail(
     },
     { server: true, watch: [slug] }
   )
-  const loadedKitchen = computed<KitchenPublicSummary | null>(() => {
+  const loadedKitchen = computed<Kitchen | null>(() => {
     const item = state.data.value?.kitchen
     return !state.error.value &&
       !state.pending.value &&

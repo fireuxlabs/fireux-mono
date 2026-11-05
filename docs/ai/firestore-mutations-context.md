@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-31
-Ref: 3f46d22a2
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -103,7 +103,7 @@ record is only the bootstrap/control-plane projection. The normal second
 database is the owning `ProjectName`; it owns that Project's canonical entities
 and operations. Consumers and scripts must not choose arbitrary per-operation
 databases. Explicit App infrastructure `databaseId` bindings are supported by
-`packages/core/fireux-core/src/config/app/fireux.config.ts` and
+`packages/extensions/fireux-app/src/config.ts` and
 `packages/core/fireux-core/src/config/app/database.ts`; they preserve the
 owning ecosystem identity database while selecting the App's domain database.
 Each additional binding retains its own lifecycle and Rules authority; its
@@ -260,7 +260,6 @@ records. Public meal-deal projection remains read-only.
   `useAppEnvCheck.ts` keys client-only diagnostics by App/account, passes
   request cancellation and rejects obsolete credentials/results. Verify both
   through `src/test/app-initialization-scope.test.mjs`.
-  Join review reads every required snapshot before its first transaction write.
   User private-account and avatar command functions live in `user/utils`,
   alongside canonical identity provisioning and handle transport. Profile edits
   use `user/composables/identity/useUserProfileUpdate.ts`; bootstrap uses the
@@ -299,6 +298,10 @@ records. Public meal-deal projection remains read-only.
   `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
   `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and
   `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
+- App initialization decides when a configured global main App can provision
+  its Ecosystem. The Ecosystem owns root validation and its guarded identity
+  transaction in
+  `packages/core/fireux-core/src/runtime/ecosystem/server/identity/provision.ts`.
 - App media single-image and bulk sync share the same development/developer
   command. Only known image kinds are caller inputs; App and bucket come from
   runtime authority. Missing owner artwork fails instead of borrowing a parent
@@ -462,7 +465,7 @@ See the App-owned release README and `test/storage.production.test.mjs`.
 The candidate also permits exact owner account reads, exact-App admin featured
 settings, and Kitchen-operator Menu source, draft, table-tab and promotion reads.
 Private App roots containing context require admin authority; App metadata and
-self-join policy use the safe status projection. Public people and member display
+App metadata uses the safe status projection. Public people and member display
 identities use their existing server projection owners, while canonical membership
 lookup requires current App administration. These are source-only contracts, not
 an authorization to apply the candidate.
@@ -508,12 +511,11 @@ membership, App, route and caller form before credentials, validates the exact
 response id/action and suppresses obsolete UI completion. Displayed create
 failures are sanitized and copyable. The offline `project-identity.py` planner
 targets only `projects/fireux-2005/databases/fireux`, preserves preimages and
-revisions, and neither connects to Firestore nor applies/deletes records. Connected App ownership of
-description/image is enforced by the ecosystem connection predicate even when
-that provider is unavailable. Project implementation, canonical reads, authority and protected commands live in
-the FireUX ecosystem; App-specific cross-project discovery, remote product context
-and HTTP transport remain App-owned. Focused proof lives in the FireUX ecosystem's `project-identity.test.mjs`
-and FireUX App's `project-identity-command.test.mjs`.
+revisions, and neither connects to Firestore nor applies/deletes records.
+Project owns its name, description and image. Canonical reads and protected
+commands live in the FireUX ecosystem. FireUX App owns directory discovery
+and HTTP routes. FireUX App's `project-identity-command.test.mjs` covers the
+command with mocked transactions.
 Project Team create/update/delete and role-label commands reuse
 `fireux-fireux/runtime/project/server/authority.ts` to recheck App membership, timestamp-bound
 Project access and Project existence inside their writing transaction. Creation

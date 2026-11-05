@@ -96,10 +96,10 @@ service cloud.firestore {
     }
 
     match /apps/{app} {
-      // The existing session reads public App identity before joining. Never
-      // expose legacy/unknown root fields merely because the App is known.
+      // The existing session reads public App identity during setup. Never
+      // expose unknown root fields merely because the App is known.
       function publicIdentity(d) {
-        return d.keys().hasOnly(['ecosystem_id', 'role', 'status', 'name', 'short_name', 'tagline', 'description', 'social_links', 'media', 'self_join_enabled', 'created', 'updated']) &&
+        return d.keys().hasOnly(['ecosystem_id', 'role', 'status', 'name', 'short_name', 'tagline', 'description', 'social_links', 'media', 'created', 'updated']) &&
           (!('social_links' in d) || d.social_links.keys().hasOnly(['website', 'twitter', 'github', 'linkedin', 'instagram', 'facebook', 'youtube', 'email'])) &&
           (!('media' in d) || d.media.keys().hasOnly(['thumbnail_url', 'logo_url', 'wordmark_light_url', 'wordmark_dark_url', 'cover_url']));
       }
@@ -108,10 +108,6 @@ service cloud.firestore {
       match /users/{uid} {
         allow get: if knownApp(app) && (own(uid) || admin(app));
         allow list: if admin(app) && request.query.limit <= 100;
-      }
-      match /join-requests/{uid} {
-        allow get: if knownApp(app) && (own(uid) || admin(app));
-        allow list: if admin(app);
       }
     }
     match /kitchen_access/{uid} {

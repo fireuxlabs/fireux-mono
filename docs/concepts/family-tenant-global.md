@@ -1,7 +1,7 @@
 # Tenant and global App family
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
@@ -18,6 +18,10 @@ Apps without forking the package-owned domain system.
   `nuxt.config.ts`
 
 ## Shared spine
+
+Main Apps use `defineFireuxEcosystem` from `fireux-ecosystem/config`. Tenant
+and standalone Apps use `defineFireuxApp` from `fireux-app/config`. Core is a
+shared lower dependency and does not select either bundle.
 
 Global and tenant Apps must:
 
@@ -48,6 +52,8 @@ Global and tenant Apps must:
 
 `standalone` is a third FireUX-owned App role. It shares explicit config and
 package contracts; it must not become an implicit fallback for unknown roles.
+An Ecosystem Main App can host tenant Apps, standalone Apps, or both. Its own
+`global` role does not require a particular child-App role.
 
 ## Entity management vocabulary
 
@@ -155,7 +161,7 @@ list, detail and Project-scoped readers use those App sources. Ecosystem identit
 readers continue to use PLATFORM_DIRECTORY_TARGETS; adding an App source does
 not create another Ecosystem identity.
 
-The shared Core `/api/apps` directory reads the configured runtime database's
+The shared `fireux-ecosystem` `/api/apps` directory reads the configured runtime database's
 root `apps` collection and filters the canonical `ecosystem_id`. App ownership
 remains in its existing database; the platform does not maintain duplicate root
 App records. The named Ecosystem reverse locator identifies the App's database

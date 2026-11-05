@@ -1,16 +1,9 @@
 import type { FireuxMetaSolution } from 'fireux-core/config/app/meta-content'
-import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
 const fireuxOwner = {
   id: 'fireux',
   name: 'FireUX',
   to: '/',
-} as const
-
-const werkboxOwner = {
-  id: 'werkbox',
-  name: 'Werkbox',
-  to: '/ecosystems/werkbox',
 } as const
 
 const ignitionFromSolution = (slug: string) =>
@@ -186,31 +179,6 @@ export const fireuxSolutions: FireuxMetaSolution[] = [
       keywords: ['branded web app', 'custom branded app', 'installable business web app'],
     },
     {
-      slug: 'cleaning',
-      title: 'App for a cleaning business',
-      description: 'Start on Werkbox, run cleaning work, and move to your own app only when you need it.',
-      icon: 'i-lucide-sparkles',
-      status: 'coming-soon',
-      owner: werkboxOwner,
-      body: 'Werkbox is the conservative starting point: use the shared app first, then move to a dedicated branded app when the business has proved the need.',
-      relatedApp: {
-        name: 'Werkbox cleaning',
-        to: '/ecosystems/werkbox/cleaning',
-        description: 'See the shared cleaning offer, capacity network, and upgrade path inside Werkbox.',
-      },
-      cta: {
-        label: 'See Werkbox cleaning',
-        to: '/ecosystems/werkbox/cleaning',
-        icon: 'i-lucide-arrow-right',
-      },
-      keywords: [
-        'app for cleaning business',
-        'cleaning job management app',
-        'find temporary cleaners',
-        'cleaning business software',
-      ],
-    },
-    {
       slug: 'fireux-app',
       title: 'FireUX App',
       description: 'A hosted and maintained website plus app surface we run for you.',
@@ -245,5 +213,4 @@ export const fireuxSolutions: FireuxMetaSolution[] = [
       icon: 'i-lucide-shopping-bag',
       owner: fireuxOwner,
     },
-    ...fireuxMiseboxSolutions,
   ]

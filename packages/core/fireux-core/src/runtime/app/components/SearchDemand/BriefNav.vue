@@ -2,7 +2,7 @@
   <nav
     v-if="briefs.length > 1"
     aria-label="Research subject"
-    class="flex flex-wrap gap-2"
+    class="research-button-row"
   >
     <UButton
       v-for="brief in briefs"
@@ -25,3 +25,4 @@ defineProps<{
   }>
 }>()
 </script>
+<style scoped src="./reading.css"></style>

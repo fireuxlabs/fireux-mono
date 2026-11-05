@@ -23,10 +23,15 @@ export async function readPlatformEcosystem(
   return readEcosystem(id, database, options)
 }
 
-export function readPlatformEcosystems(options: { activeOnly?: boolean } = {}) {
-  return Promise.all(
+export async function readPlatformEcosystems(
+  options: { activeOnly?: boolean } = {}
+) {
+  const ecosystems = await Promise.all(
     PLATFORM_DIRECTORY_TARGETS.map((target) =>
-      readPlatformEcosystem(target.ecosystemId, options)
+      readPlatformEcosystem(target.ecosystemId, { activeOnly: false })
     )
   )
+  return options.activeOnly === false
+    ? ecosystems
+    : ecosystems.filter((ecosystem) => ecosystem.status === 'active')
 }

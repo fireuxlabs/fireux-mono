@@ -18,7 +18,7 @@ const miseboxPricingProfile = {
     'Advertise permanent and temporary Jobs',
     'Coordinate one active temporary Engagement',
   ],
-  professional: [
+  pro: [
     'Create and publish custom regular Menus',
     'Manage the Kitchen team and invitations',
     'Manage dishes, recipes, stations, and orders',
@@ -30,7 +30,7 @@ export function useMiseboxPricing() {
   const pricing = usePricing(miseboxPricingProfile)
   const tiers = computed(() =>
     pricing.tiers.value.filter((tier) =>
-      ['free', 'professional', 'business'].includes(tier.id)
+      ['free', 'pro', 'business'].includes(tier.id)
     )
   )
   const products = computed(() =>

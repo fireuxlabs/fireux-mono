@@ -1,51 +1,72 @@
 <template>
-  <main class="mx-auto max-w-3xl space-y-8 px-6 py-12">
-    <header class="space-y-3">
-      <h1 class="text-3xl font-semibold">FireUX context</h1>
-      <p>{{ context.summary }}</p>
-    </header>
-    <section class="space-y-3" aria-labelledby="purpose">
-      <h2 id="purpose" class="text-xl font-semibold">What we are building</h2>
-      <p>{{ context.mission.intent }}</p>
-      <p>{{ context.mission.whiteLabel }}</p>
-      <p>{{ context.mission.example }}</p>
-    </section>
-    <dl class="grid gap-5 sm:grid-cols-2">
-      <div v-for="(meaning, term) in context.structure" :key="term">
-        <dt class="font-semibold capitalize">{{ term }}</dt>
-        <dd class="text-muted">{{ meaning }}</dd>
-      </div>
-    </dl>
-    <section class="space-y-3" aria-labelledby="consumption">
-      <h2 id="consumption" class="text-xl font-semibold">Using this context</h2>
-      <p>{{ context.consumption.purpose }}</p>
-      <p>{{ context.consumption.boundary }}</p>
-      <UButton :href="context.consumption.endpoint" variant="soft"
-        >Read public context JSON</UButton
+  <UPage>
+    <UPageHeader
+      headline="FireUX"
+      title="Context"
+      :description="context.summary"
+    />
+
+    <UPageBody>
+      <UPageSection title="What we are building">
+        <p>{{ context.mission.intent }}</p>
+        <p>{{ context.mission.whiteLabel }}</p>
+        <p>{{ context.mission.example }}</p>
+      </UPageSection>
+
+      <UPageSection title="The FireUX structure">
+        <UPageGrid>
+          <UCard v-for="(meaning, term) in context.structure" :key="term">
+            <template #header>
+              <h3 class="platform-context__term">{{ term }}</h3>
+            </template>
+            <p>{{ meaning }}</p>
+          </UCard>
+        </UPageGrid>
+      </UPageSection>
+
+      <UPageSection title="Using this context">
+        <p>{{ context.consumption.purpose }}</p>
+        <p>{{ context.consumption.boundary }}</p>
+        <UButton :href="context.consumption.endpoint" variant="soft">
+          Read public context JSON
+        </UButton>
+        <p class="platform-context__note">
+          The JSON includes a schema version and content revision. Consumers
+          choose when to read it; current records and available tools remain
+          authoritative.
+        </p>
+      </UPageSection>
+
+      <UPageSection
+        title="Research an industry"
+        description="Use the shared method to turn evidence into ranked capability proposals and compare them with current implementation."
       >
-      <p class="text-sm text-muted">
-        The JSON includes a schema version and content revision. Consumers
-        choose when to read it; current records and available tools remain
-        authoritative.
-      </p>
-    </section>
-    <section class="space-y-3" aria-labelledby="research">
-      <h2 id="research" class="text-xl font-semibold">Research an industry</h2>
-      <p>
-        Use the shared method to turn evidence into ranked capability proposals
-        and compare them with current implementation.
-      </p>
-      <UButton to="/context/research" variant="soft"
-        >Industry and Capability Research</UButton
-      >
-    </section>
-    <UButton to="/product" variant="link">Explore FireUX</UButton>
-  </main>
+        <UButton to="/context/research" variant="soft">
+          Industry and Capability Research
+        </UButton>
+      </UPageSection>
+
+      <UButton to="/product" variant="link">Explore FireUX</UButton>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { readPlatformContext } from '../../../shared/platform-context'
+
 const context = readPlatformContext()
+
 definePageMeta({ layout: 'landing' })
 useSeoMeta({ title: 'FireUX context', description: context.summary })
 </script>
+
+<style scoped>
+.platform-context__term {
+  text-transform: capitalize;
+}
+
+.platform-context__note {
+  color: var(--ui-text-muted);
+  font-size: 0.875rem;
+}
+</style>

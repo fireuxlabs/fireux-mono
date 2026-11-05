@@ -1,4 +1,5 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
+import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -219,6 +220,7 @@ function nativeSession(initial = {}) {
     'app/composables/membership/useAppUserRead.ts',
     'useAppUserRead',
     {
+      readAppUserSubscription,
       computed,
       unref,
       useFirestoreRead,
@@ -230,12 +232,6 @@ function nativeSession(initial = {}) {
     {
       computed,
       useAuth: () => auth,
-      useFireUXConfig: () => ({ appId: 'runtime' }),
-      useAppRead: () => ({
-        canSelfJoin: ref(true),
-        pending: ref(false),
-        error: ref(undefined),
-      }),
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
       resolveUserAvatarSource: (value) => value || '/img/ecosystem/avatar.png',
       useAppUserAccess: () => ({}),
@@ -322,7 +318,6 @@ test('settled registered nonmember resolves own User before membership exists', 
   assert.equal(f.state.currentUser.value.id, 'person')
   assert.equal(f.state.appOutcome.value, 'empty')
   assert.equal(f.state.appUser.value, null)
-  assert.equal(f.state.canSelfJoin.value, true)
   f.scope.stop()
 })
 test('authorized missing own User remains onboarding and failed own User remains an error', async () => {
@@ -367,6 +362,18 @@ test('sign-out immediately masks own User, avatar and membership before anonymou
   assert.equal(f.docCalls.length, 2)
   assert.equal(f.state.coreOutcome.value, 'idle')
   assert.equal(f.state.error.value, null)
+  f.scope.stop()
+})
+test('membership reads expose legacy premium as Pro and reject unknown stored tiers', async () => {
+  const f = nativeSession({ user: { uid: 'person' }, settled: true })
+  await nextTick()
+  f.settle('users', { display_name: 'Person' })
+  const stored = { role: 'user', subscription: 'premium' }
+  f.settle('apps/runtime/users', stored)
+  assert.equal(f.state.appUser.value.subscription, 'pro')
+  assert.equal(stored.subscription, 'premium')
+  f.settle('apps/runtime/users', { role: 'user', subscription: 'unknown' })
+  assert.equal(f.state.appUser.value, null)
   f.scope.stop()
 })
 test('account switch masks previous identity and membership until exact new reads settle', async () => {

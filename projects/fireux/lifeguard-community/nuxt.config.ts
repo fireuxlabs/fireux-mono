@@ -1,12 +1,13 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 
-export default defineFireuxConfig({
+export default defineFireuxApp({
   ecosystem: 'fireux',
-  extends: ['fireux-core/layer', 'fireux-blogs/layer'],
+  extends: ['fireux-core/layer'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'lifeguard-community',
-  context: "Lifeguard Community provides a place for member discussion and extracurricular learning. Community material should remain distinguishable from official qualifications or accredited training.",
+  context:
+    'Lifeguard Community provides a place for member discussion and extracurricular learning. Community material should remain distinguishable from official qualifications or accredited training.',
   name: 'Lifeguard Community',
   shortName: 'Lifeguard Community',
   databaseId: 'lifeguard-community',

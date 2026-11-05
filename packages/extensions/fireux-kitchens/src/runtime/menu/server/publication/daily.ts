@@ -38,10 +38,10 @@ export async function publishDailyMenu(event: H3Event, input: unknown) {
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
-    if (published && !['premium', 'business'].includes(access.subscription))
+    if (published && !['pro', 'business'].includes(access.subscription))
       throw createError({
         statusCode: 403,
-        statusMessage: 'Daily menus require Plus.',
+        statusMessage: 'Daily menus require Pro.',
       })
     const target = serverKitchenMenusTarget(kitchenId)
     const menu = await tx.read(target, menuId)
@@ -84,7 +84,7 @@ export async function publishDailyMenu(event: H3Event, input: unknown) {
       (value) => value !== date
     )
     if (published) dates.push(date)
-    const stamp = serverAuditStamp({ by: actor.uid })
+    const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     tx.update(target, menuId, {
       status: published ? 'published' : menu.data.status,
       published_dates: dates.sort(),

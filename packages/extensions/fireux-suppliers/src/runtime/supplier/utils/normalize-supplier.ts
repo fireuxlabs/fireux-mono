@@ -33,7 +33,7 @@ export function normalizeSupplier(
     !onlyKeys(source, [
       'context',
       'id',
-      'company_id',
+      'business_id',
       'management',
       'identity',
       'catalogue',
@@ -51,8 +51,8 @@ export function normalizeSupplier(
   const delivery = record(source.delivery)
   if (
     !management ||
-    typeof source.company_id !== 'string' ||
-    !isFirestoreDocumentId(source.company_id) ||
+    typeof source.business_id !== 'string' ||
+    !isFirestoreDocumentId(source.business_id) ||
     !identity ||
     !onlyKeys(identity, ['slug', 'status', 'visibility']) ||
     typeof identity.slug !== 'string' ||
@@ -80,7 +80,7 @@ export function normalizeSupplier(
     ...(typeof source.context === 'string' ? { context: source.context } : {}),
     id,
     management,
-    company_id: source.company_id.trim(),
+    business_id: source.business_id.trim(),
     identity: {
       slug: identity.slug.trim(),
       status: identity.status as Supplier['identity']['status'],

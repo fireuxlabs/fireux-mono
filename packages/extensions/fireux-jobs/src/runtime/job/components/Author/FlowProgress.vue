@@ -74,7 +74,7 @@ const steps = [
   {
     number: 2,
     label: 'Build the draft',
-    description: 'Choose the Company, Place, role, schedule, and offer.',
+    description: 'Choose the Business, Place, role, schedule, and offer.',
   },
   {
     number: 3,

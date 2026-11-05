@@ -34,7 +34,7 @@ test('Supplier navigation uses current authorized choices and suppresses failed 
       'withDefaults',
       'defineProps',
       'useWorkspaceEntryCta',
-      'useSupplierWorkspaceIndex',
+      'useSupplierWorkspace',
       'useSupplierInterface',
     ]
   )(
@@ -42,7 +42,7 @@ test('Supplier navigation uses current authorized choices and suppresses failed 
     () => ({}),
     () => ({}),
     () => ({ workspaceEntryPath: ref('/workspace/supplier') }),
-    () => index,
+    () => ({ ...index, id: index.selectedId, collectionOutcome: index.outcome }),
     () => ({
       pill: (value) =>
         value ? { id: value.id, title: value.name, imageUrl: '' } : null,

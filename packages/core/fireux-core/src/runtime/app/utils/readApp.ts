@@ -1,4 +1,8 @@
-import type { App, AppPublicSummary } from '../models/app.model.ts'
+import {
+  APP_ROLES,
+  APP_STATUSES,
+  type App,
+} from '../models/app.model.ts'
 
 const APP_FIELDS = new Set([
   'ecosystem_id',
@@ -10,12 +14,9 @@ const APP_FIELDS = new Set([
   'description',
   'social_links',
   'media',
-  'self_join_enabled',
   'created',
   'updated',
 ])
-const APP_ROLES = new Set<App['role']>(['global', 'tenant', 'standalone'])
-const APP_STATUSES = new Set<App['status']>(['active', 'inactive', 'archived'])
 const SOCIAL_LINK_FIELDS = [
   'website',
   'twitter',
@@ -50,7 +51,7 @@ function hasOptionalStringFields(
   )
 }
 
-function isStamp(value: unknown, allowAppId = false): value is App['created'] {
+function isStamp(value: unknown): value is App['created'] {
   if (!isRecord(value) || !isRecord(value.at)) return false
   if (
     typeof value.at.seconds !== 'number' ||
@@ -59,12 +60,8 @@ function isStamp(value: unknown, allowAppId = false): value is App['created'] {
     return false
   }
   return (
-    Object.keys(value).every(
-      (key) => key === 'at' || key === 'by' || (allowAppId && key === 'app_id')
-    ) &&
-    (value.by === undefined || typeof value.by === 'string') &&
-    (value.app_id === undefined ||
-      (allowAppId && typeof value.app_id === 'string'))
+    Object.keys(value).every((key) => key === 'at' || key === 'by') &&
+    (value.by === undefined || typeof value.by === 'string')
   )
 }
 
@@ -74,19 +71,17 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   if (
     typeof raw.ecosystem_id !== 'string' ||
     !raw.ecosystem_id.trim() ||
-    !APP_ROLES.has(raw.role as App['role']) ||
-    !APP_STATUSES.has(raw.status as App['status']) ||
+    !APP_ROLES.some((role) => role === raw.role) ||
+    !APP_STATUSES.some((status) => status === raw.status) ||
     typeof raw.name !== 'string' ||
     (raw.short_name !== undefined && typeof raw.short_name !== 'string') ||
     (raw.tagline !== undefined && typeof raw.tagline !== 'string') ||
     (raw.description !== undefined && typeof raw.description !== 'string') ||
-    (raw.self_join_enabled !== undefined &&
-      typeof raw.self_join_enabled !== 'boolean') ||
     (raw.social_links !== undefined &&
       !hasOptionalStringFields(raw.social_links, SOCIAL_LINK_FIELDS)) ||
     (raw.media !== undefined &&
       !hasOptionalStringFields(raw.media, MEDIA_FIELDS)) ||
-    !isStamp(raw.created, true) ||
+    !isStamp(raw.created) ||
     !isStamp(raw.updated)
   ) {
     return null
@@ -96,37 +91,14 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   const fields = Object.fromEntries(
     Object.entries(raw).filter(([key]) => APP_FIELDS.has(key))
   )
-  const projectCreatedStamp = (stamp: App['created']) => ({
-    at: { seconds: stamp.at.seconds, nanoseconds: stamp.at.nanoseconds },
-    ...(stamp.by !== undefined ? { by: stamp.by } : {}),
-    ...(stamp.app_id !== undefined ? { app_id: stamp.app_id } : {}),
-  })
-  const projectUpdatedStamp = (stamp: App['updated']) => ({
+  const projectStamp = (stamp: App['created']) => ({
     at: { seconds: stamp.at.seconds, nanoseconds: stamp.at.nanoseconds },
     ...(stamp.by !== undefined ? { by: stamp.by } : {}),
   })
   return {
     ...fields,
     id,
-    created: projectCreatedStamp(raw.created),
-    updated: projectUpdatedStamp(raw.updated),
+    created: projectStamp(raw.created),
+    updated: projectStamp(raw.updated),
   } as App
-}
-
-/** Project an App for public directories, detail pages and relationship views. */
-export function toAppPublicSummary(app: App): AppPublicSummary {
-  return {
-    id: app.id,
-    ecosystem_id: app.ecosystem_id,
-    role: app.role,
-    status: app.status,
-    name: app.name,
-    ...(app.short_name !== undefined ? { short_name: app.short_name } : {}),
-    ...(app.tagline !== undefined ? { tagline: app.tagline } : {}),
-    ...(app.description !== undefined ? { description: app.description } : {}),
-    ...(app.social_links !== undefined
-      ? { social_links: app.social_links }
-      : {}),
-    ...(app.media !== undefined ? { media: app.media } : {}),
-  }
 }

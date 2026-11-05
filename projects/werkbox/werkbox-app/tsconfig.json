@@ -20,14 +20,14 @@
       "fireux-core/runtime/*": [
         "../../../packages/core/fireux-core/src/runtime/*"
       ],
-      "fireux-companies": [
-        "../../../packages/extensions/fireux-companies/src/module.ts"
+      "fireux-businesses": [
+        "../../../packages/extensions/fireux-businesses/src/module.ts"
       ],
-      "fireux-companies/*": [
-        "../../../packages/extensions/fireux-companies/src/*"
+      "fireux-businesses/*": [
+        "../../../packages/extensions/fireux-businesses/src/*"
       ],
-      "fireux-companies/runtime/*": [
-        "../../../packages/extensions/fireux-companies/src/runtime/*"
+      "fireux-businesses/runtime/*": [
+        "../../../packages/extensions/fireux-businesses/src/runtime/*"
       ],
       "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],

@@ -1,4 +1,6 @@
-<template><div /></template>
 <script setup lang="ts">
-definePageMeta({ redirect: '/apps/werkbox' })
+await navigateTo('https://cleanbox.web.app/pricing', {
+  external: true,
+  redirectCode: 301,
+})
 </script>

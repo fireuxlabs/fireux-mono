@@ -43,12 +43,13 @@ inspection of source, consumers, siblings, and available tests.
 | Workspace and Entity surfaces | `docs/concepts/family-workspace-entity.md` |
 | Misebox Apps, ecosystem, or tenants | `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md` |
 | Bären tenant or venue-specific operational decisions | `projects/misebox/baeren-ringgenberg/docs/ai/baeren-context.md` |
-| Optional cross-ecosystem account connections | `docs/ai/account-connections-context.md` |
 | Firestore mutations | `docs/ai/firestore-mutations-context.md` |
 | Product copy or literature | `docs/concepts/product-language.md` |
 | Main App identity, landing, or pricing literature | `docs/ai/identity-literature-context.md` |
 | Brand assets | `docs/concepts/brand-assets.md` |
 | App ignition and build reconciliation | `packages/extensions/fireux-ignite/docs/ai/ignite-context.md` |
+| Business identity, Workspace and Company migration | `packages/extensions/fireux-businesses/docs/ai/businesses-context.md` |
+| Reusable booking and calendar integrations | `packages/extensions/fireux-bookings/docs/ai/bookings-context.md` |
 | FireUX App Ignition requests and delivery | `projects/fireux/fireux-app/docs/ai/ignition-intake-context.md` |
 | Industry research and capability discovery | `packages/extensions/fireux-ai/docs/ai/research-context.md` |
 | Documentation roles or new durable docs | `docs/concepts/documentation.md` |

@@ -67,7 +67,7 @@ have an optional account-connection service, consent/ownership UX and custom-aut
 handoff in source. The first integration uses existing Firebase Auth accounts;
 no external OIDC provider is configured. Local App memberships, profiles and
 workspace permissions remain their existing owners. The authoritative source,
-checks and activation boundary are mapped in `docs/ai/account-connections-context.md`.
+checks and activation boundary are in the [pilot record](../../fireux-misebox-account-connections.md).
 
 ### Next
 

@@ -114,7 +114,7 @@ const createPrep = async () => {
           .filter(Boolean),
       },
       { kitchenId: requestedKitchenId },
-      { translate: false, sourceLanguage: 'en' }
+      { sourceLanguage: 'en' }
     )
     if (!isCurrent()) return
     const selection = {

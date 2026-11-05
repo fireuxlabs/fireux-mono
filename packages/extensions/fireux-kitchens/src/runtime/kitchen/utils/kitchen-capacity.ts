@@ -5,7 +5,7 @@ import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subsc
 export const KITCHEN_USER_LIMIT = 50
 
 export const kitchenCapacity = {
-  kitchen: { free: 1, premium: 1, business: null },
+  kitchen: { free: 1, pro: 1, business: null },
 } satisfies FireuxAppSubscriptionCapacity
 
 /** Account allowance only; onboarding still checks authority for the target Kitchen. */

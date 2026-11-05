@@ -18,7 +18,7 @@
             App users and access
           </h3>
           <p class="mt-1 text-sm text-muted">
-            Review requests and manage AppUsers and their access to this App.
+            Manage the members and access for this App.
           </p>
         </div>
 
@@ -30,14 +30,6 @@
             {{ appUserCount }}
             {{ appUserCount === 1 ? 'AppUser' : 'AppUsers'
             }}{{ membersHasMore ? ' loaded' : '' }}
-          </UBadge>
-          <UBadge
-            :color="joinRequestItems.length ? 'warning' : 'neutral'"
-            variant="soft"
-          >
-            {{ joinRequestItems.length }} pending{{
-              requestsHasMore ? ' loaded' : ''
-            }}
           </UBadge>
         </div>
       </div>
@@ -57,14 +49,6 @@
       />
 
       <div v-else class="grid gap-4 lg:grid-cols-2">
-        <AppEditSectionsJoinRequests
-          :items="joinRequestItems"
-          :has-more="requestsHasMore"
-          @load-more="loadMoreRequests"
-          :on-approve="onApprove"
-          :on-remove="onRemove"
-        />
-
         <AppEditSectionsAdmins
           :rows="adminRows"
           :has-more="adminsHasMore"
@@ -78,8 +62,10 @@
           :rows="appUserRows"
           :has-more="membersHasMore"
           @load-more="loadMoreMembers"
+          :role-action-uid="adminActionUid"
           :subscription-action-uid="subscriptionActionUid"
           :pill-for="adminPillFor"
+          :on-make-admin="makeMemberAdmin"
           :on-set-subscription="setMemberSubscription"
           class="lg:col-span-2"
         />
@@ -89,13 +75,12 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin member and join-request identities.
+// Concurrent edit — 2026-11-03 — App administration manages current members only.
 import { computed, ref, watch } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useAppSession } from '../../composables/useAppSession'
 import { runAppUserCommand } from '../../utils/runAppUserCommand'
-import { useAppJoinRequests } from '../../composables/membership/useAppJoinRequests'
 import { useAppUsers } from '../../composables/membership/useAppUsers'
 import {
   useUserView,
@@ -119,8 +104,6 @@ const actionSources = [
 ]
 const captureIntent = useCommandScope(actionSources)
 
-const handleJoinRequests = (userId: string, approve: boolean) =>
-  runAppUserCommand({ action: 'review-join', userId, approve })
 const setAppUserAdmin = (userId: string, makeAdmin: boolean) =>
   runAppUserCommand({
     action: 'set-role',
@@ -135,15 +118,12 @@ const {
   memberships: users,
   administrators,
   userById,
-  joinRequests,
   count: appUserCount,
   outcome: appUsersOutcome,
   membersHasMore,
   loadMoreMembers,
   adminsHasMore,
   loadMoreAdmins,
-  requestsHasMore,
-  loadMoreRequests,
 } = useAppUsers()
 const { pill: userCard } = useUserView()
 
@@ -195,7 +175,7 @@ const appUserRows = computed(() => {
       ): row is {
         id: string
         role: 'admin' | 'user' | 'dev'
-        subscription: 'free' | 'premium' | 'business'
+        subscription: 'free' | 'pro' | 'business'
         display_name: string
       } => Boolean(row)
     )
@@ -293,10 +273,24 @@ const removeAdmin = withToast(
   'Failed to remove admin'
 )
 
+const makeMemberAdmin = withToast(
+  async (uid: string) => {
+    const isCurrent = captureIntent()
+    adminActionUid.value = uid
+    try {
+      await setAppUserAdmin(uid, true)
+    } finally {
+      if (isCurrent()) adminActionUid.value = null
+    }
+  },
+  'Admin access granted',
+  'Failed to grant admin access'
+)
+
 const setMemberSubscription = withToast(
   async (value: {
     uid: string
-    subscription: 'free' | 'premium' | 'business'
+    subscription: 'free' | 'pro' | 'business'
   }) => {
     const isCurrent = captureIntent()
     subscriptionActionUid.value = value.uid
@@ -310,27 +304,4 @@ const setMemberSubscription = withToast(
   'Failed to update subscription'
 )
 
-const cardRef = computed(() => cardForUser)
-
-const {
-  items: joinRequestItems,
-  approve: approveJoinRequest,
-  reject: rejectJoinRequest,
-} = useAppJoinRequests({
-  requests: joinRequests,
-  handleJoinRequests,
-  card: cardRef,
-})
-
-const onApprove = withToast(
-  (uid: string) => approveJoinRequest(uid),
-  'Join request approved',
-  'Failed to approve request'
-)
-
-const onRemove = withToast(
-  (uid: string) => rejectJoinRequest(uid),
-  'Join request removed',
-  'Failed to remove request'
-)
 </script>

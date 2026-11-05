@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 const source = readFileSync(
-  new URL('../runtime/project/server/index/directory.ts', import.meta.url),
+  new URL('../runtime/project/server/directory/read.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -46,7 +46,7 @@ test('Project directory uses its named database and filters/sorts only canonical
 })
 
 const detailSource = readFileSync(
-  new URL('../runtime/project/server/index/detail.ts', import.meta.url),
+  new URL('../runtime/project/server/detail/read.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')

@@ -26,6 +26,12 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
   `packages/core/fireux-core/src/utils/brandAssets.ts`
 - Asset catalogue:
   `packages/core/fireux-core/src/runtime/pages/assets.vue`
+- App logo and wordmark renderers:
+  `packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue` and
+  `packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue`
+- App profile and collection media consumers:
+  `packages/core/fireux-core/src/runtime/app/components/Detail/Index.vue` and
+  `packages/core/fireux-core/src/runtime/components/landing/AppCollection.vue`
 - App role paths, dimensions and stored field names:
   `packages/core/fireux-core/src/runtime/app/models/app-media-requirements.ts`
 - App media editor and trusted sync command:
@@ -93,9 +99,10 @@ owner artwork fails; there is no implicit parent-App fallback.
 
 Storage objects use `apps/{appId}/img/app/*`; favicon and PWA files stay local.
 A recorded URL does not prove that Storage matches the current source file.
-The `/assets` catalogue presents the standard family. An App may append its
-own product assets through `app.config.ts` at `fireuxAssets.catalogue`, under
-its `/img/app` contract.
+The `/assets` library presents the standard family grouped by its renderer or
+browser role, with the consuming component named on each asset. An App may
+append its own product assets through `app.config.ts` at
+`fireuxAssets.catalogue`, under its `/img/app` contract.
 
 ## Ecosystem identity
 

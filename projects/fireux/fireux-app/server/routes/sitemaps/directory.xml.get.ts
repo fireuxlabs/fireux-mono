@@ -8,18 +8,20 @@ import {
 import {
   isDirectoryAppIndexable,
   isDirectoryEcosystemIndexable,
-  readPlatformDirectory,
-} from '../../utils/default-directory'
+} from '../../../app/utils/directorySearchPolicy'
 import { readPlatformApps } from '../../utils/apps'
+import { readPlatformEcosystems } from '../../utils/ecosystems'
 
 export default defineEventHandler(async (event) => {
   const { siteUrl } = readRuntimeSeoSitemaps()
-  const directory = await readPlatformDirectory()
-  const apps = await readPlatformApps()
+  const [ecosystems, apps] = await Promise.all([
+    readPlatformEcosystems(),
+    readPlatformApps(),
+  ])
   const paths = [
-    ...directory.ecosystems
+    ...ecosystems
       .filter((ecosystem) => isDirectoryEcosystemIndexable(ecosystem.id))
-      .map((ecosystem) => ecosystem.detail_url),
+      .map((ecosystem) => `/ecosystems/${encodeURIComponent(ecosystem.id)}`),
     ...apps
       .filter((app) => isDirectoryAppIndexable(app.id))
       .map((app) => `/apps/${encodeURIComponent(app.id)}`),

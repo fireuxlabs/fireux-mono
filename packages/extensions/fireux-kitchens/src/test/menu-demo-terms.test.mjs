@@ -24,23 +24,15 @@ test('complete Demo scenarios and public manifests resolve commercial terms from
     )
     assert.equal(kitchenDemoScenarios.length, 3)
     const incomplete = structuredClone(kitchenDemoScenarios[0])
-    const placed = incomplete.menuSections
-      .flatMap(({ items }) => items)
-      .filter((item) => item.status === 'active')
+    const placed = incomplete.menuSections.flatMap(({ items }) => items).filter(item => item.status === 'active')
     const freeId = placed[0].dish_id
-    const missingId = placed.find((item) => item.dish_id !== freeId).dish_id
-    incomplete.dishes.find((dish) => dish.id === freeId).price = 0
-    delete incomplete.dishes.find((dish) => dish.id === missingId).price
-    const projected = kitchenDemoManifestSections(incomplete).flatMap(
-      (section) => section.items
-    )
-    assert.ok(
-      projected.some((item) => item.dishId === freeId && item.price === 0)
-    )
-    assert.ok(projected.every((item) => item.dishId !== missingId))
+    const missingId = placed.find(item => item.dish_id !== freeId).dish_id
+    incomplete.dishes.find(dish => dish.id === freeId).price = 0
+    delete incomplete.dishes.find(dish => dish.id === missingId).price
+    const projected = kitchenDemoManifestSections(incomplete).flatMap(section => section.items)
+    assert.ok(projected.some(item => item.dishId === freeId && item.price === 0))
+    assert.ok(projected.every(item => item.dishId !== missingId))
     for (const scenario of kitchenDemoScenarios) {
-      assert.ok(scenario.kitchen.created.at.seconds)
-      assert.ok(scenario.kitchen.updated.at.seconds)
       const manifest = kitchenDemoManifest(scenario)
       const dishes = new Map(scenario.dishes.map((dish) => [dish.id, dish]))
       for (const section of manifest.content.sections)

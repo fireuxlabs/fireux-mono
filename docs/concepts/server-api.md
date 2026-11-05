@@ -54,8 +54,11 @@ behavior; the former `scripts/guards/server-ownership.mjs` is retired. Kitchen p
 Identity, Team and its Dish, Drink, Ingredient, Menu, Mise, Order, Recipe,
 Station, Supplier, Table and Finance operations. Supplier points to Index,
 Overview, Identity, Team and its Catalogue, Ingredient and Item operations.
-Project points to Index, Overview, Identity, Team and its App and Ecosystem
-operations; Ignition request transport remains App-owned intake/admin, while `fireux-ignite` owns the reusable build/reconciliation method. A missing server slice
+Project's public directory, public detail and protected management reads each
+have their own scope under `project/server`. The `index` scope owns Project
+creation. Identity, Team and relationships have separate capabilities. Ignition
+request transport remains App-owned intake/admin, while `fireux-ignite` owns
+the reusable build/reconciliation method. A missing server slice
 remains valid when its product surface has no server-owned behaviour; empty
 folder symmetry is not required. The complete visible capability map is owned
 by `docs/concepts/workspace.md`.

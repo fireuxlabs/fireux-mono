@@ -3,7 +3,7 @@ import type { LandingPricingPlan } from '../../../components/landing/product.typ
 
 export type AppPricingTierId =
   | 'free'
-  | 'professional'
+  | 'pro'
   | 'business'
   | 'managed'
   | 'your-app'
@@ -26,13 +26,13 @@ export type PricingProfile = {
   entityName: string
   entityPluralName: string
   free: readonly string[]
-  professional: readonly string[]
+  pro: readonly string[]
   includesManaged?: boolean
   includesEcosystemTier?: boolean
 }
 
 const prices = {
-  professionalEntityMonthly: 20,
+  proEntityMonthly: 20,
   businessMonthly: 100,
   managedMonthly: 100,
   appSetup: 600,
@@ -81,18 +81,18 @@ export function usePricing(profile: PricingProfile) {
         to: '/pricing/free',
       },
       {
-        id: 'professional',
+        id: 'pro',
         eyebrow: `${appName.value} pricing`,
         title: 'Pro',
         description: `Operate one ${entity} with the complete self-managed ${workspaceName.value}.`,
-        price: chf(prices.professionalEntityMonthly),
+        price: chf(prices.proEntityMonthly),
         billingCycle: '/month',
         features: [
           'Everything in Free',
           `One complete ${entity}`,
           'Self-managed',
         ],
-        included: ['Everything in Free', ...profile.professional],
+        included: ['Everything in Free', ...profile.pro],
         notIncluded: [
           `Multiple ${entities}`,
           'Managed service',
@@ -100,7 +100,7 @@ export function usePricing(profile: PricingProfile) {
         ],
         priceNote: `Includes one fully enabled ${entity}.`,
         nextStep: `Choose Pro to operate one complete ${entity}.`,
-        to: '/pricing/professional',
+        to: '/pricing/pro',
       },
       {
         id: 'business',
@@ -112,20 +112,20 @@ export function usePricing(profile: PricingProfile) {
         features: [
           'Everything in Pro',
           `Multiple ${entities}`,
-          `${chf(prices.professionalEntityMonthly)} per ${entity} each month`,
+          `${chf(prices.proEntityMonthly)} per ${entity} each month`,
         ],
         included: [
           'Everything in Pro',
           `Multi-${entity} operating access`,
           `Separate Team authority for each ${entity}`,
-          `Add ${entities} for ${chf(prices.professionalEntityMonthly)} each per month`,
+          `Add ${entities} for ${chf(prices.proEntityMonthly)} each per month`,
         ],
         notIncluded: [
           'Managed service',
           'A separate branded App',
           'New product development',
         ],
-        priceNote: `${chf(prices.businessMonthly)}/month plus ${chf(prices.professionalEntityMonthly)}/month for each ${entity}.`,
+        priceNote: `${chf(prices.businessMonthly)}/month plus ${chf(prices.proEntityMonthly)}/month for each ${entity}.`,
         nextStep: `Choose Business when you operate more than one ${entity}.`,
         to: '/pricing/business',
       },
@@ -142,7 +142,7 @@ export function usePricing(profile: PricingProfile) {
         features: [
           'Add to Pro or Business',
           `Select the ${entities} to manage`,
-          `${chf(prices.professionalEntityMonthly)} per managed ${entity} each month`,
+          `${chf(prices.proEntityMonthly)} per managed ${entity} each month`,
         ],
         included: [
           'Agreed recurring management work',
@@ -154,7 +154,7 @@ export function usePricing(profile: PricingProfile) {
           'Unlimited operational work',
           'New capabilities, integrations, or product development',
         ],
-        priceNote: `Additional to the subscription: ${chf(prices.managedMonthly)}/month plus ${chf(prices.professionalEntityMonthly)}/month for each managed ${entity}.`,
+        priceNote: `Additional to the subscription: ${chf(prices.managedMonthly)}/month plus ${chf(prices.proEntityMonthly)}/month for each managed ${entity}.`,
         nextStep: `Choose the ${entities} that need agreed recurring management.`,
         to: '/pricing/managed',
       })

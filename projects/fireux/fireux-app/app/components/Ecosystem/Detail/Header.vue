@@ -23,6 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import type { EcosystemPublicSummary } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
-defineProps<{ ecosystem: EcosystemPublicSummary }>()
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+defineProps<{ ecosystem: Ecosystem }>()
 </script>

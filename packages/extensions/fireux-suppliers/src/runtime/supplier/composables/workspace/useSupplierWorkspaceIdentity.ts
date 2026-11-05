@@ -10,24 +10,24 @@ export function useSupplierWorkspaceIdentity() {
   const workspace = useSupplierWorkspace()
   const access = useSupplierAccess()
   const { currentUser } = useAuth()
-  const companyId = computed(() =>
-    normalizeString(workspace.data.value?.company_id)
+  const businessId = computed(() =>
+    normalizeString(workspace.data.value?.business_id)
   )
-  const linkedPlace = usePlaceFetch(companyId)
-  const companyPlace = computed(() =>
-    linkedPlace.place.value?.id === companyId.value
+  const linkedPlace = usePlaceFetch(businessId)
+  const businessPlace = computed(() =>
+    linkedPlace.place.value?.id === businessId.value
       ? linkedPlace.place.value
       : null
   )
 
   const name = computed(() =>
-    normalizeString(companyPlace.value?.short_name || companyPlace.value?.name)
+    normalizeString(businessPlace.value?.short_name || businessPlace.value?.name)
   )
-  const tagline = computed(() => normalizeString(companyPlace.value?.tagline))
-  const summary = computed(() => normalizeString(companyPlace.value?.about))
+  const tagline = computed(() => normalizeString(businessPlace.value?.tagline))
+  const summary = computed(() => normalizeString(businessPlace.value?.about))
   const imageUrl = computed(() =>
     normalizeString(
-      companyPlace.value?.logo_image || companyPlace.value?.image_url
+      businessPlace.value?.logo_image || businessPlace.value?.image_url
     )
   )
   const debug = computed(() => ({
@@ -46,7 +46,7 @@ export function useSupplierWorkspaceIdentity() {
   }))
   const status = computed(() =>
     workspace.outcome.value === 'ready'
-      ? companyId.value
+      ? businessId.value
         ? linkedPlace.outcome.value
         : 'empty'
       : workspace.outcome.value
@@ -68,9 +68,9 @@ export function useSupplierWorkspaceIdentity() {
   return {
     ...state,
     fields,
-    companyId,
+    businessId,
     placeOutcome: linkedPlace.outcome,
-    place: companyPlace,
+    place: businessPlace,
     selectedSupplier: workspace.data,
     supplierId: workspace.id,
     name,

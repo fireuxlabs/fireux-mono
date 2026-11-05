@@ -18,10 +18,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EcosystemPublicSummary } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
 
-const props = defineProps<{ ecosystem: EcosystemPublicSummary }>()
+const props = defineProps<{ ecosystem: Ecosystem }>()
 const { projects } = useProjects()
 const project = computed(
   () =>

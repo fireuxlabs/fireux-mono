@@ -42,7 +42,7 @@ const item = {
   description_translations: [],
 }
 const section = { label: 'Lunch', label_translations: [], items: [item, item] }
-const stamp = { by: 'operator', at: 'unchanged', app_id: 'app' }
+const stamp = { by: 'operator', at: 'unchanged' }
 
 test('draft planner preserves distinct identities, prices, stamps and Dish ownership', () => {
   const { plannedSections } = planKitchenMenuDraft(
@@ -61,8 +61,7 @@ test('draft planner preserves distinct identities, prices, stamps and Dish owner
     assert.equal(row.itemData.dish_id, row.dishId)
     assert.equal(row.dishData.item_kind, 'food')
     assert.equal(row.itemData.created, stamp)
-    assert.deepEqual(row.dishData.updated, { at: stamp.at, by: stamp.by })
-    assert.deepEqual(row.itemData.updated, { at: stamp.at, by: stamp.by })
+    assert.equal(row.dishData.updated, stamp)
     assert.equal(Object.hasOwn(row.itemData, 'name'), false)
     assert.equal(Object.hasOwn(row.itemData, 'image_url'), false)
     assert.equal(Object.hasOwn(row.dishData, 'image_url'), false)

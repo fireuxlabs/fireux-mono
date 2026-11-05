@@ -1,83 +1,68 @@
-<!-- Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: add the shared factual index route. -->
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-10 sm:py-14">
-      <div class="mx-auto grid max-w-5xl gap-10">
-        <header class="grid max-w-3xl gap-3">
-          <NuxtLink
-            to="/"
-            class="w-fit text-sm font-semibold text-primary hover:underline"
+  <UPage>
+    <UPageHeader
+      title="Operations"
+      :description="`Operations across ${appName} workspaces.`"
+    >
+      <template #headline>
+        <ULink to="/">{{ appName }}</ULink>
+      </template>
+      <template v-if="operationGroups.length > 1" #links>
+        <nav aria-label="Workspace operations" class="operations-index__nav">
+          <UButton
+            v-for="group in operationGroups"
+            :key="group.id"
+            :to="`#${group.id}`"
+            color="neutral"
+            variant="soft"
+            size="sm"
           >
-            {{ appName }}
-          </NuxtLink>
-          <h1
-            class="m-0 text-3xl font-semibold leading-tight text-highlighted sm:text-4xl"
-          >
-            Operations
-          </h1>
-          <p class="m-0 text-base leading-7 text-muted">
-            Operations across {{ appName }} workspaces.
-          </p>
-          <nav
-            v-if="operationGroups.length > 1"
-            aria-label="Workspace operations"
-            class="mt-2 flex flex-wrap gap-2"
-          >
-            <UButton
-              v-for="group in operationGroups"
-              :key="group.id"
-              :to="`#${group.id}`"
-              color="neutral"
-              variant="soft"
-              size="sm"
-            >
-              {{ group.name }}
-            </UButton>
-          </nav>
-        </header>
+            {{ group.name }}
+          </UButton>
+        </nav>
+      </template>
+    </UPageHeader>
 
-        <section
-          v-for="group in operationGroups"
-          :id="group.id"
-          :key="group.id"
-          class="grid gap-5"
-        >
-          <div class="flex min-w-0 items-center justify-between gap-4">
-            <h2 class="m-0 text-xl font-semibold text-highlighted">
-              {{ group.name }}
-            </h2>
-            <NuxtLink
-              :to="group.to"
-              class="shrink-0 text-sm font-semibold text-primary hover:underline"
-            >
-              Open workspace
-            </NuxtLink>
-          </div>
-          <UPageGrid>
-            <UPageCard
-              v-for="operation in group.operations"
-              :key="operation.id"
-              :title="operation.title"
-              :description="operation.description"
-              :icon="operation.icon || 'i-lucide-circle-dot'"
-              :to="
-                operation.slug ? `/operations/${operation.slug}` : operation.to
-              "
-              variant="subtle"
-            />
-          </UPageGrid>
-        </section>
+    <UPageBody>
+      <UPageSection
+        v-for="group in operationGroups"
+        :id="group.id"
+        :key="group.id"
+        :title="group.name"
+      >
+        <template #links>
+          <UButton
+            :to="group.to"
+            variant="link"
+            trailing-icon="i-lucide-arrow-up-right"
+          >
+            Open workspace
+          </UButton>
+        </template>
+        <UPageGrid>
+          <UPageCard
+            v-for="operation in group.operations"
+            :key="operation.id"
+            :title="operation.title"
+            :description="operation.description"
+            :icon="operation.icon || 'i-lucide-circle-dot'"
+            :to="
+              operation.slug ? `/operations/${operation.slug}` : operation.to
+            "
+            variant="subtle"
+          />
+        </UPageGrid>
+      </UPageSection>
 
-        <UAlert
-          v-if="!operations.length"
-          color="neutral"
-          variant="soft"
-          title="No operations published yet"
-          description="This app has not declared any Workspace Operations."
-        />
-      </div>
-    </UContainer>
-  </main>
+      <UAlert
+        v-if="!operations.length"
+        color="neutral"
+        variant="soft"
+        title="No operations published yet"
+        description="This app has not declared any Workspace Operations."
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -163,3 +148,11 @@ useSeo({
     }),
 })
 </script>
+
+<style scoped>
+.operations-index__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+</style>

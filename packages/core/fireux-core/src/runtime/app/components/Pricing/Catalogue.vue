@@ -21,22 +21,22 @@ function plan(tier: AppPricingTier) {
       label: `View ${tier.title}`,
       to: tier.to,
       color:
-        tier.id === 'professional'
+        tier.id === 'pro'
           ? ('primary' as const)
           : ('neutral' as const),
       variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
     },
-    highlight: tier.id === 'professional',
+    highlight: tier.id === 'pro',
   }
 }
 
 const planGroups = computed<PricingPlanGroup[]>(() => {
   const subscriptions = props.tiers.filter((tier) =>
-    ['free', 'professional', 'business'].includes(tier.id)
+    ['free', 'pro', 'business'].includes(tier.id)
   )
   const offers = props.tiers.filter(
-    (tier) => !['free', 'professional', 'business'].includes(tier.id)
+    (tier) => !['free', 'pro', 'business'].includes(tier.id)
   )
 
   return [

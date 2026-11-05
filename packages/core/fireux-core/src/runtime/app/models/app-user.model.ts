@@ -1,9 +1,9 @@
-import type { FireuxStamps } from '../../models/utils/stamps.model'
+import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export const APP_USER_ROLES = ['user', 'admin', 'dev'] as const
 export type AppUserRole = (typeof APP_USER_ROLES)[number]
 
-export const APP_USER_SUBSCRIPTIONS = ['free', 'premium', 'business'] as const
+export const APP_USER_SUBSCRIPTIONS = ['free', 'pro', 'business'] as const
 export type AppUserSubscription = (typeof APP_USER_SUBSCRIPTIONS)[number]
 
 export function isAppUserRole(value: unknown): value is AppUserRole {
@@ -16,10 +16,26 @@ export function isAppUserSubscription(
   return APP_USER_SUBSCRIPTIONS.includes(value as AppUserSubscription)
 }
 
+/** Read the legacy stored tier until the approved subscription migration is complete. */
+export function readAppUserSubscription(
+  value: unknown
+): AppUserSubscription | null {
+  if (value === 'premium') return 'pro'
+  return isAppUserSubscription(value) ? value : null
+}
+
 /** Membership of one User in one App. Domains own their own access records. */
-export type AppUser = FireuxStamps & {
+export type AppUser = {
   role: AppUserRole
   subscription: AppUserSubscription
+  created: {
+    at: FirebaseTimestamp
+    by?: string
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: string
+  }
 }
 
 /** AppUser document data paired with its Firestore document id. */

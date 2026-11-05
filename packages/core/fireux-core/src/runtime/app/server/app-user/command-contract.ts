@@ -5,14 +5,13 @@ import type {
   AppMembershipMutationResult,
 } from '../../models/app-membership'
 import {
-  isAppUserSubscription,
+  readAppUserSubscription,
   isAppUserRole,
   type AppUserRole,
 } from '../../models/app-user.model.ts'
 import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import { serverAppUsersTarget } from '../mutation-targets'
 import type { GuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 
 export type MutationContext = {
   actorUid: string
@@ -44,7 +43,7 @@ export function initialMembership(actorUid: string, role: AppUserRole) {
 
 export function requireCanonicalMembership(data: DocumentData) {
   if (!roleFrom(data)) forbidden(409, 'The App membership has an invalid role.')
-  if (!isAppUserSubscription(data.subscription))
+  if (!readAppUserSubscription(data.subscription))
     forbidden(409, 'The App membership has an invalid subscription.')
 }
 
@@ -65,11 +64,9 @@ export function requiredIdentityUserId(
   input: AppMembershipMutationInput,
   actorUid: string
 ) {
-  if (input.action === 'ensure-self' || input.action === 'bootstrap-admin')
-    return actorUid
-  if (input.action === 'review-join' && input.approve)
-    return requireFirestoreDocumentId(input.userId, 'User id')
-  return ''
+  return input.action === 'ensure-self' || input.action === 'bootstrap-admin'
+    ? actorUid
+    : ''
 }
 
 export function appGovernancePatch(actorUid: string) {
@@ -101,7 +98,6 @@ export async function countTransactionAdmins(
 export type MembershipTransactionState = {
   context: MutationContext
   mutations: GuardedServerTransaction
-  appData: DocumentData
   actorMembershipExists: boolean
   actorMembership: DocumentData | undefined
 }

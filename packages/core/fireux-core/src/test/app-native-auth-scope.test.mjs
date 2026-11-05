@@ -5,6 +5,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, unref } from 'vue'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
 function load(file, dependencies, name) {
   const source = readFileSync(
     new URL(`../runtime/${file}`, import.meta.url),
@@ -35,7 +36,6 @@ function fixture() {
     response = {
       appId: 'app',
       initialized: true,
-      selfJoinEnabled: true,
       app: { id: 'app', name: 'App' },
     }
   const use = load(
@@ -82,41 +82,34 @@ test('App snapshot is inactive before registered Auth and after logout', async (
   assert.equal(f.state.exists.value, undefined)
   f.auth.hasAuthState.value = true
   await f.run()
-  assert.equal(f.state.canSelfJoin.value, true)
   f.auth.isAuthenticated.value = false
   f.auth.uid.value = ''
   assert.equal(f.state.app.value, undefined)
   assert.equal(f.state.exists.value, undefined)
-  assert.equal(f.state.canSelfJoin.value, false)
 })
-test('App existence and stored join policy survive invalid presentation', async () => {
+test('App existence survives invalid presentation metadata', async () => {
   const f = fixture()
   f.setResponse({
     appId: 'app',
     initialized: true,
-    selfJoinEnabled: true,
     app: null,
   })
   await f.run()
   assert.equal(f.state.exists.value, true)
   assert.equal(f.state.outcome.value, 'empty')
-  assert.equal(f.state.canSelfJoin.value, true)
   f.setResponse({
     appId: 'app',
     initialized: false,
-    selfJoinEnabled: false,
     app: null,
   })
   await f.run()
   assert.equal(f.state.exists.value, false)
-  assert.equal(f.state.canSelfJoin.value, false)
 })
-test('App/account changes immediately hide retained metadata, policy and errors', async () => {
+test('App/account changes immediately hide retained metadata and errors', async () => {
   const f = fixture()
   await f.run()
   f.auth.uid.value = 'other'
   assert.equal(f.state.app.value, undefined)
-  assert.equal(f.state.canSelfJoin.value, false)
   await f.run()
   f.id.value = 'other-app'
   assert.equal(f.state.app.value, undefined)
@@ -126,7 +119,11 @@ test('App/account changes immediately hide retained metadata, policy and errors'
   assert.equal(f.state.error.value, undefined)
 })
 test('App status projection excludes stored private context and keeps truthful existence', async () => {
-  const readAppDocument = load('app/utils/readApp.ts', {}, 'readAppDocument')
+  const readAppDocument = load(
+    'app/utils/readApp.ts',
+    { APP_ROLES, APP_STATUSES },
+    'readAppDocument'
+  )
   let raw = {
     ecosystem_id: 'misebox',
     role: 'global',

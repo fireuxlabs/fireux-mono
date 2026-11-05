@@ -115,7 +115,6 @@ const capabilityCandidates = {
         ],
         boundaries: [
           'Authentication, membership, domain permission and paid entitlement are separate checks.',
-          'Optional FireUX account connections do not grant cross-App authority.',
         ],
         service_example:
           'User onboarding can coordinate sign-in, local membership and domain-specific access.',

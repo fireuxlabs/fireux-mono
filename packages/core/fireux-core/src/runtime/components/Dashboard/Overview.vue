@@ -59,8 +59,6 @@
         <div class="space-y-4">
           <FireDashboardOverviewApp
             :app-name="fireux.appName"
-            :app-short-name="fireux.appShortName"
-            :app-card="appCard"
             :app-outcome="appOutcome"
             :membership="resolvedAppUser"
             :membership-outcome="membershipOutcome"
@@ -70,7 +68,6 @@
             :workspace-label="workspaceEntryLabel"
             :workspace-icon="workspaceEntryIcon"
             :can-manage-app="canManageApp"
-            :can-self-join="canSelfJoin"
           >
             <template v-if="$slots.workspace" #workspace>
               <slot name="workspace" />
@@ -122,7 +119,6 @@ import { useAppRead } from '../../app/composables/useAppRead'
 import { useAppUserRead } from '../../app/composables/membership/useAppUserRead'
 import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
-import { useAppView } from '../../app/composables/useAppView'
 import { useUserRead } from '../../user/composables/useUserRead'
 import { useUserAccount } from '../../user/composables/account/useUserAccount'
 import { useUserView } from '../../user/composables/useUserView'
@@ -137,7 +133,6 @@ import type { DashboardOverviewProfileEntry } from './Overview/types'
 const fireux = useFireUXConfig()
 const isDev = computed(() => import.meta.dev)
 const { uid, lastAccountProvisionError } = useAuth()
-const { toCard: appToCard } = useAppView()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 const { workspaceActions, hasWorkspaceEntry, workspaceEntryHref } =
@@ -217,7 +212,6 @@ const coreIsMissing = computed(
   () => coreOutcome.value === 'empty' || coreUser.value === null
 )
 const userCard = computed(() => userToCard(coreUser.value ?? null))
-const appCard = computed(() => appToCard(app.value ?? null))
 const resolvedAppUser = computed(() =>
   appUser.value && uid.value ? { ...appUser.value, id: uid.value } : null
 )
@@ -255,10 +249,6 @@ const canManageApp = computed(
     membershipOutcome.value === 'ready' &&
     (appUser.value?.role === 'admin' || appUser.value?.role === 'dev')
 )
-const canSelfJoin = computed(
-  () => appOutcome.value === 'ready' && app.value?.self_join_enabled === true
-)
-
 function formatEcosystemName(value: unknown): string {
   if (typeof value !== 'string') return 'your ecosystem'
   const name = value.trim()

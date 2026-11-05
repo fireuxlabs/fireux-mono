@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-03
-Ref: a0433bb2b
+Updated: 2026-11-05
+Ref: d6240d394
 Role: living context
 Scope: repository-wide
 
@@ -37,7 +37,31 @@ Implementation follows this dependency direction:
   trusted behavior.
 - Core owns proved product-neutral FireUX and Nuxt mechanics.
 
-An App may consume Core or an Extension directly. Ecosystems may consume Core
+`fireux-core` owns the shared Firebase/VueFire integration, including Admin
+initialization and browser Auth persistence. The public reference is the
+App-selected `fireux-docs` extension and is not a Core dependency.
+
+`fireux-app` composes the standard App: Core, Blogs and Products. Tenant and
+standalone Apps use `defineFireuxApp` from `fireux-app/config`; Ecosystem Main
+Apps use `defineFireuxEcosystem` from `fireux-ecosystem/config`. The Ecosystem
+bundle includes the App bundle and shared Main App surfaces. Core can be used
+independently and never imports either bundle or a product package.
+
+The App bundle owns default module and native-layer registration. Concrete Apps
+declare their selected bundle and the packages they import or configure directly.
+Named Ecosystem packages still own their bindings and domain composition; they
+do not import the Main App bundle merely because tenants share that Ecosystem.
+
+Ecosystem Main Apps own shared public documentation. Tenant and standalone Apps
+include documentation only for an explicit product need and may link to their
+Ecosystem's guides. Documentation layers are selected by the App.
+
+`fireux-sproochli` owns shared translation and multilingual-copy capabilities.
+Apps own their source copy, language profiles and approved text. See the
+[translation map](../concepts/translation.md) for that boundary.
+
+An App may consume its own Ecosystem package, Core or an Extension directly.
+Ecosystems may consume Core
 and lower Extensions; Extensions may consume Core and lower Extensions. Core
 does not depend on product packages. Keep implementation with the lowest owner
 that has its complete meaning and authority. See
@@ -49,6 +73,10 @@ Packages keep authored implementation in src, identity and commands in
 package.json, typing in tsconfig.json, and entrypoint explanations in README.
 Use the package manifest as the source for dependencies and version pins; do not
 copy a version inventory into living context.
+
+Reusable libraries under `packages/` use `fireux-*` names. Development tools
+live under `tools/` and use tool-specific names outside that prefix. Inventory
+libraries, Apps and development tools separately.
 
 ## New work and composition
 
@@ -161,33 +189,23 @@ FireUX rule is required. See the runtime filesystem map.
 
 ## Entities, Workspace and data authority
 
-Core's `FireuxEntity` supplies only record identity, optional internal context
-and the existing creation/update stamps. Menu, Kitchen, Project, App and
-Ecosystem compose this foundation with their domain fields. AppUser is an
-App-owned relationship Record and shares `FireuxStamps` without claiming root
-Entity identity or context. Public summaries are projections, not complete
-canonical records. See [the shared record foundation](../concepts/entities.md#shared-record-foundation).
-
 A root Firestore collection can establish an Entity family when its model,
 authority, routes and behavior prove that contract. The Entity owns its data,
 readers, validation, permissions and protected commands. Workspace is a product
 surface over an Entity, not a storage owner. UI placement and navigation groups
 do not change data ownership.
 
+Business is an independent Workspace Entity owned by `fireux-businesses`; it replaces the former Company/Place role. Business may use Free, and optional capabilities retain their own domain owners. Place links do not own the Business lifecycle.
+
 User is the person; AppUser is membership in one App. A tenant App remains an
 App role and uses the same Entity contracts. Every App declares its canonical
 Ecosystem relationship, including standalone Apps. Preserve exact owner,
-scope and lifecycle in cross-domain and account-connection flows.
+scope and lifecycle in cross-domain flows.
 
 The Workspace surface exists on arrival, even with no saved Entity. An `empty`
 read is not a missing Workspace or onboarding flag; creating a record still
 uses its owning command and authority. See
 [Workspace and Entity composition](../concepts/family-workspace-entity.md).
-
-Optional cross-ecosystem account connections preserve each Auth realm and UID
-and do not create local User, AppUser or Workspace grants. Login authority stays
-in a separate server-only store. Follow the
-[account connections context](account-connections-context.md).
 
 Direct Firestore views use the owning Firebase listener. Server-only API
 projections use native Nuxt `useAsyncData`/`useFetch`, with `refreshNuxtData`
@@ -248,9 +266,13 @@ commands and pages as evidence; a proposal or connected source is not a shipped
 capability. Feature entitlement belongs to the acting User, separately from
 permission to edit the selected Entity.
 SaaS plan offers belong to Ecosystem main Apps, not tenant Apps. Core supplies
-the shared Free, Pro and Business presentation and capacity mechanics; stored
-subscription IDs currently remain free, premium and business. Do not rename
-stored IDs without inspecting and migrating their membership consumers. A shared
+the shared Free, Pro and Business presentation and capacity mechanics. Canonical
+subscription IDs are `free`, `pro` and `business`. The App-owned subscription
+reader maps legacy stored `premium` to `pro` during the explicitly staged
+migration in [App membership](../concepts/entities.md#subscription-naming-migration).
+Subscription entitlement and Business identity are separate. A Business may use
+Free. Upgrading to the Business plan must collect additional business details
+through its owning identity command once that contract is defined. A shared
 tier is not evidence of paid billing or cross-App entitlement reconciliation.
 A public Product packages a domain capability; it does not become the owner of
 the underlying tool. Workspace may expose that same capability directly with

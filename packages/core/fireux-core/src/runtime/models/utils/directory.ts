@@ -1,17 +1,12 @@
-import type { EcosystemStatus } from '../../ecosystem/models/ecosystem.model.ts'
+import type { Ecosystem } from '../../ecosystem/models/ecosystem.model.ts'
 
 /**
- * Directory entries are transport records, not stored entities. They contain
- * only the fields needed to discover canonical App/Ecosystem records.
+ * Directory entries carry the fields needed to discover canonical entities.
  */
-export type EcosystemDirectoryEntry = {
-  id: string
-  project_id: string
-  status: EcosystemStatus
-  name: string
-  description: string
-  image_url: string
-  website_url: string
+export type EcosystemDirectoryEntry = Pick<
+  Ecosystem,
+  'id' | 'project_id' | 'status' | 'name' | 'description' | 'image_url' | 'website_url'
+> & {
   detail_url: string
   app_count: number
 }

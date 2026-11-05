@@ -27,8 +27,7 @@
     <section class="community-card mt-8">
       <h2>Start a Demo topic</h2>
       <p v-if="!isAuthenticated">
-        Sign in first. Core will create or attach your App membership during the
-        shared onboarding flow.
+        Sign in to post. Topics stay in this browser session.
       </p>
       <form v-else @submit.prevent="submit">
         <UInput

@@ -4,6 +4,8 @@ Updated: 2026-10-25
 Ref: ce2861c77
 Role: map, not canon
 
+Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
+
 ## Purpose and authority
 
 Map shared Workspace mechanics, domain-owned capabilities and their current

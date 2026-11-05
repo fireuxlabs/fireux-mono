@@ -1,7 +1,7 @@
 # Layouts spine map
 
-Updated: 2026-10-26
-Ref: ce2861c77
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and authority
@@ -101,7 +101,7 @@ relationship.
   `layout` key explicitly; Dashboard's fragment-based pages retain their
   previous unanimated behavior.
 - App/package layouts also consume native slots:
-  [Docs](../../packages/core/fireux-docs/src/runtime/layouts/docs.vue),
+  [Docs](../../packages/extensions/fireux-docs/src/runtime/layouts/docs.vue),
   [Misebox Jobs](../../projects/misebox/misebox-app/app/layouts/misebox-jobs.vue),
   [Friiites templates](../../projects/misebox/friiites/app/layouts/templates.vue),
   [Bären](../../projects/misebox/baeren-ringgenberg/app/layouts/baeren-default.vue),

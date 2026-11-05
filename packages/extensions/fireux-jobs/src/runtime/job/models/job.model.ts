@@ -3,7 +3,6 @@
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make Agent authority, Place identity, scheduling, and compensation explicit.
 
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxRootVisibility } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -23,22 +22,6 @@ export const JobStorage = {
   collection: 'jobs',
   idParam: 'jobId',
 } as const
-
-export const JobEntity = defineFireuxEntity({
-  kind: 'entity',
-  name: 'Job',
-  family: ['content'],
-  identity: 'root',
-  authority: 'domain-database',
-  appSupport: 'none',
-  workspace: false,
-  root: JobStorage.path,
-  notes: [
-    'The owning Agent/User is explicit in root owner scope; created.by remains audit-only.',
-    'Company and canonical Place relationships are stored by id without product-specific workplace identity.',
-    'Detail reads return the canonical Job; the paginated Directory uses a named joined card view.',
-  ],
-})
 
 export const JOB_STATUSES = ['open', 'closed'] as const
 export type JobStatus = (typeof JOB_STATUSES)[number]
@@ -73,7 +56,7 @@ export type Job = {
   visibility: JobVisibility
 
   /** Employer represented in this posting. */
-  company_id: string
+  business_id: string
 
   /** Canonical work location. Place owns all shared location truth. */
   place_id: string
@@ -116,7 +99,7 @@ export const JobModel = {
   owner_type: 'user',
   owner_id: '',
   visibility: 'app',
-  company_id: '',
+  business_id: '',
   place_id: '',
   category_id: '',
   contract_type: 'permanent',
@@ -143,7 +126,7 @@ export const Job = JobModel
 
 export type JobCreateInput = Pick<
   Job,
-  | 'company_id'
+  | 'business_id'
   | 'place_id'
   | 'category_id'
   | 'contract_type'

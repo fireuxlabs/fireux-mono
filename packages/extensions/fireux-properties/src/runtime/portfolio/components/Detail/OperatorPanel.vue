@@ -61,7 +61,7 @@ const props = defineProps<{
 }>()
 
 const aligned = ['Identity', 'Document', 'Task', 'Compliance']
-const notAligned = ['Client', 'Property', 'Unit']
+const notAligned = ['Client', 'Property']
 const portfolioName = computed(() =>
   String(props.portfolio?.identity?.name || props.portfolio?.identity?.slug || '').trim()
 )

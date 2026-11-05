@@ -1,3 +1,4 @@
+import { seedSproochliText as seedText } from '../../../../fireux-sproochli/src/runtime/utils/translation-seed.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -74,6 +75,8 @@ function context() {
   const deps = {
     ...vue,
     useCommandScope,
+    useNuxtApp: () => ({ payload: { data: {} } }),
+    refreshNuxtData: async () => {},
     File,
     FormData,
     useWorkspace: () => ({ selectedId }),
@@ -86,16 +89,10 @@ function context() {
     useWorkspace: () => ({ selectedId }),
     useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
     useRequireUser: () => auth.promise,
-    useTranslationSeed: () => ({
-      seedTranslations: async (input) => {
-        seeds.push(input)
-        return {
-          sourceLanguage: 'en',
-          text: { ...input.existingText, en: input.text },
-          failedLanguages: [],
-        }
-      },
-    }),
+    seedSproochliText: (input) => {
+      seeds.push(input)
+      return seedText(input)
+    },
     $fetch: (url, options) => {
       calls.push({ url, options })
       return response.promise
@@ -168,6 +165,11 @@ function context() {
       'useKitchenPrepItemCreate',
       deps
     )
+    deps.useMenuSectionDishCreation = load(
+      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+      'useMenuSectionDishCreation',
+      deps
+    )
   }
   factories()
   return {
@@ -215,13 +217,18 @@ function mount(h, component, exposed, extra = {}) {
     ...specification,
     dishCategories,
     useAuth: () => ({ currentUser: h.currentUser }),
-    useKitchenWorkspaceDish: () => identity,
+    useKitchenWorkspace: () => ({
+      id: identity.kitchenId,
+      outcome: vue.ref('ready'),
+    }),
+    useRouteParam: () => identity.dishId,
+    useKitchenDishDetail: () => identity,
     useKitchenDishesContext: () => ({
       ...identity,
       dishes: vue.ref([identity.dish.value]),
       readOnly,
     }),
-    useKitchenWorkspaceMenuSection: () => ({
+    useMenuSection: () => ({
       ...identity,
       menuId: vue.ref('menu'),
       sectionId: vue.ref('section'),
@@ -274,7 +281,8 @@ function mount(h, component, exposed, extra = {}) {
     if (id === 'vue') return vue
     if (
       id === '#imports' ||
-      /useDish|useKitchen|useToastify|useAuth|FireUXConfig|dish-specification|dish.model/.test(
+      id === 'nuxt/app' ||
+      /useDish|useKitchen|useMenuSection|useRouteParam|useToastify|useAuth|FireUXConfig|dish-specification|dish.model/.test(
         id
       )
     )
@@ -411,12 +419,19 @@ test('Dish commands capture member/access/local intent before credentials and pr
       ]) {
         const h = context(),
           local = vue.ref('original'),
-          api = h.scope.run(() => h.deps.useDishMutation([local])),
+          api = h.scope.run(() =>
+            h.deps.useDishMutation([
+              h.selectedId,
+              () => h.route.fullPath,
+              local,
+            ])
+          ),
           flight = api.mutate(
             method,
             method === 'POST'
               ? { draft: { name: 'Dish' } }
-              : { dishId: 'dish', changes: { name: 'Dish' } }
+              : { dishId: 'dish', changes: { name: 'Dish' } },
+            h.selectedId.value
           )
         if (stage !== 'auth') {
           h.auth.resolve(h.user)
@@ -458,7 +473,8 @@ test('Dish adapters validate safe string identities and exact update/delete resp
         api = h.scope.run(() => h.deps.useDishMutation()),
         flight = api.mutate(
           method,
-          method === 'POST' ? { draft: { name: 'Dish' } } : { dishId: 'dish' }
+          method === 'POST' ? { draft: { name: 'Dish' } } : { dishId: 'dish' },
+          h.selectedId.value
         )
       await finish(h)
       h.response.resolve({ id })
@@ -481,7 +497,13 @@ test('Image transport snapshots its file, rejects obsolete credentials, and reta
     ]) {
       const h = context(),
         local = vue.ref('original'),
-        api = h.scope.run(() => h.deps.useDishImageUpload([local])),
+        api = h.scope.run(() =>
+          h.deps.useDishImageUpload([
+            h.selectedId,
+            () => h.route.fullPath,
+            local,
+          ])
+        ),
         input = {
           dishId: 'dish',
           kitchenId: 'kitchen',
@@ -553,14 +575,19 @@ test('Creation reports saved Dish with failed image and suppresses obsolete foll
   for (const changed of [false, true]) {
     const h = context(),
       uploads = [],
-      f = mount(h, 'FoodAndDrink/Items/Create/Index', '{addDish,price,name,imageFile,message}', {
-        useDishImageUpload: () => ({
-          uploadDishImage: async (input) => {
-            uploads.push(input)
-            throw Error('Upload failed')
-          },
-        }),
-      })
+      f = mount(
+        h,
+        'FoodAndDrink/Items/Create/Index',
+        '{addDish,price,name,imageFile,message}',
+        {
+          useDishImageUpload: () => ({
+            uploadDishImage: async (input) => {
+              uploads.push(input)
+              throw Error('Upload failed')
+            },
+          }),
+        }
+      )
     f.api.price.value = 13
     f.api.name.value = 'Dish'
     f.api.imageFile.value = new File(['original'], 'original.png')
@@ -662,7 +689,11 @@ test('Specification changed draft or closed/reopened editor cancels credentials 
 })
 test('Specification clean same-ID live updates hydrate while dirty drafts and own pending saves survive', async () => {
   const h = context(),
-    f = mount(h, 'FoodAndDrink/Items/Spec', '{toggle,save,draft,assembly,editing,error}')
+    f = mount(
+      h,
+      'FoodAndDrink/Items/Spec',
+      '{toggle,save,draft,assembly,editing,error}'
+    )
   f.api.toggle()
   f.identity.dish.value = {
     ...existing(),
@@ -714,7 +745,11 @@ test('Specification rejects blank/non-finite quantities before a command and sup
 })
 test('Identity fields pass real local completion predicates through credentials and lock other controls', async () => {
   const h = context(),
-    f = mount(h, 'FoodAndDrink/Items/Edit/Index', '{handleName,handleImageUpload,fieldSaving}')
+    f = mount(
+      h,
+      'FoodAndDrink/Items/Edit/Index',
+      '{handleName,handleImageUpload,fieldSaving}'
+    )
   const draft = vue.ref('Submitted'),
     capture = h.scope.run(() => useCommandScope([draft])),
     isCurrent = capture(),
@@ -785,7 +820,11 @@ test('Identity replacement field action keeps its busy state when an older token
       ++tokens === 1 ? firstToken.promise : secondToken.promise,
   })
   h.factories()
-  const f = mount(h, 'FoodAndDrink/Items/Edit/Index', '{handleName,fieldSaving}'),
+  const f = mount(
+      h,
+      'FoodAndDrink/Items/Edit/Index',
+      '{handleName,fieldSaving}'
+    ),
     draft = vue.ref('First'),
     capture = h.scope.run(() => useCommandScope([draft]))
   const first = f.api.handleName('First', capture())
@@ -811,7 +850,11 @@ test('Identity replacement field action keeps its busy state when an older token
 test('Categories validate their chosen field and ignore changed search intent during credentials', async () => {
   for (const changed of ['invalid', 'query']) {
     const h = context(),
-      f = mount(h, 'FoodAndDrink/Items/Categories', '{save,query,error,busy,saved}'),
+      f = mount(
+        h,
+        'FoodAndDrink/Items/Categories',
+        '{save,query,error,busy,saved}'
+      ),
       flight = f.api.save('dish', changed === 'invalid' ? 'unknown' : 'main')
     if (changed === 'query') f.api.query.value = 'Another row'
     await finish(h)

@@ -519,7 +519,7 @@ test('subscription chrome renders settled guest or membership pricing without an
   assert.match(
     await renderPolishComponent(file, {
       phase: 'signed-in',
-      member: { id: 'actor', role: 'user', subscription: 'premium' },
+      member: { id: 'actor', role: 'user', subscription: 'pro' },
     }),
     /View pricing for Professional/
   )

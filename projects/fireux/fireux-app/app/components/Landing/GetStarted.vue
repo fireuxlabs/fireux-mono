@@ -17,20 +17,11 @@ const items = [
     icon: 'i-lucide-rocket',
   },
   {
-    title: 'Misebox',
-    description:
-      'Explore our hospitality ecosystem for kitchens, menus, teams, and daily operations.',
-    to: 'https://misebox.app',
-    cta: 'Explore hospitality',
-    icon: 'i-lucide-chef-hat',
-  },
-  {
-    title: 'Werkbox',
-    description:
-      'Explore cleaning and other practical work through the shared Werkbox hub.',
-    to: '/ecosystems/werkbox/cleaning',
-    cta: 'Explore cleaning',
-    icon: 'i-lucide-sparkles',
+    title: 'Explore Ecosystems',
+    description: 'Find an ecosystem for your industry.',
+    to: '/ecosystems',
+    cta: 'Browse Ecosystems',
+    icon: 'i-lucide-orbit',
   },
   {
     title: 'Your own ecosystem',

@@ -8,7 +8,6 @@ export const FIRESTORE_RULE_CORE_BLOCK_STACK = Object.freeze([
 export const FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS = Object.freeze([
   ...FIRESTORE_RULE_CORE_BLOCK_STACK,
   'match /apps/{appId}',
-  'match /join-requests/{userId}',
 ])
 
 export const FIRESTORE_RULE_FRAGMENTS = Object.freeze({
@@ -68,27 +67,6 @@ export const FIRESTORE_RULE_FRAGMENTS = Object.freeze({
     scope: 'database',
     indent: 4,
     blockStack: FIRESTORE_RULE_CORE_BLOCK_STACK,
-    requiresFunctions: Object.freeze([]),
-  }),
-  'join-validator': Object.freeze({
-    file: 'app-join-request-validator.rules',
-    scope: 'app-join-request',
-    indent: 8,
-    blockStack: Object.freeze([
-      ...FIRESTORE_RULE_CORE_BLOCK_STACK,
-      'match /apps/{appId}',
-      'match /join-requests/{userId}',
-    ]),
-    requiresFunctions: Object.freeze(['function validCreatedStamp(value)']),
-  }),
-  'membership-block': Object.freeze({
-    file: 'app-membership-block-deny.rules',
-    scope: 'app',
-    indent: 6,
-    blockStack: Object.freeze([
-      ...FIRESTORE_RULE_CORE_BLOCK_STACK,
-      'match /apps/{appId}',
-    ]),
     requiresFunctions: Object.freeze([]),
   }),
   'overlay-validator': Object.freeze({

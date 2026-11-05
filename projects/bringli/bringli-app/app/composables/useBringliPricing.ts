@@ -15,7 +15,7 @@ const bringliPricingProfile = {
     'Use the Supplier Workspace',
     'Review catalogue, ingredient, and item records',
   ],
-  professional: [
+  pro: [
     'Manage complete supplier catalogues',
     'Connect ingredients and supplied items',
     'Coordinate coverage and delivery work',

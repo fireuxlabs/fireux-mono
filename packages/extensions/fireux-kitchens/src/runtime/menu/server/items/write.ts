@@ -73,11 +73,11 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
         })
       if (
         menu.data?.schedule === 'daily' &&
-        !['premium', 'business'].includes(access.subscription)
+        !['pro', 'business'].includes(access.subscription)
       )
         throw createError({
           statusCode: 403,
-          statusMessage: 'Daily specials require Plus.',
+          statusMessage: 'Daily specials require Pro.',
         })
       if (promotionId) {
         const { name, status, currency, days, price, groups } = dish.data || {}
@@ -228,11 +228,11 @@ export async function updateKitchenMenuItem(
       })
     if (
       menu.data?.schedule === 'daily' &&
-      !['premium', 'business'].includes(access.subscription)
+      !['pro', 'business'].includes(access.subscription)
     )
       throw createError({
         statusCode: 403,
-        statusMessage: 'Daily specials require Plus.',
+        statusMessage: 'Daily specials require Pro.',
       })
     mutations.update(target, itemId, {
       ...changes,

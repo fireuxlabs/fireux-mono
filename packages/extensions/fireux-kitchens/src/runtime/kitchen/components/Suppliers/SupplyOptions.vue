@@ -53,7 +53,7 @@ const { supplier, hasIntegratedCatalogue } = useKitchenSupplierDetail(
 )
 const title = computed(
   () =>
-    `${String(supplier.value?.company_place?.short_name || supplier.value?.company_place?.name || 'Supplier')} supply options`
+    `${String(supplier.value?.business_place?.short_name || supplier.value?.business_place?.name || 'Supplier')} supply options`
 )
 const description =
   'Supply options are not connected yet. The supplier catalogue remains available where integrated.'

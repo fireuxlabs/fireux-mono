@@ -62,28 +62,26 @@
         data.ecosystem_id == 'cleanbox' &&
         data.database_id == 'cleanbox' &&
         data.slug == appId &&
-        ((appId == 'cleanbox-app' &&
-            data.role == 'global' && data.self_join_enabled == true) ||
-          (appId == 'richies-reinigung' &&
-            data.role == 'tenant' && data.self_join_enabled == false));
+        ((appId == 'cleanbox-app' && data.role == 'global') ||
+          (appId == 'richies-reinigung' && data.role == 'tenant'));
     }
 
     function isValidApp(data, appId) {
       return isKnownApp(appId) &&
         data.keys().hasAll([
           'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
-          'app_name', 'app_short_name', 'role', 'self_join_enabled',
+          'app_name', 'app_short_name', 'role',
           'derived', 'created', 'updated'
         ]) &&
         data.keys().hasOnly([
           'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
           'app_name', 'app_short_name', 'role', 'tagline', 'description',
           'short_bio', 'long_bio', 'social_links', 'derived', 'media',
-          'fireux_native', 'fireux_size', 'fireux_repo', 'self_join_enabled',
+          'fireux_native', 'fireux_size', 'fireux_repo',
           'moderation_state', 'ban_reasons', 'created', 'updated'
         ]) &&
         isExpectedAppAuthority(data, appId) &&
-        data.status in ['active', 'inactive', 'archived'] &&
+        data.status in ['active', 'inactive'] &&
         validRequiredText(data, 'app_name', 1, 60) &&
         validRequiredText(data, 'app_short_name', 1, 40) &&
         validOptionalText(data, 'tagline', 120) &&
@@ -119,18 +117,6 @@
         request.resource.data.created == resource.data.created &&
         validOwnerUpdateStamp(request.resource.data, request.auth.uid);
 
-      match /join-requests/{userId} {
-        // @fireux-core-rules join-validator
-        allow get: if isKnownApp(appId) &&
-          (isOwner(userId) ||
-            (isAppAdmin(appId) && isValidJoinRequest(resource.data)));
-        allow list: if isAppAdmin(appId) &&
-          request.query.limit <= 100 &&
-          isValidJoinRequest(resource.data);
-        allow create, update, delete: if false;
-      }
-
-      // @fireux-core-rules membership-block
       match /users/{userId} {
         function isValidEntityRelationship(data, idsField, primaryField) {
           return
@@ -158,7 +144,7 @@
               'created', 'updated'
             ]) &&
             data.role in ['admin', 'user', 'dev'] &&
-            data.subscription in ['free', 'premium', 'business'] &&
+            data.subscription in ['free', 'pro', 'premium', 'business'] &&
             data.onboarding_status in [
               'pending', 'completed', 'skipped'
             ] &&

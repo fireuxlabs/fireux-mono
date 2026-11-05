@@ -97,25 +97,25 @@ const normalizeStringArray = (value: unknown) =>
 
 const title = computed(
   () =>
-    normalizeString(companyPlace.value?.short_name) ||
-    normalizeString(companyPlace.value?.name) ||
+    normalizeString(businessPlace.value?.short_name) ||
+    normalizeString(businessPlace.value?.name) ||
     normalizeString(props.supplier?.id) ||
     'Untitled supplier'
 )
-const headline = computed(() => normalizeString(companyPlace.value?.tagline))
-const summary = computed(() => normalizeString(companyPlace.value?.about))
-const companyPlace = computed(() => {
-  const value = props.supplier?.company_place
+const headline = computed(() => normalizeString(businessPlace.value?.tagline))
+const summary = computed(() => normalizeString(businessPlace.value?.about))
+const businessPlace = computed(() => {
+  const value = props.supplier?.business_place
   return value && typeof value === 'object'
     ? (value as Record<string, unknown>)
     : null
 })
-const media = computed(() => placeIdentityMedia(props.supplier?.company_place))
+const media = computed(() => placeIdentityMedia(props.supplier?.business_place))
 const imageUrl = computed(() => media.value.imageUrl)
 const headquartersLabel = computed(
   () =>
-    normalizeString(companyPlace.value?.short_address) ||
-    normalizeString(companyPlace.value?.name)
+    normalizeString(businessPlace.value?.short_address) ||
+    normalizeString(businessPlace.value?.name)
 )
 const status = computed(() => normalizeString(props.supplier?.identity?.status))
 const categories = computed(() => [])

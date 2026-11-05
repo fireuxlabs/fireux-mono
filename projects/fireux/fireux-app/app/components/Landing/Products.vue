@@ -15,8 +15,7 @@
     <UAlert
       v-if="!items?.length"
       icon="i-lucide-packages"
-      title="Apps index coming soon"
-      description="Werkbox, Misebox, and more — server-driven catalog."
+      title="No Apps to show yet"
       color="neutral"
       variant="soft"
     />

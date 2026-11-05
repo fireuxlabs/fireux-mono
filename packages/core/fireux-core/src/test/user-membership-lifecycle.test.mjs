@@ -1,4 +1,8 @@
-import { isAppUserRole } from '../runtime/app/models/app-user.model.ts'
+import {
+  isAppUserRole,
+  isAppUserSubscription,
+  readAppUserSubscription,
+} from '../runtime/app/models/app-user.model.ts'
 import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -35,145 +39,44 @@ function deferred() {
 }
 
 const memberships = (appId) => `apps/${appId}/users`
-const joins = (appId) => `apps/${appId}/join-requests`
-const blocks = (appId) => `apps/${appId}/membership-blocks`
 const contract = load(
   '../runtime/app/server/app-user/command-contract.ts',
-  '{ appGovernancePatch, forbidden, initialMembership, requireAdmin, roleFrom }',
+  '{ appGovernancePatch, countTransactionAdmins, forbidden, initialMembership, isAdminMembership, requireAdmin, requireCanonicalMembership, roleFrom, stamp }',
   {
     createError: ({ statusCode, statusMessage }) =>
       Object.assign(new Error(statusMessage), { statusCode }),
     FieldValue: { serverTimestamp: () => ({ seconds: 123, nanoseconds: 0 }) },
+    isAppUserRole,
+    isAppUserSubscription,
+    readAppUserSubscription,
     USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
-  }
-)
-const review = load(
-  '../runtime/app/server/app-user/review-join.ts',
-  'handleReviewJoin',
-  {
-    ...contract,
-    APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
-USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
     serverAppUsersTarget: memberships,
-    serverAppJoinRequestsTarget: joins,
-    serverAppMembershipBlocksTarget: blocks,
-    requireFirestoreDocumentId: (id) => id,
   }
 )
 
-function reviewTransaction({
-  member,
-  publicUser = {},
-  request = {},
-  block = {},
-} = {}) {
-  const stored = new Map([
-    ['users/person', publicUser],
-    [`${memberships('app')}/person`, member],
-    [`${joins('app')}/person`, request],
-    [`${blocks('app')}/person`, block],
-  ])
-  const writes = []
-  const reads = []
-  const mutations = {
-    read: async (target, id) => {
-      assert.equal(
-        writes.length,
-        0,
-        'Firestore transactions require all reads before writes'
-      )
-      const path = `${target}/${id}`
-      reads.push(path)
-      const data = stored.get(path)
-      return { exists: data != null, data }
-    },
-    create: (target, id, data) => writes.push(['create', target, id, data]),
-    update: (target, id, data) => writes.push(['update', target, id, data]),
-    delete: (target, id) => writes.push(['delete', target, id]),
-  }
-  const run = (
-    approve,
-    { role = 'admin', crossDatabaseUserVerified = false } = {}
-  ) =>
-    review(
-      {
-        context: {
-          actorUid: 'administrator',
-          appId: 'app',
-          input: { action: 'review-join', userId: 'person', approve },
-        },
-        actorMembership: { role },
-        mutations,
-      },
-      crossDatabaseUserVerified
-    )
-  return { run, writes, reads }
-}
-
-for (const member of [undefined, { role: 'dev', subscription: 'premium' }]) {
-  test(`join approval ${member ? 'preserves existing membership' : 'creates unprivileged membership'} before clearing request and block`, async () => {
-    const transaction = reviewTransaction({ member })
-    const result = await transaction.run(true)
-    assert.equal(result.created, !member)
-    assert.equal(result.role, member?.role ?? 'user')
-    assert.deepEqual(
-      transaction.writes.map(([verb, target]) => [verb, target]),
-      [
-        ...(!member ? [['create', memberships('app')]] : []),
-        ['delete', blocks('app')],
-        ['update', 'apps'],
-        ['delete', joins('app')],
-      ]
-    )
-    if (!member) {
-      assert.equal(transaction.writes[0][3].role, 'user')
-      assert.equal(transaction.writes[0][3].subscription, 'free')
-    }
+test('App membership retains only its role, subscription and timestamps', () => {
+  const membership = contract.initialMembership('person', 'user')
+  assert.deepEqual(membership, {
+    role: 'user',
+    subscription: 'free',
+    created: { at: { seconds: 123, nanoseconds: 0 }, by: 'person' },
+    updated: { at: { seconds: 123, nanoseconds: 0 }, by: 'person' },
   })
-}
-
-test('rejecting a request never creates membership or clears a membership block', async () => {
-  const transaction = reviewTransaction({ publicUser: null })
-  const result = await transaction.run(false)
-  assert.equal(result.created, false)
-  assert.deepEqual(
-    transaction.writes.map(([verb, target]) => [verb, target]),
-    [
-      ['update', 'apps'],
-      ['delete', joins('app')],
-    ]
+  assert.doesNotThrow(() => contract.requireCanonicalMembership(membership))
+  assert.doesNotThrow(() =>
+    contract.requireCanonicalMembership({ ...membership, subscription: 'premium' })
   )
-  assert.ok(!transaction.reads.includes('users/person'))
-})
-
-test('approval rejects missing identity and non-admin actors before any write', async () => {
-  const missing = reviewTransaction({ publicUser: null })
-  await assert.rejects(missing.run(true), { statusCode: 409 })
-  assert.deepEqual(missing.writes, [])
-  const unauthorized = reviewTransaction()
-  await assert.rejects(unauthorized.run(true, { role: 'user' }), {
-    statusCode: 403,
-  })
-  assert.deepEqual(unauthorized.writes, [])
-})
-
-test('cross-database approval trusts the preverified identity and tolerates an already cleared request', async () => {
-  const transaction = reviewTransaction({
-    publicUser: null,
-    request: null,
-    block: null,
-  })
-  const result = await transaction.run(true, {
-    crossDatabaseUserVerified: true,
-  })
-  assert.equal(result.created, true)
-  assert.ok(!transaction.reads.includes('users/person'))
-  assert.deepEqual(
-    transaction.writes.map(([verb, target]) => [verb, target]),
-    [
-      ['create', memberships('app')],
-      ['update', 'apps'],
-    ]
+  assert.throws(
+    () => contract.requireCanonicalMembership({ ...membership, subscription: 'invalid' }),
+    { statusCode: 409 }
+  )
+  assert.throws(
+    () =>
+      contract.requireCanonicalMembership({
+        ...membership,
+        role: 'invalid',
+      }),
+    { statusCode: 409 }
   )
 })
 
@@ -283,10 +186,9 @@ test('current provisioning errors remain visible and an explicit retry can succe
 
 for (const boundary of [
   'identity',
-  'membership-read',
-  'policy',
   'membership-command',
   'event-token',
+  'event',
 ]) {
   test(`account switching during bootstrap ${boundary} cannot start its next stage`, async () => {
     const gate = deferred()
@@ -312,14 +214,14 @@ for (const boundary of [
       '../runtime/user/composables/identity/useUserBootstrap.ts',
       'useUserBootstrap',
       {
-        doc: () => ({}),
-        getDoc: async () => {
-          await pause('membership-read')
-          return { exists: () => false }
+        runAppUserCommand: async (input, supplied) => {
+          assert.deepEqual(input, { action: 'ensure-self' })
+          assert.equal(supplied.uid, 'A')
+          await pause('membership-command')
+          return { created: true }
         },
         getAuth: () => auth,
         useFireUXConfig: () => ({ appId: 'app' }),
-        useFirestore: () => ({}),
         requireUid: async () => {
           throw new Error('Bootstrap must retain its supplied Auth identity')
         },
@@ -328,27 +230,10 @@ for (const boundary of [
           await pause('identity')
           return { created: true }
         },
-        runAppUserCommand: async (_input, actor) => {
-          const uid = actor.uid
-          assert.equal(uid, 'A')
-          await pause('membership-command')
-          return { created: true }
-        },
         fetch: async (url) => {
-          assert.equal(
-            url,
-            '/api/app/status',
-            'A must not emit a joined event after switching accounts'
-          )
-          await pause('policy')
-          return {
-            ok: true,
-            json: async () => ({
-              appId: 'app',
-              initialized: true,
-              selfJoinEnabled: true,
-            }),
-          }
+          assert.equal(url, '/api/internal/events/user-joined')
+          await pause('event')
+          return { ok: true, json: async () => ({ event: { created: true } }) }
         },
       }
     )
@@ -367,7 +252,6 @@ test('bootstrap rejects an intended account that is no longer signed in before c
     '../runtime/user/composables/identity/useUserBootstrap.ts',
     'useUserBootstrap',
     {
-      useFirestore: () => ({}),
       useFireUXConfig: () => ({ appId: 'app' }),
       getAuth: () => ({ currentUser: { uid: 'B' } }),
     }
@@ -460,8 +344,6 @@ test('removing a disposable member revokes live domain access and a new membersh
       countTransactionAdmins: async () => 1,
       requireFirestoreDocumentId: (id) => id,
       serverAppUsersTarget: memberships,
-      serverAppJoinRequestsTarget: joins,
-      serverAppMembershipBlocksTarget: blocks,
       APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
     }
   )
@@ -501,7 +383,6 @@ test('removing a disposable member revokes live domain access and a new membersh
     assert.equal(access.outcome.value, 'idle')
   }
   assert.equal(stored.get(`${memberships('app')}/administrator`), admin)
-  assert.equal(stored.get(`${blocks('app')}/${uid}`).user_id, uid)
   membership.value = {
     role: 'user',
     subscription: 'free',

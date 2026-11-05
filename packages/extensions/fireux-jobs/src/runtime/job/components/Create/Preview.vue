@@ -33,8 +33,8 @@
             <UBadge v-if="categoryId" size="xs" variant="soft" color="neutral">
               Category: {{ categoryId }}
             </UBadge>
-            <UBadge v-if="companyId" size="xs" variant="soft" color="neutral">
-              Company: {{ companyId }}
+            <UBadge v-if="businessId" size="xs" variant="soft" color="neutral">
+              Business: {{ businessId }}
             </UBadge>
           </div>
         </div>
@@ -63,8 +63,8 @@
             <p v-else class="text-sm text-default">Not selected</p>
           </div>
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-dimmed">Company</p>
-            <CompanyPill v-if="companyId" :id="companyId" />
+            <p class="text-xs uppercase tracking-wide text-dimmed">Business</p>
+            <BusinessPill v-if="businessId" :id="businessId" />
             <p v-else class="text-sm text-default">Not set</p>
           </div>
         </div>
@@ -93,8 +93,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCompanyDetail } from 'fireux-companies/runtime/place/composables/company/useCompanyDetail'
-import { useCompanyInterface } from 'fireux-companies/runtime/place/composables/company/useCompanyInterface'
+import { useBusinessDetail } from 'fireux-businesses/runtime/business/composables/business/useBusinessDetail'
+import { useBusinessInterface } from 'fireux-businesses/runtime/business/composables/business/useBusinessInterface'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
 import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import { computed, defineComponent } from 'vue'
@@ -109,21 +109,21 @@ import {
 
 import type { JobCreateForm } from '../../composables/firestore/mutations/useJobCreate'
 
-const CompanyPill = defineComponent({
+const BusinessPill = defineComponent({
   props: { id: String },
   setup(props) {
-    const companyId = computed(() => String(props.id || '').trim())
-    const { place: companyData } = useCompanyDetail(companyId)
-    const companyInterface = useCompanyInterface()
-    const companyCard = computed(() => companyInterface.pill(companyData.value))
-    return { companyCard }
+    const businessId = computed(() => String(props.id || '').trim())
+    const { place: businessData } = useBusinessDetail(businessId)
+    const businessInterface = useBusinessInterface()
+    const businessCard = computed(() => businessInterface.pill(businessData.value))
+    return { businessCard }
   },
   template: `
-    <div v-if="companyCard" class="pill">
+    <div v-if="businessCard" class="pill">
       <UUser
-        :name="companyCard.title"
-        :description="companyCard.subtitle"
-        :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
+        :name="businessCard.title"
+        :description="businessCard.subtitle"
+        :avatar="{ src: businessCard.imageUrl, alt: businessCard.title }"
         size="sm"
       />
     </div>
@@ -165,7 +165,7 @@ const agentCard = computed(() =>
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())
 const placeId = computed(() => props.form.place_id.trim())
-const companyId = computed(() => props.form.company_id.trim())
+const businessId = computed(() => props.form.business_id.trim())
 const categoryId = computed(() => props.form.category_id.trim())
 const statusLabel = 'Private draft'
 const contractTypeLabel = computed(() =>

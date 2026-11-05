@@ -192,7 +192,7 @@ export function normalizePlacePatch(
     }
     if (key === 'brand_palette') {
       const result = parseBrandPalette(value)
-      if (!result.ok) badRequest(result.error)
+      if (result.ok === false) badRequest(result.error)
       patch.brand_palette = Object.keys(result.value).length
         ? result.value
         : FieldValue.delete()

@@ -7,6 +7,7 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
+    "test:booking-sandbox": "node --test test/booking-sandbox.test.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
@@ -15,7 +16,8 @@
     "@nuxt/ui": "4.12.0",
     "firebase": "11.10.0",
     "firebase-functions": "^6.3.2",
-    "fireux-blogs": "workspace:*",
+    "fireux-app": "workspace:*",
+    "fireux-bookings": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
     "h3": "^1.15.4",

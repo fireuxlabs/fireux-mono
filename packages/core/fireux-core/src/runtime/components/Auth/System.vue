@@ -77,9 +77,7 @@
               color="neutral"
               variant="subtle"
               :loading="providerLoading"
-              :disabled="
-                providerLoading || emailLoading || additionalProviderLoading
-              "
+              :disabled="providerLoading || emailLoading"
               icon="i-logos-google-icon"
               @click="handleGoogle"
             >
@@ -107,17 +105,11 @@
               />
             </div>
 
-            <slot
-              name="providers"
-              :disabled="providerLoading || emailLoading"
-              :set-busy="handleAdditionalProviderBusy"
-            />
-
             <USeparator label="or continue with email" />
 
             <FireAuthEmailPanel
               :default-mode="authMode"
-              :disabled="providerLoading || additionalProviderLoading"
+              :disabled="providerLoading"
               @busy="handleEmailBusy"
             />
           </template>
@@ -146,7 +138,6 @@ const {
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const providerLoading = ref(false)
 const emailLoading = ref(false)
-const additionalProviderLoading = ref(false)
 const accountSwitchBusy = ref(false)
 async function changeAccount() {
   if (accountSwitchBusy.value) return
@@ -156,9 +147,6 @@ async function changeAccount() {
   } finally {
     accountSwitchBusy.value = false
   }
-}
-function handleAdditionalProviderBusy(busy: boolean) {
-  additionalProviderLoading.value = busy
 }
 const providerError = ref<SignInFeedback | null>(null)
 const navigationError = ref('')
@@ -241,12 +229,7 @@ watch(
 )
 
 const handleGoogle = async () => {
-  if (
-    providerLoading.value ||
-    emailLoading.value ||
-    additionalProviderLoading.value
-  )
-    return
+  if (providerLoading.value || emailLoading.value) return
   providerError.value = null
   providerLoading.value = true
   try {

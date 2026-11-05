@@ -21,6 +21,7 @@ import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 import {
   isAppUserRole,
   isAppUserSubscription,
+  readAppUserSubscription,
 } from '../runtime/app/models/app-user.model.ts'
 
 const require = createRequire(import.meta.url)
@@ -28,6 +29,30 @@ const vueRequire = createRequire(require.resolve('vue'))
 const { parse, compileScript } = vueRequire('@vue/compiler-sfc')
 const { renderToString } = vueRequire('@vue/server-renderer')
 const componentPath = '../runtime/user/components/SubscriptionControl.vue'
+const appSubscriptionCapacity = load(
+  '../runtime/app/utils/app-subscription-capacity.ts',
+  'appSubscriptionCapacity',
+  { readAppUserSubscription }
+)
+
+test('legacy premium retains Pro access and capacity while canonical writes accept only current tiers', () => {
+  assert.equal(readAppUserSubscription('premium'), 'pro')
+  assert.equal(isAppUserSubscription('premium'), false)
+  assert.equal(isAppUserSubscription('pro'), true)
+  const access = resolveAppUserAccess({ role: 'user', subscription: 'premium' })
+  assert.equal(access.hasMembership, true)
+  assert.equal(access.subscription, 'pro')
+  assert.equal(access.hasProSubscription, true)
+  assert.equal(access.hasBusinessSubscription, false)
+  const capacity = { project: { free: 1, pro: 4, business: null } }
+  assert.equal(appSubscriptionCapacity(capacity, 'project', 'premium'), 4)
+  assert.equal(appSubscriptionCapacity(capacity, 'project', 'pro'), 4)
+  for (const value of ['professional', 'unknown', '', null, undefined]) {
+    assert.equal(readAppUserSubscription(value), null)
+    assert.equal(resolveAppUserAccess({ role: 'user', subscription: value }).hasMembership, false)
+    assert.equal(appSubscriptionCapacity(capacity, 'project', value), 0)
+  }
+})
 
 function load(path, name, dependencies, development = false) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -107,7 +132,7 @@ function fixture({ role = 'dev', subscription = 'free', guest = false } = {}) {
   const useAppUserSubscriptions = load(
     '../runtime/app/composables/membership/useAppUserSubscriptions.ts',
     'useAppUserSubscriptions',
-    { computed, toValue, runAppUserCommand }
+    { computed, toValue, runAppUserCommand, readAppUserSubscription }
   )
   const dependencies = {
     computed,
@@ -215,8 +240,9 @@ for (const role of ['admin', 'dev'])
     assert.match(html, /Change Free subscription/)
     assert.doesNotMatch(html, /href="\/pricing"/)
     for (const [stored, next] of [
-      ['free', 'premium'],
+      ['free', 'pro'],
       ['premium', 'business'],
+      ['pro', 'business'],
       ['business', 'free'],
     ]) {
       f.session.appUser.value.subscription = stored
@@ -236,7 +262,7 @@ for (const role of ['admin', 'dev'])
       await result
       assert.equal(f.api.saving.value, false)
     }
-    assert.equal(f.calls.length, 3)
+    assert.equal(f.calls.length, 4)
     assert.deepEqual(f.notices, [])
     f.owner.stop()
   })
@@ -331,7 +357,7 @@ test('live subscription update does not invalidate authorized command intent or 
   assert.equal(f.calls.length, 1)
   assert.equal(
     f.calls[0].body.subscription,
-    'premium',
+    'pro',
     'authored next tier captured before credential await'
   )
   f.response.resolve()
@@ -385,6 +411,7 @@ const contract = load(
   {
     isAppUserRole,
     isAppUserSubscription,
+    readAppUserSubscription,
     createError: ({ statusCode, statusMessage }) =>
       Object.assign(new Error(statusMessage), { statusCode }),
     FieldValue: { serverTimestamp: () => ({ seconds: 1, nanoseconds: 0 }) },
@@ -452,4 +479,32 @@ test('existing production transactional authority permits admin/dev self target 
     403,
     'development-only self command remains disabled in production'
   )
+})
+
+test('subscription mutations write Pro and reject legacy or invalid requested tiers', async () => {
+  for (const subscription of ['pro', 'premium', 'professional', 'invalid', '']) {
+    const writes = []
+    const state = {
+      context: {
+        actorUid: 'admin',
+        appId: 'app',
+        input: { action: 'set-subscription', userId: 'person', subscription },
+      },
+      actorMembership: { role: 'admin', subscription: 'free' },
+      mutations: {
+        read: async () => ({ exists: true }),
+        update: (target, id, data) => writes.push({ target, id, data }),
+      },
+    }
+    if (subscription === 'pro') {
+      const result = await handleSettings(state)
+      assert.equal(result.subscription, 'pro')
+      assert.equal(writes.length, 1)
+      assert.equal(writes[0].data.subscription, 'pro')
+      assert.equal(writes[0].id, 'person')
+    } else {
+      await assert.rejects(handleSettings(state), { statusCode: 400 })
+      assert.deepEqual(writes, [])
+    }
+  }
 })

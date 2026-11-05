@@ -9,12 +9,7 @@ export function resolveUserOnboardingDestination(value: unknown): string {
   while (!seen.has(target)) {
     seen.add(target)
     const url = new URL(target, 'http://fireux.local')
-    if (
-      url.pathname !== '/users/create' &&
-      url.pathname !== '/dashboard/user/create'
-    ) {
-      return target
-    }
+    if (url.pathname !== '/users/create') return target
     target = resolveInternalRedirect(url.searchParams.get('redirect'))
   }
 

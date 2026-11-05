@@ -11,7 +11,7 @@ import {
 } from '../authority'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 
 export async function createProjectTeamMember(
   event: H3Event,
@@ -38,8 +38,8 @@ export async function createProjectTeamMember(
   const capacity = useFireUXConfig(event).subscriptionCapacity
   return runGuardedServerTransaction(team.database, async (tx) => {
     const membership = await requireProjectOperatorInTransaction(tx, actor)
-    const subscription = membership.subscription
-    if (!isAppUserSubscription(subscription))
+    const subscription = readAppUserSubscription(membership.subscription)
+    if (!subscription)
       throw createError({
         statusCode: 409,
         statusMessage: 'Invalid subscription.',

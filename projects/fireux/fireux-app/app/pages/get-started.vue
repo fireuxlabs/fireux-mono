@@ -245,7 +245,7 @@
                 <p class="text-xs text-muted">
                   See the
                   <NuxtLink
-                    to="/legal/privacy"
+                    to="/legal#privacy"
                     class="text-primary hover:underline"
                     >Privacy Policy</NuxtLink
                   >.

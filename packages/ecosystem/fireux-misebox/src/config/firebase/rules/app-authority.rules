@@ -83,7 +83,6 @@
           'app_name',
           'app_short_name',
           'role',
-          'self_join_enabled',
           'derived',
           'created',
           'updated'
@@ -107,7 +106,6 @@
           'fireux_native',
           'fireux_size',
           'fireux_repo',
-          'self_join_enabled',
           'moderation_state',
           'ban_reasons',
           'created',
@@ -117,7 +115,7 @@
         validOptionalText(data, 'ecosystem_id', 120) &&
         validRequiredText(data, 'database_id', 1, 120) &&
         validRequiredText(data, 'slug', 3, 80) &&
-        data.status in ['active', 'inactive', 'archived'] &&
+        data.status in ['active', 'inactive'] &&
         validRequiredText(data, 'app_name', 1, 60) &&
         validRequiredText(data, 'app_short_name', 1, 40) &&
         data.role in ['global', 'tenant', 'standalone', 'ecosystem', 'system'] &&
@@ -136,7 +134,6 @@
         (!('fireux_native' in data) || data.fireux_native is bool) &&
         (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
         (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
-        data.self_join_enabled is bool &&
         (!('moderation_state' in data) || data.moderation_state == '') &&
         (!('ban_reasons' in data) ||
           (data.ban_reasons is list && data.ban_reasons.size() == 0)) &&
@@ -170,7 +167,6 @@
         request.resource.data.slug == appId &&
         request.resource.data.status == 'active' &&
         request.resource.data.role == 'global' &&
-        request.resource.data.self_join_enabled == true &&
         request.resource.data.derived.user_count == 0 &&
         request.resource.data.created.by == request.auth.uid &&
         request.resource.data.created.at == request.time &&

@@ -1,20 +1,20 @@
 <template>
   <div class="space-y-6">
     <div v-if="!create" class="space-y-3">
-      <CompanyCreateSystem v-if="!companyId" @created="onCompanyReady" />
+      <BusinessCreateSystem v-if="!businessId" @created="onBusinessReady" />
       <UAlert
         v-else
         color="success"
         variant="soft"
-        title="Company ready"
-        :description="companyId"
+        title="Business ready"
+        :description="businessId"
       >
         <template #actions>
           <UButton
             size="xs"
             color="neutral"
             variant="soft"
-            @click="companyId = ''"
+            @click="businessId = ''"
           >
             Choose another
           </UButton>
@@ -23,7 +23,7 @@
     </div>
 
     <UFormField
-      v-if="!create && companyId"
+      v-if="!create && businessId"
       label="Organization name"
       description="This becomes the Supplier identity and public web address."
       required
@@ -60,7 +60,7 @@
           size="lg"
           class="min-w-60"
           :loading="isCreating"
-          :disabled="isCreating || (!create && !companyId)"
+          :disabled="isCreating || (!create && !businessId)"
           @click="handleCreate"
         >
           {{ isCreating ? 'Creating…' : 'Create Supplier Workspace' }}
@@ -114,15 +114,15 @@ const { select } = useWorkspace('supplier')
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
 const organizationName = ref('')
-const companyId = ref('')
+const businessId = ref('')
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
 const resolvedMode = computed<FireuxEntityCreateMode>(
   () => props.mode ?? 'workspace'
 )
 const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 
-function onCompanyReady(payload: { id: string }) {
-  companyId.value = String(payload.id || '').trim()
+function onBusinessReady(payload: { id: string }) {
+  businessId.value = String(payload.id || '').trim()
 }
 
 const { currentUser } = useAuth()
@@ -137,7 +137,7 @@ const scopeSources = [
   () => props.returnTo,
   () => props.create,
   organizationName,
-  companyId,
+  businessId,
 ]
 const captureCommand = useCommandScope(scopeSources)
 watch(
@@ -151,8 +151,8 @@ watch(
 
 const handleCreate = async () => {
   if (isCreating.value) return
-  if (!props.create && !companyId.value) {
-    errorMessage.value = 'Choose the Company this Supplier belongs to.'
+  if (!props.create && !businessId.value) {
+    errorMessage.value = 'Choose the Business this Supplier belongs to.'
     return
   }
   if (!props.create && organizationName.value.trim().length < 2) {
@@ -177,12 +177,12 @@ const handleCreate = async () => {
       : isWorkspaceMode.value
         ? await createSupplierWorkspace({
             organizationName: organizationName.value,
-            companyId: companyId.value,
+            businessId: businessId.value,
             isCurrent,
           })
         : await createSupplier({
             organizationName: organizationName.value,
-            companyId: companyId.value,
+            businessId: businessId.value,
             isCurrent,
           })
     if (!isCurrent()) return

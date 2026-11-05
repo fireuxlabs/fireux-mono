@@ -1,7 +1,7 @@
 export type FireuxRootOwnerType =
   | 'app'
   | 'ecosystem'
-  | 'company'
+  | 'business'
   | 'place'
   | 'user'
 

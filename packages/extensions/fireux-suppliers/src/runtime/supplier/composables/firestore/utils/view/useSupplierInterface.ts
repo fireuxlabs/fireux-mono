@@ -42,11 +42,11 @@ export namespace SupplierCard {
   }
 }
 
-export type SupplierSurface = Supplier & { company_place?: Place }
+export type SupplierSurface = Supplier & { business_place?: Place }
 export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> =
   {
     supplier?: TSupplier | null | undefined
-    companyPlace?: Place | null | undefined
+    businessPlace?: Place | null | undefined
   }
 
 export function useSupplierInterface() {
@@ -62,23 +62,23 @@ export function useSupplierInterface() {
     const source = parts.supplier ?? null
     if (!source) return null
 
-    const { company_place: _companyPlace, ...body } = source as Record<
+    const { business_place: _businessPlace, ...body } = source as Record<
       string,
       unknown
     >
     const root = normalizeSupplier(body.id, body)
     if (!root) return null
-    const companyPlace = parts.companyPlace ?? null
-    if (companyPlace) {
-      const companyId = safeString(root.company_id).trim()
-      const placeId = safeString(companyPlace.id).trim()
-      if (!companyId || companyId !== placeId) return null
+    const businessPlace = parts.businessPlace ?? null
+    if (businessPlace) {
+      const businessId = safeString(root.business_id).trim()
+      const placeId = safeString(businessPlace.id).trim()
+      if (!businessId || businessId !== placeId) return null
     }
     const merged = {
       ...root,
-      ...(companyPlace
+      ...(businessPlace
         ? {
-            company_place: { ...companyPlace },
+            business_place: { ...businessPlace },
           }
         : {}),
     } as TSupplier & SupplierSurface
@@ -95,18 +95,18 @@ export function useSupplierInterface() {
     const id = safeString(target.id).trim()
     const slug = safeString(target.identity?.slug).trim()
     const organizationName =
-      safeString(target.company_place?.short_name) ||
-      safeString(target.company_place?.name)
+      safeString(target.business_place?.short_name) ||
+      safeString(target.business_place?.name)
     const deliveryAreas = safeStringArray(target.delivery?.areas)
     const badges = deliveryAreas
-    const headline = safeString(target.company_place?.tagline)
-    const summary = safeString(target.company_place?.about)
-    const logoImageUrl = safeString(target.company_place?.logo_image)
-    const placeImageUrl = safeString(target.company_place?.image_url)
-    const media = placeIdentityMedia(target.company_place)
+    const headline = safeString(target.business_place?.tagline)
+    const summary = safeString(target.business_place?.about)
+    const logoImageUrl = safeString(target.business_place?.logo_image)
+    const placeImageUrl = safeString(target.business_place?.image_url)
+    const media = placeIdentityMedia(target.business_place)
     const headquartersLabel =
-      safeString(target.company_place?.short_address) ||
-      safeString(target.company_place?.name)
+      safeString(target.business_place?.short_address) ||
+      safeString(target.business_place?.name)
     const categoriesCsv = csv(badges)
     const locationsLabel = deliveryAreas.join(', ')
 

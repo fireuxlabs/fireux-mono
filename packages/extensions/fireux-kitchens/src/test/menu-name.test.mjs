@@ -9,7 +9,7 @@ const source = readFileSync(
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
   .replace(/^export /gm, '')
-function harness(subscription = 'premium', duplicates = []) {
+function harness(subscription = 'pro', duplicates = []) {
   const writes = []
   const tx = {
     read: async () => ({ exists: true, data: { name: 'Food', slug: 'food' } }),
@@ -54,8 +54,8 @@ function harness(subscription = 'premium', duplicates = []) {
   )(...Object.values(dependencies))
   return { rename, writes, normalizeMenuMetadataPatch, updateKitchenMenu }
 }
-test('Plus rename preserves original slug and children while updating the display name', async () => {
-  for (const tier of ['premium', 'business']) {
+test('Pro rename preserves original slug and children while updating the display name', async () => {
+  for (const tier of ['pro', 'business']) {
     const h = harness(tier)
     assert.deepEqual(
       await h.rename(
@@ -76,10 +76,10 @@ test('Free rename is denied while duplicate display names preserve stable URLs',
   const free = harness('free')
   await assert.rejects(
     free.rename({}, { kitchenId: 'k', menuId: 'stable', name: 'Dinner' }),
-    /Plus/
+    /Pro/
   )
   assert.equal(free.writes.length, 0)
-  const duplicate = harness('premium', ['another'])
+  const duplicate = harness('pro', ['another'])
   const result = await duplicate.rename(
     {},
     { kitchenId: 'k', menuId: 'stable', name: 'Dinner' }

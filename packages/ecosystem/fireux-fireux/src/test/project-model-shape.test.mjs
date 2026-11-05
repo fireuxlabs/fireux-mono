@@ -80,7 +80,6 @@ test('Canonical Project nests local Identity and admits only exact guest authori
 test('Public Project profile cannot expose guest ownership, audit or unrelated private metadata', () => {
   const value = {
     ...root(),
-    context: 'private',
     guest_owner_uid: 'private',
     created: { secret: 'private' },
     team: ['private'],
@@ -90,6 +89,9 @@ test('Public Project profile cannot expose guest ownership, audit or unrelated p
     id: 'p',
     identity: root().identity,
   })
+  const archived = { ...root(), identity: { ...root().identity, status: 'archived' } }
+  assert.equal(readProjectDocument(archived, 'p'), null)
+  assert.equal(readProjectPublicSummary(archived, 'p'), null)
   assert.equal(
     readProjectPublicSummary(
       { ...value, identity: { ...value.identity, notes: 'private' } },
@@ -134,15 +136,12 @@ test('Malformed granted Project roots fail the collection without exposing a par
     selectedId = ref('p')
   owner.run(() =>
     load(
-      '../runtime/project/composables/workspace/useProjectWorkspace.ts',
-      'useProjectWorkspace()',
+      '../runtime/project/composables/workspace/useProjectWorkspaceIndex.ts',
+      'useProjectWorkspaceIndex()',
       {
         computed,
         watch,
-        defineWorkspace: (setup) => setup,
         useProjectCollection: () => collection,
-        useProjectAccess: () => access,
-        useProjectRead: () => ({ outcome: ref('ready'), data: ref(root()) }),
         useWorkspace: () => ({
           selectedId,
           select() {},
@@ -210,7 +209,7 @@ test('A malformed settled Project detail is an explicit error and clears when th
   assert.equal(read.outcome.value, 'idle')
 })
 
-test('Project creation captures account, App and caller form before credentials and validates guest response identity and action', async () => {
+test('Project creation captures route and caller form before credentials and validates guest response identity and action', async () => {
   const useCommandScope = load(
     '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
     'useCommandScope',
@@ -218,7 +217,7 @@ test('Project creation captures account, App and caller form before credentials 
   )
   for (const change of [
     'stable',
-    'app',
+    'route',
     'membership',
     'account',
     'form',
@@ -234,20 +233,21 @@ test('Project creation captures account, App and caller form before credentials 
     const user = { uid: 'guest', isAnonymous: true, getIdToken: () => token },
       currentUser = ref(user),
       membership = ref(null),
-      config = reactive({ appId: 'app' }),
+      route = reactive({ fullPath: '/project' }),
       isOwnerCurrent = ref(true)
     const controller = owner.run(() =>
       load(
-        '../runtime/project/composables/useProjectCreate.ts',
-        'useProjectCreate()',
+        '../runtime/project/composables/workspace/useProjectWorkspaceCreate.ts',
+        'useProjectWorkspaceCreate()',
         {
           ref,
           watch,
           useCommandScope,
           isFirestoreDocumentId,
+          useRoute: () => route,
           useAuth: () => ({ currentUser }),
           useAppSession: () => ({ appUser: membership }),
-          useFireUXConfig: () => config,
+          useFireUXConfig: () => ({ appId: 'app' }),
           $fetch: async (...args) => {
             calls.push(args)
             if (change === 'transport-error')
@@ -275,9 +275,9 @@ test('Project creation captures account, App and caller form before credentials 
                 ? /private database/
                 : /context changed/
           )
-    if (change === 'app') {
-      config.appId = 'other'
-      config.appId = 'app'
+    if (change === 'route') {
+      route.fullPath = '/other'
+      route.fullPath = '/project'
     }
     if (change === 'membership') {
       membership.value = { id: 'member' }

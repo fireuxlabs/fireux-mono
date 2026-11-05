@@ -1,8 +1,11 @@
 # FireUX Products
 
 Products owns the catalogue, public Product projections, protected Product
-commands and optional Stripe Checkout integration. Apps opt in through the
-`fireux-products` dependency, module and native layer; it is not a Core baseline.
+commands and optional Stripe Checkout integration. It is a default capability
+for every FireUX App. Each App declares `fireux-products` directly; Core's App
+config supplies its module and native layer. An App may set module options for
+its catalogue. Stripe Checkout remains optional and requires the consuming
+App's explicit SDK and secret configuration.
 
 ## Checkout boundary
 

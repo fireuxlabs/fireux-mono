@@ -9,8 +9,3 @@ export type AppUserSummary = {
   user: UserIdentitySummary | null
 }
 
-export type AppUserJoinRequestSummary = {
-  id: string
-  user: UserIdentitySummary | null
-}
-

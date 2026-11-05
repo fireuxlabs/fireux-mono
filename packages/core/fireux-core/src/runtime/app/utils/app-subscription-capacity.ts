@@ -1,12 +1,14 @@
 import type { FireuxAppSubscriptionCapacity } from '../../../config/app/types'
 import type { AppUserSubscription } from '../models/app-user.model'
+import { readAppUserSubscription } from '../models/app-user.model.ts'
 
 export function appSubscriptionCapacity(
   capacity: FireuxAppSubscriptionCapacity,
   capability: string,
-  subscription: AppUserSubscription
+  subscription: AppUserSubscription | 'premium'
 ) {
-  const limit = capacity[capability]?.[subscription]
+  const tier = readAppUserSubscription(subscription)
+  const limit = tier ? capacity[capability]?.[tier] : undefined
   return limit === undefined ? 0 : limit
 }
 

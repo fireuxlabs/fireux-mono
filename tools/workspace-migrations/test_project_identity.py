@@ -47,7 +47,8 @@ class ProjectPlanTests(unittest.TestCase):
     def test_partial_mixed_unknown_and_invalid_values_not_silently_dropped(self):
         for mutate in [lambda v:v.update(identity={'name':'other'}), lambda v:v.pop('status'),
                        lambda v:v.update(team=[]), lambda v:v.update(name=3),
-                       lambda v:v.update(status='other'), lambda v:v.update(created={})]:
+                       lambda v:v.update(status='other'), lambda v:v.update(status='archived'),
+                       lambda v:v.update(created={})]:
             before = root()
             mutate(before)
             entry = plan(before)['entries'][0]

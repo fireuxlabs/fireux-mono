@@ -7,7 +7,7 @@ import {
 
 import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
 import type { ProjectPublicSummary } from 'fireux-fireux/runtime/project/models/project.model'
-import { readProjects } from 'fireux-fireux/runtime/project/server/index/directory'
+import { readProjects } from 'fireux-fireux/runtime/project/server/directory/read'
 
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')

@@ -91,7 +91,7 @@ function experience(value: unknown, limit: number) {
     const toYear = experienceYear(entry.to_year)
     if (
       !isFirestoreDocumentId(placeId) ||
-      !['', 'kitchens', 'companies'].includes(placeCollection) ||
+      !['', 'kitchens', 'businesses'].includes(placeCollection) ||
       fromMonth == null ||
       fromYear == null ||
       toMonth == null ||

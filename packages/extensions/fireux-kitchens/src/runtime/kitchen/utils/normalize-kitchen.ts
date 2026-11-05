@@ -1,5 +1,5 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+import type { Kitchen } from '../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { readKitchenVisibility } from './kitchen-readers.ts'
 
@@ -10,16 +10,15 @@ const record = (value: unknown): Record<string, unknown> =>
 
 export function readKitchenIdentitySource(
   value: unknown
-): KitchenPublicSummary['identity']['source'] {
+): Kitchen['identity']['source'] {
   return value === 'user' || value === 'place' ? value : undefined
 }
 
-/** Allowlisted public projection; never returns internal notes or audit data. */
 export function normalizeKitchen(
   idValue: unknown,
   value: unknown,
   place: Place | null
-): (KitchenPublicSummary & { place: Place }) | null {
+): (Kitchen & { place: Place }) | null {
   const id = String(idValue ?? '').trim()
   const source = record(value)
   const identity = record(source.identity)
@@ -39,15 +38,12 @@ export function normalizeKitchen(
         ? { source: readKitchenIdentitySource(identity.source) }
         : {}),
       slug,
-      status: status as KitchenPublicSummary['identity']['status'],
+      status: status as Kitchen['identity']['status'],
       visibility: readKitchenVisibility(source),
     },
     services: {
-      title:
-        String(record(source.services).title || '').trim() || 'Food & drinks',
-      ...(record(source.services).item_images === true
-        ? { item_images: true }
-        : {}),
+      title: String(record(source.services).title || '').trim() || 'Food & drinks',
+      ...(record(source.services).item_images === true ? { item_images: true } : {}),
     },
     place,
   }

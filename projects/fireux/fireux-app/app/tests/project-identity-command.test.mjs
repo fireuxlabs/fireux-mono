@@ -27,11 +27,6 @@ const requireWorkspaceEntityMemberRole = load(
   { createError },
   'requireWorkspaceEntityMemberRole'
 )
-const hasProjectAppContext = load(
-  'packages/ecosystem/fireux-fireux/src/runtime/project/utils/app-context-connection.ts',
-  {},
-  'hasProjectAppContext'
-)
 const useCommandScope = load(
   core + 'composables/fireux/commands/useCommandScope.ts',
   { watch, onScopeDispose },
@@ -71,7 +66,6 @@ function harness(role = 'user') {
       requireFirebaseBearerUser: async () => ({ uid: 'u' }),
       requireFirestoreDocumentId,
       useFireUXConfig: () => ({ appId: 'fireux-app' }),
-      hasProjectAppContext,
       fireuxAppUsersTarget: () => 'members',
       serverProjectAccessTarget: () => 'access',
       fireuxProjectsTarget: 'projects',
@@ -149,18 +143,25 @@ test('transaction rejects revoked membership/access and membership recreation', 
     assert.equal(h.writes.length, 0)
   }
 })
-test('connected App owns fields even without contacting provider; name remains editable', async () => {
+test('the former linked Project uses the same editable identity fields', async () => {
   const h = harness()
-  for (const body of [
-    { description: '' },
-    { image_url: '' },
-    { name: 'New', description: 'No' },
-  ]) {
-    await assert.rejects(h.update({}, 'misebox', body), { statusCode: 403 })
-  }
-  assert.equal(h.writes.length, 0)
-  await h.update({}, 'misebox', { name: 'New' })
-  assert.equal(h.writes.length, 1)
+  await h.update({}, 'misebox', {
+    name: 'New',
+    description: 'Project notes',
+    image_url: 'https://example.com/project.png',
+  })
+  assert.deepEqual(h.writes, [
+    [
+      'projects',
+      'misebox',
+      {
+        'identity.name': 'New',
+        'identity.description': 'Project notes',
+        'identity.image_url': 'https://example.com/project.png',
+        updated: { by: 'u' },
+      },
+    ],
+  ])
 })
 test('strict identity fields reject envelopes, ownership fields, malformed values and URLs', async () => {
   for (const body of [

@@ -17,7 +17,6 @@ type RuntimeNormalizedFields =
   | 'subscriptionCapacity'
   | 'domains'
   | 'profiles'
-  | 'selfJoinEnabled'
   | 'seo'
   | 'meta'
 
@@ -37,7 +36,6 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   subscriptionCapacity: FireuxAppSubscriptionCapacity
   domains: readonly string[]
   profiles: readonly string[]
-  selfJoinEnabled: boolean
 }
 
 export type RuntimeFirebaseEcosystem = {

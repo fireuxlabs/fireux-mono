@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-10-25
-Ref: 4a06df9ef
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
@@ -106,19 +106,34 @@ This assessment belongs in the smallest relevant living context or concept map
 only when it is a durable conclusion. Temporary investigation notes and
 speculative alternatives do not belong in living documentation.
 
-## Viewer
+## Contributor and public docs
 
-`fireux-docs` renders `AGENTS.md`, living contexts, and concept maps from their
-current repository locations. The host App owns the Nuxt Content source
-collection; the package owns reusable `/docs` routes. Rendered content and the
-docs manifest are views over this graph, never copied documentation authority.
-Each content source keeps the narrowest watch root that contains its files; a
-single root document must never make the App watch the whole repository.
+| Reader | Start here | What belongs there |
+| --- | --- | --- |
+| People and agents working on FireUX | [AGENTS.md](../../AGENTS.md) | Working rules, scoped context and architecture maps. |
+| People building with FireUX | `/getting-started` and [the public reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/index.vue) at `/docs` | Setup, supported APIs and examples. |
+| People and tools reading published context | `/context` and `/context/research` | Reviewed summaries of FireUX and its research. |
 
-The FireUX host installs this docs surface in production. Ordinary local
-Workspace development leaves Nuxt Content off; set
-`FIREUX_DOCS_ENABLED=true` when the local task is specifically working on or
-verifying `/docs`.
+Keep contributor guidance in the repository. FireUX App hosts the public
+guides and the `fireux-docs` reference. Give each API one reference, based on
+its owning package's source, and link to it from examples and patterns.
+Reviews and handoffs stay with the repository evidence.
+
+Ecosystem Main Apps own shared public guides for their products and libraries.
+Tenant Apps, such as La Tap Berne, and standalone Apps add documentation only
+for an explicit product need. They may link to their Ecosystem's guides.
+The App selects its documentation layer. The `fireux-docs` extension hosts
+FireUX's developer reference and depends on Core; Core does not depend on Docs. The App
+and Ecosystem bundles do not add that FireUX-specific content to other Apps.
+
+The public reference follows the parts of a Nuxt App that developers work
+with: configuration, pages, layouts, components, composables, and server
+routes. Each guide leads with what FireUX adds, shows an example, and links
+to the relevant Nuxt or Nuxt UI reference for the basics.
+Use the FireUX voice in section headings and keep guide titles easy to match
+to their Nuxt and Nuxt UI counterparts.
+Group Core component examples by the job they do. Feature controls with real
+consumers and a clear shared responsibility.
 
 ## Family maps
 
@@ -210,10 +225,5 @@ package, and genuinely App-specific guidance under that App. Root `AGENTS.md`
 remains the sole scope router. Do not create folders or guides without a recurring
 owned responsibility; mixed-owner guides stay central until a single owner is proved.
 
-The docs viewer retains its explicit central and five ecosystem source directories,
-with narrow watch roots. Moving an internal guide does not turn it into a public
-product contract. Existing `/docs` rendering remains separate from the curated
-`readPlatformContext` public projection and FireUX `/context` page/API. The latter
-never reads internal guides, live records, credentials or chat history and does
-not automatically inject context into AI requests. Consumers explicitly choose
-relevant context; command authority stays with the actual tools and server checks.
+The public context pages and APIs read authored platform and research
+summaries. Command authority stays with the owning tools and server checks.

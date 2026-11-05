@@ -10,11 +10,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppPublicSummary } from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { isDirectoryAppIndexable } from '../../../utils/directorySearchPolicy'
 
-const props = defineProps<{ app: AppPublicSummary }>()
+const props = defineProps<{ app: App }>()
 
 useSeo({
   title: computed(() => `${props.app.name} · FireUX App`),

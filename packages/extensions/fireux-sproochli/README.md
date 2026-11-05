@@ -1,11 +1,15 @@
 # fireux-sproochli
 
-Updated: 2026-08-01
+Updated: 2026-11-05
 Role: package entrypoint; implementation authority remains current source and guards
 
 `fireux-sproochli` gives a host App Sproochli language selection, Menu
 localization models, server-side provider transport, and host-local cache and
 translation-memory helpers.
+
+`seedSproochliText` prepares source text and existing translations for local
+forms. It is synchronous and makes no provider calls. Kitchen Recipe and Prep
+Item creation use it before their existing protected commands.
 
 Sproochli localizes food content in context. Menu generation preserves dish,
 ingredient, preparation, dietary, and allergen meaning; it is not a
@@ -48,8 +52,7 @@ Firebase CLI aliases, or provider access to host Firestore as shortcuts.
 Non-secret deployment values belong in the App's `firebase.runtime-env.json`;
 secrets and credentials do not.
 
-Misebox is the first production proof. Its current registration is guarded in
-`scripts/guards/sproochli-copy.mjs`. General idempotent host provisioning is
+Misebox is the current host-registration reference. General idempotent host provisioning is
 still to be packaged as Sproochli onboarding, so new hosts must not copy
 Misebox-specific identifiers.
 
@@ -63,9 +66,10 @@ and authorization do not.
 
 ## Current authority
 
-- Product and storage map: `docs/concepts/translation.md`
-- Provider-family boundary: `docs/concepts/tool-provider.md`
+- [Product and storage map](../../../docs/concepts/translation.md)
+- [Provider-family boundary](../../../docs/concepts/tool-provider.md)
+- Localized-field preparation: `src/runtime/utils/translation-seed.ts`
 - Host identity: `src/runtime/host.ts`
 - Host persistence: `src/runtime/server/menu/`
 - Provider client: `src/runtime/server/menu/provider-client.ts`
-- Executable contract: `scripts/guards/sproochli-copy.mjs`
+- Localized-field checks: `src/test/translation-seed.test.mjs`

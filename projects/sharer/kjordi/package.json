@@ -19,7 +19,7 @@
   "dependencies": {
     "@nuxt/icon": "2.5.1",
     "@nuxt/ui": "4.12.0",
-    "fireux-blogs": "workspace:*",
+    "fireux-app": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-go-qr": "workspace:*",
     "fireux-sharer": "workspace:*",

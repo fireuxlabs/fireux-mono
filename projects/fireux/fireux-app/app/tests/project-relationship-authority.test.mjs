@@ -3,6 +3,11 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { ECOSYSTEM_STATUSES } from '../../../../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts'
+import {
+  isAppUserSubscription,
+  readAppUserSubscription,
+} from '../../../../../packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
@@ -16,10 +21,6 @@ function load(path, result, deps = {}) {
     Object.keys(deps)
   )(...Object.values(deps))
 }
-const toEcosystemPublicSummary = load(
-  core + 'ecosystem/server/identity/read.ts',
-  'toEcosystemPublicSummary'
-)
 const createError = (value) =>
   Object.assign(new Error(value.statusMessage), value)
 const readMembershipAccessIds = load(
@@ -32,13 +33,10 @@ const requireWorkspaceEntityMemberRole = load(
   { createError }
 )
 const isAppUserRole = load(core + 'app/models/app-user.model.ts', 'isAppUserRole')
-const isAppUserSubscription = load(
-  core + 'app/models/app-user.model.ts',
-  'isAppUserSubscription'
-)
 const capacity = load(
   core + 'app/utils/app-subscription-capacity.ts',
-  '{ hasAppSubscriptionCapacity }'
+  '{ hasAppSubscriptionCapacity }',
+  { readAppUserSubscription }
 )
 const target = (collectionPath) => ({
   collectionPath,
@@ -154,11 +152,11 @@ function harness() {
     useFireUXConfig: () => ({
       ecosystemId: 'fireux',
       subscriptionCapacity: {
-        'project.team': { free: 1, premium: 2, business: 10 },
+        'project.team': { free: 1, pro: 2, business: 10 },
       },
     }),
     ...capacity,
-    isAppUserSubscription,
+    readAppUserSubscription,
     ...mechanics,
     teamRolesCommand: roles,
     defineFirestoreMutationTarget: target,
@@ -267,6 +265,14 @@ test('Team creation fails closed on malformed current subscription', async () =>
   await assert.rejects(h.commands.create(), { statusCode: 409 })
   assert.equal(h.writes.length, 0)
 })
+test('Team creation preserves Pro capacity for canonical and legacy stored memberships', async () => {
+  for (const subscription of ['pro', 'premium']) {
+    const h = harness()
+    h.records.get('apps/fireux-app/users/actor').subscription = subscription
+    await h.commands.create()
+    assert.equal(h.writes.length, 1)
+  }
+})
 const newApp = {
   id: 'new-app',
   name: 'New App',
@@ -288,7 +294,6 @@ test('Explicit App creation establishes its Ecosystem and only the creator’s i
   assert.equal(h.writes[0][3].ecosystem_id, 'fireux')
   assert.equal(h.writes[0][3].status, 'inactive')
   assert.equal(h.writes[0][3].context, newApp.context)
-  assert.equal(h.writes[0][3].self_join_enabled, false)
   assert.equal(h.writes[1][3].role, 'admin')
   assert.equal(h.reconciled.length, 2)
 })
@@ -315,17 +320,10 @@ test('Project access cannot claim an existing App or an Ecosystem belonging else
 })
 
 test('Project Ecosystem relationship uses owning records even when the hub copy disagrees', async () => {
-  const at = { seconds: 1, nanoseconds: 0 }
   const calls = [],
     ownerRecords = [
-      {
-        id: 'mine', project_id: 'project', status: 'inactive', name: 'Mine',
-        description: '', image_url: '', created: { at }, updated: { at },
-      },
-      {
-        id: 'foreign', project_id: 'other', status: 'active', name: 'Foreign',
-        description: '', image_url: '', created: { at }, updated: { at },
-      },
+      { id: 'mine', project_id: 'project', status: 'inactive' },
+      { id: 'foreign', project_id: 'other', status: 'active' },
     ]
   const read = load(app + 'ecosystem/read.ts', 'readProjectEcosystems', {
     requireProjectOperator: async () => ({
@@ -340,17 +338,11 @@ test('Project Ecosystem relationship uses owning records even when the hub copy 
       calls.push(options)
       return ownerRecords
     },
-    toEcosystemPublicSummary,
   })
   const result = await read({}, 'project')
   assert.deepEqual(result, {
     project_id: 'project',
-    ecosystems: [
-      {
-        id: 'mine', project_id: 'project', status: 'inactive', name: 'Mine',
-        description: '', image_url: '',
-      },
-    ],
+    ecosystems: [ownerRecords[0]],
   })
   assert.deepEqual(calls, [{ activeOnly: false }])
 })
@@ -376,16 +368,11 @@ test('Unauthorized and unavailable owning Ecosystems cannot become a partial or 
   await assert.rejects(failed({}, 'project'), /unavailable/)
 })
 test('Owning Ecosystem reads admit inactive management records without making them public', async () => {
-  const at = { seconds: 1, nanoseconds: 0 }
   let value = {
     project_id: 'project',
     name: 'Example',
     status: 'inactive',
-    description: 'Example details',
-    image_url: '',
-    context: 'Private operator notes',
-    created: { at, app_id: 'project-creator' },
-    updated: { at },
+    id: 'forged',
   }
   const db = {
     collection: () => ({
@@ -397,24 +384,10 @@ test('Owning Ecosystem reads admit inactive management records without making th
   const read = load(
     core + 'ecosystem/server/identity/read.ts',
     'readEcosystem',
-    { createError, requireFirestoreDocumentId }
+    { createError, requireFirestoreDocumentId, ECOSYSTEM_STATUSES }
   )
   await assert.rejects(read('eco', db), { statusCode: 404 })
-  const ecosystem = await read('eco', db, { activeOnly: false })
-  assert.equal(ecosystem.id, 'eco')
-  assert.equal(ecosystem.context, undefined)
-  assert.equal(ecosystem.created.app_id, 'project-creator')
-  assert.deepEqual(
-    toEcosystemPublicSummary(ecosystem),
-    {
-      id: 'eco',
-      project_id: 'project',
-      status: 'inactive',
-      name: 'Example',
-      description: 'Example details',
-      image_url: '',
-    }
-  )
+  assert.equal((await read('eco', db, { activeOnly: false })).id, 'eco')
   value.status = 'unknown'
   await assert.rejects(read('eco', db, { activeOnly: false }), {
     statusCode: 404,
@@ -431,6 +404,7 @@ test('Project ownership and administration in another App cannot administer an e
       FieldValue: { serverTimestamp: () => 1 },
       isAppUserRole,
       isAppUserSubscription,
+      readAppUserSubscription,
       APP_MUTATION_TARGETS: targets,
 USER_MUTATION_TARGETS: targets,
 ECOSYSTEM_MUTATION_TARGETS: targets,
@@ -494,8 +468,6 @@ PORTFOLIO_MUTATION_TARGETS: targets,
 SUPPLIER_MUTATION_TARGETS: targets,
 JOB_MUTATION_TARGETS: targets,
         serverAppUsersTarget: members,
-        serverAppJoinRequestsTarget: (id) => target(`apps/${id}/join_requests`),
-        serverAppMembershipBlocksTarget: (id) => target(`apps/${id}/blocks`),
         handleMembershipSettings: settings,
         runGuardedServerTransaction: async (placement, work) => {
           assert.deepEqual(placement, { kind: 'runtime' })

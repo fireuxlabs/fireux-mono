@@ -2,7 +2,7 @@ import { buildSupplierDemoScenario } from './scenario-build'
 
 export const bernMarketGarden = buildSupplierDemoScenario({
   id: 'bern-market-garden',
-  companyId: 'bern-market-garden-hq',
+  businessId: 'bern-market-garden-hq',
   name: 'Bern Market Garden',
   status: 'active',
   catalogueState: 'integrated',

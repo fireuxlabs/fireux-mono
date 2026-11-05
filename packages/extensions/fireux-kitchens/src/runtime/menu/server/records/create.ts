@@ -53,11 +53,11 @@ export async function stageCreateKitchenMenu(
   const access = await requireMenuCreationCapacity(tx, actor, kitchenId)
   if (
     value.schedule === 'daily' &&
-    !['premium', 'business'].includes(access.subscription)
+    !['pro', 'business'].includes(access.subscription)
   )
     throw createError({
       statusCode: 403,
-      statusMessage: 'Daily menus require Plus.',
+      statusMessage: 'Daily menus require Pro.',
     })
   if (!readPlaceCurrencyCode(access.placeData))
     throw createError({
@@ -70,7 +70,7 @@ export async function stageCreateKitchenMenu(
   )
     throw createError({
       statusCode: 403,
-      statusMessage: 'Custom Menu names require Plus.',
+      statusMessage: 'Custom Menu names require Pro.',
     })
   const canonicalName =
     access.subscription === 'free'
@@ -86,7 +86,7 @@ export async function stageCreateKitchenMenu(
     ...buildMenuPayload(value, canonicalName),
     slug,
     created: stamp,
-    updated: serverAuditStamp({ by: actor.uid }),
+    updated: stamp,
   })
   return { created: true, id: menuId, slug, kitchenId }
 }

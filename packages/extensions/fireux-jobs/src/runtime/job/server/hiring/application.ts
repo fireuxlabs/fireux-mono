@@ -32,12 +32,12 @@ import {
   capacityDocumentId,
   DIRECT_EMPLOYMENT_TERMS_VERSION,
   fail,
-  hasPremiumCapacity,
+  hasProCapacity,
   hasProfile,
   isCurrentMembership,
   membershipRef,
   normalizeMessage,
-  PREMIUM_TEMPORARY_CAPACITY_LIMIT,
+  PRO_TEMPORARY_CAPACITY_LIMIT,
   record,
   text,
   userProfileRef,
@@ -102,7 +102,7 @@ export async function createJobApplication(
       job_id: job.id,
       employer_user_id: job.owner_id,
       candidate_user_id: uid,
-      company_id: job.company_id,
+      business_id: job.business_id,
       place_id: job.place_id,
       message,
       status: 'submitted',
@@ -181,7 +181,7 @@ export async function mutateJobApplication(
       if (
         job.source_app_id !== scope.appId ||
         job.owner_id !== uid ||
-        job.company_id !== application.company_id ||
+        job.business_id !== application.business_id ||
         job.place_id !== application.place_id
       ) {
         fail(409, 'The Job no longer matches this Application.')
@@ -268,7 +268,7 @@ export async function mutateJobApplication(
     if (
       job.source_app_id !== scope.appId ||
       job.owner_id !== application.employer_user_id ||
-      job.company_id !== application.company_id ||
+      job.business_id !== application.business_id ||
       job.place_id !== application.place_id
     ) {
       fail(409, 'The Job no longer matches this Application.')
@@ -294,23 +294,23 @@ export async function mutateJobApplication(
           )
         )
       : []
-    if (activeIds.length > PREMIUM_TEMPORARY_CAPACITY_LIMIT) {
+    if (activeIds.length > PRO_TEMPORARY_CAPACITY_LIMIT) {
       fail(503, 'The employer temporary-work capacity record is invalid.')
     }
     const occupiesTemporaryCapacity = job.contract_type === 'temporary'
     if (
       !temporaryCapacityAllowsAcceptance({
         contractType: job.contract_type,
-        hasPremiumCapacity: hasPremiumCapacity(employerMembershipSnapshot),
+        hasProCapacity: hasProCapacity(employerMembershipSnapshot),
         activeTemporaryEngagementCount: activeIds.length,
-        premiumLimit: PREMIUM_TEMPORARY_CAPACITY_LIMIT,
+        proLimit: PRO_TEMPORARY_CAPACITY_LIMIT,
       })
     ) {
       fail(
         409,
-        hasPremiumCapacity(employerMembershipSnapshot)
+        hasProCapacity(employerMembershipSnapshot)
           ? 'The employer has reached the supported temporary Engagement limit.'
-          : 'The employer must finish the current temporary Engagement before accepting another or activate Premium access in this App.'
+          : 'The employer must finish the current temporary Engagement before accepting another or activate Pro access in this App.'
       )
     }
     const now = Timestamp.now()
@@ -321,7 +321,7 @@ export async function mutateJobApplication(
       job_id: job.id,
       employer_user_id: application.employer_user_id,
       worker_user_id: application.candidate_user_id,
-      company_id: job.company_id,
+      business_id: job.business_id,
       place_id: job.place_id,
       contract_type: job.contract_type,
       management_mode: job.management_mode,

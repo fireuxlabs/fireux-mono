@@ -15,7 +15,7 @@ const slapPricingProfile = {
     'Use the Commerce Workspace',
     'Build the first public brand surface',
   ],
-  professional: [
+  pro: [
     'Manage products, collections, and drops',
     'Publish stories and gallery content',
     'Operate the branded storefront',

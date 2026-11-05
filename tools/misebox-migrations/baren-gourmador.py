@@ -22,7 +22,7 @@ SUPPLIER_TARGET = 'projects/bringli-b0517/databases/bringli'
 SUPPLIER_BASE = f'https://firestore.googleapis.com/v1/{SUPPLIER_TARGET}/documents'
 SUPPLIER_BACKUP = 'gs://bringli-b0517-migrations-20260918-7c41/gourmador-identity'
 BACKUP = 'gs://misebox-78f9c-firestore-migrations/baren-gourmador-20260918'
-COLLECTIONS = {'places', 'companies', 'suppliers', 'supplier-ingredients', 'ingredients'}
+COLLECTIONS = {'places', 'businesses', 'suppliers', 'supplier-ingredients', 'ingredients'}
 _module = importlib.util.spec_from_file_location('ingredient_catalogue', HERE / 'ingredient-catalogue.py')
 ingredient = importlib.util.module_from_spec(_module)
 _module.loader.exec_module(ingredient)
@@ -30,7 +30,7 @@ SOURCE_FILES = [Path(__file__), SPEC, INGREDIENT_SPEC, HERE / 'ingredient-catalo
                 HERE / 'kitchen_ordering_runner.py',
                 EXTENSIONS / 'fireux-kitchens/src/runtime/kitchen/models/supplier-ingredient.model.ts',
                 EXTENSIONS / 'fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
-                EXTENSIONS / 'fireux-companies/src/runtime/place/models/company.model.ts',
+                EXTENSIONS / 'fireux-businesses/src/runtime/business/models/business.model.ts',
                 EXTENSIONS / 'fireux-places/src/runtime/place/models/place.model.ts']
 
 
@@ -61,11 +61,11 @@ def build_plan(inventory, spec, ingredient_ids, timestamp):
     changes, issues = [], []
     stamp = {'mapValue': {'fields': {'at': {'timestampValue': timestamp},
              'by': encode('system:baren-gourmador-20260918')}}}
-    company_stamp = {'mapValue': {'fields': {'at': {'timestampValue': timestamp}}}}
+    business_stamp = {'mapValue': {'fields': {'at': {'timestampValue': timestamp}}}}
     candidates = {
         f'places/{PLACE}': {**fields(spec['place']), 'created': stamp, 'updated': stamp},
-        f'companies/{PLACE}': {'created': company_stamp, 'updated': company_stamp},
-        f'suppliers/{SUPPLIER}': {**fields({'management': {'mode': 'root'}, 'company_id': PLACE,
+        f'businesses/{PLACE}': {**fields({'name': spec['place']['name'], 'description': spec['place'].get('about', ''), 'email': '', 'phone': '', 'website': spec['place'].get('website', ''), 'place_ids': [PLACE], 'management': {'mode': 'root'}}), 'created': business_stamp, 'updated': business_stamp},
+        f'suppliers/{SUPPLIER}': {**fields({'management': {'mode': 'root'}, 'business_id': PLACE,
             'identity': {'slug': SUPPLIER, 'status': 'active', 'visibility': True},
             'catalogue': {'mode': 'directory_only'}, 'delivery': {'areas': []}}), 'created': stamp, 'updated': stamp},
         f'kitchens/{KITCHEN}/suppliers/{SUPPLIER}': {**fields({'supplier_id': SUPPLIER,
@@ -99,7 +99,7 @@ def build_plan(inventory, spec, ingredient_ids, timestamp):
 
 
 def validate_plan(plan, ingredient_ids):
-    allowed = {f'places/{PLACE}', f'companies/{PLACE}', f'suppliers/{SUPPLIER}', f'kitchens/{KITCHEN}/suppliers/{SUPPLIER}'}
+    allowed = {f'places/{PLACE}', f'businesses/{PLACE}', f'suppliers/{SUPPLIER}', f'kitchens/{KITCHEN}/suppliers/{SUPPLIER}'}
     allowed.update(f'kitchens/{KITCHEN}/supplier-ingredients/{SUPPLIER}--{id}' for id in ingredient_ids)
     if plan['target'] != TARGET or plan.get('supplier_target') != SUPPLIER_TARGET or plan['kitchen_id'] != KITCHEN or plan['issues']:
         raise ValueError('Unexpected target or unresolved issues')
@@ -162,10 +162,10 @@ def run():
     source_hash = digest([p.read_text() for p in SOURCE_FILES])
     if args.mode == 'plan':
         if any(directory.iterdir()): raise RuntimeError('Fresh directory required')
-        paths = [f'places/{PLACE}', f'companies/{PLACE}', f'suppliers/{SUPPLIER}', f'kitchens/{KITCHEN}/suppliers/{SUPPLIER}']
+        paths = [f'places/{PLACE}', f'businesses/{PLACE}', f'suppliers/{SUPPLIER}', f'kitchens/{KITCHEN}/suppliers/{SUPPLIER}']
         paths.extend(f'kitchens/{KITCHEN}/supplier-ingredients/{SUPPLIER}--{id}' for id in ids)
         links = listing(f'kitchens/{KITCHEN}/supplier-ingredients')
-        # The whole root Supplier collection is small and prevents duplicate Company links.
+        # The whole root Supplier collection is small and prevents duplicate Business links.
         suppliers = listing('suppliers')
         inventory = {'kitchen': get(f'kitchens/{KITCHEN}'), 'ingredients': listing('ingredients'),
             'kitchen_ingredients': listing(f'kitchens/{KITCHEN}/ingredients'),
@@ -174,8 +174,8 @@ def run():
         for path in paths[4:]:
             inventory['targets'][path] = next((d for d in links if d['name'] == f'{TARGET}/documents/{path}'), None)
         plan = build_plan(inventory, spec, ids, datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'))
-        if any(d['name'].split('/')[-1] != SUPPLIER and d.get('fields', {}).get('company_id') == encode(PLACE) for d in suppliers):
-            plan['issues'].append('Another Supplier already links this Company')
+        if any(d['name'].split('/')[-1] != SUPPLIER and d.get('fields', {}).get('business_id') == encode(PLACE) for d in suppliers):
+            plan['issues'].append('Another Supplier already links this Business')
         plan['source_hash'] = source_hash
         (directory / 'preimages.json').write_text(json.dumps(inventory, indent=2))
         (directory / 'plan.json').write_text(json.dumps(plan, indent=2))
@@ -201,7 +201,7 @@ def run():
             raise RuntimeError('Bringli managed export required')
         supplier_export = request('https://firestore.googleapis.com/v1/' + supplier_op)
         sm = supplier_export.get('metadata', {})
-        if not supplier_export.get('done') or supplier_export.get('error') or sm.get('outputUriPrefix', '').rstrip('/') != SUPPLIER_BACKUP or not {'places', 'companies', 'suppliers'}.issubset(sm.get('collectionIds', [])):
+        if not supplier_export.get('done') or supplier_export.get('error') or sm.get('outputUriPrefix', '').rstrip('/') != SUPPLIER_BACKUP or not {'places', 'businesses', 'suppliers'}.issubset(sm.get('collectionIds', [])):
             raise RuntimeError('Completed Bringli managed export required')
         (directory / 'supplier-managed-export.json').write_text(json.dumps(supplier_export, indent=2))
         print(json.dumps(apply_plan(request, plan, ids)))

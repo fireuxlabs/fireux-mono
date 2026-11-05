@@ -1,12 +1,12 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
-import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+import type { Kitchen } from '../models/kitchen.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function resolveKitchenDetailPresentation(
   base: KitchenDetailPresentation,
-  kitchen: KitchenPublicSummary,
+  kitchen: Kitchen,
   place: Place
 ): KitchenDetailPresentation {
   const name = place.name

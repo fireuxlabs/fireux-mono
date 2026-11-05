@@ -22,7 +22,7 @@ export const miseboxSolutions = [
     steps: [
       'Start one Kitchen without signing up.',
       'Create and structure one Menu with sections, dishes, and prices.',
-      'Publish the Menu for guests, then choose Premium if you need more than one Menu.',
+      'Publish the Menu for guests, then choose Pro if you need more than one Menu.',
     ],
     cta: { label: 'Start one Kitchen', to: '/workspace/kitchen' },
   },
@@ -48,7 +48,7 @@ export const miseboxSolutions = [
     slug: 'restaurant-menu-management',
     title: 'Restaurant menu management',
     description:
-      'Create, structure, and publish one restaurant Menu for free, then choose Premium to manage multiple Menus.',
+      'Create, structure, and publish one restaurant Menu for free, then choose Pro to manage multiple Menus.',
     icon: 'i-lucide-list-tree',
     status: 'live',
     keywords: [
@@ -60,7 +60,7 @@ export const miseboxSolutions = [
     steps: [
       'Start a Kitchen and create its first Menu.',
       'Organise sections, dishes, prices, availability, and presentation.',
-      'Publish the Menu, or choose Premium when the Kitchen needs multiple Menus.',
+      'Publish the Menu, or choose Pro when the Kitchen needs multiple Menus.',
     ],
     cta: { label: 'Open kitchen workspace', to: '/workspace/kitchen/food-and-drink/menus' },
   },
@@ -80,7 +80,7 @@ export const miseboxSolutions = [
     steps: [
       'Name the Kitchen that owns the Menu.',
       'Add sections, dishes, prices, and public presentation.',
-      'Publish one Menu for free; choose Premium to create and manage additional Menus.',
+      'Publish one Menu for free; choose Pro to create and manage additional Menus.',
     ],
     cta: { label: 'Create menu', to: '/workspace/kitchen/food-and-drink/menus' },
   },

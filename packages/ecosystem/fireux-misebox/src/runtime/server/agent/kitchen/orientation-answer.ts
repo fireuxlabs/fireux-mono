@@ -43,7 +43,7 @@ export async function answerKitchenAgentOrientation(
         entitlement_evidence: 'not-supplied',
         multi_kitchen_policy: {
           free: 'one Kitchen',
-          premium: 'one Kitchen',
+          pro: 'one Kitchen',
           business: 'multiple Kitchens',
         },
         current_product_state:

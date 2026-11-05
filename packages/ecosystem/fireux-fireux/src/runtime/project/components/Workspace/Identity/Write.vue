@@ -2,11 +2,7 @@
   <UModal
     v-model:open="open"
     title="Edit Project Identity"
-    :description="
-      identity.publication.value
-        ? 'Edit the workspace name. Description and image come from the connected App.'
-        : 'Update this workspace’s name, description and image.'
-    "
+    description="Update this workspace’s name, description and image."
     :dismissible="!saving"
     :close="!saving"
   >
@@ -20,7 +16,7 @@
             autofocus
             :disabled="saving"
         /></UFormField>
-        <UFormField v-if="!identity.publication.value" label="Description"
+        <UFormField label="Description"
           ><UTextarea
             v-model="description"
             maxlength="2000"
@@ -28,7 +24,6 @@
             :disabled="saving"
         /></UFormField>
         <UFormField
-          v-if="!identity.publication.value"
           label="Image URL"
           hint="HTTPS; leave empty to remove the image."
           ><UInput
@@ -37,37 +32,6 @@
             class="workspace-profile__input"
             :disabled="saving"
         /></UFormField>
-        <div v-if="identity.publication.value" class="workspace-profile__notes">
-          <p class="workspace-profile__note">
-            Description and image are published by
-            {{ identity.publication.value.appName }}.
-          </p>
-          <p v-if="identity.publication.value.status === 'pending'">
-            Loading App identity…
-          </p>
-          <template v-else-if="identity.publication.value.message">
-            <p role="status">{{ identity.publication.value.message }}</p>
-            <FireCopyError :message="identity.publication.value.message" />
-          </template>
-          <template v-else>
-            <UAvatar
-              :src="identity.imageUrl.value"
-              :alt="identity.publication.value.appName"
-              :class="{
-                'workspace-profile__avatar--contain':
-                  identity.imageFit.value === 'contain',
-              }"
-              size="xl"
-            />
-            <p>{{ identity.description.value }}</p>
-          </template>
-          <UButton
-            :to="identity.publication.value.sourceUrl"
-            target="_blank"
-            label="View App source"
-            variant="link"
-          />
-        </div>
         <UAlert
           v-if="error"
           color="error"
@@ -176,17 +140,10 @@ function show(intent?: ProjectIdentityIntent) {
   original.value = signature()
   if (intent?.action === 'update') {
     if (intent.name !== null) name.value = intent.name
-    if (!props.identity.publication.value && intent.description !== null)
-      description.value = intent.description
-    if (!props.identity.publication.value && intent.imageUrl !== null)
-      imageUrl.value = intent.imageUrl
+    if (intent.description !== null) description.value = intent.description
+    if (intent.imageUrl !== null) imageUrl.value = intent.imageUrl
   }
-  error.value =
-    props.identity.publication.value &&
-    intent?.action === 'update' &&
-    (intent.description !== null || intent.imageUrl !== null)
-      ? 'Description and image are managed by the connected App. You can edit the workspace name here.'
-      : ''
+  error.value = ''
   open.value = true
 }
 async function save() {
@@ -204,12 +161,8 @@ async function save() {
     await props.identity.update({
       projectId: projectId.value,
       name: name.value,
-      description: props.identity.publication.value
-        ? props.identity.description.value
-        : description.value,
-      imageUrl: props.identity.publication.value
-        ? props.identity.imageUrl.value
-        : imageUrl.value,
+      description: description.value,
+      imageUrl: imageUrl.value,
     })
     if (epoch !== scopeEpoch) return
     open.value = false

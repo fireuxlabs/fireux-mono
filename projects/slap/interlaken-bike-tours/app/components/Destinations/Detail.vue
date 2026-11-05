@@ -16,15 +16,15 @@ const relatedTours = computed(() =>
       }}
     </p>
     <h1>{{ destination.name }}</h1>
-    <p class="mt-6 max-w-3xl text-xl">{{ destination.summary }}</p>
-    <p class="max-w-3xl">{{ destination.description }}</p>
+    <p class="destination-summary">{{ destination.summary }}</p>
+    <p class="destination-description">{{ destination.description }}</p>
     <section
       v-if="relatedTours.length"
-      class="mt-12"
+      class="destination-detail-section"
       aria-labelledby="destination-rides"
     >
       <h2 id="destination-rides">Rides to explore</h2>
-      <div class="grid gap-6 md:grid-cols-2">
+      <div class="destination-rides-grid">
         <UPageCard
           v-for="tour in relatedTours"
           :key="tour.slug"
@@ -34,7 +34,7 @@ const relatedTours = computed(() =>
         />
       </div>
     </section>
-    <section class="mt-12" aria-labelledby="destination-enquiry">
+    <section class="destination-detail-section" aria-labelledby="destination-enquiry">
       <h2 id="destination-enquiry">Plan your day</h2>
       <p>
         Share your dates, group size, cycling experience and preferred pace.

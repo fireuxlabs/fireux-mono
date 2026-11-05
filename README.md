@@ -1,10 +1,9 @@
 # FireUX Mono
 
-Start with the [three priorities](docs/roadmaps/fireux-priorities.md).
-Use **Audit FireUX progress** as the active implementation chat; finish one
-bounded change there before opening another workstream.
+Building an App? Start with the [FireUX developer guide](https://fireux.app/getting-started).
+Working on this repo? Read the [working guide](AGENTS.md) and
+[current priorities](docs/roadmaps/fireux-priorities.md).
 
-- [Working rules and scope router](AGENTS.md)
 - [Repository ownership map](docs/concepts/fireux-mono.md)
 - [Parked plans and historical audits](docs/archive/2026-10-workspace-cleanup/README.md)
 - [Chat archive and recovery index](docs/reviews/codex-workspace-cleanup-2026-10-25.md)

@@ -40,7 +40,7 @@ function deferred() {
   })
   return { promise, resolve, reject }
 }
-function setupHarness(kind = 'user') {
+function setupHarness() {
   const owner = effectScope(),
     gate = deferred(),
     calls = [],
@@ -67,30 +67,16 @@ function setupHarness(kind = 'user') {
         resolveUserOnboardingDestination,
         FIREUX_ACCOUNT_TERMS_VERSION: 'current',
         useUserSession: () => ({
-          canSelfJoin: ref(true),
-          appPolicyPending: ref(false),
-          appPolicyError: ref(null),
-          appError: ref(null),
-          appOutcome: ref('empty'),
-          appUser: ref(null),
           coreError: ref(null),
-          coreOutcome: ref(kind === 'user' ? 'empty' : 'ready'),
-          coreUser: ref(kind === 'user' ? null : { id: 'actor' }),
+          coreOutcome: ref('empty'),
+          coreUser: ref(null),
         }),
         useUserAccount: () => ({
           account: ref(
-            kind === 'user'
-              ? null
-              : { terms: { version: 'current', accepted_at: 1 } }
+            null
           ),
           error: ref(null),
-          outcome: ref(kind === 'user' ? 'empty' : 'ready'),
-        }),
-        useUserBootstrap: () => ({
-          bootstrapUser: () => {
-            calls.push('join')
-            return gate.promise
-          },
+          outcome: ref('empty'),
         }),
         useAuth: () => ({
           currentUser: authUser,
@@ -107,42 +93,41 @@ function setupHarness(kind = 'user') {
   control.onboardingConsentAcknowledged.value = true
   return { owner, gate, calls, navigations, authUser, config, route, control }
 }
-for (const kind of ['user', 'app'])
-  for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
-    for (const failure of [false, true])
-      test(`${kind} setup ${failure ? 'failure' : 'success'} completion respects ${change} context`, async () => {
-        const h = setupHarness(kind),
-          pending = h.control.handleEnsure()
-        assert.equal(h.calls.length, 1)
-        if (change === 'account') {
-          h.authUser.value = { uid: 'other' }
-          h.authUser.value = { uid: 'actor' }
-        }
-        if (change === 'app') {
-          h.config.appId = 'other'
-          h.config.appId = 'app'
-        }
-        if (change === 'route') {
-          h.route.fullPath = '/other'
-          h.route.fullPath =
-            '/users/create?redirect=%2Fworkspace%3Fmenu%3DA%23details'
-        }
-        if (change === 'disposal') h.owner.stop()
-        if (failure) h.gate.reject(new Error('Controlled failure'))
-        else h.gate.resolve(true)
-        await pending
-        assert.deepEqual(
-          h.navigations,
-          change === 'stable' && !failure ? ['/workspace?menu=A#details'] : []
-        )
-        assert.equal(
-          h.control.error.value,
-          change === 'stable' && failure ? 'Controlled failure' : null
-        )
-        if (change !== 'stable' && change !== 'disposal')
-          assert.equal(h.control.onboardingConsentAcknowledged.value, false)
-        h.owner.stop()
-      })
+for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
+  for (const failure of [false, true])
+    test(`User setup ${failure ? 'failure' : 'success'} completion respects ${change} context`, async () => {
+      const h = setupHarness(),
+        pending = h.control.handleEnsure()
+      assert.equal(h.calls.length, 1)
+      if (change === 'account') {
+        h.authUser.value = { uid: 'other' }
+        h.authUser.value = { uid: 'actor' }
+      }
+      if (change === 'app') {
+        h.config.appId = 'other'
+        h.config.appId = 'app'
+      }
+      if (change === 'route') {
+        h.route.fullPath = '/other'
+        h.route.fullPath =
+          '/users/create?redirect=%2Fworkspace%3Fmenu%3DA%23details'
+      }
+      if (change === 'disposal') h.owner.stop()
+      if (failure) h.gate.reject(new Error('Controlled failure'))
+      else h.gate.resolve(true)
+      await pending
+      assert.deepEqual(
+        h.navigations,
+        change === 'stable' && !failure ? ['/workspace?menu=A#details'] : []
+      )
+      assert.equal(
+        h.control.error.value,
+        change === 'stable' && failure ? 'Controlled failure' : null
+      )
+      if (change !== 'stable' && change !== 'disposal')
+        assert.equal(h.control.onboardingConsentAcknowledged.value, false)
+      h.owner.stop()
+    })
 test('Setup cannot start without explicit terms consent', async () => {
   const h = setupHarness()
   h.control.onboardingConsentAcknowledged.value = false

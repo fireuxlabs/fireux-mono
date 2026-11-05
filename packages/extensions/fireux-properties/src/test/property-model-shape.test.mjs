@@ -36,7 +36,6 @@ const model = load(
   '../runtime/property/models/property.model.ts',
   '({PropertyModel,PropertyManualModel})',
   {
-    defineFireuxEntity: (value) => value,
     FireuxEntityManagementDefaults: { mode: 'root' },
   }
 )

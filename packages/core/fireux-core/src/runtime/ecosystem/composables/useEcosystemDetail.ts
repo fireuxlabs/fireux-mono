@@ -2,11 +2,11 @@ import { useAsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { EcosystemPublicSummary } from '../models/ecosystem.model'
+import type { Ecosystem } from '../models/ecosystem.model'
 
 export function useEcosystemDetail(id: MaybeRefOrGetter<string>) {
   const ecosystemId = computed(() => String(toValue(id) || '').trim())
-  const state = useAsyncData<{ ecosystem: EcosystemPublicSummary } | null>(
+  const state = useAsyncData<{ ecosystem: Ecosystem } | null>(
     () => `ecosystem-detail-${ecosystemId.value || 'none'}`,
     async (_nuxtApp, { signal }) => {
       const fetchRead = $fetch.create({ signal, cache: 'no-store' })

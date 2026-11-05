@@ -8,7 +8,6 @@
       v-if="workspace.collection.value.length"
       :collection="workspace.collection.value"
       :selected-id="workspace.id.value"
-      :publication="publication"
       @select="workspace.select"
     />
     <span v-if="workspace.collectionOutcome.value === 'pending'" role="status"
@@ -48,14 +47,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
 import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 
 withDefaults(
   defineProps<{
     showUpgrade?: boolean
-    publication?: ProjectPublishedIdentity | null
   }>(),
   { showUpgrade: true }
 )

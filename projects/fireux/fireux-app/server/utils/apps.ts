@@ -1,18 +1,12 @@
 import { readPlatformEcosystems } from './ecosystems'
-import type {
-  App,
-  AppPublicSummary,
-} from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { createError } from 'h3'
 import {
   appCollectionPage,
   readAppPageInput,
   readAppRecords,
 } from 'fireux-core/runtime/app/server/collection/read'
-import {
-  readAppDocument,
-  toAppPublicSummary,
-} from 'fireux-core/runtime/app/utils/readApp'
+import { readAppDocument } from 'fireux-core/runtime/app/utils/readApp'
 import { PLATFORM_APP_TARGETS } from '../config/platform-directory-targets'
 import { getFirestoreProjectDb } from './firebase-admin'
 
@@ -85,8 +79,10 @@ export async function readPlatformAppCollection(
   return appCollectionPage(groups.flat(), ecosystemIds ? undefined : limit)
 }
 
-/** Read public summaries for active Apps across configured ecosystem databases. */
-export async function readPlatformApps(): Promise<AppPublicSummary[]> {
+/** Read published Apps across configured databases. Counts require complete results. */
+export async function readPlatformApps(
+  options: { requireComplete?: boolean } = {}
+): Promise<App[]> {
   const outcomes = await Promise.allSettled(
     PLATFORM_APP_TARGETS.map(async (target) => {
       const db = await getFirestoreProjectDb(
@@ -96,7 +92,7 @@ export async function readPlatformApps(): Promise<AppPublicSummary[]> {
       const snapshot = await db.collection('apps').get()
       return snapshot.docs.flatMap((document) => {
         const app = readAppDocument(document.data(), document.id)
-        return app?.status === 'active' ? [toAppPublicSummary(app)] : []
+        return app?.status === 'active' ? [app] : []
       })
     })
   )
@@ -118,12 +114,14 @@ export async function readPlatformApps(): Promise<AppPublicSummary[]> {
       : []
   })
 
-  if (!collections.length && failures.length) {
+  if (failures.length && (options.requireComplete || !collections.length)) {
     throw new AggregateError(
       outcomes.flatMap((outcome) =>
         outcome.status === 'rejected' ? [outcome.reason] : []
       ),
-      'Every platform App source failed.'
+      collections.length
+        ? 'Platform App results are incomplete.'
+        : 'Every platform App source failed.'
     )
   }
   if (failures.length) {
@@ -140,9 +138,7 @@ export async function readPlatformApps(): Promise<AppPublicSummary[]> {
   return apps.sort((left, right) => left.id.localeCompare(right.id))
 }
 
-export async function readPlatformApp(
-  appId: string
-): Promise<AppPublicSummary | null> {
+export async function readPlatformApp(appId: string): Promise<App | null> {
   const id = String(appId || '').trim()
   if (!id || id.includes('/')) return null
   const matches = await Promise.all(
@@ -159,5 +155,5 @@ export async function readPlatformApp(
   )
   const apps = matches.filter((app): app is App => Boolean(app))
   if (apps.length > 1) throw new Error(`Duplicate canonical App id: ${id}`)
-  return apps[0]?.status === 'active' ? toAppPublicSummary(apps[0]) : null
+  return apps[0]?.status === 'active' ? apps[0] : null
 }

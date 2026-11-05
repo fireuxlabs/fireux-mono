@@ -64,8 +64,8 @@ const aligned = ['Identity', 'Item', 'Catalogue', 'Ingredient']
 const notAligned: string[] = []
 const supplierName = computed(() =>
   String(
-    props.supplier?.company_place?.short_name ||
-      props.supplier?.company_place?.name ||
+    props.supplier?.business_place?.short_name ||
+      props.supplier?.business_place?.name ||
       props.supplier?.identity?.slug ||
       ''
   ).trim()

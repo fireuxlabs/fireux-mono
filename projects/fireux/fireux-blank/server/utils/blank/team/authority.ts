@@ -3,7 +3,7 @@ import { serverBlankAccessTarget } from '../../../../app/utils/blank-access'
 import { blankRootTarget } from './targets'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -60,8 +60,8 @@ export async function requireBlankMutationAuthority(
       statusMessage: 'Blank association is required.',
     })
   }
-  const subscription = membership.data?.subscription
-  if (!isAppUserSubscription(subscription)) {
+  const subscription = readAppUserSubscription(membership.data?.subscription)
+  if (!subscription) {
     throw createError({
       statusCode: 409,
       statusMessage: 'Current App membership has an invalid subscription.',

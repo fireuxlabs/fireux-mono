@@ -1,6 +1,11 @@
 # Entity onboarding journeys
 
-This is the practical playbook for shared Core entity onboarding journeys.
+Role: historical working notes
+
+Use the [Workspace and Entity map](concepts/family-workspace-entity.md) for
+current onboarding and the [Main App identity context](ai/identity-literature-context.md#ownership-boundaries)
+for FireUX's public home and Project Workspace entry. The notes below retain
+earlier route, storage and command assumptions as historical evidence.
 
 ## Project onboarding boundary
 
@@ -36,13 +41,12 @@ This is the practical playbook for shared Core entity onboarding journeys.
 - `/auth` establishes the Firebase identity only. Routine sign-in never
   creates or repairs Firestore records, uploads an avatar, or accepts legal
   terms on the person's behalf.
-- User onboarding creates the canonical User and account, then creates the
-  active App membership only when that App permits self-service joining.
-  Invite-only Apps finish User setup without advertising a connection the
-  person cannot complete.
+- Completing User setup creates the canonical User, private account, and basic
+  AppUser membership in the configured App. App admins control elevated roles
+  and subscriptions.
 - The final User-creation action previews the authenticated name, email, and
   avatar before asking for legal acceptance.
-- Product copy says `User`, `public identity`, and `App connection`. Internal
+- Product copy says `User`, `public identity`, and `App access`. Internal
   implementation terms such as `core user`, `provision`, `repair`, and
   `membership sync` do not appear as the primary journey.
 - Onboarding copy names the immediate task and its visible result. Use plain
@@ -81,8 +85,6 @@ This is the practical playbook for shared Core entity onboarding journeys.
      `/api/internal/user/account`, and avatar bytes are saved through
      authenticated `/api/internal/user/avatar`; the journey does not require
      browser Firestore or Storage write permission
-   - a self-service App membership is created only when the active App permits
-     it
    - on success, user is sent to:
      - `?redirect=` target if present and valid, otherwise `/dashboard`
 
@@ -99,10 +101,8 @@ This is the practical playbook for shared Core entity onboarding journeys.
   - whether Terms checkbox is checked
   - browser/network errors in workspace for `/api/internal/user/account`
   - whether provisioning stays in `pending` without transition
-- There is an alias route for the dashboard-style location:
-  - `/dashboard/user/create` -> redirects to `/users/create`
 - Redirect resolution is owned by
-  `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`; nested
+  `packages/core/fireux-core/src/runtime/user/utils/onboarding-route.ts`; nested
   onboarding redirects collapse to the original destination and unsafe
   external-looking paths fall back to `/dashboard`.
 
@@ -130,11 +130,8 @@ What to verify next (in order):
    - should contain `handle`, `display_name`, `bio`, `avatar`, and stamps
 3. `users/{uid}/private/account`
    - should contain term acceptance + preferences record after onboarding
-4. App membership (for current app only)
-   - `apps/{appId}/users/{uid}` should exist if `selfJoinEnabled` path is active
-
-If only step 2 exists (core user exists) but step 3/4 is missing, onboarding was only
-partially completed.
+User onboarding is complete when the public User, private account, and basic
+AppUser membership in the configured App exist.
 
 ## Functional output contract
 
@@ -145,8 +142,9 @@ Successful User onboarding creates or confirms these owned records:
    acceptance evidence.
 3. `users/{uid}/avatar/current` — the User-owned Storage object for either the
    supplied avatar or the default.
-4. `apps/{appId}/users/{uid}` — only when the active App permits self-service
-   membership or a separate authorized App action creates it.
+4. `apps/{appId}/users/{uid}` — the User's basic App membership.
+
+Trusted App setup separately creates the first administrator membership.
 
 The public `/users/[handle]` page exposes one bounded `objects.user` DTO from
 the public User endpoint. Session comparisons such as `isOwnProfile` belong in
@@ -164,8 +162,8 @@ contract.
 Avatar migration may copy an existing approved image or the default into the
 User-owned Storage path and update the canonical User URL. Legal evidence must
 never be synthesized by migration: an account without current acceptance must
-return to explicit account setup. AppUser records are also not bulk-created;
-their presence follows the active App's membership policy.
+return to explicit account setup. AppUser records are created by completed User
+setup with the basic role; App admins control elevated roles and subscriptions.
 
 The guarded fleet tools are:
 
@@ -182,12 +180,10 @@ Quick in-app checks:
 
 - Signed-out visits to `/users/create` and `/apps/create` should move to
   `/auth` with the complete doorway in `redirect`.
-- After sign-in, visiting `/dashboard/user/create` should redirect to `/users/create`.
 - Clicking `Create my User` should move forward to `/dashboard` (or the active `redirect`
   target), not stop on the same screen.
-- On an invite-only App, a valid User should finish without entering a false
-  `Connect` step. On a self-join App, the membership step must create the
-  current AppUser before completion.
+- Completing User setup creates the User, private account, and basic App
+  membership.
 - In Dashboard:
   - `Finish your User setup` should clear to normal overview only when all required
     records exist.
@@ -198,10 +194,9 @@ Quick in-app checks:
 - `packages/core/fireux-core/src/runtime/components/Auth/System.vue`
 - `packages/core/fireux-core/src/runtime/user/components/Create/System.vue`
 - `packages/core/fireux-core/src/runtime/pages/users/create.vue`
-- `packages/core/fireux-core/src/runtime/pages/dashboard/user/create.vue`
 - `packages/core/fireux-core/src/runtime/user/composables/session/useUserSessionState.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
-- `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`
+- `packages/core/fireux-core/src/runtime/user/utils/onboarding-route.ts`
 
 ## App creation and runtime initialization
 
@@ -210,7 +205,7 @@ The supported browser App-creation tool is FireUX's Project Apps capability at
 initial membership and returns a minimal HTML preview. It does not provision
 hosting, a new database or authentication infrastructure.
 
-Core's `/apps/create` shows an explicit unavailable state. The former local
+The Ecosystem bundle's `/apps/create` shows an explicit unavailable state. The former local
 name/slug/review form and its placement policy are retired because they never
 submitted an App. Main Apps must provide an actual supported workflow before
 advertising creation. Core does not import Project to coordinate that workflow.
@@ -255,7 +250,7 @@ are retained. No Storage cleanup or live verification is implied by these tests.
 
 - `packages/core/fireux-core/src/runtime/project/components/Workspace/Apps/Create.vue`
 
-- `packages/core/fireux-core/src/runtime/pages/apps/create.vue`
+- `packages/extensions/fireux-ecosystem/src/runtime/pages/apps/create.vue`
 - `packages/core/fireux-core/src/runtime/app/components/Initialize/System.vue`
 - `packages/core/fireux-core/src/runtime/app/composables/initialization/useAppInitialization.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`

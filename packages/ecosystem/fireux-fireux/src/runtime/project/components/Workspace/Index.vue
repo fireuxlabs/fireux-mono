@@ -31,7 +31,6 @@
         <WorkspaceProjectHomeCollection
           :workspace="workspace"
           :can-create="creation.canCreate.value"
-          :publication="publication"
           @create="openCreate"
         />
       </template>
@@ -59,12 +58,10 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { workspaceLandingState } from 'fireux-core/runtime/workspace/models/outcome'
 import WorkspaceCapability from 'fireux-core/runtime/workspace/components/Capability.vue'
 import type { ProjectLandingIntent } from '../../models/landing-intent'
-import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
 import { useProjectWorkspaceIdentity } from '../../composables/workspace/useProjectWorkspaceIdentity'
 import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
 
-const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const { currentUser } = useAuth()
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -77,9 +74,7 @@ const creation = useWorkspaceCreation('project', () => ({
   count: workspace.access.ids.value.length,
   outcome: workspace.access.outcome.value,
 }))
-const identity = useProjectWorkspaceIdentity({
-  publication: computed(() => props.publication),
-})
+const identity = useProjectWorkspaceIdentity()
 const pageState = useWorkspacePageState('project')
 const session = useAppSession()
 const createOpen = ref(false)
@@ -131,7 +126,6 @@ const intro = computed(() => {
       'project',
       subscription
     ),
-    publishedIdentity: Boolean(identity.publication.value),
   })
 })
 watchEffect(() =>

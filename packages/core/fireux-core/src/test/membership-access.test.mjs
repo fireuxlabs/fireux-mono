@@ -108,8 +108,6 @@ for (const byAdmin of [false, true]) {
       {
         APP_MUTATION_TARGETS: { runtimeApps: 'apps' },
         serverAppUsersTarget: () => 'members',
-        serverAppJoinRequestsTarget: () => 'joins',
-        serverAppMembershipBlocksTarget: () => 'blocks',
         requireFirestoreDocumentId: (value) => value,
         appGovernancePatch: () => ({ updated: true }),
         isAdminMembership: () => false,
@@ -117,7 +115,6 @@ for (const byAdmin of [false, true]) {
           throw new Error('Unexpected admin query')
         },
         requireAdmin: () => assert.equal(byAdmin, true),
-        stamp: (actor) => ({ by: actor }),
         forbidden: (_code, message) => {
           throw new Error(message)
         },
@@ -135,27 +132,16 @@ for (const byAdmin of [false, true]) {
         read: async (target) => {
           if (target === 'members' && byAdmin)
             return { exists: true, data: before }
-          assert.ok(['joins', 'blocks'].includes(target))
+          assert.equal(target, 'members')
           return { exists: false }
         },
         delete: (target, id) => writes.push(['delete', target, id]),
-        create: (target, id, data) => writes.push(['create', target, id, data]),
         update: (target, id) => writes.push(['update', target, id]),
       },
     })
     assert.equal(result.removed, true)
     assert.deepEqual(writes, [
       ['delete', 'members', 'person'],
-      ...(byAdmin
-        ? [
-            [
-              'create',
-              'blocks',
-              'person',
-              { user_id: 'person', blocked: { by: 'administrator' } },
-            ],
-          ]
-        : []),
       ['update', 'apps', 'app'],
     ])
     const rejoined = { created: { at: { seconds: 124, nanoseconds: 0 } } }

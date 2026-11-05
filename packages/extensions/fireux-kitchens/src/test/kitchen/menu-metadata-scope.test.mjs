@@ -162,7 +162,7 @@ test('Details and Delete ignore stale error/success before navigation or notific
             kitchenId,
             canWrite: ref(true),
             deleteMenu: () => pending.promise,
-            subscription: ref('premium'),
+            subscription: ref('pro'),
             updateMenu: () => pending.promise,
             renameMenu: () => pending.promise,
           }),

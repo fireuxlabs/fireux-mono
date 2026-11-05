@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -19,7 +20,7 @@ const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
 PLACE_MUTATION_TARGETS: { places: 'places' }, readKitchenAccessIds,
-  isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
+  readAppUserSubscription, createError,
 }, 'requireKitchenMutationAuthority')
 const kitchenWasteEventRecordTool=load('../../runtime/kitchen/tools/waste/record-event.ts',{},'kitchenWasteEventRecordTool')
 function harness(){

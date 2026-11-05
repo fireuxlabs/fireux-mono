@@ -1,12 +1,13 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 
-export default defineFireuxConfig({
+export default defineFireuxApp({
   ecosystem: 'fireux',
-  extends: ['fireux-core/layer', 'fireux-blogs/layer', 'fireux-products/layer'],
+  extends: ['fireux-core/layer'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-template',
-  context: "This is the reusable starting point for a new FireUX App. Its placeholder identity and content must be replaced with the new App’s actual purpose and ownership.",
+  context:
+    'This is the reusable starting point for a new FireUX App. Its placeholder identity and content must be replaced with the new App’s actual purpose and ownership.',
   name: 'FireUX Template',
   shortName: 'Template',
   theme: {
@@ -22,5 +23,4 @@ export default defineFireuxConfig({
     },
   },
   role: 'tenant',
-  modules: ['fireux-products'],
 })

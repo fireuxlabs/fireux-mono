@@ -3,7 +3,7 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove domain-specific workplace materialization from professional experience. -->
 <!-- Concurrent edit — 2026-07-21 13:03 CEST — Misebox Jobs workplace adapter: require owner materialization before assigning experience references. -->
 <!-- Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox profile correction: persist direct Place references with the canonical blank discriminator. -->
-<!-- Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: use idempotent server materializers without raw Company existence reads. -->
+<!-- Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: use idempotent server materializers without raw Business existence reads. -->
 <!-- Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich experience through bounded exact Place reads. -->
 <template>
   <FireFormsEditableObjectArray
@@ -211,8 +211,8 @@ import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/composables/fir
 import type { PlaceCard } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
-import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
-import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
+import { useBusinessCreate } from 'fireux-businesses/runtime/business/composables/firestore/business/mutations/useBusinessCreate'
+import { BusinessStorage } from 'fireux-businesses/runtime/business/models/business.entity'
 import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
@@ -268,7 +268,7 @@ const effectivePlaceType = computed(() => {
 const { ensurePlaceExists, captureIntent } = usePlaceCreate({
   sources: [selectedCollection, () => props.items],
 })
-const { createCompany } = useCompanyCreate()
+const { createBusiness } = useBusinessCreate()
 const placeSelectionError = ref('')
 
 const normalizePlaceId = (placeId?: string | null) => {
@@ -375,8 +375,8 @@ async function ensureCollectionRecord(
   placeId: string,
   place: PlaceUpsertInput
 ) {
-  if (collection === CompanyStorage.collection) {
-    await createCompany({ id: placeId })
+  if (collection === BusinessStorage.collection) {
+    await createBusiness({ id: placeId })
     return
   }
 

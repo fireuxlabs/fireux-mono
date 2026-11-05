@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-10-28
-Ref: 57d034087
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose
@@ -259,7 +259,7 @@ Consumed responsibilities use meaningful groups:
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `identity`       | `useAppIdentityUpdate` edits the configured App's name, copy and social links through the authenticated settings command                            |
 | `featured`       | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                                        |
-| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists, joining policy, join requests and current-App filtering |
+| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists and current-App filtering |
 | `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow                                                            |
 | `brand`          | Reactive browser checks for required local App artwork                                                                                              |
 | `config`         | Request-aware runtime configuration normalization through `useFireUXConfig`                                                                         |
@@ -267,7 +267,7 @@ Consumed responsibilities use meaningful groups:
 
 Membership functions retain their distinct inputs and lifecycles. Subscriptions
 are part of the AppUser relationship, but their command and presentation
-responsibility is separate from membership creation and access projection.
+responsibility is separate from membership administration and access projection.
 Grouping does not require one umbrella controller or a fixed number of files.
 
 Keep nonreactive work outside `composables`:
@@ -466,7 +466,6 @@ a canonical identity reader is not a substitute for that projection.
 | Group           | Consumed responsibility                                                                                                                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `account`       | Owner-only private account reading; anonymous accounts are excluded                                                                                                                                           |
-| `connections`   | Explicitly imported optional command mechanics; linking authority stays with the hub and participant services                                                                                                 |
 | `directory`     | `useUserDirectory` applies eligibility and current-User presentation; all Apps use `useUserCollection` over the existing public Users API; the server owns global versus tenant membership scope |
 | `identity`      | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands                                                                                                                |
 | `session`       | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access                                                                          |
@@ -474,13 +473,13 @@ a canonical identity reader is not a substitute for that projection.
 | `profile`       | Existing bounded User/domain-profile pair detail and directory readers                                                                                                                                        |
 
 `useUserBootstrap` captures one account/App intent before credentials and retains
-it through identity provisioning, membership reads, current join policy, the
-App-owned `ensure-self` command and event publication. Component scopes also
-invalidate that intent on disposal; calls outside a component release their
-own temporary watcher. `useAuth` supplies its current-User ref directly to
-bootstrap, avoiding recursive Auth construction. Other setup callers reuse the
-lower VueFire current-User ref. Ordinary sign-in does not invoke bootstrap.
-The Firebase Auth service remains opaque to Vue reactivity (`markRaw`): state
+it through identity provisioning, default App membership and event publication.
+Component scopes also invalidate that intent on disposal; calls outside a
+component release their own temporary watcher. `useAuth` supplies its
+current-User ref directly to bootstrap, avoiding recursive Auth construction.
+Other setup callers reuse the lower VueFire current-User ref. User setup creates
+the default AppUser; Auth sign-in itself remains read-only. The Firebase Auth
+service remains opaque to Vue reactivity (`markRaw`): state
 watchers must not traverse SDK internals such as Google's cross-origin popup.
 The [SDK boundary regression](../../packages/core/fireux-core/src/test/auth-sdk-boundary.test.mjs)
 checks that the native service remains unproxied through the Auth binding.
@@ -510,9 +509,8 @@ Unused membership admin/removal wrappers and unused email/avatar formatting
 contracts are retired. Membership execution belongs to App's `runAppUserCommand`.
 The shared `useAuthRedirect` lives with generic Firebase Auth composables and
 is imported directly; it does not depend on the User record or its fields.
-The base User composable groups are registered explicitly. Optional connection
-mechanics are directly imported by their real consumers. Utilities and models
-are not auto-import directories, and retired paths have no compatibility files.
+The base User composable groups are registered explicitly. Utilities and models
+are not auto-import directories.
 
 Tenant directory pages follow App membership document cursors before canonical
 User hydration. Missing or incomplete identities do not end pagination; every
@@ -524,14 +522,7 @@ still verify the requested handle. Core `user-directory-collection`,
 `user-directory-detail` and `user-profile-commands` tests protect these boundaries.
 
 The `profile` group's existing four-family vocabulary remains a bounded legacy
-contract used by real domain routes. This pass preserves those domain consumers;
-it does not establish that a fixed Core profile catalogue is the extension model
-for future industries. Optional cross-ecosystem account linking is a separate hub/participant service
-with its own UX and private authority store. It does not become another
-responsibility of these local readers or AppUser access.
-See the [account-connection context](../ai/account-connections-context.md) for
-current boundaries and the [archived identity roadmap](../archive/2026-10-workspace-cleanup/roadmaps/identity-and-workspaces.md#optional-cross-ecosystem-identity)
-for earlier planning.
+contract used by current domain routes.
 
 ## Kitchen presentation placement
 

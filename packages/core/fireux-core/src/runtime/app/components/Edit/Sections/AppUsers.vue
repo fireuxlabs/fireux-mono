@@ -35,6 +35,18 @@
               {{ appUser.role }}
             </UBadge>
 
+            <UButton
+              v-if="appUser.role === 'user'"
+              size="xs"
+              variant="soft"
+              :loading="roleActionUid === appUser.id"
+              :disabled="roleActionUid !== null"
+              :aria-label="`Make ${appUser.display_name} an App admin`"
+              @click="onMakeAdmin(appUser.id)"
+            >
+              Make admin
+            </UButton>
+
             <USelect
               :model-value="appUser.subscription"
               :items="subscriptionOptions"
@@ -77,8 +89,10 @@ type AppUserRow = {
 const props = defineProps<{
   hasMore?: boolean
   rows: AppUserRow[]
+  roleActionUid: string | null
   subscriptionActionUid: string | null
   pillFor: (row: AppUserRow) => UserCard
+  onMakeAdmin: (uid: string) => Promise<unknown>
   onSetSubscription: (value: {
     uid: string
     subscription: AppUserSubscription
@@ -90,7 +104,7 @@ const subscriptionOptions: Array<{
   value: AppUserSubscription
 }> = [
   { label: 'Free', value: 'free' },
-  { label: 'Premium', value: 'premium' },
+  { label: 'Pro', value: 'pro' },
   { label: 'Business', value: 'business' },
 ]
 

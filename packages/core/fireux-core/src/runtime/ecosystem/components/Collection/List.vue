@@ -17,15 +17,15 @@
 import { computed } from 'vue'
 import FireCollectionCell from '../../../components/Collection/Cell.vue'
 import type { CollectionCellData } from '../../../models/utils/collection-cell'
-import type { EcosystemInterfaceCard } from '../../composables/useEcosystemView'
-const props = defineProps<{ cards: EcosystemInterfaceCard[] }>()
+import type { EcosystemDirectoryCard } from '../../composables/useEcosystemView'
+const props = defineProps<{ cards: EcosystemDirectoryCard[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({
     title: card.title,
     description: card.subtitle,
     image: card.imageUrl,
     meta: card.meta,
-    badges: card.badges.filter((badge) => badge !== card.meta),
+    badges: card.badges,
     to: card.to,
   }))
 )

@@ -84,11 +84,11 @@ export async function createKitchenMenuSection(event: H3Event, input: unknown) {
       })
     if (
       menu.data?.schedule === 'daily' &&
-      !['premium', 'business'].includes(access.subscription)
+      !['pro', 'business'].includes(access.subscription)
     )
       throw createError({
         statusCode: 403,
-        statusMessage: 'Daily specials require Plus.',
+        statusMessage: 'Daily specials require Pro.',
       })
     const target = serverKitchenMenuSectionsTarget(kitchenId, menuId)
     const sort_order = await nextMenuDisplayOrder(tx, target)
@@ -127,11 +127,11 @@ export async function updateKitchenMenuSection(event: H3Event, input: unknown) {
       })
     if (
       menu.data?.schedule === 'daily' &&
-      !['premium', 'business'].includes(access.subscription)
+      !['pro', 'business'].includes(access.subscription)
     )
       throw createError({
         statusCode: 403,
-        statusMessage: 'Daily specials require Plus.',
+        statusMessage: 'Daily specials require Pro.',
       })
     tx.update(target, sectionId, {
       ...payload,

@@ -58,7 +58,6 @@
   </form>
 </template>
 <script setup lang="ts">
-
 import { useRecipeScope } from '../../../../composables/recipe/useRecipeScope'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
@@ -249,7 +248,7 @@ const save = async () => {
       const result = await createRecipe(
         draft,
         { kitchenId: requestedKitchenId },
-        { translate: false, sourceLanguage: 'en' }
+        { sourceLanguage: 'en' }
       )
       if (!isCurrent()) return
       emit('saved', result.id)

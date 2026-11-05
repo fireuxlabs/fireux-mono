@@ -1,7 +1,7 @@
 # Landing templates context
 
-Updated: 2026-10-21
-Ref: d05ded3fd
+Updated: 2026-11-05
+Ref: d6240d394
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
 
@@ -26,11 +26,9 @@ injected owner data.
 
 - `fireux-misebox` owns Template One's contract, atom anatomy, reusable scene
   compositions and catalogue fixtures.
-- Misebox owns the canonical `/templates/template-one` product page. FireUX's
-  public framework `/templates` index describes the neutral source starter;
-  its separate Template One detail route refers to the canonical Misebox public
-  URL. FireUX does not copy template anatomy or catalogue fixtures into that
-  framework overview.
+- Misebox owns Template One. The old FireUX detail URL redirects to the
+  Misebox product page. FireUX's `/templates` index explains the neutral
+  starter App.
 - The catalogue also exposes `Default` for Root presentation and `Theme` for
   Workspace presentation. They are presentation levels, not template records.
   Template One is the only current template. Do not publish a nominal Template
@@ -101,8 +99,8 @@ injected owner data.
   domain, or production record.
 - `projects/templates/fireux-template` remains the neutral starter App;
   it is not the catalogue implementation or a container for presentation
-  templates. Its config declares Core, Blogs and Products native layers in
-  their established order; it does not inherit FireUX main-App runtime pages.
+  templates. It uses `defineFireuxApp` from `fireux-app/config`, whose bundle
+  supplies Core, Blogs and Products. It does not inherit Main App host routes.
 - Friiites remains a Misebox tenant App and visual proving reference. Core owns
   no template-specific presentation.
 - Template injections consume canonical asset roles, never filenames unique to

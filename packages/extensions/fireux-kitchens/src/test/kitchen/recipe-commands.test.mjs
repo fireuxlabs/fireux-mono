@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -20,7 +21,7 @@ const requireKitchenRecordMutationAuthority = load('../../runtime/kitchen/server
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
 PLACE_MUTATION_TARGETS: { places: 'places' }, readKitchenAccessIds,
-  isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
+  readAppUserSubscription, createError,
 }, 'requireKitchenRecordMutationAuthority')
 const preparation = load('../../runtime/kitchen/utils/recipe-preparation.ts', {isFirestoreDocumentId}, '({validateRecipePreparation,normalizeRecipePreparation})')
 const { normalizeTranslatedText } = load('../../runtime/kitchen/utils/recipe.ts', preparation, '({normalizeTranslatedText})')

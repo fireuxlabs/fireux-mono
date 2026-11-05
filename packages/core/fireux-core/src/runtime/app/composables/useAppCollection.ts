@@ -3,7 +3,7 @@ import { resolveReadOutcome } from '../../utils/read-outcome'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 
 import { readPages } from '../../composables/http/readPages'
-import type { AppPublicSummary } from '../models/app.model'
+import type { App } from '../models/app.model'
 import type { CollectionPage } from '../../models/utils/directory'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
@@ -24,9 +24,7 @@ export function useAppCollection(
     Boolean(url.value && (!options.authenticated || currentUser.value))
   )
   const pageCount = ref(1)
-  const state = useAsyncData<
-    CollectionPage<AppPublicSummary> & { requestKey: string }
-  >(
+  const state = useAsyncData<CollectionPage<App> & { requestKey: string }>(
     key,
     async (_nuxtApp, { signal }) => {
       const fetchRead = $fetch.create({ signal, cache: 'no-store' })
@@ -39,7 +37,7 @@ export function useAppCollection(
           ? { authorization: `Bearer ${await currentUser.value.getIdToken()}` }
           : undefined
       const page = active.value
-        ? await readPages<CollectionPage<AppPublicSummary>>(
+        ? await readPages<CollectionPage<App>>(
             fetchRead,
             requestUrl,
             requestedPages,
@@ -53,7 +51,7 @@ export function useAppCollection(
   const current = computed(() =>
     state.data.value?.requestKey === key.value ? state.data.value : undefined
   )
-  const apps = computed<AppPublicSummary[]>(() =>
+  const apps = computed<App[]>(() =>
     active.value ? (current.value?.items ?? []) : []
   )
   const count = computed(() => apps.value.length)

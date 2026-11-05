@@ -2,24 +2,34 @@ import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from '@nuxt/schema'
 import type { ModuleOptions as IconOptions } from '@nuxt/icon'
 import type { ModuleOptions as UIOptions } from '@nuxt/ui'
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 import { identity } from './app/ignition/brief'
 import { searchPlan } from './app/ignition/search'
 
-const fireux = defineFireuxConfig({
+const fireux = defineFireuxApp({
   ...identity,
-  extends: ['fireux-core/layer', 'fireux-slap/layer', 'fireux-blogs/layer'],
+  extends: [
+    'fireux-core/layer',
+    'fireux-slap/layer',
+    'fireux-businesses/layer',
+    'fireux-bookings/layer',
+  ],
+  workspaceConfig: { business: { canCreate: true } },
+  subscriptionCapacity: {
+    business: { free: 1, pro: 1, business: null },
+    'business.team': { free: 1, pro: 5, business: 50 },
+  },
   contactEmail: 'info@interlakenbiketours.com',
   theme: {
     palette: {
-      canvas: '#f6f5ed',
-      surface: '#e8ecdf',
-      canvas_inverted: '#193e33',
-      text: '#183c32',
-      text_muted: '#52675c',
-      ink: '#193e33',
-      accent: '#285a42',
-      accent_contrast: '#ffffff',
+      canvas: '#f5f5f1',
+      surface: '#e9eceb',
+      canvas_inverted: '#07162d',
+      text: '#101d31',
+      text_muted: '#687382',
+      ink: '#07162d',
+      accent: '#10d4dd',
+      accent_contrast: '#07162d',
     },
   },
   seo: {
@@ -27,7 +37,9 @@ const fireux = defineFireuxConfig({
     disallowPaths: searchPlan.mode === 'public' ? [] : ['/'],
     noindexPaths:
       searchPlan.mode === 'public'
-        ? searchPlan.pages.filter((page) => !page.index).map((page) => page.path)
+        ? searchPlan.pages
+            .filter((page) => !page.index)
+            .map((page) => page.path)
         : ['/', '/**'],
     staticPaths: searchPlan.pages
       .filter((page) => page.sitemap)

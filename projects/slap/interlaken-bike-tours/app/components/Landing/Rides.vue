@@ -1,38 +1,59 @@
 <script setup lang="ts">
 import { tours } from '~/content/tours'
+
+const bespokeEnquiry = {
+  path: '/',
+  query: { tour: 'Bespoke tour' },
+  hash: '#enquire',
+}
 </script>
+
 <template>
-  <section id="tours" class="section wrap">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">Choose your adventure</p>
-        <h2>Three rides.<br />Endless good moments.</h2>
+  <section
+    id="tours"
+    class="rides-section section"
+    aria-labelledby="rides-title"
+  >
+    <div class="section-heading wrap">
+      <p class="eyebrow">01 / The tours</p>
+      <div class="section-heading-row">
+        <h2 id="rides-title">Four ways to ride.</h2>
+        <p>
+          Every tour is private and led by a local guide. Pick an easy ride
+          between the lakes or spend the day exploring the waterfalls.
+        </p>
       </div>
-      <p>
-        Lakeside cruising or a whole day in the valley. Every ride is private,
-        with space to make it yours.
-      </p>
     </div>
-    <div class="tour-grid">
+    <div class="tour-grid wrap">
       <ToursCard
-        v-for="(tour, index) in tours"
+        v-for="tour in tours"
         :key="tour.slug"
-        :tour="tour"
-        :index="index"
+        :class="{ 'giessbach-card': tour.slug === 'giessbach-waterfalls' }"
+        :name="tour.name"
+        :label="tour.label"
+        :summary="tour.summary"
+        :difficulty="tour.difficulty"
+        :image="tour.image"
+        :alt="tour.alt"
+        :duration="tour.duration"
+        :distance="tour.distance"
+        :elevation="tour.elevation"
+        :price="tour.price"
+        :to="'/tours/' + tour.slug"
+        action="View tour"
       />
-    </div>
-    <div class="bespoke">
-      <div>
-        <h3>Have something else in mind?</h3>
-        <p>Bespoke routes, bike rental, or a day built around your group.</p>
-      </div>
-      <UButton
-        to="#enquire"
-        variant="outline"
-        trailing-icon="i-lucide-arrow-up-right"
-        size="lg"
-        >Let's plan it</UButton
-      >
+      <ToursCard
+        class="bespoke-card"
+        name="Bespoke bike tours"
+        label="Your route, your pace, your day"
+        summary="Tell Ben what you have in mind, from a photography ride to a longer climb or a relaxed loop."
+        difficulty="Tailored"
+        duration="Half or full day"
+        image="/images/lake.webp"
+        alt="An alpine lake and the surrounding mountains"
+        :to="bespokeEnquiry"
+        action="Enquire"
+      />
     </div>
   </section>
 </template>

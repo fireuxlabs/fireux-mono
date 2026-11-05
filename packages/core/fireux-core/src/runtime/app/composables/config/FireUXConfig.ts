@@ -1,15 +1,13 @@
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
 import type { RuntimeApp } from '../../../../config/app/runtime'
+import { APP_ROLES, type AppRole } from '../../models/app.model'
 import type {
-  FireuxAppRole,
   FireuxWorkspaceConfig,
   FireuxWorkspaceFamilyConfig,
   FireuxAppSubscriptionCapacity,
   FireuxAppSubscriptionCapacityLimit,
 } from '../../../../config/app/types'
-
-export type FireUXRole = FireuxAppRole
 
 export type FireUXConfig = Omit<
   RuntimeApp,
@@ -121,9 +119,12 @@ function toSubscriptionCapacity(v: unknown): FireuxAppSubscriptionCapacity {
       continue
     const source = value as AnyRecord
     const limit = (
-      tier: 'free' | 'premium' | 'business'
+      tier: 'free' | 'pro' | 'business'
     ): FireuxAppSubscriptionCapacityLimit['free'] => {
-      const candidate = source[tier]
+      const candidate =
+        tier === 'pro' && !Object.hasOwn(source, 'pro')
+          ? source.premium
+          : source[tier]
       if (candidate === null || candidate === '') return null
       return typeof candidate === 'number' &&
         Number.isInteger(candidate) &&
@@ -135,7 +136,7 @@ function toSubscriptionCapacity(v: unknown): FireuxAppSubscriptionCapacity {
       key,
       {
         free: limit('free'),
-        premium: limit('premium'),
+        pro: limit('pro'),
         business: limit('business'),
       },
     ])
@@ -143,14 +144,15 @@ function toSubscriptionCapacity(v: unknown): FireuxAppSubscriptionCapacity {
   return Object.fromEntries(entries)
 }
 
-function reqRole(src: AnyRecord): FireUXRole {
-  const raw = reqString(src, 'role').toLowerCase()
-  if (raw !== 'global' && raw !== 'tenant' && raw !== 'standalone') {
+function reqRole(src: AnyRecord): AppRole {
+  const raw = reqString(src, 'role')
+  const role = APP_ROLES.find((candidate) => candidate === raw)
+  if (!role) {
     throw new Error(
       `[fireux] runtimeConfig.public.fireux.role must be "global", "tenant", or "standalone".`
     )
   }
-  return raw
+  return role
 }
 
 function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
@@ -186,7 +188,6 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     subscriptionCapacity: toSubscriptionCapacity(fireux.subscriptionCapacity),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
-    selfJoinEnabled: fireux.selfJoinEnabled === true,
     theme: optRecord(fireux, 'theme') as FireUXConfig['theme'],
 
     contactEmail: optString(fireux, 'contactEmail'),

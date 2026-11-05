@@ -9,8 +9,8 @@ The FireUX App `/ignite-preview` and Codex `ignition:prepare` use the same
 - An empty `.env.example` for the business Firebase and Stripe configuration.
 
 ```sh
-pnpm --filter fireux-app ignition:prepare /path/to/brief.json
-pnpm --filter fireux-app ignition:prepare /path/to/brief.json --write
+pnpm --filter fireux-platform-app ignition:prepare /path/to/brief.json
+pnpm --filter fireux-platform-app ignition:prepare /path/to/brief.json --write
 ```
 
 The CLI verifies downloaded artifacts, checks both owners before writing, resumes

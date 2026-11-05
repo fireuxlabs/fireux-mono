@@ -1,6 +1,6 @@
 # Create spine map
 
-Updated: 2026-08-23
+Updated: 2026-11-03
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -262,7 +262,7 @@ Use an ensure/upsert create when the user intent is “make sure this exists,”
 - Place create/ensure.
 - Test target create.
 - Workspace target root create with known IDs.
-- User/app membership create.
+- Canonical User identity provisioning.
 
 #### Typical shape
 

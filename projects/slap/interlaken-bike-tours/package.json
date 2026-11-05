@@ -6,22 +6,29 @@
     "dev": "nuxt dev --port 3035 --host 127.0.0.1",
     "prepare": "nuxt prepare",
     "build": "nuxt build",
+    "build:release": "node ../../../tools/firebase-release/cli.mjs build --project slap-45389 --config firebase.json --app-domain https://interlaken-bike-tours-prototype.web.app",
+    "prepare:firebase-output": "node ../../../tools/firebase-release/cli.mjs prepare --project slap-45389 --config firebase.json",
+    "deploy:preflight": "node ../../../tools/firebase-release/cli.mjs preflight --project slap-45389 --config firebase.json --rules-policy development --rules-template ../../../packages/ecosystem/fireux-slap/src/config/firebase/firestore.template.rules",
+    "deploy:preview": "node ../../../tools/firebase-release/cli.mjs deploy --project slap-45389 --config firebase.json --rules-policy development --rules-template ../../../packages/ecosystem/fireux-slap/src/config/firebase/firestore.template.rules",
     "typecheck": "nuxt typecheck",
     "generate": "nuxt generate",
-    "test:seo": "node --test tests/seo.test.mjs"
+    "test:seo": "node --test tests/seo.test.mjs",
+    "test:bookings": "node --test tests/booking-calendar.test.mjs tests/booking-flow.test.mjs"
   },
   "dependencies": {
     "@nuxt/ui": "4.12.0",
+    "fireux-app": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-ignite": "workspace:*",
     "nuxt": "4.6.1",
     "vue": "3.5.43",
     "vue-router": "5.4.0",
     "fireux-slap": "workspace:*",
-    "fireux-blogs": "workspace:*",
+    "fireux-bookings": "workspace:*",
     "@nuxt/icon": "2.5.1",
     "firebase-functions": "^6.3.2",
-    "@google-cloud/functions-framework": "5.0.5"
+    "@google-cloud/functions-framework": "5.0.5",
+    "fireux-businesses": "workspace:*"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1"

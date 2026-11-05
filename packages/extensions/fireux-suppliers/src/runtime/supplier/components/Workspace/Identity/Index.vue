@@ -18,7 +18,7 @@
         </p>
         <PlaceEdit
           v-if="section && identity.canWrite.value"
-          :key="`${identity.companyId.value}:${section}`"
+          :key="`${identity.businessId.value}:${section}`"
           :place="identity.place.value"
           :section="section"
           :update-adapter="updateAdapter"
@@ -51,13 +51,13 @@ const { currentUser } = useAuth()
 const captureIntent = useCommandScope([
   () => currentUser.value?.uid,
   identity.supplierId,
-  identity.companyId,
+  identity.businessId,
   identity.canWrite,
 ])
 const updateAdapter: PlaceUpdateAdapter = {
   captureIntent,
   update: (placeId, patch) => {
-    if (!identity.canWrite.value || identity.companyId.value !== placeId)
+    if (!identity.canWrite.value || identity.businessId.value !== placeId)
       throw new Error('Reopen Identity for the current Supplier.')
     return updateProfile({
       supplierId: identity.supplierId.value,
@@ -81,7 +81,7 @@ watch(
   [
     () => currentUser.value?.uid,
     identity.supplierId,
-    identity.companyId,
+    identity.businessId,
     identity.canWrite,
   ],
   () => {

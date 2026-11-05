@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-10-07
-Ref: bd7ab9559
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
@@ -19,23 +19,27 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - runtime-package.md
 - pnpm.md
 
-## Core files
+## Current sources
 
-- `packages/core/fireux-core/src/config/app/fireux.config.ts`
-- `packages/core/fireux-core/src/config/app/modules.ts`
+- `packages/extensions/fireux-app/package.json` (`fireux-app/config`)
+- `packages/extensions/fireux-ecosystem/package.json` (`fireux-ecosystem/config`)
 - `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts`
 
 ## App pattern
 
-- Import `defineFireuxConfig` and export it directly. Project Apps do not own a
+- Tenant and standalone Apps import `defineFireuxApp` from `fireux-app/config`.
+  Main Apps import `defineFireuxEcosystem` from `fireux-ecosystem/config`.
+  Export the result directly. Project Apps do not own a
   second assembly object just to append native layers: `extends` passes through
   the existing builder with Nuxt’s own type and priority. Repeated runtime or
   framework behavior belongs in its Core, ecosystem, or extension owner.
-  Core appends its own native runtime layer as the baseline; App `extends`
+  The App bundle appends the Core and default extension layers; App `extends`
   entries retain their declared priority above it.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
+- `role` uses `AppRole` from Core's canonical App model. App configuration and
+  runtime policy share that type instead of defining another role union.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
 - `projectId` names the canonical FireUX Project entity.
 - Required `ecosystemId` names the canonical Ecosystem entity that contains the
@@ -61,13 +65,16 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   shared Nuxt baseline. Apps do not repeat or override
   `future.compatibilityVersion`; compatibility repairs belong to the lowest
   Core, ecosystem, or extension owner that implements the affected behavior.
-- Blog is the one universal default extension and is loaded even when an App
-  omits it from `modules`. The App still declares `fireux-blogs` directly in
-  its manifest. `modules` lists every additional extension capability and may
-  provide custom options for a default module.
-- Products are future/explicit, not an App baseline. An App loads and depends
-  on `fireux-products` only when it currently owns a real Product capability.
-  Ecosystem packages do not bundle domain extensions on an App's behalf.
+- Blogs and Products are universal App defaults owned by `fireux-app`. The
+  bundle adds both modules and native layers when omitted. `modules` lists
+  additional extensions and may configure a default module. Keep direct package
+  dependencies for explicit imports or configuration. An App may keep explicit
+  layer positions where its declared Nuxt precedence needs them. Named Ecosystem
+  packages may compose their domain modules; the shared `fireux-ecosystem`
+  bundle is selected only by Main Apps.
+- Documentation is an App-owned opt-in layer. Ecosystem Main Apps host their
+  shared guides. Tenant and standalone Apps include documentation only when
+  their product needs it, or link to the owning Ecosystem's guides.
 - A reusable extension owns its shared runtime integration defaults and
   environment resolution. For example, `fireux-kitchens` owns the Bringli
   Supplier-directory configuration, `fireux-places` owns Google Maps and
@@ -75,7 +82,7 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   Project Apps do not repeat those runtime values.
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
-  repeat deployment identity in `defineFireuxConfig`.
+  repeat deployment identity in the bundle configuration.
 - `workspaceConfig.<family>.origin` optionally declares an App-owned Workspace
   origin. The registered route with `nav.key: workspace-<family>` still owns Home.
   Core exposes an internal path for return/selection and an origin-aware URL for
@@ -86,7 +93,7 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   It is not deployment runtime configuration. Authentication stays Core-owned; entry routes carry
   mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
   thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
-  enter `defineFireuxConfig` or public runtime config. `RuntimeApp` derives from
+  enter the bundle configuration or public runtime config. `RuntimeApp` derives from
   App config and makes normalized
   arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the
   consumer names once. Browser and trusted-server consumers use the same
@@ -98,7 +105,10 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - Authored `app/meta.ts` is pure data and may be consumed by browser or server
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
   dependencies; filesystem and Markdown loading belong to Core's config-only
-  metadata loader.
+  metadata loader. Its optional `legal.notices` are App-owned additions to
+  Core's shared `/legal` page; `readAppMeta` exposes only the validated public
+  projection. Core platform documents remain shared, and an installed extension
+  does not add legal content unless the App explicitly composes it.
 - Core `resolveWorkspaceCanCreate` owns the shared explicit-override then
   non-tenant fallback. Workspace UI and trusted entity onboarding use that same
   policy instead of repeating it inside each domain.
@@ -137,13 +147,12 @@ query/result behavior. This is a publication query seam, not mutation authority.
 - `workspaceConfig`
 - `domains`
 - `profiles`
-- `selfJoinEnabled`: initial policy seed for a new canonical App only.
-  User onboarding and bootstrap read the stored App `self_join_enabled` policy,
-  as the trusted join command does; build-time config does not gate joining
-  an existing App.
 - Navigation belongs in `app/app.config.ts`, alongside App presentation.
   Its optional `navigation.hiddenKeys` and `navigation.overrides` affect only
   inherited route presentation, never route existence or authorization.
+
+Completing User setup creates a basic AppUser. App admins can change its role
+or subscription.
 
 ## Mode differences
 
@@ -200,10 +209,9 @@ initialized App awaiting media publication is not an uninitialized App.
 | Difference                                                          | State      | Reason or alignment trigger                                                                                      |
 | ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | Global, tenant, and standalone roles differ                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                   |
-| Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
-| Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it        |
+| Apps receive Blog and Products by default                           | `accepted` | Core composes the shared editorial and catalogue extensions; other domain extensions remain App-specific         |
 | A tenant App pins Workspace target IDs in Nuxt config               | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                         |
-| Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority          |
+| Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                |
 | An app disables or replaces the Core page transition globally       | `drift`    | Apps inherit the shared default; route-specific exceptions belong in page meta                                   |
 | A project app shell or stylesheet copies the shared page transition | `drift`    | Keep shared behavior in Core and route-specific exceptions in page meta                                          |

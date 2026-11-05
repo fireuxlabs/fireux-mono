@@ -133,7 +133,6 @@ export async function createProjectApp(
         name: input.name,
         description: input.description,
         context: input.context,
-        self_join_enabled: false,
         created: stamp(uid),
         updated: stamp(uid),
       })

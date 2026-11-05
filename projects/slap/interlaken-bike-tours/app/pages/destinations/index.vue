@@ -18,7 +18,7 @@ useSeo({
   <div class="wrap section">
     <p class="eyebrow">Choose a place. Plan a ride.</p>
     <h1>Cycling destinations</h1>
-    <p class="my-8 max-w-3xl">
+    <p class="destination-intro">
       Explore destinations on our existing rides, or ask about a custom trip in
       Bern or Lausanne. Custom routes and availability are confirmed directly
       with your guide.

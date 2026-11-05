@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -62,7 +63,7 @@ const authority = load(
     serverKitchenAccessTarget: () => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
 PLACE_MUTATION_TARGETS: { places: 'places' },
-    isAppUserSubscription: (x) => x === 'free',
+    readAppUserSubscription,
   }
 )
 const taxonomy = load('../runtime/ingredient/models/ingredient-taxonomy.ts', [

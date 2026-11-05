@@ -79,7 +79,7 @@ export const supplierRoot = (input: SupplierDemoScenarioSeed): Supplier => ({
   ...SupplierDefaults,
   id: input.id,
   management: { mode: 'workspace' },
-  company_id: input.companyId,
+  business_id: input.businessId,
   identity: { slug: input.id, status: input.status, visibility: true },
   catalogue: { mode: input.catalogueState },
   delivery: { areas: ['Switzerland'] },

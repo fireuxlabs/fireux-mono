@@ -106,7 +106,7 @@ export async function hydrateViews(
         title: job.title,
         contract_type: job.contract_type,
         management_mode: job.management_mode,
-        company_id: job.company_id,
+        business_id: job.business_id,
         place_id: job.place_id,
       },
       candidate: includeCandidates

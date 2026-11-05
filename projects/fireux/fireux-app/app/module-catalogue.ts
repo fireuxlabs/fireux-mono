@@ -64,9 +64,9 @@ export const fireuxExtensionModules = [
     group: 'content',
   },
   {
-    id: 'fireux-companies',
-    name: 'Companies',
-    description: 'Company records and reusable company profiles.',
+    id: 'fireux-businesses',
+    name: 'Businesses',
+    description: 'Business records and reusable business profiles.',
     icon: 'i-lucide-building-2',
     group: 'business',
   },
@@ -87,7 +87,8 @@ export const fireuxExtensionModules = [
   {
     id: 'fireux-finance',
     name: 'Finance',
-    description: 'Immutable financial facts and money primitives for domain operations.',
+    description:
+      'Immutable financial facts and money primitives for domain operations.',
     icon: 'i-lucide-landmark',
     group: 'business',
   },
@@ -136,7 +137,8 @@ export const fireuxExtensionModules = [
   {
     id: 'fireux-sproochli',
     name: 'Sproochli',
-    description: 'Multilingual information pages and content tooling.',
+    description:
+      'Translation, language selection and reviewed multilingual copy.',
     icon: 'i-lucide-panels-top-left',
     group: 'content',
   },
@@ -153,12 +155,5 @@ export const fireuxExtensionModules = [
     description: 'Tasks that can connect work across FireUX domains.',
     icon: 'i-lucide-list-checks',
     group: 'business',
-  },
-  {
-    id: 'fireux-translation',
-    name: 'Translation',
-    description: 'Shared translation tools and language catalogues.',
-    icon: 'i-lucide-languages',
-    group: 'platform',
   },
 ] as const satisfies readonly FireuxExtensionModule[]

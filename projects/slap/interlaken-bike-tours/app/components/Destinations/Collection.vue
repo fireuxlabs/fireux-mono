@@ -2,21 +2,19 @@
 import { destinations } from '~/content/destinations'
 </script>
 <template>
-  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-    <UPageCard
+  <div class="destination-grid">
+    <NuxtLink
       v-for="destination in destinations"
       :key="destination.slug"
-      :title="destination.name"
-      :description="destination.summary"
+      class="destination-card"
       :to="`/destinations/${destination.slug}`"
     >
-      <p>
-        {{
-          destination.tourSlugs.length
-            ? 'Explore an existing ride'
-            : 'Custom trip by enquiry'
-        }}
-      </p>
-    </UPageCard>
+      <span class="eyebrow">
+        {{ destination.tourSlugs.length ? 'Guided ride' : 'Custom by enquiry' }}
+      </span>
+      <h3>{{ destination.name }}</h3>
+      <p>{{ destination.summary }}</p>
+      <span class="destination-arrow" aria-hidden="true">↗</span>
+    </NuxtLink>
   </div>
 </template>

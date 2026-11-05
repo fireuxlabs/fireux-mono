@@ -15,12 +15,6 @@
           v-if="catalogue.outcome === 'ready'"
           :products="catalogue.products"
         />
-        <UPageCard
-          title="Products for your Kitchen"
-          description="Explore Menu Express and Collection Ordering in Misebox’s Product catalogue."
-          icon="i-lucide-utensils"
-          :to="miseboxProducts"
-        />
         <ProductDirectoryActions />
       </UPageBody>
     </UPage>
@@ -31,9 +25,6 @@ import { reactive } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
 
 const catalogue = reactive(useProductCollection())
-const miseboxProducts = import.meta.dev
-  ? 'http://localhost:3001/products'
-  : 'https://misebox.app/products'
 
 definePageMeta({
   layout: 'framework',
@@ -52,6 +43,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Products · FireUX',
   description:
-    'Explore FireUX Apps, templates and modules, and Misebox products for your Kitchen.',
+    'Explore FireUX Apps, templates and modules.',
 })
 </script>

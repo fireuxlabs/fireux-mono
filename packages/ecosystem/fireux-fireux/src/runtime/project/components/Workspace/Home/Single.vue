@@ -9,17 +9,11 @@
       <UAvatar
         :src="identity.imageUrl.value || undefined"
         :alt="identity.name.value"
-        :ui="
-          identity.imageFit.value === 'contain'
-            ? { image: 'object-contain p-1.5' }
-            : undefined
-        "
         icon="i-lucide-briefcase-business"
         size="xl"
       />
     </template>
     <UBadge
-      v-if="identity.selectedProject.value.identity.status"
       :color="
         identity.selectedProject.value.identity.status === 'active'
           ? 'success'
@@ -29,9 +23,7 @@
       >{{
         identity.selectedProject.value.identity.status === 'active'
           ? 'Active'
-          : identity.selectedProject.value.identity.status === 'archived'
-            ? 'Archived'
-            : 'Inactive'
+          : 'Inactive'
       }}</UBadge
     >
   </WorkspaceSingleCard>

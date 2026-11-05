@@ -53,7 +53,7 @@ function fixture() {
     readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }),
     requireKitchenMutationAuthority: async () => {
       if (!allowed) throw Error('Denied')
-      return { subscription: 'premium' }
+      return { subscription: 'pro' }
     },
     serverAuditStamp: () => ({ by: 'u', at: 'now' }),
     runGuardedServerTransaction: async (_, work) => {

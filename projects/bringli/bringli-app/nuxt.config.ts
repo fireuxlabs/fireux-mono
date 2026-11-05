@@ -1,13 +1,14 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
 
 const workspaces = ['supplier']
 
-export default defineFireuxConfig({
+export default defineFireuxEcosystem({
   ecosystem: 'bringli',
   projectId: 'bringli',
   ecosystemId: 'bringli',
   id: 'bringli-app',
-  context: "Bringli provides a Supplier Workspace for managing supplier information, catalogue records and business associations. Public business identity comes from the linked Company and Place.",
+  context:
+    'Bringli provides a Supplier Workspace for managing supplier information, catalogue records and business associations. Public business identity comes from the linked Business and Place.',
   name: 'Bringli',
   shortName: 'Bringli',
   role: 'global',
@@ -16,14 +17,14 @@ export default defineFireuxConfig({
     'fireux-core/layer',
     ...(workspaces.includes('supplier') ? ['fireux-suppliers/layer'] : []),
     'fireux-bringli/layer',
-    'fireux-blogs/layer',
+
     'fireux-places/layer',
-    'fireux-companies/layer',
+    'fireux-businesses/layer',
   ],
   subscriptionCapacity: {
-    supplier: { free: 1, premium: 1, business: null },
-    'supplier.team': { free: 3, premium: 7, business: null },
+    supplier: { free: 1, pro: 1, business: null },
+    'supplier.team': { free: 3, pro: 7, business: null },
   },
   domains: ['suppliers'],
-  modules: ['fireux-places', 'fireux-companies'],
+  modules: ['fireux-places', 'fireux-businesses'],
 })

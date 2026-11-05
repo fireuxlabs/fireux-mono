@@ -1,5 +1,5 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue -->
-<!-- Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: replace the Premium-only header badge with the derived tier. -->
+<!-- Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: replace the Pro-only header badge with the derived tier. -->
 <template>
   <ClientOnly>
     <!-- Single-source mobile toggle via UHeader -->

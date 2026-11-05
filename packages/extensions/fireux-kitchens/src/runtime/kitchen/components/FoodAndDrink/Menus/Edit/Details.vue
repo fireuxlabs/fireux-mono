@@ -13,7 +13,7 @@
         :disabled="!canRename"
         :disabled-message="
           canWrite
-            ? 'Plus is required to rename a Menu.'
+            ? 'Pro is required to rename a Menu.'
             : 'This Menu is read-only.'
         "
         :validation-function="validateName"

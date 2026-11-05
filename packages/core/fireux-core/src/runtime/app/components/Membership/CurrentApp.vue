@@ -14,7 +14,15 @@
       state="empty"
     />
     <UPageCard v-else title="Current App" icon="i-lucide-box" variant="subtle">
-      <AppCardsCell v-bind="appCard" link />
+      <AppCardsCell
+        :to="appCard.to"
+        :thumbnail-url="appCard.thumbnailUrl"
+        :avatar-text="appCard.avatarText"
+        :name="appCard.name"
+        :badges="appCard.badges"
+        :tagline="appCard.tagline"
+        link
+      />
       <dl class="mt-5 divide-y divide-default text-sm">
         <div class="py-3 first:pt-0">
           <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
@@ -26,10 +34,10 @@
         </div>
         <div class="py-3 last:pb-0">
           <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
-            Ecosystem
+            Ecosystem ID
           </dt>
           <dd class="mt-1 font-medium text-highlighted">
-            {{ appCard.ecosystem || 'Not assigned' }}
+            {{ appCard.ecosystemId }}
           </dd>
         </div>
       </dl>
@@ -43,6 +51,6 @@ import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAppView } from '../../composables/useAppView'
 const { appId } = useFireUXConfig()
 const { app, pending: appPending, error: appError } = useAppRead(appId)
-const { toCard: toAppCard } = useAppView(app)
+const { toCard: toAppCard } = useAppView()
 const appCard = computed(() => toAppCard(app.value))
 </script>

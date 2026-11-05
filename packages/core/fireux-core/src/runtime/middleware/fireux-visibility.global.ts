@@ -5,12 +5,12 @@ import {
   normaliseNavVisibility,
 } from '../composables/navigation/visibility'
 import type { NavMeta, NavVisibility } from '../composables/navigation/types'
-import type { FireuxAppRole } from '../../config/app/types'
+import type { AppRole } from '../app/models/app.model'
 
 type RouteMetaWithVisibility = {
   nav?: NavMeta
   visibility?: NavVisibility
-  appRole?: FireuxAppRole
+  appRole?: AppRole
 }
 
 export default defineNuxtRouteMiddleware((to) => {

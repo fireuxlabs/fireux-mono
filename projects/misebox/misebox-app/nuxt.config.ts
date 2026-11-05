@@ -1,8 +1,8 @@
 import type { NuxtPage } from '@nuxt/schema'
 import {
-  defineFireuxConfig,
+  defineFireuxEcosystem,
   type FireuxAppConfig,
-} from 'fireux-core/config/app/fireux.config'
+} from 'fireux-ecosystem/config'
 
 const app: FireuxAppConfig = {
   ecosystem: 'misebox',
@@ -27,7 +27,6 @@ const app: FireuxAppConfig = {
   },
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
-  selfJoinEnabled: true,
   seo: {
     staticPaths: [
       '/product',
@@ -38,9 +37,8 @@ const app: FireuxAppConfig = {
     ],
   },
   modules: [
-    'fireux-products',
     'fireux-places',
-    'fireux-companies',
+    'fireux-businesses',
     'fireux-go-qr',
     'fireux-sproochli',
     ['fireux-suppliers', { mode: 'consumer' }],
@@ -49,7 +47,19 @@ const app: FireuxAppConfig = {
   ],
 }
 
-const appConfig = defineFireuxConfig(app)
+const appConfig = defineFireuxEcosystem({
+  ...app,
+  extends: [
+    ...(app.workspaces?.includes('kitchen')
+      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
+      : []),
+    'fireux-core/layer',
+    'fireux-places/layer',
+    'fireux-businesses/layer',
+    'fireux-jobs/layer',
+    'fireux-ai/layer',
+  ],
+})
 
 export default {
   ...appConfig,
@@ -67,34 +77,10 @@ export default {
 
   runtimeConfig: {
     ...appConfig.runtimeConfig,
-    accountConnections: {
-      origin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://misebox.app'
-          : 'http://localhost:3001',
-      hubOrigin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://fireux.app'
-          : 'http://localhost:3000',
-      peerSecret: '',
-    },
     public: {
       ...appConfig.runtimeConfig?.public,
       packageComponents: {},
-      sharedSignIn: { enabled: false },
       ordering: { channels: ['pos', 'kiosk', 'website'] },
     },
   },
-  extends: [
-    ...(app.workspaces?.includes('kitchen')
-      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
-      : []),
-    'fireux-core/layer',
-    'fireux-products/layer',
-    'fireux-blogs/layer',
-    'fireux-places/layer',
-    'fireux-companies/layer',
-    'fireux-jobs/layer',
-    'fireux-ai/layer',
-  ],
 }

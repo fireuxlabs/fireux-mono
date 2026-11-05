@@ -28,7 +28,7 @@ const definitions = {
     family: 'identity',
     contextProviders: [
       context('supplier.identity', 'Supplier', true),
-      context('company.identity', 'Company', true),
+      context('business.identity', 'Business', true),
       context('place.identity', 'Place', true),
     ],
     capabilities: identityAgentCapabilities,

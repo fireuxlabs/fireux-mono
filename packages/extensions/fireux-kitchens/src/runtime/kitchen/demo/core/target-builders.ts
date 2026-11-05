@@ -10,10 +10,7 @@ import type {
   KitchenConfiguration,
   KitchenOrdersConfig,
 } from '../../models/kitchen-configuration.model.ts'
-import type {
-  KitchenFulfilment,
-  KitchenFulfilmentPaymentPolicy,
-} from '../../models/fulfilment.model.ts'
+import type { KitchenFulfilment, KitchenFulfilmentPaymentPolicy } from '../../models/fulfilment.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
 import type { KitchenDemoAccess, KitchenDemoIdentity } from './types'
 
@@ -58,8 +55,6 @@ export type DemoPlaceInput = {
 export const kitchen = (input: DemoKitchenInput) => ({
   kitchen: {
     id: input.identity.kitchenId,
-    created: kitchenDemoCreated(input.identity),
-    updated: kitchenDemoUpdated(),
     identity: {
       source: 'place',
       slug: input.identity.kitchenSlug,

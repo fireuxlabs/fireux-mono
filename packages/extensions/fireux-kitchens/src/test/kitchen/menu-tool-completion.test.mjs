@@ -154,7 +154,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
               kitchenId: h.kitchenId,
               canCreateMenu: ref(true),
               menuCreateBlockedMessage: ref(''),
-              subscription: ref('premium'),
+              subscription: ref('pro'),
               createMenu: (input) => {
                 h.calls.push(structuredClone(input))
                 return h.response.promise
@@ -281,12 +281,12 @@ test('Menu removal returns to the collection after live data removes the record'
   assert.equal(api.busy.value, false)
 })
 
-test('Menu suggestions stay locked for Free and create ordinary interactive drafts for Plus', async () => {
-  for (const tier of ['free', 'premium', 'business']) {
+test('Menu suggestions stay locked for Free and create ordinary interactive drafts for Pro', async () => {
+  for (const tier of ['free', 'pro', 'business']) {
     const h = context()
     const api = h.run(
       'kitchen/components/FoodAndDrink/Menus/Collection/Suggestions.vue',
-      '({create,hasPlus,suggestions})',
+      '({create,hasPro,suggestions})',
       {
         useKitchenMenusContext: () => ({
           menus: ref([]),

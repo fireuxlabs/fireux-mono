@@ -73,7 +73,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EcosystemInterfaceInput } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import { useEcosystemView } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import { useProjectEcosystems } from '../../../composables/useProjectEcosystems'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
@@ -92,23 +91,8 @@ const outcome = computed(() =>
 const selectedProjectName = computed(
   () => String(selectedProject.value?.identity.name || '').trim() || 'Untitled'
 )
-const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
-  return ecosystems.value.map((value: EcosystemInterfaceInput) => ({
-    ...value,
-    href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
-    src: value.image_url,
-    text: value.name,
-    key: value.id,
-  }))
-})
-const { cell } = useEcosystemView()
-const ecosystemCards = computed(() =>
-  ecosystemCollection.value
-    .map((entry) => cell(entry))
-    .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
-      Boolean(card)
-    )
-)
+const { toCard } = useEcosystemView()
+const ecosystemCards = computed(() => ecosystems.value.map(toCard))
 const ecosystemCount = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
     ? ecosystemCards.value.length

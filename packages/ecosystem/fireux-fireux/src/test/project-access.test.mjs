@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
@@ -20,6 +21,7 @@ import {
 
 function load(path, bindings, result) {
   bindings = {
+    readAppUserSubscription,
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
     isFirestoreDocumentId,
@@ -241,7 +243,7 @@ function createHarness(access) {
       ...contract,
       useFireUXConfig: () => ({
         appId: 'app',
-        subscriptionCapacity: { project: { free: 1, premium: null } },
+        subscriptionCapacity: { project: { free: 1, pro: null } },
       }),
       requireFirebaseBearerUser: async () => ({
         uid: 'u',
@@ -262,8 +264,7 @@ function createHarness(access) {
         if (!exists || !['user', 'admin', 'dev'].includes(role))
           throw createError({ statusCode: 403 })
       },
-      isAppUserSubscription: (value) =>
-        ['free', 'premium', 'business'].includes(value),
+      readAppUserSubscription,
       hasAppSubscriptionCapacity,
       fireuxProjectsTarget: projectsTarget,
       FIREUX_MUTATION_TARGETS: { fireuxApps: appTarget },
@@ -326,13 +327,16 @@ test('Creation after rejoining replaces stale grants and preserves current grant
     path: 'project_access/app/users/u',
     data: { ids: ['first'], membership_created_at: stamps },
   })
-  const premium = createHarness({
-    ids: ['existing'],
-    membership_created_at: stamps,
-  })
-  premium.state.membership.subscription = 'premium'
-  await premium.run()
-  assert.deepEqual(premium.state.writes.at(-1).data.ids, ['existing', 'new'])
+  for (const subscription of ['pro', 'premium']) {
+    const pro = createHarness({
+      ids: ['existing'],
+      membership_created_at: stamps,
+    })
+    pro.state.membership.subscription = subscription
+    await pro.run()
+    assert.deepEqual(pro.state.writes.at(-1).data.ids, ['existing', 'new'])
+    assert.equal(pro.state.membership.subscription, subscription)
+  }
 })
 
 test('Project server projection observes domain access and returns allowed ids even when roots are missing', async () => {
@@ -378,7 +382,7 @@ test('Project server projection observes domain access and returns allowed ids e
     'readProjectDocument'
   )
   const read = load(
-    '../runtime/project/server/index/read.ts',
+    '../runtime/project/server/management/read.ts',
     {
       useFireUXConfig: () => ({ appId: 'app' }),
       createError,

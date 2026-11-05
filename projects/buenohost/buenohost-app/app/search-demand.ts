@@ -541,10 +541,9 @@ export const searchDemand = defineAppSearchDemand({
             status: 'partial',
             assessed_at: '2026-10-05',
             scope:
-              'Property identity/unit models and tenant offer presentation exist; reusable pricing and channel distribution are unproved. Source inspection only, not fresh live acceptance testing.',
+              'Property identity and tenant offer presentation exist; reusable pricing and channel distribution are unproved. Source inspection only, not fresh live acceptance testing.',
             source_paths: [
               'packages/extensions/fireux-properties/src/runtime/property/models/property.model.ts',
-              'packages/extensions/fireux-properties/src/runtime/property/models/unit.model.ts',
               'projects/buenohost/ausfinn-apartments/app/pages/stays.vue',
             ],
           },

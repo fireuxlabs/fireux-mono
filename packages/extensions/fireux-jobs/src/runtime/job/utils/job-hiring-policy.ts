@@ -93,12 +93,12 @@ export function nextEngagementStatus(
 
 export function temporaryCapacityAllowsAcceptance(input: {
   contractType: JobContractType
-  hasPremiumCapacity: boolean
+  hasProCapacity: boolean
   activeTemporaryEngagementCount: number
-  premiumLimit?: number
+  proLimit?: number
 }): boolean {
   if (input.contractType !== 'temporary') return true
-  const limit = input.hasPremiumCapacity ? (input.premiumLimit ?? 100) : 1
+  const limit = input.hasProCapacity ? (input.proLimit ?? 100) : 1
   return (
     Number.isInteger(input.activeTemporaryEngagementCount) &&
     input.activeTemporaryEngagementCount >= 0 &&

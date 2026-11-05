@@ -21,9 +21,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppPublicSummary } from '../../models/app.model'
+import type { App } from '../../models/app.model'
 import { renderAppPreview } from '../../utils/renderAppPreview'
-const props = defineProps<{ app: AppPublicSummary }>()
+const props = defineProps<{ app: App }>()
 const html = computed(() => renderAppPreview(props.app))
 function download() {
   const url = URL.createObjectURL(new Blob([html.value], { type: 'text/html' }))

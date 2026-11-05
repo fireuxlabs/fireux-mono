@@ -5,7 +5,6 @@ const normalize = (value: unknown) => String(value || '').trim()
 const allowedTargetTypes = new Set<DocumentLinkTargetType>([
   'portfolio',
   'property',
-  'unit',
   'compliance-record',
   'tenancy',
   'task',

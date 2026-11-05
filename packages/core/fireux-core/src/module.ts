@@ -76,7 +76,7 @@ export default defineNuxtModule({
     nitro.esbuild.options ||= {}
     nitro.esbuild.options.target ||= 'es2022'
     nitro.esbuild.options.exclude ??=
-      /node_modules\/(?!(?:.*\/)?fireux-(?:core|nuxtfire)\/src\/)/
+      /node_modules\/(?!(?:.*\/)?fireux-core\/src\/)/
 
     if (nuxt.options.dev) {
       if (defaultMaxListeners < DEV_RESPONSE_MAX_LISTENERS) {

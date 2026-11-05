@@ -51,7 +51,7 @@ const visible = computed(
     (props.placement === 'top' || props.placement === 'discovery')
 )
 const planLabel = computed(() =>
-  plan.value === 'premium'
+  plan.value === 'pro'
     ? 'Pro'
     : plan.value === 'business'
       ? 'Business'
@@ -74,9 +74,9 @@ const unit = computed(() =>
 )
 const upgrade = computed(() => {
   const limits = capacity.value
-  if (plan.value === 'premium' || !limits || limits.premium === limits.free)
+  if (plan.value === 'pro' || !limits || limits.pro === limits.free)
     return 'business'
-  return 'premium'
+  return 'pro'
 })
 const upgradeLabel = computed(() =>
   upgrade.value === 'business' ? 'Business' : 'Pro'

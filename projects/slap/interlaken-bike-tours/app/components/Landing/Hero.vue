@@ -1,36 +1,59 @@
 <template>
-  <section class="hero wrap">
-    <div class="hero-copy">
-      <p class="eyebrow">Private bike adventures · Interlaken, Switzerland</p>
-      <h1>The Alps.<br />Your pace.<br /><em>Your kind of day.</em></h1>
-      <p class="intro">
-        Beyond the postcard, there's a quieter road. Discover it with a local
-        guide and a ride made just for you.
-      </p>
-      <UButton to="#tours" size="xl" trailing-icon="i-lucide-arrow-down-right"
-        >Find your ride</UButton
-      >
-      <p class="hero-caption">
-        Private tours · English & German · E-bikes available
-      </p>
-    </div>
-    <div class="hero-image">
+  <section class="hero">
+    <div class="hero-media" aria-hidden="true">
       <img
         src="/images/lake.webp"
-        alt="The blue waters of Lake Thun framed by alpine mountains"
+        alt=""
         fetchpriority="high"
         width="1600"
-        height="1200"
+        height="1600"
       />
-      <div class="image-caption">
-        <span>46°41′ N 7°51′ E</span
-        ><span>A little further from ordinary.</span>
-      </div>
-      <span class="image-stamp">LET'S<br />RIDE ↗</span>
     </div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-copy wrap">
+      <p class="eyebrow">Interlaken · Bernese Oberland</p>
+      <h1>Command<br />the Alps.</h1>
+      <p class="intro">
+        Private guided bike and e-bike tours from Interlaken. Ride at your own
+        pace through Lauterbrunnen, along Lake Brienz, or to Giessbach Falls.
+      </p>
+      <div class="hero-actions">
+        <UButton
+          class="booking-action"
+          to="/book"
+          size="xl"
+          color="primary"
+          trailing-icon="i-lucide-arrow-up-right"
+          >Book a private tour</UButton
+        >
+        <UButton
+          class="secondary-action"
+          to="#tours"
+          size="xl"
+          variant="outline"
+          color="neutral"
+          trailing-icon="i-lucide-arrow-down-right"
+          >See the tours</UButton
+        >
+      </div>
+    </div>
+    <dl class="hero-facts wrap" aria-label="Tour highlights">
+      <div>
+        <dt>Languages</dt>
+        <dd>English + German</dd>
+      </div>
+      <div>
+        <dt>Groups</dt>
+        <dd>Private, always</dd>
+      </div>
+      <div>
+        <dt>Included</dt>
+        <dd>Bike + helmet</dd>
+      </div>
+      <div>
+        <dt>Booking</dt>
+        <dd>Instant confirmation</dd>
+      </div>
+    </dl>
   </section>
-  <div class="ride-strip">
-    <span>Local knowledge</span><span>Just your group</span
-    ><span>Room for detours</span><span>Unforgettable views</span>
-  </div>
 </template>

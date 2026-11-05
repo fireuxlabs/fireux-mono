@@ -1,7 +1,7 @@
 # Nuxt 4 integration map
 
-Updated: 2026-10-25
-Ref: ce2861c77
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and authority
@@ -23,11 +23,12 @@ over a copied framework manual.
 
 ## FireUX integration
 
-Core's [defineFireuxConfig](../../packages/core/fireux-core/src/config/app/fireux.config.ts)
-adds the Core layer and configures the shared Nuxt baseline. That baseline
-registers Nuxt UI, FireUX Core, the Ecosystem module, the configured Firebase
-runtime and common App modules. Each App declares its product layers and
-enabled package modules in its own configuration.
+[defineFireuxApp](../../packages/extensions/fireux-app/src/config.ts) composes
+Core, Blogs and Products for tenant and standalone Apps.
+[defineFireuxEcosystem](../../packages/extensions/fireux-ecosystem/src/config.ts)
+adds the Main App bundle. Both use Core's shared Nuxt and Firebase mechanics.
+Core remains independently usable. Apps declare their own Ecosystem binding
+and any additional domain layers and modules.
 
 A package owns its Nuxt module and runtime layer. Its module registers that
 package's components, composables, assets, pages or server handlers through
@@ -38,7 +39,8 @@ entrypoints and package-owned runtime paths; see
 
 Use Nuxt's public module and layer APIs. Do not insert package runtimes into
 private resolved-layer internals. The current source entrypoints are
-[Core configuration](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts),
+[App composition](../../packages/extensions/fireux-app/src/config.ts),
+[Core framework helpers](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts),
 [Core module](../../packages/core/fireux-core/src/module.ts), and the relevant
 App or package's nuxt.config.ts.
 

@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { dishPricingHelpers } from './dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -206,8 +207,7 @@ export function harness({ document = false, status = 'draft' } = {}) {
       ...stamp,
       ...(input.appId ? { app_id: input.appId } : {}),
     }),
-    isAppUserSubscription: (value) =>
-      ['free', 'premium', 'business'].includes(value),
+    readAppUserSubscription,
     requireFirestoreDocumentId: (value) => {
       if (!value || value.includes('/')) throw new Error('Invalid id')
       return value

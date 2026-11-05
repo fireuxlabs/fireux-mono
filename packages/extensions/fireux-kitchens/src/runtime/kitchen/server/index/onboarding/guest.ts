@@ -78,7 +78,6 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
           visibility: false,
         },
         created,
-        updated: serverAuditStamp({ by: uid }),
       })
       tx.create(
         team,

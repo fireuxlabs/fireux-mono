@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { computed, unref, type MaybeRef } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { resolveReadOutcome } from '../../utils/read-outcome'
@@ -7,11 +7,10 @@ import type { App } from '../models/app.model'
 type AppSnapshot = {
   appId: string
   initialized: boolean
-  selfJoinEnabled: boolean
   app: App | null
 }
 
-/** Current App metadata and join policy share the existing safe status projection. */
+/** Current App metadata and initialization state share the safe status projection. */
 export function useAppRead(id: MaybeRef<string | null | undefined>) {
   const { uid, isAuthenticated, hasAuthState } = useAuth()
   const targetId = computed(() =>
@@ -65,18 +64,12 @@ export function useAppRead(id: MaybeRef<string | null | undefined>) {
       present: Boolean(app.value),
     })
   )
-  const canSelfJoin = computed(
-    () =>
-      current.value?.initialized === true &&
-      current.value.selfJoinEnabled === true
-  )
   return {
     app,
     exists,
     pending,
     error,
     outcome,
-    canSelfJoin,
-    refresh: source.refresh,
+    refresh: source.refresh as AsyncData<unknown, unknown>['refresh'],
   }
 }

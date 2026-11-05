@@ -254,47 +254,24 @@ test('public Project and App projections omit stored context', () => {
     projectReaders.readProjectDocument({ ...source, context: {} }, 'one'),
     null
   )
-  const { readAppDocument, toAppPublicSummary } = load(
+  const readApp = load(
     'packages/core/fireux-core/src/runtime/app/utils/readApp.ts',
-    '({ readAppDocument, toAppPublicSummary })',
+    'readAppDocument',
     {}
   )
-  const app = readAppDocument(
+  const app = readApp(
     {
       ecosystem_id: 'fireux',
       role: 'global',
       status: 'active',
       name: 'App',
-      short_name: 'A',
-      tagline: 'A tagline',
-      description: 'Description',
-      social_links: { website: 'https://example.test' },
-      media: { logo_url: 'https://example.test/logo.png' },
-      self_join_enabled: true,
-      created: { ...stamp, by: 'creator', app_id: 'creator-app' },
-      updated: { ...stamp, by: 'operator' },
+      created: stamp,
+      updated: stamp,
       context: 'Private App background',
     },
     'app'
   )
   assert.equal(Object.hasOwn(app, 'context'), false)
-  assert.equal(app.created.app_id, 'creator-app')
-  const appSummary = toAppPublicSummary(app)
-  assert.deepEqual(Object.keys(appSummary).sort(), [
-    'description',
-    'ecosystem_id',
-    'id',
-    'media',
-    'name',
-    'role',
-    'short_name',
-    'social_links',
-    'status',
-    'tagline',
-  ])
-  assert.equal(appSummary.self_join_enabled, undefined)
-  assert.equal(appSummary.created, undefined)
-  assert.equal(appSummary.updated, undefined)
 })
 
 test('User editing writes only the authenticated private context and detects conflicts', async () => {

@@ -9,7 +9,6 @@ import {
   getRuntimeIdentityFirestore,
 } from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
   countTransactionAdmins,
   initialMembership,
@@ -19,7 +18,7 @@ import {
 } from '../app-user/command-contract'
 import { reconcileUserAppReference } from '../app-user/user-reference'
 import { reconcileAppEcosystemReference } from '../relationships/ecosystem-reference'
-import { ECOSYSTEM_MUTATION_TARGETS } from '../../../ecosystem/server/mutation-targets'
+import { provisionEcosystem } from '../../../ecosystem/server/identity/provision'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -66,7 +65,6 @@ function appPayload(
       wordmark_dark_url: '',
       cover_url: '',
     },
-    self_join_enabled: config.selfJoinEnabled,
     created: { at: now, by: uid },
     updated: { at: now, by: uid },
   }
@@ -88,110 +86,47 @@ function assertExistingAppMatchesRuntime(
   }
 }
 
-function mainEcosystemBootstrap(input: InitializeRuntimeAppInput) {
-  const { config } = input
+async function provisionMainAppEcosystem(
+  input: InitializeRuntimeAppInput,
+  identityUserExists: boolean
+) {
+  const { uid, config, appDatabaseId, identityDatabaseId } = input
   if (
     config.role !== 'global' ||
     config.projectId !== config.ecosystemId ||
     config.appId !== `${config.ecosystemId}-app`
   )
-    return null
-
-  const ecosystemId = requireFirestoreDocumentId(
-      config.ecosystemId,
-      'Ecosystem id'
-    ),
-    projectId = requireFirestoreDocumentId(config.projectId, 'Project id'),
-    name = String(input.ecosystem.name || '').trim(),
-    description = String(input.ecosystem.description || '').trim()
-
-  if (!name || name.length > 120 || description.length > 2000) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'The main App Ecosystem identity is invalid.',
-    })
-  }
-
-  return { ecosystemId, projectId, name, description }
-}
-
-async function ensureMainEcosystem(input: {
-  uid: string
-  identityDatabaseId: string
-  appDatabaseId: string
-  identityUserExists: boolean
-  appConfig: InitializeRuntimeAppInput['config']
-  ecosystem: InitializeRuntimeAppInput['ecosystem']
-}) {
-  const bootstrapInput: InitializeRuntimeAppInput = {
-    uid: input.uid,
-    config: input.appConfig,
-    appDatabaseId: input.appDatabaseId,
-    identityDatabaseId: input.identityDatabaseId,
-    ecosystem: input.ecosystem,
-  }
-  const identity = mainEcosystemBootstrap(bootstrapInput)
-  if (!identity) return false
-
-  const database = getRuntimeIdentityFirestore(input.identityDatabaseId),
-    ecosystemRef = database.collection('ecosystems').doc(identity.ecosystemId),
-    existing = await ecosystemRef.get()
-  if (existing.exists) {
-    if (String(existing.get('project_id') || '').trim() !== identity.projectId)
-      conflict('The existing Ecosystem does not match runtime projectId.')
     return false
-  }
 
-  if (!input.identityUserExists) {
-    const user = await database.collection('users').doc(input.uid).get()
-    if (!user.exists) conflict('The User record does not exist.')
-  }
-
-  const app = await getRuntimeFirestore(input.appDatabaseId)
-    .collection('apps')
-    .doc(input.appConfig.appId)
-    .get()
-  if (app.exists) {
-    assertExistingAppMatchesRuntime(app.data() ?? {}, input.appConfig)
-  } else {
-    const membership = await getRuntimeFirestore(input.appDatabaseId)
-      .doc(`apps/${input.appConfig.appId}/users/${input.uid}`)
-      .get()
-    if (membership.exists)
-      conflict('An App membership exists without its canonical App record.')
-  }
-
-  return runGuardedServerTransaction(
-    { kind: 'identity' },
-    async (mutations) => {
-      const ecosystem = await mutations.read(
-        ECOSYSTEM_MUTATION_TARGETS.ecosystems,
-        identity.ecosystemId
-      )
-      if (ecosystem.exists) {
-        if (
-          String(ecosystem.data?.project_id || '').trim() !== identity.projectId
-        )
-          conflict('The existing Ecosystem does not match runtime projectId.')
-        return false
+  return provisionEcosystem({
+    uid,
+    identityDatabaseId,
+    ecosystemId: config.ecosystemId,
+    projectId: config.projectId,
+    name: input.ecosystem.name,
+    description: input.ecosystem.description,
+    checkPrerequisites: async () => {
+      if (!identityUserExists) {
+        const user = await getRuntimeIdentityFirestore(identityDatabaseId)
+          .collection('users')
+          .doc(uid)
+          .get()
+        if (!user.exists) conflict('The User record does not exist.')
       }
-      const now = FieldValue.serverTimestamp()
-      mutations.create(
-        ECOSYSTEM_MUTATION_TARGETS.ecosystems,
-        identity.ecosystemId,
-        {
-          project_id: identity.projectId,
-          status: 'active',
-          name: identity.name,
-          description: identity.description,
-          image_url: '',
-          created: { at: now, by: input.uid },
-          updated: { at: now, by: input.uid },
-        }
-      )
-      return true
-    }
-  )
+
+      const database = getRuntimeFirestore(appDatabaseId)
+      const app = await database.collection('apps').doc(config.appId).get()
+      if (app.exists) {
+        assertExistingAppMatchesRuntime(app.data() ?? {}, config)
+      } else {
+        const membership = await database
+          .doc(`apps/${config.appId}/users/${uid}`)
+          .get()
+        if (membership.exists)
+          conflict('An App membership exists without its canonical App record.')
+      }
+    },
+  })
 }
 
 export async function initializeRuntimeApp(
@@ -221,14 +156,10 @@ export async function initializeRuntimeApp(
     identityUserExists = true
   }
 
-  const ecosystemCreated = await ensureMainEcosystem({
-    uid,
-    identityDatabaseId: input.identityDatabaseId,
-    appDatabaseId: input.appDatabaseId,
-    identityUserExists,
-    appConfig: config,
-    ecosystem: input.ecosystem,
-  })
+  const ecosystemCreated = await provisionMainAppEcosystem(
+    input,
+    identityUserExists
+  )
 
   const apps = APP_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(config.appId)

@@ -2,7 +2,7 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money'
 import type {
-  JobCompanySummary,
+  JobBusinessSummary,
   JobPlaceSummary,
 } from '../../../../models/job-collection.model.ts'
 import {
@@ -26,9 +26,9 @@ export type JobView = Pick<
   | 'title'
   | 'description'
 > & {
-  company_id?: string
+  business_id?: string
   place_id?: string
-  company?: JobCompanySummary
+  business?: JobBusinessSummary
   place?: JobPlaceSummary
   start_at: Job['start_at'] | string | null
   end_at: Job['end_at'] | string | null
@@ -45,9 +45,9 @@ export namespace JobCard {
     status: Job['status']
     description: string
     badges: string[]
-    companyId: string
-    companyName: string
-    companyImageUrl: string
+    businessId: string
+    businessName: string
+    businessImageUrl: string
     placeId: string
     placeName: string
     placeAddress: string
@@ -148,7 +148,7 @@ export function useJobInterface() {
 
   function map(job: JobView): JobCard.Card {
     const id = safeString(job.id).trim()
-    const companyName = safeString(job.company?.short_name || job.company?.name)
+    const businessName = safeString(job.business?.short_name || job.business?.name)
     const placeName = safeString(job.place?.short_name || job.place?.name)
     const placeAddress = safeString(job.place?.short_address)
     const contractTypeLabel = formatJobContractType(job.contract_type)
@@ -160,9 +160,9 @@ export function useJobInterface() {
     return {
       id,
       to: id ? `/${JobStorage.collection}/${encodeURIComponent(id)}` : '',
-      imageUrl: safeString(job.place?.image_url || job.company?.image_url),
+      imageUrl: safeString(job.place?.image_url || job.business?.image_url),
       title: safeString(job.title),
-      subtitle: [companyName, placeAddress || placeName]
+      subtitle: [businessName, placeAddress || placeName]
         .filter(Boolean)
         .join(' · '),
       summary: safeString(job.description),
@@ -174,9 +174,9 @@ export function useJobInterface() {
         openingsLabel,
         compensationLabel,
       ],
-      companyId: safeString(job.company_id),
-      companyName,
-      companyImageUrl: safeString(job.company?.image_url),
+      businessId: safeString(job.business_id),
+      businessName,
+      businessImageUrl: safeString(job.business?.image_url),
       placeId: safeString(job.place_id),
       placeName,
       placeAddress,

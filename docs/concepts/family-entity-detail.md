@@ -64,7 +64,7 @@ Every Entity Detail route should:
   nesting them on an Entity root and filtering them later.
 - Delegate domain display to named domain components.
 - Name relationship children after the related Entity (`AppDetailProject`,
-  `JobDetailPlace`, `SupplierDetailCompany`) rather than hiding distinct jobs
+  `JobDetailPlace`, `SupplierDetailBusiness`) rather than hiding distinct jobs
   behind a generic `Relations` component.
 - Name content and action children after their actual capability
   (`ProjectDetailApps`, `JobDetailSummary`, `JobDetailApply`) rather than generic
@@ -151,7 +151,7 @@ The same guard requires each maintained route to expose launcher-backed
 `objects` and `derived` payloads with `object-origin="fetched"`. Related reads
 stay with the Detail component that owns them: for example User membership,
 Kitchen Place presentation, Menu projection payloads, Ecosystem/Project App
-relations, Supplier Company Place, and Portfolio profile projection. Pure
+relations, Supplier Business Place, and Portfolio profile projection. Pure
 display leaves do not invent empty debug panels.
 
 ## Product and Blog presentation ownership
@@ -185,7 +185,7 @@ Verify the bounded composition and purchase request with Product's
 | App                               | id                | `accepted`: canonical App identity is already a public platform key                                                                                                                    |
 | Agent, Chef, Driver, Professional | User handle       | `accepted`: public identity uses the canonical User handle; the trusted projection resolves it to the uid-keyed profile and legacy uid requests redirect permanently to the handle URL |
 | Place                             | document id       | `accepted`: exact reads return `{ place: Place }`; the stable document id remains the route key                                                                                        |
-| Company, Job                      | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
+| Business, Job                      | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
 | Portfolio                         | document id       | `accepted`: endpoint-first exact reads use the stable root id; authored slug remains canonical content and currently matches that id                                                   |
 | Property                          | none              | `parked`: no detail route exists until a product decision defines a privacy-safe contract for the governance/valuation-bearing canonical root                                          |
 | Project                           | id                | `accepted`: the FireUX route resolves the canonical Project; the Project detail component owns its connected-App read                                                                  |
@@ -201,7 +201,7 @@ review.
 | Profile details join canonical User presentation by uid                | `accepted`  | Domain profile roots remain owner/private authority and do not duplicate public User identity; public Agent, Chef, Driver, and Professional routes resolve the User handle at the trusted projection boundary |
 | FireUX App detail uses its platform directory                          | `accepted`  | FireUX owns the platform relationship, Ignition action, search policy, and directory reader; the Core App detail remains the aligned Ecosystem-local sibling rather than a generic runtime-composed page      |
 | Legacy profile uid URLs redirect permanently to the User-handle URL    | `migration` | Stored links remain usable during the route cutover while every new card, canonical tag, and share path uses the handle                                                                                       |
-| Job detail returns the canonical Job plus named Company/Place records  | `accepted`  | Category and tenant eligibility remain server-owned; the paginated Directory alone uses a bounded joined `JobDirectoryEntry`                                                                                  |
+| Job detail returns the canonical Job plus named Business/Place records  | `accepted`  | Category and tenant eligibility remain server-owned; the paginated Directory alone uses a bounded joined `JobDirectoryEntry`                                                                                  |
 | Kitchen detail can expose published KitchenMenus                       | `accepted`  | Kitchen is a Workspace Entity with scoped published children; its reader returns canonical Kitchen and Place records plus a named joined presentation while menus remain Kitchen-owned                        |
 | Place is the reference identity surface for Place-backed entities      | `accepted`  | Kitchen and Supplier keep named detail entrypoints and domain-owned sections while composing the resolved Place identity presentation instead of copying its visual atoms or stored fields                    |
 | Place exact and index reads return canonical Place                     | `accepted`  | Detail returns `{ place }`; the bounded index adds pagination metadata around `Place[]`; mutation responses publish the same Place into local detail state                                                    |
@@ -210,7 +210,7 @@ review.
 | Portfolio keeps Finance and operations outside its root                | `accepted`  | Portfolio remains the readable Entity; Finance and operational children stay in their own scoped owners                                                                                                       |
 | Misebox User detail appends Kitchen membership                         | `accepted`  | The App composes a Kitchen-owned, self/admin-authorized relationship section over canonical User identity; Core does not absorb AppUser, Kitchen, Place, or Team meaning                                     |
 | Portfolio exact and index reads return canonical Portfolio             | `accepted`  | Public SSR readers inject document ids, omit incomplete onboarding roots, and return the same normalized Portfolio used by client/workspace readers                                                           |
-| Supplier detail joins its Company/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
+| Supplier detail joins its Business/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
 | Menu detail reader resolves route projection                           | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root or tenant scope; `menu/composables/useMenu.ts` reads the scoped projection directly for Browse, Order and QR                      |
 
@@ -238,7 +238,7 @@ review.
 
 - Settle named operator-panel responsibilities using Kitchen and Menu as the
   proving siblings.
-- Record route identity decisions for Place, Company, Job, Portfolio, and
+- Record route identity decisions for Place, Business, Job, Portfolio, and
   Property.
 - Move reusable Property detail behavior out of project-app forks.
 

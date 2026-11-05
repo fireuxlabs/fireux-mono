@@ -1,12 +1,13 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 
-export default defineFireuxConfig({
+export default defineFireuxApp({
   ecosystem: 'sharer',
-  extends: ['fireux-core/layer', 'fireux-sharer/layer', 'fireux-blogs/layer'],
+  extends: ['fireux-core/layer', 'fireux-sharer/layer'],
   projectId: 'sharer-ecosystem',
   ecosystemId: 'sharer',
   id: 'kjordi',
-  context: "This is a branded personal sharing App whose public page currently uses the name “Kjordy”. The intended spelling needs confirmation before standardising its identity.",
+  context:
+    'This is a branded personal sharing App whose public page currently uses the name “Kjordy”. The intended spelling needs confirmation before standardising its identity.',
   name: 'Kjordi',
   shortName: 'Kjordi',
   theme: {

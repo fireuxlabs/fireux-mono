@@ -61,7 +61,7 @@
         variant="soft"
         icon="i-lucide-user-round-x"
         title="No app membership"
-        :description="missingMembershipDescription"
+        description="This app has not granted you access. Your public identity is unchanged."
       />
 
       <div v-else-if="membership">
@@ -77,13 +77,6 @@
         </div>
       </div>
 
-      <UButton
-        v-if="membershipOutcome === 'empty' && canSelfJoin"
-        class="mt-4"
-        to="/users/create"
-        label="Set up app access"
-        icon="i-lucide-user-plus"
-      />
     </div>
 
     <template v-if="membershipOutcome === 'ready' && profileEntries.length">
@@ -131,18 +124,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { AppCard } from '../../../app/composables/useAppView'
 import type { AppUserWithId } from '../../../app/models/app-user.model.ts'
 import type {
   DashboardOverviewOutcome,
   DashboardOverviewProfileEntry,
 } from './types'
 
-const props = defineProps<{
+defineProps<{
   appName: string
-  appShortName: string
-  appCard: AppCard | null
   appOutcome: DashboardOverviewOutcome
   membership: AppUserWithId | null
   membershipOutcome: DashboardOverviewOutcome
@@ -152,12 +141,5 @@ const props = defineProps<{
   workspaceLabel: string
   workspaceIcon: string
   canManageApp: boolean
-  canSelfJoin: boolean
 }>()
-
-const missingMembershipDescription = computed(() =>
-  props.canSelfJoin
-    ? `Set up access to use ${props.appName} features. Your public identity already exists.`
-    : 'This app has not granted you access. Your public identity is unchanged.'
-)
 </script>

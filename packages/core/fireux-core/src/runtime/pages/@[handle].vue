@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { definePageMeta, navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useRouteParam } from '../composables/shared/useRouteParam'
 
@@ -13,6 +13,8 @@ const handle = useRouteParam('handle')
 const target = computed(() =>
   handle.value ? `/users/${encodeURIComponent(handle.value)}` : '/users'
 )
+
+definePageMeta({ pageTransition: false })
 
 await navigateTo(target.value, { replace: true })
 </script>

@@ -3,7 +3,7 @@ export function useAgentFormatting() {
     const typeMap: Record<string, string> = {
       restaurant: 'Restaurant',
       hotel: 'Hotel',
-      catering: 'Catering Company',
+      catering: 'Catering Business',
       food_service: 'Food Service',
       retail: 'Retail',
       other: 'Other',
@@ -75,8 +75,8 @@ export function useAgentFormatting() {
     return `${types.slice(0, 2).join(' & ')} & more`
   }
 
-  const formatCompanyName = (name: string): string => {
-    if (!name || name.trim().length === 0) return 'Company Name Not Set'
+  const formatBusinessName = (name: string): string => {
+    if (!name || name.trim().length === 0) return 'Business Name Not Set'
     return name.trim()
   }
 
@@ -106,7 +106,7 @@ export function useAgentFormatting() {
 
   const formatVerificationStatus = (verified: boolean): string => {
     if (verified) {
-      return 'Verified Company'
+      return 'Verified Business'
     }
     return 'Pending Verification'
   }
@@ -120,7 +120,7 @@ export function useAgentFormatting() {
     formatSpecialties,
     formatCuisineTypes,
     formatEstablishmentTypes,
-    formatCompanyName,
+    formatBusinessName,
     formatContactPerson,
     formatBioShort,
     formatWebsite,
@@ -278,7 +278,7 @@ export function useAgentValidation() {
 
     const requiredValidations = [
       validateAgencyName(
-        data.title || data.agency_name || data.company_name || ''
+        data.title || data.agency_name || data.business_name || ''
       ),
       validateEmail(data.email || ''),
     ]

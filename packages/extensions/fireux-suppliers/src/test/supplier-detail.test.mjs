@@ -85,7 +85,7 @@ function fixture() {
 }
 const payload = (id, extra = {}) => ({
   supplier: { id, identity: { status: 'active', visibility: true, ...extra } },
-  company: { id: `${id}-company` },
+  business: { id: `${id}-business` },
   place: { id: `${id}-place` },
 })
 
@@ -95,7 +95,7 @@ test('one server projection follows live identity and clears all parts on naviga
   assert.equal(f.detail.supplier.value.id, 'supplier-a')
   f.id.value = 'supplier-b'
   assert.equal(f.detail.outcome.value, 'pending')
-  for (const name of ['supplier', 'company', 'place'])
+  for (const name of ['supplier', 'business', 'place'])
     assert.equal(f.detail[name].value, null)
   await f.load(payload('supplier-b'))
   assert.equal(f.detail.place.value.id, 'supplier-b-place')
@@ -115,7 +115,7 @@ test('deletion, denied and failed reads never retain last-good Supplier or Place
     f.state.error.value = { statusCode }
     f.state.pending.value = false
     assert.equal(f.detail.outcome.value, statusCode === 404 ? 'empty' : 'error')
-    for (const name of ['supplier', 'company', 'place'])
+    for (const name of ['supplier', 'business', 'place'])
       assert.equal(f.detail[name].value, null)
     f.state.error.value = null
     assert.equal(f.detail.outcome.value, 'ready')
@@ -141,6 +141,6 @@ test('detail preserves case-sensitive document identity and rejects a differentl
   assert.equal(f.detail.supplier.value.id, 'Supplier-A')
   await f.load(payload('supplier-a'))
   assert.equal(f.detail.outcome.value, 'empty')
-  for (const name of ['supplier', 'company', 'place'])
+  for (const name of ['supplier', 'business', 'place'])
     assert.equal(f.detail[name].value, null)
 })

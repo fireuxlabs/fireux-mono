@@ -81,11 +81,11 @@ export async function moveKitchenMenuEntry(event: H3Event, input: unknown) {
       })
     if (
       menu.data?.schedule === 'daily' &&
-      !['premium', 'business'].includes(access.subscription)
+      !['pro', 'business'].includes(access.subscription)
     )
       throw createError({
         statusCode: 403,
-        statusMessage: 'Daily specials require Plus.',
+        statusMessage: 'Daily specials require Pro.',
       })
     const target = itemId
       ? serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)

@@ -1,17 +1,15 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 
-export default defineFireuxConfig({
+export default defineFireuxApp({
   ecosystem: 'werkbox',
   // The logical Project is Werkbox; Firebase and database bindings retain their physical ids.
   projectId: 'werkbox',
   ecosystemId: 'cleanbox',
   id: 'richies-reinigung',
-  context: "Richies represents cleaning services for homes and businesses around Interlaken, Lauterbrunnen and Wengen. Individual service scope and arrangements belong to the customer agreement.",
+  context:
+    'Richies represents cleaning services for homes and businesses around Interlaken, Lauterbrunnen and Wengen. Individual service scope and arrangements belong to the customer agreement.',
   name: 'Richies',
   shortName: 'Richies',
   role: 'tenant',
-  extends: [
-    'fireux-werkbox/layer',
-    'fireux-blogs/layer',
-  ],
+  extends: ['fireux-werkbox/layer'],
 })

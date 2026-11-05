@@ -8,7 +8,7 @@ import {
 
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
 import type { ProjectPublicSummary } from 'fireux-fireux/runtime/project/models/project.model'
-import { readProjectDetail } from 'fireux-fireux/runtime/project/server/index/detail'
+import { readProjectDetail } from 'fireux-fireux/runtime/project/server/detail/read'
 
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')

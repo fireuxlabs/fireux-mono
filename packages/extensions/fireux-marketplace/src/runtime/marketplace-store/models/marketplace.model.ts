@@ -1,4 +1,3 @@
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -10,23 +9,6 @@ export const MarketplaceStoreStorage = {
   collection: 'marketplace-stores',
   idParam: 'storeId',
 } as const
-
-export const MarketplaceStoreEntity = defineFireuxEntity({
-  kind: 'entity',
-  name: 'MarketplaceStore',
-  family: ['commerce'],
-  identity: 'root',
-  authority: 'domain-database',
-  appSupport: 'none',
-  workspace: false,
-  root: MarketplaceStoreStorage.path,
-  notes: [
-    'Store identity is root-owned even when management names an App.',
-    'Linked Team users establish Store association; role labels do not gate access.',
-    'The reader supplies the root document id; writers do not store it.',
-    'Public directory/detail transport may join published Offer children without embedding them in Store.',
-  ],
-})
 
 export const MarketplaceStoreTeamStorage = {
   shape: 'scoped',
@@ -43,36 +25,12 @@ export const MarketplaceOfferStorage = {
   idParam: 'offerId',
 } as const
 
-export const MarketplaceOfferRecord = defineFireuxEntity({
-  kind: 'record',
-  name: 'MarketplaceOffer',
-  family: ['commerce'],
-  identity: 'parent-scoped',
-  authority: 'parent',
-  appSupport: 'none',
-  workspace: false,
-  scoped: MarketplaceOfferStorage.path,
-  parent: 'MarketplaceStore',
-})
-
 export const MarketplaceOrderStorage = {
   shape: 'parent-record',
   path: `${MarketplaceStoreStorage.path}/orders/{orderId}`,
   collection: 'orders',
   idParam: 'orderId',
 } as const
-
-export const MarketplaceOrderRecord = defineFireuxEntity({
-  kind: 'record',
-  name: 'MarketplaceOrder',
-  family: ['commerce'],
-  identity: 'parent-scoped',
-  authority: 'parent',
-  appSupport: 'none',
-  workspace: false,
-  scoped: MarketplaceOrderStorage.path,
-  parent: 'MarketplaceStore',
-})
 
 export const MARKETPLACE_STORE_STATES = [
   'draft',

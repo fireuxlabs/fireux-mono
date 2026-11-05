@@ -5,9 +5,10 @@ import {
   type SupplierSurface,
 } from '../composables/firestore/utils/view/useSupplierInterface'
 
-type SupplierCompanyDemoTargetLike = {
-  company: {
+type SupplierBusinessDemoTargetLike = {
+  business: {
     id?: string | null
+    place_ids: readonly string[]
   }
   place: {
     id?: string | null
@@ -23,7 +24,7 @@ export type ProjectedSupplierDemoScenario<
   TScenario extends SupplierDemoScenarioLike,
 > = Omit<TScenario, 'supplier'> & {
   supplier: SupplierSurface
-  companyPlace: Place
+  businessPlace: Place
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -32,38 +33,38 @@ export function projectSupplierDemoWorld<
   TScenario extends SupplierDemoScenarioLike,
 >(input: {
   scenarios: readonly TScenario[]
-  companyTargets: readonly SupplierCompanyDemoTargetLike[]
+  businessTargets: readonly SupplierBusinessDemoTargetLike[]
 }): ProjectedSupplierDemoScenario<TScenario>[] {
-  const companyTargetById = new Map<string, SupplierCompanyDemoTargetLike>()
-  for (const target of input.companyTargets) {
-    const companyId = clean(target.company.id)
+  const businessTargetById = new Map<string, SupplierBusinessDemoTargetLike>()
+  for (const target of input.businessTargets) {
+    const businessId = clean(target.business.id)
     if (
-      !companyId ||
-      companyTargetById.has(companyId) ||
-      clean(target.place.id) !== companyId ||
-      clean(target.resolvedPlace.id) !== companyId
+      !businessId ||
+      businessTargetById.has(businessId) ||
+      !target.business.place_ids.includes(clean(target.place.id)) ||
+      clean(target.resolvedPlace.id) !== clean(target.place.id)
     ) {
       throw new Error(
-        `Supplier Demo Company/Place target is invalid: ${companyId || '(missing-id)'}`
+        `Supplier Demo Business/Place target is invalid: ${businessId || '(missing-id)'}`
       )
     }
-    companyTargetById.set(companyId, target)
+    businessTargetById.set(businessId, target)
   }
 
   const { surface } = useSupplierInterface()
   const supplierIds = new Set<string>()
   return input.scenarios.map((scenario) => {
     const supplierId = clean(scenario.supplier.id)
-    const companyId = clean(scenario.supplier.company_id)
-    const companyTarget = companyTargetById.get(companyId)
+    const businessId = clean(scenario.supplier.business_id)
+    const businessTarget = businessTargetById.get(businessId)
     if (
       !supplierId ||
       supplierIds.has(supplierId) ||
-      !companyTarget ||
+      !businessTarget ||
       'place_id' in scenario.supplier
     ) {
       throw new Error(
-        `Supplier Demo Company/Place relationship is unresolved: ${
+        `Supplier Demo Business/Place relationship is unresolved: ${
           supplierId || '(missing-id)'
         }`
       )
@@ -71,7 +72,7 @@ export function projectSupplierDemoWorld<
 
     const supplier = surface({
       supplier: scenario.supplier,
-      companyPlace: companyTarget.resolvedPlace,
+      businessPlace: businessTarget.resolvedPlace,
     })
     if (!supplier) {
       throw new Error(`Supplier Demo surface is incomplete: ${supplierId}`)
@@ -81,7 +82,7 @@ export function projectSupplierDemoWorld<
     return {
       ...scenario,
       supplier,
-      companyPlace: companyTarget.resolvedPlace,
+      businessPlace: businessTarget.resolvedPlace,
     }
   })
 }

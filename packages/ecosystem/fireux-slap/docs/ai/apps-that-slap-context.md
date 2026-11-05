@@ -1,7 +1,7 @@
 # Apps That Slap context
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-05
+Ref: d6240d394
 Role: living context
 Scope: Apps That Slap ecosystem identity, admission, routing, and reusable presentation boundary
 
@@ -39,21 +39,37 @@ away from genuine operational domains.
 
 ## Runtime composition
 
-The global and Yellow Velo Apps explicitly declare Core → Slap → Blogs → Products
-native layers in their established precedence. Slap exports its conventional
-runtime layer; domain and infrastructure registration remain in the owning
-modules. Verify both Apps when changing discovery because their App-owned pages
-and components differ.
+Slap Main App uses `defineFireuxEcosystem` from `fireux-ecosystem/config`.
+Yellow Velo uses `defineFireuxApp` from `fireux-app/config`. Both receive Core,
+Blogs and Products through the App bundle and select Slap's conventional runtime
+layer. The named Slap package owns its binding and product runtime, not the
+shared Main App bundle. Verify both Apps when changing discovery because their
+App-owned pages and components differ.
 
-Interlaken Bike Tours (`projects/slap/interlaken-bike-tours`) consumes Core → Slap
-→ Blogs native layers through `defineFireuxConfig`. Its App-owned `tours` layout
-frames only the public cycling pages; Core retains shared account, management,
+Interlaken Bike Tours (`projects/slap/interlaken-bike-tours`) uses
+`defineFireuxApp` and selects its Slap and Business layers. The App bundle
+supplies Core, Blogs and Products. Its App-owned `tours` layout
+uses Core's public header and the App's footer for the cycling pages. Core retains shared account, management,
 initialization, SEO and PWA manifest responsibilities. The dedicated prototype
 Hosting site uses the App's Firebase SSR function. Its custom footer consumes Core's `FireLayoutsSharedPlatformFooter`; landing/detail metadata consumes Core SEO helpers, with preview indexing policy configured explicitly. The App-owned `app/ignition/search.ts` supplies its reviewed preview origin,
 page metadata and sitemap policy to the brief and runtime configuration; Ignition
 reviews this declared plan without certifying live indexation. Tour and destination content (`app/content/tours.ts` and `app/content/destinations.ts`) and external
-enquiry drafts remain App-owned. Destination routes distinguish existing rides from custom trips by enquiry; no booking domain or operator Workspace is
-implied by the runtime integration.
+enquiry drafts remain App-owned. Interlaken Bike Tours directly consumes
+`fireux-bookings` for server-side Google Calendar transport through its
+App-owned `server/utils/tour-calendar.ts` adapter. The package owns OAuth token
+refresh transport, raw busy intervals and event insertion; the App owns the
+single 09:00 tour schedule, daily booking lock, catalog prices and booking
+records. Its `/book` route checks availability, writes a pending hold, creates a
+Calendar event, then confirms the record and returns on-screen confirmation.
+Calendar conflicts and event-insert failures release the pending hold; a failed
+final Firestore update after Calendar insertion keeps the slot held for manual
+reconciliation. Payments, outbound confirmation email, cancellations and an
+operator Workspace remain outside this visitor flow.
+
+Bike Tours owns its noindex preview release commands in its
+[App manifest](../../../../../projects/slap/interlaken-bike-tours/package.json).
+They use the shared artifact tooling with the existing Slap development Rules
+readback and the App's explicit preview target.
 
 ## Presentation boundary
 
@@ -71,7 +87,7 @@ or reproduce Product acquisition state.
 
 Use this order:
 
-1. App source, package manifests, `defineFireuxConfig`, and source-owned tests.
+1. App source, package manifests, selected App bundle, and source-owned tests.
 2. `packages/ecosystem/fireux-slap/src/module.ts` and `src/config/**`.
 3. App-owned dev commands and deployment configuration, ecosystem Firebase
    templates, and current brand assets.

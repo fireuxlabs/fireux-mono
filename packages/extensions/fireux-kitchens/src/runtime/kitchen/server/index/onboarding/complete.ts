@@ -8,11 +8,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import { PLACE_MUTATION_TARGETS } from 'fireux-places/runtime/place/server/mutation-targets'
-import {
-  KITCHEN_MUTATION_TARGETS,
-  serverKitchenMenusTarget,
-  serverKitchenTeamMembersTarget,
-} from '../../mutation-targets'
+import { KITCHEN_MUTATION_TARGETS, serverKitchenMenusTarget, serverKitchenTeamMembersTarget } from '../../mutation-targets'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
 import {
@@ -151,7 +147,6 @@ export async function completeKitchenOnboarding(
       mutations.create(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         identity: { source: 'place', slug, status: 'active', visibility: true },
         created: stamp,
-        updated: serverAuditStamp({ by: current.uid }),
       })
     }
 

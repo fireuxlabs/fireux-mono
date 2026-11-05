@@ -5,7 +5,7 @@ export type SupplierOnboardingAction = 'create' | 'connect' | 'open'
 export type SupplierOnboardingCompleteInput = {
   supplier_id?: string
   organization_name?: string
-  company_id?: string
+  business_id?: string
 }
 
 export type SupplierOnboardingCompleteResult = {

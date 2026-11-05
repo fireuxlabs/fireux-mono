@@ -51,7 +51,7 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
 
       const rootPatch: Record<string, unknown> = {
         'theme.palette': requested.palette as WorkspacePalette,
-        updated: serverAuditStamp({ by: actor.uid }),
+        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
       }
       mutations.update<DocumentData>(
         KITCHEN_MUTATION_TARGETS.kitchens,

@@ -1,13 +1,14 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 
 const workspaces = ['property']
 
-export default defineFireuxConfig({
+export default defineFireuxApp({
   ecosystem: 'buenohost',
   projectId: 'fireux',
   ecosystemId: 'buenohost',
   id: 'ausfinn-apartments',
-  context: "AUSFinn Apartments presents apartments, houses and an alpine villa around Interlaken, Unterseen, Ringgenberg and Bönigen. Each property retains its own accommodation information.",
+  context:
+    'AUSFinn Apartments presents apartments, houses and an alpine villa around Interlaken, Unterseen, Ringgenberg and Bönigen. Each property retains its own accommodation information.',
   name: 'AUSFinn Apartments',
   shortName: 'AUSFinn',
   role: 'tenant',
@@ -17,13 +18,14 @@ export default defineFireuxConfig({
   workspaces,
   extends: [
     'fireux-core/layer',
-    ...(workspaces.includes('property') ? ['fireux-properties/layer', 'fireux-reservations/layer'] : []),
+    ...(workspaces.includes('property')
+      ? ['fireux-properties/layer', 'fireux-reservations/layer']
+      : []),
     'fireux-buenohost/layer',
-    'fireux-blogs/layer',
   ],
   subscriptionCapacity: {
-    property: { free: 1, premium: 1, business: null },
-    'property.team': { free: 3, premium: 7, business: null },
+    property: { free: 1, pro: 1, business: null },
+    'property.team': { free: 3, pro: 7, business: null },
   },
   workspaceConfig: {
     property: {

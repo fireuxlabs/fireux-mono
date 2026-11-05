@@ -15,7 +15,7 @@ const werkboxPricingProfile = {
     'Apply to published work directly',
     'Use the functional Work Workspace',
   ],
-  professional: [
+  pro: [
     'Publish work',
     'Review applications and hire directly',
     'Manage customer and job workspaces',

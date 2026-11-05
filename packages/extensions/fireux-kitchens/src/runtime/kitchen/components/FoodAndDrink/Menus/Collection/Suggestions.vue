@@ -9,16 +9,16 @@
         v-for="name in suggestions"
         :key="name"
         :label="name"
-        :icon="hasPlus ? 'i-lucide-plus' : 'i-lucide-lock-keyhole'"
+        :icon="hasPro ? 'i-lucide-plus' : 'i-lucide-lock-keyhole'"
         color="neutral"
         variant="outline"
-        :to="hasPlus ? undefined : '/pricing'"
-        :disabled="hasPlus && (!canCreateMenu || busy)"
-        @click="hasPlus && create(name)"
+        :to="hasPro ? undefined : '/pricing'"
+        :disabled="hasPro && (!canCreateMenu || busy)"
+        @click="hasPro && create(name)"
       />
     </div>
-    <p v-if="!hasPlus" class="fx-type-caption">
-      Plus unlocks additional Menus.
+    <p v-if="!hasPro" class="fx-type-caption">
+      Pro unlocks additional Menus.
     </p>
     <FireCopyError v-if="error" :message="error" />
   </section>
@@ -31,8 +31,8 @@ import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEdito
 const { menus, subscription, canCreateMenu, createMenu, kitchenId } =
   useKitchenMenusContext()
 const { openView } = useMenuRecordNavigation()
-const hasPlus = computed(() =>
-  ['premium', 'business'].includes(subscription.value)
+const hasPro = computed(() =>
+  ['pro', 'business'].includes(subscription.value)
 )
 const suggestions = computed(() =>
   ['Breakfast', 'Lunch', 'Specials'].filter(
@@ -49,7 +49,7 @@ const captureScope = useMenuEditorScope([kitchenId, subscription], () => {
   error.value = ''
 })
 async function create(name: string) {
-  if (!hasPlus.value || !canCreateMenu.value || busy.value) return
+  if (!hasPro.value || !canCreateMenu.value || busy.value) return
   const isCurrent = captureScope()
   busy.value = true
   error.value = ''

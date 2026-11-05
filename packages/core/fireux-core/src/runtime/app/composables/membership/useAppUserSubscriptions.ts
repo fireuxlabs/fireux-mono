@@ -1,6 +1,7 @@
 import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type { AppUserSubscription } from '../../models/app-user.model'
+import { readAppUserSubscription } from '../../models/app-user.model'
 import { runAppUserCommand } from '../../utils/runAppUserCommand'
 
 const subscriptions = [
@@ -11,7 +12,7 @@ const subscriptions = [
     color: 'neutral',
   },
   {
-    id: 'premium',
+    id: 'pro',
     label: 'Pro',
     icon: 'i-lucide-crown',
     color: 'warning',
@@ -32,8 +33,10 @@ const subscriptions = [
 export function useAppUserSubscriptions(
   current?: MaybeRefOrGetter<AppUserSubscription | null | undefined>
 ) {
-  const getSubscription = (id: AppUserSubscription) =>
-    subscriptions.find((subscription) => subscription.id === id)
+  const getSubscription = (id: unknown) =>
+    subscriptions.find(
+      (subscription) => subscription.id === readAppUserSubscription(id)
+    )
   const subscription = computed(
     () => getSubscription(toValue(current) || 'free') || subscriptions[0]
   )

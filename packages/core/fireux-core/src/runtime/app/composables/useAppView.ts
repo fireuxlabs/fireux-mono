@@ -1,62 +1,23 @@
-import { safeString } from '../../composables/shared/useInterfaceUtils'
-import type { Ref } from 'vue'
-import type { AppPublicSummary } from '../models/app.model.ts'
+import type { App } from '../models/app.model.ts'
 import { resolveAppMediaForView } from '../utils/app-media'
-import { useColorMode } from '#imports'
 
 export type AppCard = {
-    id: string
-    to: string
-
-    // Media (empty string means unset)
-    imageUrl: string
-    avatarUrl: string
-    avatarText: string
-    thumbnailUrl: string
-
-    title: string
-    subtitle: string
-    displayName: string
-    ecosystem: string
-    badges: string[]
-
-    summary: string
-    status: string
-    ownerLabel: string
-    locationLabel: string
-
-    tagline: string
-    shortName: string
-    role: string
-    userCount: number | null
-
-    description: string
-
-    logoUrl: string
-    wordmarkLightUrl: string
-    wordmarkDarkUrl: string
-    coverUrl: string
-
-    // Always safe to render (empty string if none)
-    wordmarkUrl: string
-
-  socialLinks: AppPublicSummary['social_links']
+  id: string
+  to: string
+  name: string
+  ecosystemId: string
+  thumbnailUrl: string
+  logoUrl: string
+  coverUrl: string
+  avatarText: string
+  badges: string[]
+  tagline: string | undefined
+  shortName: string | undefined
+  description: string | undefined
 }
 
-function safeMedia(app: AppPublicSummary) {
-  return (
-    app.media ?? {
-      thumbnail_url: '',
-      logo_url: '',
-      wordmark_light_url: '',
-      wordmark_dark_url: '',
-      cover_url: '',
-    }
-  )
-}
-
-function makeAvatarText(app: AppPublicSummary): string {
-  const source = safeString(app.short_name || app.name || app.id)
+function makeAvatarText(name: string): string {
+  const source = name.trim()
   if (!source) return ''
 
   return source
@@ -67,75 +28,28 @@ function makeAvatarText(app: AppPublicSummary): string {
     .join('')
 }
 
-export function useAppView<T extends AppPublicSummary>(
-  appRef?: Ref<T | null | undefined>
-) {
-  const resolvedMode = useColorMode()
+export function useAppView() {
+  function toCard(app: App | null | undefined): AppCard | null {
+    if (!app) return null
 
-  function resolveWordmarkUrl(app: AppPublicSummary): string {
-    const media = resolveAppMediaForView(safeMedia(app), {
+    const media = resolveAppMediaForView(app.media, {
       owningAppBundle: false,
     })
-    return resolvedMode.value === 'dark'
-      ? media.wordmarkDarkUrl
-      : media.wordmarkLightUrl
-  }
-
-  function map(app: AppPublicSummary): AppCard {
-    const media = resolveAppMediaForView(safeMedia(app), {
-      owningAppBundle: false,
-    })
-    const id = safeString(app.id).trim()
-    const ecosystemId = safeString(app.ecosystem_id)
-    const name = safeString(app.name)
-    const shortName = safeString(app.short_name)
 
     return {
-      id,
-      to: id ? `/apps/${encodeURIComponent(id)}` : '',
-
-      imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
-      avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
-      avatarText: makeAvatarText(app),
-      thumbnailUrl: safeString(media.thumbnailUrl),
-
-      title: name,
-      subtitle: ecosystemId,
-      displayName: name,
-      ecosystem: ecosystemId,
-      badges: [app.role, ecosystemId]
-        .map((value) => safeString(value))
-        .filter(Boolean),
-
-      summary: safeString(app.description),
-      status: app.status,
-      ownerLabel: '',
-      locationLabel: '',
-
-      tagline: safeString(app.tagline),
-      shortName,
-      role: app.role != null ? String(app.role) : '',
-      userCount: null,
-
-      description: safeString(app.description),
-
-      logoUrl: safeString(media.logoUrl),
-      wordmarkLightUrl: safeString(media.wordmarkLightUrl),
-      wordmarkDarkUrl: safeString(media.wordmarkDarkUrl),
-      coverUrl: safeString(media.coverUrl),
-      wordmarkUrl: resolveWordmarkUrl(app),
-
-      socialLinks: app.social_links,
+      id: app.id,
+      to: `/apps/${encodeURIComponent(app.id)}`,
+      name: app.name,
+      ecosystemId: app.ecosystem_id,
+      thumbnailUrl: media.thumbnailUrl,
+      logoUrl: media.logoUrl,
+      coverUrl: media.coverUrl,
+      avatarText: makeAvatarText(app.name),
+      badges: [app.role, app.ecosystem_id],
+      tagline: app.tagline,
+      shortName: app.short_name,
+      description: app.description,
     }
-  }
-
-  function toCard(
-    target?: AppPublicSummary | null | undefined
-  ): AppCard | null {
-    const app = target ?? appRef?.value ?? null
-    if (!app) return null
-    const mapped = map(app)
-    return mapped.id ? mapped : null
   }
 
   return { toCard }

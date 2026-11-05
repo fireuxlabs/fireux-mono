@@ -16,27 +16,12 @@
     v-else
     :title="data.identity.name || 'Untitled Project'"
     label="Project overview"
-    :description="description"
-    :image="imageUrl"
-    :image-fit="publication?.imageFit"
+    :description="data.identity.description"
+    :image="data.identity.image_url"
     icon="i-lucide-briefcase-business"
     :links="links"
   >
-    <div v-if="publication" class="space-y-2 text-sm text-muted">
-      <UButton
-        :to="publication.sourceUrl"
-        target="_blank"
-        :label="`Description and image from ${publication.appName}`"
-        variant="link"
-      />
-      <p v-if="publication.status === 'pending'">Loading App identity…</p>
-      <template v-if="publication.message"
-        ><p>{{ publication.message }}</p>
-        <FireCopyError :message="publication.message"
-      /></template>
-    </div>
-    <OverviewCapabilities :publication="publication" />
-    <slot />
+    <OverviewCapabilities />
     <template v-if="incompleteFields.length" #attention>
       <p class="text-sm text-muted">Complete your Project identity.</p>
       <UButton
@@ -55,26 +40,14 @@
 <script setup lang="ts">
 import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
-import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import WorkspaceOverview from 'fireux-core/runtime/workspace/components/Overview/Index.vue'
 import { useProjectWorkspaceHome } from '../../../composables/workspace/useProjectWorkspaceHome'
-const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const { selectedProject: data, outcome } = useProjectWorkspaceHome()
-const description = computed(() =>
-  props.publication
-    ? props.publication.description
-    : data.value?.identity.description || ''
-)
-const imageUrl = computed(() =>
-  props.publication
-    ? props.publication.imageUrl
-    : data.value?.identity.image_url || ''
-)
 const incompleteFields = computed(() =>
   [
     !data.value?.identity.name && 'a name',
-    !props.publication && !data.value?.identity.description && 'a description',
-    !props.publication && !data.value?.identity.image_url && 'an image',
+    !data.value?.identity.description && 'a description',
+    !data.value?.identity.image_url && 'an image',
   ].filter((field): field is string => Boolean(field))
 )
 const links = [

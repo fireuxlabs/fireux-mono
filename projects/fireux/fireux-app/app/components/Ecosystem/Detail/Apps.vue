@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import type { EcosystemPublicSummary } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 import { useEcosystemApps } from 'fireux-core/runtime/ecosystem/composables/useEcosystemApps'
-const props = defineProps<{ ecosystem: EcosystemPublicSummary }>()
+const props = defineProps<{ ecosystem: Ecosystem }>()
 const { apps, pending, error } = useEcosystemApps(() => props.ecosystem.id)
 </script>

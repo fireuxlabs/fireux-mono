@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-21 12:23 CEST — Cleanbox-to-Werkbox app migration: define truthful Werkbox identity and route metadata.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty workspace-operation set.
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { swissJobsLegalReview } from 'fireux-jobs/runtime/content/swiss-legal-review'
 
 export const metaContent = defineFireuxMeta({
   app: {
@@ -42,6 +43,7 @@ export const metaContent = defineFireuxMeta({
       to: '/categories/cleaning',
     },
   },
+  legal: { notices: [swissJobsLegalReview] },
   operations: [],
   routes: {
     public: ['/', '/categories/cleaning', '/jobs', '/agents', '/professionals'],

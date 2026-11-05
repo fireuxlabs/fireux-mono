@@ -16,9 +16,16 @@ definePageMeta({ layout: 'tours' })
   <div>
     <LandingHero />
     <LandingRides />
-    <section class="wrap section" aria-labelledby="landing-destinations">
-      <h2 id="landing-destinations">Where would you like to ride?</h2>
-      <DestinationsCollection />
+    <LandingWhyRide />
+    <LandingBikeRental />
+    <section
+      class="destination-section section"
+      aria-labelledby="landing-destinations"
+    >
+      <div class="wrap">
+        <h2 id="landing-destinations">Where would you like to ride?</h2>
+        <DestinationsCollection />
+      </div>
     </section>
     <LandingGuide />
     <LandingEnquiry />

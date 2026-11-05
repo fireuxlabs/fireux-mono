@@ -20,7 +20,7 @@ export function prepareIgnitionPreview(value: unknown) {
   const outcome = (input.outcome as string).trim()
   if (
     !/^[a-z][a-z0-9-]{2,58}$/.test(id) ||
-    ['fireux-app', 'fireux-template'].includes(id)
+    ['app', 'ecosystem', 'fireux-app', 'fireux-template'].includes(id)
   )
     throw new Error(
       'Use a new App id: 3–59 lowercase letters, digits or hyphens.'
@@ -54,14 +54,8 @@ export function prepareIgnitionPreview(value: unknown) {
     name,
     shortName: name,
     role: 'global',
-    selfJoinEnabled: true,
     context: outcome,
-    modules: ['fireux-products'],
-    extends: [
-      `${packageName}/layer`,
-      'fireux-blogs/layer',
-      'fireux-products/layer',
-    ],
+    extends: [`${packageName}/layer`],
     seo: {
       siteUrl: 'http://localhost:3048',
       noindexPaths: ['/', '/**'],
@@ -77,12 +71,7 @@ export function prepareIgnitionPreview(value: unknown) {
     '@nuxt/icon',
   ] as const)
     dependencies[key] = manifest.dependencies[key]
-  for (const key of [
-    'fireux-core',
-    'fireux-blogs',
-    'fireux-products',
-    'fireux-ignite',
-  ])
+  for (const key of ['fireux-core', 'fireux-ecosystem', 'fireux-ignite'])
     dependencies[key] = 'workspace:*'
   dependencies[packageName] = 'workspace:*'
   dependencies['@vite-pwa/nuxt'] = manifest.devDependencies['@vite-pwa/nuxt']
@@ -105,7 +94,7 @@ export function prepareIgnitionPreview(value: unknown) {
         null,
         2
       ) + '\n',
-    'nuxt.config.ts': `import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'\n\nexport default defineFireuxConfig(${JSON.stringify(identity, null, 2)})\n`,
+    'nuxt.config.ts': `import { defineFireuxEcosystem } from 'fireux-ecosystem/config'\n\nexport default defineFireuxEcosystem(${JSON.stringify(identity, null, 2)})\n`,
     'tsconfig.json':
       JSON.stringify(
         {
@@ -141,10 +130,10 @@ import { name } from '../../ignition/brief'
 const pricing = usePricing({
   appName: name, contactEmail: '', workspaceName: 'Workspace',
   entityName: 'workspace', entityPluralName: 'workspaces',
-  free: ['Start with the Free tier'], professional: ['Pro workspace capabilities'],
+  free: ['Start with the Free tier'], pro: ['Pro workspace capabilities'],
   includesManaged: false, includesEcosystemTier: false,
 })
-const tiers = computed(() => pricing.tiers.value.filter(tier => ['free', 'professional', 'business'].includes(tier.id)))
+const tiers = computed(() => pricing.tiers.value.filter(tier => ['free', 'pro', 'business'].includes(tier.id)))
 </script>
 `,
     '.env.example': `APP_DOMAIN=http://localhost:3048

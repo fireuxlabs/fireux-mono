@@ -1,15 +1,10 @@
 <template>
   <UPage class="research-page">
     <UPageHeader
-      :ui="{
-        root: 'py-5',
-        title: 'text-2xl sm:text-3xl',
-        description: 'text-sm mt-2',
-      }"
       title="Research evidence"
       description="Read the sources behind this Workspace plan."
     />
-    <UPageBody class="mt-5 flex flex-col gap-5 space-y-0">
+    <UPageBody class="research-page__body">
       <AppSearchDemandBriefNav :briefs="briefs" /><AppSearchDemandStageNav
         current="domain"
       />
@@ -29,10 +24,10 @@
       <template v-else>
         <section class="research-intro">
           <h2>{{ demand.domain }}</h2>
-          <p class="research-reading text-sm text-muted">
+          <p class="research-reading research-copy research-muted">
             {{ demand.summary.conclusion }}
           </p>
-          <p class="text-xs text-muted">
+          <p class="research-meta research-muted">
             {{ observations.length }} observations<span
               v-if="demand.research_scope"
             >
@@ -42,7 +37,7 @@
         </section>
         <details class="research-details">
           <summary>Who this research covers and its limits</summary>
-          <div class="research-detail-body research-reading text-sm">
+          <div class="research-detail-body research-reading research-copy">
             <p><strong>Operator:</strong> {{ demand.operator }}</p>
             <p>{{ demand.description }}</p>
             <template v-if="demand.research_scope"
@@ -65,18 +60,18 @@
             </p>
           </div>
         </details>
-        <label class="research-grid gap-2 max-w-lg"
-          ><span class="text-sm font-medium">Find evidence</span
-          ><input
+        <UFormField label="Find evidence" class="research-filter">
+          <UInput
             v-model="search"
             type="search"
             placeholder="Search sources, findings or places…"
-            class="research-field"
-        /></label>
+            icon="i-lucide-search"
+          />
+        </UFormField>
         <p
           v-if="!observationGroups.length"
           role="status"
-          class="text-sm text-muted"
+          class="research-copy research-muted"
         >
           No matching evidence. Try another search.
         </p>
@@ -110,12 +105,14 @@
                     >{{ observation.query
                     }}<span
                       v-if="observation.finding"
-                      class="research-summary-copy block line-clamp-2"
+                      class="research-summary-copy research-summary-copy--clamped"
                       >{{ observation.finding }}</span
                     ></span
                   >
                 </summary>
-                <div class="research-detail-body research-reading text-sm">
+                <div
+                  class="research-detail-body research-reading research-copy"
+                >
                   <ULink
                     v-if="observation.source_url"
                     :to="observation.source_url"
@@ -131,7 +128,7 @@
                   <p v-if="observation.limitations">
                     <strong>Limits:</strong> {{ observation.limitations }}
                   </p>
-                  <p class="text-xs text-muted">
+                  <p class="research-meta research-muted">
                     {{ sourceLabel(observation.source) }} ·
                     {{ observation.geography }} · {{ observation.language }} ·
                     observed {{ observation.observed_at
@@ -143,12 +140,12 @@
                   </p>
                   <dl
                     v-if="observation.metrics?.length"
-                    class="text-xs text-muted"
+                    class="research-meta research-muted"
                   >
                     <div
                       v-for="metric in observation.metrics"
                       :key="metric.label"
-                      class="flex gap-2"
+                      class="research-row"
                     >
                       <dt>{{ metric.label }}:</dt>
                       <dd>{{ metric.value }}</dd>
@@ -160,7 +157,7 @@
           </details>
         </div>
         <footer class="research-next">
-          <p class="text-sm text-muted">
+          <p class="research-copy research-muted">
             Next: see the operator jobs these sources suggest.
           </p>
           <UButton

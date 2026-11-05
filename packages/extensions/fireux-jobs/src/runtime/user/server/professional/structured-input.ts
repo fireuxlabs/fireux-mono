@@ -197,14 +197,14 @@ function normalizeExperience(
     `${label} Place collection`,
     120
   )
-  if (!['', 'kitchens', 'companies'].includes(placeCollection)) {
+  if (!['', 'kitchens', 'businesses'].includes(placeCollection)) {
     failProfessionalStructuredInput(
       `${label} Place collection is unsupported.`
     )
   }
   references.push({ path: `places/${placeId}`, label: `${label} Place` })
-  if (placeCollection === 'companies') {
-    references.push({ path: `companies/${placeId}`, label: `${label} Company` })
+  if (placeCollection === 'businesses') {
+    references.push({ path: `businesses/${placeId}`, label: `${label} Business` })
   }
   if (placeCollection === 'kitchens') {
     references.push({ path: `kitchens/${placeId}`, label: `${label} Kitchen` })

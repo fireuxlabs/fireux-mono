@@ -1,6 +1,5 @@
-import { FieldValue } from 'firebase-admin/firestore'
 import type { AppMembershipMutationResult } from '../../models/app-membership'
-import { APP_MUTATION_TARGETS, serverAppJoinRequestsTarget, serverAppMembershipBlocksTarget, serverAppUsersTarget } from '../mutation-targets'
+import { APP_MUTATION_TARGETS, serverAppUsersTarget } from '../mutation-targets'
 import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
@@ -18,7 +17,6 @@ import {
   type TransactionOutcome,
 } from './command-contract'
 import { handleRemoveMember } from './remove'
-import { handleReviewJoin } from './review-join'
 import { handleMembershipSettings } from './settings'
 import { reconcileUserAppReference } from './user-reference'
 
@@ -29,13 +27,9 @@ async function mutateInTransaction(
   const { actorUid, appId, developerUid, input } = context
   const apps = APP_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(appId)
-  const joinRequests = serverAppJoinRequestsTarget(appId)
-  const blocks = serverAppMembershipBlocksTarget(appId)
-
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const app = await mutations.read(apps, appId)
     if (!app.exists) forbidden(409, 'The runtime App record does not exist.')
-    const appData = app.data ?? {}
     const actorMembershipSnapshot = await mutations.read(memberships, actorUid)
     const actorMembership = actorMembershipSnapshot.data
 
@@ -48,29 +42,30 @@ async function mutateInTransaction(
         if (!user.exists)
           forbidden(409, 'The public User record does not exist.')
       }
-      const created = !actorMembershipSnapshot.exists
-      if (created) {
-        const block = await mutations.read(blocks, actorUid)
-        if (block.exists)
-          forbidden(403, 'This App membership has been blocked.')
-        if (appData.self_join_enabled !== true)
-          forbidden(403, 'This App requires an approved join request.')
-        mutations.create(
-          memberships,
-          actorUid,
-          initialMembership(actorUid, 'user')
-        )
-        mutations.update(apps, appId, appGovernancePatch(actorUid))
-      } else {
+      if (actorMembershipSnapshot.exists) {
         requireCanonicalMembership(actorMembership ?? {})
+        return {
+          ok: true,
+          action: input.action,
+          appId,
+          userId: actorUid,
+          created: false,
+          role: roleFrom(actorMembership) ?? 'user',
+        }
       }
+      mutations.create(
+        memberships,
+        actorUid,
+        initialMembership(actorUid, 'user')
+      )
+      mutations.update(apps, appId, appGovernancePatch(actorUid))
       return {
         ok: true,
         action: input.action,
         appId,
         userId: actorUid,
-        created,
-        role: created ? 'user' : (roleFrom(actorMembership) ?? 'user'),
+        created: true,
+        role: 'user',
       }
     }
 
@@ -115,45 +110,12 @@ async function mutateInTransaction(
       }
     }
 
-    if (input.action === 'request-join') {
-      if (actorMembershipSnapshot.exists)
-        return {
-          ok: true,
-          action: input.action,
-          appId,
-          userId: actorUid,
-          requested: false,
-        }
-      if ((await mutations.read(blocks, actorUid)).exists)
-        forbidden(403, 'This App membership has been blocked.')
-      const existingRequest = await mutations.read(joinRequests, actorUid)
-      if (!existingRequest.exists)
-        mutations.create(joinRequests, actorUid, {
-          user_id: actorUid,
-          created: {
-            at: FieldValue.serverTimestamp(),
-            by: actorUid,
-            app_id: appId,
-          },
-        })
-      return {
-        ok: true,
-        action: input.action,
-        appId,
-        userId: actorUid,
-        requested: !existingRequest.exists,
-      }
-    }
-
     const state = {
       context,
       mutations,
-      appData,
       actorMembershipExists: actorMembershipSnapshot.exists,
       actorMembership,
     }
-    if (input.action === 'review-join')
-      return handleReviewJoin(state, crossDatabaseUserVerified)
     if (
       input.action === 'set-role' ||
       input.action === 'set-subscription' ||

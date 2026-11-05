@@ -1,3 +1,4 @@
+import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -19,7 +20,7 @@ const requireKitchenRecordMutationAuthority = load('../../runtime/kitchen/server
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
 PLACE_MUTATION_TARGETS: { places: 'places' }, readKitchenAccessIds,
-  isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
+  readAppUserSubscription, createError,
 }, 'requireKitchenRecordMutationAuthority')
 const normalizeKitchenPrepItemTranslatedText=load('../../runtime/kitchen/utils/prep-item.ts',{},'normalizeKitchenPrepItemTranslatedText')
 const readPrepItemCreateInput=load('../../runtime/kitchen/server/prep-items/create-input.ts',{createError,requireFirestoreDocumentId,normalizeKitchenPrepItemTranslatedText,normalizeSlug:value=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-')},'readPrepItemCreateInput')

@@ -3,7 +3,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-import type { EcosystemPublicSummary } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 
 /** Authorized Project relationship with live owning-system dependencies. */
 export function useProjectEcosystems(
@@ -32,7 +32,7 @@ export function useProjectEcosystems(
       const token = await user.getIdToken()
       const result = await fetchRead<{
         project_id: string
-        ecosystems: EcosystemPublicSummary[]
+        ecosystems: Ecosystem[]
       }>(
         `/api/internal/control/projects/${encodeURIComponent(requestId)}/ecosystems`,
         { headers: { authorization: `Bearer ${token}` } }

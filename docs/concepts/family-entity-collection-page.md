@@ -189,7 +189,7 @@ become public outcome presentation.
 | Supplier                                   | ordinary sibling         | supplier identity, catalogue facts and management doorway    |
 | Portfolio                                  | ordinary sibling         | property-group identity and management doorway               |
 | Property                                   | paginated sibling        | bounded pagination and intentionally unlinked cards today    |
-| Company                                    | joined sibling           | complete Company/Place pairs and bounded pagination          |
+| Business                                    | joined sibling           | complete Business/Place pairs and bounded pagination          |
 
 ## App-owned branded families
 
@@ -257,7 +257,7 @@ When this family changes:
   rather than a shared `FireCollectionPage` shell. Marketplace Store is the one
   declared root Entity without a comparable root index; this pass does not
   invent one.
-- Company, Ingredient, Product, profile directories, Blog, parent-scoped
+- Business, Ingredient, Product, profile directories, Blog, parent-scoped
   Entities, and App-branded routes are not silently promoted into this audited
   root-Entity family. Their existing surfaces remain separate pending their own
   classification or product decision.
@@ -265,8 +265,7 @@ When this family changes:
   legitimate domain deltas.
 - Yellow Velo and Interlaken aesthetic families remain App-owned.
 - Supplier, Portfolio, and Property are aligned FL siblings. Their collection
-  authority and management doorways remain Entity-owned. Company remains a
-  Place-owned Record and is not claimed as a root Entity sibling.
+  authority and management doorways remain Entity-owned. Business is an independent Workspace Entity with optional Place links.
 - Portfolio public index transport pages canonical `Portfolio[]`; the reader
   supplies document ids and does not create a second directory-entry model.
 - Place index transport pages canonical `Place[]`; it no longer maintains a
@@ -301,7 +300,7 @@ When this family changes:
   identity. `useMenuDirectory` owns client outcomes and pagination while
   `readMenuDirectoryPage` owns the server read for all Menu Collection Page scopes.
 - Job uses `JobDirectoryEntry` and `JobDirectoryPage` because its paginated
-  cards join Company/Place display facts and JSON-safe schedule values.
+  cards join Business/Place display facts and JSON-safe schedule values.
   `readJobDirectoryPage` owns the shared JSON and sitemap read; exact detail
   returns the canonical Job plus its named related records.
 - Editorial Blog presentation remains outside this completed proving pass;

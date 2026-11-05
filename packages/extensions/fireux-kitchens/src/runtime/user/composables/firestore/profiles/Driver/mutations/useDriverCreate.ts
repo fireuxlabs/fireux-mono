@@ -27,14 +27,14 @@ export function useDriverCreate() {
     const actor = await useRequireUser()
     const assertCurrent = () => { if (!isCurrent() || actor.uid !== uid) throw new Error('The signed-in account changed. Please try again.') }
     assertCurrent()
-    const user = await bootstrapUser(actor)
+    await bootstrapUser(actor)
     assertCurrent()
     const profile = await createProfile(actor)
 
     return {
       createdProfile: profile.createdProfile,
       createdAppState: profile.createdAppState,
-      id: user.id,
+      id: profile.userId,
     }
   }
 

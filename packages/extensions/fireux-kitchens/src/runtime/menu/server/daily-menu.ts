@@ -55,10 +55,10 @@ export async function configureDailyMenu(
   const sectionId = randomUUID()
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
-    if (!['premium', 'business'].includes(access.subscription))
+    if (!['pro', 'business'].includes(access.subscription))
       throw createError({
         statusCode: 403,
-        statusMessage: 'Daily menus require Plus.',
+        statusMessage: 'Daily menus require Pro.',
       })
     const target = serverKitchenMenusTarget(kitchenId)
     const menu = await tx.read(target, menuId)

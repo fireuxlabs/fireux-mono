@@ -11,7 +11,6 @@ type ProjectLandingFacts = {
   subscription: string
   used: number
   limit: number | null
-  publishedIdentity: boolean
 }
 
 export function projectWorkspaceIntro(
@@ -21,15 +20,15 @@ export function projectWorkspaceIntro(
   const tier =
     facts?.subscription === 'business'
       ? 'Business'
-      : facts?.subscription === 'premium'
-        ? 'Premium'
+      : facts?.subscription === 'pro'
+        ? 'Pro'
         : 'Free'
   return {
     title: 'Project Workspace',
     purpose: facts?.count
       ? 'Your Projects, and the work that comes next.'
       : 'Give your next idea a place to grow.',
-    data: 'These are Projects associated with your account in this app. The Project owns its records. A connected App owns its published description and image.',
+    data: 'See the Projects you can access in this app.',
     boundaries:
       'Selection opens the current Project’s capabilities. Editing a Project does not deploy its connected App.',
     access:
@@ -50,7 +49,7 @@ export function projectWorkspaceIntro(
         : !facts.configured
           ? 'Project creation allowance is not configured. An upgrade is not a confirmed remedy.'
           : !known
-            ? 'Sign in to see your account allowance. Saving a new Project requires App membership.'
+            ? 'Complete User setup to get App access and see your account allowance.'
             : `${tier} · ${facts.used} associated Projects · ${facts.limit === null ? 'no subscription count limit' : `allowance ${facts.limit}`}.`,
       retained:
         'This page does not remove existing Projects when the creation allowance is reached. Editing still depends on Project access. The creation command checks Project associations when saving.',
@@ -81,9 +80,7 @@ export function projectWorkspaceIntro(
       {
         id: 'update',
         label: 'Edit Project',
-        description: facts?.publishedIdentity
-          ? 'Edit the Project name. Description and image come from the connected App.'
-          : 'Edit the selected Project’s name, description and image.',
+        description: 'Edit the selected Project’s name, description and image.',
         available: facts?.canUpdate ?? false,
         reason: facts?.canUpdate
           ? 'Review your changes and save them explicitly.'

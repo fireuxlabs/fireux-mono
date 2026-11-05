@@ -162,7 +162,7 @@ for (const name of ['Chef', 'Customer', 'Driver']) {
   })
 
   test(`${name} creation stops when User bootstrap fails`, async (t) => {
-    const failure = new Error('Join this App before creating a profile.')
+    const failure = new Error('App access is required before creating a profile.')
     const subject = workflow(name, { bootstrapError: failure })
     t.after(subject.stop)
     await assert.rejects(subject.create(), failure)

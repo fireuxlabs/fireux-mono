@@ -1,7 +1,7 @@
 # Menu family
 
-Updated: 2026-11-03
-Ref: a0433bb2b
+Updated: 2026-11-02
+Ref: a2bd21763
 Role: map, not canon
 
 ## Purpose
@@ -31,9 +31,6 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | MenuSourceUpload | Kitchen-scoped | Source material awaiting review; not a published Menu                          |
 
 `menu/models/menu.model.ts` is the sole stored Menu model.
-It composes Core's [shared record foundation](entities.md#shared-record-foundation)
-with Menu-owned naming, publication, audience, ordering, scheduling and format
-fields. Document and interactive Menus inherit the same identity and audit fields.
 `menu/models/menu-storage.model.ts` owns `kitchens/{kitchenId}/menus/{menuId}`.
 There is no root Menu record, standalone Menu upload, copied publication status,
 or directory synchronization command. Interactive content uses sections and Dish or meal-deal

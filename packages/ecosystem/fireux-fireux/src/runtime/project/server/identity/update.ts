@@ -10,13 +10,12 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { serverProjectAccessTarget } from '../access'
 import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
-import { hasProjectAppContext } from '../../utils/app-context-connection'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
 }
 
-function identityPatch(value: unknown, connected: boolean) {
+function identityPatch(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     fail(400, 'Project Identity changes must be an object.')
   const source = value as Record<string, unknown>
@@ -26,8 +25,6 @@ function identityPatch(value: unknown, connected: boolean) {
     keys.some((key) => !['name', 'description', 'image_url'].includes(key))
   )
     fail(400, 'Only Project Identity fields may be updated.')
-  if (connected && keys.some((key) => key !== 'name'))
-    fail(403, 'Description and image are managed by the connected App.')
   const patch: Record<string, string> = {}
   for (const key of keys) {
     if (typeof source[key] !== 'string')
@@ -73,7 +70,7 @@ export async function updateProjectIdentity(
     useFireUXConfig(event).appId,
     'FireUX App id'
   )
-  const patch = identityPatch(input, hasProjectAppContext(projectId))
+  const patch = identityPatch(input)
   const memberships = fireuxAppUsersTarget(appId)
   const accessTarget = serverProjectAccessTarget(appId)
   await runGuardedServerTransaction(

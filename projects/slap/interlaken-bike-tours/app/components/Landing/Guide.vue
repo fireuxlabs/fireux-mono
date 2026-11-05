@@ -11,7 +11,7 @@
         /><span>THE LOCAL WAY ↗</span>
       </div>
       <div>
-        <p class="eyebrow">Meet your guide</p>
+        <p class="eyebrow">04 / Your guide</p>
         <h2>Hi, I'm Ben.<br />Let's take<br />the scenic way.</h2>
         <p>
           I've called the Swiss Alps home for 20 years. Every route is one I've

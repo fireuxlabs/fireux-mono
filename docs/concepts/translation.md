@@ -1,21 +1,19 @@
 # Translation and reviewed copy
 
-Updated: 2026-08-19
-Ref: d1a7d5eec
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
 
-Map the boundary between transient localization helpers and durable,
-human-reviewed public copy.
+Map Sproochli's language support, localized fields and reviewed public copy.
 
 ## Shared spine
 
-- `fireux-translation` owns the product-neutral language catalogue and client
-  request helpers used to seed transient/localized fields. It owns no provider
-  credentials, reviewed-copy persistence, or approval workflow.
-- `fireux-sproochli` owns multilingual document models, provider transport,
-  language selection, and reviewed authored-copy workflow semantics.
+- `fireux-sproochli` owns shared language definitions, localized-field
+  preparation, multilingual document models, provider transport, language
+  selection, and reviewed authored-copy semantics. These responsibilities
+  share one package owner.
 - A consuming host owns its runtime Sproochli cache. The shared server package
   resolves the host's Firebase runtime and fixed named database `sproochli`;
   the standalone Sproochli App generates missing translations but never
@@ -100,6 +98,19 @@ human-reviewed public copy.
   readiness is unavailable, the manifest carries `null` rather than claiming
   that no languages are cached.
 
+## Localized fields
+
+Sproochli's `seedSproochliText` prepares localized fields for Kitchen Recipe and
+Prep Item creation. It preserves existing text, normalizes the source-language
+code and sets the canonical source value. This is a synchronous value helper;
+it makes no HTTP or provider calls. Kitchen's command owns validation,
+authority and persistence.
+
+Supported language choices come from Sproochli's shared public-language
+catalogue. Field preparation has no separate target-language list, generation
+flag or failed-language result. Provider generation stays server-owned, and
+reviewed public copy still requires an approved phrase pack.
+
 ## Host registration canon
 
 Enabling `fireux-sproochli` attaches the runtime capability; it does not by
@@ -178,6 +189,10 @@ translation state onto Kitchen.
 
 ## Source and verification
 
+- Supported language choices:
+  `packages/extensions/fireux-sproochli/src/runtime/composables/fireux/sproochli/publicLanguage.ts`
+- Localized-field preparation:
+  `packages/extensions/fireux-sproochli/src/runtime/utils/translation-seed.ts`
 - Workflow types and approval resolver:
   `packages/extensions/fireux-sproochli/src/runtime/copy.ts`
 - Trusted drafting:

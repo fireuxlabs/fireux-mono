@@ -1,3 +1,4 @@
+import { seedSproochliText as seedText } from '../../../../fireux-sproochli/src/runtime/utils/translation-seed.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -73,16 +74,10 @@ function context() {
     useWorkspace: () => ({ selectedId }),
     useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
     useRequireUser: () => auth.promise,
-    useTranslationSeed: () => ({
-      seedTranslations: async (input) => {
-        seeds.push(input)
-        return {
-          sourceLanguage: 'en',
-          text: { ...input.existingText, en: input.text },
-          failedLanguages: [],
-        }
-      },
-    }),
+    seedSproochliText: (input) => {
+      seeds.push(input)
+      return seedText(input)
+    },
     $fetch: (url, options) => {
       calls.push({ url, options })
       return response.promise
@@ -167,6 +162,7 @@ function context() {
     deps,
     change,
     factories,
+    ownerSources: [selectedId, () => route.fullPath],
   }
 }
 const changedKinds = [
@@ -189,12 +185,14 @@ test('Recipe mutation snapshots authority and local intent through auth/token wa
       for (const changed of changedKinds) {
         const h = context(),
           local = vue.ref('before'),
-          api = h.scope.run(() => h.deps.useRecipeMutation([local]))
+          api = h.scope.run(() =>
+            h.deps.useRecipeMutation([local, ...h.ownerSources])
+          )
         const body =
           method === 'POST'
             ? { draft: { name: 'Original' } }
             : { recipeId: 'recipe', changes: { name: 'Original' } }
-        const flight = api.mutate(method, body)
+        const flight = api.mutate(method, body, 'kitchen')
         if (stage !== 'auth') {
           h.auth.resolve(h.user)
           await drain()
@@ -242,7 +240,7 @@ test('Recipe and Prep responses require a safe string document identity and exac
         )
       const flight =
         kind === 'prep'
-          ? api.createPrepItem({ name: 'Prep' }, {}, { translate: false })
+          ? api.createPrepItem({ name: 'Prep' }, { kitchenId: 'kitchen' })
           : api.mutate(
               kind === 'create'
                 ? 'POST'
@@ -251,7 +249,8 @@ test('Recipe and Prep responses require a safe string document identity and exac
                   : 'DELETE',
               kind === 'create'
                 ? { draft: { name: 'Original' } }
-                : { recipeId: 'recipe' }
+                : { recipeId: 'recipe' },
+              'kitchen'
             )
       h.auth.resolve(h.user)
       h.token.resolve('token')
@@ -259,33 +258,6 @@ test('Recipe and Prep responses require a safe string document identity and exac
       await assert.rejects(flight, /response did not identify/)
       h.scope.stop()
     }
-})
-test('Recipe translation preparation stops before a second seed when its originating intent changes', async () => {
-  const h = context(),
-    seed = deferred()
-  h.deps.useTranslationSeed = () => ({
-    seedTranslations: (input) => {
-      h.seeds.push(input)
-      return seed.promise
-    },
-  })
-  h.factories()
-  const api = h.scope.run(() => h.deps.useRecipeCreate())
-  const flight = api.createRecipe(
-    { name: 'Original', description: 'Notes' },
-    {},
-    { translate: false }
-  )
-  h.change('app')
-  seed.resolve({
-    sourceLanguage: 'en',
-    text: { en: 'Original' },
-    failedLanguages: [],
-  })
-  await assert.rejects(flight, /changed/)
-  assert.equal(h.seeds.length, 1)
-  assert.equal(h.calls.length, 0)
-  h.scope.stop()
 })
 test('Recipe mutation copies nested caller inputs before credentials', async () => {
   const h = context(),
@@ -297,7 +269,7 @@ test('Recipe mutation copies nested caller inputs before credentials', async () 
         preparation: { yield: { quantity: 2 } },
       },
     }
-  const flight = api.mutate('PATCH', input)
+  const flight = api.mutate('PATCH', input, 'kitchen')
   input.changes.names.en = 'Changed'
   input.changes.preparation.yield.quantity = 99
   h.auth.resolve(h.user)
@@ -553,35 +525,23 @@ test('native Recipe form rejects blank and non-finite quantities before any comm
   }
 })
 test('local Recipe draft changes cancel credentials and suppress stale post-dispatch save effects', async () => {
-  for (const stage of ['seed', 'token', 'response'])
+  for (const stage of ['auth', 'token', 'response'])
     for (const failed of [false, true]) {
-      const h = context(),
-        seed = deferred()
-      if (stage === 'seed') {
-        h.deps.useTranslationSeed = () => ({
-          seedTranslations: (input) => {
-            h.seeds.push(input)
-            return seed.promise
-          },
-        })
-        h.factories()
-      }
-      const f = mountForm(h, stage === 'seed' ? null : existing())
+      const h = context()
+      const f = mountForm(h, stage === 'auth' ? null : existing())
       f.api.name.value = 'Submitted'
       const flight = f.api.save()
-      h.auth.resolve(h.user)
-      await drain()
+      if (stage !== 'auth') {
+        h.auth.resolve(h.user)
+        await drain()
+      }
       if (stage === 'response') {
         h.token.resolve('token')
         await drain()
         assert.equal(h.calls.length, 1)
       }
       f.api.name.value = 'Replacement'
-      seed.resolve({
-        sourceLanguage: 'en',
-        text: { en: 'Submitted' },
-        failedLanguages: [],
-      })
+      h.auth.resolve(h.user)
       h.token.resolve('token')
       if (failed) {
         h.response.promise.catch(() => {})
@@ -589,7 +549,6 @@ test('local Recipe draft changes cancel credentials and suppress stale post-disp
       } else h.response.resolve({ id: 'recipe' })
       await flight
       assert.equal(h.calls.length, stage === 'response' ? 1 : 0)
-      if (stage === 'seed') assert.equal(h.seeds.length, 1)
       assert.deepEqual(f.saved, [])
       assert.equal(f.api.name.value, 'Replacement')
       assert.equal(f.api.message.value, '')
@@ -723,8 +682,8 @@ test('Recipe and Prep commands reject unsettled membership before starting prepa
       )
       const flight =
         kind === 'recipe'
-          ? api.createRecipe({ name: 'Draft' }, {}, { translate: false })
-          : api.createPrepItem({ name: 'Prep' }, {}, { translate: false })
+          ? api.createRecipe({ name: 'Draft' }, { kitchenId: 'kitchen' })
+          : api.createPrepItem({ name: 'Prep' }, { kitchenId: 'kitchen' })
       await assert.rejects(flight, /changed/)
       assert.equal(h.seeds.length, 0)
       assert.equal(h.calls.length, 0)

@@ -7,9 +7,9 @@ const cleanList = (value: unknown) =>
 export type KitchenDemoSupplierScenarioLike = {
   supplier: {
     id?: string | null
-    company_id?: string | null
+    business_id?: string | null
     delivery?: { areas?: readonly string[] | null } | null
-    company_place?: {
+    business_place?: {
       id?: string | null
       name?: string | null
       short_name?: string | null
@@ -131,18 +131,17 @@ export function buildKitchenDemoSuppliersOperation(
     }
 
     const name =
-      clean(scenario.supplier.company_place?.short_name) ||
-      clean(scenario.supplier.company_place?.name)
-    const companyPlaceId = clean(scenario.supplier.company_place?.id)
-    const logoImageUrl = clean(scenario.supplier.company_place?.logo_image)
-    const placeImageUrl = clean(scenario.supplier.company_place?.image_url)
+      clean(scenario.supplier.business_place?.short_name) ||
+      clean(scenario.supplier.business_place?.name)
+    const businessPlaceId = clean(scenario.supplier.business_place?.id)
+    const logoImageUrl = clean(scenario.supplier.business_place?.logo_image)
+    const placeImageUrl = clean(scenario.supplier.business_place?.image_url)
     const headquartersLabel =
-      clean(scenario.supplier.company_place?.short_address) ||
-      clean(scenario.supplier.company_place?.name)
+      clean(scenario.supplier.business_place?.short_address) ||
+      clean(scenario.supplier.business_place?.name)
     if (
       !name ||
-      !companyPlaceId ||
-      companyPlaceId !== clean(scenario.supplier.company_id) ||
+      !businessPlaceId ||
       !placeImageUrl ||
       !logoImageUrl ||
       !headquartersLabel
@@ -155,7 +154,7 @@ export function buildKitchenDemoSuppliersOperation(
     return {
       id: supplierId,
       name,
-      headline: clean(scenario.supplier.company_place?.tagline),
+      headline: clean(scenario.supplier.business_place?.tagline),
       imageUrl: placeImageUrl || logoImageUrl,
       logoImageUrl,
       placeImageUrl,

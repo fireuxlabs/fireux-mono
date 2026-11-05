@@ -8,10 +8,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EcosystemPublicSummary } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
-const props = defineProps<{ ecosystem: EcosystemPublicSummary }>()
+const props = defineProps<{ ecosystem: Ecosystem }>()
 useSeo({
   title: computed(() => `${props.ecosystem.name} · FireUX Ecosystem`),
   description: computed(

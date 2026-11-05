@@ -16,13 +16,13 @@
         :billing-cycle="tier.billingCycle"
         :features="tier.included.slice(0, 4)"
         :terms="tier.priceNote"
-        :highlight="tier.id === 'professional'"
-        :badge="tier.id === 'professional' ? 'One Kitchen' : undefined"
+        :highlight="tier.id === 'pro'"
+        :badge="tier.id === 'pro' ? 'One Kitchen' : undefined"
         :button="{
           label: tier.id === 'free' ? 'Explore Free' : `Explore ${tier.title}`,
           to: tier.to,
           trailingIcon: 'i-lucide-arrow-right',
-          variant: tier.id === 'professional' ? 'solid' : 'outline',
+          variant: tier.id === 'pro' ? 'solid' : 'outline',
         }"
       />
     </UPricingPlans>

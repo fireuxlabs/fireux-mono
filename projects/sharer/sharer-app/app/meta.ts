@@ -14,7 +14,7 @@ export const metaContent = defineFireuxMeta({
     promise_html:
       'Show one profile QR or open a direct QR for a single link.',
     workspace_bridge_html:
-      'The free Sharer App carries Sharer branding. A premium business gets its own branded PWA.',
+      'The free Sharer App carries Sharer branding. Businesses can get their own branded, installable App.',
   },
   seo: {
     title: 'Sharer',

@@ -11,7 +11,7 @@ export function useSupplierDiagnostics() {
     id?: string
     supplier_id?: string
     name?: string
-    company_place?: { name?: string; short_name?: string }
+    business_place?: { name?: string; short_name?: string }
   }
   type SupplierIngredientRow = {
     key: string
@@ -39,8 +39,8 @@ export function useSupplierDiagnostics() {
     normalizeString(supplier.id || supplier.supplier_id)
   const getSupplierLabel = (supplier: SupplierDevRecord) =>
     normalizeString(
-      supplier.company_place?.short_name ||
-        supplier.company_place?.name ||
+      supplier.business_place?.short_name ||
+        supplier.business_place?.name ||
         supplier.name ||
         supplier.id ||
         supplier.supplier_id
@@ -59,8 +59,8 @@ export function useSupplierDiagnostics() {
 
   const selectedSupplierLabel = computed(() =>
     normalizeString(
-      selectedSupplier.value?.company_place?.short_name ||
-        selectedSupplier.value?.company_place?.name ||
+      selectedSupplier.value?.business_place?.short_name ||
+        selectedSupplier.value?.business_place?.name ||
         selectedSupplier.value?.name ||
         selectedSupplier.value?.id
     )

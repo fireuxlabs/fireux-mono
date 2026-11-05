@@ -72,7 +72,6 @@ function harness({ failedSource = '', standalone = false } = {}) {
     createError,
     FieldPath: { documentId: () => '__name__' },
     readAppDocument: (data, id) => ({ ...data, id }),
-    toAppPublicSummary: (app) => app,
   }
   const path =
     '../../../../../packages/core/fireux-core/src/runtime/app/server/collection/read.ts'
@@ -186,8 +185,8 @@ test('Ambiguous and malformed parents fail before querying', async () => {
   assert.equal(queries.length, 0)
 })
 
-test('Public App detail excludes inactive and archived definitions', async () => {
-  for (const status of ['active', 'inactive', 'archived']) {
+test('Public App detail excludes inactive definitions', async () => {
+  for (const status of ['active', 'inactive']) {
     const read = load('../../server/utils/apps.ts', 'readPlatformApp', {
       PLATFORM_APP_TARGETS: [{ projectId: 'host', databaseId: 'apps' }],
       getFirestoreProjectDb: async () => ({
@@ -198,7 +197,6 @@ test('Public App detail excludes inactive and archived definitions', async () =>
         }),
       }),
       readAppDocument: (data, id) => ({ ...data, id }),
-      toAppPublicSummary: (app) => app,
     })
     assert.deepEqual(
       await read('example'),
@@ -207,7 +205,7 @@ test('Public App detail excludes inactive and archived definitions', async () =>
   }
 })
 
-test('Complete App reads report the correct failed source while retaining available Apps', async () => {
+test('App reads retain available Apps only when partial results are permitted', async () => {
   const warnings = []
   const targets = ['first', 'second', 'third'].map((key) => ({
     key,
@@ -224,7 +222,6 @@ test('Complete App reads report the correct failed source while retaining availa
       }),
     }),
     readAppDocument: (data, id) => ({ ...data, id }),
-    toAppPublicSummary: (app) => app,
     console: { warn: (...args) => warnings.push(args) },
   })
   assert.deepEqual(
@@ -234,6 +231,13 @@ test('Complete App reads report the correct failed source while retaining availa
   assert.deepEqual(warnings[0][1], [
     { target: 'second', reason: 'Unavailable' },
   ])
+  await assert.rejects(
+    read({ requireComplete: true }),
+    (error) =>
+      error instanceof AggregateError &&
+      error.message === 'Platform App results are incomplete.' &&
+      error.errors.length === 1
+  )
 })
 
 test('Complete App reads fail when every configured source is unavailable', async () => {
@@ -281,6 +285,28 @@ test('Platform Ecosystem detail selects the owning named database and rejects un
     (error) => error.statusCode === 404
   )
   assert.equal(calls.length, 1)
+})
+
+test('Public Ecosystem lists omit inactive records and management still receives them', async () => {
+  const read = load('../../server/utils/ecosystems.ts', 'readPlatformEcosystems', {
+    PLATFORM_DIRECTORY_TARGETS: ['published', 'paused'].map((id) => ({
+      ecosystemId: id,
+      projectId: id,
+      databaseId: id,
+    })),
+    getFirestoreProjectDb: async (_project, database) => database,
+    readEcosystem: async (id, database, { activeOnly }) => {
+      assert.equal(id, database)
+      assert.equal(activeOnly, false)
+      return { id, status: id === 'published' ? 'active' : 'inactive' }
+    },
+  })
+
+  assert.deepEqual((await read()).map((item) => item.id), ['published'])
+  assert.deepEqual(
+    (await read({ activeOnly: false })).map((item) => item.id),
+    ['published', 'paused']
+  )
 })
 
 test('Platform and Ecosystem directories include standalone App databases without leaking another Ecosystem', async () => {

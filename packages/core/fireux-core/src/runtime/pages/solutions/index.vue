@@ -1,11 +1,9 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-10 sm:py-14">
-      <div class="mx-auto max-w-5xl space-y-8">
-        <FireLandingSolutions variant="hub" />
-      </div>
-    </UContainer>
-  </main>
+  <UPage>
+    <UPageBody>
+      <FireLandingSolutions variant="hub" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

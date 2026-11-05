@@ -30,8 +30,8 @@
         color="neutral"
         :title="
           menu.schedule === 'daily' &&
-          !['premium', 'business'].includes(subscription)
-            ? 'Daily specials require Plus'
+          !['pro', 'business'].includes(subscription)
+            ? 'Daily specials require Pro'
             : 'Read-only Menu'
         "
       />

@@ -60,7 +60,7 @@ export type KitchenDemoDishesOperation = {
 export type KitchenDemoDishesSupplierScenario = {
   supplier: {
     id?: string | null
-    company_place?: {
+    business_place?: {
       name?: string | null
       short_name?: string | null
     }

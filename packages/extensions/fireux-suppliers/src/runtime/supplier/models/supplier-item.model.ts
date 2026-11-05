@@ -1,4 +1,3 @@
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -36,23 +35,6 @@ export const SupplierItemStorage = {
   parent: 'supplier',
   idParam: 'supplierItemId',
 } as const
-
-export const SupplierItemRecord = defineFireuxEntity({
-  kind: 'record',
-  name: 'SupplierItem',
-  family: ['supplier', 'commerce'],
-  identity: 'parent-scoped',
-  authority: 'parent',
-  appSupport: 'none',
-  workspace: false,
-  parent: 'Supplier',
-  scoped: SupplierItemStorage.path,
-  notes: [
-    'Every SupplierItem belongs to its path Supplier and requires product_id.',
-    'ingredient_id is optional because not every commercial Product is culinary stock.',
-    'SupplierItem never copies canonical Product or Ingredient identity.',
-  ],
-})
 
 export const SupplierItemDefaults = {
   id: '',

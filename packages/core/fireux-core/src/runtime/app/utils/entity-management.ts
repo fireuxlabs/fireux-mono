@@ -1,4 +1,4 @@
-import type { FireuxAppRole } from '../../../config/app/types'
+import type { AppRole } from '../models/app.model'
 import type { FireuxEntityManagement } from '../../models/utils/scope.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -34,7 +34,7 @@ export function readFireuxEntityManagement(
 }
 
 export function resolveFireuxEntityManagementForApp(
-  role: FireuxAppRole,
+  role: AppRole,
   appId: string,
   ecosystem: string
 ): Exclude<FireuxEntityManagement, { mode: 'root' }> {

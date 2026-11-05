@@ -3,7 +3,6 @@ import type { Project, ProjectIdentity, ProjectPublicSummary } from '../models/p
 
 const PROJECT_FIELDS = new Set(['context', 'id', 'identity', 'guest_owner_uid', 'created', 'updated'])
 const IDENTITY_FIELDS = new Set(['status', 'name', 'description', 'image_url'])
-const PROJECT_STATUSES = new Set<ProjectIdentity['status']>(['active', 'inactive', 'archived'])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
@@ -21,12 +20,12 @@ function isStamp(value: unknown, allowAppId = false): boolean {
 
 function readIdentity(value: unknown): ProjectIdentity | null {
   if (!isRecord(value) || Object.keys(value).some(key => !IDENTITY_FIELDS.has(key)) ||
-      !PROJECT_STATUSES.has(value.status as ProjectIdentity['status']) ||
+      (value.status !== 'active' && value.status !== 'inactive') ||
       typeof value.name !== 'string' || !value.name.trim() || value.name.length > 120 ||
       typeof value.description !== 'string' || value.description.length > 2000 ||
       typeof value.image_url !== 'string' || value.image_url.length > 2048) return null
   return {
-    status: value.status as ProjectIdentity['status'], name: value.name.trim(),
+    status: value.status, name: value.name.trim(),
     description: value.description.trim(), image_url: value.image_url.trim(),
   }
 }

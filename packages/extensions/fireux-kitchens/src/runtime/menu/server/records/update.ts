@@ -45,10 +45,10 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
-    if (renamed && !['premium', 'business'].includes(access.subscription))
+    if (renamed && !['pro', 'business'].includes(access.subscription))
       throw createError({
         statusCode: 403,
-        statusMessage: 'Editing Menu names requires Plus.',
+        statusMessage: 'Editing Menu names requires Pro.',
       })
     const target = serverKitchenMenusTarget(kitchenId),
       menu = await tx.read(target, menuId)
@@ -90,7 +90,7 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
           statusMessage: 'Menu hours must fit within Kitchen service hours.',
         })
     }
-    const stamp = serverAuditStamp({ by: actor.uid })
+    const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     const next: Record<string, unknown> = {
       ...menu.data,
       ...changes,

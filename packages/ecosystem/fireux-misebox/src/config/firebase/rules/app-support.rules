@@ -1,19 +1,10 @@
 // @fireux-ecosystem-rules-fragment misebox/app-support
-      match /join-requests/{userId} {
-        // @fireux-core-rules join-validator
-        allow get: if isOwner(userId) ||
-          (isAppAdmin(appId) && isValidJoinRequest(resource.data));
-        allow list: if isAppAdmin(appId);
-        allow create, update, delete: if false;
-      }
-
       match /financial-facts/{factId} {
         allow get, list, create, update, delete: if false;
       }
 
       // AppUser is membership and App governance only. Profile and Workspace
       // capability state live under their own owners.
-      // @fireux-core-rules membership-block
       match /users/{userId} {
         function isValidEntityRelationship(data, idsField, primaryField) {
           return
@@ -54,7 +45,7 @@
               'updated'
             ]) &&
             data.role in ['admin', 'user', 'dev'] &&
-            data.subscription in ['free', 'premium', 'business'] &&
+            data.subscription in ['free', 'pro', 'premium', 'business'] &&
             data.onboarding_status in [
               'pending',
               'completed',

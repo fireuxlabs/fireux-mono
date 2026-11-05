@@ -49,8 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { projectIdentityMedia } from '../../utils/project-identity-media'
-import { useProjectAppContext } from '../../composables/workspace/identity/useProjectAppContext'
+import type { Project } from '../../models/project.model'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/workspace/components/EntitySwitcher.vue'
 import { useProjectWorkspace } from '../../composables/workspace/useProjectWorkspace'
@@ -68,7 +67,6 @@ withDefaults(
   }
 )
 const workspace = useProjectWorkspace()
-const { publication } = useProjectAppContext()
 const { workspaceEntryPath } = useWorkspaceEntryCta('project')
 const selected = computed(() =>
   workspace.collection.value.find(
@@ -76,16 +74,11 @@ const selected = computed(() =>
   )
 )
 const backdropImage = computed(() => '')
-function avatar(project: Parameters<typeof projectIdentityMedia>[0]) {
-  const media = projectIdentityMedia(project, publication.value)
+function avatar(project: Project | null | undefined) {
   return {
-    src: media.imageUrl || undefined,
+    src: project?.identity.image_url || undefined,
     alt: project?.identity.name || project?.id || 'Project',
     icon: 'i-lucide-briefcase-business',
-    ui:
-      media.imageFit === 'contain'
-        ? { image: 'object-contain p-0.5' }
-        : undefined,
   }
 }
 const item = computed(() => ({

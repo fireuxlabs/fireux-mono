@@ -49,7 +49,7 @@ function harness() {
     readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }),
     requireKitchenMutationAuthority: async () => {
       if (denied) throw Error('Denied')
-      return { subscription: 'premium' }
+      return { subscription: 'pro' }
     },
     randomUUID: () => `placement-${++ids}`,
     serverAuditStamp: () => ({ by: 'u', at: 'server' }),

@@ -1,7 +1,7 @@
 # Search visibility
 
-Updated: 2026-10-21
-Ref: d1a7d5eec
+Updated: 2026-11-04
+Ref: 6c81e972a
 Role: map, not canon
 
 ## Purpose
@@ -90,7 +90,7 @@ Organization/WebSite/WebPage graph. Other Apps retain their facts while
 converging on that transport.
 
 FireUX is also the first public catalogue proof beyond the landing. Its
-Operations and Solutions hubs project source-owned child catalogues as
+Operations and Solutions hubs project the App's declared catalogues as
 canonical CollectionPage/ItemList graphs, while their detail routes project
 canonical WebPages through the same Core transport. Unreleased Solution
 statuses remain outside generated sitemap discovery. A Solution composed from
@@ -98,13 +98,12 @@ another ecosystem links to and permanently redirects through its declared
 canonical destination; FireUX does not manufacture a competing local detail
 or sitemap entry.
 
-FireUX owns one canonical parent overview at `/ecosystems/misebox`. It explains
-the FireUX–Misebox relationship from Misebox-owned Ecosystem literature, links
-to canonical Misebox Operations and Solution pages, and lists only active Apps
-from the bounded public directory. The former `/misebox` doorway permanently
-redirects to that overview and remains outside the sitemap. Missing App copy is
-not filled with invented claims; richer descriptions appear only when the App
-owner publishes them to the public projection.
+FireUX serves Ecosystem details through `/ecosystems/[id]` using published
+records. The former `/misebox` doorway and `/ecosystems/misebox/explore`
+redirect to `/ecosystems/misebox`. The former Werkbox explore page redirects
+to its stored-ID detail at `/ecosystems/cleanbox`. Ecosystem-owned product
+details stay on their owning App. Directory summaries use the fields the owner
+publishes.
 
 The platform relationship graph follows one rule across all Apps. FireUX
 publishes the `/apps` directory. Every App, including standalone Apps, declares a canonical Ecosystem parent;
@@ -112,8 +111,8 @@ the Ecosystem page links back to its active Apps. Runtime package selection and
 database binding remain separate from the stored relationship.
 
 FireUX owns `/sitemaps/directory.xml` for dynamic App and Ecosystem details.
-The JSON directory endpoint and XML sitemap share one bounded reader, so search
-discovery cannot bypass active-record projection rules. The App-owned sitemap
+The JSON directory endpoint and XML sitemap share the published record readers.
+The directory requires complete App results for its counts. The App-owned sitemap
 document is registered through Core's typed SEO configuration and appears in
 the sitemap index. Retired Cleanbox Ecosystem identity redirects to Werkbox and
 the FireUX Blank development harness remains `noindex` and outside the dynamic
@@ -265,7 +264,7 @@ templates have measurable baselines.
 | Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives                          |
 | Three landings have rendered shared SEO contracts                  | `accepted`   | FireUX, Misebox, and Interlaken smoke verifies canonical, robots, social metadata, and graph facts            |
 | FireUX Operations and Solutions prove hub/detail search transport  | `accepted`   | Source catalogues feed canonical collection/detail pages, connected lists, sitemap policy, and rendered smoke |
-| FireUX describes Misebox at one parent Ecosystem route             | `accepted`   | Source-owned relationship copy, released Solutions, and bounded active App records feed the rendered page     |
+| FireUX shows published Ecosystem details through one generic route | `accepted`   | The detail route reads the Ecosystem record and its published Apps                                             |
 | Dynamic App/Ecosystem details use one directory sitemap            | `accepted`   | JSON and XML share the bounded reader; App details expose their canonical parent relationship                 |
 | Every App declares one canonical Ecosystem parent                 | `accepted`   | App role does not remove its explicit Ecosystem relationship; infrastructure binding remains separate         |
 | FireUX Blank remains visible but non-indexable                     | `migration`  | Current source defines a harness; archive its public record or approve a product role before indexing         |
@@ -305,8 +304,8 @@ locale, and visible content together. Run Core's `src/test/seo-baseline.test.mjs
   under rendered smoke.
 - Keep FireUX Operations and Solutions hub/detail canonicals, graphs, and
   released-status sitemap eligibility under rendered smoke and the SEO guard.
-- Keep `/ecosystems/misebox` as the FireUX parent overview, `/misebox` as a
-  permanent redirect, and all product-depth links canonical to Misebox.
+- Keep legacy Ecosystem doorways redirected to their generic canonical detail
+  route and product-depth links canonical to their owning App.
 - Keep the FireUX App/Ecosystem JSON directory and directory sitemap on one
   bounded reader, and keep every indexable App detail linked to its real parent.
 

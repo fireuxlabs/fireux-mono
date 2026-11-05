@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-10-28
-Ref: ce2861c77
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and navigation
@@ -92,6 +92,13 @@ slots, known runtime prerequisites and real consumer evidence. A package
 catalogue, auto-registration or visual similarity does not prove shared use.
 Use [spine.md](spine.md) to compare materially different consumers.
 
+Core [FireDisclosureCard](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosureCard.vue)
+combines Nuxt UI's native disclosure with the shared card-cell surface. Its
+consumer controls `v-model:open` when several cards share one-open-at-a-time
+state and owns the slot content. Use [FireDisclosurePanel](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosurePanel.vue)
+for a disclosure without the card-cell surface. The FireUX App exposes the
+[Disclosure Card component page](../../projects/fireux/fireux-app/app/pages/components/disclosure-card.vue).
+
 ## Workspace composition
 
 [AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
@@ -137,10 +144,6 @@ and Entity route boundaries.
 | Page introduction         | Entity routes compose native UPageHeader or their named Hero/Detail                                        | A record introduction, collection introduction and operational context bar have different jobs                          |
 | Transitions               | Existing Core page policy uses native route metadata                                                       | Workspace and Dashboard remain unanimated; other page policy and genuine App differences remain explicit                |
 
-The App-owned [Connected ecosystems route](../../projects/fireux/fireux-app/app/pages/dashboard/connections.vue)
-uses native UDashboardNavbar directly, bypassing the shared Dashboard Navbar's
-subscription/notification controls. The reason for that difference is unproved;
-compare it with the common Dashboard contract before treating it as an exception.
 The Kitchen [Collection Header](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Collection/Header.vue)
 supplies content titles and actions for Ingredients, Recipes, Items, Menus and
 Promotions. It derives no route breadcrumbs; Core's Workspace frame owns the
@@ -212,14 +215,13 @@ accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
 fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
-The working [Page composition showcase](../../projects/fireux/fireux-app/app/pages/components/page.vue)
-at `/components/page` extends the Nuxt UI reference for FireUX consumers, with
-Usage, Examples, API, Data and authority, and Theme sections. It uses native
-UPage side regions for component navigation and a table of contents. It keeps
-upstream component APIs upstream and documents FireUX-owned composition
-conventions and the actual State/Pagination contracts. Code examples do not
-acquire Entity records. The Components index lives at
-`pages/components/index.vue`; no custom parent shell is added.
+The public [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
+documents supported FireUX controls. The FireUX App
+[playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
+links to that reference. Nuxt UI documents its own controls.
+
+[Page composition](../../projects/fireux/fireux-app/app/pages/patterns/page-composition.vue)
+shows how to use native `UPage` with FireUX components and a single collection reader.
 
 ## Multiple selection
 
@@ -228,9 +230,10 @@ Core [MultiSelect.vue](../../packages/core/fireux-core/src/runtime/components/mo
 lists. It accepts labelled
 items, an accessible group label, optional descriptions and disabled state, and
 an array model. It owns interaction only; domains provide choices, eligibility
-and persistence. Kitchen Services menu selection is its current production
-consumer. Searchable or long lists and single selection remain separate
-responsibilities.
+and persistence. Current consumers are Kitchen Services setup, Promotions, and
+the public Menu ordering form. Use Nuxt UI `URadioGroup` for a short list with
+one choice, as the Kitchen order ticket example does. Searchable or long lists
+use Nuxt UI selection controls suited to those lists.
 
 ## Collection rows
 

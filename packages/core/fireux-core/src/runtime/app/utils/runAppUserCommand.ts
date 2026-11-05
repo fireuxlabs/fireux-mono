@@ -73,7 +73,7 @@ export async function runAppUserCommand(
       throw new Error(
         responseMessage(
           payload,
-          `App membership request failed (${response.status}).`
+          `App membership action failed (${response.status}).`
         )
       )
     }

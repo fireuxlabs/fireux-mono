@@ -92,7 +92,7 @@
           variant="soft"
           icon="i-lucide-shield-check"
           title="Canonical employer and location"
-          description="The published job will use the linked Company and Place as the source of employer and location truth."
+          description="The published job will use the linked Business and Place as the source of employer and location truth."
         />
         <div class="flex justify-end gap-2">
           <UButton
@@ -185,7 +185,7 @@ const badgeColor = computed(() => {
   return 'warning'
 })
 const checklist = computed(() => [
-  { label: 'Canonical Company and Place are linked', ready: true },
+  { label: 'Canonical Business and Place are linked', ready: true },
   { label: 'Job status is Open', ready: statusIsOpen.value },
   { label: 'All changes are saved', ready: !props.isDirty && !props.saving },
 ])

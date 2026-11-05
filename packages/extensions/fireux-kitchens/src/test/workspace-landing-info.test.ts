@@ -4,11 +4,11 @@ import { kitchenWorkspaceIntro } from '../runtime/kitchen/utils/kitchen-workspac
 import { resolveKitchenAllowance } from '../runtime/kitchen/utils/kitchen-capacity.ts'
 import { projectWorkspaceIntro } from '../../../../ecosystem/fireux-fireux/src/runtime/project/utils/project-workspace-intro.ts'
 
-test('Kitchen information explains retained access and blocked creation from the same Premium facts', () => {
+test('Kitchen information explains retained access and blocked creation from the same Pro facts', () => {
   const allowance = resolveKitchenAllowance(
     {
       role: 'user',
-      subscription: 'premium',
+      subscription: 'pro',
     },
     ['one', 'two', 'three', 'four']
   )
@@ -56,7 +56,7 @@ test('Account loading does not publish a guessed Kitchen allowance or enable act
   )
 })
 
-test('Project allowance counts associations independently of loaded records and retains App-owned identity', () => {
+test('Project allowance counts associations independently of loaded records', () => {
   const info = projectWorkspaceIntro({
     status: 'ready',
     count: 2,
@@ -65,10 +65,9 @@ test('Project allowance counts associations independently of loaded records and 
     accountReady: true,
     hasAccount: true,
     configured: true,
-    subscription: 'premium',
+    subscription: 'pro',
     used: 3,
     limit: 1,
-    publishedIdentity: true,
   })
   assert.equal(info.allowance?.used, 3)
   assert.match(info.allowance?.description || '', /3 associated Projects/)
@@ -78,7 +77,7 @@ test('Project allowance counts associations independently of loaded records and 
   )
   assert.match(
     info.tools?.find((tool) => tool.id === 'update')?.description || '',
-    /connected App/
+    /Project’s name, description and image/
   )
   assert.equal(
     info.tools?.find((tool) => tool.id === 'update')?.available,
@@ -100,10 +99,9 @@ test('Unconfigured Project policy does not promise that upgrading fixes creation
     accountReady: true,
     hasAccount: true,
     configured: false,
-    subscription: 'premium',
+    subscription: 'pro',
     used: 1,
     limit: 0,
-    publishedIdentity: false,
   })
   assert.equal(info.allowance?.configured, false)
   assert.equal(info.allowance?.limit, undefined)

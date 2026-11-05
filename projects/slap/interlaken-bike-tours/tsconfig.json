@@ -9,26 +9,9 @@
       "fireux-core/runtime/*": [
         "../../../packages/core/fireux-core/src/runtime/*"
       ],
-      "fireux-docs": ["../../../packages/core/fireux-docs/src/module.ts"],
-      "fireux-docs/*": ["../../../packages/core/fireux-docs/src/*"],
+      "fireux-docs/*": ["../../../packages/extensions/fireux-docs/src/*"],
       "fireux-docs/runtime/*": [
-        "../../../packages/core/fireux-docs/src/runtime/*"
-      ],
-      "fireux-nuxtfire": [
-        "../../../packages/core/fireux-nuxtfire/src/module.ts"
-      ],
-      "fireux-nuxtfire/*": ["../../../packages/core/fireux-nuxtfire/src/*"],
-      "fireux-nuxtfire/runtime/*": [
-        "../../../packages/core/fireux-nuxtfire/src/runtime/*"
-      ],
-      "fireux-translation": [
-        "../../../packages/extensions/fireux-translation/src/module.ts"
-      ],
-      "fireux-translation/*": [
-        "../../../packages/extensions/fireux-translation/src/*"
-      ],
-      "fireux-translation/runtime/*": [
-        "../../../packages/extensions/fireux-translation/src/runtime/*"
+        "../../../packages/extensions/fireux-docs/src/runtime/*"
       ],
       "fireux-finance": [
         "../../../packages/extensions/fireux-finance/src/module.ts"
@@ -67,6 +50,15 @@
       "fireux-blogs/runtime/*": [
         "../../../packages/extensions/fireux-blogs/src/runtime/*"
       ],
+      "fireux-bookings": [
+        "../../../packages/extensions/fireux-bookings/src/module.ts"
+      ],
+      "fireux-bookings/*": [
+        "../../../packages/extensions/fireux-bookings/src/*"
+      ],
+      "fireux-bookings/runtime/*": [
+        "../../../packages/extensions/fireux-bookings/src/runtime/*"
+      ],
       "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
       "fireux-jobs/runtime/*": [
@@ -90,14 +82,14 @@
       "fireux-marketplace/runtime/*": [
         "../../../packages/extensions/fireux-marketplace/src/runtime/*"
       ],
-      "fireux-companies": [
-        "../../../packages/extensions/fireux-companies/src/module.ts"
+      "fireux-businesses": [
+        "../../../packages/extensions/fireux-businesses/src/module.ts"
       ],
-      "fireux-companies/*": [
-        "../../../packages/extensions/fireux-companies/src/*"
+      "fireux-businesses/*": [
+        "../../../packages/extensions/fireux-businesses/src/*"
       ],
-      "fireux-companies/runtime/*": [
-        "../../../packages/extensions/fireux-companies/src/runtime/*"
+      "fireux-businesses/runtime/*": [
+        "../../../packages/extensions/fireux-businesses/src/runtime/*"
       ],
       "fireux-compliance": [
         "../../../packages/extensions/fireux-compliance/src/module.ts"

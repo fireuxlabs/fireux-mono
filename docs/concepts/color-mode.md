@@ -1,6 +1,7 @@
 # Color Mode
 
-Updated: 2026-10-26
+Updated: 2026-11-04
+Ref: 7899136bf
 Role: map, not canon
 
 ## Purpose and authority
@@ -22,13 +23,13 @@ Nuxt owns root classes, device-theme changes and `nuxt-color-mode` persistence.
 The native module saves its preference automatically, initially System. Selecting
 System stores that preference; clearing site data removes it. See the
 [browser-storage inventory](../../packages/core/fireux-core/src/config/privacy/browser-storage.json)
-and the [public storage page](../../packages/core/fireux-core/src/runtime/pages/legal/storage.vue).
+and the
+[browser storage section](../../packages/core/fireux-core/src/runtime/components/Legal/BrowserStorage.vue).
 No FireUX preference store, DOM observer, media listener, legacy-key migration
 or activation hook sits alongside it.
 
 Core [Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue),
 [Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue),
-[useAppView](../../packages/core/fireux-core/src/runtime/app/composables/useAppView.ts),
 FireUX App [Fuel](../../projects/fireux/fireux-app/app/components/Landing/Fuel.vue)
 and the [design specimen](../../packages/core/fireux-core/src/runtime/components/Library/Design/Contracts.vue)
 consume native state. The App Shell does not bootstrap a second engine.

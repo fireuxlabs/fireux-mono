@@ -2,7 +2,7 @@ import { buildSupplierDemoScenario } from './scenario-build'
 
 export const alpineFoodservice = buildSupplierDemoScenario({
   id: 'alpine-foodservice',
-  companyId: 'alpine-foodservice-hq',
+  businessId: 'alpine-foodservice-hq',
   name: 'Alpine Foodservice',
   status: 'active',
   catalogueState: 'integrated',

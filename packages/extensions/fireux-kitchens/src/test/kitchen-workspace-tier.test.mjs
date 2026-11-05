@@ -71,7 +71,7 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
   )
   for (const [subscription, multiple] of [
     ['free', false],
-    ['premium', false],
+    ['pro', false],
     ['business', true],
     ['free', false],
   ]) {

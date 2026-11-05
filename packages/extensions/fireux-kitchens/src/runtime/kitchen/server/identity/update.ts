@@ -10,7 +10,6 @@ import {
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority.ts'
 import { parseKitchenUpdate } from './update-input.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 
 const record = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -66,7 +65,6 @@ export async function updateKitchen(event: H3Event, input: unknown) {
       requested.kitchenId,
       {
         ...requested.patch,
-        updated: serverAuditStamp({ by: actor.uid }),
       }
     )
   })

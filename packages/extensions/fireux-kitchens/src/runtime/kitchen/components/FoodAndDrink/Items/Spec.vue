@@ -418,8 +418,7 @@ async function createPrep() {
         description:
           'Working preparation; quantities and varieties need kitchen review.',
       },
-      { kitchenId: requestedKitchen },
-      { translate: false }
+      { kitchenId: requestedKitchen }
     )
     if (!isCurrent()) return
     newPrep.value = {

@@ -27,35 +27,45 @@ function fixture({ global = false } = {}) {
     }),
     doc: (path) => ({ get: async () => snapshot(path) }),
   }
+  const server = {
+    createError: (value) => Object.assign(new Error(value.statusMessage), value),
+    FieldValue: { serverTimestamp: () => 'now' },
+    getRuntimeIdentityFirestore: () => database,
+    runGuardedServerTransaction: async (_, action) =>
+      action({
+        read: async (owner, id) => ({
+          exists: records.has(`${owner.collectionPath}/${id}`),
+          data: records.get(`${owner.collectionPath}/${id}`),
+        }),
+        create: (owner, id, fields) => {
+          const path = `${owner.collectionPath}/${id}`
+          writes.push({ path, fields })
+          records.set(path, fields)
+        },
+        update: () => {
+          throw new Error('Unexpected overwrite')
+        },
+      }),
+  }
+  const provisionEcosystem = load(
+    '../runtime/ecosystem/server/identity/provision.ts',
+    'provisionEcosystem',
+    {
+      ...server,
+      requireFirestoreDocumentId: (value) => value,
+      ECOSYSTEM_MUTATION_TARGETS: { ecosystems: target('ecosystems') },
+    }
+  )
   const run = load(
     '../runtime/app/server/initialization/initialize.ts',
     'initializeRuntimeApp',
     {
-      createError: (value) =>
-        Object.assign(new Error(value.statusMessage), value),
-      FieldValue: { serverTimestamp: () => 'now' },
+      ...server,
+      provisionEcosystem,
       APP_MUTATION_TARGETS: { runtimeApps: target('apps') },
       USER_MUTATION_TARGETS: { runtimeUsers: target('users') },
       serverAppUsersTarget: (id) => target(`apps/${id}/users`),
-      getRuntimeIdentityFirestore: () => database,
       getRuntimeFirestore: () => database,
-      requireFirestoreDocumentId: (value) => value,
-      ECOSYSTEM_MUTATION_TARGETS: { ecosystems: target('ecosystems') },
-      runGuardedServerTransaction: async (_, action) =>
-        action({
-          read: async (owner, id) => ({
-            exists: records.has(`${owner.collectionPath}/${id}`),
-            data: records.get(`${owner.collectionPath}/${id}`),
-          }),
-          create: (owner, id, fields) => {
-            const path = `${owner.collectionPath}/${id}`
-            writes.push({ path, fields })
-            records.set(path, fields)
-          },
-          update: (owner, id, fields) => {
-            throw new Error('Unexpected overwrite')
-          },
-        }),
       countTransactionAdmins: async () => 0,
       initialMembership: () => ({ role: 'admin' }),
       isAdminMembership: (value) => value?.role === 'admin',
@@ -74,7 +84,6 @@ function fixture({ global = false } = {}) {
       role: global ? 'global' : 'tenant',
       appName: 'Example',
       appShortName: 'Example',
-      selfJoinEnabled: false,
     },
     appDatabaseId: 'fireux',
     identityDatabaseId: 'fireux',
@@ -131,6 +140,13 @@ test('Ecosystem bootstrap is limited to matching main Apps and rejects Project c
     /does not match runtime projectId/
   )
   assert.equal(conflict.writes.length, 0)
+})
+test('A failed App setup precheck blocks Ecosystem creation', async () => {
+  const f = fixture({ global: true })
+  f.records.set('apps/example-app/users/operator', { role: 'admin' })
+  await assert.rejects(f.run(f.input), /without its canonical App record/)
+  assert.equal(f.records.has('ecosystems/example'), false)
+  assert.equal(f.writes.length, 0)
 })
 test('App context seed uses the private runtime branch', () => {
   const { setRuntime } = load('../config/app/runtime.ts', '({ setRuntime })')

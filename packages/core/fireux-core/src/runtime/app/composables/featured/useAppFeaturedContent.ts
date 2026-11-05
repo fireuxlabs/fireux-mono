@@ -11,7 +11,6 @@ export type AppFeaturedSlugField = `featured_${string}_slugs`
 
 export type AppFeaturedContent = {
   id?: string
-  featured_ecosystem_slugs?: string[]
   [key: AppFeaturedSlugField]: string[] | string | undefined
 }
 
@@ -37,9 +36,6 @@ export function useAppFeaturedContent() {
       ? value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
       : []
 
-  const featuredEcosystemSlugs = computed(() =>
-    cleanList(settings.value?.featured_ecosystem_slugs)
-  )
   const featuredSlugsFor = (domain: string) =>
     computed(() => cleanList(settings.value?.[`featured_${domain}_slugs`]))
 
@@ -95,7 +91,6 @@ export function useAppFeaturedContent() {
     pending: settings.pending,
     error: settings.error,
     outcome: settings.outcome,
-    featuredEcosystemSlugs,
     featuredSlugsFor,
     canUpdate: isAdmin,
     updateFeaturedSlugs,

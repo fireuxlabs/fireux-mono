@@ -25,7 +25,7 @@ const cells = computed<CollectionCellData[]>(() =>
     title: card.title,
     description: card.subtitle || card.description,
     image: card.imageUrl,
-    meta: [card.companyName, card.placeName].filter(Boolean).join(' · '),
+    meta: [card.businessName, card.placeName].filter(Boolean).join(' · '),
     badges: card.badges,
     to: card.to,
   }))

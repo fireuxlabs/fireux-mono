@@ -98,7 +98,7 @@ export async function writeKitchenMenuDraft(input: {
             throw createError({
               statusCode: 403,
               statusMessage:
-                'Choose an existing Food or Drinks Menu. Creating a custom Menu requires Plus.',
+                'Choose an existing Food or Drinks Menu. Creating a custom Menu requires Pro.',
             })
           name = slug === 'food' ? 'Food' : 'Drinks'
         }
@@ -111,7 +111,7 @@ export async function writeKitchenMenuDraft(input: {
         format: 'interactive',
         sort_order: Number(existing.sort_order || 0),
         created: record(existing.created).at ? existing.created : stamp,
-        updated: serverAuditStamp({ by: input.uid }),
+        updated: stamp,
         ...(description ? { description } : {}),
       }
       const plannedDishes = plannedSections.flatMap((section) => section.items)

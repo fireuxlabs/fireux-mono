@@ -1,4 +1,4 @@
-import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
 import { defineFirestoreReadTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 
@@ -30,7 +30,7 @@ export function canKitchenEditPlace(input: {
       input.kitchenExists &&
       input.membershipExists &&
       ['user', 'admin', 'dev'].includes(String(input.membership.role)) &&
-      isAppUserSubscription(input.membership.subscription)
+      readAppUserSubscription(input.membership.subscription)
   )
   if (!permitted || input.access == null) return false
   const invalid = (): never => {
@@ -77,6 +77,7 @@ export function canKitchenEditPlace(input: {
 
 // Place owns these reference checks, not the referenced domains' write authority.
 export const placeReferenceTargets = Object.freeze({
+  businesses: defineFirestoreReadTarget({ key: 'businesses', database: { kind: 'runtime' }, collectionPath: 'businesses' }),
   kitchens: defineFirestoreReadTarget({ key: 'project.kitchens', database: { kind: 'runtime' }, collectionPath: 'kitchens' }),
   properties: defineFirestoreReadTarget({ key: 'project.properties', database: { kind: 'runtime' }, collectionPath: 'properties' }),
   jobs: defineFirestoreReadTarget({ key: 'project.jobs', database: { kind: 'runtime' }, collectionPath: 'jobs' }),

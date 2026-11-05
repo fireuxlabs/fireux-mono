@@ -1,5 +1,5 @@
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
-import type { FireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
 
@@ -10,11 +10,14 @@ export type MenuDocument = {
   storage_path: string
 }
 
-export type Menu = FireuxEntity & {
+export type Menu = FireuxStamped & {
+  id: string
   slug: string
   name: string
   /** Optional Workspace label; customers see name. */
   internal_name?: string
+  /** Internal operator background; omitted from public projections. */
+  context?: string
   description?: string
   status: MenuStatus
   sort_order: number
