@@ -13,7 +13,7 @@ export async function readPages<T extends { nextCursor?: string | null }>(
   let cursor: string | null | undefined
   let result: T
   for (let page = 0; page < pageCount; page++) {
-    result = (await fetcher<T, string, 'get'>(endpoint, {
+    result = (await fetcher<T, string>(endpoint, {
       ...options,
       method: 'get',
       query: { ...options.query, ...(cursor ? { cursor } : {}) },

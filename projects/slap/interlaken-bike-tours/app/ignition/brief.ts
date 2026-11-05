@@ -2,7 +2,7 @@ import type {
   IgnitionBrief,
   IgnitionAssembly,
 } from 'fireux-ignite/runtime/models/ignition'
-import type { FireuxAppConfig } from 'fireux-core/config/app/types'
+import type { FireuxAppConfig } from 'fireux-app/config'
 
 import { searchPlan } from './search'
 
@@ -15,9 +15,9 @@ export const identity = {
   name: 'Interlaken Bike Tours',
   shortName: 'Bike Tours',
   role: 'tenant',
-  modules: ['fireux-businesses', 'fireux-bookings'],
+  modules: ['fireux-businesses', ['fireux-bookings', { businessWorkspace: true }]],
   context:
-    'A customer-facing prototype for premium private guided rides. Visitors can check a single 09:00 departure against Ben’s Google Calendar and confirm one private tour per day at the catalog price per person; the App stores a booking record and the shared FireUX Bookings package owns confirmation orchestration and Calendar transport. The optional Business Workspace provides profile/contact details, linked locations and a Team roster. No payment, outbound confirmation email, cancellation flow or operator Workspace is implemented. Prices and operating capacity require operator review before release.',
+    'A customer-facing prototype for premium private guided rides. Visitors can check the configured departure against working days, closed dates and Ben’s Google Calendar and confirm one private tour per day at the catalog price per person; the App stores a booking record and the shared FireUX Bookings package owns confirmation orchestration and Calendar transport. The Business Workspace provides profile/contact details, linked locations, a Team roster, availability settings and private booking records. Public bookings require a server-configured Business id and Calendar credentials. No payment, outbound confirmation email or cancellation flow is implemented. Prices and operating capacity require operator review before release.',
 } satisfies FireuxAppConfig
 
 export const brief = {
@@ -28,6 +28,7 @@ export const brief = {
   actors: ['Visitor', 'Local guide'],
   search: searchPlan,
   requirements: [
+    { id: 'manage-bookings', need: 'Manage Business availability and review customer bookings.', acceptance: 'Current Business access protects working days, closed dates, departure time and paged booking records. Public booking checks the saved policy and rejects changed checkout availability.' },
     {
       id: 'search',
       need: 'Present useful ride information through consistent search metadata without indexing the prototype.',
@@ -103,8 +104,8 @@ export const assembly = {
     {
       id: 'booking',
       role: 'capability',
-      owner: 'interlaken-bike-tours',
-      requirements: ['book'],
+      owner: 'interlaken-bike-tours → fireux-bookings',
+      requirements: ['book', 'manage-bookings'],
       uses: ['rides'],
       sourcePaths: [
         'app/pages/book.vue',
@@ -129,9 +130,9 @@ export const assembly = {
   learnings: [
     {
       decision:
-        'Compose the branded prototype on Core and Slap with the default Blogs and Products capabilities.',
+        'Compose the branded prototype with fireux-app and Slap. The App bundle includes Core, Blogs and Products.',
       reason:
-        'Core supplies Blogs and Products to every App. App-owned tour content and enquiry drafts still add no booking storage or authority.',
+        'The fireux-app bundle supplies Blogs and Products. Tour catalogue and enquiry framing stay App-owned; Business booking storage and management are composed from fireux-bookings.',
       owner: 'interlaken-bike-tours',
       references: ['nuxt.config.ts', 'app/ignition/brief.ts'],
     },

@@ -1,7 +1,7 @@
 # FireUX platform map
 
-Updated: 2026-11-04
-Ref: 8d44cbfef
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and authority
@@ -40,8 +40,8 @@ against that responsibility before adding another layer.
 
 | Foundation                    | Upstream documentation                                                                                                                                                                                                                                                                                                                                                                         | FireUX integration                                                                                                                                                                                                                                                                                                        |
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Nuxt 4 and Vue                | [Nuxt 4](https://nuxt.com/docs/4.x/getting-started/introduction), [modules](https://nuxt.com/docs/guide/concepts/modules), [layers](https://nuxt.com/docs/4.x/guide/going-further/layers)                                                                                                                                                                                                      | Core provides defineFireuxConfig and the shared Nuxt baseline. Apps select their Ecosystem and package layers; package modules register their owned runtime surfaces.                                                                                                                                                     |
-| Nuxt UI 4                     | [Nuxt UI](https://ui.nuxt.com/docs/getting-started), [Nuxt installation](https://ui.nuxt.com/docs/getting-started/installation/nuxt), [theme and design system](https://ui.nuxt.com/docs/getting-started/theme/design-system)                                                                                                                                                                  | Core registers Nuxt UI and extends it with proved FireUX components, semantic styles and connected platform UI. Domains compose supported controls around domain workflows.                                                                                                                                               |
+| Nuxt 4 and Vue                | [Nuxt 4](https://nuxt.com/docs/4.x/getting-started/introduction), [modules](https://nuxt.com/docs/guide/concepts/modules), [layers](https://nuxt.com/docs/4.x/guide/going-further/layers)                                                                                                                                                                                                      | Core provides shared Nuxt mechanics. fireux-app composes standard Apps; fireux-ecosystem adds Main App surfaces. Apps select their Ecosystem and domain packages.                                                                                                                                                     |
+| Nuxt UI 4                     | [Nuxt UI](https://ui.nuxt.com/docs/getting-started), [Nuxt installation](https://ui.nuxt.com/docs/getting-started/installation/nuxt), [theme and design system](https://ui.nuxt.com/docs/getting-started/theme/design-system)                                                                                                                                                                  | The App bundle registers Nuxt UI. Core extends it with proved FireUX components, semantic styles and connected platform UI. Domains compose supported controls around domain workflows.                                                                                                                                               |
 | Firebase JS SDK and Firestore | [Web Authentication](https://firebase.google.com/docs/auth/web/start), [Auth state](https://firebase.google.com/docs/auth/web/auth-state-persistence), [data model](https://firebase.google.com/docs/firestore/data-model), [realtime listeners](https://firebase.google.com/docs/firestore/query-data/listen), [Security Rules](https://firebase.google.com/docs/firestore/security/overview) | Ecosystem configuration binds the Firebase project and database. Core binds the configured Firebase runtime. Direct views use Firebase listeners; server projections use native Nuxt fetching and refresh after successful actions. Domain packages own canonical records, projections, permissions and trusted commands. |
 
 FireUX extends these systems instead of maintaining replacement routers,
@@ -78,8 +78,9 @@ does not justify replacing the underlying framework mechanisms.
 ## Package and data ownership
 
 App → Ecosystem → Extension → Core is the product ownership order. Dependencies
-point down toward lower owners. Every App receives the default Blog and Product
-extensions through Core; other extension layers remain capability-specific.
+point down toward lower owners. The fireux-app bundle includes Core, Blogs and
+Products. The fireux-ecosystem bundle adds Main App features. Other extension
+layers remain capability-specific, and Core does not depend on either bundle.
 
 - Apps own deployment, routes and adapters, configuration, brand, SEO and
   App-specific product composition.
@@ -106,14 +107,18 @@ shipping authorization. See [Entity storage](firestore-entity.md),
 
 ## Current integration sources
 
-- [Core App integration](../../packages/core/fireux-core/src/config/app/fireux.config.ts)
-  adds the Core layer and baseline modules.
-- [Nuxt module baseline](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts)
+- [App composition](../../packages/extensions/fireux-app/src/config.ts)
+  supplies the standard App bundle, including Core, Blogs and Products.
+- [Main App composition](../../packages/extensions/fireux-ecosystem/src/config.ts)
+  adds the shared Ecosystem host layer.
+- [App module composition](../../packages/extensions/fireux-app/src/config.ts)
   registers Nuxt UI, Firebase integration and the shared Core module.
+- [Core framework helpers](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts)
+  supply the shared Nuxt defaults used by that composition.
 - [FireUX App composition](../../projects/fireux/fireux-app/nuxt.config.ts)
   selects the FireUX Ecosystem and its App-specific package layers.
-- [Firebase Nuxt module](../../packages/core/fireux-nuxtfire/src/module.ts)
-  configures the installed Nuxt Firebase runtime.
+- [Core Firebase integration](../../packages/core/fireux-core/src/config/app/firebase.ts)
+  configures the installed Nuxt Firebase runtime and its ordered Auth plugins.
 - [FireUX Ecosystem binding](../../packages/ecosystem/fireux-fireux/src/config/firebase/ecosystem.config.ts)
   supplies this Ecosystem's Firebase project and database.
 

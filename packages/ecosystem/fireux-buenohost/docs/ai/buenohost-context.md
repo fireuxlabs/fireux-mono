@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-05
+Ref: d6240d394
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -84,8 +84,9 @@ select their own bounded property targets.
   `fireux-buenohost` installs the Property and Reservation extensions required
   by that Workspace. Apps do not repeat those module selections, while direct
   App imports still require direct package dependencies. Each maintained App
-  declares Core → conditional Properties/Reservations → BuenoHost → Blogs
-  native layers in its established precedence. The same Property workspace
+  selects the Ecosystem bundle for its Main App or the App bundle for tenants,
+  then its conditional Properties/Reservations and BuenoHost native layers.
+  The App bundle supplies Core, Blogs and Products. The same Property workspace
   flag controls native layers and ecosystem module installation. Conventional
   discovery belongs to the owning package layer; explicit domain registration
   and trusted handler policy remain module-owned.

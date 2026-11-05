@@ -5,7 +5,8 @@ definePageMeta({ layout: 'tours' })
 
 type TourAvailability = {
   available: boolean
-  reason?: 'past' | 'booked' | 'calendar-busy'
+  availabilityRevision: number
+  reason?: 'closed' | 'past' | 'booked' | 'calendar-busy'
   tourName: string
   date: string
   departureTime: string
@@ -124,6 +125,7 @@ async function submitBooking() {
           guestName: guestName.value,
           guestEmail: guestEmail.value,
           groupSize: groupSize.value,
+          availabilityRevision: availability.value.availabilityRevision,
         },
       }
     )
@@ -221,7 +223,7 @@ async function submitBooking() {
 
         <div class="booking-availability" aria-live="polite">
           <p v-if="!date">Choose a date to check availability.</p>
-          <p v-else-if="availabilityPending">Checking Ben’s calendar…</p>
+          <p v-else-if="availabilityPending">Checking availability…</p>
           <p v-else-if="availabilityError" role="alert">
             {{ availabilityError }}
           </p>
@@ -231,6 +233,9 @@ async function submitBooking() {
           </p>
           <p v-else-if="availability?.reason === 'past'">
             This departure has already passed. Choose another date.
+          </p>
+          <p v-else-if="availability?.reason === 'closed'">
+            This date is closed. Choose another date.
           </p>
           <p v-else-if="availability">
             This date is already booked. Choose another date.

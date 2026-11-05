@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-05
+Ref: d6240d394
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -62,7 +62,7 @@ shared public-language or pricing seam applies to them.
   `usePricing`, and reusable prop-driven presentation contracts. Each Main App
   owns one `useXPricing` wrapper for its Workspace name, capabilities, limits,
   contact, and explicit ecosystem-tier eligibility. Pricing literature is not
-  App boot configuration and never enters `defineFireuxConfig` or public
+  App boot configuration and never enters App bundle configuration or public
   runtime config.
 - Core owns the product-literature Main App Hero font family and display weight.
   FireUX's framework homepage is a separate App-owned surface composed with native
@@ -113,7 +113,7 @@ shared public-language or pricing seam applies to them.
   ecosystem; they do not offer ecosystem creation.
 - FireUX's Project Apps capability owns the supported App-record creation and
   preview journey at `/workspace/project/apps`. It does not provision hosting.
-  Core's `/apps/create` is an explicit unavailable state; the former draft-only
+  The Ecosystem bundle's `/apps/create` is an explicit unavailable state; the former draft-only
   form and generic pricing Create CTA are retired. A Main App must supply a real
   supported workflow before advertising App creation. Runtime App initialization
   remains an internal shell operation and must not be presented as new-App creation.
@@ -177,7 +177,7 @@ Review implementation claims when their referenced owners change.
 
 - `packages/core/fireux-core/src/runtime/components/landing/product.types.ts`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue`
-- `packages/core/fireux-core/src/runtime/components/landing/EcosystemHome.vue`
+- `packages/extensions/fireux-ecosystem/src/runtime/components/landing/EcosystemHome.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductSurfaceShowcase.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue`
 - `packages/core/fireux-core/src/runtime/app/components/Pricing/Catalogue.vue`

@@ -7,7 +7,7 @@ import { useUserSession } from 'fireux-core/runtime/user/composables/session/use
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
+import { seedSproochliText } from 'fireux-sproochli/runtime/utils/translation-seed'
 import type {
   KitchenPrepItemInput,
   KitchenPrepItemUnit,
@@ -26,14 +26,11 @@ type KitchenPrepItemCreateDraft = {
 }
 
 type KitchenPrepItemCreateOptions = {
-  languageCodes?: string[]
   sourceLanguage?: string
-  translate?: boolean
 }
 
 export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
   const { currentUser } = useAuth()
-  const { seedTranslations } = useTranslationSeed()
   const config = useFireUXConfig()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
   const access = useKitchenAccess()
@@ -80,21 +77,17 @@ export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
     assertScope()
     const name = String(captured.name ?? '').trim(),
       description = String(captured.description ?? '').trim()
-    const nameSeed = await seedTranslations({
+    const nameSeed = seedSproochliText({
       text: name,
       sourceLanguage: options.sourceLanguage,
-      languageCodes: options.languageCodes,
       existingText: captured.names,
-      translate: options.translate,
     })
     assertScope()
     const descriptionSeed = description
-      ? await seedTranslations({
+      ? seedSproochliText({
           text: description,
           sourceLanguage: nameSeed.sourceLanguage,
-          languageCodes: options.languageCodes,
           existingText: captured.descriptions,
-          translate: options.translate,
         })
       : null
     assertScope()
@@ -137,15 +130,7 @@ export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
       !isFirestoreDocumentId(result.id)
     )
       throw new Error('Prep Item response did not identify the created record.')
-    return {
-      id: result.id,
-      failedLanguages: [
-        ...new Set([
-          ...nameSeed.failedLanguages,
-          ...(descriptionSeed?.failedLanguages ?? []),
-        ]),
-      ],
-    }
+    return { id: result.id }
   }
   return { createPrepItem }
 }

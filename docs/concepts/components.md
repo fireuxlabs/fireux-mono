@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-04
-Ref: 8d44cbfef
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and navigation
@@ -215,7 +215,7 @@ accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
 fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
-The public [component reference](../../packages/core/fireux-docs/src/runtime/pages/docs/components/index.vue)
+The public [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
 documents supported FireUX controls. The FireUX App
 [playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
 links to that reference. Nuxt UI documents its own controls.

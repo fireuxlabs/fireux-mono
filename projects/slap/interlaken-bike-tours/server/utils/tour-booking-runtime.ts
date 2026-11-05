@@ -1,3 +1,4 @@
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { createError } from 'h3'
 import {
   createInterlakenTourBookingWorkflow,
@@ -11,8 +12,9 @@ import {
 } from './tour-calendar'
 
 export function getInterlakenTourBookingWorkflow() {
+  const businessId = requireFirestoreDocumentId(process.env.BOOKINGS_BUSINESS_ID, 'Booking Business id')
   const connection = interlakenTourCalendarConnection()
-  const store = createInterlakenTourBookingStore()
+  const store = createInterlakenTourBookingStore(businessId)
   return createInterlakenTourBookingWorkflow({
     store,
     calendar: {

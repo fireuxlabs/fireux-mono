@@ -47,3 +47,9 @@ export {
   type SproochliDialectProfile,
   type SproochliReviewedCopyLanguage,
 } from './copy.ts'
+
+export {
+  seedSproochliText,
+  type SproochliTextSeedInput,
+  type SproochliTextSeed,
+} from './utils/translation-seed'

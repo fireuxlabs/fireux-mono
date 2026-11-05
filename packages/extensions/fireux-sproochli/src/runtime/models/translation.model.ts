@@ -1,5 +1,5 @@
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Model conventions: docs/concepts/core-models.md#entity-model-file-shape
  *
  * Family: Sproochli translation document
  * Storage: root translation document with scoped language translations

@@ -1,6 +1,6 @@
 import type { WatchSource } from 'vue'
 import type { RecipePreparation } from '../../models/recipe-preparation'
-import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
+import { seedSproochliText } from 'fireux-sproochli/runtime/utils/translation-seed'
 import { useRecipeMutation } from './useRecipeMutation'
 
 type RecipeCreateDraft = {
@@ -12,18 +12,14 @@ type RecipeCreateDraft = {
 }
 
 type RecipeCreateOptions = {
-  languageCodes?: string[]
   sourceLanguage?: string
-  translate?: boolean
 }
 
 export type RecipeCreateResult = {
   id: string
-  failedLanguages: string[]
 }
 
 export function useRecipeCreate(ownerSources: WatchSource[] = []) {
-  const { seedTranslations } = useTranslationSeed()
   const { mutate } = useRecipeMutation(ownerSources)
   const createRecipe = async (
     draft: RecipeCreateDraft,
@@ -33,7 +29,6 @@ export function useRecipeCreate(ownerSources: WatchSource[] = []) {
     const options = JSON.parse(
       JSON.stringify(createOptions)
     ) as RecipeCreateOptions
-    let failedLanguages: string[] = []
     const result = await mutate(
       'POST',
       { draft },
@@ -42,30 +37,20 @@ export function useRecipeCreate(ownerSources: WatchSource[] = []) {
         const captured = body.draft as RecipeCreateDraft
         const name = String(captured.name ?? '').trim()
         const description = String(captured.description ?? '').trim()
-        const nameSeed = await seedTranslations({
+        const nameSeed = seedSproochliText({
           text: name,
           sourceLanguage: options.sourceLanguage,
-          languageCodes: options.languageCodes,
           existingText: captured.names,
-          translate: options.translate,
         })
         assertCurrent()
         const descriptionSeed = description
-          ? await seedTranslations({
+          ? seedSproochliText({
               text: description,
               sourceLanguage: nameSeed.sourceLanguage,
-              languageCodes: options.languageCodes,
               existingText: captured.descriptions,
-              translate: options.translate,
             })
           : null
         assertCurrent()
-        failedLanguages = [
-          ...new Set([
-            ...nameSeed.failedLanguages,
-            ...(descriptionSeed?.failedLanguages ?? []),
-          ]),
-        ]
         return {
           ...body,
           draft: {
@@ -79,7 +64,7 @@ export function useRecipeCreate(ownerSources: WatchSource[] = []) {
         }
       }
     )
-    return { id: result.id, failedLanguages }
+    return { id: result.id }
   }
   return { createRecipe }
 }

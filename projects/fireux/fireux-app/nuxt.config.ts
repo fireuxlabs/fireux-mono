@@ -1,6 +1,6 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
 
-const appConfig = defineFireuxConfig({
+const appConfig = defineFireuxEcosystem({
   ecosystem: 'fireux',
   projectId: 'fireux',
   ecosystemId: 'fireux',
@@ -63,12 +63,7 @@ const appConfig = defineFireuxConfig({
       },
     ],
   ],
-  extends: [
-    'fireux-docs/layer',
-    'fireux-fireux/layer',
-    'fireux-blogs/layer',
-    'fireux-products/layer',
-  ],
+  extends: ['fireux-docs/layer', 'fireux-fireux/layer'],
 })
 
 const firebaseOptions = appConfig.nitro?.firebase

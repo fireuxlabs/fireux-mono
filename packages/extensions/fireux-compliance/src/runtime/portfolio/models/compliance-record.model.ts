@@ -2,7 +2,7 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.mode
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Model conventions: docs/concepts/core-models.md#entity-model-file-shape
  *
  * Family: Portfolio-scoped
  * Storage: workspace-owned operational record
@@ -12,7 +12,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Decision note:
  * - ComplianceRecord exists because a portfolio owns and tracks compliance work.
  * - It should stay scoped even when it links to supporting root records like type or document.
- * - If its ownership changes later, update the models README first, then this file.
+ * - If its ownership changes later, update the owning model and concept map together.
  */
 export const ComplianceRecordStorage = {
   shape: 'scoped',

@@ -4,7 +4,7 @@
 
 The current shared API exposes `queryGoogleCalendarBusy` and
 `createGoogleCalendarEvent` from `fireux-bookings/runtime/server/google-calendar`.
-FreeBusy returns Google's raw busy intervals. The caller owns availability
+FreeBusy returns Google's raw busy intervals. When using transport alone, the caller owns availability
 policy, booking records, slot rules, transactional conflict handling, and
 recovery if a Calendar write fails. Calendar event fields are an explicit
 projection supplied by the owning domain.
@@ -37,3 +37,13 @@ These fixture checks do not establish a second production integration.
 Design and technical SEO remain supplied by Nuxt UI and FireUX Core. A future
 Bookings storefront uses those same owners. This Extension does not introduce
 its own design system, metadata engine or a dependency from Core into Bookings.
+
+## Optional Business Workspace
+
+Register `fireux-businesses` and `["fireux-bookings", { businessWorkspace: true }]` and explicitly extend
+`fireux-bookings/layer` alongside `fireux-businesses/layer`. The optional route
+`/workspace/business/bookings` reuses Business selection and authority. It provides
+working days, closed dates, departure time and paged private booking records.
+Business-scoped storage lives in `runtime/server/business`; service-specific
+catalogue/pricing/timezone policy remains with the consumer. Existing reservation
+domains do not move their records by importing Calendar transport.

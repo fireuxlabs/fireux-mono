@@ -1,8 +1,9 @@
+import { isBookingDayOpen } from 'fireux-bookings/runtime/utils/availability'
+import type { BookingAvailability } from 'fireux-bookings/runtime/models/business-bookings'
 import { BookingError, confirmBooking } from 'fireux-bookings/runtime/server/booking'
 import { tours } from '../../app/content/tours'
 
 const tourTimeZone = 'Europe/Zurich'
-const departureHour = 9
 const maximumGroupSize = 50
 
 export type InterlakenCalendarInterval = { start: string; end: string }
@@ -13,6 +14,7 @@ export type InterlakenTourBookingInput = {
   guestName: string
   guestEmail: string
   groupSize: number
+  availabilityRevision: number
 }
 
 export type InterlakenTourBookingRecord = {
@@ -27,6 +29,9 @@ export type InterlakenTourBookingRecord = {
   total_price_chf: number
   status: 'pending' | 'confirmed'
   created_at: string
+  guest_name: string
+  guest_email: string
+  availability_revision: number
 }
 
 export const InterlakenTourBookingError = BookingError
@@ -97,9 +102,10 @@ function localDateTime(epoch: number) {
   return `${date}T${time}${offsetSuffix(epoch)}`
 }
 
-function makeSlot(date: string, durationHours: number) {
+function makeSlot(date: string, durationHours: number, departureTime: string) {
+  const [departureHour, departureMinute] = departureTime.split(':').map(Number)
   const [year, month, day] = date.split('-').map(Number)
-  const wallClockAsUtc = Date.UTC(year, month - 1, day, departureHour)
+  const wallClockAsUtc = Date.UTC(year, month - 1, day, departureHour, departureMinute)
   const atWallClock = localParts(wallClockAsUtc)
   const offsetAtWallClock =
     Date.UTC(
@@ -111,9 +117,13 @@ function makeSlot(date: string, durationHours: number) {
       atWallClock.second
     ) - wallClockAsUtc
   const startEpoch = wallClockAsUtc - offsetAtWallClock
+  const resolved = localParts(startEpoch)
+  if (resolved.year !== year || resolved.month !== month || resolved.day !== day || resolved.hour !== departureHour || resolved.minute !== departureMinute)
+    fail(409, 'invalid_departure_time', 'This departure time does not exist on that date because of the clock change.')
   const endEpoch = startEpoch + durationHours * 60 * 60 * 1000
 
   return {
+    departureTime,
     startAt: localDateTime(startEpoch),
     endAt: localDateTime(endEpoch),
     startEpoch,
@@ -191,16 +201,18 @@ function availabilityResult(
   date: string,
   slot: ReturnType<typeof makeSlot>,
   available: boolean,
-  reason?: string
+  reason?: string,
+  availabilityRevision = 0
 ) {
   return {
     tourSlug: tour.slug,
     tourName: tour.name,
     date,
-    departureTime: '09:00',
+    departureTime: slot.departureTime,
     timeZone: tourTimeZone,
     startAt: slot.startAt,
     endAt: slot.endAt,
+    availabilityRevision,
     durationHours: tour.durationHours,
     unitPriceChf: tour.price,
     available,
@@ -225,6 +237,7 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
     }) => Promise<{ id: string }>
   }
   store: {
+    readAvailability: () => Promise<BookingAvailability>
     isDateReserved: (date: string) => Promise<boolean>
     reserve: (
       date: string,
@@ -249,7 +262,9 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
   }) {
     const tour = requireTour(rawInput.tourSlug)
     const date = requireDate(rawInput.date)
-    const slot = makeSlot(date, tour.durationHours)
+    const settings = await dependencies.store.readAvailability()
+    const slot = makeSlot(date, tour.durationHours, settings.departureTime)
+    if (!isBookingDayOpen(settings, date)) return availabilityResult(tour, date, slot, false, 'closed', settings.revision)
 
     if (slot.startEpoch <= now().getTime()) {
       return availabilityResult(tour, date, slot, false, 'past')
@@ -264,7 +279,8 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
       date,
       slot,
       !overlaps(busy, slot),
-      overlaps(busy, slot) ? 'calendar-busy' : undefined
+      overlaps(busy, slot) ? 'calendar-busy' : undefined,
+      settings.revision
     )
   }
 
@@ -272,7 +288,6 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
     const tour = requireTour(rawInput.tourSlug)
     const date = requireDate(rawInput.date)
     const guest = requireGuest(rawInput)
-    const slot = makeSlot(date, tour.durationHours)
     const availability = await checkAvailability({ tourSlug: tour.slug, date })
     if (!availability.available) {
       fail(
@@ -282,6 +297,9 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
       )
     }
 
+    if (!Number.isSafeInteger(rawInput.availabilityRevision) || rawInput.availabilityRevision !== availability.availabilityRevision)
+      fail(409, 'availability_changed', 'Availability changed. Check the date and departure time again before booking.')
+    const slot = makeSlot(date, tour.durationHours, availability.departureTime)
     const bookingId = createId()
     const booking: InterlakenTourBookingRecord = {
       id: bookingId,
@@ -295,12 +313,17 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
       total_price_chf: tour.price * guest.groupSize,
       status: 'pending',
       created_at: now().toISOString(),
+      guest_name: guest.guestName, guest_email: guest.guestEmail,
+      availability_revision: availability.availabilityRevision,
     }
 
     try {
       await confirmBooking(booking, {
         reserve: (record) => dependencies.store.reserve(date, record),
         verify: async () => {
+          const settings = await dependencies.store.readAvailability()
+          if (settings.revision !== availability.availabilityRevision || !isBookingDayOpen(settings, date))
+            fail(409, 'slot_unavailable', 'Availability changed. Please choose your date again.')
           const latestBusy = await dependencies.calendar.readBusy(
             slot.startAt,
             slot.endAt
@@ -346,7 +369,7 @@ export function createInterlakenTourBookingWorkflow(dependencies: {
         tourSlug: tour.slug,
         tourName: tour.name,
         date,
-        departureTime: '09:00',
+        departureTime: slot.departureTime,
         timeZone: tourTimeZone,
         startAt: slot.startAt,
         endAt: slot.endAt,

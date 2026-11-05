@@ -21,24 +21,19 @@
     ],
     "paths": {
       "vite/client": ["./types/vite/client.d.ts"],
+      "fireux-app/config": ["./packages/extensions/fireux-app/src/config.ts"],
+      "fireux-ecosystem/config": [
+        "./packages/extensions/fireux-ecosystem/src/config.ts"
+      ],
+      "fireux-ecosystem/runtime/*": [
+        "./packages/extensions/fireux-ecosystem/src/runtime/*"
+      ],
       "fireux-core": ["./packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["./packages/core/fireux-core/src/*"],
       "fireux-core/runtime/*": ["./packages/core/fireux-core/src/runtime/*"],
-      "fireux-docs/*": ["./packages/core/fireux-docs/src/*"],
-      "fireux-docs/runtime/*": ["./packages/core/fireux-docs/src/runtime/*"],
-      "fireux-nuxtfire": ["./packages/core/fireux-nuxtfire/src/module.ts"],
-      "fireux-nuxtfire/*": ["./packages/core/fireux-nuxtfire/src/*"],
-      "fireux-nuxtfire/runtime/*": [
-        "./packages/core/fireux-nuxtfire/src/runtime/*"
-      ],
-      "fireux-translation": [
-        "./packages/extensions/fireux-translation/src/module.ts"
-      ],
-      "fireux-translation/*": [
-        "./packages/extensions/fireux-translation/src/*"
-      ],
-      "fireux-translation/runtime/*": [
-        "./packages/extensions/fireux-translation/src/runtime/*"
+      "fireux-docs/*": ["./packages/extensions/fireux-docs/src/*"],
+      "fireux-docs/runtime/*": [
+        "./packages/extensions/fireux-docs/src/runtime/*"
       ],
       "fireux-finance": ["./packages/extensions/fireux-finance/src/module.ts"],
       "fireux-finance/*": ["./packages/extensions/fireux-finance/src/*"],
@@ -55,8 +50,12 @@
       "fireux-go-qr/runtime/*": [
         "./packages/extensions/fireux-go-qr/src/runtime/*"
       ],
-      "fireux-ignite": ["./packages/extensions/fireux-ignite/src/runtime/utils/reconcile-ignition.ts"],
-      "fireux-ignite/runtime/*": ["./packages/extensions/fireux-ignite/src/runtime/*"],
+      "fireux-ignite": [
+        "./packages/extensions/fireux-ignite/src/runtime/utils/reconcile-ignition.ts"
+      ],
+      "fireux-ignite/runtime/*": [
+        "./packages/extensions/fireux-ignite/src/runtime/*"
+      ],
       "fireux-ai": ["./packages/extensions/fireux-ai/src/module.ts"],
       "fireux-ai/*": ["./packages/extensions/fireux-ai/src/*"],
       "fireux-ai/runtime/*": ["./packages/extensions/fireux-ai/src/runtime/*"],

@@ -97,7 +97,7 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['place-order'],
       uses: ['menus', 'offerings'],
       sourcePaths: [
-        source + 'menu/composables/useCollectionCheckout.ts',
+        source + 'menu/composables/useServiceCheckout.ts',
         source + 'menu/server/ordering.ts',
         source + 'kitchen/server/orders/submission.ts',
       ],

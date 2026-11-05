@@ -28,17 +28,21 @@ const { BookingError, confirmBooking } = compileFunction(
   `${stripTypeScriptTypes(sharedSource)}; return { BookingError, confirmBooking }`
 )()
 
+const availabilitySource = readFileSync(new URL('../../../../packages/extensions/fireux-bookings/src/runtime/utils/availability.ts', import.meta.url), 'utf8').replace(/^import .*$/gm, '').replace(/^export /gm, '')
+const { defaultBookingAvailability, readBookingAvailability, isBookingDayOpen } = compileFunction(`${stripTypeScriptTypes(availabilitySource)}; return { defaultBookingAvailability, readBookingAvailability, isBookingDayOpen }`)()
+
 const source = readFileSync(
   new URL('../server/utils/tour-booking.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import \{ BookingError, confirmBooking \} from .*$/m, '')
   .replace(/^import \{ tours \} from .*$/m, 'const tours = injectedTours')
+  .replace(/^import .*$/gm, '')
   .replace(/^export /gm, '')
 const workflowModule = compileFunction(
   `${stripTypeScriptTypes(source)}; return { createInterlakenTourBookingWorkflow, InterlakenTourBookingError }`,
-  ['injectedTours', 'BookingError', 'confirmBooking']
-)(tours, BookingError, confirmBooking)
+  ['injectedTours', 'BookingError', 'confirmBooking', 'isBookingDayOpen']
+)(tours, BookingError, confirmBooking, isBookingDayOpen)
 
 const storeSource = readFileSync(
   new URL('../server/utils/tour-booking-store.ts', import.meta.url),
@@ -46,15 +50,15 @@ const storeSource = readFileSync(
 )
   .replace(/^import[\s\S]*?from\s+['"][^'"]+['"]\r?\n/gm, '')
   .replace(/^export /gm, '')
-const storeModule = compileFunction(
-  `${stripTypeScriptTypes(storeSource)}; return { createInterlakenTourBookingStore }`,
-  [
-    'runGuardedServerTransaction',
-    'getRuntimeFirestore',
-    'defineFirestoreMutationTarget',
-    'InterlakenTourBookingError',
-  ]
-)
+const sharedStoreSource = readFileSync(new URL('../../../../packages/extensions/fireux-bookings/src/runtime/server/business/store.ts', import.meta.url), 'utf8')
+  .replace(/^import[\s\S]*?from\s+['"][^'"]+['"]\r?\n/gm, '').replace(/^export /gm, '')
+function storeModule(runGuardedServerTransaction, getRuntimeFirestore, defineFirestoreMutationTarget, BookingError) {
+  const businessBookingTargets = (id) => ({ bookings: { collectionPath: `businesses/${id}/bookings` }, locks: { collectionPath: `businesses/${id}/booking-locks` }, settings: { collectionPath: `businesses/${id}/booking-settings` } })
+  const createBusinessBookingStore = compileFunction(`${stripTypeScriptTypes(sharedStoreSource)}; return createBusinessBookingStore`,
+    ['runGuardedServerTransaction', 'getRuntimeFirestore', 'businessBookingTargets', 'BUSINESS_MUTATION_TARGETS', 'readBookingAvailability', 'isBookingDayOpen', 'BookingError']
+  )(runGuardedServerTransaction, getRuntimeFirestore, businessBookingTargets, { businesses: { collectionPath: 'businesses' } }, readBookingAvailability, isBookingDayOpen, BookingError)
+  return compileFunction(`${stripTypeScriptTypes(storeSource)}; return { createInterlakenTourBookingStore }`, ['createBusinessBookingStore'])(createBusinessBookingStore)
+}
 
 function loadRoute(path, injectedNames, injectedValues) {
   const routeSource = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -75,10 +79,12 @@ const input = {
   guestName: 'Test Guest',
   guestEmail: 'guest@example.test',
   groupSize: 2,
+  availabilityRevision: 0,
 }
 
 function harness(options = {}) {
-  const documents = new Map()
+  const documents = new Map([['businesses/business-1', { name: 'Test operator' }]])
+  if (options.settings) documents.set('businesses/business-1/booking-settings/availability', options.settings)
   const db = {
     collection: (collectionPath) => ({
       doc: (id) => ({
@@ -120,33 +126,34 @@ function harness(options = {}) {
         writes.push(() => documents.delete(pathFor(target, id)))
       },
     }
-    await run(transaction)
+    const result = await run(transaction)
     writes.forEach((write) => write())
+    return result
   }
   const store = storeModule(
     runGuardedServerTransaction,
     () => db,
     (target) => target,
     workflowModule.InterlakenTourBookingError
-  ).createInterlakenTourBookingStore()
+  ).createInterlakenTourBookingStore('business-1')
   const records = {
-    get: (id) => documents.get(`interlaken_tour_bookings/${id}`),
-    set: (id, value) => documents.set(`interlaken_tour_bookings/${id}`, value),
+    get: (id) => documents.get(`businesses/business-1/bookings/${id}`),
+    set: (id, value) => documents.set(`businesses/business-1/bookings/${id}`, value),
     get size() {
       return [...documents.keys()].filter((path) =>
-        path.startsWith('interlaken_tour_bookings/')
+        path.startsWith('businesses/business-1/bookings/')
       ).length
     },
   }
   const dayLocks = {
-    has: (date) => documents.has(`interlaken_tour_booking_days/${date}`),
+    has: (date) => documents.has(`businesses/business-1/booking-locks/${date}`),
     get: (date) =>
-      documents.get(`interlaken_tour_booking_days/${date}`)?.booking_id,
+      documents.get(`businesses/business-1/booking-locks/${date}`)?.booking_id,
     set: (date, bookingId) =>
-      documents.set(`interlaken_tour_booking_days/${date}`, {
+      documents.set(`businesses/business-1/booking-locks/${date}`, {
         booking_id: bookingId,
       }),
-    delete: (date) => documents.delete(`interlaken_tour_booking_days/${date}`),
+    delete: (date) => documents.delete(`businesses/business-1/booking-locks/${date}`),
   }
   const events = []
   const busyCalls = []
@@ -170,7 +177,7 @@ function harness(options = {}) {
     now: () => new Date('2026-11-04T12:00:00.000Z'),
     createId: () => 'booking-1',
   })
-  return { workflow, records, dayLocks, events, busyCalls }
+  return { workflow, records, dayLocks, events, busyCalls, documents }
 }
 
 test('guest can check, book and receive immediate confirmation at the fixed catalog price', async () => {
@@ -203,7 +210,8 @@ test('guest can check, book and receive immediate confirmation at the fixed cata
   assert.equal(h.events[0].bookingReference, 'booking-1')
   assert.equal(h.records.get('booking-1').status, 'confirmed')
   assert.equal(h.records.get('booking-1').guestEmail, undefined)
-  assert.equal(h.records.get('booking-1').guestName, undefined)
+  assert.equal(h.records.get('booking-1').guest_name, input.guestName)
+  assert.equal(h.records.get('booking-1').guest_email, input.guestEmail)
   assert.equal(h.dayLocks.get(input.date), 'booking-1')
 })
 
@@ -252,6 +260,7 @@ test('a calendar conflict appearing during checkout releases the pending day loc
   const h = harness()
   h.workflow = workflowModule.createInterlakenTourBookingWorkflow({
     store: {
+      readAvailability: async () => defaultBookingAvailability(),
       isDateReserved: async (date) => h.dayLocks.has(date),
       reserve: async (date, booking) => {
         h.records.set(booking.id, structuredClone(booking))
@@ -384,4 +393,43 @@ test('booking HTTP route sends the request body to the booking command', async (
   const response = await route({ body: input })
   assert.deepEqual(response, { booking: { status: 'confirmed' } })
   assert.deepEqual(inputReceived, input)
+})
+
+
+test('closed dates and closed weekdays prevent public availability and bookings', async () => {
+  for (const settings of [
+    { ...defaultBookingAvailability(), closedDates: [input.date] },
+    { ...defaultBookingAvailability(), openWeekdays: [] },
+  ]) {
+    const h = harness({ settings })
+    assert.equal((await h.workflow.checkAvailability(input)).reason, 'closed')
+    await assert.rejects(h.workflow.book(input), (error) => error.statusCode === 409)
+    assert.equal(h.events.length, 0)
+    assert.equal(h.records.size, 0)
+  }
+})
+
+test('saved departure time drives availability and the confirmed calendar event', async () => {
+  const h = harness({ settings: { ...defaultBookingAvailability(), revision: 3, departureTime: '10:30' } })
+  const available = await h.workflow.checkAvailability(input)
+  assert.equal(available.startAt, '2026-11-05T10:30:00+01:00')
+  const result = await h.workflow.book({ ...input, availabilityRevision: 3 })
+  assert.equal(result.booking.departureTime, '10:30')
+  assert.equal(h.events[0].startAt, available.startAt)
+})
+
+
+test('a departure in the spring clock-change gap is rejected instead of silently moving the tour', async () => {
+  const h = harness({ settings: { ...defaultBookingAvailability(), departureTime: '02:30' } })
+  await assert.rejects(h.workflow.checkAvailability({ tourSlug: input.tourSlug, date: '2027-03-28' }), (error) => error.code === 'invalid_departure_time')
+  assert.equal(h.events.length, 0)
+})
+
+
+test('checkout cannot silently adopt a departure changed after the guest checked availability', async () => {
+  const h = harness()
+  assert.equal((await h.workflow.checkAvailability(input)).departureTime, '09:00')
+  h.documents.set('businesses/business-1/booking-settings/availability', { ...defaultBookingAvailability(), revision: 1, departureTime: '10:30' })
+  await assert.rejects(h.workflow.book(input), (error) => error.code === 'availability_changed')
+  assert.equal(h.events.length, 0)
 })

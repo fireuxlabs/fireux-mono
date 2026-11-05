@@ -1,3 +1,4 @@
+import { seedSproochliText as seedText } from '../../../../fireux-sproochli/src/runtime/utils/translation-seed.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
@@ -38,7 +39,7 @@ function scope() {
     selectedId = ref('k'),
     routePath = ref('/recipes/a'),
     disposed = []
-  const useRecipeScope = load(
+  const createRecipeScope = load(
     '../../runtime/kitchen/composables/recipe/useRecipeScope.ts',
     {
       watch,
@@ -47,10 +48,12 @@ function scope() {
     },
     'useRecipeScope'
   )
+  const useRecipeScope = (sources = [], reset) =>
+    createRecipeScope([selectedId, routePath, ...sources], reset)
   return { currentUser, selectedId, routePath, useRecipeScope, disposed }
 }
 test('Prep create captures seed inputs, invalidates pre-dispatch continuations and preserves committed creation', async () => {
-  for (const stage of ['name', 'description', 'auth', 'token', 'response'])
+  for (const stage of ['auth', 'token', 'response'])
     for (const changed of [
       'account',
       'kitchen',
@@ -59,8 +62,6 @@ test('Prep create captures seed inputs, invalidates pre-dispatch continuations a
       'dispose',
     ]) {
       const h = scope(),
-        name = deferred(),
-        description = deferred(),
         auth = deferred(),
         token = deferred(),
         response = deferred(),
@@ -82,44 +83,25 @@ test('Prep create captures seed inputs, invalidates pre-dispatch continuations a
           useWorkspace: () => ({ selectedId: h.selectedId }),
           useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
           useRequireUser: () => auth.promise,
-          useTranslationSeed: () => ({
-            seedTranslations: (input) => {
-              seeds.push(input)
-              return seeds.length === 1 ? name.promise : description.promise
-            },
-          }),
+          seedSproochliText: (input) => {
+            seeds.push(input)
+            return seedText(input)
+          },
           $fetch: (...args) => {
             calls.push(args)
             return response.promise
           },
         },
         'useKitchenPrepItemCreate'
-      )()
+      )([h.selectedId, h.routePath])
       const draft = {
           name: 'Sauce',
           description: 'Original',
           yield: { quantity: 1, unit: 'portion' },
         },
-        pending = create.createPrepItem(
-          draft,
-          { kitchenId: 'k' },
-          { translate: false }
-        ),
+        pending = create.createPrepItem(draft, { kitchenId: 'k' }),
         rejected =
           stage === 'response' ? pending : assert.rejects(pending, /changed/)
-      const seed = {
-        sourceLanguage: 'en',
-        text: { en: 'Sauce' },
-        failedLanguages: [],
-      }
-      if (stage !== 'name') {
-        name.resolve(seed)
-        await Promise.resolve()
-      }
-      if (['auth', 'token', 'response'].includes(stage)) {
-        description.resolve(seed)
-        await Promise.resolve()
-      }
       if (['token', 'response'].includes(stage)) {
         auth.resolve(user)
         await Promise.resolve()
@@ -141,15 +123,16 @@ test('Prep create captures seed inputs, invalidates pre-dispatch continuations a
         h.currentUser.value = changed === 'logout' ? null : { uid: 'b' }
         h.currentUser.value = user
       }
-      name.resolve(seed)
-      description.resolve(seed)
       auth.resolve(user)
       token.resolve('token')
       response.resolve({ id: 'sauce' })
       await rejected
       assert.equal(calls.length, stage === 'response' ? 1 : 0)
       if (calls.length) assert.equal(calls[0][1].body.draft.yield.quantity, 1)
-      assert.equal(seeds[0].translate, false)
+      assert.deepEqual(
+        seeds.map((input) => input.text),
+        ['Sauce', 'Original']
+      )
     }
 })
 const specification = load(
@@ -202,7 +185,7 @@ test('Recipe Prep button saves only Prep and snapshots quantity for its local un
     pending.resolve({ id: 'sauce' })
     await result
     assert.equal(calls[0][0].yield.quantity, 2)
-    assert.equal(calls[0][2].translate, false)
+    assert.deepEqual(calls[0][2], { sourceLanguage: 'en' })
     if (!changed) assert.equal(api.newPrepQuantity.value, 99)
     assert.equal(api.creatingPrep.value, false)
     assert.equal(api.message.value, '')
@@ -229,7 +212,9 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
       ...specification,
       useDishEditorScope,
       useRoute: () => ({ query: {} }),
-      useKitchenWorkspaceDish: () => ({
+      useKitchenWorkspace: () => ({ id: h.selectedId, outcome: ref('ready') }),
+      useRouteParam: () => dishId,
+      useKitchenDishDetail: () => ({
         kitchenId: h.selectedId,
         storageKitchenId: ref('k'),
         dishId,
@@ -267,7 +252,7 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
   assert.equal(api.creating.value, false)
 })
 
-test('stable Prep create preserves pure seed maps and failedLanguages return contract', async () => {
+test('stable Prep create preserves local source maps and returns the created identity', async () => {
   const h = scope(),
     calls = [],
     seedCalls = []
@@ -283,16 +268,10 @@ test('stable Prep create preserves pure seed maps and failedLanguages return con
       useWorkspace: () => ({ selectedId: h.selectedId }),
       useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
       useRequireUser: async () => user,
-      useTranslationSeed: () => ({
-        seedTranslations: async (input) => {
-          seedCalls.push(input)
-          return {
-            sourceLanguage: 'en',
-            text: { ...input.existingText, en: input.text },
-            failedLanguages: ['fr'],
-          }
-        },
-      }),
+      seedSproochliText: (input) => {
+        seedCalls.push(input)
+        return seedText(input)
+      },
       $fetch: async (...args) => {
         calls.push(args)
         return { id: 'sauce' }
@@ -303,11 +282,11 @@ test('stable Prep create preserves pure seed maps and failedLanguages return con
   const result = await api.createPrepItem(
     { name: 'Sauce', description: 'Mix', names: { de: 'Sosse' } },
     { kitchenId: 'k' },
-    { translate: false }
+    { sourceLanguage: 'en' }
   )
-  assert.deepEqual(result, { id: 'sauce', failedLanguages: ['fr'] })
+  assert.deepEqual(result, { id: 'sauce' })
   assert.equal(
-    seedCalls.every((input) => input.translate === false),
+    seedCalls.every((input) => input.sourceLanguage === 'en'),
     true
   )
   assert.deepEqual(calls[0][1].body.draft.names, { de: 'Sosse', en: 'Sauce' })

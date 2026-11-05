@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-10-26
-Ref: 2807ceca9
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
@@ -169,6 +169,11 @@ These files are adapters and composition boundaries. A page or Nitro handler
 may be entity-specific without making the root directory its domain owner.
 Substantial entity behaviour belongs under the entity root; pages and handlers
 delegate to it.
+
+Core's Firebase plugins live under `runtime/plugins/firebase/`. Its internal
+[Firebase module](../../packages/core/fireux-core/src/config/app/firebase.ts)
+registers them explicitly to preserve Auth options and initialization order;
+they have no top-level plugin entrypoint for native discovery.
 
 This makes the cold-reading route mechanical: begin at the framework entrypoint,
 follow its explicit import or registered component into the owner, then follow

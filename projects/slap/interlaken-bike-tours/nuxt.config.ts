@@ -2,15 +2,23 @@ import { defineNuxtConfig } from 'nuxt/config'
 import type { NuxtConfig } from '@nuxt/schema'
 import type { ModuleOptions as IconOptions } from '@nuxt/icon'
 import type { ModuleOptions as UIOptions } from '@nuxt/ui'
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp } from 'fireux-app/config'
 import { identity } from './app/ignition/brief'
 import { searchPlan } from './app/ignition/search'
 
-const fireux = defineFireuxConfig({
+const fireux = defineFireuxApp({
   ...identity,
-  extends: ['fireux-core/layer', 'fireux-slap/layer', 'fireux-businesses/layer'],
+  extends: [
+    'fireux-core/layer',
+    'fireux-slap/layer',
+    'fireux-businesses/layer',
+    'fireux-bookings/layer',
+  ],
   workspaceConfig: { business: { canCreate: true } },
-  subscriptionCapacity: { business: { free: 1, pro: 1, business: null }, 'business.team': { free: 1, pro: 5, business: 50 } },
+  subscriptionCapacity: {
+    business: { free: 1, pro: 1, business: null },
+    'business.team': { free: 1, pro: 5, business: 50 },
+  },
   contactEmail: 'info@interlakenbiketours.com',
   theme: {
     palette: {
@@ -29,7 +37,9 @@ const fireux = defineFireuxConfig({
     disallowPaths: searchPlan.mode === 'public' ? [] : ['/'],
     noindexPaths:
       searchPlan.mode === 'public'
-        ? searchPlan.pages.filter((page) => !page.index).map((page) => page.path)
+        ? searchPlan.pages
+            .filter((page) => !page.index)
+            .map((page) => page.path)
         : ['/', '/**'],
     staticPaths: searchPlan.pages
       .filter((page) => page.sitemap)

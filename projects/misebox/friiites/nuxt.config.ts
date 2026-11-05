@@ -1,11 +1,12 @@
-import { defineFireuxConfig, type FireuxAppConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp, type FireuxAppConfig } from 'fireux-app/config'
 
 const app: FireuxAppConfig = {
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'friiites',
-  context: "Friiites presents a Swiss-developed fries concept centred on hand-cut, brined potatoes triple-fried in beef tallow. Brand storytelling and confirmed menu availability remain separate.",
+  context:
+    'Friiites presents a Swiss-developed fries concept centred on hand-cut, brined potatoes triple-fried in beef tallow. Brand storytelling and confirmed menu availability remain separate.',
   name: 'Friiites',
   shortName: 'Friiites',
   theme: {
@@ -31,21 +32,16 @@ const app: FireuxAppConfig = {
       allowDemo: false,
     },
   },
-  modules: [
-    'fireux-places',
-    'fireux-go-qr',
-    'fireux-sproochli',
-  ],
+  modules: ['fireux-places', 'fireux-go-qr', 'fireux-sproochli'],
 }
 
-export default {
-  ...defineFireuxConfig(app),
+export default defineFireuxApp({
+  ...app,
   extends: [
     ...(app.workspaces?.includes('kitchen')
       ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
       : []),
     'fireux-core/layer',
-    'fireux-blogs/layer',
     'fireux-places/layer',
   ],
-}
+})

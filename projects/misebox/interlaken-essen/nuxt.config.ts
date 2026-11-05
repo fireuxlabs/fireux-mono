@@ -1,11 +1,12 @@
-import { defineFireuxConfig, type FireuxAppConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxApp, type FireuxAppConfig } from 'fireux-app/config'
 
 const app: FireuxAppConfig = {
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
   id: 'interlaken-essen',
-  context: "Interlaken Essen is a local food-discovery App. Its experience centres on locality, food offers and introductions that help people find relevant places to eat.",
+  context:
+    'Interlaken Essen is a local food-discovery App. Its experience centres on locality, food offers and introductions that help people find relevant places to eat.',
   name: 'Interlaken Essen',
   shortName: 'Interlaken Essen',
   role: 'tenant',
@@ -42,16 +43,15 @@ const app: FireuxAppConfig = {
   },
 }
 
-export default {
-  ...defineFireuxConfig(app),
+export default defineFireuxApp({
+  ...app,
   extends: [
     ...(app.workspaces?.includes('kitchen')
       ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
       : []),
     'fireux-core/layer',
-    'fireux-blogs/layer',
     'fireux-places/layer',
     'fireux-businesses/layer',
     'fireux-jobs/layer',
   ],
-}
+})

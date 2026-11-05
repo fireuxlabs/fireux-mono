@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-11-04
-Ref: 8d44cbfef
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
@@ -111,13 +111,20 @@ speculative alternatives do not belong in living documentation.
 | Reader | Start here | What belongs there |
 | --- | --- | --- |
 | People and agents working on FireUX | [AGENTS.md](../../AGENTS.md) | Working rules, scoped context and architecture maps. |
-| People building with FireUX | `/getting-started` and [the public reference](../../packages/core/fireux-docs/src/runtime/pages/docs/index.vue) at `/docs` | Setup, supported APIs and examples. |
+| People building with FireUX | `/getting-started` and [the public reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/index.vue) at `/docs` | Setup, supported APIs and examples. |
 | People and tools reading published context | `/context` and `/context/research` | Reviewed summaries of FireUX and its research. |
 
 Keep contributor guidance in the repository. FireUX App hosts the public
 guides and the `fireux-docs` reference. Give each API one reference, based on
 its owning package's source, and link to it from examples and patterns.
 Reviews and handoffs stay with the repository evidence.
+
+Ecosystem Main Apps own shared public guides for their products and libraries.
+Tenant Apps, such as La Tap Berne, and standalone Apps add documentation only
+for an explicit product need. They may link to their Ecosystem's guides.
+The App selects its documentation layer. The `fireux-docs` extension hosts
+FireUX's developer reference and depends on Core; Core does not depend on Docs. The App
+and Ecosystem bundles do not add that FireUX-specific content to other Apps.
 
 The public reference follows the parts of a Nuxt App that developers work
 with: configuration, pages, layouts, components, composables, and server

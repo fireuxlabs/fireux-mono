@@ -1,0 +1,51 @@
+{
+  "name": "fireux-ecosystem",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared FireUX ecosystem Main App composition",
+  "exports": {
+    "./config": {
+      "types": "./src/config.ts",
+      "development": "./src/config.ts",
+      "production": "./dist/config.mjs",
+      "default": "./src/config.ts"
+    },
+    "./package.json": "./package.json",
+    "./layer": "./src/runtime/nuxt.config.ts",
+    "./runtime/*.vue": {
+      "types": "./src/runtime/*.vue",
+      "default": "./src/runtime/*.vue"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    }
+  },
+  "files": [
+    "src/**/*",
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "node ../../../tools/package-config/build.mjs",
+    "prepack": "pnpm run build",
+    "test": "node --test src/test/*.test.mjs",
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "fireux-app": "workspace:*",
+    "fireux-core": "workspace:*",
+    "h3": "^1.15.4"
+  },
+  "peerDependencies": {
+    "@nuxt/schema": "^4.6.1",
+    "nuxt": "^4.6.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
+  }
+}

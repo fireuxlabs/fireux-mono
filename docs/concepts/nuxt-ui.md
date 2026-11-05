@@ -1,7 +1,7 @@
 # Nuxt UI integration map
 
-Updated: 2026-10-26
-Ref: ce2861c77
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and authority
@@ -22,9 +22,9 @@ implementation; this prose does not claim every component has been audited.
 
 ## FireUX integration
 
-Core registers Nuxt UI in
-[nuxt-baseline.ts](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts)
-and includes its stylesheet through the shared
+The App bundle registers Nuxt UI in
+[config.ts](../../packages/extensions/fireux-app/src/config.ts). Core supplies
+its shared styles through
 [main.css](../../packages/core/fireux-core/src/runtime/assets/styles/main.css)
 and [main.scss](../../packages/core/fireux-core/src/runtime/assets/styles/main.scss).
 Apps may declare semantic color roles in App configuration; package manifests

@@ -1,6 +1,6 @@
 # Interlaken bike client notes
 
-Updated: 2026-11-04
+Updated: 2026-11-05
 Status: discussion notes, not implementation specification.
 
 ## Current pointer
@@ -16,7 +16,7 @@ client distinctions, not another active backlog.
 ## Distinct businesses
 
 - **Interlaken Bike Tours**: User identified a client contact called **Ben**. Discussion concerns guided cycling experiences in the Interlaken region. Do not conflate this business with Yellow Velo. Ben's exact role, site content, and any agreed project scope should be confirmed against the original client brief before implementation.
-- **Yellow Velo**: Independent bike shop in Interlaken; it also has cycling/tour content. Existing FireUX tenant app under `projects/slap/yellow-velo`, part of the `slap` ecosystem. Its existing app config composes Core, Slap, Blogs and Products.
+- **Yellow Velo**: Independent bike shop in Interlaken; it also has cycling/tour content. Existing FireUX tenant app under `projects/slap/yellow-velo`, part of the `slap` ecosystem. Its App config uses `fireux-app` for Core, Blogs and Products and selects the Slap runtime layer.
 
 ## Repository state observed on 2026-10-22
 

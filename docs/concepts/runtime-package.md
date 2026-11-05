@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-11-04
-Ref: 8d44cbfef
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Package root spine
@@ -53,7 +53,7 @@ are shared across entities. Nuxt entrypoints such as `pages`, `layouts`,
 `plugins`, `middleware`, and `server/api` retain their conventional locations.
 Entity-owned implementation lives under `src/runtime/<entity>/<role>`. A
 package carries only the hooks, entity roots, and buckets it
-genuinely owns; a small package such as `fireux-docs` or `fireux-nuxtfire` does
+genuinely owns; a small package such as `fireux-docs` does
 not add empty structure for symmetry.
 
 Shared rules:
@@ -83,10 +83,10 @@ Shared rules:
 - Declare every direct runtime, server, type-only, and stylesheet dependency in
   the owning package manifest.
 - Project Apps compose packages; they do not re-own reusable package behavior.
-- `fireux-blogs` and `fireux-products` are the default App extensions. Core
-  adds their modules and native layers; every App declares both direct
-  dependencies even when Core supplies their registration automatically.
-  Apps may configure default-module options or add other extension packages.
+- `fireux-app` owns the default Blogs and Products modules and native layers,
+  together with the Core layer. `fireux-ecosystem` builds on that bundle for
+  Main Apps. Concrete Apps declare their selected bundle and any packages they
+  import or configure directly. Core imports no App or product bundle.
 - Cross-extension composition belongs in an ecosystem package or project that
   declares every participating package.
 - Do not place a nested `package.json` under `src`.
@@ -110,7 +110,8 @@ Dependency role supplies the missing architectural order inside those lanes:
 
 | Role | Job | May depend on |
 | --- | --- | --- |
-| Core foundation | Nuxt integration and product-neutral FireUX foundations | external libraries and a lower Core bridge |
+| Core foundation | Nuxt integration and product-neutral FireUX foundations | external libraries |
+| App composition | Standard App defaults, or shared Ecosystem Main App surfaces | Core and selected lower extensions |
 | Shared domain primitive | One bounded reusable capability or foundational Entity contract | Core and lower primitives |
 | Entity or parent-domain package | One coherent domain owner, including its related Entities and operations | Core, primitives, and named lower domain capabilities |
 | Ecosystem composition | Cross-package composition, ecosystem identity, configuration, and shared product behavior | Core, primitives, and domain packages |
@@ -168,7 +169,7 @@ for root SEO and manifest handlers outside `server/api`. Authorization and
 development-only rejection remain inside the owning handlers.
 
 Core exposes a `./layer` export backed by `src/runtime/nuxt.config.ts`.
-`defineFireuxConfig` appends it at config time when absent, preserving an explicitly
+`defineFireuxApp` appends it at config time when absent, preserving an explicitly
 authored Core position and deduplicating declarations, so
 Core discovery does not depend on an App remembering a separate declaration.
 Core's module no longer inserts its runtime into Nuxt's internal layer list.
@@ -176,36 +177,24 @@ The module owns explicit Entity component/composable registration, configuration
 root SEO/manifest handlers, and one Workspace page-transition hook. Its layer
 owns conventional pages, layouts, middleware, plugins, and server discovery.
 
-The FireUX and Werkbox ecosystem layers also extend Core; Nuxt resolves the
-shared layer once. Their existing App declarations remain valid. FireUX App and
-FireUX Blank are the inspected native and previously implicit consumers.
+Tenant and standalone Apps use `defineFireuxApp`; Main Apps use
+`defineFireuxEcosystem`, which includes the App bundle. The App bundle supplies
+Core, Blogs and Products. The Ecosystem bundle adds the shared Apps directory,
+its API routes and Main App landing composition. Named Ecosystem packages keep
+their own Firebase bindings and product runtime.
 
-FireUX satellites and the neutral starter explicitly declare their existing Core
-and Blog layers, plus their selected Jobs/AI/Product layers. They do not acquire
-the FireUX ecosystem runtime merely by installing its module; the main App
-explicitly owns that layer. AI exposes a native layer for its existing conventional
-pages/server/runtime discovery, while component/provider-only Go QR and Sproochli
-modules remain module-only.
+Apps select their domain layers and module options in the same builder input.
+For example, Granite selects its Portfolio packages; Bringli selects Suppliers,
+Places and Businesses; Misebox selects Kitchen runtime when that Workspace is
+enabled. Inspect those App configurations for their actual domain precedence
+and the named Ecosystem modules for conditional domain installation. A package
+export alone does not activate its native layer.
 
-FireUX App declares the Blog, Product and Docs layers. The Docs layer provides
-the public reference routes and layout. Contributor guidance stays in the repo.
-
-Werkbox’s global App and tenant also declare native layers, with their distinct
-domain composition kept in the owning App configurations.
-
-Granite declares Core, its conditional Portfolio extensions (Properties, Compliance,
-Documents and Tasks), Granite and Blogs in its established precedence. The
-Portfolio workspace decision controls both native layers and extension module
-installation. Each owning package exports its conventional runtime layer; its
-module retains Entity registration and explicit technical-role/server discovery.
-
-Bringli declares Core, conditional Suppliers, Bringli, Blogs, Places and Companies
-in its established precedence. Supplier workspace enablement controls both the
-owner module and its layer; consumer-only Supplier presentation does not acquire
-owner routes or handlers merely because the package exposes a layer.
-
-Misebox Apps likewise declare native layers, including Kitchen and ecosystem
-runtime layers only when their App workspace configuration enables Kitchen.
+The neutral starter and FireUX satellites receive the standard App bundle and
+add only their selected capabilities. AI exposes a native layer for conventional
+pages and server discovery; component/provider-only Go QR and Sproochli remain
+module-only. FireUX Main App selects its own Docs layer for the developer
+reference. That FireUX-specific content is not a shared Main App default.
 
 All maintained hosts declare their runtime layers at config time. The shared
 `requireNativeRuntimeLayer` assertion checks normalized roots through Nuxt Kit's
@@ -228,7 +217,7 @@ parity.
 | A package imports another extension to compose product behavior                        | `drift`      | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive         |
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
 | Runtime surface exists but is not registered                                           | `drift`      | Use the owning native layer or a necessary module hook, then verify the route/import                                    |
-| A default extension is omitted from an App's composition or direct dependencies         | `drift`      | Keep Blog and Products modules/layers in Core defaults and package dependencies in each App manifest       |
+| An App bypasses its standard bundle         | `drift`      | Use fireux-app or fireux-ecosystem for shared defaults; keep direct dependencies for explicit package use       |
 | Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and verify registration and retired paths against consumers  |
 | Extension lane contains both primitives and domain owners                              | `accepted`   | Use the dependency-role matrix to read ownership; do not add another physical lane without a migration need |
 | A package's primary dependency role cannot be explained from current source             | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |

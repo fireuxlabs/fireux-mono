@@ -15,7 +15,7 @@ independent of subscription tier. A Business can use Free.
 `fireux-businesses` owns the independent `businesses` root, profile commands,
 optional Place links, membership-bound Business access and the organisational
 Team roster. Place owns locations. App owns branding, deployment and membership.
-Bookings owns its reusable lifecycle and provider operations. Core owns the
+Bookings owns its reusable lifecycle, provider operations and optional Business-scoped availability/booking tools. The optional Bookings native layer adds `/workspace/business/bookings`; Business does not depend on Bookings. Core owns the
 Workspace shell, selection, membership lifetime checks and shared Team controls.
 Roster membership alone never grants account access. The existing Place-based directory contribution used by Jobs and Supplier selection creates a root-managed Business identity only, without Team or access grants. An employee recording an employer does not become its operator. Managed Workspace creation is the separate root/Team/access transaction. It honors the App's explicit Workspace creation policy and `business` capacity. The shared creation control counts retained membership grants, including missing roots. Team capacity is separately configured as `business.team`. Current protected commands
 require current App membership and its exact Business access grant, and validate

@@ -1,4 +1,5 @@
 import manifest from '../../package.json'
+import ecosystemPackage from 'fireux-ecosystem/package.json'
 import package0 from 'fireux-ai/package.json'
 import package1 from 'fireux-blogs/package.json'
 import package2 from 'fireux-businesses/package.json'
@@ -12,20 +13,22 @@ import package9 from 'fireux-places/package.json'
 import package10 from 'fireux-sproochli/package.json'
 import package11 from 'fireux-suppliers/package.json'
 
-const packageMetadata: Record<string, { name: string; description?: string }> = {
-  'fireux-ai': package0,
-  'fireux-blogs': package1,
-  'fireux-businesses': package2,
-  'fireux-core': package3,
-  'fireux-demo': package4,
-  'fireux-go-qr': package5,
-  'fireux-jobs': package6,
-  'fireux-kitchens': package7,
-  'fireux-misebox': package8,
-  'fireux-places': package9,
-  'fireux-sproochli': package10,
-  'fireux-suppliers': package11,
-}
+const packageMetadata: Record<string, { name: string; description?: string }> =
+  {
+    'fireux-ecosystem': ecosystemPackage,
+    'fireux-ai': package0,
+    'fireux-blogs': package1,
+    'fireux-businesses': package2,
+    'fireux-core': package3,
+    'fireux-demo': package4,
+    'fireux-go-qr': package5,
+    'fireux-jobs': package6,
+    'fireux-kitchens': package7,
+    'fireux-misebox': package8,
+    'fireux-places': package9,
+    'fireux-sproochli': package10,
+    'fireux-suppliers': package11,
+  }
 
 export const appPackages = Object.keys(manifest.dependencies)
   .filter((name) => name.startsWith('fireux-'))

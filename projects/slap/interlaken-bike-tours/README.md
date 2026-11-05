@@ -2,7 +2,7 @@
 
 FireUX visitor App assembled using the FireUX Ignite method. The App-owned
 [brief and assembly](app/ignition/brief.ts) define the bounded journey and configured
-Apps That Slap identity consumed by `defineFireuxConfig`.
+Apps That Slap identity consumed by `defineFireuxApp`.
 
 - `pnpm dev`: local preview on port 3035.
 - `pnpm build`: compile the FireUX runtime for Firebase SSR.
@@ -20,18 +20,16 @@ updating the preview's Hosting site and SSR codebase.
 Core and Slap are registered through the App's native runtime layers. The App
 also directly registers `fireux-bookings` for its server-side Google Calendar
 adapter in `server/utils/tour-calendar.ts`. The visitor booking page checks a
-single 09:00 departure against Ben's calendar and an App-owned daily booking
-lock. It composes the shared `confirmBooking` lifecycle with App-owned storage and Calendar adapters, then inserts the Calendar event before showing an
+configured departure (09:00 by default) against Ben's calendar, working days, closed dates and a Business-scoped daily booking lock. It composes the shared `confirmBooking` lifecycle with an App-owned tour adapter, Business-scoped storage and Calendar integration, then inserts the Calendar event before showing an
 on-screen confirmation. Current catalog prices are fixed per person. There is
-no payment, confirmation email, cancellation flow or operator Workspace. A provider failure after event creation begins retains the pending reservation for manual reconciliation and returns its booking reference. Do not retry it until the operator has reconciled Calendar and storage.
+no payment, confirmation email or cancellation flow. The Business Workspace manages availability and shows booking records. A provider failure after event creation begins retains the pending reservation for manual reconciliation and returns its booking reference. Do not retry it until the operator has reconciled Calendar and storage.
 Google Calendar refresh credentials and the calendar id are server-only
 environment settings: `BOOKINGS_GOOGLE_CALENDAR_ID`,
 `BOOKINGS_GOOGLE_CLIENT_ID`, `BOOKINGS_GOOGLE_CLIENT_SECRET` and
 `BOOKINGS_GOOGLE_REFRESH_TOKEN`. Store secrets in the server environment, never
 browser config or committed files.
 
-Core's default App composition supplies Blogs and Products, with both packages
-declared directly in the App manifest. Core owns Firebase integration, shared
+The `fireux-app` bundle supplies Blogs and Products. Core owns Firebase integration, shared
 account/management routes, configured App initialization, SEO and the versioned
 PWA manifest. App-owned public tour pages
 use the `tours` layout; shared runtime routes retain their owning layouts.
@@ -118,3 +116,18 @@ atomic root/Team/access command. Team roster entries do not grant account access
 The Business can use Free. No Ben Business record is created by a source build.
 Legacy Company data requires the reviewed migration plan before releasing the
 new source against an existing Company-backed database.
+
+## Booking management
+
+Enable the Bookings Business Workspace module option and native layer to expose
+`/workspace/business/bookings`. The selected Business's current membership-bound
+authority protects availability changes and private booking/guest reads. Operators
+set working weekdays, departure time and individual closed dates. Closing a day
+does not cancel an existing reservation. Concurrent schedule edits require refresh.
+The list supports cursor pages and manual refresh.
+
+Set server-only `BOOKINGS_BUSINESS_ID` to Ben's actual Business document id before
+accepting public bookings. The public browser cannot choose that owner. New records,
+settings and locks live beneath that Business. Legacy `interlaken_tour_bookings`
+and `interlaken_tour_booking_days` are not read or automatically migrated.
+Google Calendar credentials are still required for live availability and events.

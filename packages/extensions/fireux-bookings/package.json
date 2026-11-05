@@ -23,7 +23,8 @@
       "types": "./src/runtime/*.ts",
       "default": "./src/runtime/*.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./layer": "./src/runtime/nuxt.config.ts"
   },
   "typesVersions": {
     "*": {
@@ -58,11 +59,17 @@
   "peerDependencies": {
     "nuxt": "^4.4.0",
     "@nuxt/kit": "^4.4.0",
-    "@nuxt/schema": "^4.4.0"
+    "@nuxt/schema": "^4.4.0",
+    "vue": "^3.5.40",
+    "h3": "^1.15.4"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^1.0.2",
     "rimraf": "^6.0.1"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "fireux-core": "workspace:*",
+    "fireux-businesses": "workspace:*"
+  }
 }

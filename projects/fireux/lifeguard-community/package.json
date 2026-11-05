@@ -16,8 +16,7 @@
   "dependencies": {
     "@nuxt/icon": "2.5.1",
     "@nuxt/ui": "4.12.0",
-    "fireux-blogs": "workspace:*",
-    "fireux-products": "workspace:*",
+    "fireux-app": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
     "nuxt": "4.6.1",

@@ -62,7 +62,7 @@ const serialize = (value) => {
 
 const server = new Server(
   {
-    name: 'fireux-mcp-firestore',
+    name: 'mcp-firestore',
     version: '0.1.0',
   },
   {

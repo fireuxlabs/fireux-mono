@@ -10,7 +10,7 @@ export function useFirestoreApiCreate() {
     body: TBody,
     options: FirestoreApiCreateOptions = {}
   ) {
-    return await $fetch<TResponse, string, 'POST'>(endpoint, {
+    return await $fetch<TResponse, string>(endpoint, {
       onResponse: async ({ options, response }) => {
         if (
           response.ok &&

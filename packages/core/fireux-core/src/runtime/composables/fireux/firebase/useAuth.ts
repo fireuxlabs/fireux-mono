@@ -42,7 +42,7 @@ export type AuthUser = {
 
 function tryBindVueFire() {
   // These can throw if VueFire Auth hasn't been installed yet.
-  // (In FireUX apps, `fireux-nuxtfire` should ensure this is ready.)
+  // (In FireUX apps, Core’s Firebase integration should ensure this is ready.)
   const auth = useFirebaseAuth()
   const currentUser = useCurrentUser() as Ref<User | null>
   return { auth, currentUser }

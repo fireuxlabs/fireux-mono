@@ -1,8 +1,8 @@
 import type { NuxtPage } from '@nuxt/schema'
 import {
-  defineFireuxConfig,
+  defineFireuxEcosystem,
   type FireuxAppConfig,
-} from 'fireux-core/config/app/fireux.config'
+} from 'fireux-ecosystem/config'
 
 const app: FireuxAppConfig = {
   ecosystem: 'misebox',
@@ -37,7 +37,6 @@ const app: FireuxAppConfig = {
     ],
   },
   modules: [
-    'fireux-products',
     'fireux-places',
     'fireux-businesses',
     'fireux-go-qr',
@@ -48,7 +47,19 @@ const app: FireuxAppConfig = {
   ],
 }
 
-const appConfig = defineFireuxConfig(app)
+const appConfig = defineFireuxEcosystem({
+  ...app,
+  extends: [
+    ...(app.workspaces?.includes('kitchen')
+      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
+      : []),
+    'fireux-core/layer',
+    'fireux-places/layer',
+    'fireux-businesses/layer',
+    'fireux-jobs/layer',
+    'fireux-ai/layer',
+  ],
+})
 
 export default {
   ...appConfig,
@@ -72,16 +83,4 @@ export default {
       ordering: { channels: ['pos', 'kiosk', 'website'] },
     },
   },
-  extends: [
-    ...(app.workspaces?.includes('kitchen')
-      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
-      : []),
-    'fireux-core/layer',
-    'fireux-products/layer',
-    'fireux-blogs/layer',
-    'fireux-places/layer',
-    'fireux-businesses/layer',
-    'fireux-jobs/layer',
-    'fireux-ai/layer',
-  ],
 }

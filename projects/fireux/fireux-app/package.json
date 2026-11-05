@@ -1,5 +1,5 @@
 {
-  "name": "fireux-app",
+  "name": "fireux-platform-app",
   "private": true,
   "type": "module",
   "imports": {
@@ -29,6 +29,7 @@
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-docs": "workspace:*",
+    "fireux-ecosystem": "workspace:*",
     "fireux-fireux": "workspace:*",
     "fireux-ignite": "workspace:*",
     "fireux-products": "workspace:*",

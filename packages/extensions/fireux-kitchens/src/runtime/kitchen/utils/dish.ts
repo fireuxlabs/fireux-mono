@@ -8,7 +8,7 @@ import type { Dish, DishItemKind } from '../models/dish.model'
 export type { Dish, DishItemKind } from '../models/dish.model'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Model conventions: docs/concepts/core-models.md#entity-model-file-shape
  *
  * Family: Kitchen-scoped Entity
  * Storage: Kitchen-owned reusable food identity

@@ -26,11 +26,15 @@ test('one deterministic source result retains reviewed purpose, framework owners
   assert.deepEqual(artifact, prepareIgnitionPreview(input))
   assert.equal(artifact.brief.outcome, input.outcome)
   assert.match(artifact.files['app/app.vue'], /AppShell/)
-  assert.match(artifact.files['nuxt.config.ts'], /defineFireuxConfig/)
+  assert.match(artifact.files['nuxt.config.ts'], /defineFireuxEcosystem/)
   assert.match(artifact.files['nuxt.config.ts'], /noindexPaths/)
   assert.match(artifact.files['nuxt.config.ts'], /global/)
-  assert.match(artifact.files['nuxt.config.ts'], /fireux-blogs\/layer/)
-  assert.match(artifact.files['nuxt.config.ts'], /fireux-products\/layer/)
+  assert.equal(
+    JSON.parse(artifact.files['package.json']).dependencies['fireux-ecosystem'],
+    'workspace:*'
+  )
+  assert.ok(!artifact.files['nuxt.config.ts'].includes('fireux-blogs/layer'))
+  assert.ok(!artifact.files['nuxt.config.ts'].includes('fireux-products/layer'))
   assert.match(artifact.files['app/pages/pricing/index.vue'], /usePricing/)
   assert.match(
     artifact.ecosystem.files['src/module.ts'],
@@ -58,6 +62,8 @@ test('unsupported/path-like identities and invalid briefs fail before source or 
     '/tmp/x',
     'two/apps',
     'UPPER',
+    'app',
+    'ecosystem',
     'fireux-app',
     'fireux-template',
   ])

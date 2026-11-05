@@ -1,7 +1,7 @@
 # FireUX Mono repository map
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose and navigation
@@ -28,9 +28,18 @@ upstream docs linked there and the focused FireUX maps.
 | `projects/*/*`      | Concrete Nuxt Apps and the project starter.                                |
 | tools               | Local development and operational tools outside reusable runtime packages. |
 
-A directory is a package only when it has its own package.json and is included
-by pnpm-workspace.yaml. That workspace file owns the package globs. The
-no-FireUX embed harness is a static project exception, not a reusable package.
+The Core lane contains `fireux-core`, including its Firebase integration.
+The optional public-reference layer, `fireux-docs`, belongs to Extensions.
+`fireux-app` and `fireux-ecosystem` also live in Extensions: the first composes
+standard Apps, and the second adds shared Main App features. Neither is a Core
+dependency. The concrete FireUX deployment is the `fireux-platform-app` workspace
+member; its runtime App ID remains `fireux-app`.
+
+A directory is a pnpm workspace member when it has its own package.json and is
+included by pnpm-workspace.yaml. That workspace file owns the member globs.
+Library inventories cover `packages/`; concrete Apps and development tools
+belong in separate inventories. The no-FireUX embed harness is a static project
+exception, not a reusable library.
 
 ## Dependency direction
 

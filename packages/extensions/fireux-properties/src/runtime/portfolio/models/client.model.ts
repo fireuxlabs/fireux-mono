@@ -2,7 +2,7 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.mode
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Model conventions: docs/concepts/core-models.md#entity-model-file-shape
  *
  * Family: Portfolio-scoped
  * Storage: scoped operational record
@@ -11,7 +11,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Decision note:
  * - Client is currently treated as a portfolio-owned operational entity, not a global root record.
- * - If a cross-portfolio client canon appears later, update the models README first, then this file.
+ * - If a cross-portfolio client canon appears later, update the owning model and concept map together.
  */
 export const ClientStorage = {
   shape: 'scoped',

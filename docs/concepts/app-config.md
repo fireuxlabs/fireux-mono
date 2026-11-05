@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-04
-Ref: 8d44cbfef
+Updated: 2026-11-05
+Ref: d6240d394
 Role: map, not canon
 
 ## Purpose
@@ -19,20 +19,22 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - runtime-package.md
 - pnpm.md
 
-## Core files
+## Current sources
 
-- `packages/core/fireux-core/src/config/app/fireux.config.ts`
-- `packages/core/fireux-core/src/config/app/modules.ts`
+- `packages/extensions/fireux-app/package.json` (`fireux-app/config`)
+- `packages/extensions/fireux-ecosystem/package.json` (`fireux-ecosystem/config`)
 - `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts`
 
 ## App pattern
 
-- Import `defineFireuxConfig` and export it directly. Project Apps do not own a
+- Tenant and standalone Apps import `defineFireuxApp` from `fireux-app/config`.
+  Main Apps import `defineFireuxEcosystem` from `fireux-ecosystem/config`.
+  Export the result directly. Project Apps do not own a
   second assembly object just to append native layers: `extends` passes through
   the existing builder with Nuxt’s own type and priority. Repeated runtime or
   framework behavior belongs in its Core, ecosystem, or extension owner.
-  Core appends its own native runtime layer as the baseline; App `extends`
+  The App bundle appends the Core and default extension layers; App `extends`
   entries retain their declared priority above it.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
@@ -63,13 +65,16 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   shared Nuxt baseline. Apps do not repeat or override
   `future.compatibilityVersion`; compatibility repairs belong to the lowest
   Core, ecosystem, or extension owner that implements the affected behavior.
-- Blog and Products are universal default extensions. Core adds both modules
-  and native layers even when an App omits them from `modules` or `extends`;
-  every App declares both packages directly in its manifest. `modules` lists
-  additional extensions and may provide custom options for a default module.
-  An App may keep explicit layer positions to preserve established Nuxt
-  precedence. Ecosystem packages do not bundle domain extensions on an App's
-  behalf.
+- Blogs and Products are universal App defaults owned by `fireux-app`. The
+  bundle adds both modules and native layers when omitted. `modules` lists
+  additional extensions and may configure a default module. Keep direct package
+  dependencies for explicit imports or configuration. An App may keep explicit
+  layer positions where its declared Nuxt precedence needs them. Named Ecosystem
+  packages may compose their domain modules; the shared `fireux-ecosystem`
+  bundle is selected only by Main Apps.
+- Documentation is an App-owned opt-in layer. Ecosystem Main Apps host their
+  shared guides. Tenant and standalone Apps include documentation only when
+  their product needs it, or link to the owning Ecosystem's guides.
 - A reusable extension owns its shared runtime integration defaults and
   environment resolution. For example, `fireux-kitchens` owns the Bringli
   Supplier-directory configuration, `fireux-places` owns Google Maps and
@@ -77,7 +82,7 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   Project Apps do not repeat those runtime values.
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
-  repeat deployment identity in `defineFireuxConfig`.
+  repeat deployment identity in the bundle configuration.
 - `workspaceConfig.<family>.origin` optionally declares an App-owned Workspace
   origin. The registered route with `nav.key: workspace-<family>` still owns Home.
   Core exposes an internal path for return/selection and an origin-aware URL for
@@ -88,7 +93,7 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   It is not deployment runtime configuration. Authentication stays Core-owned; entry routes carry
   mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
   thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
-  enter `defineFireuxConfig` or public runtime config. `RuntimeApp` derives from
+  enter the bundle configuration or public runtime config. `RuntimeApp` derives from
   App config and makes normalized
   arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the
   consumer names once. Browser and trusted-server consumers use the same

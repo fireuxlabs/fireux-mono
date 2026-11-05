@@ -103,7 +103,7 @@ record is only the bootstrap/control-plane projection. The normal second
 database is the owning `ProjectName`; it owns that Project's canonical entities
 and operations. Consumers and scripts must not choose arbitrary per-operation
 databases. Explicit App infrastructure `databaseId` bindings are supported by
-`packages/core/fireux-core/src/config/app/fireux.config.ts` and
+`packages/extensions/fireux-app/src/config.ts` and
 `packages/core/fireux-core/src/config/app/database.ts`; they preserve the
 owning ecosystem identity database while selecting the App's domain database.
 Each additional binding retains its own lifecycle and Rules authority; its

@@ -1,5 +1,5 @@
 /**
- * Authored App literature supplied through `defineFireuxConfig`.
+ * Authored App literature supplied through App configuration.
  * This is configuration input, not a persisted model or route registry.
  */
 

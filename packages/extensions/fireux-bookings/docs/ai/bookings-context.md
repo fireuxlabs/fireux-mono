@@ -12,11 +12,9 @@ authority, and documentation rules in those sources remain authoritative.
 
 ## Purpose and ownership
 
-`fireux-bookings` is an optional Extension owning the reusable reservation-to-confirmation lifecycle and provider integrations. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. It does not own a universal
-Booking Entity or any consumer's records, availability policy, pricing, payment,
-cancellation, notification, or customer-data rules.
+`fireux-bookings` is an optional Extension owning the reusable reservation-to-confirmation lifecycle and provider integrations. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. Its optional Business Workspace owns Business-scoped availability settings, booking records and exclusive allocation locks. These are Business-owned child records, not a universal Booking Entity. Service catalogue, pricing, timezone, allocation-key policy, payments, cancellation and notification remain with their named consumers.
 
-The consuming domain or App owns its records, authority, time-slot rules,
+Outside the optional Business integration, the consuming domain or App owns its records and authority. All consumers retain service-specific time-slot rules,
 calendar connection lifecycle, confirmation policy, durable reconciliation and storage adapters. The shared lifecycle retains capacity after an external effect starts if completion is uncertain; consumers must resolve that held state before retrying. A FreeBusy response is a
 calendar projection, not proof that a domain can accept a booking. Firestore
 locks cannot atomically reserve Google Calendar time; consumers must state and
@@ -29,14 +27,18 @@ verify how external conflicts and failed event writes affect their own workflow.
   `docs/concepts/entities.md`. Firestore write authority is governed by
   `docs/ai/firestore-mutations-context.md` when a consumer persists records.
 - Package identity, exports, and commands: `package.json`.
-- Nuxt server helper registration: `src/module.ts`.
+- Nuxt registration and optional `businessWorkspace` module option: `src/module.ts`; explicit native layer `src/runtime/nuxt.config.ts`.
+- Business management: `src/runtime/server/business/management.ts`, `store.ts` and `targets.ts`. Settings, records and locks live beneath `businesses/{id}` and protected management reuses Business membership-bound authority.
+- Schedule validation: `src/runtime/utils/availability.ts`. Revision checks reject stale operator saves and schedule changes during reservation. Existing reservations are preserved when closing days.
+- Business Workspace route and focused UI: `src/runtime/pages/workspace/business/bookings.vue` and `business/components/Workspace`. Private list reads use bounded cursor pages with explicit refresh.
+- Source-owned Business policy/authority tests: `src/test/business-management.test.mjs`.
 - Provider-independent lifecycle: `src/runtime/server/booking.ts`, with behavioral checks in `src/test/booking.test.mjs`.
 - Google Calendar request and response boundary:
   `src/runtime/server/google-calendar.ts`.
 - Provider contract checks: `src/test/google-calendar.test.mjs`.
 - First App Calendar adapter and private credentials boundary:
   `projects/slap/interlaken-bike-tours/server/utils/tour-calendar.ts`.
-- First App booking workflow and Firestore records:
+- First App booking workflow and Business-scoped storage adapter:
   `projects/slap/interlaken-bike-tours/server/utils/tour-booking.ts`,
   `tour-booking-store.ts`, and `server/api/bookings/`.
 - Local provider and lifecycle sandbox: `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue`,
@@ -51,7 +53,7 @@ verify how external conflicts and failed event writes affect their own workflow.
 Property Reservation records and night locks remain in
 `fireux-reservations`; Kitchen table service and order records remain in
 `fireux-kitchens`; Job employment schedule terms remain in `fireux-jobs`.
-Those models are not interchangeable booking records. Consumers compose the lifecycle and provider APIs while keeping their own record and command authority. Public product packaging, onboarding, commercial terms and deployment belong above the Extension. Core remains independent of this optional product.
+Those models are not interchangeable booking records. The Business store accepts a consumer-selected exclusive allocation key; the Interlaken App uses the local date for one tour per day. New tour records are stored under the server-configured `BOOKINGS_BUSINESS_ID`, never a browser-selected owner. Calendar credentials remain server-only. Legacy global Interlaken booking records are not automatically assigned to a Business. Consumers compose the lifecycle and provider APIs while keeping their own record and command authority. Public product packaging, onboarding, commercial terms and deployment belong above the Extension. Core remains independent of this optional product.
 
 ## Authority and connection lifecycle
 

@@ -1,12 +1,13 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
 
-export default defineFireuxConfig({
+export default defineFireuxEcosystem({
   ecosystem: 'sharer',
-  extends: ['fireux-core/layer', 'fireux-sharer/layer', 'fireux-blogs/layer'],
+  extends: ['fireux-core/layer', 'fireux-sharer/layer'],
   projectId: 'sharer-ecosystem',
   ecosystemId: 'sharer',
   id: 'sharer-app',
-  context: "Sharer provides personal sharing profiles and branded public link pages. Each profile collects the links and content its owner chooses to share.",
+  context:
+    'Sharer provides personal sharing profiles and branded public link pages. Each profile collects the links and content its owner chooses to share.',
   name: 'Sharer',
   shortName: 'Sharer',
   theme: {
@@ -23,5 +24,4 @@ export default defineFireuxConfig({
   },
   role: 'global',
   authEnabled: true,
-  modules: [],
 })

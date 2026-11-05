@@ -10,7 +10,7 @@ export type DocumentLinkTargetType =
   | 'task'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Model conventions: docs/concepts/core-models.md#entity-model-file-shape
  *
  * Family: Portfolio-scoped
  * Storage: workspace-owned operational record
@@ -20,7 +20,7 @@ export type DocumentLinkTargetType =
  * Decision note:
  * - DocumentLink exists only because portfolio operations need attachment state.
  * - It is scoped by the portfolio even when it points to several target types.
- * - If that ownership changes later, update the models README first, then this file.
+ * - If that ownership changes later, update the owning model and concept map together.
  */
 export const DocumentLinkStorage = {
   shape: 'scoped',

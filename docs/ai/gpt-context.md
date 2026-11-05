@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-05
-Ref: 71d4618ec
+Ref: d6240d394
 Role: living context
 Scope: repository-wide
 
@@ -37,10 +37,28 @@ Implementation follows this dependency direction:
   trusted behavior.
 - Core owns proved product-neutral FireUX and Nuxt mechanics.
 
-Every FireUX App includes `fireux-blogs` and `fireux-products` by default. Core's
-App config adds both modules and native layers; every App declares both direct
-package dependencies. Apps may configure those defaults or add other extensions
-through their existing App config.
+`fireux-core` owns the shared Firebase/VueFire integration, including Admin
+initialization and browser Auth persistence. The public reference is the
+App-selected `fireux-docs` extension and is not a Core dependency.
+
+`fireux-app` composes the standard App: Core, Blogs and Products. Tenant and
+standalone Apps use `defineFireuxApp` from `fireux-app/config`; Ecosystem Main
+Apps use `defineFireuxEcosystem` from `fireux-ecosystem/config`. The Ecosystem
+bundle includes the App bundle and shared Main App surfaces. Core can be used
+independently and never imports either bundle or a product package.
+
+The App bundle owns default module and native-layer registration. Concrete Apps
+declare their selected bundle and the packages they import or configure directly.
+Named Ecosystem packages still own their bindings and domain composition; they
+do not import the Main App bundle merely because tenants share that Ecosystem.
+
+Ecosystem Main Apps own shared public documentation. Tenant and standalone Apps
+include documentation only for an explicit product need and may link to their
+Ecosystem's guides. Documentation layers are selected by the App.
+
+`fireux-sproochli` owns shared translation and multilingual-copy capabilities.
+Apps own their source copy, language profiles and approved text. See the
+[translation map](../concepts/translation.md) for that boundary.
 
 An App may consume its own Ecosystem package, Core or an Extension directly.
 Ecosystems may consume Core
@@ -55,6 +73,10 @@ Packages keep authored implementation in src, identity and commands in
 package.json, typing in tsconfig.json, and entrypoint explanations in README.
 Use the package manifest as the source for dependencies and version pins; do not
 copy a version inventory into living context.
+
+Reusable libraries under `packages/` use `fireux-*` names. Development tools
+live under `tools/` and use tool-specific names outside that prefix. Inventory
+libraries, Apps and development tools separately.
 
 ## New work and composition
 
