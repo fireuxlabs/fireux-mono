@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: ec4d84d58
 Role: living context
 Scope: repository-wide
 
@@ -292,14 +292,15 @@ regression or an explicit change of outcome. Report meaningful completed work
 and exact blockers; do not substitute repeated audits or optional symmetry
 cleanup for progress. Separate release-only gates from functional dependencies.
 
-- Preserve unrelated and concurrent work. Inspect the shared checkout before
-  editing; do not switch its branch or create a worktree unless requested.
+- Work directly on `main` in the shared checkout. Preserve unrelated and
+  concurrent work. Do not create branches or worktrees unless the user explicitly
+  requests an exception.
 - Shared Firebase artifact tooling lives in `tools/firebase-release`; App manifests
   retain explicit targets and build origins, and App-owned policy gates retain
   release authority. It never deploys Rules or provisions Auth. See the tool README.
 - Never stage, commit, push, deploy or modify live data without user
-  authorization for that action. gitsave stages shared work and requires an
-  explicit save request.
+  authorization for that action. `pnpm gitsave` requires `main`, stages shared
+  work, commits and pushes `origin/main`. Run it only after an explicit save request.
 - IDE tasks, launch entries and workspaces are generated through `pnpm ide:sync`
   from App-owned manifests and the existing launcher discovery. Use
   [the IDE workflow](../../tools/ide/README.md) for focused checks; keep generated

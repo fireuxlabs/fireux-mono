@@ -1,7 +1,7 @@
 # pnpm concept map
 
-Updated: 2026-11-02
-Ref: 4141961e7
+Updated: 2026-11-06
+Ref: ec4d84d58
 Role: map, not canon
 
 ## Purpose
@@ -43,9 +43,9 @@ workspaces from App manifests; `pnpm ide:check` detects drift. See the
   `pnpm typecheck:scope <path>`: check one owner.
 - `pnpm test:unit`: run the bounded offline Core and IDE suite.
 - `pnpm ide:sync` / `pnpm ide:check`: update / verify generated IDE files.
-- `pnpm gitsave`: stage all changes, commit, and push through
-  `.github/gitsave.sh`; run only when the user requests a save and the shared
-  tree is stable. It does not run the deleted guard suite.
+- `pnpm gitsave`: require `main`, stage all changes, commit, and push to
+  `origin/main` through `.github/gitsave.sh`. Run only when the user requests a
+  save and the shared tree is stable.
 
 Inspect `package.json` for the exact current command. The former `scripts/`
 commands, smoke wrappers, registry synchronization, and guard suite are removed.
