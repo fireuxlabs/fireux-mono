@@ -30,37 +30,23 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
 
   const currentPlaces = fireux.places
   const currentJobs = fireux.jobs
-  const currentProducts = fireux.products
-  const currentBlogs = fireux.blogs
   const currentSproochli = asRecord(fireux.sproochli)
   const currentDesignPacks = asRecord(fireux.designPacks)
 
   const placeDefaults = getPlacesConfig()
   const jobDefaults = getJobsConfig()
-  const productDefaults = { enabled: true }
-  const blogDefaults = { enabled: true }
   if (hasModule('fireux-places')) {
-    fireux.places = currentPlaces && typeof currentPlaces === 'object'
-      ? { ...placeDefaults, ...currentPlaces }
-      : { ...placeDefaults }
+    fireux.places =
+      currentPlaces && typeof currentPlaces === 'object'
+        ? { ...placeDefaults, ...currentPlaces }
+        : { ...placeDefaults }
   }
 
   if (hasModule('fireux-jobs')) {
-    fireux.jobs = currentJobs && typeof currentJobs === 'object'
-      ? { ...jobDefaults, ...currentJobs }
-      : { ...jobDefaults }
-  }
-
-  if (hasModule('fireux-products')) {
-    fireux.products = currentProducts && typeof currentProducts === 'object'
-      ? { ...productDefaults, ...currentProducts }
-      : { ...productDefaults }
-  }
-
-  if (hasModule('fireux-blogs')) {
-    fireux.blogs = currentBlogs && typeof currentBlogs === 'object'
-      ? { ...blogDefaults, ...currentBlogs }
-      : { ...blogDefaults }
+    fireux.jobs =
+      currentJobs && typeof currentJobs === 'object'
+        ? { ...jobDefaults, ...currentJobs }
+        : { ...jobDefaults }
   }
 
   if (hasModule('fireux-sproochli')) {

@@ -89,7 +89,10 @@ test('Public Project profile cannot expose guest ownership, audit or unrelated p
     id: 'p',
     identity: root().identity,
   })
-  const archived = { ...root(), identity: { ...root().identity, status: 'archived' } }
+  const archived = {
+    ...root(),
+    identity: { ...root().identity, status: 'archived' },
+  }
   assert.equal(readProjectDocument(archived, 'p'), null)
   assert.equal(readProjectPublicSummary(archived, 'p'), null)
   assert.equal(
@@ -136,12 +139,15 @@ test('Malformed granted Project roots fail the collection without exposing a par
     selectedId = ref('p')
   owner.run(() =>
     load(
-      '../runtime/project/composables/workspace/useProjectWorkspaceIndex.ts',
-      'useProjectWorkspaceIndex()',
+      '../runtime/project/composables/workspace/useProjectWorkspace.ts',
+      'useProjectWorkspace()',
       {
         computed,
         watch,
+        defineWorkspace: (factory) => factory,
         useProjectCollection: () => collection,
+        useProjectAccess: () => access,
+        useProjectRead: () => ({ data: ref(root()), outcome: ref('ready') }),
         useWorkspace: () => ({
           selectedId,
           select() {},
@@ -209,7 +215,7 @@ test('A malformed settled Project detail is an explicit error and clears when th
   assert.equal(read.outcome.value, 'idle')
 })
 
-test('Project creation captures route and caller form before credentials and validates guest response identity and action', async () => {
+test('Project creation preserves caller route/form scope before credentials and validates guest response identity and action', async () => {
   const useCommandScope = load(
     '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
     'useCommandScope',
@@ -235,16 +241,18 @@ test('Project creation captures route and caller form before credentials and val
       membership = ref(null),
       route = reactive({ fullPath: '/project' }),
       isOwnerCurrent = ref(true)
+    const captureCaller = owner.run(() =>
+      useCommandScope([() => route.fullPath, isOwnerCurrent])
+    )
     const controller = owner.run(() =>
       load(
-        '../runtime/project/composables/workspace/useProjectWorkspaceCreate.ts',
-        'useProjectWorkspaceCreate()',
+        '../runtime/project/composables/useProjectCreate.ts',
+        'useProjectCreate()',
         {
           ref,
           watch,
           useCommandScope,
           isFirestoreDocumentId,
-          useRoute: () => route,
           useAuth: () => ({ currentUser }),
           useAppSession: () => ({ appUser: membership }),
           useFireUXConfig: () => ({ appId: 'app' }),
@@ -261,8 +269,9 @@ test('Project creation captures route and caller form before credentials and val
         }
       )
     )
+    const callerIsCurrent = captureCaller()
     const flight = controller.createProject('Before', {
-      isCurrent: () => isOwnerCurrent.value,
+      isCurrent: () => callerIsCurrent() && isOwnerCurrent.value,
     })
     const done =
       change === 'stable'

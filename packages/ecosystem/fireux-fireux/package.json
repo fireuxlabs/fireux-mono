@@ -1,7 +1,7 @@
 {
   "name": "fireux-fireux",
   "version": "0.1.0",
-  "description": "FireUX tenant package (brand/runtime surface for FireUX apps)",
+  "description": "FireUX ecosystem bindings and Project Workspace",
   "private": true,
   "type": "module",
   "main": "./src/module.ts",

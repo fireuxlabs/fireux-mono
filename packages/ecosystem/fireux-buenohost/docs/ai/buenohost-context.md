@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 864d6c09b
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -86,7 +86,7 @@ select their own bounded property targets.
   App imports still require direct package dependencies. Each maintained App
   selects the Ecosystem bundle for its Main App or the App bundle for tenants,
   then its conditional Properties/Reservations and BuenoHost native layers.
-  The App bundle supplies Core, Blogs and Products. The same Property workspace
+  The App bundle supplies Core, Blogs, Products and AI. The same Property workspace
   flag controls native layers and ecosystem module installation. Conventional
   discovery belongs to the owning package layer; explicit domain registration
   and trusted handler policy remain module-owned.

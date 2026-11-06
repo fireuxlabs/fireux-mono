@@ -7,7 +7,6 @@ import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureModulePages } from './config/module/pages-config'
 import { configurePlugins } from './config/module/plugins-config'
-import { configurePublicAssets } from './config/module/public-assets-config'
 import { configureRuntimeConfig } from './config/module/runtime-config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
@@ -36,16 +35,8 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       configureRuntimeConfig,
       configurePages: configureModulePages,
       configureComponents,
-      configurePublicAssets,
     })
     if (hasKitchenWorkspace) configurePlugins(resolver)
-
-    nuxt.hook('ready', () => {
-      if (process.env.FIREUX_DEBUG_LAYERS) {
-        console.log('[fireux-misebox] layers', (nuxt.options as any)._layers)
-      }
-      // fireux-misebox: module configured
-    })
   },
 })
 

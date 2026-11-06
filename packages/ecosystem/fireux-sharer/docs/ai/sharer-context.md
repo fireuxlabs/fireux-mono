@@ -1,7 +1,7 @@
 # Sharer context
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 864d6c09b
 Role: living context
 Scope: Sharer ecosystem identity, sharing profiles, tenant Apps, and branded PWA boundary
 
@@ -64,7 +64,7 @@ or treating a tenant App as a cosmetic profile theme.
 ## Native runtime composition
 
 Sharer Main App selects `fireux-ecosystem/config`; Kjordi selects
-`fireux-app/config`. Both receive Core, Blogs and Products from the App bundle
+`fireux-app/config`. Both receive Core, Blogs, Products and AI from the App bundle
 and select Sharer's native layer. Sharer exposes `./layer` for conventional
 Nuxt runtime discovery; its module retains configuration, domain registration and
 explicit server handler contracts. Kjordi alone enables the component/provider-only

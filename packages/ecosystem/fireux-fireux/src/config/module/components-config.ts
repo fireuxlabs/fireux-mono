@@ -1,5 +1,5 @@
-import { addComponent, type Resolver } from '@nuxt/kit';
-import { registerComponentsDir } from 'fireux-core/config/module/module-helpers';
+import { addComponent, type Resolver } from '@nuxt/kit'
+import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
 
 /**
  * Register runtime components for this module.
@@ -27,5 +27,4 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'Project',
     ignore: ['Workspace/**'],
   })
-
 }

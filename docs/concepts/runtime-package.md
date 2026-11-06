@@ -1,7 +1,7 @@
 # Runtime package family
 
 Updated: 2026-11-06
-Ref: 97ab6b477
+Ref: 864d6c09b
 Role: map, not canon
 
 ## Package root spine
@@ -102,6 +102,16 @@ Shared rules:
 
 Package lanes differ in ownership, not in whether module registration is
 explicit and reviewable.
+
+Named Ecosystem modules share Core’s `configureFireuxEcosystemModule` for
+bindings, native-layer validation and public assets. Keep hooks only for real
+domain behavior; omit forwarding page hooks, duplicate asset registration and
+App-default configuration. Workspace-specific components, composables and
+commands register only when the App selects that Workspace. A selected native
+layer filters its unselected Workspace pages without removing App-owned routes.
+Project intent handlers have one explicit registration owner in `fireux-fireux`;
+they are outside native server discovery. Verify with Core’s
+`src/test/ecosystem-wiring.test.mjs` and consuming App preparation.
 
 ## Dependency roles
 

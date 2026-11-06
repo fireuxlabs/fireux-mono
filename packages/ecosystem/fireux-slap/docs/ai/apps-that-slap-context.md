@@ -1,7 +1,7 @@
 # Apps That Slap context
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 864d6c09b
 Role: living context
 Scope: Apps That Slap ecosystem identity, admission, routing, and reusable presentation boundary
 
@@ -41,14 +41,14 @@ away from genuine operational domains.
 
 Slap Main App uses `defineFireuxEcosystem` from `fireux-ecosystem/config`.
 Yellow Velo uses `defineFireuxApp` from `fireux-app/config`. Both receive Core,
-Blogs and Products through the App bundle and select Slap's conventional runtime
+Blogs, Products and AI through the App bundle and select Slap's conventional runtime
 layer. The named Slap package owns its binding and product runtime, not the
 shared Main App bundle. Verify both Apps when changing discovery because their
 App-owned pages and components differ.
 
 Interlaken Bike Tours (`projects/slap/interlaken-bike-tours`) uses
 `defineFireuxApp` and selects its Slap and Business layers. The App bundle
-supplies Core, Blogs and Products. Its App-owned `tours` layout
+supplies Core, Blogs, Products and AI. Its App-owned `tours` layout
 uses Core's public header and the App's footer for the cycling pages. Core retains shared account, management,
 initialization, SEO and PWA manifest responsibilities. The dedicated prototype
 Hosting site uses the App's Firebase SSR function. Its custom footer consumes Core's `FireLayoutsSharedPlatformFooter`; landing/detail metadata consumes Core SEO helpers, with preview indexing policy configured explicitly. The App-owned `app/ignition/search.ts` supplies its reviewed preview origin,

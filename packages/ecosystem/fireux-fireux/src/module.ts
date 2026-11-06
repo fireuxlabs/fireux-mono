@@ -9,19 +9,6 @@ import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureModulePages } from './config/module/pages-config'
 
-const configureRuntimeConfig = (nuxt: Nuxt) => {
-  const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
-  const pub = (rc.public ||= {}) as Record<string, any>
-  const fireux = (pub.fireux ||= {}) as Record<string, any>
-
-  if (!fireux.products || typeof fireux.products !== 'object') {
-    fireux.products = { enabled: true }
-  }
-  if (!fireux.blogs || typeof fireux.blogs !== 'object') {
-    fireux.blogs = { enabled: true }
-  }
-}
-
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
     name: 'fireux-fireux',
@@ -30,24 +17,29 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   },
   async setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
+    const hasProjectWorkspace =
+      nuxt.options.runtimeConfig.public?.fireux?.workspaces?.includes(
+        'project'
+      ) === true
 
     configureFireuxEcosystemModule(resolver, nuxt, {
       ecosystem: ecosystemConfig,
-      configureRuntimeConfig,
       configurePages: configureModulePages,
-      configureComponents,
+      ...(hasProjectWorkspace ? { configureComponents } : {}),
     })
+    if (!hasProjectWorkspace) return
+
     registerComposablesDirs(resolver, ['./runtime/project/composables'])
     registerServerHandlers(resolver, [
       {
         route: '/api/workspace/project/tests/intent',
         method: 'post',
-        handler: './runtime/server/api/workspace/project/tests/intent.post',
+        handler: './runtime/project/server/http/test-intent.post',
       },
       {
         route: '/api/workspace/project/intent',
         method: 'post',
-        handler: './runtime/server/api/workspace/project/intent.post',
+        handler: './runtime/project/server/http/intent.post',
       },
     ])
   },

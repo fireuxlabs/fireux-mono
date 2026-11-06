@@ -3,8 +3,6 @@ import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
-import { configureModulePages } from './config/module/pages-config'
-import { configurePublicAssets } from './config/module/public-assets-config'
 import { configureRuntimeConfig } from './config/module/runtime-config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
@@ -18,9 +16,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     configureFireuxEcosystemModule(resolver, nuxt, {
       ecosystem: ecosystemConfig,
       configureRuntimeConfig,
-      configurePages: configureModulePages,
       configureComponents,
-      configurePublicAssets,
     })
     addServerHandler({
       route: '/api/internal/share-profile',
@@ -35,12 +31,6 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       handler: resolver.resolve(
         './runtime/server/api/sharer/youtube-channel.get'
       ),
-    })
-
-    nuxt.hook('ready', () => {
-      if (process.env.FIREUX_DEBUG_LAYERS) {
-        console.log('[fireux-sharer] layers', (nuxt.options as any)._layers)
-      }
     })
   },
 })

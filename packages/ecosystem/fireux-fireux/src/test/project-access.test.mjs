@@ -9,6 +9,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import {
   computed,
+  createApp,
   ref,
   toValue,
   isRef,
@@ -422,6 +423,7 @@ test('Project collections use live exact-document bindings above 30 ids and disp
       unref,
       watch,
       effectScope,
+      useNuxtApp: () => ({ vueApp: createApp({}) }),
       doc: (_db, collectionPath, id) => ({ collectionPath, id }),
       useDocument: ({ collectionPath, id }) => {
         assert.equal(collectionPath, 'projects')
