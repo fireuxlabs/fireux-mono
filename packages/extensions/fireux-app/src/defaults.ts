@@ -1,11 +1,16 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import { moduleName } from 'fireux-core/config/app/modules'
 
-export const DEFAULT_APP_MODULES = ['fireux-blogs', 'fireux-products'] as const
+export const DEFAULT_APP_MODULES = [
+  'fireux-blogs',
+  'fireux-products',
+  'fireux-ai',
+] as const
 export const DEFAULT_APP_LAYERS = [
   'fireux-core/layer',
   'fireux-blogs/layer',
   'fireux-products/layer',
+  'fireux-ai/layer',
 ] as const
 
 export function withDefaultAppLayers<TLayer>(

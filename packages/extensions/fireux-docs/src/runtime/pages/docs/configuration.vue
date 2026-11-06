@@ -9,7 +9,7 @@
       <UPageSection title="Configure FireUX">
         <p>
           In <code>nuxt.config.ts</code>, <code>defineFireuxApp</code> composes
-          Core, Blogs and Products with your selected Ecosystem’s Firebase
+          Core, Blogs, Products and AI with your selected Ecosystem’s Firebase
           setup. Your App declares its identity and any extra packages it uses.
         </p>
         <UCard variant="subtle">

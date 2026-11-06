@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 97ab6b477
 Role: map, not canon
 
 ## Package root spine
@@ -83,7 +83,7 @@ Shared rules:
 - Declare every direct runtime, server, type-only, and stylesheet dependency in
   the owning package manifest.
 - Project Apps compose packages; they do not re-own reusable package behavior.
-- `fireux-app` owns the default Blogs and Products modules and native layers,
+- `fireux-app` owns the default Blogs, Products and AI modules and native layers,
   together with the Core layer. `fireux-ecosystem` builds on that bundle for
   Main Apps. Concrete Apps declare their selected bundle and any packages they
   import or configure directly. Core imports no App or product bundle.
@@ -98,7 +98,7 @@ Shared rules:
 | --------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Core      | Module entry, config hooks, reusable runtime                                 | `accepted`: owns product-neutral foundations and therefore has the strictest package and dependency boundary |
 | Ecosystem | Module entry plus ecosystem config, Firebase binding, shared identity/assets | `accepted`: owns cross-App composition for one ecosystem, not reusable domain implementation                 |
-| Extension | Module entry plus domain runtime surfaces                                    | `accepted`: owns reusable entities, public surfaces, Workspace operations, APIs, and assets for one domain     |
+| Extension | Module entry plus domain runtime surfaces                                    | `accepted`: owns reusable entities, public surfaces, Workspace operations, APIs, and assets for one domain   |
 
 Package lanes differ in ownership, not in whether module registration is
 explicit and reviewable.
@@ -108,14 +108,14 @@ explicit and reviewable.
 The physical Core, Ecosystem, and Extension lanes are workspace organization.
 Dependency role supplies the missing architectural order inside those lanes:
 
-| Role | Job | May depend on |
-| --- | --- | --- |
-| Core foundation | Nuxt integration and product-neutral FireUX foundations | external libraries |
-| App composition | Standard App defaults, or shared Ecosystem Main App surfaces | Core and selected lower extensions |
-| Shared domain primitive | One bounded reusable capability or foundational Entity contract | Core and lower primitives |
-| Entity or parent-domain package | One coherent domain owner, including its related Entities and operations | Core, primitives, and named lower domain capabilities |
-| Ecosystem composition | Cross-package composition, ecosystem identity, configuration, and shared product behavior | Core, primitives, and domain packages |
-| Concrete App | Final route, brand, tenant, and product composition | its ecosystem plus explicitly enabled packages |
+| Role                            | Job                                                                                       | May depend on                                         |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Core foundation                 | Nuxt integration and product-neutral FireUX foundations                                   | external libraries                                    |
+| App composition                 | Standard App defaults, or shared Ecosystem Main App surfaces                              | Core and selected lower extensions                    |
+| Shared domain primitive         | One bounded reusable capability or foundational Entity contract                           | Core and lower primitives                             |
+| Entity or parent-domain package | One coherent domain owner, including its related Entities and operations                  | Core, primitives, and named lower domain capabilities |
+| Ecosystem composition           | Cross-package composition, ecosystem identity, configuration, and shared product behavior | Core, primitives, and domain packages                 |
+| Concrete App                    | Final route, brand, tenant, and product composition                                       | its ecosystem plus explicitly enabled packages        |
 
 Dependencies point downward. A dependency on a lower package does not transfer
 ownership: Kitchen may consume Place, Finance, Supplier, or Sproochli
@@ -179,7 +179,7 @@ owns conventional pages, layouts, middleware, plugins, and server discovery.
 
 Tenant and standalone Apps use `defineFireuxApp`; Main Apps use
 `defineFireuxEcosystem`, which includes the App bundle. The App bundle supplies
-Core, Blogs and Products. The Ecosystem bundle adds the shared Apps directory,
+Core, Blogs, Products and AI. The Ecosystem bundle adds the shared Apps directory,
 its API routes and Main App landing composition. Named Ecosystem packages keep
 their own Firebase bindings and product runtime.
 
@@ -213,15 +213,15 @@ parity.
 | Difference                                                                             | State        | Recommendation                                                                                              |
 | -------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
 | Similar packages expose different config files only because old scaffolds created them | `drift`      | Remove empty/no-op hooks; compare registration behavior, not filenames alone                                |
-| A project App implements package-owned Workspace/domain behavior                         | `drift`      | Move reusable code to the owning package and leave app composition local                                    |
+| A project App implements package-owned Workspace/domain behavior                       | `drift`      | Move reusable code to the owning package and leave app composition local                                    |
 | A package imports another extension to compose product behavior                        | `drift`      | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive         |
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
-| Runtime surface exists but is not registered                                           | `drift`      | Use the owning native layer or a necessary module hook, then verify the route/import                                    |
-| An App bypasses its standard bundle         | `drift`      | Use fireux-app or fireux-ecosystem for shared defaults; keep direct dependencies for explicit package use       |
-| Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and verify registration and retired paths against consumers  |
+| Runtime surface exists but is not registered                                           | `drift`      | Use the owning native layer or a necessary module hook, then verify the route/import                        |
+| An App bypasses its standard bundle                                                    | `drift`      | Use fireux-app or fireux-ecosystem for shared defaults; keep direct dependencies for explicit package use   |
+| Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and verify registration and retired paths against consumers         |
 | Extension lane contains both primitives and domain owners                              | `accepted`   | Use the dependency-role matrix to read ownership; do not add another physical lane without a migration need |
-| A package's primary dependency role cannot be explained from current source             | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |
-| A large package owns several related Entities and operations                            | `to-confirm` | Test parent-domain cohesion; size alone is not evidence for either retaining or splitting the boundary      |
+| A package's primary dependency role cannot be explained from current source            | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |
+| A large package owns several related Entities and operations                           | `to-confirm` | Test parent-domain cohesion; size alone is not evidence for either retaining or splitting the boundary      |
 
 ## Alignment roadmap
 

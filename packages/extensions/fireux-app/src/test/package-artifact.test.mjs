@@ -43,6 +43,7 @@ for (const name of ['fireux-app', 'fireux-ecosystem']) {
           'fireux-core',
           'fireux-blogs',
           'fireux-products',
+          'fireux-ai',
         ]) {
           assert.equal(manifest.dependencies[dependency], '0.1.0')
         }

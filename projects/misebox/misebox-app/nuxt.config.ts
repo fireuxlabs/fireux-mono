@@ -43,7 +43,6 @@ const app: FireuxAppConfig = {
     'fireux-sproochli',
     ['fireux-suppliers', { mode: 'consumer' }],
     ['fireux-jobs', { categories: ['hospitality'] }],
-    'fireux-ai',
   ],
 }
 
@@ -57,7 +56,6 @@ const appConfig = defineFireuxEcosystem({
     'fireux-places/layer',
     'fireux-businesses/layer',
     'fireux-jobs/layer',
-    'fireux-ai/layer',
   ],
 })
 

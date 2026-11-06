@@ -27,7 +27,8 @@
     "fireux-core": "workspace:*",
     "fireux-blogs": "workspace:*",
     "fireux-products": "workspace:*",
-    "@nuxt/eslint": "^1.12.1"
+    "@nuxt/eslint": "^1.12.1",
+    "fireux-ai": "workspace:*"
   },
   "peerDependencies": {
     "@nuxt/schema": "^4.6.1",

@@ -1,7 +1,7 @@
 # Nuxt 4 integration map
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 97ab6b477
 Role: map, not canon
 
 ## Purpose and authority
@@ -24,7 +24,7 @@ over a copied framework manual.
 ## FireUX integration
 
 [defineFireuxApp](../../packages/extensions/fireux-app/src/config.ts) composes
-Core, Blogs and Products for tenant and standalone Apps.
+Core, Blogs, Products and AI for tenant and standalone Apps.
 [defineFireuxEcosystem](../../packages/extensions/fireux-ecosystem/src/config.ts)
 adds the Main App bundle. Both use Core's shared Nuxt and Firebase mechanics.
 Core remains independently usable. Apps declare their own Ecosystem binding

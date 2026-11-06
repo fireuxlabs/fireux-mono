@@ -63,7 +63,7 @@ test('App bundles resolve their own defaults and retain watches for indirect dep
         import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
         const input = { id: 'fixture', name: 'Fixture', shortName: 'Fixture', context: 'Local config fixture', ecosystem: 'fireux', ecosystemId: 'fireux', projectId: 'fireux', role: 'tenant', meta: {} }
         const app = defineFireuxApp(input)
-        for (const name of ['fireux-blogs', 'fireux-products']) {
+        for (const name of ['fireux-blogs', 'fireux-products', 'fireux-ai']) {
           assert.equal(app.modules.filter(entry => entry === name).length, 1)
           assert.ok(app.watch.some(path => path.endsWith('/' + name + '/src/module.ts')))
           assert.ok(app.extends.some(path => path.includes('/' + name + '/src/runtime/')))

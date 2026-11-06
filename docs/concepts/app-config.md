@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 97ab6b477
 Role: map, not canon
 
 ## Purpose
@@ -65,8 +65,8 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   shared Nuxt baseline. Apps do not repeat or override
   `future.compatibilityVersion`; compatibility repairs belong to the lowest
   Core, ecosystem, or extension owner that implements the affected behavior.
-- Blogs and Products are universal App defaults owned by `fireux-app`. The
-  bundle adds both modules and native layers when omitted. `modules` lists
+- Blogs, Products and AI are universal App defaults owned by `fireux-app`. The
+  bundle adds their modules and native layers when omitted. `modules` lists
   additional extensions and may configure a default module. Keep direct package
   dependencies for explicit imports or configuration. An App may keep explicit
   layer positions where its declared Nuxt precedence needs them. Named Ecosystem
@@ -209,7 +209,7 @@ initialized App awaiting media publication is not an uninitialized App.
 | Difference                                                          | State      | Reason or alignment trigger                                                                                      |
 | ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | Global, tenant, and standalone roles differ                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                   |
-| Apps receive Blog and Products by default                           | `accepted` | Core composes the shared editorial and catalogue extensions; other domain extensions remain App-specific         |
+| Apps receive Blogs, Products and AI by default                      | `accepted` | The App bundle composes editorial, catalogue and AI capabilities; other extensions remain App-specific           |
 | A tenant App pins Workspace target IDs in Nuxt config               | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                         |
 | Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                |

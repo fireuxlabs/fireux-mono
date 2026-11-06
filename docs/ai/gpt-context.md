@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-06
-Ref: ec4d84d58
+Ref: 97ab6b477
 Role: living context
 Scope: repository-wide
 
@@ -41,11 +41,13 @@ Implementation follows this dependency direction:
 initialization and browser Auth persistence. The public reference is the
 App-selected `fireux-docs` extension and is not a Core dependency.
 
-`fireux-app` composes the standard App: Core, Blogs and Products. Tenant and
+`fireux-app` composes the standard App: Core, Blogs, Products and AI. Tenant and
 standalone Apps use `defineFireuxApp` from `fireux-app/config`; Ecosystem Main
 Apps use `defineFireuxEcosystem` from `fireux-ecosystem/config`. The Ecosystem
 bundle includes the App bundle and shared Main App surfaces. Core can be used
 independently and never imports either bundle or a product package.
+AI is available through the App bundle; execution remains explicitly enabled
+by the consuming feature and its provider configuration.
 
 The App bundle owns default module and native-layer registration. Concrete Apps
 declare their selected bundle and the packages they import or configure directly.

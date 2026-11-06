@@ -2,7 +2,7 @@ import { defineFireuxApp } from 'fireux-app/config'
 
 export default defineFireuxApp({
   ecosystem: 'fireux',
-  extends: ['fireux-core/layer', 'fireux-ai/layer'],
+  extends: ['fireux-core/layer'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'sproochli',
@@ -12,5 +12,5 @@ export default defineFireuxApp({
   shortName: 'Sproochli',
   databaseId: 'sproochli',
   role: 'standalone',
-  modules: ['fireux-sproochli', 'fireux-ai'],
+  modules: ['fireux-sproochli'],
 })
