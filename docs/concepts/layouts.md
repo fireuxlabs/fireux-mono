@@ -1,7 +1,7 @@
 # Layouts spine map
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 8744b0f78
 Role: map, not canon
 
 ## Purpose and authority
@@ -38,17 +38,35 @@ responsibility.
 
 ## App-root provider ownership
 
-Core AppShell supplies Nuxt UI's UApp provider. Custom roots compose native
-UApp around their existing Workspace and NuxtLayout branches, including:
+Core [AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
+owns the stock UApp provider, PWA status, route branches, manifest/SEO policy and
+current-App initialization blocker. Every maintained App root delegates to it,
+including the [starter](../../projects/templates/fireux-template/app/app.vue).
+The starter home uses native UPage/UPageHeader beneath the default layout; the
+layout supplies its only container. Repeating UApp plus Workspace/NuxtLayout in an App root bypasses that lifecycle
+and is not a stock alternative.
 
-- [starter](../../projects/templates/fireux-template/app/app.vue)
-- [Holzworm](../../projects/fireux/holzworm/app/app.vue)
-- [Lifeguard Community](../../projects/fireux/lifeguard-community/app/app.vue)
-- [Yellow Velo](../../projects/slap/yellow-velo/app/app.vue)
+[Go QR](../../projects/fireux/go-qr/app/app.vue) retains one explicit exception:
+`/tools/` uses a UApp-wrapped NuxtPage without ordinary site chrome or App
+initialization. Other Go QR routes still use AppShell.
 
-These roots retain their existing lifecycle and routing; adding UApp does not
-opt them into AppShell's initialization. Go QR's embedded branch likewise keeps
-its native provider around its distinct tool outlet.
+Bangin Coffee and La Tap retain App-owned theme injection around AppShell;
+Interlaken Essen retains its language metadata. These are product deltas, not
+alternative route outlets or initialization owners. They remain with those Apps.
+
+[AppDevControls](../../packages/core/fireux-core/src/runtime/app/components/DevControls.vue)
+owns the developer dock and its local feedback/cleanup. It consumes existing
+Diagnostics state and the existing media-sync command; moving the controls does
+not move command authority into AppShell or create another App reader.
+
+The focused foundation rules in `eslint.config.js` check semantic styling and
+SFC block order for App roots and the reviewed shared shell/chrome/disclosure
+owners. Other existing Core styles remain migration debt; that scoped check
+is not a repository-wide styling certificate.
+
+The future default entrance for ecosystem Main Apps, including possible
+Workspace domains, is [parked in the roadmap](../roadmaps/fireux-priorities.md#ecosystem-main-apps-default-workspace-entrance).
+It is separate from the frame-selection mechanism below.
 
 ## Workspace composition
 
@@ -56,8 +74,7 @@ its native provider around its distinct tool outlet.
 selects the named `Workspace` composition when the current route has
 `workspacePage` metadata. Workspace routes disable the separate Nuxt layout.
 Other routes continue through `<NuxtLayout><NuxtPage /></NuxtLayout>`.
-Apps with a custom root shell use the same route metadata and named Workspace
-composition; see the [Find My SEO app root](../../projects/fireux/find-my-seo-app/app/app.vue).
+App roots delegate that choice to AppShell instead of repeating the route branches.
 
 Core [Workspace](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
 composes the dashboard group, sidebar and one

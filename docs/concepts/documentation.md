@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 8744b0f78
 Role: map, not canon
 
 ## Purpose
@@ -130,6 +130,19 @@ The public reference follows the parts of a Nuxt App that developers work
 with: configuration, pages, layouts, components, composables, and server
 routes. Each guide leads with what FireUX adds, shows an example, and links
 to the relevant Nuxt or Nuxt UI reference for the basics.
+The public library at `/docs/components` inventories all Core Vue sources,
+including App, User, Ecosystem and Workspace components. The Docs layer generates
+that inventory from Core source and Nuxt registration through
+`fireux-docs/src/catalogue/core-inventory.mjs`; do not maintain a second list.
+`fireux-docs/src/runtime/components/CorePreview.vue` owns explicit sample-data
+previews and local-only callbacks. Components without an isolated preview remain
+visible as source-only entries; do not auto-mount connected screens or claim that
+an inventory entry is a supported standalone control.
+
+The smaller `fireux-docs/src/runtime/models/catalogue.ts` supplies the curated
+usage guides and sidebar links. Patterns and templates remain separate
+compositions. Nuxt UI owns the reference for its basic controls.
+
 Use the FireUX voice in section headings and keep guide titles easy to match
 to their Nuxt and Nuxt UI counterparts.
 Group Core component examples by the job they do. Feature controls with real

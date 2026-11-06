@@ -1,7 +1,7 @@
 <template>
   <UPage>
     <UPageBody>
-      <MiseboxPlaceKitchen
+      <KitchenPlaceDetail
         v-if="place && kitchen"
         :key="kitchen.id"
         :kitchen="kitchen"
@@ -15,7 +15,7 @@
           <PlaceDetailAdmin v-else :place="place" />
           <!-- Supplier actions remain disconnected until its Place relationship is ready. -->
         </template>
-      </MiseboxPlaceKitchen>
+      </KitchenPlaceDetail>
       <PlaceDetail v-else-if="place" :place="place">
         <template #services>
           <UAlert
@@ -56,7 +56,6 @@ import PlaceDetailAdmin from 'fireux-places/runtime/place/components/Detail/Admi
 import KitchenDetailOperatorPanel from 'fireux-kitchens/runtime/kitchen/components/Detail/OperatorPanel.vue'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
 import { useKitchenAccess } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenAccess'
-import MiseboxPlaceKitchen from '../../../components/Place/Kitchen.vue'
 
 definePageMeta({
   layout: 'default',

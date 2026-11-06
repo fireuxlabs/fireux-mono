@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-06
-Ref: b8e3b2348
+Ref: 8744b0f78
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -45,6 +45,10 @@ Misebox App → fireux-misebox → domain extensions → fireux-core
 
 Tenant-specific branches, ids, defaults, and copied domain models do not belong
 in the ecosystem package.
+
+Kitchens owns the standard Kitchen Workspace home and `KitchenPlaceDetail`
+presentation. Misebox keeps the Place/Kitchen route composition, shared tenant
+chrome and hospitality templates; it does not override the generic Workspace home.
 
 ## Development and Rules authority
 

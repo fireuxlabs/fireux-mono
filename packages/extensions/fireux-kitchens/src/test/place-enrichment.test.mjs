@@ -109,7 +109,7 @@ test('workspace handoff waits for access and only selects an available Kitchen',
   const selectedId = ref('previous')
   const navigations = []
   const useIndex = load(
-    '../runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
+    '../runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
     {
       computed,
       useCommandScope: () => () => true,
@@ -137,12 +137,24 @@ test('workspace handoff waits for access and only selects an available Kitchen',
         },
         reconcile: () => {},
       }),
-      useKitchenWorkspaceKitchens: () => source,
+      defineWorkspace: (setup) => setup,
+      useKitchenTargets: () => source,
+      useKitchenAccess: () => ({
+        outcome: ref('ready'),
+        ids: ref(['allowed']),
+      }),
+      useKitchenRead: () => ({
+        kitchen: ref(null),
+        place: ref(null),
+        outcome: ref('pending'),
+        placeOutcome: ref('idle'),
+      }),
+      useKitchenInterface: () => ({ surface: (value) => value }),
       navigateTo: (to, options) => {
         navigations.push({ to, options })
       },
     },
-    'useKitchenWorkspaceIndex'
+    'useKitchenWorkspace'
   )
   useIndex()
   assert.equal(selectedId.value, 'previous')
@@ -199,6 +211,7 @@ test('Misebox Workspace root renders in place and preserves query intent', () =>
       'navigateTo',
       'useRequestURL',
       'useRuntimeConfig',
+      'createError',
     ]
   )(
     (value) => value,
@@ -208,7 +221,8 @@ test('Misebox Workspace root renders in place and preserves query intent', () =>
       public: {
         fireux: { workspaceConfig: { kitchen: { origin: workspaceOrigin } } },
       },
-    })
+    }),
+    (options) => Object.assign(new Error(options.statusMessage), options)
   )
   const target = {
     path: '/workspace/kitchen',
@@ -222,7 +236,7 @@ test('Misebox Workspace root renders in place and preserves query intent', () =>
   ]) {
     workspaceOrigin = origin
     requestUrl = new URL(origin)
-    assert.equal(middleware(target), undefined)
+    assert.throws(() => middleware(target), { statusCode: 404 })
     const root = { ...target, path: '/', hash: '#overview', meta: {} }
     assert.equal(
       middleware(root),

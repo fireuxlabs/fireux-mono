@@ -2,7 +2,7 @@
   <UPage v-if="entry">
     <UPageHeader
       headline="Docs · Components"
-      :title="entry.name"
+      :title="entry.title"
       :description="entry.description"
     >
       <template #links>
@@ -17,9 +17,13 @@
     </UPageHeader>
 
     <UPageBody>
+      <p>
+        <code>{{ entry.name }}</code> · FireUX Core
+      </p>
       <p>{{ entry.usage }}</p>
 
-      <UPageSection title="Example">
+      <section class="docs-section">
+        <h2>Example</h2>
         <FireCreateShell
           v-if="entry.slug === 'create-shell'"
           submit-label="Create record"
@@ -81,10 +85,20 @@
             The owner supplies the current step.
           </p>
         </FireOnboardingShell>
-      </UPageSection>
-      <UCard v-if="entry.slug === 'editable-text'" variant="subtle">
-        <pre><code>{{ textExample }}</code></pre>
-      </UCard>
+      </section>
+      <section class="docs-section">
+        <h2>Usage</h2>
+        <UCard variant="subtle">
+          <pre class="docs-code"><code>{{ entry.example }}</code></pre>
+        </UCard>
+        <p>
+          Supply the values and callbacks from your page. The example above uses
+          local state.
+        </p>
+        <ULink :to="sourceUrl" target="_blank"
+          >View component source and full API</ULink
+        >
+      </section>
     </UPageBody>
   </UPage>
 
@@ -106,11 +120,11 @@ const textValue = ref('Example App')
 const updateText = (value: string) => {
   textValue.value = value
 }
-const textExample = `<FireFormsEditableSimpleField
-  label="Display name"
-  :value="displayName"
-  :update="saveDisplayName"
-/>`
+const sourceUrl = computed(() =>
+  entry.value
+    ? `https://github.com/fireuxlabs/fireux-mono/blob/main/packages/core/fireux-core/src/runtime/components/${entry.value.source}`
+    : ''
+)
 const selectedFilename = ref('')
 const showFilename = (file: File) => {
   selectedFilename.value = file.name
@@ -146,3 +160,20 @@ useSeoMeta({
   description: computed(() => entry.value?.description || ''),
 })
 </script>
+
+<style scoped>
+.docs-section {
+  margin-block: calc(var(--spacing) * 8);
+}
+
+.docs-section h2 {
+  margin-bottom: calc(var(--spacing) * 4);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.docs-code {
+  overflow-x: auto;
+  white-space: pre;
+}
+</style>

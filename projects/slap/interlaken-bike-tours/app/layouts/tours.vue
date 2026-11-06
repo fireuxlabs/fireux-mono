@@ -26,8 +26,8 @@
           <p>3800 Interlaken, Switzerland</p>
         </div>
         <p class="prototype-note">
-          Enquiries open WhatsApp or your email app. Your guide confirms
-          availability and booking.
+          Choose a tour to check availability. Bespoke rides and questions go
+          directly to Ben through WhatsApp or email.
         </p>
         <FireLayoutsSharedPlatformFooter class="platform-footer" />
       </div>

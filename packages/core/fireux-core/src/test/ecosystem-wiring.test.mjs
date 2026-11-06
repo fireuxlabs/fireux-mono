@@ -116,10 +116,7 @@ for (const [lane, name, workspace] of [
   })
 }
 
-for (const [name, workspace] of [
-  ['fireux-projects', 'project'],
-  ['fireux-misebox', 'kitchen'],
-]) {
+for (const [name, workspace] of [['fireux-projects', 'project']]) {
   test(`${name} filters only its unselected Workspace pages from a native layer`, () => {
     const source = resolve(
       root,

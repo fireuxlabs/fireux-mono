@@ -1,15 +1,10 @@
-<!-- packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue -->
-<!-- Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: replace the Pro-only header badge with the derived tier. -->
 <template>
   <ClientOnly>
-    <!-- Single-source mobile toggle via UHeader -->
     <UHeader :title="appName" to="/" mode="slideover" data-fireux-header-root>
-      <!-- Brand -->
       <template #title>
         <AppBrandWordmark size="large" />
       </template>
 
-      <!-- Desktop nav (hidden on mobile by Nuxt UI) -->
       <div data-fireux-header-center>
         <UNavigationMenu
           v-if="desktopItems.length"
@@ -18,12 +13,8 @@
         />
       </div>
 
-      <!-- Right side: auth funnel -->
       <template #right>
-        <div
-          data-fireux-header-right
-          class="flex items-center justify-end gap-1.5"
-        >
+        <div data-fireux-header-right class="fx-header-actions">
           <UButton
             v-if="hasWorkspaceEntry"
             :to="workspaceEntryHref"
@@ -33,7 +24,6 @@
             icon="i-lucide-panels-top-left"
             label="Workspace"
           />
-          <!-- Signed out => Sign in -->
           <UButton
             v-if="authPhase === 'guest'"
             :to="{ path: '/auth', query: { redirect: route.fullPath } }"
@@ -45,7 +35,6 @@
             Sign in
           </UButton>
 
-          <!-- Signed in => dashboard -->
           <template v-else-if="isSignedIn">
             <UserAccessBadge :subscription="subscription" />
 
@@ -65,11 +54,10 @@
             </UButton>
           </template>
 
-          <USkeleton v-else class="h-8 w-8 rounded-full" />
+          <USkeleton v-else class="fx-header-avatar-placeholder" />
         </div>
       </template>
 
-      <!-- Mobile panel content -->
       <template #body>
         <UNavigationMenu
           v-if="mobileItems.length"
@@ -162,3 +150,17 @@ const headerAvatarSrc = computed(() => {
   return proxied || undefined
 })
 </script>
+
+<style scoped>
+.fx-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(var(--spacing) * 1.5);
+}
+.fx-header-avatar-placeholder {
+  width: calc(var(--spacing) * 8);
+  height: calc(var(--spacing) * 8);
+  border-radius: 999px;
+}
+</style>

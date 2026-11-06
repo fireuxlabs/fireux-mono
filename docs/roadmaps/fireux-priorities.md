@@ -314,6 +314,42 @@ are preserved proposals/current-direction references, not newly verified prices.
 | Service-layer article and other learning posts                                | Source claims are refreshed and the draft receives editorial review; see [recovered draft](../archive/2026-10-workspace-cleanup/drafts/service-layer/article.md).                                                                                                                                                       |
 | Old audit findings, naming questions and uninitialised roots                  | Current source reproduces a relevant gap. Historical inventories are leads, not newly assigned jobs.                                                                                                                                                                                                                    |
 
+
+### Ecosystem Main Apps: default Workspace entrance
+
+Experience direction agreed on 6 November 2026; implementation remains parked.
+No routing or domain changes are authorised by this note.
+
+Ecosystem Main Apps with Workspaces should open in Workspace first, especially
+Misebox. The concrete FireUX App (`projects/fireux/fireux-app`) remains an
+exception because its public platform entrance has a different job. This is not
+a new default for tenant or standalone Apps, or a rule for the `fireux-app` bundle.
+
+The intended shape is:
+
+- Arrive in Workspace with the left navigation available.
+- Put the selector and first useful action at the top, so people can begin
+  using the Free tier without passing through a traditional landing page.
+- Put supporting information, examples and guidance below the selector,
+  available by scrolling down the Workspace home page.
+- Keep a traditional Home page, reached through a clear Home/About link back
+  out of Workspace. It is an optional introduction, not a required funnel step.
+
+When implementation is deliberately reopened, decide:
+
+- The exact URLs and whether one host is enough. A Workspace subdomain or
+  separate domains/deployments remain options, not requirements.
+- How guests, signed-in users, empty Workspaces and multiple Workspaces behave
+  within this shape, including when sign-in is needed and how work is retained.
+- How sign-in return URLs, invitations, target selection, public discovery, SEO
+  and local testing work. A hostname must not grant data access.
+
+Keep the existing AppShell lifecycle and domain-owned Workspace composition.
+`workspacePage` selects the frame; it does not decide the App's default entrance.
+Inspect the current [Misebox host middleware](../../projects/misebox/misebox-app/app/middleware/00-misebox-workspace-surface.global.ts)
+as one existing experiment, not a universal solution. Prove the experience in
+one real ecosystem App before introducing shared configuration.
+
 ## Maintenance
 
 Update this list when the chosen outcome or ordering changes. Keep detailed

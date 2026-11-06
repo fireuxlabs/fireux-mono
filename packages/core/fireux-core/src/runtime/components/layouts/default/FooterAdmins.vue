@@ -19,7 +19,6 @@
         v-bind="admin.card"
         :link="Boolean(admin.card.to)"
         :show-badges="false"
-        class="block"
       />
     </div>
 
@@ -124,6 +123,7 @@ const isLoading = computed(() => Boolean(pending.value))
 }
 
 .footer-admins__grid > * {
+  display: block;
   width: min(100%, 260px);
 }
 

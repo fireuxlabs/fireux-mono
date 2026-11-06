@@ -1,21 +1,48 @@
 <template>
-  <div
-    class="flex flex-col items-center justify-between gap-4 text-sm text-default sm:flex-row"
-  >
-    <nav
-      aria-label="FireUX platform information"
-      class="flex flex-wrap justify-center gap-x-4 gap-y-2"
-    >
-      <NuxtLink to="/legal" class="hover:underline">Legal</NuxtLink>
+  <div class="fx-platform-footer">
+    <nav aria-label="FireUX platform information">
+      <NuxtLink to="/legal">Legal</NuxtLink>
     </nav>
     <a
       href="https://fireux.app"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex shrink-0 items-center gap-2 hover:underline"
+      class="fx-platform-footer__credit"
     >
       <img src="/img/core/brand/logo.svg" alt="" width="20" height="20" />
       <span>Built by FireUX</span>
     </a>
   </div>
 </template>
+
+<style scoped>
+.fx-platform-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  font-size: var(--text-sm);
+  color: var(--ui-text);
+}
+.fx-platform-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--spacing) * 4);
+}
+.fx-platform-footer a:hover {
+  text-decoration: underline;
+}
+.fx-platform-footer__credit {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+@media (min-width: 40rem) {
+  .fx-platform-footer {
+    flex-direction: row;
+  }
+}
+</style>

@@ -1,6 +1,13 @@
 export const fireuxDocsCatalogue = [
   {
     slug: 'create-shell',
+    title: 'Create shell',
+    group: 'Flows',
+    source: 'Create/Shell.vue',
+    example: `<FireCreateShell @submit="createRecord" @clear="clearDraft">
+  <template #write><UTextarea v-model="draft" /></template>
+  <template #preview>{{ draft }}</template>
+</FireCreateShell>`,
     name: 'FireCreateShell',
     description: 'Give a create form separate Write and Preview tabs.',
     usage:
@@ -8,6 +15,14 @@ export const fireuxDocsCatalogue = [
   },
   {
     slug: 'editable-text',
+    title: 'Editable text',
+    group: 'Editing',
+    source: 'molecules/forms/editable/SimpleField.vue',
+    example: `<FireFormsEditableSimpleField
+  label="Display name"
+  :value="displayName"
+  :update="saveDisplayName"
+/>`,
     name: 'FireFormsEditableSimpleField',
     description: 'Show a saved text value and let people edit it in place.',
     usage:
@@ -15,6 +30,14 @@ export const fireuxDocsCatalogue = [
   },
   {
     slug: 'editable-checkbox',
+    title: 'Editable checkbox',
+    group: 'Editing',
+    source: 'molecules/forms/editable/Checkbox.vue',
+    example: `<FireFormsEditableCheckbox
+  label="Public profile"
+  :value="isPublic"
+  :update="saveVisibility"
+/>`,
     name: 'FireFormsEditableCheckbox',
     description: 'Edit an on or off setting in place.',
     usage:
@@ -22,6 +45,14 @@ export const fireuxDocsCatalogue = [
   },
   {
     slug: 'editable-image-picker',
+    title: 'Editable image',
+    group: 'Editing',
+    source: 'molecules/forms/editable/ImagePicker.vue',
+    example: `<FireFormsEditableImagePicker
+  :src="imageUrl"
+  alt="Profile image"
+  :update="uploadAndSaveImage"
+/>`,
     name: 'FireFormsEditableImagePicker',
     description: 'Preview an image and let people choose a replacement.',
     usage:
@@ -29,6 +60,15 @@ export const fireuxDocsCatalogue = [
   },
   {
     slug: 'editable-select',
+    title: 'Editable select',
+    group: 'Editing',
+    source: 'molecules/forms/editable/Select.vue',
+    example: `<FireFormsEditableSelect
+  label="Status"
+  :value="status"
+  :options="[{ label: 'Active', value: 'active' }, { label: 'Draft', value: 'draft' }]"
+  :update="saveStatus"
+/>`,
     name: 'FireFormsEditableSelect',
     description: 'Edit a value from a short list of options.',
     usage:
@@ -36,6 +76,14 @@ export const fireuxDocsCatalogue = [
   },
   {
     slug: 'onboarding-system',
+    title: 'Onboarding shell',
+    group: 'Flows',
+    source: 'Onboarding/Shell.vue',
+    example: `<FireOnboardingShell family="profile" :stage="stage">
+  <template #intro>Set up your profile</template>
+  <ProfileSetupStep />
+  <template #footer><UButton @click="next">Continue</UButton></template>
+</FireOnboardingShell>`,
     name: 'FireOnboardingShell',
     description: 'Show a step in a guided setup.',
     usage:

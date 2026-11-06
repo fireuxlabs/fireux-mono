@@ -36,7 +36,7 @@ useSeoMeta({
 
 const groups = [
   {
-    title: 'Ignite',
+    title: 'Ignight',
     guides: [
       {
         label: 'Getting started',

@@ -54,17 +54,14 @@ initialization, SEO and PWA manifest responsibilities. The dedicated prototype
 Hosting site uses the App's Firebase SSR function. Its custom footer consumes Core's `FireLayoutsSharedPlatformFooter`; landing/detail metadata consumes Core SEO helpers, with preview indexing policy configured explicitly. The App-owned `app/ignition/search.ts` supplies its reviewed preview origin,
 page metadata and sitemap policy to the brief and runtime configuration; Ignition
 reviews this declared plan without certifying live indexation. Tour and destination content (`app/content/tours.ts` and `app/content/destinations.ts`) and external
-enquiry drafts remain App-owned. Interlaken Bike Tours directly consumes
-`fireux-bookings` for server-side Google Calendar transport through its
-App-owned `server/utils/tour-calendar.ts` adapter. The package owns OAuth token
-refresh transport, raw busy intervals and event insertion; the App owns the
-single 09:00 tour schedule, daily booking lock, catalog prices and booking
-records. Its `/book` route checks availability, writes a pending hold, creates a
-Calendar event, then confirms the record and returns on-screen confirmation.
-Calendar conflicts and event-insert failures release the pending hold; a failed
-final Firestore update after Calendar insertion keeps the slot held for manual
-reconciliation. Payments, outbound confirmation email, cancellations and an
-operator Workspace remain outside this visitor flow.
+enquiry drafts remain App-owned. Interlaken Bike Tours consumes
+`fireux-bookings` through its App-owned Calendar and tour adapters. Shared booking
+contracts and Business Workspace management follow the
+[Bookings context](../../../../extensions/fireux-bookings/docs/ai/bookings-context.md);
+App tour policy and catalogue facts stay local. Its thin tour route composes
+`ToursDetail`, reusing Core SEO and native Nuxt UI page, header, section, grid, feature and
+card composition. `ToursCompare` extends Core's `FireDisclosurePanel` with App-owned ride
+facts. These do not introduce another Ecosystem design system or booking owner.
 
 Bike Tours owns its noindex preview release commands in its
 [App manifest](../../../../../projects/slap/interlaken-bike-tours/package.json).

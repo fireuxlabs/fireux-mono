@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch, resolveComponent } from 'vue'
 
 type LegalSection = 'privacy' | 'terms' | 'browser-storage'
 
@@ -25,28 +25,28 @@ const legalSections: Array<{
   description: string
   icon: string
   value: LegalSection
-  component: string
+  component: ReturnType<typeof resolveComponent>
 }> = [
   {
     label: 'Privacy Policy',
     description: 'How personal information is collected, used, and protected.',
     icon: 'i-lucide-shield-check',
     value: 'privacy',
-    component: 'FireLegalPrivacyPolicy',
+    component: resolveComponent('FireLegalPrivacyPolicy'),
   },
   {
     label: 'Terms of Service',
     description: 'The terms governing FireUX-powered apps.',
     icon: 'i-lucide-file-text',
     value: 'terms',
-    component: 'FireLegalTermsOfService',
+    component: resolveComponent('FireLegalTermsOfService'),
   },
   {
     label: 'Cookies and browser storage',
     description: 'Browser storage for appearance and requested features.',
     icon: 'i-lucide-cookie',
     value: 'browser-storage',
-    component: 'FireLegalBrowserStorage',
+    component: resolveComponent('FireLegalBrowserStorage'),
   },
 ]
 

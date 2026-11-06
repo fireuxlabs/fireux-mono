@@ -3,53 +3,28 @@
     v-bind="collapsibleProps"
     @update:open="$emit('update:open', $event)"
   >
-    <UButton
-      class="group"
-      :label="hasRichLabel ? undefined : title"
-      :color="color"
-      :variant="variant"
-      :size="size"
-      :block="block"
-      :disabled="disabled"
-      trailing-icon="i-lucide-chevron-down"
-      :ui="{
-        trailingIcon:
-          'group-data-[state=open]:rotate-180 transition-transform duration-200',
-      }"
-    >
-      <template v-if="hasRichLabel" #default>
-        <span
-          v-if="icon"
-          class="flex min-w-0 items-start gap-3 text-left"
-        >
-          <UIcon
-            :name="icon"
-            class="mt-0.5 size-4 shrink-0 text-muted"
-            aria-hidden="true"
-          />
-          <span class="grid min-w-0">
-            <span class="truncate">{{ title }}</span>
-            <span
-              v-if="description"
-              class="truncate text-xs font-normal text-dimmed"
-            >
-              {{ description }}
-            </span>
-          </span>
+    <template #default="{ open: expanded }">
+      <UButton
+        class="fire-disclosure-panel__trigger"
+        :color="color"
+        :variant="variant"
+        :size="size"
+        :block="block"
+        :disabled="disabled"
+        :icon="icon || undefined"
+        :trailing-icon="
+          expanded ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+        "
+      >
+        <span class="fire-disclosure-panel__label">
+          <span>{{ title }}</span>
+          <span v-if="description" class="fire-disclosure-panel__description">{{
+            description
+          }}</span>
         </span>
-
-        <span v-else class="grid min-w-0 text-left">
-          <span class="truncate">{{ title }}</span>
-          <span class="truncate text-xs font-normal text-dimmed">
-            {{ description }}
-          </span>
-        </span>
-      </template>
-    </UButton>
-
-    <template #content>
-      <slot />
+      </UButton>
     </template>
+    <template #content><slot /></template>
   </UCollapsible>
 </template>
 
@@ -57,35 +32,33 @@
 import type { ButtonProps } from '@nuxt/ui'
 import { computed } from 'vue'
 
-const props = withDefaults(defineProps<{
-  title: string
-  description?: string
-  icon?: string
-  defaultOpen?: boolean
-  open?: boolean | null
-  disabled?: boolean
-  unmountOnHide?: boolean
-  color?: ButtonProps['color']
-  variant?: ButtonProps['variant']
-  size?: ButtonProps['size']
-  block?: boolean
-}>(), {
-  description: '',
-  icon: '',
-  defaultOpen: false,
-  open: null,
-  disabled: false,
-  unmountOnHide: true,
-  color: 'neutral',
-  variant: 'soft',
-  block: true,
-})
-
-defineEmits<{
-  (event: 'update:open', value: boolean): void
-}>()
-
-const hasRichLabel = computed(() => Boolean(props.icon || props.description))
+const props = withDefaults(
+  defineProps<{
+    title: string
+    description?: string
+    icon?: string
+    defaultOpen?: boolean
+    open?: boolean | null
+    disabled?: boolean
+    unmountOnHide?: boolean
+    color?: ButtonProps['color']
+    variant?: ButtonProps['variant']
+    size?: ButtonProps['size']
+    block?: boolean
+  }>(),
+  {
+    description: '',
+    icon: '',
+    defaultOpen: false,
+    open: null,
+    disabled: false,
+    unmountOnHide: true,
+    color: 'neutral',
+    variant: 'soft',
+    block: true,
+  }
+)
+defineEmits<{ 'update:open': [value: boolean] }>()
 const collapsibleProps = computed(() => ({
   defaultOpen: props.defaultOpen,
   disabled: props.disabled,
@@ -93,3 +66,20 @@ const collapsibleProps = computed(() => ({
   ...(typeof props.open === 'boolean' ? { open: props.open } : {}),
 }))
 </script>
+
+<style scoped>
+.fire-disclosure-panel__trigger {
+  text-align: start;
+}
+.fire-disclosure-panel__label {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: var(--spacing);
+}
+.fire-disclosure-panel__description {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--ui-text-dimmed);
+}
+</style>

@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: 8744b0f78
 Role: map, not canon
 
 ## Purpose and navigation
@@ -96,7 +96,9 @@ Core [FireDisclosureCard](../../packages/core/fireux-core/src/runtime/components
 combines Nuxt UI's native disclosure with the shared card-cell surface. Its
 consumer controls `v-model:open` when several cards share one-open-at-a-time
 state and owns the slot content. Use [FireDisclosurePanel](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosurePanel.vue)
-for a disclosure without the card-cell surface. The FireUX App exposes the
+for a disclosure without the card-cell surface. Both reuse native UCollapsible
+interaction. DisclosurePanel owns the labelled trigger and description with
+semantic styles; controlled open state remains with the caller. The FireUX App exposes the
 [Disclosure Card component page](../../projects/fireux/fireux-app/app/pages/components/disclosure-card.vue).
 
 ## Workspace composition
@@ -106,8 +108,8 @@ selects the named [Workspace composition](../../packages/core/fireux-core/src/ru
 through route metadata. It combines the shared sidebar and one
 [WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
 frame. WorkspacePage owns the dashboard panel, Navbar, Breadcrumbs, error
-boundary and Workspace route outlet. Apps with a custom root shell select the
-same component when `workspacePage` is set; see the [Find My SEO app root](../../projects/fireux/find-my-seo-app/app/app.vue).
+boundary and Workspace route outlet. App roots delegate to AppShell; they do
+not repeat its provider, route selection or initialization lifecycle.
 The old GroupPage and Workspace layout shell are retired.
 
 Routes provide their content. Group indexes use
@@ -264,3 +266,18 @@ label them `fetched`. Callers may override display settings, including
 context. Explicit `open`/`defaultOpen` behavior and development-only rendering
 remain supported. Collection-page coordinators supply only object and derived
 facts; they do not select diagnostic display defaults or assert acquisition.
+
+## Stock public composition boundary
+
+Core's default and landing layouts own Header, one content slot/container and
+Footer. Header consumes existing navigation, session and Workspace-entry owners;
+Footer consumes its existing navigation and public Admin presentation. Brand
+media remains with AppBrandLogo/Wordmark. Product pages supply their actual copy,
+actions and named domain sections; adding native controls or copying a screenshot
+does not establish that composition.
+
+The unused platform-specific `LandingHeroSection` and forwarding `LandingShell`
+are retired. They are not stock App baselines. The maintained Misebox and Werkbox
+landings compose `FireLandingProductIndex` with their own content and sections;
+inspect those owners before extending that family. Their existence is not a
+certificate that every descendant is free of utility debt.

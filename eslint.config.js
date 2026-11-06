@@ -1,3 +1,4 @@
+import fireuxVue from './tools/eslint/fireux-vue.mjs'
 import tsParser from '@typescript-eslint/parser'
 import vueParser from 'vue-eslint-parser'
 import fs from 'node:fs'
@@ -180,6 +181,23 @@ export default [
       'no-restricted-imports': makeNoRestrictedImportsRule({
         patterns: authoredRestrictedImportPatterns,
       }),
+    },
+  },
+  // Reviewed stock App foundation. Other existing component utility usage remains debt.
+  {
+    files: [
+      'projects/**/app/app.vue',
+      'projects/templates/fireux-template/app/pages/index.vue',
+      'packages/core/fireux-core/src/runtime/app/components/{Shell,DevControls}.vue',
+      'packages/core/fireux-core/src/runtime/layouts/{default,landing}.vue',
+      'packages/core/fireux-core/src/runtime/components/layouts/default/{Header,Footer,FooterAdmins}.vue',
+      'packages/core/fireux-core/src/runtime/components/layouts/shared/PlatformFooter.vue',
+      'packages/core/fireux-core/src/runtime/components/molecules/{DisclosurePanel,DisclosureCard}.vue',
+    ],
+    plugins: { 'fireux-vue': fireuxVue },
+    rules: {
+      'fireux-vue/no-authored-utilities': 'error',
+      'fireux-vue/block-order': 'error',
     },
   },
   // TS/JS files

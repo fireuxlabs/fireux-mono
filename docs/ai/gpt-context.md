@@ -128,6 +128,13 @@ checklist.
 3. Preserve scope, authority, reads, mutations and navigation. Resolve unclear
    ownership before implementation.
 4. Select checks and any live verification needed for this slice.
+5. Before the first edit, report the inspected composition in a concise progress
+   update: the existing parent surface, named lower owners being reused, nearest
+   maintained consumer, and the exact App/domain delta. A package dependency,
+   screenshot, assembly declaration or list of native controls is insufficient.
+   Inspect the chosen reference itself for compliance; existing source may be
+   migration debt. If no suitable composition exists, state that gap and resolve
+   its ownership before implementing a substitute.
 
 **Before reporting completion:**
 
@@ -139,6 +146,12 @@ checklist.
    and was not verified.
 4. Confirm the applicable living context still points to current owners and
    evidence.
+5. Report composition evidence separately from functional checks: name the
+   reused parent and lower owners and explain each retained custom boundary.
+   Typechecks, rendered metadata tests and use of native controls cannot prove
+   design or architectural alignment. A visual change also needs visual review
+   at the affected viewport sizes before claiming its presentation is verified.
+   When challenged about drift, return to this start gate before rewriting.
 
 The detailed UI and Entity conventions live in [components](../concepts/components.md),
 [pages](../concepts/pages.md), [layouts](../concepts/layouts.md),
@@ -147,9 +160,11 @@ The detailed UI and Entity conventions live in [components](../concepts/componen
 
 ## UI and design system
 
-App roots provide Nuxt UI's native `UApp` once around shared controls, normally
-through Core AppShell. Custom roots preserve that provider and their explicit
-route-outlet ownership. See [the rendering map](../concepts/layouts.md).
+Stock App roots delegate to Core AppShell, which owns the single `UApp`
+provider, route selection and App initialization lifecycle. App-owned theme and
+language setup may remain around that delegation. Go QR's documented embedded
+tool branch retains its separate provider/outlet; another bypass needs a real
+product and lifecycle justification. See [the rendering map](../concepts/layouts.md).
 
 Nuxt UI owns its component API, accessibility behavior and theming API.
 FireUX Core adds only proved shared visual or interaction responsibilities;
@@ -179,6 +194,14 @@ owns shared-library registration.
 Use Nuxt's generated component names when package registration provides them.
 Do not add an explicit import or alias without an inspected registration gap or
 name collision. See [component ownership and reuse](../concepts/components.md).
+
+### Vue file convention
+
+Authored Vue single-file components put `<template>` first, then
+`<script setup>`, then any `<style>` blocks. Omit blocks that have no purpose.
+This order does not replace readable composition or domain ownership. Format
+changed files through the existing repository formatter and run the applicable
+lint checks; do not claim those checks enforce rules absent from their config.
 
 ## Shared utility boundary
 
