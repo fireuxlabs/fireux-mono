@@ -1,7 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from './targets'
 import {
   stamp,
   initialMembership,
@@ -11,7 +11,7 @@ import { reconcileAppEcosystemReference } from 'fireux-core/runtime/app/server/r
 import {
   requireProjectOperator,
   requireProjectOperatorInTransaction,
-} from '../authority'
+} from 'fireux-projects/runtime/project/server/authority'
 
 export function projectAppInput(value: unknown) {
   const input =

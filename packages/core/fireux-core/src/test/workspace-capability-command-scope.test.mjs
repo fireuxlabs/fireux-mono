@@ -37,7 +37,7 @@ function deferred() {
 const specs = [
   [
     'Project',
-    'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
+    'packages/extensions/fireux-projects/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
   ],
   [
     'Kitchen',
@@ -157,7 +157,7 @@ for (const [family, path] of specs) {
   })
 }
 const authorityPath =
-  'packages/ecosystem/fireux-fireux/src/runtime/project/server/authority.ts'
+  'packages/extensions/fireux-projects/src/runtime/project/server/authority.ts'
 const targets = {
   fireuxApps: { collectionPath: 'apps' },
   fireuxEcosystems: { collectionPath: 'ecosystems' },
@@ -242,8 +242,8 @@ for (const action of ['create', 'update', 'delete', 'App create']) {
       const w = server(condition === 'revoked', condition === 'replaced')
       const isApp = action === 'App create'
       const path = isApp
-        ? 'packages/ecosystem/fireux-fireux/src/runtime/project/server/apps/create.ts'
-        : `packages/ecosystem/fireux-fireux/src/runtime/project/server/test/${action}.ts`
+        ? 'packages/ecosystem/fireux-fireux/src/runtime/platform/project-apps.ts'
+        : `packages/extensions/fireux-projects/src/runtime/project/server/test/${action}.ts`
       const name = isApp ? 'createProjectApp' : `${action}ProjectTest`
       const command = load(path, name, {
         createError,

@@ -40,7 +40,7 @@ const owners = [
   ],
   [
     'project',
-    'packages/ecosystem/fireux-fireux/src/runtime/project/server/team/roles.ts',
+    'packages/extensions/fireux-projects/src/runtime/project/server/team/roles.ts',
   ],
   ['blank', 'projects/fireux/fireux-blank/server/utils/blank/team/roles.ts'],
 ]

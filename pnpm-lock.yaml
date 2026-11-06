@@ -240,6 +240,25 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-projects:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-projects
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^1.0.2
+        version: 1.0.2(@nuxt/cli@3.37.0(@nuxt/schema@4.6.1)(cac@6.7.14)(magicast@0.5.5))(@vue/compiler-core@3.5.43)(esbuild@0.28.0)(sass@1.96.0)(typescript@5.9.2)(vue-tsc@3.3.0(typescript@5.9.2))(vue@3.5.43(typescript@5.9.2))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-projects:
+    dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-ai
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -1075,6 +1094,9 @@ importers:
       fireux-products:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-products
+      fireux-projects:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-projects
       h3:
         specifier: 1.15.11
         version: 1.15.11

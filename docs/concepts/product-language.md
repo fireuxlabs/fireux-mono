@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-11-05
-Ref: 71d4618ec
+Updated: 2026-11-06
+Ref: f2fbf2242
 Role: map, not canon
 
 ## Purpose
@@ -339,7 +339,7 @@ changing published offers. Product owners may then accept or round each price.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
 - `projects/fireux/fireux-app/shared/platform-context.ts`
 - `packages/core/fireux-core/src/runtime/workspace/components/Capability.vue`
-- `packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Team/Index.vue`
+- `packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Team/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/menus/index.vue`
 - `packages/core/fireux-core/src/config/app/meta-content.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts`

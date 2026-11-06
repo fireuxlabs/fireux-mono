@@ -28,6 +28,13 @@
       "fireux-ecosystem/runtime/*": [
         "./packages/extensions/fireux-ecosystem/src/runtime/*"
       ],
+      "fireux-projects": [
+        "./packages/extensions/fireux-projects/src/module.ts"
+      ],
+      "fireux-projects/*": ["./packages/extensions/fireux-projects/src/*"],
+      "fireux-projects/runtime/*": [
+        "./packages/extensions/fireux-projects/src/runtime/*"
+      ],
       "fireux-core": ["./packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["./packages/core/fireux-core/src/*"],
       "fireux-core/runtime/*": ["./packages/core/fireux-core/src/runtime/*"],
@@ -192,11 +199,6 @@
       "fireux-slap/*": ["./packages/ecosystem/fireux-slap/src/*"],
       "fireux-slap/runtime/*": [
         "./packages/ecosystem/fireux-slap/src/runtime/*"
-      ],
-      "fireux-sharer": ["./packages/ecosystem/fireux-sharer/src/module.ts"],
-      "fireux-sharer/*": ["./packages/ecosystem/fireux-sharer/src/*"],
-      "fireux-sharer/runtime/*": [
-        "./packages/ecosystem/fireux-sharer/src/runtime/*"
       ]
     }
   }

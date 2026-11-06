@@ -9,7 +9,7 @@ const core = 'packages/core/fireux-core/src/runtime/'
 const kitchens = 'packages/extensions/fireux-kitchens/src/runtime/'
 const properties = 'packages/extensions/fireux-properties/src/runtime/'
 const reservations = 'packages/extensions/fireux-reservations/src/runtime/'
-const project = 'packages/ecosystem/fireux-fireux/src/runtime/project/'
+const project = 'packages/extensions/fireux-projects/src/runtime/project/'
 function coverage(
   level: ComparisonObservation['level'],
   references: readonly string[],

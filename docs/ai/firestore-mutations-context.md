@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-06
+Ref: f2fbf2242
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -227,7 +227,8 @@ records. Public meal-deal projection remains read-only.
 - Domain mutation definitions live under each owning Entity’s `server/mutation-targets.ts`.
   Core App, User and Ecosystem own their definitions; no global target registry
   or compatibility barrel imports domains into Core. FireUX-specific named-database
-  bindings live in the FireUX ecosystem’s `project/server/platform-targets.ts`.
+  Project and App-membership bindings live in `fireux-projects/runtime/project/server`.
+  FireUX platform coordination targets live in `fireux-fireux/runtime/platform/targets.ts`.
 - Target validation and dynamic Server target factories:
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts`
   while Core-owned definitions live beneath App, User and Ecosystem. Domain-specific
@@ -517,7 +518,7 @@ commands live in the FireUX ecosystem. FireUX App owns directory discovery
 and HTTP routes. FireUX App's `project-identity-command.test.mjs` covers the
 command with mocked transactions.
 Project Team create/update/delete and role-label commands reuse
-`fireux-fireux/runtime/project/server/authority.ts` to recheck App membership, timestamp-bound
+`fireux-projects/runtime/project/server/authority.ts` to recheck App membership, timestamp-bound
 Project access and Project existence inside their writing transaction. Creation
 uses the current transactional subscription for Team capacity, not the preflight
 copy. Team labels do not grant App membership or broaden access to existing Apps.

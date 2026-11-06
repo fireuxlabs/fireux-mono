@@ -65,7 +65,7 @@ test('public Project detail rejects old identities and exposes recoverable read 
     error = ref(null)
   const source = readFileSync(
     new URL(
-      '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/useProjectDetail.ts',
+      '../../../../extensions/fireux-projects/src/runtime/project/composables/useProjectDetail.ts',
       import.meta.url
     ),
     'utf8'
@@ -158,7 +158,7 @@ test('Ecosystem detail reads one canonical record without loading the directory'
 for (const [name, path, key] of [
   [
     'Projects',
-    '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/useProjects.ts',
+    '../../../../extensions/fireux-projects/src/runtime/project/composables/useProjects.ts',
     'items',
   ],
   [

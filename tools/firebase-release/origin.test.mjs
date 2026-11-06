@@ -117,7 +117,6 @@ test('App-only hostname presentation uses native forwarded-origin options', () =
   for (const path of [
     'projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts',
     'projects/misebox/misebox-app/app/middleware/misebox-jobs-surface.global.ts',
-    'projects/sharer/sharer-app/app/pages/index.vue',
   ]) {
     assert.match(
       read(path),

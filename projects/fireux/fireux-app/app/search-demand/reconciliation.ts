@@ -19,7 +19,7 @@ export const projectReconciliation = {
         status: 'connected',
         owner: 'Project',
         source_paths: [
-          'packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Apps/Create.vue',
+          'packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Apps/Create.vue',
         ],
       },
       {
@@ -35,7 +35,7 @@ export const projectReconciliation = {
         status: 'connected',
         owner: 'FireUX App',
         source_paths: [
-          'packages/ecosystem/fireux-fireux/src/runtime/project/server/apps/create.ts',
+          'packages/ecosystem/fireux-fireux/src/runtime/platform/project-apps.ts',
         ],
       },
     ],
@@ -69,7 +69,7 @@ export const projectReconciliation = {
       rationale:
         'Keep App creation and directory links; validate brief-to-working-App, branding and reuse before claiming SaaS generation.',
       source_paths: [
-        'packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Apps/Index.vue',
+        'packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Apps/Index.vue',
       ],
       source_capability_ids: ['app-building', 'industry-brief'],
       source_observation_ids: ['project-generation', 'project-ownership'],
@@ -82,7 +82,7 @@ export const projectReconciliation = {
       rationale:
         'Keep connected product-family discovery; define shared-versus-isolated data, membership and reuse explicitly before offering ecosystem provisioning.',
       source_paths: [
-        'packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Ecosystem/Index.vue',
+        'packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Ecosystem/Index.vue',
       ],
       source_capability_ids: ['ecosystem-composition'],
       source_observation_ids: ['project-remix', 'project-authority'],

@@ -1,8 +1,9 @@
 # fireux-fireux
 
-FireUX ecosystem bindings, shared assets and the Project domain. Project Workspace
-registration follows the App’s `workspaces` selection. Core supplies shared ecosystem
-wiring; `fireux-app` supplies standard App capabilities.
+FireUX ecosystem bindings, shared assets and platform composition. It selects
+`fireux-projects` when the App declares Project Workspace. FireUX-specific App
+creation stays under `src/runtime/platform`; Project domain behavior belongs
+to the Projects Extension.
 
 See [package composition](../../../docs/concepts/runtime-package.md) and
 [src/module.ts](src/module.ts).

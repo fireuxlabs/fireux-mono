@@ -6,7 +6,7 @@ import test from 'node:test'
 
 const repo = new URL('../../../../../', import.meta.url)
 const source = (path) => readFileSync(new URL(path, repo), 'utf8')
-const ecosystem = 'packages/ecosystem/fireux-fireux/src/runtime/'
+const ecosystem = 'packages/extensions/fireux-projects/src/runtime/'
 const strip = (text, dev = true) =>
   stripTypeScriptTypes(
     text

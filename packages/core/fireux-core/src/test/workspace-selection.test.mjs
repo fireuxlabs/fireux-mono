@@ -93,7 +93,7 @@ for (const family of [
     }
     const useIndex = load(
       family === 'project'
-        ? '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspace.ts'
+        ? '../../../../extensions/fireux-projects/src/runtime/project/composables/workspace/useProjectWorkspace.ts'
         : family === 'kitchen'
           ? '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts'
           : family === 'blank'

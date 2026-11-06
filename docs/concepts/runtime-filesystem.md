@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-06
+Ref: f2fbf2242
 Role: map, not canon
 
 ## Purpose
@@ -250,7 +250,7 @@ registers the existing `WorkspacePortfolioOverview` name explicitly. Core does
 not import those domains, and Properties does not import its upper Ecosystem.
 No package-level directory is required for a package containing only one Entity's
 Workspace implementation. Project-specific Intent, Team AI and App context UI
-live beneath `fireux-fireux/runtime/project/components/Workspace`.
+live beneath `fireux-projects/runtime/project/components/Workspace`.
 
 Entity-specific Workspace implementation lives with the entity:
 

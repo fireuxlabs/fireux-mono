@@ -5,7 +5,7 @@ import {
   setResponseHeaders,
 } from 'h3'
 
-import { readProjectTests } from 'fireux-fireux/runtime/project/server/test/read'
+import { readProjectTests } from 'fireux-projects/runtime/project/server/test/read'
 
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')

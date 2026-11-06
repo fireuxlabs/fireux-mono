@@ -63,7 +63,11 @@ const appConfig = defineFireuxEcosystem({
       },
     ],
   ],
-  extends: ['fireux-docs/layer', 'fireux-fireux/layer'],
+  extends: [
+    'fireux-docs/layer',
+    'fireux-projects/layer',
+    'fireux-fireux/layer',
+  ],
 })
 
 const firebaseOptions = appConfig.nitro?.firebase

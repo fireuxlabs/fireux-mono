@@ -181,7 +181,7 @@ test('Project context rechecks membership inside the transaction before reading 
   const writes = []
   const target = { database: 'fireux', collectionPath: 'projects' }
   const command = load(
-    'packages/ecosystem/fireux-fireux/src/runtime/project/server/context.ts',
+    'packages/extensions/fireux-projects/src/runtime/project/server/context.ts',
     'projectContext',
     {
       ...contract,
@@ -223,7 +223,7 @@ test('Project context rechecks membership inside the transaction before reading 
 
 test('public Project and App projections omit stored context', () => {
   const projectReaders = load(
-    'packages/ecosystem/fireux-fireux/src/runtime/project/utils/readProject.ts',
+    'packages/extensions/fireux-projects/src/runtime/project/utils/readProject.ts',
     '({ readProjectDocument, readProjectPublicSummary })',
     {
       isFirestoreDocumentId: (value) =>

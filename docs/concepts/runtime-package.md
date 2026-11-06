@@ -1,7 +1,7 @@
 # Runtime package family
 
 Updated: 2026-11-06
-Ref: 864d6c09b
+Ref: f2fbf2242
 Role: map, not canon
 
 ## Package root spine
@@ -109,7 +109,7 @@ domain behavior; omit forwarding page hooks, duplicate asset registration and
 App-default configuration. Workspace-specific components, composables and
 commands register only when the App selects that Workspace. A selected native
 layer filters its unselected Workspace pages without removing App-owned routes.
-Project intent handlers have one explicit registration owner in `fireux-fireux`;
+Project intent handlers have one explicit registration owner in `fireux-projects`;
 they are outside native server discovery. Verify with Core’s
 `src/test/ecosystem-wiring.test.mjs` and consuming App preparation.
 
@@ -281,7 +281,15 @@ layouts, middleware, plugins and Nitro handlers when changing composition.
 
 ### Project domain ownership
 
-`fireux-fireux/runtime/project` owns the Project entity, readers, components,
+`fireux-projects` is an optional Extension selected by `fireux-fireux` for
+Project Workspace. The host declares `fireux-projects/layer`. The existing
+Project data remains in the named `fireux` database; this package move changes
+no stored paths, scope or authority. FireUX-specific App creation stays in
+`fireux-fireux/runtime/platform/project-apps.ts`; owning-system Ecosystem
+coordination stays in FireUX App. The Extension does not import an Ecosystem
+package.
+
+`fireux-projects/runtime/project` owns the Project entity, readers, components,
 models and domain targets. Its module registers Project component names and
 composables. Canonical reads, protected commands and authority also live under
 `project/server`; FireUX App routes retain HTTP transport, approved cross-project

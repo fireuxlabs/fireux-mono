@@ -220,13 +220,6 @@
       "fireux-slap/runtime/*": [
         "../../../packages/ecosystem/fireux-slap/src/runtime/*"
       ],
-      "fireux-sharer": [
-        "../../../packages/ecosystem/fireux-sharer/src/module.ts"
-      ],
-      "fireux-sharer/*": ["../../../packages/ecosystem/fireux-sharer/src/*"],
-      "fireux-sharer/runtime/*": [
-        "../../../packages/ecosystem/fireux-sharer/src/runtime/*"
-      ],
       "#components": ["./app/.nuxt/components.d.ts"],
       "#build/*": ["./app/.nuxt/*"],
       "~/*": ["./app/*"],

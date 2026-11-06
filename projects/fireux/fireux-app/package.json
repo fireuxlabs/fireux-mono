@@ -37,7 +37,8 @@
     "nuxt": "4.6.1",
     "vue": "3.5.43",
     "vue-router": "5.4.0",
-    "@google-cloud/functions-framework": "5.0.5"
+    "@google-cloud/functions-framework": "5.0.5",
+    "fireux-projects": "workspace:*"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",

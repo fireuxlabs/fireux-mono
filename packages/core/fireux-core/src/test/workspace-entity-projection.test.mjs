@@ -23,7 +23,7 @@ const readMembershipAccessIds = load(
   {}
 )
 const paths = {
-  Project: '../../../../ecosystem/fireux-fireux/src/runtime/project/',
+  Project: '../../../../extensions/fireux-projects/src/runtime/project/',
   Kitchen: '../../../../extensions/fireux-kitchens/src/runtime/kitchen/',
   Supplier: '../../../../extensions/fireux-suppliers/src/runtime/supplier/',
   Portfolio: '../../../../extensions/fireux-properties/src/runtime/portfolio/',

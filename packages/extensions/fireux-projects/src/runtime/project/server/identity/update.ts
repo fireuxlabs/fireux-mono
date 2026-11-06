@@ -9,7 +9,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { serverProjectAccessTarget } from '../access'
-import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../app-targets'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })

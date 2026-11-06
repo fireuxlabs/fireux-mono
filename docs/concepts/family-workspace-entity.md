@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-05
-Ref: 71d4618ec
+Updated: 2026-11-06
+Ref: f2fbf2242
 Role: map, not canon
 
 ## Purpose
@@ -188,12 +188,12 @@ Local development uses the existing Codex transport and its FireUX/Codex label;
 production uses the configured provider. Facts, instructions, available actions and
 response schema are built once before transport selection. Project Landing AI
 uses the same bounded interaction through the existing Project intent route's
-landing branch, owned by `fireux-fireux/runtime/project/server/landing-intent.ts`.
+landing branch, owned by `fireux-projects/runtime/project/server/landing-intent.ts`.
 Project Index exposes current selection and Create Project controls; FireUX's
 landing page owns navigation to the existing `/apps/create` setup review.
 Chat performs no writes and cannot save launch intents, create Apps, provision
 infrastructure or deploy. Guest requests receive no Project record context.
-`fireux-fireux/src/test/project-landing-intent.test.mjs` covers intent validation,
+`fireux-projects/src/test/project-landing-intent.test.mjs` covers intent validation,
 permission denial, stale responses, retry and the reviewed control callbacks.
 
 Both landing routes retain the real selector in the top toolbar, then Hero and
@@ -534,7 +534,7 @@ The Identity route owns its page JSON publication, so opening the same editor
 from the entry page leaves that page's context intact.
 
 Project Identity saves through the FireUX App's named
-`fireux-fireux/runtime/project/server/identity/update.ts` command and App-owned thin PATCH adapter. Its transaction
+`fireux-projects/runtime/project/server/identity/update.ts` command and App-owned thin PATCH adapter. Its transaction
 rereads the current App, membership, membership-bound Project access and Project
 before writing the allowlisted identity fields. The client adapter and editor
 invalidate obsolete account/Project intent, including same-tick round trips.
@@ -626,7 +626,7 @@ Classified boundaries:
 
 - `accepted`: shared selection, capacity and dialog lifecycle; domain-defined
   Identity fields, linked records and access choices.
-- `accepted`: `fireux-fireux/src/runtime/project` owns the Project entity,
+- `accepted`: `fireux-projects/src/runtime/project` owns the Project entity,
   Identity editor, readers and Team composition. Its ecosystem module registers
   Project components/composables and protected commands. App routes adapt those
   commands; cross-project discovery and the remote product-context bridge retain App policy.
@@ -807,7 +807,7 @@ they render or mutate directly.
 Project Team consumes the live collection's explicit pending, error and
 settled outcome. An unavailable roster remains an error, loading does not
 expose the previous roster, and no selected Project is a settled empty surface.
-`packages/ecosystem/fireux-fireux/src/test/project-team-client.test.mjs` protects
+`packages/extensions/fireux-projects/src/test/project-team-client.test.mjs` protects
 these states alongside the command-intent tests.
 
 `useKitchenWorkspaceTeam` and `useProjectWorkspaceTeam` each own their domain reads and commands,

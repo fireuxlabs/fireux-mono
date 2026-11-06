@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-06
-Ref: 97ab6b477
+Ref: f2fbf2242
 Role: living context
 Scope: repository-wide
 
@@ -57,6 +57,10 @@ do not import the Main App bundle merely because tenants share that Ecosystem.
 Ecosystem Main Apps own shared public documentation. Tenant and standalone Apps
 include documentation only for an explicit product need and may link to their
 Ecosystem's guides. Documentation layers are selected by the App.
+
+`fireux-projects` owns the Project domain and Workspace. `fireux-fireux`
+selects it for Project Workspace and retains FireUX platform-specific App
+creation. Core and the standard App bundle do not depend on Projects.
 
 `fireux-sproochli` owns shared translation and multilingual-copy capabilities.
 Apps own their source copy, language profiles and approved text. See the

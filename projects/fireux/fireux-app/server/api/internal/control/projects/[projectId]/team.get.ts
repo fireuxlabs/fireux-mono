@@ -5,7 +5,7 @@ import {
   setResponseHeaders,
 } from 'h3'
 
-import { readProjectTeam } from 'fireux-fireux/runtime/project/server/team/read'
+import { readProjectTeam } from 'fireux-projects/runtime/project/server/team/read'
 
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')

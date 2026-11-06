@@ -1,0 +1,75 @@
+{
+  "name": "fireux-projects",
+  "version": "0.1.0",
+  "description": "FireUX Project identity, access and Workspace capabilities",
+  "private": true,
+  "type": "module",
+  "main": "./src/module.ts",
+  "types": "./src/module.ts",
+  "exports": {
+    ".": "./src/module.ts",
+    "./layer": "./src/runtime/nuxt.config.ts",
+    "./runtime/*.vue": {
+      "types": "./src/runtime/*.vue",
+      "default": "./src/runtime/*.vue"
+    },
+    "./runtime/*.css": {
+      "types": "./src/runtime/*.css",
+      "default": "./src/runtime/*.css"
+    },
+    "./runtime/*.scss": {
+      "types": "./src/runtime/*.scss",
+      "default": "./src/runtime/*.scss"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*.css": [
+        "src/runtime/*.css"
+      ],
+      "runtime/*.scss": [
+        "src/runtime/*.scss"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
+    }
+  },
+  "files": [
+    "src/**/*"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build build",
+    "dev": "nuxt-module-build --stub",
+    "postbuild": "rimraf src/**/*.map",
+    "clean": "rimraf dist",
+    "test": "node --test src/test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
+  },
+  "dependencies": {
+    "fireux-ai": "workspace:*",
+    "fireux-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "nuxt": "^4.4.0",
+    "@nuxt/kit": "^4.4.0",
+    "@nuxt/schema": "^4.4.0",
+    "vue": "^3.5.40",
+    "h3": "*"
+  },
+  "devDependencies": {
+    "@nuxt/module-builder": "^1.0.2",
+    "rimraf": "^6.0.1"
+  }
+}

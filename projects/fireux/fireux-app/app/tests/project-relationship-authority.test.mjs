@@ -11,7 +11,7 @@ import {
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
-const domain = 'packages/ecosystem/fireux-fireux/src/runtime/project/server/'
+const domain = 'packages/extensions/fireux-projects/src/runtime/project/server/'
 function load(path, result, deps = {}) {
   const source = readFileSync(new URL(path, root), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -32,7 +32,10 @@ const requireWorkspaceEntityMemberRole = load(
   'requireWorkspaceEntityMemberRole',
   { createError }
 )
-const isAppUserRole = load(core + 'app/models/app-user.model.ts', 'isAppUserRole')
+const isAppUserRole = load(
+  core + 'app/models/app-user.model.ts',
+  'isAppUserRole'
+)
 const capacity = load(
   core + 'app/utils/app-subscription-capacity.ts',
   '{ hasAppSubscriptionCapacity }',
@@ -190,19 +193,26 @@ function harness() {
         roleIds: ['operator'],
       }),
   }
-  const createApp = load(domain + 'apps/create.ts', 'createProjectApp', {
-    ...deps,
-    FIREUX_MUTATION_TARGETS: { fireuxApps: apps, fireuxEcosystems: ecosystems },
-    fireuxAppUsersTarget: members,
-    stamp: (uid) => ({ by: uid }),
-    initialMembership: (uid) => ({
-      role: 'admin',
-      subscription: 'free',
-      created: { by: uid },
-    }),
-    reconcileAppEcosystemReference: async (value) => reconciled.push(value),
-    reconcileUserAppReference: async (value) => reconciled.push(value),
-  })
+  const createApp = load(
+    'packages/ecosystem/fireux-fireux/src/runtime/platform/project-apps.ts',
+    'createProjectApp',
+    {
+      ...deps,
+      FIREUX_MUTATION_TARGETS: {
+        fireuxApps: apps,
+        fireuxEcosystems: ecosystems,
+      },
+      fireuxAppUsersTarget: members,
+      stamp: (uid) => ({ by: uid }),
+      initialMembership: (uid) => ({
+        role: 'admin',
+        subscription: 'free',
+        created: { by: uid },
+      }),
+      reconcileAppEcosystemReference: async (value) => reconciled.push(value),
+      reconcileUserAppReference: async (value) => reconciled.push(value),
+    }
+  )
   return {
     records,
     writes,
@@ -406,18 +416,18 @@ test('Project ownership and administration in another App cannot administer an e
       isAppUserSubscription,
       readAppUserSubscription,
       APP_MUTATION_TARGETS: targets,
-USER_MUTATION_TARGETS: targets,
-ECOSYSTEM_MUTATION_TARGETS: targets,
-FIREUX_MUTATION_TARGETS: targets,
-SPROOCHLI_MUTATION_TARGETS: targets,
-PLACE_MUTATION_TARGETS: targets,
-KITCHEN_MUTATION_TARGETS: targets,
-INGREDIENT_MUTATION_TARGETS: targets,
-PRODUCT_MUTATION_TARGETS: targets,
-PROPERTY_MUTATION_TARGETS: targets,
-PORTFOLIO_MUTATION_TARGETS: targets,
-SUPPLIER_MUTATION_TARGETS: targets,
-JOB_MUTATION_TARGETS: targets,
+      USER_MUTATION_TARGETS: targets,
+      ECOSYSTEM_MUTATION_TARGETS: targets,
+      FIREUX_MUTATION_TARGETS: targets,
+      SPROOCHLI_MUTATION_TARGETS: targets,
+      PLACE_MUTATION_TARGETS: targets,
+      KITCHEN_MUTATION_TARGETS: targets,
+      INGREDIENT_MUTATION_TARGETS: targets,
+      PRODUCT_MUTATION_TARGETS: targets,
+      PROPERTY_MUTATION_TARGETS: targets,
+      PORTFOLIO_MUTATION_TARGETS: targets,
+      SUPPLIER_MUTATION_TARGETS: targets,
+      JOB_MUTATION_TARGETS: targets,
       serverAppUsersTarget: members,
     }
   )
@@ -455,18 +465,18 @@ JOB_MUTATION_TARGETS: targets,
       {
         ...contract,
         APP_MUTATION_TARGETS: targets,
-USER_MUTATION_TARGETS: targets,
-ECOSYSTEM_MUTATION_TARGETS: targets,
-FIREUX_MUTATION_TARGETS: targets,
-SPROOCHLI_MUTATION_TARGETS: targets,
-PLACE_MUTATION_TARGETS: targets,
-KITCHEN_MUTATION_TARGETS: targets,
-INGREDIENT_MUTATION_TARGETS: targets,
-PRODUCT_MUTATION_TARGETS: targets,
-PROPERTY_MUTATION_TARGETS: targets,
-PORTFOLIO_MUTATION_TARGETS: targets,
-SUPPLIER_MUTATION_TARGETS: targets,
-JOB_MUTATION_TARGETS: targets,
+        USER_MUTATION_TARGETS: targets,
+        ECOSYSTEM_MUTATION_TARGETS: targets,
+        FIREUX_MUTATION_TARGETS: targets,
+        SPROOCHLI_MUTATION_TARGETS: targets,
+        PLACE_MUTATION_TARGETS: targets,
+        KITCHEN_MUTATION_TARGETS: targets,
+        INGREDIENT_MUTATION_TARGETS: targets,
+        PRODUCT_MUTATION_TARGETS: targets,
+        PROPERTY_MUTATION_TARGETS: targets,
+        PORTFOLIO_MUTATION_TARGETS: targets,
+        SUPPLIER_MUTATION_TARGETS: targets,
+        JOB_MUTATION_TARGETS: targets,
         serverAppUsersTarget: members,
         handleMembershipSettings: settings,
         runGuardedServerTransaction: async (placement, work) => {

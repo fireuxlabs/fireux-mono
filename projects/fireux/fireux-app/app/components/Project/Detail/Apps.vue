@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectPublicSummary } from 'fireux-fireux/runtime/project/models/project.model'
-import { useProjectApps } from 'fireux-fireux/runtime/project/composables/useProjectApps'
+import type { ProjectPublicSummary } from 'fireux-projects/runtime/project/models/project.model'
+import { useProjectApps } from 'fireux-projects/runtime/project/composables/useProjectApps'
 const props = defineProps<{ project: ProjectPublicSummary }>()
 const { apps, pending, error } = useProjectApps(() => props.project.id)
 </script>

@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { requireProjectOperator } from 'fireux-fireux/runtime/project/server/authority'
+import { requireProjectOperator } from 'fireux-projects/runtime/project/server/authority'
 import { readPlatformEcosystems } from '../../utils/ecosystems'
 
 /** Relationship authority comes from each approved owning Ecosystem database. */

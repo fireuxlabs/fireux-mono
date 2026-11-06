@@ -9,7 +9,7 @@ for (const domain of ['Kitchen', 'Project']) {
     const kitchen = domain === 'Kitchen'
     const path = kitchen
       ? '../../../../extensions/fireux-kitchens/src/runtime/kitchen/server/team/delete.ts'
-      : '../../../../ecosystem/fireux-fireux/src/runtime/project/server/team/delete.ts'
+      : '../../../../extensions/fireux-projects/src/runtime/project/server/team/delete.ts'
     const source = readFileSync(new URL(path, import.meta.url), 'utf8')
       .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
       .replace(/^export /gm, '')

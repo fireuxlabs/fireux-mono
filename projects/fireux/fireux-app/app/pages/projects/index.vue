@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectCollectionPage } from 'fireux-fireux/runtime/project/composables/useProjectCollectionPage'
+import { useProjectCollectionPage } from 'fireux-projects/runtime/project/composables/useProjectCollectionPage'
 
 definePageMeta({
   tag: 'projects',

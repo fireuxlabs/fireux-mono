@@ -1,7 +1,7 @@
 {
   "name": "fireux-fireux",
   "version": "0.1.0",
-  "description": "FireUX ecosystem bindings and Project Workspace",
+  "description": "FireUX ecosystem bindings and platform composition",
   "private": true,
   "type": "module",
   "main": "./src/module.ts",
@@ -58,7 +58,8 @@
   },
   "dependencies": {
     "fireux-ai": "workspace:*",
-    "fireux-core": "workspace:*"
+    "fireux-core": "workspace:*",
+    "fireux-projects": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

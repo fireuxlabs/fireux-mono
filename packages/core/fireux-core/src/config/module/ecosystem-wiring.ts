@@ -3,7 +3,10 @@ import type { Nuxt } from '@nuxt/schema'
 import { existsSync } from 'fs'
 import type { FireuxEcosystemConfig } from '../../types/ecosystem'
 import { setRuntimeFirebaseEcosystem } from '../app/runtime'
-import { registerComposablesDir, registerLayoutComponents } from './module-helpers'
+import {
+  registerComposablesDir,
+  registerLayoutComponents,
+} from './module-helpers'
 import { configurePages } from './pages-config'
 
 type EcosystemResolverStep = (resolver: Resolver, nuxt: Nuxt) => void
@@ -17,10 +20,7 @@ export type ConfigureFireuxEcosystemModuleOptions = {
   configurePublicAssets?: EcosystemResolverStep
 }
 
-const configureDefaultPublicAssets = (
-  resolver: Resolver,
-  nuxt: Nuxt
-) => {
+const configureDefaultPublicAssets = (resolver: Resolver, nuxt: Nuxt) => {
   const publicDir = resolver.resolve('./runtime/public')
   if (!existsSync(publicDir)) return
 
@@ -33,7 +33,6 @@ const configureDefaultPublicAssets = (
     typeof entry === 'string' ? entry === publicDir : entry?.dir === publicDir
   )
   if (!already) publicAssets.push({ dir: publicDir })
-
 }
 
 export function configureFireuxEcosystemModule(
@@ -82,7 +81,11 @@ export function configureFireuxEcosystemModule(
   })
 
   options.configureRuntimeConfig?.(nuxt)
-  ;(options.configurePages || configurePages)(resolver, nuxt)
+  if (options.configurePages) {
+    options.configurePages(resolver, nuxt)
+  } else if (existsSync(resolver.resolve('./runtime/pages'))) {
+    configurePages(resolver, nuxt)
+  }
   options.configureComponents?.(resolver, nuxt)
   registerLayoutComponents(resolver)
   registerComposablesDir(resolver)

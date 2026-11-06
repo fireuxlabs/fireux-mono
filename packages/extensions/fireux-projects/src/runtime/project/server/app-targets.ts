@@ -8,13 +8,6 @@ const verbs = ALL_FIRESTORE_MUTATION_VERBS
 const segment = assertFirestoreMutationSegment
 
 export const FIREUX_MUTATION_TARGETS = Object.freeze({
-  fireuxEcosystems: defineFirestoreMutationTarget({
-    key: 'fireux.ecosystems',
-    lane: 'server',
-    verbs,
-    database: { kind: 'named', databaseId: 'fireux' },
-    collectionPath: 'ecosystems',
-  }),
   fireuxApps: defineFirestoreMutationTarget({
     key: 'fireux.apps',
     lane: 'server',

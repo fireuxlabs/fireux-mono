@@ -12,7 +12,7 @@ import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/server/entity/onboarding-authority'
 import { readAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../platform-targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from '../app-targets'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   createMembershipAccess,

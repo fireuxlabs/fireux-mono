@@ -346,8 +346,8 @@ export const demandCapabilities: AppSearchDemand['capabilities'] = {
                     ? 'Project Ecosystem supplies a read view, not proved ecosystem provisioning or safe cloning.'
                     : 'This industry research does not establish a customer-owned execution path for this proposal.',
               source_paths: [
-                'packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Apps/Index.vue',
-                'packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Ecosystem/Index.vue',
+                'packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Apps/Index.vue',
+                'packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Ecosystem/Index.vue',
               ],
             },
           },

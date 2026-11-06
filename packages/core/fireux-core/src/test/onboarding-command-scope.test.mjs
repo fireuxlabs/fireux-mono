@@ -29,7 +29,7 @@ const families = [
   ],
   [
     'Project',
-    'ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspaceCreate.ts',
+    'extensions/fireux-projects/src/runtime/project/composables/workspace/useProjectWorkspaceCreate.ts',
   ],
 ]
 for (const [family, path] of families)

@@ -7,6 +7,7 @@ import package3 from 'fireux-docs/package.json'
 import package4 from 'fireux-fireux/package.json'
 import package5 from 'fireux-ignite/package.json'
 import package7 from 'fireux-products/package.json'
+import projectsPackage from 'fireux-projects/package.json'
 
 const packageMetadata: Record<string, { name: string; description?: string }> =
   {
@@ -18,6 +19,7 @@ const packageMetadata: Record<string, { name: string; description?: string }> =
     'fireux-fireux': package4,
     'fireux-ignite': package5,
     'fireux-products': package7,
+    'fireux-projects': projectsPackage,
   }
 
 export const appPackages = Object.keys(manifest.dependencies)

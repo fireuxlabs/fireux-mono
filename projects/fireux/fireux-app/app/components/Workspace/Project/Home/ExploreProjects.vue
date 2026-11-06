@@ -70,6 +70,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
+import { useProjects } from 'fireux-projects/runtime/project/composables/useProjects'
 const { projects, pending, error, refresh } = useProjects()
 </script>

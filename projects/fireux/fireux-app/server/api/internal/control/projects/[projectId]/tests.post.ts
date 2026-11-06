@@ -4,7 +4,7 @@ import {
   readBody,
   setResponseHeaders,
 } from 'h3'
-import { createProjectTest } from 'fireux-fireux/runtime/project/server/test/create'
+import { createProjectTest } from 'fireux-projects/runtime/project/server/test/create'
 
 export default defineEventHandler(async (event) => {
   const response = await createProjectTest(

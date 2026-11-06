@@ -38,7 +38,7 @@ const requireFirestoreDocumentId = (value) => {
   return value
 }
 const readProjectDocument = load(
-  'packages/ecosystem/fireux-fireux/src/runtime/project/utils/readProject.ts',
+  'packages/extensions/fireux-projects/src/runtime/project/utils/readProject.ts',
   { isFirestoreDocumentId },
   'readProjectDocument'
 )
@@ -59,7 +59,7 @@ function harness(role = 'user') {
   ])
   let before = () => {}
   const update = load(
-    'packages/ecosystem/fireux-fireux/src/runtime/project/server/identity/update.ts',
+    'packages/extensions/fireux-projects/src/runtime/project/server/identity/update.ts',
     {
       createError,
       readProjectDocument,
@@ -208,7 +208,7 @@ test('client PATCH exact envelope and round-trip scope invalidation during token
     const config = reactive({ appId: 'fireux-app' }),
       owner = effectScope()
     const useProjectUpdate = load(
-      'packages/ecosystem/fireux-fireux/src/runtime/project/composables/useProjectUpdate.ts',
+      'packages/extensions/fireux-projects/src/runtime/project/composables/useProjectUpdate.ts',
       {
         unref,
         useCommandScope,

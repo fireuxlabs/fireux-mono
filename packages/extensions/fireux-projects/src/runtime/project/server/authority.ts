@@ -6,7 +6,7 @@ import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/workspace/
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from './platform-targets'
+import { FIREUX_MUTATION_TARGETS, fireuxAppUsersTarget } from './app-targets'
 import { fireuxProjectsTarget } from './targets'
 import { serverProjectAccessTarget } from './access'
 

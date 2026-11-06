@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-11-05
-Ref: 71d4618ec
+Updated: 2026-11-06
+Ref: f2fbf2242
 Role: map, not canon
 
 ## Purpose
@@ -15,7 +15,7 @@ Current source is authoritative:
 - `packages/core/fireux-core/src/runtime/app/models/app.model.ts`
 - `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts`
 - `packages/core/fireux-core/src/runtime/user/models/user.model.ts`
-- `packages/ecosystem/fireux-fireux/src/runtime/project/models/project.model.ts`
+- `packages/extensions/fireux-projects/src/runtime/project/models/project.model.ts`
 - `packages/core/fireux-core/src/runtime/app/models/app-user.model.ts`
 - `packages/core/fireux-core/src/test/app-collection.test.mjs`
 - `projects/fireux/fireux-app/app/tests/platform-apps-read.test.mjs`
@@ -328,7 +328,7 @@ route and request input before credentials. The AI dialog separately owns its
 selected-record and available-action lifetime. Identity completion is suppressed
 after revocation or disposal; App-context requests consume Nuxt cancellation and
 hide obsolete results. These client guards do not replace trusted server
-authority. `fireux-fireux/src/test/project-internals.test.mjs` protects the
+authority. `fireux-projects/src/test/project-internals.test.mjs` protects the
 boundaries alongside the existing Identity and intent tests.
 
 The Project Workspace may expose capabilities backed by existing authority and

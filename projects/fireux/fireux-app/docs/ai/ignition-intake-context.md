@@ -1,7 +1,7 @@
 # FireUX App Ignition intake context
 
-Updated: 2026-11-01
-Ref: cf2413355
+Updated: 2026-11-06
+Ref: f2fbf2242
 Role: living context
 Scope: FireUX App Ignition requests and private delivery tracking
 
@@ -42,9 +42,8 @@ This is the single named family definition for the current Ignition direction:
 | External dog brand, unnamed | [Brand] is a dog grooming operating system.                    |
 | External cat brand, unnamed | [Brand] is a cat grooming operating system.                    |
 
-Sharer and Apps That Slap are outside this Ignition product family. This scope
-choice does not remove their packages, Apps or existing ownership. It is not a
-runtime registry or a restriction on future industries.
+This family defines the current industry-SaaS intake scope. It is not a runtime
+registry or a restriction on other products or future industries.
 
 When generation is claimed, prove it through independently assembled external consumers: first the
 dog App, then a separate cat App; compare their working domain behaviour before

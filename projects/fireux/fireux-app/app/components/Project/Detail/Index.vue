@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ProjectPublicSummary } from 'fireux-fireux/runtime/project/models/project.model'
+import type { ProjectPublicSummary } from 'fireux-projects/runtime/project/models/project.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 const props = defineProps<{ project: ProjectPublicSummary }>()
 useSeo({
