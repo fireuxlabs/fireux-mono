@@ -13,7 +13,6 @@
       />
       <UButton
         v-if="message.resultAction?.kind === 'copy'"
-        class="mt-3"
         :label="message.resultAction.label"
         icon="i-lucide-copy"
         color="primary"
@@ -26,7 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenAIResultAction, KitchenAIWelcomeMessage } from '../../../models/kitchen-ai-presentation.model'
+import type {
+  KitchenAIResultAction,
+  KitchenAIWelcomeMessage,
+} from '../../../models/kitchen-ai-presentation.model'
 
 defineProps<{ messages: readonly KitchenAIWelcomeMessage[] }>()
 const emit = defineEmits<{ copy: [action: KitchenAIResultAction] }>()

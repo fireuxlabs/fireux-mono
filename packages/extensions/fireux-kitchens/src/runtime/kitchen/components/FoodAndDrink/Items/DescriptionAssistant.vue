@@ -1,19 +1,17 @@
 <template>
-  <section
+  <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
     v-if="dish && catalogue.itemKind === 'drink' && canWrite"
-    class="grid gap-4 rounded-lg border border-default bg-elevated/30 p-4"
+    
   >
-    <div class="space-y-1">
-      <h3 class="text-sm font-semibold text-highlighted">
-        DrinksAI description assistance
-      </h3>
-      <p class="text-xs text-muted">
+    <div class="fx-card-body-stack">
+      <h3>DrinksAI description assistance</h3>
+      <p>
         Supply confirmed notes, then review the proposal before applying it
         through Update Drink.
       </p>
     </div>
 
-    <div class="grid gap-4">
+    <div class="fx-card-body-stack">
       <UFormField label="Confirmed notes">
         <UTextarea
           v-model="notes"
@@ -21,7 +19,6 @@
           :maxlength="1200"
           :disabled="proposing || saving"
           placeholder="For example: alcohol-free, lime and mint, served over ice."
-          class="w-full"
         />
       </UFormField>
 
@@ -30,7 +27,6 @@
         icon="i-lucide-sparkles"
         color="neutral"
         variant="soft"
-        class="w-fit"
         :loading="proposing"
         :disabled="!notes.trim() || proposing || saving"
         @click="proposeDescription"
@@ -42,11 +38,10 @@
           :rows="5"
           :maxlength="800"
           :disabled="proposing || saving"
-          class="w-full"
         />
       </UFormField>
 
-      <div v-if="proposal" class="flex flex-wrap gap-2">
+      <div v-if="proposal" class="fx-card__actions">
         <UButton
           label="Approve description"
           icon="i-lucide-check"
@@ -63,7 +58,7 @@
         />
       </div>
     </div>
-  </section>
+  </UCard>
 </template>
 
 <script setup lang="ts">

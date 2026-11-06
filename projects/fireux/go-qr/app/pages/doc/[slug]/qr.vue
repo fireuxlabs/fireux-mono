@@ -1,15 +1,11 @@
 <template>
   <main class="min-h-screen bg-white text-slate-950">
     <div
-      class="mx-auto flex min-h-screen flex-col items-center justify-center gap-2 p-2 text-center"
+      class="mx-auto flex min-h-screen flex-col items-center justify-center gap-2 p-2"
     >
-      <div class="space-y-0.5">
-        <p
-          class="text-[10px] font-semibold uppercase tracking-wide text-slate-500"
-        >
-          Go QR
-        </p>
-        <h1 class="max-w-[92vw] truncate text-lg font-bold leading-tight">
+      <div class="pagebody">
+        <p class="text-slate-500 fx-type-body">Go QR</p>
+        <h1 class="max-w-[92vw] truncate fx-type-page-title">
           {{ documentLabel }}
         </h1>
       </div>
@@ -28,7 +24,7 @@
           class="size-full"
         />
         <div
-          class="absolute left-1/2 top-1/2 grid size-[18%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.45rem] border-white bg-[#4f2df4] px-1 text-center text-[clamp(0.45rem,3.25vw,1.45rem)] font-black uppercase leading-none text-white shadow-sm"
+          class="absolute left-1/2 top-1/2 grid size-[18%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.45rem] border-white bg-[#4f2df4] px-1 text-[clamp(0.45rem,3.25vw,1.45rem)] text-white shadow-sm"
           aria-hidden="true"
         >
           {{ qrCentreLabel }}
@@ -36,7 +32,7 @@
       </div>
       <div
         v-else
-        class="grid max-w-[96vw] place-items-center border border-slate-200 text-sm text-slate-500"
+        class="grid max-w-[96vw] place-items-center border border-slate-200 text-slate-500"
         style="
           width: min(96vw, calc(100vh - 4.75rem), 44rem);
           height: min(96vw, calc(100vh - 4.75rem), 44rem);
@@ -45,13 +41,13 @@
         Creating QR
       </div>
 
-      <p class="max-w-[92vw] break-all text-[10px] text-slate-600">
+      <p class="max-w-[92vw] break-all text-slate-600 fx-type-body">
         {{ publicUrl }}
       </p>
 
       <a
         href="https://go-qr.web.app"
-        class="flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 hover:text-slate-900"
+        class="flex items-center justify-center gap-1.5 text-[10px] text-slate-500 hover:text-slate-900"
       >
         <span>Powered by</span>
         <img src="/img/app/logo.svg" alt="Go QR" class="size-4" />

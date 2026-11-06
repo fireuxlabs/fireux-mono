@@ -1,5 +1,5 @@
 <template>
-  <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+  <UDashboardToolbar
     ><UTabs
       v-if="test.records.value.length"
       :model-value="test.selected.value?.id"

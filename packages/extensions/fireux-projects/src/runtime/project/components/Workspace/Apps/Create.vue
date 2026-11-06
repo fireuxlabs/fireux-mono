@@ -1,7 +1,10 @@
 <template>
   <UCard v-if="projectId">
-    <template #header><h2 class="font-semibold">Create an App</h2></template>
-    <form class="space-y-4" @submit.prevent="save">
+    <template #header><h2 class="fx-type-card-heading">Create an App</h2></template>
+    <form
+      class="workspace-surface workspace-surface--compact"
+      @submit.prevent="save"
+    >
       <UFormField label="App name" required
         ><UInput v-model="name" class="w-full"
       /></UFormField>
@@ -27,7 +30,7 @@
           placeholder="Choose a role"
           class="w-full"
       /></UFormField>
-      <p class="text-sm text-muted">
+      <p>
         Ecosystem: {{ config.ecosystemId }}. Saves an inactive App with a
         minimal HTML preview. No hosting or new database is provisioned.
       </p>
@@ -39,7 +42,7 @@
         >Save App and preview</UButton
       >
     </form>
-    <p v-if="savedId" class="mt-4 text-sm">
+    <p v-if="savedId" class="mt-4">
       Saved {{ savedId }}. Its preview is available below.
     </p>
     <AppPreviewHtml v-if="savedApp" :app="savedApp" class="mt-4" />

@@ -1,14 +1,10 @@
 <template>
   <UCard variant="subtle">
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="card__header">
         <div>
-          <div class="text-sm font-semibold text-highlighted">
-            Delivery boundary editor
-          </div>
-          <p class="text-sm text-dimmed">
-            Select a zone, then click the real map to add boundary points.
-          </p>
+          <div>Delivery boundary editor</div>
+          <p>Select a zone, then click the real map to add boundary points.</p>
         </div>
 
         <UBadge color="neutral" variant="soft">
@@ -17,8 +13,8 @@
       </div>
     </template>
 
-    <div class="space-y-3">
-      <div class="flex flex-wrap gap-2">
+    <div class="fx-card-body-stack">
+      <div class="fx-card__actions">
         <UButton
           v-for="(zone, index) in zones"
           :key="zone.id || zone.label || index"
@@ -43,13 +39,13 @@
         </p>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="m-0 text-xs text-dimmed">
+      <div class="card__header">
+        <p>
           {{ pointCount }} point{{ pointCount === 1 ? '' : 's' }} in this
           boundary.
         </p>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             color="neutral"
             variant="soft"

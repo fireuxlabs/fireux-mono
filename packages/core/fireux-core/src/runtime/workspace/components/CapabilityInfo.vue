@@ -5,8 +5,8 @@
       :key="section"
       v-show="section in pageState"
     >
-      <h3 class="font-semibold capitalize">{{ section }}</h3>
-      <pre class="overflow-auto text-xs">{{
+      <h3>{{ section }}</h3>
+      <pre class="overflow-auto">{{
         JSON.stringify(pageState[section], null, 2)
       }}</pre>
     </section>
@@ -17,21 +17,19 @@
     aria-labelledby="capability-context-title"
   >
     <div>
-      <h3 id="capability-context-title" class="m-0 font-semibold">
-        {{ capability.subject }} capability
-      </h3>
-      <p class="m-0 text-sm text-muted">{{ capability.id }}</p>
+      <h3 id="capability-context-title">{{ capability.subject }} capability</h3>
+      <p>{{ capability.id }}</p>
     </div>
 
     <div class="grid gap-2">
-      <p class="m-0 text-sm font-medium text-toned">Primitives</p>
-      <ul class="m-0 grid gap-2 p-0" aria-label="Page primitives">
+      <p>Primitives</p>
+      <ul class="grid gap-2 p-0" aria-label="Page primitives">
         <li
           v-for="primitive in primitives"
           :key="primitive.id"
-          class="flex items-center justify-between gap-3 text-sm"
+          class="flex items-center justify-between gap-3"
         >
-          <span class="capitalize">{{ primitive.id }}</span>
+          <span>{{ primitive.id }}</span>
           <UBadge
             :color="primitive.available ? 'success' : 'neutral'"
             variant="subtle"
@@ -43,8 +41,8 @@
     </div>
 
     <div v-if="capability.natives.length" class="grid gap-2">
-      <p class="m-0 text-sm font-medium text-toned">Capability natives</p>
-      <ul class="m-0 grid gap-1 pl-5 text-sm text-muted">
+      <p>Capability natives</p>
+      <ul class="fx-list-stack">
         <li v-for="native in capability.natives" :key="native.id">
           {{ nativeLabel(native.id) }} · {{ native.primitive }}
         </li>

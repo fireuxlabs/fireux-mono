@@ -1,6 +1,6 @@
 <template>
   <fieldset class="space-y-3">
-    <legend class="mb-2 font-medium">Options</legend>
+    <legend class="mb-2">Options</legend>
     <div
       v-for="(option, index) in options"
       :key="index"

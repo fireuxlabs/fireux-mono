@@ -23,7 +23,7 @@
       />
       <div
         v-else
-        class="flex size-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/5 to-transparent text-muted"
+        class="flex size-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/5 to-transparent"
       >
         <UIcon
           :name="icon"
@@ -38,22 +38,16 @@
       class="ingredient-card__caption flex min-w-0 flex-1 items-center gap-3"
     >
       <div class="min-w-0 flex-1">
-        <h3
-          class="text-sm font-medium leading-snug text-highlighted"
-          :class="variant === 'list' ? 'truncate' : 'line-clamp-2'"
-        >
+        <h3 :class="variant === 'list' ? 'truncate' : 'line-clamp-2'">
           {{ title || 'Unnamed ingredient' }}
         </h3>
-        <p
-          v-if="variant === 'list' && categoryLabel"
-          class="mt-0.5 text-xs text-muted"
-        >
+        <p v-if="variant === 'list' && categoryLabel" class="mt-0.5">
           {{ categoryLabel }}
         </p>
       </div>
       <UIcon
         name="i-lucide-arrow-right"
-        class="size-4 shrink-0 text-dimmed transition group-hover:text-primary"
+        class="shrink-0 transition"
         aria-hidden="true"
       />
     </div>

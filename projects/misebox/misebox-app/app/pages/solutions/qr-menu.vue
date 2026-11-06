@@ -1,6 +1,6 @@
 <template>
-  <UContainer class="py-12 space-y-6">
-    <h1 class="text-3xl font-semibold">QR Menu</h1>
+  <UContainer>
+    <h1 class="fx-type-page-title">QR Menu</h1>
     <p>
       Create an interactive Menu or upload a document, publish it, then print
       its QR code.

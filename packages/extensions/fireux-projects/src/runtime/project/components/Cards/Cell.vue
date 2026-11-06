@@ -12,12 +12,11 @@
         :alt="title"
         icon="i-lucide-folders"
         size="md"
-        class="shrink-0"
       />
 
       <div class="card__content card__stack">
         <div class="card__header">
-          <div class="min-w-0">
+          <div class="card__content">
             <div class="card__title">{{ title }}</div>
             <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
@@ -39,7 +38,7 @@
 
         <div v-if="showMeta" class="card__tagline">
           <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
+          <span v-else class="fx-card__tagline--empty">missing</span>
         </div>
       </div>
     </div>

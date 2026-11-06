@@ -1,7 +1,7 @@
 <template>
   <WorkspaceProjectHomeGuest v-if="currentUser?.isAnonymous" />
   <template v-else>
-    <p v-if="landingState === 'pending'" role="status" class="py-6 text-muted">
+    <p v-if="landingState === 'pending'" role="status" class="py-6">
       Loading your Projects…
     </p>
     <UAlert

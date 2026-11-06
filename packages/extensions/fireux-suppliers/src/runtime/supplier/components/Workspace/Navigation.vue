@@ -6,7 +6,7 @@
       :icon="item.icon"
       size="2xs"
     />
-    <span class="truncate text-sm font-medium">{{ item.label }}</span>
+    <span class="truncate">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
     v-else-if="!identityOnly && !backdropOnly"

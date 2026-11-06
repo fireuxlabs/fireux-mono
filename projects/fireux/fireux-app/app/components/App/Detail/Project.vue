@@ -4,7 +4,7 @@
     <ULink :to="`/projects/${encodeURIComponent(project.id)}`">
       {{ project.identity.name || project.id }}
     </ULink>
-    <p class="text-sm text-muted">{{ project.identity.description }}</p>
+    <p class="fx-type-caption">{{ project.identity.description }}</p>
   </UCard>
 </template>
 
@@ -17,12 +17,15 @@ import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
 const props = defineProps<{ app: App }>()
 const { projects } = useProjects()
 const { data: directory } = usePlatformDirectory()
-const ecosystem = computed(() =>
-  (directory.value?.ecosystems ?? []).find(
-    (entry) => entry.id === props.app.ecosystem_id
-  ) ?? null
+const ecosystem = computed(
+  () =>
+    (directory.value?.ecosystems ?? []).find(
+      (entry) => entry.id === props.app.ecosystem_id
+    ) ?? null
 )
 const project = computed(
-  () => projects.value.find((entry) => entry.id === ecosystem.value?.project_id) ?? null
+  () =>
+    projects.value.find((entry) => entry.id === ecosystem.value?.project_id) ??
+    null
 )
 </script>

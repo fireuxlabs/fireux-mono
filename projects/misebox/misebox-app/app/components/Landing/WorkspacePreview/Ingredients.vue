@@ -12,15 +12,10 @@
         :items="ingredientGroups"
         :default-value="defaultOpenFoodGroups"
         :unmount-on-hide="false"
-        class="max-h-[24rem] overflow-y-auto pr-1"
-        :ui="{
-          trigger: 'py-2',
-          body: 'pb-3',
-        }"
       >
         <template #default="{ item }">
           <div class="flex min-w-0 flex-1 items-center justify-between gap-2">
-            <span class="truncate text-sm font-semibold">{{ item.label }}</span>
+            <span class="truncate">{{ item.label }}</span>
             <UBadge color="neutral" variant="soft" size="xs">
               {{ item.ingredients.length }}
             </UBadge>
@@ -45,9 +40,9 @@
                 loading="lazy"
                 width="160"
                 height="160"
-              >
+              />
               <div class="border-t border-default px-2.5 py-2">
-                <p class="truncate text-xs font-semibold text-highlighted">
+                <p class="truncate fx-type-caption">
                   {{ ingredient.name }}
                 </p>
               </div>
@@ -93,7 +88,7 @@ const props = defineProps<{
 const ingredientGroups = computed<ProductDemoIngredientGroup[]>(() =>
   INGREDIENT_CATEGORY_OPTIONS.flatMap((option) => {
     const ingredients = props.ingredients.filter(
-      ingredient => ingredient.foodGroup === option.value
+      (ingredient) => ingredient.foodGroup === option.value
     )
     if (!ingredients.length) return []
 

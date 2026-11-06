@@ -17,7 +17,7 @@
         label="Sign in to create a Project"
         icon="i-lucide-log-in"
       />
-      <p v-else class="text-sm text-muted">{{ creationReason }}</p>
+      <p v-else>{{ creationReason }}</p>
     </template>
   </WorkspaceGettingStarted>
 </template>

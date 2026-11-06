@@ -38,7 +38,7 @@
         >
       </div>
       <div v-else class="template-one-scene-one__not-ready">
-        <h1 :id="titleId">{{ name }}</h1>
+        <h1 class="fx-type-page-title" :id="titleId">{{ name }}</h1>
         <p>Template One is not ready.</p>
         <ul>
           <li v-if="!requirements.wordmark">Canonical wordmark missing</li>

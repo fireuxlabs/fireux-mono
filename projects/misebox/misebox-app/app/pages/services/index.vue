@@ -1,10 +1,12 @@
 <template>
   <section class="mx-auto max-w-3xl space-y-6 py-8">
-    <h1 class="text-3xl font-semibold">Services</h1>
+    <h1 class="fx-type-page-title">Services</h1>
     <UCard>
-      <h2 class="text-xl font-semibold">Ordering</h2>
-      <p class="mt-2 text-muted">Take customer orders through your website.</p>
-      <UButton class="mt-4" to="/services/ordering" label="Explore ordering" />
+      <h2 class="fx-type-section-title">Ordering</h2>
+      <p class="mt-2 fx-type-body">
+        Take customer orders through your website.
+      </p>
+      <UButton to="/services/ordering" label="Explore ordering" />
     </UCard>
   </section>
 </template>

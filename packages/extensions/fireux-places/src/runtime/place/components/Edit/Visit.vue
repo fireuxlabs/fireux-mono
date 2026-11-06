@@ -3,7 +3,7 @@
   <UCard v-if="hasPlace">
     <template #header>
       <div>
-        <div class="text-base font-semibold text-highlighted">Location</div>
+        <div>Location</div>
       </div>
     </template>
 

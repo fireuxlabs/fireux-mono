@@ -1,19 +1,17 @@
 <template>
   <KitchenFinanceNav />
-  <section class="grid gap-4 lg:grid-cols-2">
+  <section class="workspace-surface__grid workspace-surface__grid--2">
     <UCard>
       <template #header>
-        <div class="flex items-center justify-between gap-3">
+        <div class="card__header">
           <div>
-            <h2 class="font-semibold text-highlighted">Gross sales</h2>
-            <p class="mt-1 text-sm text-muted">
-              Completed Kitchen sales by period.
-            </p>
+            <h2>Gross sales</h2>
+            <p class="mt-1">Completed Kitchen sales by period.</p>
           </div>
           <UBadge color="success" variant="subtle">Available</UBadge>
         </div>
       </template>
-      <p class="text-sm text-muted">
+      <p>
         Review reconciled totals, completed sales, average sale, service mix and
         item performance.
       </p>
@@ -29,14 +27,14 @@
 
     <UCard v-for="report in unavailableReports" :key="report.title">
       <template #header>
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="font-semibold text-highlighted">
+        <div class="card__header">
+          <h2>
             {{ report.title }}
           </h2>
           <UBadge color="neutral" variant="soft">Source required</UBadge>
         </div>
       </template>
-      <p class="text-sm text-muted">{{ report.description }}</p>
+      <p>{{ report.description }}</p>
     </UCard>
   </section>
 </template>

@@ -1,9 +1,9 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-center justify-between gap-3">
+      <div class="fx-card__header">
         <div>{{ title }}</div>
-        <div class="flex items-center gap-2">
+        <div class="fx-card__actions">
           <UButton
             size="xs"
             :disabled="copying"
@@ -50,7 +50,11 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => {
 }
 
 const toType = (key: string, value: unknown): string => {
-  if (isPlainObject(value) && Object.keys(value).length === 0 && /(^|_)at$|_at$|^created_at$|^updated_at$/i.test(key)) {
+  if (
+    isPlainObject(value) &&
+    Object.keys(value).length === 0 &&
+    /(^|_)at$|_at$|^created_at$|^updated_at$/i.test(key)
+  ) {
     return 'FirebaseTimestamp'
   }
   if (Array.isArray(value)) return 'array'
@@ -68,9 +72,10 @@ const buildNodes = (model?: Record<string, unknown>): ShapeNode[] =>
   Object.keys(model ?? {}).map((key) => {
     const value = (model ?? {})[key]
     const type = toType(key, value)
-    const children = isPlainObject(value) && Object.keys(value).length
-      ? buildNodes(value)
-      : undefined
+    const children =
+      isPlainObject(value) && Object.keys(value).length
+        ? buildNodes(value)
+        : undefined
     return { key, type, children }
   })
 
@@ -84,7 +89,9 @@ const toTreeItems = (list: ShapeNode[], prefix = ''): any[] =>
       id: path,
       label: `${node.key}: ${typeLabel(node.type)}`,
       icon: hasChildren ? 'i-lucide-braces' : undefined,
-      children: hasChildren ? toTreeItems(node.children ?? [], path) : undefined,
+      children: hasChildren
+        ? toTreeItems(node.children ?? [], path)
+        : undefined,
     }
   })
 
@@ -107,10 +114,8 @@ const typeLabel = (value: string) =>
   value.startsWith('enum:')
     ? `enum (${value.slice('enum:'.length).split('|').join(' | ')})`
     : value === 'FirebaseTimestamp'
-    ? 'FirebaseTimestamp'
-    : value
-
+      ? 'FirebaseTimestamp'
+      : value
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

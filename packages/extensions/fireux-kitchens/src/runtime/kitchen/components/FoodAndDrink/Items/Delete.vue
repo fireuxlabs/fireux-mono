@@ -1,23 +1,17 @@
 <template>
   <UCard v-if="dish && canWrite">
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="card__header">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">
-            Delete {{ singularTitle }}
-          </h2>
-          <p class="text-sm text-dimmed">
-            Remove this Kitchen {{ catalogue.singular }} record.
-          </p>
+          <h2>Delete {{ singularTitle }}</h2>
+          <p>Remove this Kitchen {{ catalogue.singular }} record.</p>
         </div>
       </div>
     </template>
 
     <FireCopyError v-if="usageError" :message="String(usageError)" />
-    <p v-else-if="!usageReady" class="text-sm text-muted" role="status">
-      Checking where this is used…
-    </p>
-    <div v-else-if="usages.length" class="space-y-2 text-sm">
+    <p v-else-if="!usageReady" role="status">Checking where this is used…</p>
+    <div v-else-if="usages.length" class="fx-card-body-stack">
       <p>
         Remove this {{ catalogue.singular }} from these Menus and Promotions
         before deleting it.
@@ -27,19 +21,17 @@
           v-for="usage in usages"
           :key="`${usage.kind}:${usage.id}:${usage.section || ''}`"
         >
-          <NuxtLink :to="usage.to" class="text-primary underline"
+          <NuxtLink :to="usage.to" class="underline"
             >{{ usage.name
             }}<template v-if="usage.section">
               · {{ usage.section }}</template
             ></NuxtLink
           >
-          <span class="text-muted">
-            · {{ usage.kind === 'menu' ? 'Menu' : 'Promotion' }}</span
-          >
+          <span> · {{ usage.kind === 'menu' ? 'Menu' : 'Promotion' }}</span>
         </li>
       </ul>
     </div>
-    <p v-else class="text-sm text-muted">Not used in any Menu or Promotion.</p>
+    <p v-else>Not used in any Menu or Promotion.</p>
 
     <UButton
       color="error"

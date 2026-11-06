@@ -28,7 +28,6 @@
             <UCalendar
               :model-value="calendarRange"
               :max-value="todayDate"
-              class="p-2"
               range
               @update:model-value="selectCalendarRange"
             />

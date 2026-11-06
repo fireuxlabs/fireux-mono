@@ -1,9 +1,7 @@
 <template>
   <section class="space-y-3">
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-xs font-medium uppercase tracking-wide text-muted">
-        Hours
-      </h3>
+      <h3>Hours</h3>
       <UButton
         :icon="editing ? 'i-lucide-check' : 'i-lucide-pencil'"
         :aria-label="editing ? 'Done editing hours' : 'Edit hours'"
@@ -16,13 +14,11 @@
       />
     </div>
     <div v-if="!editing" class="space-y-1">
-      <p class="text-xs text-muted">
+      <p>
         {{ sameAsKitchen ? 'Kitchen hours' : 'Custom hours' }}
       </p>
-      <p v-for="line in summary" :key="line" class="text-sm">{{ line }}</p>
-      <p v-if="!summary.length" class="text-sm text-warning">
-        No serving hours set
-      </p>
+      <p v-for="line in summary" :key="line">{{ line }}</p>
+      <p v-if="!summary.length">No serving hours set</p>
     </div>
     <UAlert
       v-if="conflict"
@@ -43,8 +39,8 @@
           @update:model-value="emit('inherit', $event === 'yes')"
         />
       </UFormField>
-      <div class="text-sm text-muted">
-        <p class="font-medium">Within Kitchen service hours</p>
+      <div>
+        <p>Within Kitchen service hours</p>
         <p v-for="line in serviceHoursSummary(kitchenHours)" :key="line">
           {{ line }}
         </p>

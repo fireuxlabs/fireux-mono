@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section class="workspace-surface workspace-surface--compact">
     <UAlert
       v-if="writeError"
       color="error"
@@ -8,9 +8,7 @@
       ><template #actions><FireCopyError :message="writeError" /></template
     ></UAlert>
 
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading compliance…
-    </p>
+    <p v-if="outcome === 'pending'" role="status">Loading compliance…</p>
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -20,30 +18,27 @@
         ><FireCopyError message="Could not load compliance."
       /></template>
     </UAlert>
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Portfolio to view compliance.
     </p>
     <template v-else>
       <UCard>
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Total records</div>
-            <div class="text-xl font-semibold">
+            <div>Total records</div>
+            <div>
               {{ complianceSummary.total }}
             </div>
           </div>
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Due soon</div>
-            <div class="text-xl font-semibold">
+            <div>Due soon</div>
+            <div>
               {{ complianceSummary.dueSoon }}
             </div>
           </div>
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Overdue</div>
-            <div class="text-xl font-semibold">
+            <div>Overdue</div>
+            <div>
               {{ complianceSummary.overdue }}
             </div>
           </div>
@@ -52,18 +47,16 @@
 
       <UCard>
         <template #header>
-          <div class="text-sm font-semibold">Compliance board</div>
+          <div>Compliance board</div>
         </template>
 
         <div v-if="cards.length" class="space-y-3">
           <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
-                <div class="text-sm font-semibold">{{ item.title }}</div>
-                <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                <div class="text-xs text-dimmed">
-                  Expiry: {{ item.expiryDate || 'empty' }}
-                </div>
+                <div>{{ item.title }}</div>
+                <div>{{ item.subtitle }}</div>
+                <div>Expiry: {{ item.expiryDate || 'empty' }}</div>
               </div>
 
               <div class="flex items-center gap-2">

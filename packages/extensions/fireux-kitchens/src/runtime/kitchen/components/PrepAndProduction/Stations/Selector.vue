@@ -6,7 +6,7 @@
       :items="items"
       value-key="value"
       aria-label="Select Station"
-      class="min-w-0 flex-1 sm:max-w-72"
+      class="flex-1"
     />
 
     <UButton

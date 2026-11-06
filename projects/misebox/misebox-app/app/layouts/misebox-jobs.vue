@@ -4,16 +4,9 @@
     <FireLayoutsDefaultHeader />
 
     <div class="border-b border-default bg-default/80 backdrop-blur">
-      <UContainer
-        class="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <NuxtLink
-          to="/jobs"
-          class="inline-flex items-center gap-2 font-semibold text-highlighted"
-        >
-          <span
-            class="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary"
-          >
+      <UContainer>
+        <NuxtLink to="/jobs" class="inline-flex items-center gap-2">
+          <span class="grid size-8 place-items-center rounded-lg bg-primary/10">
             <UIcon name="i-lucide-briefcase-business" aria-hidden="true" />
           </span>
           Misebox Jobs
@@ -23,12 +16,7 @@
           class="flex items-center gap-1 overflow-x-auto"
           aria-label="Misebox Jobs"
         >
-          <UButton
-            to="/jobs"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-          >
+          <UButton to="/jobs" color="neutral" variant="ghost" size="sm">
             Browse jobs
           </UButton>
           <UButton
@@ -39,12 +27,7 @@
           >
             Professionals
           </UButton>
-          <UButton
-            to="/jobs/manage"
-            color="neutral"
-            variant="soft"
-            size="sm"
-          >
+          <UButton to="/jobs/manage" color="neutral" variant="soft" size="sm">
             Post a job
           </UButton>
         </nav>

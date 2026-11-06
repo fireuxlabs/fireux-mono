@@ -1,3 +1,16 @@
+<template>
+  <UPage>
+    <LandingHero />
+    <LandingRides />
+    <LandingWhyRide />
+    <LandingBikeRental />
+    <UPageSection title="Where would you like to ride?"
+      ><DestinationsCollection
+    /></UPageSection>
+    <LandingGuide />
+    <LandingEnquiry />
+  </UPage>
+</template>
 <script setup lang="ts">
 import { searchPage } from '~/ignition/search'
 const page = searchPage('/')
@@ -10,24 +23,5 @@ useAppLandingSeo({
   logo: '/img/app/logo.png',
   language: 'en',
 })
-definePageMeta({ layout: 'tours' })
+definePageMeta({ layout: 'default' })
 </script>
-<template>
-  <div>
-    <LandingHero />
-    <LandingRides />
-    <LandingWhyRide />
-    <LandingBikeRental />
-    <section
-      class="destination-section section"
-      aria-labelledby="landing-destinations"
-    >
-      <div class="wrap">
-        <h2 id="landing-destinations">Where would you like to ride?</h2>
-        <DestinationsCollection />
-      </div>
-    </section>
-    <LandingGuide />
-    <LandingEnquiry />
-  </div>
-</template>

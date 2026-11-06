@@ -7,7 +7,7 @@
       :update="save"
       :disabled="!canWrite"
     />
-    <p class="text-xs text-muted">
+    <p>
       Shown behind transparent logos and wordmarks. Clear to use the default.
     </p>
   </div>

@@ -1,6 +1,5 @@
 <template>
   <UContainer
-    class="py-8"
     data-menu-projection="diagnostic"
     :data-menu-context="query?.context || undefined"
     :data-kitchen-slug="query?.kitchenSlug || undefined"

@@ -53,7 +53,6 @@
           size="lg"
           :color="action.key === 'directions' ? 'primary' : 'neutral'"
           :variant="action.key === 'directions' ? 'solid' : 'outline'"
-          class="rounded-full"
           >{{ action.label }}</UButton
         >
       </div>

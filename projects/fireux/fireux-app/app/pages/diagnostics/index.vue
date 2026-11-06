@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
-    <UPageHeader class="border-b-0"
+    <UPageHeader
       title="Diagnostics · Tools"
       description="Clipboard-first utilities for directory projections, diagnostics, and FireUX automation."
     />
@@ -10,29 +10,22 @@
       <UCard>
         <template #header>
           <div class="flex flex-col gap-1">
-            <h2
-              class="text-base font-semibold text-highlighted"
-            >
-              Directory + diagnostics
-            </h2>
-            <p class="text-sm text-muted">
+            <h2 class="fx-type-section-title">Directory + diagnostics</h2>
+            <p class="fx-type-caption">
               These tools skip narration and expose allowlisted projections for
               parity checks and incident response.
             </p>
           </div>
         </template>
 
-        <div class="space-y-2 text-sm text-toned">
+        <div class="space-y-2">
           <p>
             Use this stack when you need projected JSON without opening a
             workspace. Entity authority stays behind the projection boundary.
           </p>
           <p>
             Need onboarding context instead of payloads? Hop to
-            <NuxtLink
-              class="text-primary hover:underline"
-              to="/developer/registry"
-            >
+            <NuxtLink class="hover:underline" to="/developer/registry">
               Developer · Directory Docs
             </NuxtLink>
             for human-readable workflows.
@@ -47,31 +40,25 @@
           :to="`/diagnostics/${tool.slug}`"
           class="group block"
         >
-          <UCard
-            class="h-full transition duration-200 group-hover:border-primary"
-          >
+          <UCard class="transition">
             <div class="flex flex-col gap-3">
               <div class="flex items-center gap-3">
                 <span
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10"
                   aria-hidden="true"
                 >
-                  <Icon :name="tool.icon" class="text-lg" />
+                  <Icon :name="tool.icon" />
                 </span>
                 <div>
-                  <p
-                    class="text-base font-semibold text-highlighted"
-                  >
+                  <p class="fx-type-body">
                     {{ tool.label }}
                   </p>
-                  <p class="text-sm text-muted">
+                  <p class="fx-type-caption">
                     {{ tool.description }}
                   </p>
                 </div>
               </div>
-              <div
-                class="flex items-center gap-2 text-sm text-muted"
-              >
+              <div class="flex items-center gap-2">
                 <span>Open tool</span>
                 <Icon
                   name="i-lucide-arrow-up-right"

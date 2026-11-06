@@ -9,12 +9,8 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Ecosystem status</div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('status')"
-            >
+            <div>Ecosystem status</div>
+            <UButton variant="ghost" size="xs" @click="toggleSection('status')">
               {{ openSections.status ? 'Hide' : 'Show' }}
             </UButton>
           </div>
@@ -22,29 +18,32 @@
             <UCard>
               <template #header>
                 <div class="flex flex-col gap-1">
-                  <h2 class="text-base font-semibold">Ecosystem status</h2>
-                  <p class="text-sm text-muted">
-                    Bringli is configured as a local-first producer marketplace ecosystem.
+                  <h2 class="fx-type-card-heading">Ecosystem status</h2>
+                  <p>
+                    Bringli is configured as a local-first producer marketplace
+                    ecosystem.
                   </p>
                 </div>
               </template>
 
-              <dl class="grid gap-4 sm:grid-cols-2 text-sm">
+              <dl class="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <dt class="text-muted">Ecosystem</dt>
-                  <dd class="font-medium">{{ cfg.ecosystem }}</dd>
+                  <dt>Ecosystem</dt>
+                  <dd>{{ cfg.ecosystem }}</dd>
                 </div>
                 <div>
-                  <dt class="text-muted">Role</dt>
-                  <dd class="font-medium capitalize">{{ cfg.role }}</dd>
+                  <dt>Role</dt>
+                  <dd>{{ cfg.role }}</dd>
                 </div>
                 <div>
-                  <dt class="text-muted">App ID</dt>
-                  <dd class="font-mono">{{ cfg.appId || 'not set' }}</dd>
+                  <dt>App ID</dt>
+                  <dd>{{ cfg.appId || 'not set' }}</dd>
                 </div>
                 <div>
-                  <dt class="text-muted">Modules</dt>
-                  <dd class="font-mono">{{ cfg.modules.length ? cfg.modules.join(', ') : 'none' }}</dd>
+                  <dt>Modules</dt>
+                  <dd>
+                    {{ cfg.modules.length ? cfg.modules.join(', ') : 'none' }}
+                  </dd>
                 </div>
               </dl>
             </UCard>
@@ -53,7 +52,7 @@
 
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Bringli defaults</div>
+            <div>Bringli defaults</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -66,17 +65,27 @@
             <UCard>
               <template #header>
                 <div class="flex flex-col gap-1">
-                  <h2 class="text-base font-semibold">Bringli defaults</h2>
-                  <p class="text-sm text-muted">
-                    Runtime defaults keep Drop and Places enabled unless overridden in app config.
+                  <h2 class="fx-type-card-heading">Bringli defaults</h2>
+                  <p>
+                    Runtime defaults keep Drop and Places enabled unless
+                    overridden in app config.
                   </p>
                 </div>
               </template>
 
-              <ul class="list-disc fx-list-stack text-sm text-toned">
-                <li>Drop extension should own supplier and local delivery-facing profile flows.</li>
-                <li>Places extension remains available for location and service-area workflows.</li>
-                <li>Firebase keys in ecosystem config are placeholders until project provisioning is completed.</li>
+              <ul class="fx-list-stack">
+                <li>
+                  Drop extension should own supplier and local delivery-facing
+                  profile flows.
+                </li>
+                <li>
+                  Places extension remains available for location and
+                  service-area workflows.
+                </li>
+                <li>
+                  Firebase keys in ecosystem config are placeholders until
+                  project provisioning is completed.
+                </li>
               </ul>
             </UCard>
           </div>
@@ -87,8 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig';
-import { reactive } from 'vue';
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { reactive } from 'vue'
 
 definePageMeta({
   layout: 'diagnostics',

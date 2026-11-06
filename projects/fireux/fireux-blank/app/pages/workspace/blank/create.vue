@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: keep the create route thin. -->
 <template>
-  <section class="space-y-4">
+  <section class="workspace-surface">
     <BlankCreateSystem />
   </section>
 </template>

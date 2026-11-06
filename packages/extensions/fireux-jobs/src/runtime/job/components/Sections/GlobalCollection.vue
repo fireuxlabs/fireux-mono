@@ -2,17 +2,15 @@
   <UCard>
     <template #header>
       <div class="flex items-center justify-between gap-2">
-        <h2>Network jobs</h2>
+        <h2 class="fx-type-card-heading">Network jobs</h2>
         <UBadge v-if="isSettled" variant="soft">{{ total }}</UBadge>
       </div>
-      <p class="text-sm opacity-70">
-        Open roles published across this runtime.
-      </p>
+      <p class="opacity-70">Open roles published across this runtime.</p>
     </template>
 
     <div v-if="outcome === 'pending'" class="space-y-3">
-      <USkeleton class="h-20 rounded-xl" />
-      <USkeleton class="h-20 rounded-xl" />
+      <USkeleton class="h-20" />
+      <USkeleton class="h-20" />
     </div>
 
     <UAlert
@@ -29,8 +27,8 @@
           <UCard>
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
-                <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
-                <p class="text-xs uppercase tracking-wide text-dimmed">
+                <h3 class="fx-type-card-heading">{{ job.title }}</h3>
+                <p>
                   {{ job.category_id }}
                 </p>
               </div>
@@ -53,9 +51,7 @@
         </li>
       </ul>
 
-      <p v-else class="text-sm opacity-70">
-        No jobs published yet. Check back soon.
-      </p>
+      <p v-else class="opacity-70">No jobs published yet. Check back soon.</p>
     </template>
   </UCard>
 </template>

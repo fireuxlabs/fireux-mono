@@ -9,7 +9,6 @@
     :to="hasSubscription && !canToggle ? '/pricing' : undefined"
     :disabled="saving || !hasSubscription"
     :loading="saving"
-    class="rounded-full"
     :aria-label="
       !hasSubscription
         ? 'Subscription unavailable'

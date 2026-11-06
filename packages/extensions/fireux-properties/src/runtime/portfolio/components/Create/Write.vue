@@ -28,7 +28,7 @@
       />
     </UFormField>
 
-    <div v-if="error" role="alert" class="text-sm text-error">
+    <div v-if="error" role="alert" class="text-error">
       {{ error }}
       <FireCopyError :message="error" />
     </div>
@@ -111,9 +111,28 @@ const resolvedReturnTo = computed(() => {
 const { currentUser } = useAuth()
 const appSession = useAppSession()
 const fireux = useFireUXConfig()
-const scopeSources = [currentUser, appSession.appUser, () => fireux.appId, () => route.fullPath, () => props.mode, resolvedReturnTo, name, ownerLabel, regionLabel, strategyLabel, notes]
+const scopeSources = [
+  currentUser,
+  appSession.appUser,
+  () => fireux.appId,
+  () => route.fullPath,
+  () => props.mode,
+  resolvedReturnTo,
+  name,
+  ownerLabel,
+  regionLabel,
+  strategyLabel,
+  notes,
+]
 const captureCommand = useCommandScope(scopeSources)
-watch(scopeSources, () => { submitting.value = false; error.value = '' }, { flush: 'sync' })
+watch(
+  scopeSources,
+  () => {
+    submitting.value = false
+    error.value = ''
+  },
+  { flush: 'sync' }
+)
 
 const submit = async () => {
   if (submitting.value) return
@@ -125,15 +144,18 @@ const submit = async () => {
   submitting.value = true
 
   try {
-    const result = await createPortfolio({
-      identity: {
-      name: name.value,
-      owner_label: ownerLabel.value,
-      region_label: regionLabel.value,
-      strategy_label: strategyLabel.value,
-      notes: notes.value,
+    const result = await createPortfolio(
+      {
+        identity: {
+          name: name.value,
+          owner_label: ownerLabel.value,
+          region_label: regionLabel.value,
+          strategy_label: strategyLabel.value,
+          notes: notes.value,
+        },
       },
-    }, { isCurrent })
+      { isCurrent }
+    )
 
     if (!isCurrent()) return
     if (mode === 'workspace') {
@@ -146,7 +168,8 @@ const submit = async () => {
     }
   } catch {
     if (!isCurrent()) return
-    error.value = 'Portfolio could not be created. Check the details and try again.'
+    error.value =
+      'Portfolio could not be created. Check the details and try again.'
   } finally {
     if (isCurrent()) submitting.value = false
   }

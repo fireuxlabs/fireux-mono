@@ -5,7 +5,7 @@
     class="pill"
     @activate="emit('action')"
   >
-    <div class="flex min-w-0 items-start gap-2">
+    <div class="card__media fx-card__media--start">
       <UAvatar
         v-if="avatarUrl"
         :src="avatarUrl || undefined"
@@ -13,28 +13,36 @@
         size="sm"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
+      <div class="card__content card__stack">
+        <p class="card__title">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+        <p v-if="showSubtitle && subtitle" class="card__subtitle">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div v-if="showBadges && (badges?.length ?? 0)" class="card__badges">
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</FireActionSurface>
+  </FireActionSurface>
 </template>
 
 <script setup lang="ts">
-
 import type { ProductCard } from '../../composables/useProductInterface'
 
-type PillProps = Pick<ProductCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
+type PillProps = Pick<
+  ProductCard.Card,
+  'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'
+> & {
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean
@@ -52,5 +60,4 @@ withDefaults(defineProps<PillProps>(), {
   link: false,
   action: false,
 })
-
 </script>

@@ -6,15 +6,15 @@
       aria-live="polite"
       aria-atomic="true"
     >
-      <p class="text-sm text-muted">
+      <p>
         {{
           submission.order.channel === 'kiosk' ? 'Order' : 'Collection order'
         }}
         #{{ submission.order.number }}
       </p>
-      <h3 class="text-xl font-semibold">{{ responseTitle }}</h3>
+      <h3>{{ responseTitle }}</h3>
       <p>{{ responseMessage }}</p>
-      <p v-if="submission.message" class="font-medium">
+      <p v-if="submission.message">
         {{ submission.message }}
       </p>
       <p
@@ -22,7 +22,6 @@
           submission.estimate_minutes &&
           ['accepted', 'preparing'].includes(submission.state)
         "
-        class="text-sm"
       >
         Kitchen estimate: {{ submission.estimate_minutes }} minutes.
       </p>
@@ -32,30 +31,30 @@
       class="space-y-1 border-y border-default py-4"
       aria-label="Collection details"
     >
-      <h3 class="text-sm text-muted">
+      <h3>
         {{
           ['declined', 'completed'].includes(submission.state)
             ? 'Venue'
             : 'Collect from'
         }}
       </h3>
-      <p class="font-semibold">{{ venue.display_name }}</p>
-      <p v-if="venue.formatted_address || venue.short_address" class="text-sm">
+      <p>{{ venue.display_name }}</p>
+      <p v-if="venue.formatted_address || venue.short_address">
         {{ venue.formatted_address || venue.short_address }}
       </p>
-      <div class="flex flex-wrap gap-x-4 gap-y-2 pt-1 text-sm">
+      <div class="flex flex-wrap gap-x-4 gap-y-2 pt-1">
         <a
           v-if="venue.google_maps_url"
           :href="venue.google_maps_url"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-primary hover:underline"
+          class="hover:underline"
           >Directions</a
         >
         <a
           v-if="venue.phone"
           :href="`tel:${venue.phone}`"
-          class="text-primary hover:underline"
+          class="hover:underline"
           >{{ venue.phone }}</a
         >
       </div>
@@ -68,7 +67,7 @@
           class="py-3 first:pt-0"
         >
           <div class="flex items-start justify-between gap-4">
-            <p class="min-w-0 break-words font-medium">
+            <p class="min-w-0 break-words">
               {{ line.quantity }} × {{ line.item.name }}
             </p>
             <span
@@ -79,7 +78,7 @@
           </div>
           <ul
             v-if="line.notes?.length"
-            class="mt-1 space-y-1 text-sm text-muted"
+            class="mt-1 space-y-1"
             aria-label="Item choices"
           >
             <li v-for="(note, index) in line.notes" :key="index">{{ note }}</li>
@@ -88,13 +87,13 @@
       </ul>
       <div
         v-if="submission.pricing"
-        class="flex justify-between gap-4 border-t border-default pt-4 text-lg font-semibold"
+        class="flex justify-between gap-4 border-t border-default pt-4"
       >
         <span>Total · {{ submission.pricing.currency }}</span>
         <span class="tabular-nums">{{ money(submission.pricing.total) }}</span>
       </div>
     </section>
-    <div v-if="error" role="alert" class="space-y-2 text-sm">
+    <div v-if="error" role="alert" class="space-y-2">
       <p>Order updates are unavailable. Your order is still saved.</p>
       <FireCopyError :message="error" />
       <UButton

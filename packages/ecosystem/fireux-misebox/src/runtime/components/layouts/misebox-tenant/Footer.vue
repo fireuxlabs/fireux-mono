@@ -35,7 +35,7 @@
         <UCard class="misebox-tenant-footer__callout">
           <div class="misebox-tenant-footer__callout-copy">
             <p class="misebox-tenant-footer__callout-eyebrow">Misebox</p>
-            <h2 :id="titleId">Venue tools and operator access.</h2>
+            <h2 class="fx-type-card-heading" :id="titleId">Venue tools and operator access.</h2>
             <p>
               Guests can visit Misebox. Head chefs and team members can sign in
               to the operator workspace.

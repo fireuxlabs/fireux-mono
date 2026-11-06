@@ -14,7 +14,7 @@
     <USkeleton v-for="n in 8" :key="n" class="h-64 rounded-xl" />
   </div>
   <div v-else-if="!visibleDishes.length" class="catalogue-empty">
-    <UIcon :name="catalogue.icon" class="size-8 text-muted" />
+    <UIcon :name="catalogue.icon" />
     <h2>{{ dishes.length ? 'No matches' : `No ${catalogue.plural} yet` }}</h2>
     <UButton
       v-if="dishes.length"

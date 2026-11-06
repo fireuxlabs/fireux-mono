@@ -14,9 +14,7 @@
             class="mt-6"
           />
           <div class="mt-10 flex flex-wrap items-center justify-between gap-3">
-            <h2 class="text-xl font-semibold tracking-tight">
-              Explore the menus
-            </h2>
+            <h2>Explore the menus</h2>
             <UButton
               to="/kitchens/"
               label="Explore other menus"

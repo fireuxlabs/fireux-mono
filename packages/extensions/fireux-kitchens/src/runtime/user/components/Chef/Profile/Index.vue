@@ -26,9 +26,7 @@
           eyebrow="Culinary identity"
           title="About"
         >
-          <p
-            class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
-          >
+          <p class="whitespace-pre-line">
             {{ aboutCopy }}
           </p>
         </UserProfileSection>
@@ -64,7 +62,7 @@
               />
               <figcaption
                 v-if="item.name"
-                class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10 text-sm font-medium text-white"
+                class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10"
               >
                 {{ item.name }}
               </figcaption>
@@ -99,13 +97,9 @@
           eyebrow="Kitchen network"
           title="At work"
         >
-          <p
-            v-if="profile?.chef_organization_name"
-            class="text-sm font-medium text-highlighted"
-          >
+          <p v-if="profile?.chef_organization_name">
             {{ profile.chef_organization_name }}
           </p>
-
         </UserProfileSection>
       </aside>
     </div>

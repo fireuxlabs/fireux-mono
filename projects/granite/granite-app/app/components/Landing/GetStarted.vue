@@ -1,59 +1,66 @@
 <template>
   <section class="landing-index-section">
-    <div class="space-y-6">
-      <div class="space-y-2">
-        <h2 class="text-3xl font-semibold">
-          Get started in minutes.
-        </h2>
-        <p class="text-muted">
-          Create or select a portfolio, then run the workspace. Granite keeps the branch view
-          clear and auditable - no hidden state, no magic defaults.
+    <div class="pagebody">
+      <div class="pagebody">
+        <h2 class="fx-type-section-title">Get started in minutes.</h2>
+        <p class="fx-type-body">
+          Create or select a portfolio, then run the workspace. Granite keeps
+          the branch view clear and auditable - no hidden state, no magic
+          defaults.
         </p>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-3">
+      <UPageGrid>
         <UCard>
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-building-2" />
-              <p class="font-medium">1) Choose a portfolio</p>
+              <p class="fx-type-body">1) Choose a portfolio</p>
             </div>
-            <p class="text-sm text-muted">
+            <p class="fx-type-caption">
               Each portfolio represents one client with many properties.
             </p>
           </div>
         </UCard>
 
         <UCard>
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-shield-check" />
-              <p class="font-medium">2) Review risk</p>
+              <p class="fx-type-body">2) Review risk</p>
             </div>
-            <p class="text-sm text-muted">
+            <p class="fx-type-caption">
               Track obligations, evidence, expiries, and exposure.
             </p>
           </div>
         </UCard>
 
         <UCard>
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-terminal" />
-              <p class="font-medium">3) Run the workspace</p>
+              <p class="fx-type-body">3) Run the workspace</p>
             </div>
-            <p class="text-sm text-muted">
+            <p class="fx-type-caption">
               Keep incidents, tasks, and finance signals under control.
             </p>
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <div class="flex flex-wrap gap-3">
-        <UButton to="/workspace/portfolio" color="primary" icon="i-lucide-building">
+        <UButton
+          to="/workspace/portfolio"
+          color="primary"
+          icon="i-lucide-building"
+        >
           Select portfolio
         </UButton>
-        <UButton to="/workspace/portfolio" variant="outline" icon="i-lucide-terminal">
+        <UButton
+          to="/workspace/portfolio"
+          variant="outline"
+          icon="i-lucide-terminal"
+        >
           Enter via selector
         </UButton>
       </div>
@@ -61,5 +68,4 @@
   </section>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>

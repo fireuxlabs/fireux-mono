@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap gap-2" role="group" :aria-label="label">
+  <div class="fx-card__actions" role="group" :aria-label="label">
     <UBadge
       v-for="item in items"
       :key="item.value"
@@ -46,7 +46,10 @@ function toggle(value: string) {
   color: var(--ui-text-muted);
   background: color-mix(in oklab, var(--ui-bg-elevated) 70%, transparent);
   box-shadow: inset 0 0 0 1px var(--ui-border);
-  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
 }
 .multi-select-option[aria-pressed='true'] {
   color: var(--ui-text-highlighted);
@@ -55,11 +58,13 @@ function toggle(value: string) {
     color-mix(in oklab, var(--ui-primary) 23%, var(--ui-bg)),
     color-mix(in oklab, var(--ui-primary) 12%, var(--ui-bg))
   );
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ui-primary) 45%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklab, var(--ui-primary) 45%, transparent);
 }
 .multi-select-option:hover:not(:disabled) {
   color: var(--ui-text-highlighted);
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ui-primary) 65%, var(--ui-border));
+  box-shadow: inset 0 0 0 1px
+    color-mix(in oklab, var(--ui-primary) 65%, var(--ui-border));
 }
 .multi-select-option:focus-visible {
   outline: 2px solid var(--ui-primary);

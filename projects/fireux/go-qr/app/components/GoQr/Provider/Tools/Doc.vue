@@ -5,38 +5,28 @@
     endpoint="/api/tools/doc"
   >
     <ClientOnly>
-      <form class="space-y-4" @submit.prevent="createDoc">
-        <UFormField :label="fileLabel">
+      <form class="pagebody" @submit.prevent="createDoc">
+        <UFormField :label="fileLabel" :help="uploadHint">
           <UFileUpload
             v-model="selectedFile"
             :accept="accept"
             :multiple="allowMultipleFiles"
             variant="area"
             size="xl"
-            class="w-full"
           />
-          <p class="mt-1 text-xs text-muted">
-            {{ uploadHint }}
-          </p>
         </UFormField>
 
-        <UFormField :label="pathLabel">
+        <UFormField
+          :label="pathLabel"
+          :description="previewUrl"
+          :help="canUseSlug ? slugMessage : undefined"
+          :error="!canUseSlug ? slugMessage : undefined"
+        >
           <UInput
             v-model="slugInput"
             :placeholder="slugPlaceholder"
             :disabled="slugLocked"
-            class="w-full"
           />
-          <p class="mt-1 break-all text-xs text-muted">
-            {{ previewUrl }}
-          </p>
-          <p
-            v-if="slugMessage"
-            class="mt-1 text-xs"
-            :class="canUseSlug ? 'text-muted' : 'text-error'"
-          >
-            {{ slugMessage }}
-          </p>
         </UFormField>
 
         <UButton
@@ -49,7 +39,7 @@
           {{ isCreating ? loadingLabel : ctaLabel }}
         </UButton>
 
-        <p v-if="createError" class="text-xs text-error">
+        <p v-if="createError" class="text-error fx-type-caption">
           {{ createError }}
         </p>
       </form>
@@ -75,8 +65,8 @@
       </div>
 
       <template #fallback>
-        <UCard variant="subtle" class="rounded-lg">
-          <p class="text-sm text-dimmed">Loading menu upload...</p>
+        <UCard variant="subtle">
+          <p class="fx-type-caption">Loading menu upload...</p>
         </UCard>
       </template>
     </ClientOnly>

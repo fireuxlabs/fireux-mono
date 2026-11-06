@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6 py-12">
+  <div class="pagebody">
     <FireLandingMissingBrandAssetsFlag />
     <AppInitializeSystem />
   </div>

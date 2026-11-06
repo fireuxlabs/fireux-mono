@@ -1,6 +1,6 @@
 <template>
-  <section class="pt-4" aria-label="Project tools">
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+  <section aria-label="Project tools">
+    <UPageGrid>
       <UPageCard
         v-for="card in cards"
         :key="card.title"
@@ -14,13 +14,8 @@
         "
         variant="subtle"
         class="landing-tool-card"
-        :ui="{
-          container: 'h-full justify-between p-4 sm:p-5',
-          leadingIcon: 'size-7',
-          description: 'text-sm',
-        }"
       />
-    </div>
+    </UPageGrid>
   </section>
 </template>
 <script setup lang="ts">

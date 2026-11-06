@@ -10,10 +10,10 @@
         size="sm"
         @click="start"
       />
-      <span v-if="running" role="status" class="text-sm text-muted">
+      <span v-if="running" role="status">
         {{ completed }} / {{ total }} · {{ currentName }}
       </span>
-      <span v-else-if="completed" role="status" class="text-sm text-muted">
+      <span v-else-if="completed" role="status">
         {{ completed }} images saved
       </span>
       <UButton
@@ -45,7 +45,8 @@ const props = defineProps<{
   ingredients: Array<{ id: string; name?: string; image_url?: string }>
 }>()
 const { isAdmin } = useUserSession()
-const { generate, error, captureIntent, scopeEpoch } = useIngredientImageGeneration()
+const { generate, error, captureIntent, scopeEpoch } =
+  useIngredientImageGeneration()
 const missing = computed(() =>
   props.ingredients.filter((item) => !item.image_url)
 )
@@ -54,7 +55,16 @@ const stopRequested = ref(false)
 const completed = ref(0)
 const total = ref(0)
 const currentName = ref('')
-watch(scopeEpoch, () => { running.value = false; stopRequested.value = true; completed.value = 0; currentName.value = '' }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    running.value = false
+    stopRequested.value = true
+    completed.value = 0
+    currentName.value = ''
+  },
+  { flush: 'sync' }
+)
 onBeforeUnmount(() => {
   stopRequested.value = true
 })

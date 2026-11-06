@@ -13,10 +13,7 @@
       @delete="clear"
     />
 
-    <div
-      v-if="!isEditing"
-      class="flex flex-wrap gap-2 rounded-md border border-default bg-muted/30 p-3"
-    >
+    <div v-if="!isEditing" class="flex flex-wrap gap-2 p-3">
       <UBadge
         v-for="option in selectedOptions"
         :key="option.value"
@@ -25,7 +22,7 @@
       >
         {{ option.label }}
       </UBadge>
-      <span v-if="!selectedOptions.length" class="text-sm text-dimmed">
+      <span v-if="!selectedOptions.length">
         {{ emptyLabel }}
       </span>
     </div>
@@ -39,7 +36,6 @@
       description-key="description"
       variant="card"
       :disabled="saving"
-      class="sm:grid-cols-2"
     />
   </div>
 </template>

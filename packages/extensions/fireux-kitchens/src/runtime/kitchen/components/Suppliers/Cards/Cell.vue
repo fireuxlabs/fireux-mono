@@ -18,25 +18,19 @@
         "
         icon="i-lucide-store"
         size="md"
-        class="shrink-0"
+        class="fx-card__badge"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div
-              v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-dimmed"
-            >
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">{{ title }}</div>
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
             </div>
           </div>
 
-          <div
-            v-if="showBadges && badges.length"
-            class="flex shrink-0 flex-wrap items-center gap-1"
-          >
+          <div v-if="showBadges && badges.length" class="card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -49,7 +43,7 @@
           </div>
         </div>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
+        <div v-if="showTagline" class="card__tagline">
           <span v-if="prop || summary">{{ prop || summary }}</span>
           <span v-else>{{ id }}</span>
         </div>
@@ -59,7 +53,6 @@
 </template>
 
 <script setup lang="ts">
-
 import type { SupplierCard } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
 
 const emit = defineEmits<{
@@ -95,5 +88,4 @@ withDefaults(
     action: false,
   }
 )
-
 </script>

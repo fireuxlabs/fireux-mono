@@ -1,20 +1,18 @@
 <template>
   <UCard>
     <template #header
-      ><h2 class="text-lg font-semibold">Website ordering</h2>
-      <p class="mt-1 text-sm text-muted">
+      ><h2>Website ordering</h2>
+      <p class="mt-1">
         Add one button to your website. Customers choose from your current
         offerings and menus.
       </p></template
     >
     <div class="grid items-start gap-6 lg:grid-cols-2">
-      <div class="space-y-4">
+      <div class="fx-card-body-stack">
         <div
           class="flex min-h-48 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-default bg-elevated/30 p-6"
         >
-          <span class="text-xs font-medium uppercase tracking-wider text-muted"
-            >Button preview</span
-          >
+          <span>Button preview</span>
           <UButton
             label="Order now"
             size="xl"
@@ -22,7 +20,7 @@
             @click="previewOpen = true"
           />
         </div>
-        <p class="text-sm text-muted">
+        <p>
           Menu, hour and availability changes update the ordering page
           automatically. You only need new code if the website address changes.
         </p>
@@ -34,11 +32,11 @@
           trailing-icon="i-lucide-arrow-right"
         />
       </div>
-      <div class="min-w-0 space-y-4">
+      <div class="fx-card-body-stack">
         <KitchenIntegrationsAllowedWebsites :key="kitchen.id" />
         <USeparator />
         <KitchenIntegrationsWebsiteCode :code="snippet" />
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             :to="orderUrl"
             target="_blank"
@@ -49,10 +47,10 @@
             :disabled="!orderUrl"
           />
         </div>
-        <p class="text-sm text-muted">
+        <p>
           The button opens an ordering window, with a direct link as a fallback.
         </p>
-        <p v-if="isLocal" class="text-sm text-warning">
+        <p v-if="isLocal">
           This is a localhost preview. Copy the final code from your published
           workspace.
         </p>

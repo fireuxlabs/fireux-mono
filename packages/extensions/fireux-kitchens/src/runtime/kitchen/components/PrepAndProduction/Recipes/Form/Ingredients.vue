@@ -1,7 +1,7 @@
 <template>
   <section class="grid gap-4">
     <div class="flex items-center justify-between gap-3">
-      <h3 class="font-semibold">Ingredients</h3>
+      <h3>Ingredients</h3>
       <UButton
         label="Add ingredient"
         icon="i-lucide-plus"
@@ -19,9 +19,9 @@
       title="Ingredients unavailable"
       :description="String(error)"
     />
-    <p v-else-if="!pending && !options.length" class="text-sm text-muted">
+    <p v-else-if="!pending && !options.length">
       Add ingredients to this kitchen first.
-      <NuxtLink to="/workspace/kitchen/prep/ingredients" class="text-primary"
+      <NuxtLink to="/workspace/kitchen/prep/ingredients"
         >Open ingredients</NuxtLink
       >
     </p>
@@ -34,7 +34,6 @@
           placeholder="Ingredient"
           :aria-label="`Ingredient ${index + 1}`"
           :loading="pending"
-          class="w-full"
         />
       </div>
       <UInput

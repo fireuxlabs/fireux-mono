@@ -1,5 +1,5 @@
 <template>
-  <component :is="as" class="collection-row py-3">
+  <component :is="as" class="collection-row">
     <div class="collection-row__content"><slot /></div>
     <div v-if="$slots.value" class="collection-row__value">
       <slot name="value" />

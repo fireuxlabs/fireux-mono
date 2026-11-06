@@ -22,15 +22,15 @@
           aria-labelledby="team-access-heading"
           class="mx-auto max-w-4xl space-y-4 px-6 py-12"
         >
-          <h2 id="team-access-heading" class="text-2xl font-semibold">
+          <h2 id="team-access-heading" class="fx-type-section-title">
             Your team, your way
           </h2>
-          <p class="text-muted">
+          <p class="fx-type-body">
             Shared Misebox gives team members broad access, with limits based on
             their subscription. Your own managed App lets us configure who can
             view and change each area.
           </p>
-          <p class="text-sm text-muted">
+          <p class="fx-type-caption">
             Subscription limits control usage. They do not replace access
             controls for sensitive information or important changes.
           </p>

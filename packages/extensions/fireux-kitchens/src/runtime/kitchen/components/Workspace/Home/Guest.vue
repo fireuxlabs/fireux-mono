@@ -2,7 +2,7 @@
   <section class="space-y-4 py-4" aria-label="Your Kitchen">
     <p v-if="reading || saving" role="status">Opening your Kitchen…</p>
     <template v-else-if="kitchen">
-      <h2 class="text-xl font-semibold">{{ name }}</h2>
+      <h2>{{ name }}</h2>
       <UButton
         @click="continueWithAccount"
         label="Continue with an account"

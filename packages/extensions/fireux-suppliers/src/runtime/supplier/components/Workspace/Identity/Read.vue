@@ -16,7 +16,7 @@
       <UCard>
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="font-semibold">Business profile</h2>
+            <h2 class="fx-type-card-heading">Business profile</h2>
             <UButton
               v-if="identity.canWrite.value"
               label="Edit profile"
@@ -43,25 +43,20 @@
               backgroundColor: media.imageBackground,
             }"
           />
-          <UIcon v-else name="i-lucide-building-2" class="size-16 text-muted" />
+          <UIcon v-else name="i-lucide-building-2" />
           <div class="min-w-0 space-y-3">
-            <h3 class="break-words text-xl font-semibold text-highlighted">
+            <h3 class="break-words">
               {{ name || 'Untitled supplier' }}
             </h3>
-            <p v-if="tagline" class="text-sm text-muted">{{ tagline }}</p>
-            <p
-              v-if="summary"
-              class="whitespace-pre-line text-sm leading-6 text-toned"
-            >
+            <p v-if="tagline">{{ tagline }}</p>
+            <p v-if="summary" class="whitespace-pre-line">
               {{ summary }}
             </p>
           </div>
         </div>
         <template #footer>
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <p class="text-sm text-muted">
-              Shared wherever this business profile is used.
-            </p>
+            <p>Shared wherever this business profile is used.</p>
             <UButton
               :to="`/places/${encodeURIComponent(businessId)}`"
               label="View business profile"
@@ -76,7 +71,7 @@
         <UCard v-for="item in sections" :key="item.value">
           <template #header>
             <div class="flex items-center justify-between gap-3">
-              <h3 class="font-semibold">{{ item.label }}</h3>
+              <h3 class="fx-type-card-heading">{{ item.label }}</h3>
               <UButton
                 v-if="identity.canWrite.value"
                 label="Edit"
@@ -95,8 +90,8 @@
               :key="field.label"
               class="grid gap-1"
             >
-              <dt class="text-xs text-muted">{{ field.label }}</dt>
-              <dd class="break-words text-sm">
+              <dt>{{ field.label }}</dt>
+              <dd class="break-words">
                 {{ field.value || 'Not added' }}
               </dd>
             </div>

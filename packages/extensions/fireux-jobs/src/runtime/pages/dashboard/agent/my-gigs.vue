@@ -21,7 +21,7 @@
       />
 
       <div v-if="pending" class="grid gap-4 xl:grid-cols-2">
-        <USkeleton v-for="index in 2" :key="index" class="h-56 rounded-xl" />
+        <USkeleton v-for="index in 2" :key="index" class="h-56" />
       </div>
 
       <UAlert
@@ -50,12 +50,12 @@
                   icon="i-lucide-user-round"
                 />
                 <div class="min-w-0">
-                  <p class="truncate font-semibold text-highlighted">
+                  <p class="truncate">
                     {{ candidateName(item) }}
                   </p>
                   <NuxtLink
                     :to="`/jobs/${item.job.id}`"
-                    class="text-xs text-muted hover:text-primary"
+                    class="hover:text-primary"
                   >
                     {{ item.job.title }}
                   </NuxtLink>
@@ -67,15 +67,10 @@
             </div>
           </template>
 
-          <p
-            v-if="item.application.message"
-            class="whitespace-pre-line text-sm text-muted"
-          >
+          <p v-if="item.application.message" class="whitespace-pre-line">
             {{ item.application.message }}
           </p>
-          <p v-else class="text-sm text-muted">
-            The candidate applied using their Professional profile.
-          </p>
+          <p v-else>The candidate applied using their Professional profile.</p>
 
           <div
             v-if="item.application.status === 'submitted'"
@@ -126,12 +121,8 @@
           <div v-if="item.engagement" class="mt-4 border-t border-default pt-4">
             <div class="flex items-center justify-between gap-3">
               <div>
-                <p
-                  class="text-xs font-semibold uppercase tracking-wide text-muted"
-                >
-                  Engagement
-                </p>
-                <p class="mt-1 text-sm text-highlighted">
+                <p>Engagement</p>
+                <p class="mt-1">
                   {{ label(item.engagement.status) }}
                   · {{ label(item.engagement.contract_type) }}
                 </p>

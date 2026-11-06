@@ -3,27 +3,26 @@
     <template v-if="isScopedIndex">
       <div
         v-if="pending || outcome.kind === 'redirect'"
-        class="grid min-h-screen place-items-center px-4 text-center"
+        class="grid min-h-screen place-items-center px-4"
         data-menu-projection="index"
         data-menu-index-kind="loading"
       >
-        <p class="text-sm text-dimmed">Loading menus...</p>
+        <p>Loading menus...</p>
       </div>
 
       <div
         v-else-if="outcome.kind === 'unavailable'"
-        class="grid min-h-screen place-items-center px-4 text-center"
+        class="grid min-h-screen place-items-center px-4"
         data-menu-projection="index"
         data-menu-index-kind="unavailable"
         data-menu-state="unavailable"
         role="alert"
       >
-        <p class="text-sm text-dimmed">Menus unavailable.</p>
-        <p v-if="errorDetail" class="mt-2 max-w-xl text-xs text-muted">
+        <p>Menus unavailable.</p>
+        <p v-if="errorDetail" class="mt-2 max-w-xl">
           {{ errorDetail }}
         </p>
         <UButton
-          class="mt-4"
           label="Try again"
           color="neutral"
           variant="soft"
@@ -60,17 +59,17 @@
                     menuId: menu.slug || menu.id,
                   })
                 "
-                class="venue-menu-entry group block transition-colors hover:text-primary focus-visible:outline-primary"
+                class="venue-menu-entry group block transition-colors focus-visible:outline-primary"
               >
                 <div class="flex items-center justify-between gap-4">
-                  <h3 class="text-lg font-semibold">{{ menu.name }}</h3>
+                  <h3>{{ menu.name }}</h3>
                   <UIcon
                     name="i-lucide-arrow-up-right"
-                    class="size-5 shrink-0 text-muted group-hover:text-primary"
+                    class="shrink-0"
                     aria-hidden="true"
                   />
                 </div>
-                <p v-if="menu.description" class="mt-1 text-sm text-muted">
+                <p v-if="menu.description" class="mt-1">
                   {{ menu.description }}
                 </p>
                 <KitchenDetailOfferingTimes
@@ -91,7 +90,7 @@
             </template>
           </div>
 
-          <p v-else class="text-sm text-dimmed">No published menus.</p>
+          <p v-else>No published menus.</p>
 
           <div v-if="hasMore" class="flex justify-center pt-4">
             <UButton
@@ -105,7 +104,7 @@
             </UButton>
           </div>
 
-          <p v-if="loadMoreError" class="text-sm text-error" role="alert">
+          <p v-if="loadMoreError" role="alert">
             More menus could not be loaded. Please try again.
           </p>
         </UPageBody>

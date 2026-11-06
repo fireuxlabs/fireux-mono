@@ -9,7 +9,6 @@
         icon="i-lucide-message-circle"
         color="primary"
         size="lg"
-        class="shadow-lg"
         aria-label="Open chat"
       >
         Chat

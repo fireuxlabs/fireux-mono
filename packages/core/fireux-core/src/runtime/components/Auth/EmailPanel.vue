@@ -4,7 +4,7 @@
     <div
       role="group"
       aria-label="Email account options"
-      class="grid grid-cols-2 gap-1 rounded-lg bg-elevated p-1"
+      class="grid grid-cols-2 gap-1 p-1"
     >
       <UButton
         label="Sign in"
@@ -12,7 +12,6 @@
         :variant="isSignUp ? 'ghost' : 'solid'"
         :aria-pressed="!isSignUp"
         :disabled="formLoading || disabled"
-        class="justify-center"
         @click="setMode(false)"
       />
       <UButton
@@ -21,13 +20,11 @@
         :variant="isSignUp ? 'solid' : 'ghost'"
         :aria-pressed="isSignUp"
         :disabled="formLoading || disabled"
-        class="justify-center"
         @click="setMode(true)"
       />
     </div>
 
     <UAuthForm
-      class="w-full"
       :fields="fields"
       :submit="{ label: submitLabel, size: 'lg' }"
       :loading="formLoading"
@@ -35,16 +32,14 @@
       @submit="handleEmailSubmit"
     >
       <template #footer>
-        <div v-if="error" role="alert" class="space-y-2">
+        <div v-if="error" role="alert" class="pagebody">
           <UAlert
             :color="error.color"
             variant="subtle"
             :title="error.title"
             :description="error.description"
           />
-          <FireCopyError
-            :message="`${error.title}: ${error.description}`"
-          />
+          <FireCopyError :message="`${error.title}: ${error.description}`" />
         </div>
       </template>
     </UAuthForm>

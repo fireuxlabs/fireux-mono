@@ -12,10 +12,8 @@
           <div class="space-y-4">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <p class="text-sm font-medium">Hi {{ greetingName }}</p>
-                <p class="text-sm text-dimmed">
-                  This is the public identity that posts jobs.
-                </p>
+                <p>Hi {{ greetingName }}</p>
+                <p>This is the public identity that posts jobs.</p>
               </div>
 
               <UButton
@@ -28,24 +26,20 @@
 
             <div v-if="showProfileCompletedness" class="space-y-2">
               <div class="flex items-center justify-between gap-3">
-                <span class="text-sm text-dimmed">Profile completedness</span>
+                <span>Profile completedness</span>
                 <UBadge color="neutral" variant="soft">
                   {{ profileLabel }}
                 </UBadge>
               </div>
 
-              <UProgress
-                :model-value="profileComplete ?? 0"
-                :max="100"
-                :ui="{ indicator: 'transition-none duration-0' }"
-              />
+              <UProgress :model-value="profileComplete ?? 0" :max="100" />
             </div>
           </div>
         </UCard>
 
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2 text-sm font-semibold">
+            <div class="flex items-center gap-2">
               <UIcon name="i-lucide-sparkles" />
               Quick actions
             </div>
@@ -78,23 +72,23 @@
 
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2 text-sm font-semibold">
+          <div class="flex items-center gap-2">
             <UIcon name="i-lucide-flag" />
             Next steps
           </div>
         </template>
 
-        <ul class="space-y-2 text-sm text-dimmed">
+        <ul class="space-y-2">
           <li class="flex items-center gap-2">
-            <UIcon name="i-lucide-check-circle" class="text-primary" />
+            <UIcon name="i-lucide-check-circle" />
             Add placement types and coverage areas to improve matching.
           </li>
           <li class="flex items-center gap-2">
-            <UIcon name="i-lucide-check-circle" class="text-primary" />
+            <UIcon name="i-lucide-check-circle" />
             Add a profile image to build trust with candidates.
           </li>
           <li class="flex items-center gap-2">
-            <UIcon name="i-lucide-check-circle" class="text-primary" />
+            <UIcon name="i-lucide-check-circle" />
             Review your job posts to keep them current.
           </li>
         </ul>

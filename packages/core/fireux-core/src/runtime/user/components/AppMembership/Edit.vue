@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="pagebody">
     <UFormField
       label="Subscription"
       :description="`Set ${displayName}'s current App subscription.`"
@@ -10,7 +10,6 @@
         value-key="value"
         label-key="label"
         size="sm"
-        class="w-full sm:w-48"
         :loading="pending"
         :disabled="pending"
         :aria-label="`Subscription for ${displayName}`"
@@ -18,7 +17,7 @@
       />
     </UFormField>
 
-    <p class="text-xs text-muted">
+    <p>
       Business supports multiple Workspaces where this App allows them.
       Membership and subscription are managed separately.
     </p>

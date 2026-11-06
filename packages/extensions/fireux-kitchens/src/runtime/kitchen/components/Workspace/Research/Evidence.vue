@@ -6,13 +6,11 @@
     />
 
     <header class="grid gap-3 border-b border-default pb-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Stage 1 · Evidence
-      </p>
-      <h1 class="m-0 text-3xl font-semibold text-highlighted">
+      <p>Stage 1 · Evidence</p>
+      <h1>
         {{ demand.question }}
       </h1>
-      <p class="m-0 max-w-3xl text-base text-muted">{{ demand.method }}</p>
+      <p class="max-w-3xl">{{ demand.method }}</p>
       <div class="flex flex-wrap gap-2">
         <UBadge color="neutral" variant="soft">
           Observed {{ demand.observedAt }}
@@ -24,23 +22,17 @@
       </div>
     </header>
 
-    <section class="grid gap-4">
+    <section class="workspace-surface__grid">
       <div>
-        <p
-          class="m-0 text-xs font-semibold uppercase tracking-wide text-primary"
-        >
-          Search results
-        </p>
-        <h2 class="m-0 mt-1 text-2xl font-semibold text-highlighted">
-          What people search for
-        </h2>
+        <p>Search results</p>
+        <h2 class="mt-1">What people search for</h2>
       </div>
       <div class="grid gap-3 md:grid-cols-2">
         <UCard v-for="group in demand.seeds" :key="group.seed" variant="subtle">
           <template #header>
-            <h3 class="font-semibold text-highlighted">{{ group.seed }}</h3>
+            <h3>{{ group.seed }}</h3>
           </template>
-          <ul class="grid gap-1 text-sm text-muted">
+          <ul class="workspace-surface__grid">
             <li v-for="query in group.queries" :key="query">{{ query }}</li>
           </ul>
         </UCard>
@@ -48,23 +40,17 @@
     </section>
 
     <section class="grid gap-3 border-t border-default pt-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Validation literature
-      </p>
-      <p class="m-0 text-sm text-muted">
+      <p>Validation literature</p>
+      <p>
         These sources validate the operational subject. Product claims are not
         treated as canonical records or implemented capabilities.
       </p>
-      <ul class="grid gap-3">
+      <ul class="workspace-surface__grid">
         <li v-for="source in demand.validationSources" :key="source.url">
-          <ULink
-            :to="source.url"
-            target="_blank"
-            class="font-medium text-highlighted hover:text-primary"
-          >
+          <ULink :to="source.url" target="_blank">
             {{ source.label }}
           </ULink>
-          <p class="m-0 text-sm text-muted">{{ source.note }}</p>
+          <p>{{ source.note }}</p>
         </li>
       </ul>
     </section>

@@ -1,60 +1,52 @@
 <template>
-  <UContainer class="py-10 sm:py-14">
+  <UContainer class="sm:py-14">
     <div class="mx-auto grid max-w-5xl gap-8">
       <header class="grid gap-3">
-        <NuxtLink
-          to="/tools"
-          class="w-fit text-sm font-semibold text-primary hover:underline"
-          >Tools</NuxtLink
-        >
-        <h1 class="m-0 text-3xl font-semibold text-highlighted">
-          AI primitives
-        </h1>
-        <p class="m-0 max-w-3xl text-muted">
+        <NuxtLink to="/tools" class="w-fit hover:underline">Tools</NuxtLink>
+        <h1 class="m-0 fx-type-page-title">AI primitives</h1>
+        <p class="m-0 max-w-3xl">
           FireUX AI turns supplied content into schema-checked information.
           Owning packages provide the domain instructions and decide what may be
           saved.
         </p>
       </header>
       <div class="grid gap-4">
-        <article
+        <UCard
           v-for="primitive in aiToolPrimitives"
           :id="primitive.documentation.slug"
           :key="primitive.id"
-          class="grid gap-4 rounded-lg border border-default p-4"
+          class="grid gap-4" as="article" :ui="{ body: 'fx-card-body-stack' }"
         >
           <header class="grid gap-1">
-            <h2 class="m-0 font-semibold text-highlighted">
+            <h2 class="m-0 fx-type-section-title">
               {{ primitive.name }}
             </h2>
-            <p class="m-0 text-sm text-muted">{{ primitive.description }}</p>
-            <code class="text-xs text-dimmed">{{ primitive.id }}</code>
+            <p class="m-0">{{ primitive.description }}</p>
+            <code>{{ primitive.id }}</code>
           </header>
-          <div class="grid gap-1 text-sm text-toned">
-            <strong class="text-highlighted">Problem</strong>
+          <div class="grid gap-1">
+            <strong>Problem</strong>
             <span>{{ primitive.problem }}</span>
           </div>
-          <div class="grid gap-1 text-sm text-toned">
-            <strong class="text-highlighted">Search intent</strong>
+          <div class="grid gap-1">
+            <strong>Search intent</strong>
             <ul class="m-0 grid gap-1 pl-5">
               <li
                 v-for="intent in primitive.searchIntents"
                 :key="`${intent.kind}:${intent.phrase}`"
               >
                 {{ intent.phrase }}
-                <span class="text-dimmed"
-                  >({{ intent.kind }}, {{ intent.status }})</span
-                >
+                <span>({{ intent.kind }}, {{ intent.status }})</span>
               </li>
             </ul>
           </div>
-          <p class="m-0 text-sm leading-6 text-toned">
+          <p class="m-0">
             {{ primitive.documentation.guide }}
           </p>
-          <div class="grid gap-1 text-sm text-toned">
-            <strong class="text-highlighted">AI context</strong>
+          <div class="grid gap-1">
+            <strong>AI context</strong>
             <span>{{ primitive.ai.baked.purpose }}</span>
-            <span class="text-xs text-dimmed">
+            <span>
               Runtime required:
               {{ primitive.ai.runtime.required.join(', ') || 'none' }} ·
               optional:
@@ -62,9 +54,9 @@
             </span>
           </div>
           <pre
-            class="overflow-x-auto rounded-lg bg-elevated p-4 text-sm"
+            class="overflow-x-auto rounded-lg bg-elevated p-4"
           ><code>{{ primitive.documentation.example }}</code></pre>
-        </article>
+        </UCard>
       </div>
     </div>
   </UContainer>

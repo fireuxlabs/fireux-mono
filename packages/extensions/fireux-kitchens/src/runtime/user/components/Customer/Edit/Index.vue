@@ -65,17 +65,17 @@
               </button>
             </div>
 
-            <p v-if="addressSuggestionsPending" class="text-xs text-dimmed">
+            <p v-if="addressSuggestionsPending">
               Loading address suggestions...
             </p>
 
-            <p v-if="addressSuggestionsError" class="text-xs text-dimmed">
+            <p v-if="addressSuggestionsError">
               {{ addressSuggestionsError }}
             </p>
           </div>
         </UFormField>
 
-        <p v-if="inlineState" class="text-xs text-dimmed">
+        <p v-if="inlineState">
           {{ inlineState }}
         </p>
 
@@ -91,12 +91,7 @@
       </div>
     </UPageCard>
 
-    <FireStateCard
-      v-else
-      entity="customer profile"
-      kind="document"
-      loading
-    />
+    <FireStateCard v-else entity="customer profile" kind="document" loading />
   </ClientOnly>
 </template>
 

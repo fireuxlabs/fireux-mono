@@ -3,12 +3,10 @@
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 class="text-lg font-semibold text-highlighted">{{ title }}</h2>
-          <p class="mt-1 text-sm text-muted">
-            The hours guests see on your public page.
-          </p>
+          <h2 class="fx-type-card-heading">{{ title }}</h2>
+          <p class="mt-1">The hours guests see on your public page.</p>
         </div>
-        <UIcon name="i-lucide-calendar-clock" class="size-6 text-muted" />
+        <UIcon name="i-lucide-calendar-clock" />
       </div>
     </template>
     <div v-if="showTimezone" class="mb-6 max-w-sm">

@@ -6,7 +6,6 @@
     :provider-origin="providerBaseUrl"
     :auth-token="resolvedAuthToken"
     :message-source="messageSource"
-    class="w-full"
     @tool-result="emit('tool-result', $event)"
   />
   <UAlert
@@ -16,12 +15,8 @@
     :title="toolTitle"
     :description="toolError"
   />
-  <UPageCard
-    v-else
-    variant="subtle"
-    class="w-full"
-  >
-    <p class="text-sm text-dimmed">Loading {{ toolTitle }}...</p>
+  <UPageCard v-else variant="subtle">
+    <p class="fx-type-caption">Loading {{ toolTitle }}...</p>
   </UPageCard>
 </template>
 
@@ -29,26 +24,31 @@
 import { computed } from 'vue'
 import { useToolProviderTool } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderTool'
 
-const props = withDefaults(defineProps<{
-  tool?: string
-  payload?: Record<string, unknown> | null
-  providerBaseUrl?: string
-  title?: string
-  authToken?: string
-}>(), {
-  tool: 'doc',
-  payload: null,
-  providerBaseUrl: '',
-  title: '',
-  authToken: '',
-})
+const props = withDefaults(
+  defineProps<{
+    tool?: string
+    payload?: Record<string, unknown> | null
+    providerBaseUrl?: string
+    title?: string
+    authToken?: string
+  }>(),
+  {
+    tool: 'doc',
+    payload: null,
+    providerBaseUrl: '',
+    title: '',
+    authToken: '',
+  }
+)
 const emit = defineEmits<{
   'tool-result': [message: Record<string, unknown>]
 }>()
 
 const text = (value: unknown) => String(value ?? '').trim()
 const toolId = computed(() =>
-  text(props.tool || 'doc').toLowerCase().replace(/[^a-z0-9-]+/g, '-')
+  text(props.tool || 'doc')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
 )
 const requestedProviderBaseUrl = computed(() => {
   const configured = text(props.providerBaseUrl).replace(/\/+$/, '')
@@ -56,8 +56,8 @@ const requestedProviderBaseUrl = computed(() => {
 
   return import.meta.client ? window.location.origin : ''
 })
-const requestedToolTitle = computed(() =>
-  text(props.title) || `Go QR ${toolId.value} tool`
+const requestedToolTitle = computed(
+  () => text(props.title) || `Go QR ${toolId.value} tool`
 )
 const toolPayload = computed(() => props.payload ?? {})
 const requestedAuthToken = computed(() => text(props.authToken))

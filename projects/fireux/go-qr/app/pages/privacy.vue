@@ -1,14 +1,12 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> Go QR </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> Go QR </UButton>
         <UPageHeader
           title="Privacy"
           description="Go QR is for public docs, not private storage."
         />
-        <UPageBody class="space-y-4">
-          <section class="space-y-4 text-muted">
+        <UPageBody>
+          <section class="space-y-4">
             <p>
               When you create a QR doc, we store the uploaded file, the public
               path, and basic metadata needed to display the doc and QR page.
@@ -32,8 +30,6 @@
           </section>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

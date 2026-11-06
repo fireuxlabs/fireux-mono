@@ -9,7 +9,7 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Model</div>
+            <div>Model</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('model')">
               {{ openSections.model ? 'Hide' : 'Show' }}
             </UButton>
@@ -24,7 +24,7 @@
 
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Collection</div>
+            <div>Collection</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -37,10 +37,8 @@
             <UCard>
               <template #header>
                 <div class="space-y-3">
-                  <p class="text-sm font-semibold text-highlighted">
-                    Blogs collection
-                  </p>
-                  <p class="text-xs text-muted">
+                  <p>Blogs collection</p>
+                  <p>
                     Inspect model drift separately from the Blog directory
                     manager.
                   </p>

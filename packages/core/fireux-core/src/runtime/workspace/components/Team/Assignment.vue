@@ -1,7 +1,7 @@
 <template>
   <section v-if="editor" class="space-y-3">
-    <h3 class="font-semibold">Assigned roles</h3>
-    <div class="flex flex-wrap gap-2">
+    <h3>Assigned roles</h3>
+    <div class="fx-card__actions">
       <UCheckbox
         v-for="role in editor.roles"
         :key="role.id"
@@ -11,9 +11,7 @@
         @update:model-value="editor.toggleRole(role.id)"
       />
     </div>
-    <p v-if="!editor.roles.length" class="text-sm text-muted">
-      Add roles in Team roles below.
-    </p>
+    <p v-if="!editor.roles.length">Add roles in Team roles below.</p>
     <UButton
       v-if="editor.assignmentChanged"
       label="Save roles"

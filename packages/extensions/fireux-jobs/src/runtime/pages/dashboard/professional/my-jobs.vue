@@ -21,7 +21,7 @@
       />
 
       <div v-if="pending" class="grid gap-4 lg:grid-cols-2">
-        <USkeleton v-for="index in 2" :key="index" class="h-48 rounded-xl" />
+        <USkeleton v-for="index in 2" :key="index" class="h-48" />
       </div>
 
       <UAlert
@@ -46,11 +46,11 @@
               <div>
                 <NuxtLink
                   :to="`/jobs/${item.job.id}`"
-                  class="font-semibold text-highlighted hover:text-primary"
+                  class="hover:text-primary"
                 >
                   {{ item.job.title }}
                 </NuxtLink>
-                <p class="mt-1 text-xs text-muted">
+                <p class="mt-1">
                   {{ contractLabel(item.job.contract_type) }}
                 </p>
               </div>
@@ -60,16 +60,12 @@
             </div>
           </template>
 
-          <p
-            v-if="item.application.message"
-            class="whitespace-pre-line text-sm text-muted"
-          >
+          <p v-if="item.application.message" class="whitespace-pre-line">
             {{ item.application.message }}
           </p>
 
           <UAlert
             v-if="item.application.status === 'offered'"
-            class="mt-4"
             color="primary"
             variant="soft"
             title="The employer has made an offer"
@@ -119,10 +115,8 @@
           </div>
 
           <div v-if="item.engagement" class="mt-4 border-t border-default pt-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-              Engagement
-            </p>
-            <p class="mt-1 text-sm text-highlighted">
+            <p>Engagement</p>
+            <p class="mt-1">
               {{ statusLabel(item.engagement.status) }}
             </p>
           </div>

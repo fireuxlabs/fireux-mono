@@ -17,7 +17,7 @@
         label="Sign in to add your Kitchen"
         icon="i-lucide-log-in"
       />
-      <p v-else class="text-sm text-muted">{{ creationReason }}</p>
+      <p v-else>{{ creationReason }}</p>
       <UButton
         to="/kitchens"
         label="Explore Kitchens"

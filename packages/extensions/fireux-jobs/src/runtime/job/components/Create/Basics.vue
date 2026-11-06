@@ -6,11 +6,9 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-muted">
-          {{ props.stepLabel }} · {{ props.title }}
-        </p>
-        <h2 class="text-lg font-semibold">{{ props.title }}</h2>
-        <p v-if="props.subtitle" class="text-sm text-muted">
+        <p>{{ props.stepLabel }} · {{ props.title }}</p>
+        <h2 class="fx-type-card-heading">{{ props.title }}</h2>
+        <p v-if="props.subtitle">
           {{ props.subtitle }}
         </p>
       </div>
@@ -29,7 +27,11 @@
         />
       </UFormField>
 
-      <UFormField v-else-if="categoryOptions.length > 1" label="Category" required>
+      <UFormField
+        v-else-if="categoryOptions.length > 1"
+        label="Category"
+        required
+      >
         <USelect
           v-model="form.category_id"
           :options="categoryOptions"
@@ -60,11 +62,7 @@
         </UFormField>
 
         <UFormField label="Openings" required>
-          <UInputNumber
-            v-model="form.openings_count"
-            :min="1"
-            :max="500"
-          />
+          <UInputNumber v-model="form.openings_count" :min="1" :max="500" />
         </UFormField>
       </div>
 
@@ -126,10 +124,7 @@ import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/m
 import { computed } from 'vue'
 import { useFireuxJobsConfig } from '../../../composables/config/useFireuxJobsConfig'
 import type { JobCreateForm } from '../../composables/firestore/mutations/useJobCreate'
-import type {
-  JobContractType,
-  JobPayUnit,
-} from '../../models/job.model.ts'
+import type { JobContractType, JobPayUnit } from '../../models/job.model.ts'
 
 const jobsConfig = useFireuxJobsConfig()
 const categoryOptions = computed(() =>
@@ -186,11 +181,11 @@ const discloseCompensation = computed({
     form.value = {
       ...form.value,
       compensation: enabled
-        ? form.value.compensation ?? {
+        ? (form.value.compensation ?? {
             amount_minor: 0,
             currency_code: 'CHF',
             unit: 'hour',
-          }
+          })
         : null,
     }
   },
@@ -237,7 +232,9 @@ const compensationCurrency = computed({
     if (!compensation) return
     const previousDigits = currencyDigits(compensation.currency_code)
     const amount = compensation.amount_minor / 10 ** previousDigits
-    const currencyCode = String(value ?? '').toUpperCase().slice(0, 3)
+    const currencyCode = String(value ?? '')
+      .toUpperCase()
+      .slice(0, 3)
     const nextDigits = currencyDigits(currencyCode)
     form.value = {
       ...form.value,
@@ -268,9 +265,10 @@ function timestampInput(value: JobCreateForm['start_at']): string {
     seconds?: number
     toDate?: () => Date
   }
-  const date = typeof source.toDate === 'function'
-    ? source.toDate()
-    : new Date(Number(source.seconds ?? 0) * 1_000)
+  const date =
+    typeof source.toDate === 'function'
+      ? source.toDate()
+      : new Date(Number(source.seconds ?? 0) * 1_000)
   if (!Number.isFinite(date.getTime())) return ''
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
   return local.toISOString().slice(0, 16)

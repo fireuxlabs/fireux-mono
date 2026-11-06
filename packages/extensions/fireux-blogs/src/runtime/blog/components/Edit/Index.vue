@@ -13,9 +13,7 @@
     color="warning"
   />
   <form v-else-if="post && baseline" class="space-y-6" @submit.prevent="save">
-    <p class="text-sm text-muted">
-      Editing /blog/{{ slug }} · {{ post.author.display_name }}
-    </p>
+    <p>Editing /blog/{{ slug }} · {{ post.author.display_name }}</p>
     <UAlert
       v-if="conflict"
       title="This post changed while you were editing."
@@ -37,7 +35,7 @@
         ><UTextarea
           v-model="draft.content"
           aria-label="Article content (HTML)"
-          class="w-full font-mono"
+          class="w-full"
           :rows="18"
       /></UFormField>
       <UButton
@@ -54,7 +52,7 @@
         :srcdoc="previewDocument"
         class="w-full h-[36rem] rounded border"
       />
-      <p v-if="hasTranslations" class="text-sm text-muted">
+      <p v-if="hasTranslations">
         This edits the original article. Existing translations remain unchanged
         and need their own review.
       </p>

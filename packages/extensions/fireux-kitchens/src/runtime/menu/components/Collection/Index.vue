@@ -116,11 +116,7 @@
       </UButton>
     </div>
 
-    <p
-      v-if="outcome.kind === 'list' && index.loadMoreError.value"
-      class="text-sm text-error"
-      role="alert"
-    >
+    <p v-if="outcome.kind === 'list' && index.loadMoreError.value" role="alert">
       More menus could not be loaded. Please try again.
     </p>
 

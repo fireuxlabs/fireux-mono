@@ -1,5 +1,8 @@
 <template>
-  <section class="grid gap-5 md:grid-cols-2" aria-label="Reservation summaries">
+  <section
+    class="workspace-surface__grid workspace-surface__grid--2"
+    aria-label="Reservation summaries"
+  >
     <Summary
       title="Reservations"
       icon="i-lucide-calendar-days"

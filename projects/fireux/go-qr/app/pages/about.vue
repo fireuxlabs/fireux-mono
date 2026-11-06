@@ -1,20 +1,18 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> Go QR </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> Go QR </UButton>
         <UPageHeader
           title="About"
           description="Go QR turns public docs into QR pages."
         />
-        <UPageBody class="space-y-4">
-          <section class="space-y-4">
-            <p class="text-muted">
+        <UPageBody>
+          <section class="pagebody">
+            <p class="fx-type-body">
               Upload a doc, choose a public path, and get a page people can open
               from a QR code.
             </p>
 
-            <p class="text-muted">
+            <p class="fx-type-body">
               Go QR is part of the FireUX ecosystem and is designed for simple
               public information: text, links, notices, forms, and finished docs
               people need to scan and read.
@@ -28,8 +26,6 @@
           </div>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

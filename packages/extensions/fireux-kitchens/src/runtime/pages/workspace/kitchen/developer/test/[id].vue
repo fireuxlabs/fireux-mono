@@ -5,7 +5,6 @@
     icon="i-lucide-arrow-left"
     color="neutral"
     variant="ghost"
-    class="w-fit"
   />
   <WorkspaceTestDetail
     :key="`${test.id.value}:${recordId}`"

@@ -3,7 +3,7 @@
   <UCard>
     <template #header>
       <div>
-        <div class="text-base font-semibold text-highlighted">Social links</div>
+        <div>Social links</div>
       </div>
     </template>
 

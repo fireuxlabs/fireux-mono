@@ -1,12 +1,10 @@
 <template>
-  <form class="grid gap-3" @submit.prevent="save">
+  <form
+    class="workspace-surface workspace-surface--compact"
+    @submit.prevent="save"
+  >
     <UFormField label="String" :error="error || undefined">
-      <UInput
-        v-model="value"
-        :disabled="busy"
-        :maxlength="120"
-        class="w-full"
-      />
+      <UInput v-model="value" :disabled="busy" :maxlength="120" />
     </UFormField>
     <FireCopyError v-if="error" :message="error" />
     <UButton
@@ -14,7 +12,6 @@
       :label="label"
       :loading="busy"
       :disabled="!value.trim()"
-      class="justify-self-start"
     />
   </form>
 </template>
@@ -38,8 +35,20 @@ watch(
     value.value = text ?? ''
   }
 )
-const capture = useCommandScope([() => props.initialValue, () => props.active, () => props.submit, value])
-watch([() => props.active, () => props.submit, value], () => { busy.value = false; error.value = '' }, { flush: 'sync' })
+const capture = useCommandScope([
+  () => props.initialValue,
+  () => props.active,
+  () => props.submit,
+  value,
+])
+watch(
+  [() => props.active, () => props.submit, value],
+  () => {
+    busy.value = false
+    error.value = ''
+  },
+  { flush: 'sync' }
+)
 async function save() {
   if (busy.value || !value.value.trim()) return
   const local = capture()

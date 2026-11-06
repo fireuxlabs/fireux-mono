@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="page">
-    <h1 class="text-3xl font-bold mb-8">Skills</h1>
+    <h1 class="mb-8 fx-type-page-title">Skills</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <section
         v-for="skill in skills"
@@ -10,8 +10,8 @@
         class="p-6 bg-default rounded-lg shadow-sm border border-default hover:shadow-md transition-shadow"
       >
         <Icon :name="skill.icon" class="w-12 h-12 mb-4" />
-        <h2 class="text-xl font-semibold mb-2">{{ skill.name }}</h2>
-        <p class="text-toned">{{ skill.description }}</p>
+        <h2 class="mb-2 fx-type-section-title">{{ skill.name }}</h2>
+        <p class="fx-type-body">{{ skill.description }}</p>
       </section>
     </div>
   </div>

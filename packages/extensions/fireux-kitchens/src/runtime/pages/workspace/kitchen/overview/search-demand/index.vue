@@ -5,13 +5,11 @@
       current="evidence"
     />
     <header class="grid gap-3 border-b border-default pb-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Stage 1 · Evidence
-      </p>
-      <h1 class="m-0 text-3xl font-semibold text-highlighted">
+      <p>Stage 1 · Evidence</p>
+      <h1>
         {{ demand.question }}
       </h1>
-      <p class="m-0 max-w-3xl text-base text-muted">
+      <p class="max-w-3xl">
         {{ demand.method }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -23,28 +21,21 @@
     <section class="grid gap-3 md:grid-cols-3">
       <UCard v-for="group in demand.seeds" :key="group.seed" variant="subtle">
         <template #header
-          ><h2 class="font-semibold text-highlighted">
+          ><h2>
             {{ group.seed }}
           </h2></template
         >
-        <ul class="grid gap-1 text-sm text-muted">
+        <ul class="workspace-surface__grid">
           <li v-for="query in group.queries" :key="query">{{ query }}</li>
         </ul>
       </UCard>
     </section>
     <section class="grid gap-3 border-t border-default pt-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Validation literature
-      </p>
-      <ul class="grid gap-3">
+      <p>Validation literature</p>
+      <ul class="workspace-surface__grid">
         <li v-for="source in demand.validationSources" :key="source.url">
-          <ULink
-            :to="source.url"
-            target="_blank"
-            class="font-medium text-highlighted hover:text-primary"
-            >{{ source.label }}</ULink
-          >
-          <p class="m-0 text-sm text-muted">{{ source.note }}</p>
+          <ULink :to="source.url" target="_blank">{{ source.label }}</ULink>
+          <p>{{ source.note }}</p>
         </li>
       </ul>
     </section>

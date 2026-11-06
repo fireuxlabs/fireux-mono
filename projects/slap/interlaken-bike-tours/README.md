@@ -32,7 +32,7 @@ browser config or committed files.
 The `fireux-app` bundle supplies Blogs and Products. Core owns Firebase integration, shared
 account/management routes, configured App initialization, SEO and the versioned
 PWA manifest. App-owned public tour pages
-use the `tours` layout; shared runtime routes retain their owning layouts.
+use Core’s stock `default` layout and existing native page compositions; shared runtime routes retain their owning layouts. The App has no separate site-wide CSS system. `components/Booking/Index.vue` is registered by Nuxt as `Booking` and owns the visitor booking adapter UI.
 Enquiry controls open a prepared WhatsApp/email draft; they do not persist
 enquiries or send messages. `/book` is the separate instant-confirmation flow.
 
@@ -41,7 +41,7 @@ Firebase web identity: `1:884456976096:web:a44e8e83518ee57f0d2a85`.
 Infrastructure: project `slap-45389`, database `slap`, region `europe-west1`.
 App initialization uses Core's authenticated trusted command. The configured
 App and initial developer membership are initialized in the owning database;
-operator booking management remains outside this visitor prototype.
+Business booking management is exposed by the optional Bookings extension.
 
 Content and bundled photos were inspected from the existing business website on
 2026-10-21. Sources: [home](https://www.interlakenbiketours.com/),

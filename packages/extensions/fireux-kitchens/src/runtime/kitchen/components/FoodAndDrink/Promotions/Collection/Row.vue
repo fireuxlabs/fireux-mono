@@ -1,19 +1,17 @@
 <template>
   <UCard>
-    <div class="flex items-start justify-between gap-3">
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold">{{ promotion.name }}</h2>
+    <div class="card__header">
+      <div class="fx-card-body-stack">
+        <h2>{{ promotion.name }}</h2>
         <template v-if="'groups' in promotion">
           <p>
             Meal deal ·
             {{ formatPrice(promotion.price, promotion.currency) }}
           </p>
-          <ul class="space-y-2 text-sm">
+          <ul class="fx-card-body-stack">
             <li v-for="group in promotion.groups" :key="group.id">
-              <p class="font-medium">
-                {{ group.name }} · Choose {{ group.choose }}
-              </p>
-              <p class="text-muted">
+              <p>{{ group.name }} · Choose {{ group.choose }}</p>
+              <p>
                 {{
                   group.dishes
                     .map(
@@ -27,7 +25,7 @@
           </ul>
         </template>
         <p v-else>Dish offer · {{ promotion.dishes.length }} dishes</p>
-        <p class="text-sm text-muted">
+        <p>
           {{
             promotion.days
               .map((day) => day.charAt(0).toUpperCase() + day.slice(1))

@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-3">
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-xs font-medium uppercase tracking-wide text-muted">Advance notice</h3>
+      <h3>Advance notice</h3>
       <UButton
         :label="editing ? 'Done' : 'Edit notice'"
         :aria-expanded="editing"
@@ -12,16 +12,16 @@
         @click="editing = !editing"
       />
     </div>
-    <p v-if="!editing" class="text-sm">{{ config.notice_hours || 0 }} hours</p>
+    <p v-if="!editing">{{ config.notice_hours || 0 }} hours</p>
     <UFormField v-else label="Advance notice (hours)">
-    <UInput
-      type="number"
-      min="0"
-      max="168"
-      :model-value="config.notice_hours || 0"
-      :disabled="disabled"
-      @change="updateNotice"
-    />
+      <UInput
+        type="number"
+        min="0"
+        max="168"
+        :model-value="config.notice_hours || 0"
+        :disabled="disabled"
+        @change="updateNotice"
+      />
     </UFormField>
   </section>
 </template>

@@ -6,12 +6,12 @@
       description="A neutral starter app you buy once and run yourself."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody>
       <template v-if="product">
         <UCard>
           <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div class="space-y-4">
-              <div class="flex flex-wrap gap-2">
+            <div class="fx-card-body-stack">
+              <div class="card__badges">
                 <UBadge color="primary" variant="soft"
                   >One-time purchase</UBadge
                 >
@@ -20,8 +20,8 @@
                   >Developer starter</UBadge
                 >
               </div>
-              <h2 class="text-2xl font-semibold">{{ product.name }}</h2>
-              <p class="text-sm text-toned">
+              <h2 class="fx-type-section-title">{{ product.name }}</h2>
+              <p class="fx-type-caption">
                 {{ product.tagline || product.description }}
               </p>
               <div
@@ -33,15 +33,15 @@
 
             <UCard>
               <template #header>
-                <p class="font-semibold">Buy template</p>
+                <p class="fx-type-body">Buy template</p>
               </template>
-              <div class="space-y-4">
-                <p class="text-2xl font-bold">{{ priceLabel }}</p>
-                <p class="text-sm text-toned">
+              <div class="fx-card-body-stack">
+                <p class="fx-type-body">{{ priceLabel }}</p>
+                <p class="fx-type-caption">
                   Includes Products + Blogs baseline and a clean FireUX app
                   structure.
                 </p>
-                <div class="flex flex-wrap gap-2">
+                <div class="fx-card__actions">
                   <UButton
                     :to="`/products/${product.slug}`"
                     color="primary"
@@ -60,7 +60,7 @@
 
         <UCard>
           <template #header>
-            <p class="font-semibold">What is included</p>
+            <p class="fx-type-body">What is included</p>
           </template>
           <div class="grid gap-2 sm:grid-cols-2">
             <div
@@ -68,20 +68,17 @@
               :key="`${feature.title}-${index}`"
               class="flex items-start gap-2 rounded-md border p-3"
             >
-              <UIcon
-                name="i-lucide-check-circle-2"
-                class="mt-0.5 text-primary"
-              />
-              <p class="text-sm">{{ feature.title }}</p>
+              <UIcon name="i-lucide-check-circle-2" />
+              <p class="fx-type-caption">{{ feature.title }}</p>
             </div>
           </div>
         </UCard>
 
         <UCard>
           <template #header>
-            <p class="font-semibold">Upsell path</p>
+            <p class="fx-type-body">Upsell path</p>
           </template>
-          <p class="text-sm text-toned">
+          <p class="fx-type-caption">
             Add modules later as your project grows. Start lean, then extend
             with optional capabilities.
           </p>
@@ -89,11 +86,11 @@
 
         <UCard v-if="product.Q || product.A">
           <template #header>
-            <p class="font-semibold">Common question</p>
+            <p class="fx-type-body">Common question</p>
           </template>
-          <div class="space-y-2">
-            <p v-if="product.Q" class="font-medium">{{ product.Q }}</p>
-            <p v-if="product.A" class="text-sm text-toned">{{ product.A }}</p>
+          <div class="fx-card-body-stack">
+            <p v-if="product.Q" class="fx-type-body">{{ product.Q }}</p>
+            <p v-if="product.A" class="fx-type-caption">{{ product.A }}</p>
           </div>
         </UCard>
       </template>
@@ -162,7 +159,9 @@ const activeFeatures = computed(() =>
 )
 
 const chosenPrice = computed<ProductPrice | null>(() => {
-  const activePrices = productPrices.value.filter((price) => price.active !== false)
+  const activePrices = productPrices.value.filter(
+    (price) => price.active !== false
+  )
   return activePrices.find((price) => price.default) || activePrices[0] || null
 })
 

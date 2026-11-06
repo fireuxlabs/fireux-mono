@@ -1,9 +1,9 @@
 <template>
-  <section class="space-y-4">
+  <section class="workspace-surface workspace-surface--compact">
     <UCard>
       <template #header>
         <div class="flex items-center justify-between gap-3">
-          <h2 class="font-semibold">Portfolio Properties</h2>
+          <h2 class="fx-type-card-heading">Portfolio Properties</h2>
           <UBadge
             v-if="outcome === 'ready' || outcome === 'empty'"
             color="neutral"
@@ -12,9 +12,7 @@
           >
         </div>
       </template>
-      <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-        Loading properties…
-      </p>
+      <p v-if="outcome === 'pending'" role="status">Loading properties…</p>
       <UAlert
         v-else-if="outcome === 'error'"
         color="error"
@@ -36,8 +34,8 @@
             icon="i-lucide-building-2"
           />
           <div class="min-w-0 flex-1">
-            <p class="truncate font-medium">{{ property.identity.name }}</p>
-            <p class="text-xs text-muted">
+            <p class="truncate">{{ property.identity.name }}</p>
+            <p>
               {{ property.identity.property_type }} ·
               {{ property.identity.unit_count }} units
             </p>
@@ -47,12 +45,10 @@
           }}</UBadge>
         </li>
       </ul>
-      <p v-else-if="outcome === 'empty'" class="text-sm text-muted">
+      <p v-else-if="outcome === 'empty'">
         No properties in this Portfolio yet.
       </p>
-      <p v-else class="text-sm text-muted">
-        Select an available Portfolio to view properties.
-      </p>
+      <p v-else>Select an available Portfolio to view properties.</p>
     </UCard>
     <FireDiagnosticsDebugPanel
       v-if="isDev"

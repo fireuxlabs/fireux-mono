@@ -1,12 +1,7 @@
 <template>
-  <section
-    class="grid min-w-0 gap-3 border-t border-default py-4"
-    :aria-label="title"
-  >
-    <h2 class="text-base font-semibold">{{ title }}</h2>
-    <p v-if="pending" class="text-sm text-muted" role="status">
-      Loading context…
-    </p>
+  <section class="grid min-w-0 gap-3 py-4" :aria-label="title">
+    <h2>{{ title }}</h2>
+    <p v-if="pending" role="status">Loading context…</p>
     <UTextarea
       v-if="ready"
       v-model="text"
@@ -16,13 +11,12 @@
       :maxlength="maxlength ?? 32000"
       placeholder="Background, decisions and questions to confirm"
       autoresize
-      class="w-full"
       @blur="text.trim() !== value && emit('update', text)"
     />
-    <p v-if="saving" role="status" class="text-sm text-muted">Updating…</p>
+    <p v-if="saving" role="status">Updating…</p>
     <div v-if="error" class="grid gap-2">
       <FireCopyError :message="error" />
-      <div class="flex gap-2">
+      <div class="fx-card__actions">
         <UButton
           v-if="ready"
           label="Retry update"

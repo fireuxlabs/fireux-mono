@@ -4,7 +4,7 @@
   <WorkspaceAI compact aria-label="Blank Team AI"
     ><UAlert title="Team AI is not connected yet" color="neutral" />
   </WorkspaceAI>
-  <section class="space-y-4">
+  <section class="workspace-surface">
     <WorkspaceBlankTeam :team="team" />
   </section>
 </template>

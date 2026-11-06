@@ -15,7 +15,10 @@ export const identity = {
   name: 'Interlaken Bike Tours',
   shortName: 'Bike Tours',
   role: 'tenant',
-  modules: ['fireux-businesses', ['fireux-bookings', { businessWorkspace: true }]],
+  modules: [
+    'fireux-businesses',
+    ['fireux-bookings', { businessWorkspace: true }],
+  ],
   context:
     'A customer-facing prototype for premium private guided rides. Visitors can check the configured departure against working days, closed dates and Ben’s Google Calendar and confirm one private tour per day at the catalog price per person; the App stores a booking record and the shared FireUX Bookings package owns confirmation orchestration and Calendar transport. The Business Workspace provides profile/contact details, linked locations, a Team roster, availability settings and private booking records. Public bookings require a server-configured Business id and Calendar credentials. No payment, outbound confirmation email or cancellation flow is implemented. Prices and operating capacity require operator review before release.',
 } satisfies FireuxAppConfig
@@ -28,7 +31,12 @@ export const brief = {
   actors: ['Visitor', 'Local guide'],
   search: searchPlan,
   requirements: [
-    { id: 'manage-bookings', need: 'Manage Business availability and review customer bookings.', acceptance: 'Current Business access protects working days, closed dates, departure time and paged booking records. Public booking checks the saved policy and rejects changed checkout availability.' },
+    {
+      id: 'manage-bookings',
+      need: 'Manage Business availability and review customer bookings.',
+      acceptance:
+        'Current Business access protects working days, closed dates, departure time and paged booking records. Public booking checks the saved policy and rejects changed checkout availability.',
+    },
     {
       id: 'search',
       need: 'Present useful ride information through consistent search metadata without indexing the prototype.',
@@ -91,7 +99,10 @@ export const assembly = {
       owner: 'interlaken-bike-tours',
       requirements: ['details'],
       uses: ['rides'],
-      sourcePaths: ['app/pages/tours/[slug].vue'],
+      sourcePaths: [
+        'app/pages/tours/[slug].vue',
+        'app/components/Tours/Detail.vue',
+      ],
     },
     {
       id: 'enquiry',
@@ -109,6 +120,7 @@ export const assembly = {
       uses: ['rides'],
       sourcePaths: [
         'app/pages/book.vue',
+        'app/components/Booking/Index.vue',
         'server/api/bookings/',
         'server/utils/tour-booking.ts',
         'server/utils/tour-booking-store.ts',
@@ -137,17 +149,18 @@ export const assembly = {
       references: ['nuxt.config.ts', 'app/ignition/brief.ts'],
     },
     {
-      decision: 'Keep tour-specific presentation in this App.',
+      decision:
+        'Compose tour content through the stock public layout and existing native page patterns.',
       reason:
-        'Yellow Velo is a composition reference, not a shared tour-booking domain. No second proven tour consumer supports extracting a library.',
+        'Core owns the public layout, header, footer and theme. FireUX Landing/Index and patterns/page-composition establish the native hero, page, section and card composition. The App supplies tour facts, images and configured actions rather than a separate visual system.',
       owner: 'interlaken-bike-tours',
       references: ['app/components/Landing/Rides.vue'],
     },
     {
       decision:
-        'Use FireUX Bookings for server-side Google Calendar transport.',
+        'Use FireUX Bookings for shared booking orchestration, Business storage and Calendar transport.',
       reason:
-        'The App owns tour slots, pricing, booking records, confirmation and recovery; FireUX Bookings owns server-side Google Calendar transport and OAuth token refresh only.',
+        'The App owns tour catalogue, prices, date allocation policy and the visitor API adapter. FireUX Bookings owns shared confirmation orchestration, Business booking storage, availability management and Calendar transport.',
       owner: 'interlaken-bike-tours → fireux-bookings',
       references: [
         'server/utils/tour-calendar.ts',

@@ -3,10 +3,10 @@
     <UCard :ui="{ body: 'fx-card-body-stack' }">
       <template #header>
         <div class="space-y-1">
-          <div class="font-medium">Select a place</div>
-          <div class="text-sm text-dimmed">
-            We’ll use the existing business if it exists, or create the record if
-            it doesn’t.
+          <div>Select a place</div>
+          <div>
+            We’ll use the existing business if it exists, or create the record
+            if it doesn’t.
           </div>
         </div>
       </template>
@@ -14,10 +14,10 @@
       <!-- section consumer -->
       <PlaceSearch @confirmed="onPlaceConfirmed" />
 
-      <div v-if="successId" class="text-sm text-success">
+      <div v-if="successId" class="text-success">
         Business ready: {{ successId }}
       </div>
-      <div v-if="error" class="text-sm text-error">
+      <div v-if="error" class="text-error">
         {{ error }}
       </div>
     </UCard>
@@ -39,7 +39,8 @@ const successId = ref<string | null>(null)
 
 let selectionSequence = 0
 async function onPlaceConfirmed(payload: { placeId: string }) {
-  const sequence = ++selectionSequence, contextCurrent = captureIntent()
+  const sequence = ++selectionSequence,
+    contextCurrent = captureIntent()
   const isCurrent = () => contextCurrent() && sequence === selectionSequence
   error.value = null
   successId.value = null

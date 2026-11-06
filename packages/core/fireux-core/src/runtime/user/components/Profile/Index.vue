@@ -5,21 +5,14 @@
       <UAvatar
         :src="user.avatar || undefined"
         :alt="user.display_name"
-        class="size-24 sm:size-32 ring-4 ring-default shadow-xl"
+        class="size-24 sm:size-32"
       />
       <div class="min-w-0 flex-1">
-        <p class="mb-2 text-sm font-medium tracking-wide text-primary">
-          @{{ user.handle }}
-        </p>
-        <h1
-          class="text-3xl font-semibold tracking-tight text-highlighted sm:text-5xl break-words"
-        >
+        <p class="mb-2">@{{ user.handle }}</p>
+        <h1 class="break-words">
           {{ user.display_name }}
         </h1>
-        <p
-          v-if="user.bio"
-          class="mt-4 max-w-xl whitespace-pre-line text-base leading-relaxed text-muted"
-        >
+        <p v-if="user.bio" class="mt-4 max-w-xl whitespace-pre-line">
           {{ user.bio }}
         </p>
         <UButton
@@ -28,7 +21,6 @@
           label="Add a little about you"
           variant="link"
           color="neutral"
-          class="mt-2 px-0"
         />
       </div>
       <UButton
@@ -38,7 +30,6 @@
         aria-label="Edit your profile"
         color="neutral"
         variant="soft"
-        class="self-start rounded-full"
       />
     </div>
   </section>

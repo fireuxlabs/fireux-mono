@@ -5,12 +5,7 @@
     class="grid scroll-mt-24 gap-4"
     aria-labelledby="venue-contact-heading"
   >
-    <h2
-      id="venue-contact-heading"
-      class="text-2xl font-semibold tracking-tight text-highlighted"
-    >
-      Contact
-    </h2>
+    <h2 class="fx-type-section-title" id="venue-contact-heading">Contact</h2>
     <div class="flex flex-wrap gap-3">
       <UButton
         v-for="link in links"
@@ -24,7 +19,7 @@
         color="neutral"
         variant="soft"
         :ui="{
-          label: 'break-all text-left whitespace-normal',
+          label: 'break-all whitespace-normal',
           base: 'max-w-full',
         }"
       />

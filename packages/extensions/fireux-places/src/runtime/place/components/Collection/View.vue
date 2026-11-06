@@ -7,9 +7,7 @@
       :link="false"
     />
 
-    <p v-if="!cards.length" class="text-sm text-dimmed">
-      No places found.
-    </p>
+    <p v-if="!cards.length">No places found.</p>
   </div>
 </template>
 

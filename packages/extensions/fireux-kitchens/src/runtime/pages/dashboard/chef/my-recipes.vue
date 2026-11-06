@@ -17,12 +17,12 @@
       <div class="grid gap-4 lg:grid-cols-3">
         <UCard class="lg:col-span-2">
           <template #header>
-            <div class="flex items-center gap-2 text-sm font-semibold">
+            <div class="card__media">
               <UIcon name="i-lucide-activity" />
               Recipe overview
             </div>
           </template>
-          <p class="text-sm text-muted">
+          <p>
             Placeholder content. Wire this card to your recipe store when
             available.
           </p>
@@ -30,12 +30,12 @@
 
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2 text-sm font-semibold">
+            <div class="card__media">
               <UIcon name="i-lucide-sparkles" />
               Quick actions
             </div>
           </template>
-          <div class="space-y-2">
+          <div class="fx-card-body-stack">
             <UButton
               to="/dashboard/chef/profile"
               label="Update profile"

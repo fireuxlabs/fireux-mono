@@ -5,14 +5,13 @@
     :aria-label="`Loading ${workspaceLabel}`"
     role="status"
   >
-    <USkeleton class="size-5 shrink-0 rounded-full" />
+    <USkeleton class="size-5 shrink-0" />
     <USkeleton v-if="!collapsed" class="h-4 flex-1" />
   </div>
   <UDropdownMenu
     v-else-if="item.choices.length && collapsed"
     :items="[item.choices]"
     :content="{ align: 'center', collisionPadding: 12 }"
-    :ui="{ content: 'w-48' }"
   >
     <UButton
       :icon="item.avatar?.src || item.image ? undefined : item.icon"
@@ -21,7 +20,6 @@
       size="sm"
       block
       square
-      class="data-[state=open]:bg-elevated"
       :aria-label="`${item.label}: change ${workspaceLabel}`"
     >
       <template v-if="item.avatar?.src || item.image" #leading>
@@ -44,7 +42,6 @@
       variant="ghost"
       size="sm"
       block
-      class="min-w-0 flex-1 justify-start rounded-r-none"
       :aria-label="`Open ${item.label}`"
     >
       <template v-if="item.avatar?.src || item.image" #leading>
@@ -59,7 +56,6 @@
     <UDropdownMenu
       :items="[item.choices]"
       :content="{ align: 'end', collisionPadding: 12 }"
-      :ui="{ content: 'w-48' }"
     >
       <UButton
         icon="i-lucide-chevrons-up-down"
@@ -67,8 +63,6 @@
         variant="ghost"
         size="sm"
         square
-        class="shrink-0 rounded-l-none data-[state=open]:bg-elevated"
-        :ui="{ leadingIcon: 'text-dimmed' }"
         :aria-label="`Change ${workspaceLabel}`"
       />
     </UDropdownMenu>

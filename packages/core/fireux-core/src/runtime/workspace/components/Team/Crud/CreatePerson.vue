@@ -1,5 +1,8 @@
 <template>
-  <form class="space-y-4" @submit.prevent="createNamedPerson">
+  <form
+    class="workspace-surface workspace-surface--compact"
+    @submit.prevent="createNamedPerson"
+  >
     <UFormField
       label="Find a person"
       hint="Search existing Users before adding a new name."
@@ -17,7 +20,10 @@
 
     <slot />
 
-    <div v-if="matchingPeople.length" class="grid gap-2">
+    <div
+      v-if="matchingPeople.length"
+      class="workspace-surface workspace-surface--compact"
+    >
       <UButton
         v-for="person in matchingPeople"
         :key="person.id"
@@ -25,7 +31,6 @@
         color="neutral"
         variant="soft"
         block
-        class="justify-start"
         :loading="savingId === person.id"
         :disabled="Boolean(savingId)"
         @click="selectPerson(person)"
@@ -35,13 +40,11 @@
           :alt="person.display_name"
           size="sm"
         />
-        <span class="min-w-0 text-left">
-          <span class="block truncate font-medium">{{
+        <span class="min-w-0">
+          <span class="block truncate">{{
             person.display_name || person.handle
           }}</span>
-          <span class="block truncate text-xs text-dimmed"
-            >@{{ person.handle }}</span
-          >
+          <span class="block truncate">@{{ person.handle }}</span>
         </span>
       </UButton>
     </div>

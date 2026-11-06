@@ -9,18 +9,12 @@
     <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="card__header">
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide text-muted"
-              >
-                Directory utilities
-              </p>
-              <h2 class="text-lg font-semibold text-highlighted">
-                Copy projected JSON
-              </h2>
+              <p class="fx-type-caption">Directory utilities</p>
+              <h2 class="fx-type-section-title">Copy projected JSON</h2>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="fx-card__actions">
               <UButton
                 size="sm"
                 variant="soft"
@@ -43,35 +37,25 @@
           </div>
         </template>
 
-        <p class="text-sm text-muted">
+        <p class="fx-type-caption">
           Uses <code>/api/directory</code>. The legacy Firestore registry API is
           retired because it mixed package metadata with entity copies. For the
           authority notes, visit
-          <NuxtLink
-            class="text-primary hover:underline"
-            to="/developer/registry"
-          >
+          <NuxtLink class="hover:underline" to="/developer/registry">
             Developer · Directory Docs
           </NuxtLink>
           for the narrative workflow.
         </p>
 
-        <div
-          v-if="error"
-          class="mt-4 rounded-lg border border-error/40 bg-error/10 p-4 text-sm text-error"
-        >
-          <p class="font-semibold text-error">Unable to load directory data.</p>
+        <UCard v-if="error">
+          <p class="text-error fx-type-body">Unable to load directory data.</p>
           <p v-text="errorMessage"></p>
-        </div>
+        </UCard>
         <div
           v-else-if="pending"
-          class="mt-4 flex items-center gap-3 rounded-lg border border-dashed border-default p-4 text-sm text-muted"
+          class="mt-4 flex items-center gap-3 rounded-lg border border-dashed border-default p-4"
         >
-          <Icon
-            name="eos-icons:bubble-loading"
-            class="text-lg text-primary"
-            aria-hidden="true"
-          />
+          <Icon name="eos-icons:bubble-loading" aria-hidden="true" />
           <span>Loading directory snapshot…</span>
         </div>
         <DiagnosticsDebugPanelPanel
@@ -84,12 +68,12 @@
           :data="snapshot"
           :default-open="true"
         />
-        <p v-else class="mt-4 text-sm text-muted">
+        <p v-else class="mt-4 fx-type-caption">
           No public directory entries are available.
         </p>
 
         <template #footer>
-          <div class="text-xs text-muted">
+          <div>
             <span>Last generated:</span>
             <span
               v-if="generatedAtText"

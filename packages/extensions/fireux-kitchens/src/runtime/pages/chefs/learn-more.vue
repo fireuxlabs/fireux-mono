@@ -13,7 +13,7 @@
       </p>
 
       <div>
-        <h2 class="font-semibold">With a Chef Profile you can:</h2>
+        <h2>With a Chef Profile you can:</h2>
         <ul class="mt-2 list-disc space-y-1 pl-6">
           <li>Showcase your culinary expertise and signature stations.</li>
           <li>Be matched to shifts and roles based on experience.</li>

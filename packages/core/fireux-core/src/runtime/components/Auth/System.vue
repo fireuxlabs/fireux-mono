@@ -1,8 +1,8 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/System.vue -->
 <template>
   <div class="w-full">
-    <UCard class="w-full">
-      <div class="space-y-6">
+    <UCard>
+      <div class="fx-card-body-stack">
         <div class="flex w-full justify-center" aria-label="Brand wordmark">
           <AppBrandWordmark
             v-if="!isTenantApp"
@@ -52,11 +52,9 @@
         </div>
 
         <template v-else>
-          <div class="space-y-1 text-center">
-            <h1 class="text-2xl font-semibold tracking-tight">Your account</h1>
-            <p class="text-sm text-muted">
-              Sign in or create an account to continue.
-            </p>
+          <div class="fx-card__stack">
+            <h1>Your account</h1>
+            <p>Sign in or create an account to continue.</p>
           </div>
           <UAlert
             v-if="authUnavailableMessage"
@@ -86,14 +84,10 @@
               }}
             </UButton>
 
-            <p
-              v-if="providerLoading"
-              role="status"
-              class="text-center text-sm text-muted"
-            >
+            <p v-if="providerLoading" role="status">
               Complete sign-in in the Google window.
             </p>
-            <div v-if="providerError" role="alert" class="space-y-2">
+            <div v-if="providerError" role="alert" class="fx-card__stack">
               <UAlert
                 :color="providerError.color"
                 variant="subtle"
@@ -125,7 +119,10 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { googleSignInFeedback, type SignInFeedback } from './sign-in-feedback'
-import { resolvePostAuthDestination, userOnboardingPath } from '../../user/utils/onboarding-route'
+import {
+  resolvePostAuthDestination,
+  userOnboardingPath,
+} from '../../user/utils/onboarding-route'
 const router = useRouter()
 const route = useRoute()
 const {

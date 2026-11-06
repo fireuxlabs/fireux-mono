@@ -1,7 +1,7 @@
 <template>
   <UCard v-if="open">
     <template #header
-      ><h2 class="font-semibold">{{ title }}</h2></template
+      ><h2>{{ title }}</h2></template
     >
     <WorkspaceCapabilityInfo />
     <template #footer

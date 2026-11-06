@@ -2,9 +2,8 @@
   <UPageCard
     as="section"
     variant="outline"
-    class="public-profile-section rounded-3xl shadow-sm"
+    class="public-profile-section"
     :data-compact="compact || undefined"
-    :ui="sectionUi"
   >
     <div class="public-profile-section__header">
       <UserProfileSectionHeading
@@ -26,11 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
 defineOptions({ name: 'UserProfileSection' })
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     compact?: boolean
     eyebrow: string
@@ -41,10 +38,6 @@ const props = withDefaults(
     compact: false,
   }
 )
-
-const sectionUi = computed(() => ({
-  container: props.compact ? 'p-5 sm:p-5' : 'p-5 sm:p-7',
-}))
 </script>
 
 <style scoped>

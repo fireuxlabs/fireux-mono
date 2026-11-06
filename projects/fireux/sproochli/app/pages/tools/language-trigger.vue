@@ -1,8 +1,5 @@
 <template>
-  <main
-    ref="toolRoot"
-    class="inline-flex bg-transparent p-2 text-default"
-  >
+  <main ref="toolRoot" class="inline-flex bg-transparent p-2">
     <SproochliProviderToolsLanguageTrigger
       class="w-full"
       :selected-language="config.selectedLanguage"

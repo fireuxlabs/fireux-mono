@@ -184,6 +184,12 @@ not permission to add more. There is no implicit local-layout or final-polish
 exception; a unique final-element adjustment requires explicit human approval
 for that adjustment.
 
+For the current simple surfaces, inherit the native component, theme or existing
+shared semantic style. Remove redundant utility overrides rather than copying
+them into new CSS. Flag a concrete visibility, accessibility or geometry need
+before retaining an exception; future unique or pixel-perfect work does not
+authorize utility classes in current work.
+
 Core shared UI uses the `Fire` library prefix. Atomic Design folders such as
 atoms, molecules and organisms are internal organisation and are omitted from
 public names: `FireState`, `FireCollectionPagination`. Domain and

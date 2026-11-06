@@ -1,19 +1,20 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
-  <section class="space-y-6 py-12">
+  <section class="pagebody">
     <FireLandingMissingBrandAssetsFlag />
 
     <header>
-      <h1 class="text-3xl font-semibold">Join This Tenant</h1>
-      <p class="mt-2 text-toned">
+      <h1 class="fx-type-page-title">Join This Tenant</h1>
+      <p class="mt-2 fx-type-body">
         Complete onboarding, then use the admin tools to grant yourself access
         or request membership from an existing admin.
       </p>
     </header>
 
-    <div class="space-y-4">
+    <div class="pagebody">
       <p>
-        Use App setup to initialize this App and its first administrator membership.
+        Use App setup to initialize this App and its first administrator
+        membership.
       </p>
       <p>
         Already a member? Navigate back to the workspace once the runtime user

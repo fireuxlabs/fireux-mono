@@ -15,7 +15,7 @@
     </UPageHeader>
     <UPageBody>
       <section id="preview" class="core-component-section">
-        <h2>Preview</h2>
+        <h2 class="fx-type-section-title">Preview</h2>
         <p v-if="entry.preview">
           Sample data and local actions. Nothing here saves to your account.
         </p>
@@ -47,7 +47,7 @@
         </p>
       </section>
       <section class="core-component-section">
-        <h2>Source</h2>
+        <h2 class="fx-type-section-title">Source</h2>
         <p>
           The actual Core component, including its props, slots and
           dependencies.

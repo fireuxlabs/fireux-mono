@@ -10,36 +10,35 @@
     v-model:open="open"
     :title="`About ${intro.title}`"
     :description="intro.purpose"
-    :ui="{ content: 'sm:max-w-2xl' }"
   >
     <template #body
       ><div class="grid gap-5">
         <WorkspaceCapabilityInfo v-if="showStructuredDetails" />
         <section>
-          <h3 class="font-semibold">Data and scope</h3>
+          <h3>Data and scope</h3>
           <p>{{ intro.data }}</p>
-          <p v-if="intro.recordCount !== undefined" class="text-sm text-muted">
+          <p v-if="intro.recordCount !== undefined">
             {{ intro.recordCount }} records · {{ intro.status }}
           </p>
         </section>
         <section v-if="intro.access">
-          <h3 class="font-semibold">Access</h3>
+          <h3>Access</h3>
           <p>{{ intro.access }}</p>
         </section>
         <section v-if="intro.allowance">
-          <h3 class="font-semibold">Your allowance</h3>
+          <h3>Your allowance</h3>
           <p>{{ intro.allowance.description }}</p>
-          <p class="mt-2 text-sm text-muted">{{ intro.allowance.retained }}</p>
+          <p class="mt-2">{{ intro.allowance.retained }}</p>
         </section>
         <section>
-          <h3 class="font-semibold">Boundaries</h3>
+          <h3>Boundaries</h3>
           <p>{{ intro.boundaries }}</p>
         </section>
         <section v-if="intro.tools?.length">
-          <h3 class="font-semibold">Tools</h3>
+          <h3>Tools</h3>
           <dl class="grid gap-3">
             <div v-for="tool in intro.tools" :key="tool.id">
-              <dt class="font-medium">
+              <dt>
                 {{ tool.label }}
                 <UBadge
                   v-if="tool.available !== undefined"
@@ -50,14 +49,14 @@
                 >
               </dt>
               <dd>{{ tool.description }}</dd>
-              <dd v-if="tool.reason" class="mt-1 text-sm text-muted">
+              <dd v-if="tool.reason" class="mt-1">
                 {{ tool.reason }}
               </dd>
             </div>
           </dl>
         </section>
         <section>
-          <h3 class="font-semibold">AI</h3>
+          <h3>AI</h3>
           <p>{{ intro.ai }}</p>
         </section>
       </div></template

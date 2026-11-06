@@ -9,17 +9,22 @@
     />
     <UModal v-model:open="createOpen" title="Create a Test">
       <template #body
-        ><TestForm label="Create" :submit="create" :active="createOpen" :capture-intent="captureIntent" @saved="createOpen = false"
+        ><TestForm
+          label="Create"
+          :submit="create"
+          :active="createOpen"
+          :capture-intent="captureIntent"
+          @saved="createOpen = false"
       /></template>
     </UModal>
   </header>
-  <p v-if="pending" role="status" class="text-muted">Loading…</p>
+  <p v-if="pending" role="status">Loading…</p>
   <UAlert v-else-if="readError" color="error" title="Tests could not be loaded">
     <template #description
       ><FireCopyError message="Tests could not be loaded"
     /></template>
   </UAlert>
-  <p v-else-if="!records.length" class="text-muted">No Tests yet.</p>
+  <p v-else-if="!records.length">No Tests yet.</p>
   <div v-else class="grid min-w-0 grid-cols-1 gap-2">
     <WorkspaceSelectionRow
       v-for="record in records"

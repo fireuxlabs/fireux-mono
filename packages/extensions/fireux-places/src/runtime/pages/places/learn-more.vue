@@ -7,34 +7,35 @@
 
     <UPageBody class="pagebody">
       <section class="space-y-3">
-        <h2 class="text-lg font-semibold">Why Places exists</h2>
-        <p class="text-sm text-toned">
-          Places is a shared, canonical location layer. A Place represents a real-world
-          location (often backed by a Google Place ID) that other records (companies,
-          kitchens, etc.) can attach to.
+        <h2 class="fx-type-section-title">Why Places exists</h2>
+        <p>
+          Places is a shared, canonical location layer. A Place represents a
+          real-world location (often backed by a Google Place ID) that other
+          records (companies, kitchens, etc.) can attach to.
         </p>
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Core capabilities today</h3>
-        <ul class="space-y-2 text-sm text-toned">
+        <h3 class="fx-type-card-title">Core capabilities today</h3>
+        <ul class="space-y-2">
           <li>
-            <strong class="font-medium text-highlighted">Google-backed search</strong>
+            <strong>Google-backed search</strong>
             &nbsp;— confirm a place once, then reuse it everywhere.
           </li>
           <li>
-            <strong class="font-medium text-highlighted">Canonical IDs</strong>
+            <strong>Canonical IDs</strong>
             &nbsp;— place documents are keyed by a stable ID.
           </li>
           <li>
-            <strong class="font-medium text-highlighted">Record-friendly</strong>
-            &nbsp;— other domains can bind to a place without duplicating location data.
+            <strong>Record-friendly</strong>
+            &nbsp;— other domains can bind to a place without duplicating
+            location data.
           </li>
         </ul>
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Get started</h3>
+        <h3 class="fx-type-card-title">Get started</h3>
         <div class="flex flex-wrap gap-2">
           <UButton to="/places/create" color="primary">Create a place</UButton>
           <UButton to="/places" variant="ghost">Browse places</UButton>

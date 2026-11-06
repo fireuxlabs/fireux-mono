@@ -5,7 +5,7 @@
         <div class="header">
           <div>
             <p class="eyebrow">Professional profile</p>
-            <h2>Create your profile</h2>
+            <h2 class="fx-type-card-heading">Create your profile</h2>
           </div>
           <p class="lede">
             Set up a professional profile with your headline and experience. You

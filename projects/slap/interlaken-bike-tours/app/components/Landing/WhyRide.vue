@@ -1,3 +1,17 @@
+<template>
+  <UPageSection
+    title="One guide. Your group. The whole valley."
+    headline="Why ride with us"
+  >
+    <UPageGrid
+      ><UPageCard
+        v-for="reason in reasons"
+        :key="reason.number"
+        :title="reason.title"
+        :description="reason.description"
+    /></UPageGrid>
+  </UPageSection>
+</template>
 <script setup lang="ts">
 const reasons = [
   {
@@ -26,21 +40,3 @@ const reasons = [
   },
 ]
 </script>
-
-<template>
-  <section class="why-section section">
-    <div class="why-inner wrap">
-      <div class="why-heading">
-        <p class="eyebrow">02 / Why ride with us</p>
-        <h2>One guide. Your group.<br />The whole valley.</h2>
-      </div>
-      <div class="reasons-grid">
-        <article v-for="reason in reasons" :key="reason.number" class="reason">
-          <p class="reason-number">{{ reason.number }}</p>
-          <h3>{{ reason.title }}</h3>
-          <p>{{ reason.description }}</p>
-        </article>
-      </div>
-    </div>
-  </section>
-</template>

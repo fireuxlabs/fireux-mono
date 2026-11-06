@@ -1,8 +1,8 @@
 <template>
   <section class="space-y-6 py-8">
-    <h1 class="text-2xl font-semibold">Order ticket</h1>
+    <h1>Order ticket</h1>
     <section class="space-y-3" aria-labelledby="init-heading">
-      <h2 id="init-heading" class="font-semibold">1. Init</h2>
+      <h2 id="init-heading">1. Init</h2>
       <UFormField label="Channel">
         <URadioGroup
           v-model="channel"
@@ -23,23 +23,22 @@
           indicator="hidden"
         />
       </UFormField>
-      <p v-if="channel === 'pos'" class="text-sm text-muted">
-        Example staff identity: Alex.
-      </p>
-      <p
-        v-if="channel === 'website' && identity === 'identified'"
-        class="text-sm text-muted"
-      >
+      <p v-if="channel === 'pos'">Example staff identity: Alex.</p>
+      <p v-if="channel === 'website' && identity === 'identified'">
         Example signed-in customer: Sam.
       </p>
-      <KitchenOrdersExamplesPreview :order="initOrder" name="init" label="init" />
+      <KitchenOrdersExamplesPreview
+        :order="initOrder"
+        name="init"
+        label="init"
+      />
     </section>
     <section
       v-if="channel === 'pos' || channel === 'kiosk' || channel === 'website'"
       class="space-y-3"
       aria-labelledby="pre-info-heading"
     >
-      <h2 id="pre-info-heading" class="font-semibold">2. Pre-info</h2>
+      <h2 id="pre-info-heading">2. Pre-info</h2>
       <UFormField
         v-if="channel === 'pos' || channel === 'kiosk'"
         label="Fulfilment"
@@ -68,69 +67,70 @@
         class="grid max-w-sm gap-3"
       >
         <UFormField label="Table name supplied by QR"
-          ><UInput v-model="tableName" :maxlength="200" class="w-full"
+          ><UInput v-model="tableName" :maxlength="200"
         /></UFormField>
         <UFormField label="Table reference (optional)"
-          ><UInput v-model="tableId" :maxlength="128" class="w-full"
+          ><UInput v-model="tableId" :maxlength="128"
         /></UFormField>
-        <p v-if="!tableName.trim()" class="text-sm text-muted">
-          Table context has not been supplied yet.
-        </p>
+        <p v-if="!tableName.trim()">Table context has not been supplied yet.</p>
       </div>
-      <KitchenOrdersExamplesPreview :order="preOrder" name="pre" label="pre-info" />
+      <KitchenOrdersExamplesPreview
+        :order="preOrder"
+        name="pre"
+        label="pre-info"
+      />
     </section>
     <section class="space-y-3" aria-labelledby="items-heading">
-      <h2 id="items-heading" class="font-semibold">3. Items</h2>
+      <h2 id="items-heading">3. Items</h2>
       <UButton
         :label="itemsAdded ? 'Clear example items' : 'Add fixed food items'"
         color="neutral"
         variant="soft"
         @click="itemsAdded = !itemsAdded"
       />
-      <KitchenOrdersExamplesPreview :order="itemsOrder" name="items" label="items" />
+      <KitchenOrdersExamplesPreview
+        :order="itemsOrder"
+        name="items"
+        label="items"
+      />
     </section>
     <section
       v-if="itemsAdded"
       class="max-w-sm space-y-3"
       aria-labelledby="post-info-heading"
     >
-      <h2 id="post-info-heading" class="font-semibold">4. Post-info</h2>
-      <p v-if="!selectedFulfilment" class="text-sm text-muted">
-        Choose fulfilment in Pre-info first.
-      </p>
+      <h2 id="post-info-heading">4. Post-info</h2>
+      <p v-if="!selectedFulfilment">Choose fulfilment in Pre-info first.</p>
       <template v-else>
         <UFormField v-if="needsLocation" label="Table / location (if needed)"
-          ><UInput v-model="postLocation" :maxlength="200" class="w-full"
+          ><UInput v-model="postLocation" :maxlength="200"
         /></UFormField>
         <UFormField
           v-if="needsName"
           :label="remoteOrder ? 'Customer name' : 'Pickup name (if needed)'"
-          ><UInput v-model="customerName" :maxlength="200" class="w-full"
+          ><UInput v-model="customerName" :maxlength="200"
         /></UFormField>
-        <p
-          v-if="remoteOrder && identity === 'identified'"
-          class="text-sm text-muted"
-        >
+        <p v-if="remoteOrder && identity === 'identified'">
           Customer name supplied by the signed-in profile: Sam.
         </p>
         <UFormField v-if="remoteOrder" label="Contact phone"
-          ><UInput v-model="phone" type="tel" :maxlength="64" class="w-full"
+          ><UInput v-model="phone" type="tel" :maxlength="64"
         /></UFormField>
         <UFormField
           v-if="selectedFulfilment === 'delivery'"
           label="Delivery address"
-          ><UTextarea v-model="address" :maxlength="500" class="w-full"
+          ><UTextarea v-model="address" :maxlength="500"
         /></UFormField>
         <UFormField
           v-if="websiteEntry !== 'table'"
           label="Requested time (optional)"
-          ><UInput v-model="requestedTime" type="datetime-local" class="w-full"
+          ><UInput v-model="requestedTime" type="datetime-local"
         /></UFormField>
       </template>
       <KitchenOrdersExamplesPreview :order="order" name="order" label="order" />
     </section>
     <section class="max-w-sm space-y-3" aria-labelledby="review-heading">
-      <h2 id="review-heading" class="font-semibold">5. Review and submit</h2>
+      <h2 id="review-heading">5. Review and submit</h2>
       <KitchenOrdersTicket
         :order="order"
         :editable="false"
@@ -141,23 +141,21 @@
         class="rounded-lg border border-default p-4"
         role="status"
       >
-        <p class="mb-2 font-medium">Still needed</p>
-        <ul class="list-disc space-y-1 pl-5 text-sm">
+        <p class="mb-2">Still needed</p>
+        <ul class="list-disc space-y-1 pl-5">
           <li v-for="issue in reviewIssues" :key="issue">{{ issue }}</li>
         </ul>
       </div>
-      <p v-else class="text-sm text-muted">
-        Required example information is complete.
-      </p>
+      <p v-else>Required example information is complete.</p>
       <UButton
         :label="submittedOrder ? 'Submitted' : 'Submit order'"
         :disabled="reviewIssues.length > 0 || Boolean(submittedOrder)"
         @click="submitExample"
       />
-      <p class="text-xs text-muted">Preview only. No order is sent.</p>
+      <p>Preview only. No order is sent.</p>
       <FireDisclosurePanel title="View review data" :default-open="false">
         <pre
-          class="mt-3 overflow-auto text-sm"
+          class="mt-3 overflow-auto"
           data-testid="review-json"
         ><code>{{ JSON.stringify(submittedOrder || order, null, 2) }}</code></pre>
       </FireDisclosurePanel>
@@ -167,7 +165,7 @@
       class="max-w-sm space-y-3"
       aria-labelledby="success-heading"
     >
-      <h2 id="success-heading" class="font-semibold">6. Success</h2>
+      <h2 id="success-heading">6. Success</h2>
       <UFormField
         v-if="submittedOrder.requested_at && channel === 'website'"
         label="Confirmation outcome"
@@ -185,9 +183,7 @@
         />
       </UFormField>
       <KitchenOrdersExamplesSuccess :view="successView" />
-      <p class="text-xs text-muted">
-        Confirmation preview. Actions are not connected.
-      </p>
+      <p>Confirmation preview. Actions are not connected.</p>
     </section>
   </section>
 </template>
@@ -205,11 +201,15 @@ const channel = ref<'pos' | 'kiosk' | 'website'>('pos')
 const kioskChoice = ref<'' | 'on_site' | 'takeaway'>('')
 const websiteEntry = ref<'' | 'collection' | 'delivery' | 'table'>('')
 const identity = ref<'' | 'guest' | 'identified'>('')
-const fulfilmentOptions: { label: string; value: typeof kioskChoice.value }[] = [
-  { label: 'Eat in', value: 'on_site' },
-  { label: 'Takeaway', value: 'takeaway' },
-]
-const websiteEntryOptions: { label: string; value: typeof websiteEntry.value }[] = [
+const fulfilmentOptions: { label: string; value: typeof kioskChoice.value }[] =
+  [
+    { label: 'Eat in', value: 'on_site' },
+    { label: 'Takeaway', value: 'takeaway' },
+  ]
+const websiteEntryOptions: {
+  label: string
+  value: typeof websiteEntry.value
+}[] = [
   { label: 'Collection', value: 'collection' },
   { label: 'Delivery', value: 'delivery' },
   { label: 'Table QR', value: 'table' },

@@ -1,49 +1,44 @@
 <!-- Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: carry pricing, solution, and App context into intake. -->
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> FireUX </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> FireUX </UButton>
         <UPageHeader
           :title="appMeta.getStarted.title"
           :description="appMeta.getStarted.description"
           :headline="appMeta.getStarted.eyebrow"
         />
-        <UPageBody class="space-y-4">
+        <UPageBody>
           <section class="grid gap-4 sm:grid-cols-2">
             <UCard variant="subtle">
-              <p class="text-sm text-muted">Setup</p>
-              <p class="mt-1 text-3xl font-semibold text-highlighted">
+              <p class="fx-type-caption">Setup</p>
+              <p class="mt-1 fx-type-body">
                 {{ appMeta.getStarted.setupPrice }}
               </p>
-              <p class="mt-2 text-sm text-muted">
+              <p class="mt-2 fx-type-caption">
                 Branding, configuration, and launch.
               </p>
             </UCard>
 
             <UCard variant="subtle">
-              <p class="text-sm text-muted">Monthly plan</p>
-              <p class="mt-1 text-3xl font-semibold text-highlighted">
+              <p class="fx-type-caption">Monthly plan</p>
+              <p class="mt-1 fx-type-body">
                 {{ appMeta.getStarted.monthlyPrice }}
               </p>
-              <p class="mt-2 text-sm text-muted">
+              <p class="mt-2 fx-type-caption">
                 CHF 50/month for each Entity managed by the App.
               </p>
             </UCard>
           </section>
 
-          <section class="space-y-3">
-            <h2 class="text-xl font-semibold text-highlighted">Included</h2>
-            <ul class="space-y-2 text-muted">
+          <section class="pagebody">
+            <h2 class="fx-type-section-title">Included</h2>
+            <ul class="space-y-2">
               <li
                 v-for="item in appMeta.getStarted.included"
                 :key="item"
                 class="flex items-start gap-2"
               >
-                <UIcon
-                  name="i-lucide-check"
-                  class="mt-1 shrink-0 text-primary"
-                />
+                <UIcon name="i-lucide-check" />
                 <span>{{ item }}</span>
               </li>
             </ul>
@@ -51,18 +46,18 @@
 
           <UCard id="ignition-request">
             <template #header>
-              <div class="space-y-1">
+              <div class="fx-card-body-stack">
                 <UBadge v-if="originLabel" color="neutral" variant="soft">
                   {{ originLabel }}
                 </UBadge>
-                <h2 class="text-xl font-semibold text-highlighted">
+                <h2 class="fx-type-section-title">
                   {{
                     submittedReference
                       ? 'Request received'
                       : fireuxOffer.ignition.requestTitle
                   }}
                 </h2>
-                <p class="text-sm text-muted">
+                <p class="fx-type-caption">
                   {{
                     submittedReference
                       ? `We will reply to ${form.contact_email}.`
@@ -72,7 +67,7 @@
               </div>
             </template>
 
-            <div v-if="submittedReference" class="space-y-5">
+            <div v-if="submittedReference" class="fx-card-body-stack">
               <UAlert
                 color="success"
                 variant="soft"
@@ -87,15 +82,13 @@
                   :key="step.title"
                   class="rounded-lg border border-default p-4"
                 >
-                  <p
-                    class="text-xs font-semibold uppercase tracking-wide text-primary"
-                  >
+                  <p class="fx-type-caption">
                     {{ index + 1 }}
                   </p>
-                  <p class="mt-2 font-semibold text-highlighted">
+                  <p class="mt-2 fx-type-body">
                     {{ step.title }}
                   </p>
-                  <p class="mt-1 text-sm text-muted">{{ step.description }}</p>
+                  <p class="mt-1 fx-type-caption">{{ step.description }}</p>
                 </li>
               </ol>
 
@@ -104,12 +97,7 @@
               </UButton>
             </div>
 
-            <UForm
-              v-else
-              :state="form"
-              class="space-y-5"
-              @submit="submitRequest"
-            >
+            <UForm v-else :state="form" @submit="submitRequest">
               <div class="grid gap-4 sm:grid-cols-2">
                 <UFormField
                   label="Your name"
@@ -118,7 +106,6 @@
                 >
                   <UInput
                     v-model="form.contact_name"
-                    class="w-full"
                     autocomplete="name"
                     placeholder="Sarah Jones"
                   />
@@ -131,7 +118,6 @@
                 >
                   <UInput
                     v-model="form.contact_email"
-                    class="w-full"
                     type="email"
                     autocomplete="email"
                     placeholder="sarah@example.com"
@@ -147,7 +133,6 @@
                 >
                   <UInput
                     v-model="form.business_name"
-                    class="w-full"
                     autocomplete="organization"
                     placeholder="Sarah's Services"
                   />
@@ -160,7 +145,6 @@
                 >
                   <UInput
                     v-model="form.website"
-                    class="w-full"
                     type="url"
                     inputmode="url"
                     autocomplete="url"
@@ -171,11 +155,7 @@
               </div>
 
               <UFormField label="Branding" required :error="errors.branding">
-                <USelect
-                  v-model="form.branding"
-                  class="w-full"
-                  :items="brandingOptions"
-                />
+                <USelect v-model="form.branding" :items="brandingOptions" />
               </UFormField>
 
               <UFormField label="Pages" required :error="errors.pages">
@@ -201,7 +181,6 @@
               >
                 <UTextarea
                   v-model="form.app_job"
-                  class="w-full"
                   :rows="5"
                   placeholder="For example: let customers request a cleaning job and let me manage it."
                 />
@@ -214,7 +193,6 @@
               >
                 <UTextarea
                   v-model="form.access"
-                  class="w-full"
                   :rows="3"
                   placeholder="For example: me, two staff members, and customers."
                 />
@@ -231,22 +209,20 @@
                 />
               </div>
 
-              <div class="space-y-2">
+              <div class="fx-card-body-stack">
                 <UCheckbox
                   v-model="form.privacy_acknowledged"
                   label="FireUX may use these details to reply to my request."
                 />
                 <p
                   v-if="errors.privacy_acknowledged"
-                  class="text-sm text-error"
+                  class="text-error fx-type-caption"
                 >
                   {{ errors.privacy_acknowledged }}
                 </p>
-                <p class="text-xs text-muted">
+                <p class="fx-type-caption">
                   See the
-                  <NuxtLink
-                    to="/legal#privacy"
-                    class="text-primary hover:underline"
+                  <NuxtLink to="/legal#privacy" class="hover:underline"
                     >Privacy Policy</NuxtLink
                   >.
                 </p>
@@ -288,8 +264,6 @@
           </div>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

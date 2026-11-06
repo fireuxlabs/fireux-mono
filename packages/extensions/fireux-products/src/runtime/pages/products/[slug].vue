@@ -2,8 +2,8 @@
   <UPage>
     <UPageBody class="pagebody">
       <div v-if="pending && !product" class="space-y-4">
-        <USkeleton class="h-48 rounded-3xl" />
-        <USkeleton class="h-36 rounded-3xl" />
+        <USkeleton class="h-48" />
+        <USkeleton class="h-36" />
       </div>
       <div v-else-if="product" class="page">
         <ProductDetail :product="product" :default-price="defaultPrice" />

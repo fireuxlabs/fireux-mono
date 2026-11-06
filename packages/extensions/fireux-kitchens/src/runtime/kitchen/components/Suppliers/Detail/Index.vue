@@ -13,25 +13,25 @@
     <KitchenSuppliersDetailSummary v-if="supplier" :supplier="supplier" />
 
     <UCard v-if="supplier">
-      <div class="space-y-4">
-        <div class="flex flex-wrap items-start gap-3">
+      <div class="fx-card-body-stack">
+        <div class="card__media">
           <UIcon
             :name="
               isEcosystemSupplier ? 'i-lucide-store' : 'i-lucide-clipboard-list'
             "
-            class="mt-1 size-5 shrink-0 text-primary"
+            class="shrink-0"
           />
           <div class="min-w-0 flex-1">
-            <h3 class="text-base font-semibold text-highlighted">
+            <h3>
               {{ statusTitle }}
             </h3>
-            <p class="mt-1 text-sm leading-6 text-muted">
+            <p class="mt-1">
               {{ statusDescription }}
             </p>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             v-if="hasIntegratedCatalogue"
             :to="cataloguePath"

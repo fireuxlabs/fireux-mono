@@ -1,8 +1,8 @@
 <template>
   <UCard>
     <template #header
-      ><div class="flex items-center justify-between gap-3">
-        <h3 class="font-semibold">{{ app.name }} — preview</h3>
+      ><div class="fx-card__header">
+        <h3>{{ app.name }} — preview</h3>
         <UButton @click="download">Download HTML</UButton>
       </div></template
     >
@@ -10,10 +10,10 @@
       :srcdoc="html"
       sandbox=""
       :title="`${app.name} preview`"
-      class="h-[32rem] w-full rounded-lg border border-default"
+      class="h-[32rem] w-full"
     />
     <template #footer
-      ><p class="text-sm text-muted">
+      ><p>
         Generated from the saved App. Hosting has not been provisioned.
       </p></template
     >

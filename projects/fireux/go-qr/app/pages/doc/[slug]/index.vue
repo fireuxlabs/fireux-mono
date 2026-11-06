@@ -1,18 +1,11 @@
 <template>
-  <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white text-default">
+  <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white">
     <header
       class="flex min-h-14 items-center justify-between gap-3 border-b border-default bg-default px-3 sm:px-4"
     >
       <div class="min-w-0">
-        <NuxtLink
-          to="/"
-          class="text-xs font-semibold uppercase tracking-wide text-primary"
-        >
-          Go QR
-        </NuxtLink>
-        <h1
-          class="truncate text-sm font-semibold text-highlighted sm:text-base"
-        >
+        <NuxtLink to="/"> Go QR </NuxtLink>
+        <h1 class="truncate fx-type-page-title">
           {{ documentLabel }}
         </h1>
       </div>
@@ -29,10 +22,10 @@
         <a
           :href="documentRecord.file_url"
           :download="documentRecord.file_name"
-          class="inline-grid size-8 place-items-center rounded-md text-muted hover:bg-elevated hover:text-highlighted"
+          class="inline-grid size-8 place-items-center rounded-md hover:bg-elevated"
           aria-label="Download document"
         >
-          <UIcon name="i-lucide-download" class="size-4" />
+          <UIcon name="i-lucide-download" />
         </a>
         <UButton
           :to="`/doc/${encodeURIComponent(documentRecord.slug)}/qr`"

@@ -7,13 +7,13 @@
       icon="i-lucide-arrow-left"
     />
     <div class="flex flex-wrap items-end justify-between gap-4">
-      <p class="max-w-2xl text-muted">
+      <p class="max-w-2xl fx-type-body">
         Start with the same architectural responsibilities. Identify domain
         substitutions and real deltas, then assess what the library actually
         supports.
       </p>
       <UFormField label="Compare Misebox with"
-        ><USelect v-model="selected" :items="options" class="w-52" />
+        ><USelect v-model="selected" :items="options" />
       </UFormField>
     </div>
     <UAlert
@@ -26,10 +26,10 @@
       color="neutral"
       icon="i-lucide-info"
     />
-    <section class="space-y-3">
-      <h2 class="text-xl font-semibold">Shared structure</h2>
+    <section class="workspace-surface">
+      <h2 class="fx-type-section-title">Shared structure</h2>
       <div class="overflow-x-auto rounded-lg border border-default">
-        <table class="w-full text-left text-sm">
+        <table class="w-full">
           <thead class="bg-elevated">
             <tr>
               <th class="p-3">Area</th>
@@ -43,16 +43,16 @@
               :key="row.key"
               class="border-t border-default align-top"
             >
-              <th class="p-3 font-medium">{{ row.label }}</th>
+              <th class="p-3">{{ row.label }}</th>
               <td class="p-3">
                 <p>{{ row.contract }}</p>
-                <p class="mt-1 text-xs text-muted">
+                <p class="mt-1 fx-type-caption">
                   {{ label(row.baseline.level) }}
                 </p>
               </td>
               <td class="p-3">
                 <p>{{ row.contract }}</p>
-                <p class="mt-1 text-xs text-muted">
+                <p class="mt-1 fx-type-caption">
                   {{ label(row.candidate.level) }}
                 </p>
               </td>
@@ -61,21 +61,21 @@
         </table>
       </div>
       <FireDisclosurePanel title="Evidence and limits"
-        ><ul class="mt-3 space-y-3 text-sm">
+        ><ul class="mt-3 space-y-3">
           <li v-for="row in report.shared" :key="row.key">
             <strong>{{ row.label }}</strong>
-            <p class="mt-1 text-muted">Misebox: {{ row.baseline.note }}</p>
-            <p class="mt-1 text-muted">
+            <p class="mt-1 fx-type-body">Misebox: {{ row.baseline.note }}</p>
+            <p class="mt-1 fx-type-body">
               {{ report.candidate.name }}: {{ row.candidate.note }}
             </p>
           </li>
         </ul></FireDisclosurePanel
       >
     </section>
-    <section class="space-y-3">
-      <h2 class="text-xl font-semibold">Domain substitutions</h2>
+    <section class="workspace-surface">
+      <h2 class="fx-type-section-title">Domain substitutions</h2>
       <div class="overflow-x-auto rounded-lg border border-default">
-        <table class="w-full text-left text-sm">
+        <table class="w-full">
           <thead class="bg-elevated">
             <tr>
               <th class="p-3">Role</th>
@@ -89,7 +89,7 @@
               :key="row.key"
               class="border-t border-default align-top"
             >
-              <th class="p-3 font-medium">{{ row.label }}</th>
+              <th class="p-3">{{ row.label }}</th>
               <td class="p-3">{{ report.baseline.domain[row.key] }}</td>
               <td class="p-3">{{ report.candidate.domain[row.key] }}</td>
             </tr>
@@ -97,11 +97,11 @@
         </table>
       </div>
     </section>
-    <section class="space-y-4">
-      <h2 class="text-xl font-semibold">Real deltas</h2>
+    <section class="workspace-surface">
+      <h2 class="fx-type-section-title">Real deltas</h2>
       <UCard v-for="delta in report.deltas" :key="delta.id"
-        ><div class="flex flex-wrap items-center justify-between gap-2">
-          <h3 class="font-semibold">{{ delta.title }}</h3>
+        ><div class="card__header">
+          <h3 class="fx-type-card-heading">{{ delta.title }}</h3>
           <UBadge color="neutral" variant="subtle">{{
             delta.kind === 'new-behaviour'
               ? 'New behaviour'
@@ -110,20 +110,18 @@
                 : 'Configuration'
           }}</UBadge>
         </div>
-        <p class="mt-3 text-sm text-muted">
+        <p class="mt-3 fx-type-caption">
           {{ delta.baseline }} → {{ delta.candidate }}
         </p>
         <p class="mt-3">{{ delta.reason }}</p>
-        <p class="mt-3 text-sm font-medium">
+        <p class="mt-3 fx-type-caption">
           {{ reuseLabel(delta.reuse) }}
         </p>
-        <p class="mt-2 text-sm text-muted">
-          Acceptance: {{ delta.acceptance }}
-        </p>
+        <p class="mt-2 fx-type-caption">Acceptance: {{ delta.acceptance }}</p>
         <FireDisclosurePanel
           v-if="delta.references.length"
           title="Source references"
-          ><ul class="mt-2 space-y-1 text-sm text-muted">
+          ><ul class="mt-2 space-y-1">
             <li v-for="reference in delta.references" :key="reference">
               {{ reference }}
             </li>

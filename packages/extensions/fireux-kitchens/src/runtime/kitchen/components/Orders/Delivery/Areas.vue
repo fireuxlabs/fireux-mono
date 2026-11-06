@@ -5,8 +5,8 @@
     icon="i-lucide-truck"
     :default-open="false"
   >
-    <UCard class="mt-4">
-      <div class="space-y-4">
+    <UCard>
+      <div class="fx-card-body-stack">
         <FireCopyError v-if="saveError" :message="saveError" />
         <UPageCard
           v-if="!zones.length"
@@ -135,7 +135,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="card__header">
           <UButton
             color="neutral"
             variant="soft"
@@ -147,7 +147,7 @@
           </UButton>
 
           <div class="flex items-center gap-2">
-            <span v-if="saveState" class="text-xs text-dimmed">
+            <span v-if="saveState">
               {{ saveState }}
             </span>
           </div>

@@ -10,7 +10,6 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-fit max-w-full"
       @update:model-value="actions.select(String($event))"
     />
     <UButton

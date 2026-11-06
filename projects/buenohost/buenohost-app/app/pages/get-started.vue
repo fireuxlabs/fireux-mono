@@ -1,15 +1,13 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> BuenoHost </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> BuenoHost </UButton>
         <UPageHeader
           title="Get Started"
           description="Create a QR-ready stay companion for guests."
         />
-        <UPageBody class="space-y-4">
-          <section class="space-y-4">
-            <ol class="list-decimal fx-list-stack text-muted">
+        <UPageBody>
+          <section class="pagebody">
+            <ol class="list-decimal fx-list-stack">
               <li>Choose a property or stay experience.</li>
               <li>
                 Add the information guests need before and during the stay.
@@ -25,8 +23,6 @@
           </div>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

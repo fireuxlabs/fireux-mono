@@ -1,10 +1,10 @@
 <template>
   <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
-      <UContainer class="space-y-4">
+      <UContainer>
         <UBadge color="primary" variant="soft">Misebox Dev Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More: Dev</h1>
-        <p class="fx-type-description text-toned">
+        <p class="fx-type-description">
           Operator reference for Misebox entities, routes, and partner
           implementation flow.
         </p>
@@ -24,12 +24,12 @@
     </section>
 
     <section>
-      <UContainer class="grid gap-6 md:grid-cols-2">
+      <UContainer>
         <UCard>
           <template #header>
             <h2 class="fx-type-card-heading">Primary entities</h2>
           </template>
-          <ul class="list-disc fx-list-stack text-sm">
+          <ul class="list-disc fx-list-stack">
             <li>
               Kitchen, Menu, Dish, Ingredient, KitchenRecipe, KitchenTeamMember
             </li>
@@ -42,24 +42,24 @@
           <template #header>
             <h2 class="fx-type-card-heading">Operational endpoints</h2>
           </template>
-          <div class="space-y-2 text-sm">
+          <div class="space-y-2">
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/free</p>
-              <p class="text-dimmed">Functional Kitchen Workspace access.</p>
+              <p class="fx-type-code">GET /pricing/free</p>
+              <p class="fx-type-body">Functional Kitchen Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/pro</p>
-              <p class="text-dimmed">
+              <p class="fx-type-code">GET /pricing/pro</p>
+              <p class="fx-type-body">
                 Complete self-managed Kitchen Workspace.
               </p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/business</p>
-              <p class="text-dimmed">Multiple-Kitchen operating capacity.</p>
+              <p class="fx-type-code">GET /pricing/business</p>
+              <p class="fx-type-body">Multiple-Kitchen operating capacity.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /product</p>
-              <p class="text-dimmed">Misebox product landing.</p>
+              <p class="fx-type-code">GET /product</p>
+              <p class="fx-type-body">Misebox product landing.</p>
             </div>
           </div>
         </UCard>

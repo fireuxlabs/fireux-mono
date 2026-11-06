@@ -5,8 +5,8 @@
       FireUX Core owns the shared runtime. Ecosystem packages bind product
       authority, and Apps explicitly compose the Modules they need.
     </p>
-    <h2 class="fx-type-section-title text-2xl">Runtime</h2>
-    <ul class="fx-type-description skills-list text-default">
+    <h2 class="fx-type-section-title">Runtime</h2>
+    <ul class="fx-type-description skills-list">
       <li>
         <Icon name="skill-icons:nuxtjs-dark" class="list-icon" />
         <NuxtLink to="/developer/technologies#nuxt-4">Nuxt 4</NuxtLink> – The
@@ -24,8 +24,8 @@
         checkout support where a product Module configures it.
       </li>
     </ul>
-    <h2 class="fx-type-section-title text-2xl">Implementation</h2>
-    <ul class="fx-type-description skills-list text-default">
+    <h2 class="fx-type-section-title">Implementation</h2>
+    <ul class="fx-type-description skills-list">
       <li>
         <Icon name="skill-icons:tailwindcss-dark" class="list-icon" />
         <NuxtLink to="/developer/skills#tailwind-css">Tailwind CSS</NuxtLink> –
@@ -65,7 +65,7 @@
         Server-side logic
       </li>
     </ul>
-    <p class="fx-type-body more-info text-default">
+    <p class="fx-type-body more-info">
       <NuxtLink to="/developer/technologies"
         >Learn more about the core technologies</NuxtLink
       >

@@ -4,11 +4,6 @@
     :placeholder="animatedPlaceholder"
     :autofocus="false"
     :rows="1"
-    :ui="
-      spacious
-        ? { root: 'rounded-2xl px-4 py-2 gap-1', base: 'text-base/6' }
-        : undefined
-    "
     @focusin="pauseHint"
     @focusout="resumeHint"
     :loading="submitting"
@@ -50,7 +45,6 @@
             color="neutral"
             variant="ghost"
             size="xs"
-            class="min-w-0 max-w-48"
             :title="modelLabel || activeModel.label"
             aria-label="About this FireUX AI model"
           >
@@ -76,7 +70,7 @@
 
   <div
     v-if="suggestions.length"
-    class="flex flex-wrap gap-2"
+    class="fx-card__actions"
     :class="spacious ? 'justify-center' : undefined"
     :aria-label="suggestionsAriaLabel"
   >
@@ -88,7 +82,6 @@
       color="neutral"
       variant="outline"
       size="sm"
-      class="rounded-full"
       :disabled="suggestionsDisabled"
       @click="emit('selectSuggestion', suggestion)"
     />

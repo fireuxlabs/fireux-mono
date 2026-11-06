@@ -27,14 +27,12 @@
         title="Delivery coverage"
       >
         <div class="flex items-end gap-3">
-          <div class="text-5xl font-semibold tracking-tight text-highlighted">
+          <div>
             {{ coverageValue }}
           </div>
-          <div class="pb-1 text-sm font-medium text-muted">
-            {{ coverageUnit }} radius
-          </div>
+          <div class="pb-1">{{ coverageUnit }} radius</div>
         </div>
-        <p class="mt-4 text-sm leading-6 text-toned">
+        <p class="mt-4">
           Available for delivery work within this public service radius. Kitchen
           assignments and contact details stay private.
         </p>
@@ -54,7 +52,7 @@
             variant="soft"
           />
         </div>
-        <p v-else class="text-sm leading-6 text-muted">
+        <p v-else>
           This driver is available through the kitchen delivery network.
         </p>
       </UserProfileSection>

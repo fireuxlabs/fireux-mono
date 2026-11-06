@@ -26,7 +26,7 @@
     <UPageBody class="pagebody">
       <ClientOnly>
         <UPageCard v-if="loading" variant="subtle">
-          <p class="text-sm text-dimmed">Loading place…</p>
+          <p>Loading place…</p>
         </UPageCard>
 
         <UAlert
@@ -70,7 +70,7 @@
         />
 
         <template #fallback>
-          <div class="py-10 text-sm opacity-70">Loading place…</div>
+          <div class="py-10 opacity-70">Loading place…</div>
         </template>
       </ClientOnly>
     </UPageBody>

@@ -26,14 +26,14 @@
     state="error"
   />
 
-  <div v-else class="space-y-6">
+  <div v-else class="pagebody">
     <UPageCard
       title="Current selection"
       description="Choose what appears first on the public surface, then save your changes."
       icon="i-lucide-star"
       variant="subtle"
     >
-      <div class="space-y-4">
+      <div class="pagebody">
         <div class="flex flex-wrap items-center gap-2">
           <UBadge color="neutral" variant="soft">
             {{ draftSlugs.length }} selected
@@ -49,7 +49,7 @@
           </UBadge>
         </div>
 
-        <p v-if="!draftSlugs.length" class="text-sm text-muted">
+        <p v-if="!draftSlugs.length" class="fx-type-caption">
           {{ emptyLabel }}
         </p>
 

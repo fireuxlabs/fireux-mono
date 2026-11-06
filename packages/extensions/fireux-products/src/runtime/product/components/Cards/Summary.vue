@@ -1,17 +1,17 @@
 <template>
   <UCard class="preview">
-    <div class="preview__row flex gap-4">
+    <div class="preview__row">
       <UAvatar :src="card.imageUrl || undefined" :alt="card.title" size="md" />
 
-      <div class="preview__main flex-1 space-y-2">
-        <div class="preview__top flex items-start justify-between gap-3">
-          <div class="preview__title text-base font-semibold">
+      <div class="preview__main">
+        <div class="preview__top">
+          <div class="preview__title">
             {{ card.title }}
           </div>
 
           <div
             v-if="showBadges && card.badges.length"
-            class="preview__badges flex flex-wrap items-center justify-end gap-1"
+            class="preview__badges"
           >
             <UBadge
               v-for="badge in card.badges"
@@ -25,21 +25,21 @@
           </div>
         </div>
 
-        <div
-          v-if="showSubtitle && card.subtitle"
-          class="preview__subtitle text-sm text-muted"
-        >
+        <div v-if="showSubtitle && card.subtitle" class="preview__subtitle">
           {{ card.subtitle }}
         </div>
 
-        <div v-if="showBody" class="preview__body space-y-2 text-sm">
-          <div v-if="card.description" class="preview__line text-muted">
+        <div v-if="showBody" class="preview__body">
+          <div v-if="card.description" class="preview__line">
             {{ card.description }}
           </div>
-          <div v-if="contentSnippet" class="preview__line text-muted">
+          <div v-if="contentSnippet" class="preview__line">
             {{ contentSnippet }}
           </div>
-          <div v-if="features.length" class="preview__meta flex flex-wrap gap-1">
+          <div
+            v-if="features.length"
+            class="preview__meta"
+          >
             <UBadge
               v-for="feature in features"
               :key="feature"
@@ -88,7 +88,11 @@ const contentSnippet = computed(() => {
   return cleaned.length > 140 ? `${cleaned.slice(0, 140)}…` : cleaned
 })
 
-const features = computed(() =>
-  props.product?.features?.map((feature) => feature.title).filter(Boolean).slice(0, 3) ?? []
+const features = computed(
+  () =>
+    props.product?.features
+      ?.map((feature) => feature.title)
+      .filter(Boolean)
+      .slice(0, 3) ?? []
 )
 </script>

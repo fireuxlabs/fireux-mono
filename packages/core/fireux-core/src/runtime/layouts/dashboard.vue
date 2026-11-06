@@ -6,26 +6,30 @@
       v-model:open="open"
       collapsible
       resizable
-      class="h-svh max-h-svh border-r-0"
+      class="workspace-sidebar"
       :ui="{
-        body: 'min-h-0 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        body: 'workspace-sidebar__body',
       }"
     >
       <template #header="{ collapsed }">
-        <div class="flex min-h-11 items-center gap-2 px-3 py-2">
+        <div class="workspace-sidebar__brand">
           <FireLayoutsDashboardProfilesMenu
             v-if="!collapsed"
             :collapsed="false"
             class="min-w-0 flex-1"
           />
           <UDashboardSidebarCollapse
-            :class="collapsed ? 'mx-auto' : 'ml-auto'"
+            :class="
+              collapsed
+                ? 'workspace-sidebar__toggle--compact'
+                : 'workspace-sidebar__toggle'
+            "
           />
         </div>
       </template>
 
       <template #default="{ collapsed }">
-        <div class="flex h-full min-h-full flex-col gap-3">
+        <div class="workspace-sidebar__navigation">
           <UNavigationMenu
             v-if="topNav.length"
             :collapsed="collapsed ?? false"
@@ -73,7 +77,7 @@
     </UDashboardSidebar>
 
     <main
-      class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
+      class="m-4 flex min-w-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
     >
       <slot />
     </main>

@@ -21,8 +21,8 @@
         size="xl"
       />
       <div class="min-w-0">
-        <h2 class="text-lg font-semibold">{{ kitchenTitle }}</h2>
-        <p v-if="kitchenSubtitle" class="text-sm text-muted">
+        <h2>{{ kitchenTitle }}</h2>
+        <p v-if="kitchenSubtitle">
           {{ kitchenSubtitle }}
         </p>
       </div>

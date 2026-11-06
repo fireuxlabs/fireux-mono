@@ -7,7 +7,7 @@
         provider="Go QR"
         open
       >
-        <p class="text-sm text-muted">Coming soon.</p>
+        <p class="fx-type-caption">Coming soon.</p>
       </AppToolFoldaway>
     </SolutionTool>
   </SolutionPage>

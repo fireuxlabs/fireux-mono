@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-4">
-    <h2 class="text-xl font-semibold">Menu placements</h2>
+    <h2>Menu placements</h2>
     <FireStateCard
       v-if="error"
       state="error"
@@ -14,9 +14,7 @@
         :key="`${kitchenId}:${menu.id}`"
         :menu="menu"
       />
-      <p v-if="!activeMenus.length" class="text-muted">
-        No menus in this kitchen.
-      </p>
+      <p v-if="!activeMenus.length">No menus in this kitchen.</p>
     </template>
     <UButton
       to="/workspace/kitchen/food-and-drink/menus"

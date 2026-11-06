@@ -30,17 +30,11 @@
         Sign in to post. Topics stay in this browser session.
       </p>
       <form v-else @submit.prevent="submit">
-        <UInput
-          v-model="title"
-          placeholder="Topic title"
-          required
-          class="mb-3"
-        />
+        <UInput v-model="title" placeholder="Topic title" required />
         <UTextarea
           v-model="body"
           placeholder="Keep the topic anonymous and non-operational."
           required
-          class="mb-3"
         />
         <UButton type="submit">Post topic in this browser session</UButton>
       </form>

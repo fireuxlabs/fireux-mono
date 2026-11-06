@@ -9,12 +9,10 @@
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Chefs collection
-            </p>
-            <p class="text-xs text-muted">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
+            <p>Chefs collection</p>
+            <p>
               Inspect model drift separately from the public chefs collection
               manager.
             </p>
@@ -32,17 +30,15 @@
       </template>
 
       <UCard v-if="pending" variant="subtle">
-        <p class="text-sm text-dimmed">Loading chefs...</p>
+        <p>Loading chefs...</p>
       </UCard>
 
-      <div v-else class="space-y-6">
+      <div v-else class="fx-card-body-stack">
         <ChefDirectory />
 
-        <div v-if="chefPreviewCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-            Preview cards
-          </p>
-          <div class="space-y-3">
+        <div v-if="chefPreviewCards.length" class="fx-card-body-stack">
+          <p>Preview cards</p>
+          <div class="fx-card-body-stack">
             <ChefCardsSummary
               v-for="entry in chefPreviewCards"
               :key="`chef-preview-${entry.card.id}`"
@@ -56,11 +52,9 @@
           </div>
         </div>
 
-        <div v-if="filteredCollection.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-            Profile cards
-          </p>
-          <div class="space-y-4">
+        <div v-if="filteredCollection.length" class="fx-card-body-stack">
+          <p>Profile cards</p>
+          <div class="fx-card-body-stack">
             <ChefProfile
               v-for="entry in filteredCollection"
               :key="`chef-profile-${String((entry as any)?.id ?? '')}`"

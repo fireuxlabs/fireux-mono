@@ -1,6 +1,6 @@
 <template>
   <UPageCard v-if="pending" variant="subtle">
-    <p class="text-sm text-dimmed">Loading place…</p>
+    <p>Loading place…</p>
   </UPageCard>
 
   <div v-else-if="placeProfile" class="space-y-4">
@@ -13,7 +13,7 @@
     >
       <div class="space-y-3">
         <ClientOnly>
-          <UBadge :color="operationHoursChipColor" variant="soft" class="w-fit">
+          <UBadge :color="operationHoursChipColor" variant="soft">
             {{ operationHoursChipLabel }}
           </UBadge>
         </ClientOnly>

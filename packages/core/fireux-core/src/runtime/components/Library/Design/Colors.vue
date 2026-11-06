@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-
 const colorGroups = {
   brandColors: ['--ui-primary', '--ui-secondary'],
   statusColors: ['--ui-info', '--ui-success', '--ui-warning', '--ui-error'],
@@ -34,13 +33,13 @@ onMounted(() => {
 
 <template>
   <div class="design">
-    <div class="grid">
+    <div class="color-grid">
       <div v-for="color in colorValues" :key="color.name" class="color-item">
         <div
           class="color-block"
           :style="{ backgroundColor: `var(${color.name})` }"
         />
-        <div class="color-header fx-type-caption font-semibold text-default">{{ color.name }}</div>
+        <div class="color-header fx-type-caption">{{ color.name }}</div>
       </div>
     </div>
   </div>
@@ -55,7 +54,7 @@ onMounted(() => {
 }
 
 /* ✅ Grid Layout */
-.grid {
+.color-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: calc(var(--spacing) * 4);

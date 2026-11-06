@@ -1,20 +1,19 @@
 <template>
   <UCard class="kitchen-ai-command-result" aria-live="polite">
-    <div class="space-y-4">
-      <div class="flex items-start gap-3">
+    <div class="workspace-surface workspace-surface--compact">
+      <div class="card__media">
         <div
-          class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"
+          class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10"
         >
           <UIcon
             :name="pending ? 'i-lucide-wand-sparkles' : 'i-lucide-circle-check'"
-            class="size-5"
           />
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
+          <p>
             {{ pending ? 'Ready for approval' : 'Result' }}
           </p>
-          <p class="mt-1 text-sm text-toned">{{ result.text }}</p>
+          <p class="mt-1">{{ result.text }}</p>
         </div>
       </div>
 
@@ -31,7 +30,7 @@
         @click="emit('copy', result.resultAction)"
       />
 
-      <div v-if="pending" class="flex justify-end gap-2">
+      <div v-if="pending" class="fx-card__actions">
         <UButton
           label="Cancel"
           color="neutral"
@@ -45,7 +44,7 @@
           @click="emit('confirm')"
         />
       </div>
-      <div v-else class="flex justify-end">
+      <div v-else class="fx-card__actions">
         <UButton
           label="New request"
           color="neutral"
@@ -59,7 +58,10 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenAIResultAction, KitchenAIWelcomeMessage } from '../../../models/kitchen-ai-presentation.model'
+import type {
+  KitchenAIResultAction,
+  KitchenAIWelcomeMessage,
+} from '../../../models/kitchen-ai-presentation.model'
 
 withDefaults(
   defineProps<{

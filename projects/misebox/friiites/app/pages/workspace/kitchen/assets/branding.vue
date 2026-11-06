@@ -1,16 +1,14 @@
 <template>
   <div class="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
-    <div class="space-y-2">
+    <div class="workspace-surface">
       <div class="flex flex-wrap items-center gap-2">
         <UBadge color="primary" variant="soft" icon="i-lucide-sparkles">
           App Brand Asset
         </UBadge>
         <UBadge color="warning" variant="soft"> Draft </UBadge>
       </div>
-      <h1 class="text-2xl font-semibold text-highlighted sm:text-3xl">
-        Friiites serving packaging
-      </h1>
-      <p class="max-w-2xl text-sm text-muted sm:text-base">
+      <h1 class="fx-type-page-title">Friiites serving packaging</h1>
+      <p class="max-w-2xl fx-type-caption">
         Reusable branded objects owned by the Friiites App. These assets can be
         combined with Dish photography without redrawing the packaging.
       </p>
@@ -18,14 +16,14 @@
 
     <UCard v-for="brandObject in brandObjects" :key="brandObject.role">
       <template #header>
-        <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="card__header">
           <div>
-            <div class="font-semibold text-highlighted">
+            <div>
               {{ brandObject.name }}
             </div>
-            <p class="text-sm text-muted">{{ brandObject.description }}</p>
+            <p class="fx-type-caption">{{ brandObject.description }}</p>
           </div>
-          <code class="text-xs text-dimmed">{{ brandObject.role }}</code>
+          <code>{{ brandObject.role }}</code>
         </div>
       </template>
 
@@ -42,44 +40,40 @@
           />
         </div>
 
-        <dl class="grid content-start gap-4 text-sm">
+        <dl class="grid content-start gap-4">
           <div>
-            <dt class="text-dimmed">Status</dt>
-            <dd class="font-medium text-highlighted">Available</dd>
+            <dt>Status</dt>
+            <dd>Available</dd>
           </div>
           <div>
-            <dt class="text-dimmed">Artwork</dt>
-            <dd class="font-medium text-highlighted">
-              Canonical FR + III + TES wordmark
-            </dd>
+            <dt>Artwork</dt>
+            <dd>Canonical FR + III + TES wordmark</dd>
           </div>
           <div>
-            <dt class="text-dimmed">Master</dt>
-            <dd class="font-medium text-highlighted">
-              Repository source · transparent PNG
-            </dd>
+            <dt>Master</dt>
+            <dd>Repository source · transparent PNG</dd>
           </div>
           <div>
-            <dt class="text-dimmed">Runtime</dt>
-            <dd class="font-medium text-highlighted">
+            <dt>Runtime</dt>
+            <dd>
               {{ brandObject.runtime }}
             </dd>
           </div>
           <div>
-            <dt class="text-dimmed">Storage object</dt>
-            <dd class="break-all font-mono text-xs text-highlighted">
+            <dt>Storage object</dt>
+            <dd class="break-all font-mono">
               {{ brandObject.objectPath }}
             </dd>
           </div>
           <div>
-            <dt class="text-dimmed">Next use</dt>
-            <dd class="font-medium text-highlighted">{{ brandObject.use }}</dd>
+            <dt>Next use</dt>
+            <dd>{{ brandObject.use }}</dd>
           </div>
         </dl>
       </div>
 
       <template #footer>
-        <p class="text-xs text-dimmed">
+        <p class="fx-type-caption">
           Brand objects remain separate from Dish photography and landing
           compositions.
         </p>

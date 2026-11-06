@@ -46,7 +46,7 @@
 
           <div
             v-if="title || profiles.length || appsLabel"
-            class="preview__line text-dimmed"
+            class="preview__line"
           >
             <span v-if="title">{{ title }}</span>
             <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>

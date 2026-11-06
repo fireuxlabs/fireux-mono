@@ -1,5 +1,5 @@
 <template>
-  <article class="space-y-8">
+  <article class="pagebody">
     <ProjectDetailHeader :project="project" />
     <ProjectDetailApps :project="project" />
   </article>

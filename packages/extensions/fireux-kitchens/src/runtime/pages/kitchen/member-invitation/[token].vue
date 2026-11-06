@@ -1,11 +1,11 @@
 <template>
-  <UContainer class="flex min-h-[70dvh] max-w-xl items-center py-12">
-    <UCard class="w-full">
-      <div class="space-y-5 text-center">
+  <UContainer class="flex min-h-[70dvh] items-center">
+    <UCard>
+      <div class="fx-card-body-stack">
         <div
-          class="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10 text-primary"
+          class="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10"
         >
-          <UIcon name="i-lucide-user-round-check" class="size-6" />
+          <UIcon name="i-lucide-user-round-check" />
         </div>
 
         <template v-if="pending">
@@ -22,12 +22,8 @@
         />
 
         <template v-else-if="accepted">
-          <h1 class="text-2xl font-semibold text-highlighted">
-            You joined as {{ invitation?.memberName }}
-          </h1>
-          <p class="text-toned">
-            Your User is now linked to this Kitchen member.
-          </p>
+          <h1>You joined as {{ invitation?.memberName }}</h1>
+          <p>Your User is now linked to this Kitchen member.</p>
           <UButton
             :to="memberTo"
             label="View Kitchen team"
@@ -38,12 +34,10 @@
 
         <template v-else-if="invitation">
           <div>
-            <p class="text-sm font-medium text-primary">Kitchen invitation</p>
-            <h1 class="mt-1 text-2xl font-semibold text-highlighted">
-              Join as {{ invitation.memberName }}
-            </h1>
+            <p>Kitchen invitation</p>
+            <h1 class="mt-1">Join as {{ invitation.memberName }}</h1>
           </div>
-          <p class="text-toned">
+          <p>
             This will link your signed-in User to the existing Kitchen member.
           </p>
           <UButton

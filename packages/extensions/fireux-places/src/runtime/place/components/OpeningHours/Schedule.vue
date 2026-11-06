@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p v-if="!hours.windows.length" class="mb-4 text-sm text-muted">
+    <p v-if="!hours.windows.length" class="mb-4">
       Add your regular weekly hours to get started.
     </p>
     <PlaceOpeningHoursWeek
@@ -14,12 +14,11 @@
       v-model:open="open"
       title="Edit opening hours"
       :dismissible="!saving"
-      :ui="{ content: 'sm:max-w-xl' }"
     >
       <template #body>
         <form class="space-y-6" @submit.prevent="save">
           <fieldset>
-            <legend class="mb-3 text-sm font-medium">Apply to</legend>
+            <legend class="mb-3">Apply to</legend>
             <div class="flex flex-wrap gap-2">
               <UButton
                 v-for="day in openingDays"
@@ -74,7 +73,7 @@
               />
               <p
                 v-if="range.close && range.close <= range.open"
-                class="hours-range__note text-xs text-muted"
+                class="hours-range__note"
               >
                 Closes the following day.
               </p>
@@ -88,7 +87,7 @@
               @click="draft.push({ open: '18:00', close: '22:00' })"
             />
           </div>
-          <p v-if="selectedDays.length > 1" class="text-sm text-muted">
+          <p v-if="selectedDays.length > 1">
             These hours will replace the hours on each selected day.
           </p>
           <UAlert
@@ -97,9 +96,7 @@
             title="Could not save hours"
             color="error"
           >
-            <template #actions
-              ><FireCopyError :message="error"
-            /></template>
+            <template #actions><FireCopyError :message="error" /></template>
           </UAlert>
           <div class="flex justify-end gap-2">
             <UButton
@@ -116,9 +113,7 @@
               :disabled="!selectedDays.length || !timezone"
             />
           </div>
-          <p v-if="!timezone" class="text-sm text-muted">
-            Add your timezone before saving opening hours.
-          </p>
+          <p v-if="!timezone">Add your timezone before saving opening hours.</p>
         </form>
       </template>
     </UModal>
@@ -190,10 +185,23 @@ function toggleDay(day: PlaceBusinessHoursDay) {
     ? selectedDays.value.filter((value) => value !== day)
     : [...selectedDays.value, day]
 }
-const sources = [open, selectedDays, mode, () => JSON.stringify(draft.value), () => props.captureIntent ? undefined : props.disabled,
-  () => props.update, () => JSON.stringify([hours.value, timezone.value])]
+const sources = [
+  open,
+  selectedDays,
+  mode,
+  () => JSON.stringify(draft.value),
+  () => (props.captureIntent ? undefined : props.disabled),
+  () => props.update,
+  () => JSON.stringify([hours.value, timezone.value]),
+]
 const capture = useCommandScope(sources)
-watch(sources, () => { saving.value = false }, { flush: 'sync' })
+watch(
+  sources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
 async function save() {
   if (saving.value) return
   error.value = ''
@@ -218,7 +226,10 @@ async function save() {
     const next = replaceOpeningDays(hours.value, selectedDays.value, ranges)
     saving.value = true
     await props.update(next)
-    if (isCurrent()) { saving.value = false; open.value = false }
+    if (isCurrent()) {
+      saving.value = false
+      open.value = false
+    }
   } catch (cause) {
     if (!isCurrent()) return
     error.value =

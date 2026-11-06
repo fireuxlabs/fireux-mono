@@ -1,17 +1,17 @@
 <template>
-  <section class="space-y-4">
+  <section class="workspace-surface workspace-surface--compact">
     <UCard>
       <template #header>
-        <h1 class="text-base font-semibold text-highlighted">Preview moved</h1>
+        <h1>Preview moved</h1>
       </template>
 
-      <p class="text-sm text-dimmed">
+      <p>
         Menus now preview through exact published menu URLs. Create and publish
         a menu, then open it from the menu QR page.
       </p>
 
       <template #footer>
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             to="/workspace/kitchen/food-and-drink/menus"
             icon="i-lucide-book-open"

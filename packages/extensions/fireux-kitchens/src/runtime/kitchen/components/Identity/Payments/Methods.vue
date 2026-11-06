@@ -8,7 +8,7 @@
   >
     <div class="mt-4 grid gap-4 lg:grid-cols-2">
       <UCard v-for="group in groups" :key="group.id">
-        <p class="mb-3 text-sm text-dimmed">
+        <p class="mb-3">
           {{ group.description }}
         </p>
 

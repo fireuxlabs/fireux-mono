@@ -8,10 +8,10 @@
           aria-live="polite"
           aria-busy="true"
         >
-          <USkeleton class="h-72 rounded-3xl" />
+          <USkeleton class="h-72" />
           <div class="public-profile-detail__content">
-            <USkeleton class="h-96 rounded-3xl" />
-            <USkeleton class="h-64 rounded-3xl" />
+            <USkeleton class="h-96" />
+            <USkeleton class="h-64" />
           </div>
         </div>
       </slot>
@@ -22,7 +22,6 @@
         :description="`This ${entityLabel.toLowerCase()} profile could not be loaded right now. Please try again.`"
         icon="i-lucide-cloud-alert"
         variant="subtle"
-        class="rounded-3xl"
       >
         <template #footer>
           <UButton
@@ -40,7 +39,6 @@
         :description="`This ${entityLabel.toLowerCase()} profile does not exist.`"
         :icon="icon"
         variant="subtle"
-        class="rounded-3xl"
       >
         <template #footer>
           <UButton

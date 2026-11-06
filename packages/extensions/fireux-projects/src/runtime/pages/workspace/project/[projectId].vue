@@ -17,15 +17,15 @@
         size="3xl"
       />
       <div>
-        <h1 class="text-2xl font-semibold text-highlighted">
+        <h1 class="fx-type-page-title">
           {{ project.identity.name }}
         </h1>
-        <p v-if="project.identity.description" class="mt-1 text-muted">
+        <p v-if="project.identity.description" class="mt-1">
           {{ project.identity.description }}
         </p>
       </div>
     </template>
-    <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
+    <USkeleton v-else-if="loading" class="h-32 w-full" />
     <FireStateCard
       v-else-if="source.outcome.value === 'error'"
       state="error"

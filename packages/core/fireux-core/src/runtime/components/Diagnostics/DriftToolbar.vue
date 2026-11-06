@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-wrap items-center gap-2 text-xs text-toned">
-    <span class="font-medium">Drift:</span>
+  <div class="flex flex-wrap items-center gap-2">
+    <span>Drift:</span>
 
     <UButton
       size="xs"
@@ -21,7 +21,7 @@
       Missing
     </UButton>
 
-    <span class="font-medium ml-2"> Filter {{ driftKind }}: </span>
+    <span class="ml-2"> Filter {{ driftKind }}: </span>
 
     <UButton
       v-for="option in filterOptions"

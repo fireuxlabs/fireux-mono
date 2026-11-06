@@ -4,7 +4,6 @@
     <USlideover
       :open="Boolean(section) && identity.canWrite.value"
       :title="sectionTitle"
-      :ui="{ content: 'sm:max-w-xl' }"
       @update:open="
         (open) => {
           if (!open) section = null
@@ -12,7 +11,7 @@
       "
     >
       <template #body>
-        <p class="mb-4 text-sm text-muted">
+        <p class="mb-4">
           Changes apply wherever this business profile is used. Save each field
           or image as you edit.
         </p>

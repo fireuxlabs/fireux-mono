@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-8 py-12">
-    <div class="space-y-2">
-      <h1 class="text-4xl font-bold text-highlighted">{{ pageTitle }}</h1>
-      <p class="text-muted">{{ pageSubtitle }}</p>
+    <div class="pagebody">
+      <h1 class="fx-type-page-title">{{ pageTitle }}</h1>
+      <p class="fx-type-body">{{ pageSubtitle }}</p>
     </div>
 
-    <UCard :ui="{ body: 'p-0 sm:p-0' }" class="overflow-hidden">
+    <UCard>
       <iframe
         v-if="mapRequested"
         title="Map to Hotel Bären Ringgenberg"
@@ -14,9 +14,18 @@
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
       />
-      <div v-else class="grid aspect-video place-content-center justify-items-center gap-4 p-8 text-center">
-        <p class="text-muted">Google Maps loads only when you ask to view it.</p>
-        <UButton icon="i-lucide-map" label="Load Google Maps" @click="mapRequested = true" />
+      <div
+        v-else
+        class="grid aspect-video place-content-center justify-items-center gap-4 p-8"
+      >
+        <p class="fx-type-body">
+          Google Maps loads only when you ask to view it.
+        </p>
+        <UButton
+          icon="i-lucide-map"
+          label="Load Google Maps"
+          @click="mapRequested = true"
+        />
       </div>
     </UCard>
   </div>

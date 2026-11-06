@@ -8,7 +8,7 @@
       ]"
       @update:model-value="select"
     />
-    <p class="mt-2 text-sm text-muted">
+    <p class="mt-2">
       Exchange means returning one matching bottle for each drink.
     </p>
   </UFormField>

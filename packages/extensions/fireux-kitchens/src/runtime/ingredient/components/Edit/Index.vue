@@ -1,18 +1,18 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
-        <div class="text-sm font-semibold">Curate Ingredient</div>
-        <p class="text-xs text-dimmed">
+      <div class="fx-card-body-stack">
+        <div>Curate Ingredient</div>
+        <p>
           Keep one popular canonical name. Aliases are synonyms, not
           translations.
         </p>
       </div>
     </template>
 
-    <div class="space-y-4">
+    <div class="fx-card-body-stack">
       <UFormField label="Image">
-        <div class="flex flex-col items-center gap-2">
+        <div class="fx-card-body-stack">
           <FireFormsEditableImagePicker
             :src="ingredient.image_url || ''"
             :alt="ingredient.name || 'Ingredient'"
@@ -21,9 +21,7 @@
             :loading="imageUploading"
             :disabled="saving || generating"
           />
-          <p v-if="imageUploading" class="text-xs text-muted">
-            Uploading image...
-          </p>
+          <p v-if="imageUploading">Uploading image...</p>
           <UButton
             v-if="!ingredient.image_url"
             label="Generate image"
@@ -68,7 +66,7 @@
         />
       </UFormField>
 
-      <div class="flex flex-wrap justify-end gap-2">
+      <div class="fx-card__actions">
         <UButton
           variant="ghost"
           :disabled="saving || imageUploading || !isDirty"

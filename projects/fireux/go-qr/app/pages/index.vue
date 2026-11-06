@@ -1,12 +1,14 @@
 <template>
-  <main class="min-h-screen bg-default text-default" data-entity-cta-family="utility-managed">
-    <UContainer class="py-8 sm:py-10">
+  <main
+    class="min-h-screen bg-default"
+    data-entity-cta-family="utility-managed"
+  >
+    <UContainer>
       <header class="mx-auto mb-6 max-w-xl space-y-3">
-        <h1 class="text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
-          Go QR
-        </h1>
-        <p class="text-base text-muted sm:text-lg">
-          Create scannable public links for text, docs, forms, contact actions, and more.
+        <h1 class="fx-type-page-title">Go QR</h1>
+        <p class="fx-type-body">
+          Create scannable public links for text, docs, forms, contact actions,
+          and more.
         </p>
       </header>
 
@@ -77,8 +79,11 @@ useSeoMeta({
   title: 'Go QR - Scannable public links',
   ogTitle: 'Go QR - Scannable public links',
   twitterTitle: 'Go QR - Scannable public links',
-  description: 'Create scannable public links for text, docs, forms, contact actions, and more.',
-  ogDescription: 'Create scannable public links for text, docs, forms, contact actions, and more.',
-  twitterDescription: 'Create scannable public links for text, docs, forms, contact actions, and more.',
+  description:
+    'Create scannable public links for text, docs, forms, contact actions, and more.',
+  ogDescription:
+    'Create scannable public links for text, docs, forms, contact actions, and more.',
+  twitterDescription:
+    'Create scannable public links for text, docs, forms, contact actions, and more.',
 })
 </script>

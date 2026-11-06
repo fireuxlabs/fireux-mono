@@ -5,23 +5,21 @@
     :data-onboarding-family="family"
     :data-onboarding-step="stage.id || undefined"
   >
-    <UCard class="min-w-0 overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-      <div class="grid min-w-0 min-h-[30rem] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <aside
-          class="min-w-0 border-b border-default bg-elevated/40 p-5 sm:p-8 lg:border-e lg:border-b-0"
-        >
+    <UCard class="overflow-hidden">
+      <div
+        class="grid min-w-0 min-h-[30rem] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"
+      >
+        <aside class="min-w-0 p-5 sm:p-8">
           <slot name="intro" />
         </aside>
 
         <main class="flex min-w-0 flex-col p-5 sm:p-8">
           <header v-if="stage.count > 1" class="mb-7">
-            <p class="text-sm font-medium text-primary">
-              Step {{ stage.number }} of {{ stage.count }}
-            </p>
-            <h2 class="mt-2 text-2xl font-semibold text-highlighted">
+            <p>Step {{ stage.number }} of {{ stage.count }}</p>
+            <h2 class="mt-2">
               {{ stage.title }}
             </h2>
-            <UProgress class="mt-4" :model-value="stage.progress" :max="100" />
+            <UProgress :model-value="stage.progress" :max="100" />
           </header>
 
           <div class="min-w-0 flex-1">
@@ -30,7 +28,6 @@
 
           <UAlert
             v-if="stage.error"
-            class="mt-6"
             color="error"
             variant="soft"
             icon="i-lucide-triangle-alert"
@@ -38,10 +35,7 @@
             :description="stage.error"
           />
 
-          <footer
-            v-if="$slots.footer"
-            class="mt-8 min-w-0 border-t border-default pt-6"
-          >
+          <footer v-if="$slots.footer" class="mt-8 min-w-0 pt-6">
             <slot name="footer" />
           </footer>
         </main>

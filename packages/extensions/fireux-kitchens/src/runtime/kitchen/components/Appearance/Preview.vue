@@ -35,7 +35,7 @@
         <h3>Seasonal favourites</h3>
         <p>A little sample of your menu’s look and feel.</p>
       </div>
-      <UIcon name="i-lucide-leaf" class="size-6" />
+      <UIcon name="i-lucide-leaf" />
     </div>
     <span class="appearance-preview__button"
       >Explore the menu <UIcon name="i-lucide-arrow-right"

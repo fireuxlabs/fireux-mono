@@ -23,7 +23,7 @@
       <p>{{ entry.usage }}</p>
 
       <section class="docs-section">
-        <h2>Example</h2>
+        <h2 class="fx-type-section-title">Example</h2>
         <FireCreateShell
           v-if="entry.slug === 'create-shell'"
           submit-label="Create record"
@@ -31,9 +31,7 @@
           <template #write
             ><UTextarea placeholder="Write the record…"
           /></template>
-          <template #preview
-            ><p class="text-sm text-dimmed">Record preview</p></template
-          >
+          <template #preview><p>Record preview</p></template>
         </FireCreateShell>
 
         <FireFormsEditableSimpleField
@@ -76,18 +74,14 @@
           :stage="onboardingStage"
         >
           <template #intro>
-            <p class="font-semibold">Set up your workspace</p>
-            <p class="mt-2 text-sm text-dimmed">
-              The owner supplies this introduction.
-            </p>
+            <p>Set up your workspace</p>
+            <p class="mt-2">The owner supplies this introduction.</p>
           </template>
-          <p class="text-sm text-dimmed">
-            The owner supplies the current step.
-          </p>
+          <p>The owner supplies the current step.</p>
         </FireOnboardingShell>
       </section>
       <section class="docs-section">
-        <h2>Usage</h2>
+        <h2 class="fx-type-section-title">Usage</h2>
         <UCard variant="subtle">
           <pre class="docs-code"><code>{{ entry.example }}</code></pre>
         </UCard>

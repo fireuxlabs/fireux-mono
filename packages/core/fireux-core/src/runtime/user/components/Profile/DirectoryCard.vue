@@ -90,7 +90,7 @@
     <UIcon
       v-if="link && to"
       name="i-lucide-arrow-up-right"
-      class="public-profile-directory-card__arrow size-4 shrink-0 text-dimmed transition"
+      class="public-profile-directory-card__arrow size-4 shrink-0 transition"
     />
   </FireActionSurface>
 </template>

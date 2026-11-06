@@ -2,7 +2,7 @@
   <TemplateOnePage v-if="projection" :projection="projection" />
 
   <UPage v-else>
-    <UContainer class="py-12 sm:py-16">
+    <UContainer>
       <UPageHeader
         :title="presentation.name"
         :description="presentation.summary"

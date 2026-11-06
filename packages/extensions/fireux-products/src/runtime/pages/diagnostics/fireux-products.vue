@@ -9,7 +9,7 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Products</div>
+            <div>Products</div>
             <UButton
               variant="ghost"
               size="xs"

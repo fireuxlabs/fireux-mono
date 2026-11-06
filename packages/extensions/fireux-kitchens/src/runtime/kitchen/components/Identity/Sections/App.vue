@@ -20,41 +20,35 @@
       <UBadge color="primary" variant="soft" icon="i-lucide-sparkles"
         >App</UBadge
       >
-      <code class="text-xs text-dimmed">{{ state.app_id }}</code>
+      <code>{{ state.app_id }}</code>
     </div>
 
     <UCard variant="subtle">
       <template #header>
         <div>
-          <div class="font-semibold text-highlighted">Five App masters</div>
-          <p class="text-sm text-dimmed">
-            The universal asset gate established during App onboarding.
-          </p>
+          <div>Five App masters</div>
+          <p>The universal asset gate established during App onboarding.</p>
         </div>
       </template>
       <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-        <div
+        <UCard as="div"
           v-for="asset in assets"
           :key="asset.key"
-          class="rounded-md border border-default p-3"
+          
         >
-          <p class="text-sm font-medium text-highlighted">{{ asset.label }}</p>
-          <UBadge
-            class="mt-2"
-            :color="asset.present ? 'success' : 'warning'"
-            variant="soft"
-          >
+          <p>{{ asset.label }}</p>
+          <UBadge :color="asset.present ? 'success' : 'warning'" variant="soft">
             {{ asset.present ? 'Present' : 'Missing' }}
           </UBadge>
-        </div>
+        </UCard>
       </div>
     </UCard>
 
     <UCard>
       <template #header>
         <div>
-          <div class="font-semibold text-highlighted">App palette</div>
-          <p class="text-sm text-dimmed">
+          <div>App palette</div>
+          <p>
             Eight effective roles. Saving stores only additions and overrides
             above Workspace.
           </p>
@@ -96,10 +90,8 @@
     <UCard>
       <template #header>
         <div>
-          <div class="font-semibold text-highlighted">App typography</div>
-          <p class="text-sm text-dimmed">
-            Two families; templates derive their semantic roles.
-          </p>
+          <div>App typography</div>
+          <p>Two families; templates derive their semantic roles.</p>
         </div>
       </template>
       <div class="grid gap-4 md:grid-cols-2">
@@ -127,7 +119,7 @@
     />
 
     <div v-else class="flex items-center justify-between gap-3">
-      <p class="text-xs text-dimmed">{{ saveState }}</p>
+      <p>{{ saveState }}</p>
       <UButton :disabled="!valid" :loading="saving" @click="save">
         Save App identity
       </UButton>

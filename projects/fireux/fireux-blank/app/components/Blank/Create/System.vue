@@ -6,7 +6,7 @@
     description="This creates the smallest workspace target: root truth plus app workspace scope."
     variant="subtle"
   >
-    <form class="space-y-4" @submit.prevent="handleCreate">
+    <form class="pagebody" @submit.prevent="handleCreate">
       <UFormField label="Name">
         <UInput v-model="name" placeholder="Blank target" autocomplete="off" />
       </UFormField>

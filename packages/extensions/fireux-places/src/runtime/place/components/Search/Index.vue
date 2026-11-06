@@ -6,7 +6,7 @@
   <div class="space-y-4">
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
 
-    <UCard v-if="selectedCell" :ui="{ body: 'space-y-3' }">
+    <UCard v-if="selectedCell" :ui="{ body: 'fx-card-body-stack' }">
       <PlaceCardsDropdownSelected
         :name="selectedCell.name"
         :address="selectedCell.subtitle"
@@ -47,7 +47,7 @@
       @select="handleSelectPlace"
     />
 
-    <p v-if="isSearching" role="status" aria-live="polite" class="text-sm text-muted">Searching…</p>
+    <p v-if="isSearching" role="status" aria-live="polite">Searching…</p>
   </div>
 </template>
 
@@ -156,9 +156,17 @@ const selectedImageUrl = computed(
   () => selectedLogo.value || selectedCell.value?.imageUrl || ''
 )
 
-const { ensurePlaceExists, captureIntent, scopeEpoch } = usePlaceCreate({ sources: [selectedPlace] })
+const { ensurePlaceExists, captureIntent, scopeEpoch } = usePlaceCreate({
+  sources: [selectedPlace],
+})
 const confirming = ref(false)
-watch(scopeEpoch, () => { confirming.value = false }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    confirming.value = false
+  },
+  { flush: 'sync' }
+)
 
 function clearSelection() {
   clear()

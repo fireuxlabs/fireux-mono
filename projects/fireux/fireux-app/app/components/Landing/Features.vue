@@ -1,25 +1,25 @@
 <template>
   <div class="landing-index-section">
-    <div class="mb-6 space-y-2 text-center">
-      <h2 class="text-2xl lg:text-3xl font-bold">What FireUX Gives You</h2>
-      <p class="mx-auto max-w-2xl text-muted">
+    <div class="mb-6 space-y-2">
+      <h2 class="fx-type-section-title">What FireUX Gives You</h2>
+      <p class="mx-auto max-w-2xl fx-type-body">
         Build, launch, and run applications on one platform.
       </p>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <UPageGrid>
       <UCard v-for="f in shown" :key="f.key">
         <template #header>
           <div class="flex items-center gap-3">
-            <UIcon :name="f.icon" class="text-xl" />
-            <h3 class="font-semibold">{{ f.title }}</h3>
+            <UIcon :name="f.icon" />
+            <h3 class="fx-type-card-heading">{{ f.title }}</h3>
           </div>
         </template>
-        <p class="text-sm text-muted">
+        <p class="fx-type-caption">
           {{ f.description }}
         </p>
       </UCard>
-    </div>
+    </UPageGrid>
   </div>
 </template>
 
@@ -43,37 +43,43 @@ const defaults: FeatureItem[] = [
     key: 'pwa',
     icon: 'i-lucide-smartphone',
     title: 'Installable Anywhere',
-    description: 'Use your app across phones and computers without waiting for an app store.',
+    description:
+      'Use your app across phones and computers without waiting for an app store.',
   },
   {
     key: 'templates',
     icon: 'i-lucide-square-dashed',
     title: 'Proven Starting Points',
-    description: 'Begin with working FireUX foundations instead of paying for a blank-sheet build.',
+    description:
+      'Begin with working FireUX foundations instead of paying for a blank-sheet build.',
   },
   {
     key: 'saas',
     icon: 'i-lucide-cloud',
     title: 'Managed for You',
-    description: 'We keep the platform, hosting, and shared foundations moving forward.',
+    description:
+      'We keep the platform, hosting, and shared foundations moving forward.',
   },
   {
     key: 'whitelabel',
     icon: 'i-lucide-layers-2',
     title: 'Your Brand',
-    description: 'Launch a focused customer-facing app with your own identity and content.',
+    description:
+      'Launch a focused customer-facing app with your own identity and content.',
   },
   {
     key: 'low-code',
     icon: 'i-lucide-code',
     title: 'Built to Grow',
-    description: 'Add capabilities when the business proves it needs them, not before.',
+    description:
+      'Add capabilities when the business proves it needs them, not before.',
   },
   {
     key: 'workspace',
     icon: 'i-lucide-terminal',
     title: 'One Control Centre',
-    description: 'Manage the work, people, and connected apps from a consistent workspace.',
+    description:
+      'Manage the work, people, and connected apps from a consistent workspace.',
   },
   {
     key: 'authpay',

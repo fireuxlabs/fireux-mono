@@ -1,13 +1,13 @@
 <template>
   <section
-    class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-default bg-elevated/30 px-5 py-4"
+    class="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
     aria-label="App membership"
   >
     <div class="flex items-center gap-3">
-      <UIcon name="i-lucide-building-2" class="size-5 text-primary" />
+      <UIcon name="i-lucide-building-2" class="size-5" />
       <div>
-        <h2 class="text-sm font-semibold text-highlighted">{{ appName }}</h2>
-        <p class="text-xs text-muted">
+        <h2>{{ appName }}</h2>
+        <p>
           {{ membership ? roleLabel : 'No membership' }}
         </p>
       </div>
@@ -24,7 +24,6 @@
         aria-label="Manage App membership"
         color="neutral"
         variant="ghost"
-        class="rounded-full"
       />
     </div>
   </section>

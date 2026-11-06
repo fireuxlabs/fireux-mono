@@ -1,10 +1,8 @@
 <template>
   <UCard>
-    <template #header
-      ><h2 class="font-semibold">Price, options and extras</h2></template
-    >
-    <form class="space-y-5" @submit.prevent="save">
-      <p class="text-sm text-muted">
+    <template #header><h2>Price, options and extras</h2></template>
+    <form class="fx-card-body-stack" @submit.prevent="save">
+      <p>
         Normal prices apply wherever this dish appears. Promotions can override
         the item price.
       </p>

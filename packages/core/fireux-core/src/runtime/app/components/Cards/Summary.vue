@@ -34,13 +34,8 @@
             <span v-if="tagline">{{ tagline }}</span>
           </div>
           <div class="preview__meta">
-            <span v-if="shortName" class="font-mono text-xs text-dimmed"
-              >@{{ shortName }}</span
-            >
-            <span v-if="id" class="font-mono text-xs text-dimmed break-all">{{
-              id
-            }}</span>
-
+            <span v-if="shortName">@{{ shortName }}</span>
+            <span v-if="id" class="break-all">{{ id }}</span>
           </div>
         </div>
       </div>

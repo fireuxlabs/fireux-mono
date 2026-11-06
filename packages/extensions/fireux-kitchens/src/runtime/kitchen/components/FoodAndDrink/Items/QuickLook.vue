@@ -20,10 +20,10 @@
             />
             <div
               v-else
-              class="flex size-full items-center justify-center text-muted"
+              class="flex size-full items-center justify-center"
               aria-hidden="true"
             >
-              <UIcon name="i-lucide-utensils" class="size-10" />
+              <UIcon name="i-lucide-utensils" />
             </div>
           </div>
 
@@ -37,7 +37,7 @@
               </UBadge>
             </div>
 
-            <p class="text-sm leading-6 text-toned">
+            <p>
               {{ dish.description || 'No description has been added yet.' }}
             </p>
           </div>
@@ -47,25 +47,20 @@
           v-if="menuUsage.length"
           aria-labelledby="dish-quick-look-menus"
         >
-          <h3
-            id="dish-quick-look-menus"
-            class="text-sm font-semibold text-highlighted"
-          >
-            On menus
-          </h3>
+          <h3 id="dish-quick-look-menus">On menus</h3>
           <ul class="mt-2 grid gap-2 sm:grid-cols-2">
-            <li
+            <UCard as="li" variant="subtle"
               v-for="placement in menuPlacements"
               :key="placement.key"
-              class="rounded-lg border border-default bg-elevated/30 px-3 py-2.5"
+              
             >
-              <p class="truncate text-sm font-medium text-highlighted">
+              <p class="truncate">
                 {{ placement.menuName }}
               </p>
-              <p class="mt-0.5 truncate text-xs text-muted">
+              <p class="mt-0.5 truncate">
                 {{ placement.sectionLabel }}
               </p>
-            </li>
+            </UCard>
           </ul>
         </section>
       </div>

@@ -6,7 +6,6 @@
         placeholder="Search the ingredient catalogue…"
         aria-label="Find ingredients to add"
         size="lg"
-        class="w-full"
         icon="i-lucide-search"
         :disabled="
           submitting ||
@@ -16,9 +15,7 @@
         "
       />
 
-      <p v-if="libraryPending" class="text-sm text-dimmed">
-        Loading ingredients…
-      </p>
+      <p v-if="libraryPending">Loading ingredients…</p>
 
       <UAlert
         v-else-if="libraryError"
@@ -35,7 +32,7 @@
           :key="ingredient.id"
           color="neutral"
           variant="soft"
-          class="justify-start gap-3 rounded-xl p-3"
+          class="justify-start"
           :loading="submitting && selectedId === ingredient.id"
           :disabled="submitting || !canAddIngredient"
           @click="handleSelect(ingredient.id)"
@@ -45,24 +42,24 @@
             icon="i-lucide-carrot"
             size="xs"
           />
-          <span class="min-w-0 text-left">
+          <span class="min-w-0">
             <span class="block truncate">{{ ingredient.name }}</span>
-            <span class="block truncate text-xs font-normal text-dimmed">
+            <span class="block truncate">
               {{ ingredientCategoryLabel(ingredient.category) }}
             </span>
           </span>
-          <UIcon name="i-lucide-plus" class="ml-auto size-4 shrink-0" />
+          <UIcon name="i-lucide-plus" class="shrink-0" />
         </UButton>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
+      <p v-else>
         {{
           query
             ? 'No ingredients available to add match your search.'
             : 'All ingredients in the catalogue are already in your kitchen.'
         }}
       </p>
-      <p v-if="candidates.length === 24" class="text-xs text-dimmed">
+      <p v-if="candidates.length === 24">
         Showing the first 24 results. Search to narrow the list.
       </p>
     </div>

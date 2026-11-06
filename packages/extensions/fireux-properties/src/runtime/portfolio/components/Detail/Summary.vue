@@ -11,10 +11,10 @@
       <div class="min-w-0 flex-1 space-y-3">
         <div class="space-y-1">
           <div class="fx-type-label">Portfolio</div>
-          <h2 class="text-2xl font-semibold text-highlighted">
+          <h2 class="fx-type-card-heading">
             {{ card.title }}
           </h2>
-          <p v-if="card.subtitle" class="max-w-3xl text-sm text-toned">
+          <p v-if="card.subtitle" class="max-w-3xl">
             {{ card.subtitle }}
           </p>
         </div>
@@ -33,18 +33,18 @@
           </UBadge>
         </div>
 
-        <dl class="grid gap-3 text-sm sm:grid-cols-2">
+        <dl class="grid gap-3 sm:grid-cols-2">
           <div v-if="card.ownerLabel" class="space-y-1">
             <dt class="fx-type-label">Owner</dt>
-            <dd class="text-default">{{ card.ownerLabel }}</dd>
+            <dd>{{ card.ownerLabel }}</dd>
           </div>
           <div v-if="card.regionLabel" class="space-y-1">
             <dt class="fx-type-label">Region</dt>
-            <dd class="text-default">{{ card.regionLabel }}</dd>
+            <dd>{{ card.regionLabel }}</dd>
           </div>
         </dl>
 
-        <p v-if="card.summary" class="text-sm text-muted">
+        <p v-if="card.summary">
           {{ card.summary }}
         </p>
       </div>

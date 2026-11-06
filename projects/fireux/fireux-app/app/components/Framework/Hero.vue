@@ -1,20 +1,17 @@
 <template>
   <section class="ignition-hero" aria-labelledby="ignition-heading">
-    <UContainer class="relative py-20 sm:py-28">
-      <div class="mx-auto max-w-3xl text-center">
+    <UContainer class="relative">
+      <div class="mx-auto max-w-3xl">
         <UBadge color="neutral" variant="subtle" size="lg">{{
           fireuxOffer.category
         }}</UBadge>
-        <h1
-          id="ignition-heading"
-          class="mt-6 text-4xl font-semibold tracking-tight text-highlighted sm:text-6xl"
-        >
+        <h1 id="ignition-heading" class="mt-6 fx-type-page-title">
           {{ fireuxOffer.headline }}
         </h1>
-        <p class="mx-auto mt-6 max-w-xl text-lg text-muted">
+        <p class="mx-auto mt-6 max-w-xl fx-type-description">
           {{ fireuxOffer.heroDescription }}
         </p>
-        <FrameworkIgnitionPrompt class="mt-10 text-left" />
+        <FrameworkIgnitionPrompt class="mt-10" />
       </div>
     </UContainer>
   </section>

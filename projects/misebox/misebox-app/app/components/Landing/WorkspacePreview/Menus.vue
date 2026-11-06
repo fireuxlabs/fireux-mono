@@ -12,23 +12,22 @@
           :alt="menu.imageAlt"
           class="aspect-square w-full object-cover"
           loading="lazy"
-        >
+        />
         <div
           v-else
-          class="flex aspect-square w-full items-center justify-center bg-elevated text-muted"
+          class="flex aspect-square w-full items-center justify-center bg-elevated"
           aria-hidden="true"
         >
-          <UIcon name="i-lucide-image" class="size-6" />
+          <UIcon name="i-lucide-image" />
         </div>
 
-        <div class="flex min-w-0 items-center gap-2 border-t border-default px-3 py-2.5">
-          <p class="truncate text-xs font-semibold text-highlighted">
+        <div
+          class="flex min-w-0 items-center gap-2 border-t border-default px-3 py-2.5"
+        >
+          <p class="truncate fx-type-caption">
             {{ menu.name }}
           </p>
-          <UIcon
-            name="i-lucide-arrow-right"
-            class="ml-auto size-3.5 shrink-0 text-muted"
-          />
+          <UIcon name="i-lucide-arrow-right" />
         </div>
       </article>
 
@@ -36,13 +35,17 @@
         class="workspace-preview-menu-card workspace-preview-create-card flex min-w-0 flex-col overflow-hidden rounded-xl border border-primary/20 bg-primary/5 shadow-sm"
       >
         <div class="flex min-h-0 flex-1 items-center justify-center">
-          <span class="flex size-10 items-center justify-center rounded-full bg-primary text-inverted shadow-sm">
-            <UIcon name="i-lucide-plus" class="size-5" />
+          <span
+            class="flex size-10 items-center justify-center rounded-full bg-primary text-inverted shadow-sm"
+          >
+            <UIcon name="i-lucide-plus" />
           </span>
         </div>
-        <div class="flex items-center gap-2 border-t border-primary/15 bg-default/70 px-3 py-2.5">
-          <p class="text-xs font-semibold text-highlighted">Create menu</p>
-          <UIcon name="i-lucide-arrow-right" class="ml-auto size-3.5 shrink-0 text-muted" />
+        <div
+          class="flex items-center gap-2 border-t border-primary/15 bg-default/70 px-3 py-2.5"
+        >
+          <p class="fx-type-caption">Create menu</p>
+          <UIcon name="i-lucide-arrow-right" />
         </div>
       </article>
     </div>

@@ -1,39 +1,31 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> Go QR </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> Go QR </UButton>
         <UPageHeader
           title="Help"
           description="Upload a public doc and get a QR code."
         />
-        <UPageBody class="space-y-4">
-          <section class="space-y-4">
+        <UPageBody>
+          <section class="pagebody">
             <div>
-              <h2 class="text-xl font-semibold text-highlighted">
-                How it works
-              </h2>
-              <p class="mt-2 text-muted">
+              <h2 class="fx-type-section-title">How it works</h2>
+              <p class="mt-2 fx-type-body">
                 Upload a doc, choose a short public path, then Go QR creates a
                 public doc page and a printable QR page.
               </p>
             </div>
 
             <div>
-              <h2 class="text-xl font-semibold text-highlighted">
-                Public by design
-              </h2>
-              <p class="mt-2 text-muted">
+              <h2 class="fx-type-section-title">Public by design</h2>
+              <p class="mt-2 fx-type-body">
                 QR docs are for public information. Anyone with the link or QR
                 code can view your doc.
               </p>
             </div>
 
             <div>
-              <h2 class="text-xl font-semibold text-highlighted">
-                What to upload
-              </h2>
-              <p class="mt-2 text-muted">
+              <h2 class="fx-type-section-title">What to upload</h2>
+              <p class="mt-2 fx-type-body">
                 Use Go QR for information people need to scan and read. Do not
                 upload private, sensitive, or confidential information.
               </p>
@@ -47,8 +39,6 @@
           </div>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

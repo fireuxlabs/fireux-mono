@@ -3,21 +3,17 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <FireDiagnosticsModel
-        :title="'Jobs · Model'"
-        :model="jobModelRuntime"
-      />
+      <FireDiagnosticsModel :title="'Jobs · Model'" :model="jobModelRuntime" />
     </UCard>
 
     <UCard>
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Jobs collection
-            </p>
-            <p class="text-xs text-muted">
-              Inspect model drift separately from the public jobs collection manager.
+            <p>Jobs collection</p>
+            <p>
+              Inspect model drift separately from the public jobs collection
+              manager.
             </p>
             <FireDiagnosticsDriftToolbar
               :drift-kind="jobsDriftKind"
@@ -76,7 +72,8 @@ const filteredJobsDriftPayload = buildJobsDriftPayload({
 })
 
 const jobsDriftCopyPayload = buildJobsCopyPayload({
-  modelPath: 'packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts',
+  modelPath:
+    'packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts',
   itemsKey: 'jobs',
   items: filteredJobsDriftPayload,
   total: computed(() => jobsCollection.value.length),

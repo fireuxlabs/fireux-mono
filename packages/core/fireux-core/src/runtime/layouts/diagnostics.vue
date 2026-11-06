@@ -1,18 +1,13 @@
 <template>
   <ClientOnly>
     <UDashboardGroup unit="rem">
-      <UDashboardSidebar
-        id="core-diagnostics"
-        collapsible
-        resizable
-        class="bg-elevated/25"
-      >
+      <UDashboardSidebar id="core-diagnostics" collapsible resizable>
         <template #default="{ collapsed }">
           <FireLayoutsDiagnosticsNav :collapsed="collapsed ?? false" />
         </template>
       </UDashboardSidebar>
 
-      <div class="w-full h-screen overflow-y-auto bg-elevated/50">
+      <div class="w-full h-screen overflow-y-auto">
         <div class="min-h-full p-0 lg:p-4">
           <slot />
         </div>

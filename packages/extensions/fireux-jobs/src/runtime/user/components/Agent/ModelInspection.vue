@@ -1,17 +1,18 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <FireDiagnosticsModel :title="'Agents · Model'" :model="agentModelRuntime" />
+      <FireDiagnosticsModel
+        :title="'Agents · Model'"
+        :model="agentModelRuntime"
+      />
     </UCard>
 
     <UCard>
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Agents collection
-            </p>
-            <p class="text-xs text-muted">
+            <p>Agents collection</p>
+            <p>
               Inspect model drift separately from the public agents collection
               manager.
             </p>
@@ -32,9 +33,7 @@
         <AgentDirectory />
 
         <div v-if="agentPreviewCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-            Preview cards
-          </p>
+          <p>Preview cards</p>
           <div class="space-y-3">
             <AgentCardsSummary
               v-for="card in agentPreviewCards"
@@ -45,9 +44,7 @@
         </div>
 
         <div v-if="agentProfileCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-            Profile cards
-          </p>
+          <p>Profile cards</p>
           <div class="space-y-4">
             <AgentProfile
               v-for="entry in agentProfileCards"

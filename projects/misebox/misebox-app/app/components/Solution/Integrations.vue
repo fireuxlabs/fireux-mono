@@ -1,29 +1,23 @@
 <template>
   <UCard variant="subtle">
     <template #header>
-      <h2 class="text-lg font-semibold text-highlighted">
-        Integrations
-      </h2>
+      <h2 class="fx-type-section-title">Integrations</h2>
     </template>
 
-    <div class="space-y-4">
-      <p class="text-sm leading-6 text-muted">
+    <div class="fx-card-body-stack">
+      <p class="fx-type-caption">
         {{ integrations.body }}
       </p>
 
       <div class="grid gap-3 md:grid-cols-3">
-        <div
-          v-for="item in integrations.items"
-          :key="item.name"
-          class="rounded-md border border-default bg-default p-3"
-        >
+        <UCard v-for="item in integrations.items" :key="item.name">
           <div class="flex items-center gap-2">
-            <UIcon :name="item.icon" class="size-4 text-primary" />
-            <h3 class="text-sm font-semibold text-highlighted">
+            <UIcon :name="item.icon" />
+            <h3 class="fx-type-card-heading">
               {{ item.name }}
             </h3>
           </div>
-          <p class="mt-2 text-xs leading-5 text-muted">
+          <p class="mt-2 fx-type-caption">
             {{ item.body }}
           </p>
           <UButton
@@ -35,11 +29,10 @@
             variant="ghost"
             size="xs"
             trailing-icon="i-lucide-arrow-up-right"
-            class="mt-3"
           >
             {{ item.cta }}
           </UButton>
-        </div>
+        </UCard>
       </div>
     </div>
   </UCard>

@@ -2,7 +2,7 @@
   <section id="menu" class="template-one-menu" :style="style" data-landing-scene="menu">
     <div class="template-one-menu__intro" data-landing-reveal="up">
       <div>
-        <h2>Menu</h2>
+        <h2 class="fx-type-section-title">Menu</h2>
         <span aria-hidden="true" />
         <p v-if="content.menu.description">{{ content.menu.description }}</p>
         <NuxtLink v-if="content.menuHref && content.menuActionLabel" :to="content.menuHref">
@@ -19,7 +19,7 @@
     <article v-if="makeItYours" class="template-one-menu__make-it-yours" data-landing-reveal="scale">
       <div>
         <p>+</p>
-        <h3>{{ makeItYours.name }}</h3>
+        <h3 class="fx-type-card-title">{{ makeItYours.name }}</h3>
       </div>
       <p>{{ addOnLabels }}</p>
     </article>

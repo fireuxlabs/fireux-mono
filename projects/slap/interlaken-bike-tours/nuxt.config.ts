@@ -52,7 +52,6 @@ const config: NuxtConfig & {
   icon: Partial<IconOptions>
 } = {
   ...fireux,
-  css: [...(fireux.css || []), '~/assets/css/main.css'],
   ui: { fonts: false } satisfies Partial<UIOptions>,
   icon: {
     clientBundle: {

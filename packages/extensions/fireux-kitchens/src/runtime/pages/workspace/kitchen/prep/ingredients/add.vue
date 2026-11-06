@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4">
+  <section class="workspace-surface workspace-surface--compact">
     <KitchenPrepAndProductionIngredientsAdd />
   </section>
 </template>

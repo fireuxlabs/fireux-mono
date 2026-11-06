@@ -1,6 +1,6 @@
 <template>
   <WorkspaceAI :aria-label="`${label} Test AI`" compact>
-    <p v-if="message" role="status" class="text-sm text-muted">{{ message }}</p>
+    <p v-if="message" role="status">{{ message }}</p>
     <FireCopyError v-if="error" :message="error" />
     <WorkspaceAIComposer
       v-model="prompt"
@@ -19,10 +19,7 @@
     >
       <template #body>
         <template v-if="prepared">
-          <p
-            v-if="prepared.action !== 'create'"
-            class="mb-4 break-words text-sm"
-          >
+          <p v-if="prepared.action !== 'create'" class="mb-4 break-words">
             {{ test.selected.value?.value }}
           </p>
           <TestForm

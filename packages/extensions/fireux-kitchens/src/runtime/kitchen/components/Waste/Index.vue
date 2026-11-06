@@ -2,31 +2,27 @@
   <section class="space-y-3" aria-labelledby="waste-events-title">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <h2 id="waste-events-title" class="m-0 text-lg font-semibold">
-          Recorded Waste
-        </h2>
-        <p class="m-0 text-sm text-muted">
-          Observed Waste events for the current Kitchen.
-        </p>
+        <h2 id="waste-events-title">Recorded Waste</h2>
+        <p>Observed Waste events for the current Kitchen.</p>
       </div>
       <UBadge color="neutral" variant="soft">{{ events.length }}</UBadge>
     </div>
 
     <div v-if="events.length" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       <UCard v-for="event in orderedEvents" :key="event.id">
-        <div class="grid gap-2">
-          <div class="flex items-start justify-between gap-3">
-            <h3 class="m-0 font-semibold text-highlighted">
+        <div class="fx-card-body-stack">
+          <div class="card__header">
+            <h3>
               {{ event.item_name }}
             </h3>
             <UBadge color="neutral" variant="soft">
               {{ event.quantity }} {{ event.unit }}
             </UBadge>
           </div>
-          <p class="m-0 text-sm text-muted">
+          <p>
             {{ reasonLabel(event.reason) }} · {{ sourceLabel(event.source) }}
           </p>
-          <p v-if="event.notes" class="m-0 text-sm text-dimmed">
+          <p v-if="event.notes">
             {{ event.notes }}
           </p>
         </div>

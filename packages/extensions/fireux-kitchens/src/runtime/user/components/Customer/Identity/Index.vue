@@ -10,7 +10,7 @@
     </div>
 
     <UPageCard v-if="isProfileLoading" variant="subtle">
-      <p class="text-sm text-dimmed">Loading customer profile…</p>
+      <p>Loading customer profile…</p>
     </UPageCard>
 
     <UPageCard
@@ -26,7 +26,7 @@
         @click="createProfile"
       />
 
-      <p v-if="createError" class="mt-3 text-sm text-dimmed">
+      <p v-if="createError" class="mt-3">
         {{ createError }}
       </p>
     </UPageCard>

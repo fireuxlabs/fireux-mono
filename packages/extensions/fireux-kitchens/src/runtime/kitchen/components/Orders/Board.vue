@@ -9,7 +9,6 @@
           color="neutral"
           :variant="selectedStates.includes(state) ? 'solid' : 'outline'"
           :aria-pressed="selectedStates.includes(state)"
-          class="min-h-11 px-4"
           @click="toggleState(state)"
         />
       </div>
@@ -38,24 +37,16 @@
       color="error"
       description="Some open orders could not be loaded."
     />
-    <p v-if="!kitchenId" class="py-16 text-center text-muted">
-      Select a Kitchen first.
-    </p>
+    <p v-if="!kitchenId" class="py-16">Select a Kitchen first.</p>
     <UAlert
       v-if="error || refreshTransport.error.value || fullscreenError"
       color="error"
       :description="error || refreshTransport.error.value || fullscreenError"
     />
-    <p
-      v-if="loaded && !allOrders.length && !error"
-      class="py-20 text-center text-xl text-muted"
-    >
+    <p v-if="loaded && !allOrders.length && !error" class="py-20">
       No orders yet
     </p>
-    <p
-      v-else-if="loaded && !visibleOrders.length && !error"
-      class="py-20 text-center text-muted"
-    >
+    <p v-else-if="loaded && !visibleOrders.length && !error" class="py-20">
       No orders in the selected states.
     </p>
     <div class="ticket-grid">
@@ -68,9 +59,7 @@
         }"
         :aria-label="`Order ${entry.order.number}`"
       >
-        <div
-          class="flex items-center justify-between px-4 py-2 text-sm font-semibold"
-        >
+        <div class="flex items-center justify-between px-4 py-2">
           <span>{{ labels[entry.state as keyof typeof labels] }}</span>
         </div>
         <KitchenOrdersTicket
@@ -133,7 +122,6 @@
             :default-open="false"
             variant="ghost"
             size="sm"
-            class="text-sm"
           >
             <div class="space-y-3 pt-3">
               <p v-if="entry.order.customer?.phone">
@@ -153,13 +141,11 @@
                     type="number"
                     min="1"
                     max="1440"
-                    class="w-full"
                 /></UFormField>
                 <UFormField label="Message / reason for declining"
                   ><UTextarea
                     v-model="messages[entry.order.id]"
                     :maxlength="500"
-                    class="w-full"
                 /></UFormField>
                 <UButton
                   label="Decline order"

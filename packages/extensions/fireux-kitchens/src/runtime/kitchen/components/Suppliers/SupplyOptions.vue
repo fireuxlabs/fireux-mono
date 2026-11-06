@@ -20,7 +20,7 @@
         </div>
       </template>
 
-      <div class="space-y-4">
+      <div class="fx-card-body-stack">
         <UAlert
           color="neutral"
           variant="soft"

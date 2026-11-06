@@ -1,8 +1,6 @@
 <template>
-  <section class="space-y-4">
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading sales…
-    </p>
+  <section class="workspace-surface workspace-surface--compact">
+    <p v-if="outcome === 'pending'" role="status">Loading sales…</p>
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -11,47 +9,44 @@
     >
       <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Kitchen to view sales.
     </p>
     <template v-else>
       <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-xs font-medium text-muted">Gross sales</p>
-            <UIcon name="i-lucide-banknote" class="size-4 text-dimmed" />
+          <div class="card__header">
+            <p>Gross sales</p>
+            <UIcon name="i-lucide-banknote" />
           </div>
-          <p class="mt-2 text-xl font-semibold tabular-nums text-highlighted">
+          <p class="mt-2 tabular-nums">
             {{ formatMoney(grossSalesMinor) }}
           </p>
         </UCard>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-xs font-medium text-muted">Completed checks</p>
-            <UIcon name="i-lucide-receipt-text" class="size-4 text-dimmed" />
+          <div class="card__header">
+            <p>Completed checks</p>
+            <UIcon name="i-lucide-receipt-text" />
           </div>
-          <p class="mt-2 text-xl font-semibold tabular-nums text-highlighted">
+          <p class="mt-2 tabular-nums">
             {{ formatCount(completedChecks) }}
           </p>
         </UCard>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-xs font-medium text-muted">Average check</p>
-            <UIcon name="i-lucide-calculator" class="size-4 text-dimmed" />
+          <div class="card__header">
+            <p>Average check</p>
+            <UIcon name="i-lucide-calculator" />
           </div>
-          <p class="mt-2 text-xl font-semibold tabular-nums text-highlighted">
+          <p class="mt-2 tabular-nums">
             {{ formatMoney(averageCheckMinor) }}
           </p>
         </UCard>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-xs font-medium text-muted">Items sold</p>
-            <UIcon name="i-lucide-utensils" class="size-4 text-dimmed" />
+          <div class="card__header">
+            <p>Items sold</p>
+            <UIcon name="i-lucide-utensils" />
           </div>
-          <p class="mt-2 text-xl font-semibold tabular-nums text-highlighted">
+          <p class="mt-2 tabular-nums">
             {{ formatCount(itemsSold) }}
           </p>
         </UCard>
@@ -66,10 +61,8 @@
           class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <h2 class="text-sm font-semibold text-highlighted">
-              Transaction direction
-            </h2>
-            <p class="mt-1 text-xs text-muted">
+            <h2>Transaction direction</h2>
+            <p class="mt-1">
               Completed Kitchen sales are the current money-in source.
             </p>
           </div>
@@ -84,17 +77,18 @@
             />
           </UFieldGroup>
         </div>
-        <p class="mt-3 text-xs text-muted">
+        <p class="mt-3">
           No Kitchen-owned outgoing source is connected for this view.
         </p>
       </UCard>
 
-      <div v-if="currencySummary" class="grid gap-4 lg:grid-cols-2">
+      <div
+        v-if="currencySummary"
+        class="workspace-surface__grid workspace-surface__grid--2"
+      >
         <UCard>
           <template #header>
-            <h2 class="text-sm font-semibold text-highlighted">
-              Sales by service
-            </h2>
+            <h2>Sales by service</h2>
           </template>
           <ul class="divide-y divide-default">
             <li
@@ -103,16 +97,12 @@
               class="flex items-center justify-between gap-4 px-4 py-3"
             >
               <div class="min-w-0">
-                <p class="text-sm font-medium text-highlighted">
+                <p>
                   {{ formatTransactionType(service.type) }}
                 </p>
-                <p class="mt-0.5 text-xs text-muted">
-                  {{ formatCount(service.checks) }} checks
-                </p>
+                <p class="mt-0.5">{{ formatCount(service.checks) }} checks</p>
               </div>
-              <p
-                class="shrink-0 text-sm font-semibold tabular-nums text-highlighted"
-              >
+              <p class="shrink-0 tabular-nums">
                 {{ formatMoney(service.amountMinor) }}
               </p>
             </li>
@@ -121,7 +111,7 @@
 
         <UCard>
           <template #header>
-            <h2 class="text-sm font-semibold text-highlighted">Best sellers</h2>
+            <h2>Best sellers</h2>
           </template>
           <ul class="divide-y divide-default">
             <li
@@ -130,16 +120,12 @@
               class="flex items-center justify-between gap-4 px-4 py-3"
             >
               <div class="min-w-0">
-                <p class="truncate text-sm font-medium text-highlighted">
+                <p class="truncate">
                   {{ item.label }}
                 </p>
-                <p class="mt-0.5 text-xs text-muted">
-                  {{ formatCount(item.quantity) }} sold
-                </p>
+                <p class="mt-0.5">{{ formatCount(item.quantity) }} sold</p>
               </div>
-              <p
-                class="shrink-0 text-sm font-semibold tabular-nums text-highlighted"
-              >
+              <p class="shrink-0 tabular-nums">
                 {{ formatMoney(item.line_gross.amount_minor) }}
               </p>
             </li>
@@ -153,12 +139,12 @@
             class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <h2 class="text-sm font-semibold text-highlighted">
+              <h2>
                 {{
                   isSingleDay ? 'Today’s completed checks' : 'Completed checks'
                 }}
               </h2>
-              <p class="mt-1 text-xs text-muted">
+              <p class="mt-1">
                 {{ periodLabel }}
               </p>
             </div>
@@ -193,33 +179,19 @@
 
         <div
           v-else-if="currencySummary && filteredTransactions.length === 0"
-          class="flex min-h-48 flex-col items-center justify-center px-6 py-10 text-center"
+          class="flex min-h-48 flex-col items-center justify-center px-6 py-10"
         >
-          <UIcon
-            name="i-lucide-receipt-text"
-            class="size-6 text-dimmed"
-            aria-hidden="true"
-          />
-          <p class="mt-3 text-sm font-medium text-highlighted">
-            No completed checks for this service
-          </p>
+          <UIcon name="i-lucide-receipt-text" aria-hidden="true" />
+          <p class="mt-3">No completed checks for this service</p>
         </div>
 
         <div
           v-else-if="!currencySummary"
-          class="flex min-h-48 flex-col items-center justify-center px-6 py-10 text-center"
+          class="flex min-h-48 flex-col items-center justify-center px-6 py-10"
         >
-          <UIcon
-            name="i-lucide-receipt-text"
-            class="size-6 text-dimmed"
-            aria-hidden="true"
-          />
-          <p class="mt-3 text-sm font-medium text-highlighted">
-            No completed sales
-          </p>
-          <p class="mt-1 text-xs text-muted">
-            There is no money-in data for this period.
-          </p>
+          <UIcon name="i-lucide-receipt-text" aria-hidden="true" />
+          <p class="mt-3">No completed sales</p>
+          <p class="mt-1">There is no money-in data for this period.</p>
         </div>
 
         <div v-else>
@@ -233,33 +205,27 @@
               class="flex items-center gap-3 px-4 py-3.5"
             >
               <span
-                class="flex size-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-success"
+                class="flex size-9 shrink-0 items-center justify-center rounded-full bg-success/10"
               >
-                <UIcon
-                  name="i-lucide-arrow-down-left"
-                  class="size-4"
-                  aria-hidden="true"
-                />
+                <UIcon name="i-lucide-arrow-down-left" aria-hidden="true" />
               </span>
               <div class="min-w-0 flex-1">
-                <div class="flex min-w-0 items-center gap-2">
-                  <p class="truncate text-sm font-medium text-highlighted">
+                <div class="fx-card__chips">
+                  <p class="truncate">
                     {{ transaction.summary }}
                   </p>
                   <UBadge color="success" variant="subtle" size="sm">
                     Completed
                   </UBadge>
                 </div>
-                <p class="mt-0.5 truncate text-xs text-muted">
+                <p class="mt-0.5 truncate">
                   {{ formatTransactionTime(transaction.occurred_at) }}
                   · {{ formatTransactionType(transaction.order_type) }} ·
                   {{ transaction.closed_by }} ·
                   {{ formatCount(transaction.item_quantity) }} items
                 </p>
               </div>
-              <p
-                class="shrink-0 text-sm font-semibold tabular-nums text-success"
-              >
+              <p class="shrink-0 tabular-nums">
                 {{ formatSignedMoney(transaction.signed_amount.amount_minor) }}
               </p>
               <UButton
@@ -275,13 +241,11 @@
         </div>
 
         <template v-if="currencySummary && filteredTransactions.length" #footer>
-          <div
-            class="flex items-center justify-between gap-4 text-sm font-semibold"
-          >
-            <span class="text-highlighted">
+          <div class="card__header">
+            <span>
               {{ formatCount(filteredTransactions.length) }} completed checks
             </span>
-            <span class="tabular-nums text-success">
+            <span class="tabular-nums">
               {{ formatSignedMoney(filteredTotalMinor) }}
             </span>
           </div>
@@ -300,15 +264,13 @@
         @after:leave="selectedTransaction = null"
       >
         <template #body>
-          <div v-if="selectedTransaction" class="space-y-5">
+          <div v-if="selectedTransaction" class="workspace-surface">
             <div
               class="flex items-center justify-between gap-4 rounded-xl bg-elevated/50 p-4"
             >
               <div>
-                <p class="text-xs font-medium text-muted">Money in</p>
-                <p
-                  class="mt-1 text-2xl font-semibold tabular-nums text-success"
-                >
+                <p>Money in</p>
+                <p class="mt-1 tabular-nums">
                   {{
                     formatSignedMoney(
                       selectedTransaction.signed_amount.amount_minor
@@ -317,13 +279,9 @@
                 </p>
               </div>
               <span
-                class="flex size-10 items-center justify-center rounded-full bg-success/10 text-success"
+                class="flex size-10 items-center justify-center rounded-full bg-success/10"
               >
-                <UIcon
-                  name="i-lucide-arrow-down-left"
-                  class="size-5"
-                  aria-hidden="true"
-                />
+                <UIcon name="i-lucide-arrow-down-left" aria-hidden="true" />
               </span>
             </div>
 
@@ -335,10 +293,10 @@
                 :key="detail.label"
                 class="flex items-center justify-between gap-4 px-4 py-3"
               >
-                <dt class="text-sm text-muted">
+                <dt>
                   {{ detail.label }}
                 </dt>
-                <dd class="text-right text-sm font-medium text-highlighted">
+                <dd>
                   {{ detail.value }}
                 </dd>
               </div>
@@ -346,13 +304,8 @@
 
             <section aria-labelledby="transaction-items-title">
               <div class="flex items-center justify-between gap-3">
-                <h3
-                  id="transaction-items-title"
-                  class="text-sm font-semibold text-highlighted"
-                >
-                  Items
-                </h3>
-                <span class="text-xs text-muted">
+                <h3 id="transaction-items-title">Items</h3>
+                <span>
                   {{ formatCount(selectedTransaction.item_quantity) }}
                 </span>
               </div>
@@ -364,19 +317,13 @@
                   :key="`${item.label}:${index}`"
                   class="flex min-w-0 items-center gap-2 px-4 py-3"
                 >
-                  <span
-                    class="shrink-0 whitespace-nowrap text-sm tabular-nums text-muted"
-                  >
+                  <span class="shrink-0 whitespace-nowrap tabular-nums">
                     {{ item.quantity }}×
                   </span>
-                  <span
-                    class="min-w-0 flex-1 truncate text-sm text-highlighted"
-                  >
+                  <span class="min-w-0 flex-1 truncate">
                     {{ item.label }}
                   </span>
-                  <span
-                    class="shrink-0 whitespace-nowrap text-sm tabular-nums text-muted"
-                  >
+                  <span class="shrink-0 whitespace-nowrap tabular-nums">
                     {{ formatMoney(item.line_gross.amount_minor) }}
                   </span>
                 </li>

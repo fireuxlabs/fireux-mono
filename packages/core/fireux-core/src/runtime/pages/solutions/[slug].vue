@@ -1,36 +1,30 @@
 <template>
-  <main v-if="solution" class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/solutions" variant="link" class="px-0">
-          Solutions
-        </UButton>
+  <main v-if="solution" class="min-h-screen">
+    <UContainer>
+      <UPage>
+        <UButton to="/solutions" variant="link"> Solutions </UButton>
         <UPageHeader
           :title="solution.title"
           :description="solution.description"
         />
-        <UPageBody class="space-y-4">
+        <UPageBody>
           <div class="grid min-w-0 gap-5">
-            <p class="m-0 whitespace-pre-line text-sm leading-7 text-muted">
+            <p class="whitespace-pre-line">
               {{ solution.body || solution.description }}
             </p>
 
             <UCard v-if="solution.steps?.length" variant="subtle">
               <template #header>
-                <h2 class="m-0 text-base font-semibold text-highlighted">
-                  How this comes to life
-                </h2>
+                <h2>How this comes to life</h2>
               </template>
 
               <ol class="grid gap-3 p-0">
                 <li
                   v-for="(step, index) in solution.steps"
                   :key="`${index}-${step}`"
-                  class="flex min-w-0 gap-3 text-sm leading-6 text-muted"
+                  class="flex min-w-0 gap-3"
                 >
-                  <span
-                    class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold leading-none text-primary"
-                  >
+                  <span class="mt-0.5 grid size-6 shrink-0 place-items-center">
                     {{ index + 1 }}
                   </span>
                   <span>{{ step }}</span>
@@ -40,13 +34,11 @@
 
             <UCard v-if="solution.relatedApp" variant="subtle">
               <template #header>
-                <h2 class="m-0 text-base font-semibold text-highlighted">
-                  Related FireUX app
-                </h2>
+                <h2>Related FireUX app</h2>
               </template>
 
               <div class="grid min-w-0 gap-3">
-                <p class="m-0 text-sm leading-6 text-muted">
+                <p>
                   {{
                     solution.relatedApp.description ||
                     `${solution.relatedApp.name} owns the deeper workflow for this solution.`
@@ -66,9 +58,7 @@
 
             <UCard v-if="relatedOperations.length" variant="subtle">
               <template #header>
-                <h2 class="m-0 text-base font-semibold text-highlighted">
-                  Related operations
-                </h2>
+                <h2>Related operations</h2>
               </template>
 
               <div class="grid gap-3 sm:grid-cols-2">
@@ -76,12 +66,12 @@
                   v-for="operation in relatedOperations"
                   :key="operation.id"
                   :to="`/operations/${operation.slug}`"
-                  class="grid gap-1 rounded-lg p-3 hover:bg-elevated"
+                  class="grid gap-1 p-3"
                 >
-                  <span class="font-semibold text-highlighted">
+                  <span>
                     {{ operation.title }}
                   </span>
-                  <span class="text-sm leading-6 text-muted">
+                  <span>
                     {{ operation.description }}
                   </span>
                 </NuxtLink>
@@ -91,18 +81,13 @@
             <UCard v-if="isAdmin && hasAdminPlanning" variant="subtle">
               <template #header>
                 <div class="flex flex-wrap items-center gap-2">
-                  <h2 class="m-0 text-base font-semibold text-highlighted">
-                    Admin planning
-                  </h2>
+                  <h2>Admin planning</h2>
                   <UBadge color="neutral" variant="soft"> Internal </UBadge>
                 </div>
               </template>
 
               <div class="grid min-w-0 gap-4">
-                <p
-                  v-if="solution.businessCase"
-                  class="m-0 whitespace-pre-line text-sm leading-6 text-muted"
-                >
+                <p v-if="solution.businessCase" class="whitespace-pre-line">
                   {{ solution.businessCase }}
                 </p>
 
@@ -110,9 +95,7 @@
                   v-if="solution.keywords?.length"
                   class="grid min-w-0 gap-2"
                 >
-                  <h3 class="m-0 text-sm font-semibold text-highlighted">
-                    Search intent
-                  </h3>
+                  <h3>Search intent</h3>
                   <div class="flex flex-wrap gap-1.5">
                     <UBadge
                       v-for="keyword in solution.keywords"
@@ -129,12 +112,8 @@
                   v-if="solution.provisioning?.length"
                   class="grid min-w-0 gap-2"
                 >
-                  <h3 class="m-0 text-sm font-semibold text-highlighted">
-                    Provisioning
-                  </h3>
-                  <ul
-                    class="m-0 grid gap-1.5 pl-4 text-sm leading-6 text-muted"
-                  >
+                  <h3>Provisioning</h3>
+                  <ul class="grid gap-1.5 pl-4">
                     <li v-for="item in solution.provisioning" :key="item">
                       {{ item }}
                     </li>
@@ -145,12 +124,8 @@
                   v-if="solution.checklist?.length"
                   class="grid min-w-0 gap-2"
                 >
-                  <h3 class="m-0 text-sm font-semibold text-highlighted">
-                    Checklist
-                  </h3>
-                  <ul
-                    class="m-0 grid list-none gap-2 p-0 text-sm leading-6 text-muted"
-                  >
+                  <h3>Checklist</h3>
+                  <ul class="grid list-none gap-2 p-0">
                     <li
                       v-for="item in solution.checklist"
                       :key="item.label"
@@ -163,7 +138,7 @@
                             : 'i-lucide-square'
                         "
                         class="mt-1 size-4 shrink-0"
-                        :class="item.done ? 'text-primary' : 'text-muted'"
+                        :class="item.done ? '' : ''"
                       />
                       <span>{{ item.label }}</span>
                     </li>
@@ -173,7 +148,7 @@
             </UCard>
           </div>
 
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton
               v-if="solution.cta"
               :to="solution.cta.to"

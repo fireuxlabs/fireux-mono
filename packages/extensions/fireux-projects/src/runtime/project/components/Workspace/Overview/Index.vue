@@ -23,7 +23,7 @@
   >
     <OverviewCapabilities />
     <template v-if="incompleteFields.length" #attention>
-      <p class="text-sm text-muted">Complete your Project identity.</p>
+      <p>Complete your Project identity.</p>
       <UButton
         v-for="field in incompleteFields"
         :key="field"

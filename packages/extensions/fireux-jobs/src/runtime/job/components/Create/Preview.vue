@@ -12,8 +12,8 @@
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-1">
-          <p class="text-xs uppercase tracking-wide text-dimmed">Preview</p>
-          <h3 class="text-base font-semibold text-highlighted">
+          <p>Preview</p>
+          <h3 class="fx-type-card-heading">
             {{ title }}
           </h3>
 
@@ -40,7 +40,7 @@
         </div>
 
         <div v-if="agentCard" class="min-w-[220px]">
-          <p class="text-xs uppercase tracking-wide text-dimmed">Posted by</p>
+          <p>Posted by</p>
           <AgentCardsPill
             v-bind="agentCard"
             :badges="agentCard?.badges ?? []"
@@ -52,42 +52,40 @@
       </div>
     </template>
 
-    <div class="space-y-4 text-sm text-toned">
-      <div class="rounded-lg border border-default bg-muted/60 p-4">
+    <div class="space-y-4">
+      <UCard :ui="{ body: 'fx-card-body-stack' }">
         <div class="grid gap-4 md:grid-cols-2">
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-dimmed">
-              Location
-            </p>
+            <p>Location</p>
             <PlacePill v-if="placeId" :id="placeId" />
-            <p v-else class="text-sm text-default">Not selected</p>
+            <p v-else>Not selected</p>
           </div>
           <div class="space-y-2">
-            <p class="text-xs uppercase tracking-wide text-dimmed">Business</p>
+            <p>Business</p>
             <BusinessPill v-if="businessId" :id="businessId" />
-            <p v-else class="text-sm text-default">Not set</p>
+            <p v-else>Not set</p>
           </div>
         </div>
-      </div>
+      </UCard>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <div class="rounded-lg border border-default bg-muted/60 p-4">
-          <p class="text-xs uppercase tracking-wide text-dimmed">Schedule</p>
-          <p class="mt-1 text-sm text-default">{{ scheduleLabel }}</p>
-        </div>
+        <UCard :ui="{ body: 'fx-card-body-stack' }">
+          <p>Schedule</p>
+          <p class="mt-1">{{ scheduleLabel }}</p>
+        </UCard>
 
-        <div class="rounded-lg border border-default bg-muted/60 p-4">
-          <p class="text-xs uppercase tracking-wide text-dimmed">Compensation</p>
-          <p class="mt-1 text-sm text-default">{{ compensationLabel }}</p>
-        </div>
+        <UCard :ui="{ body: 'fx-card-body-stack' }">
+          <p>Compensation</p>
+          <p class="mt-1">{{ compensationLabel }}</p>
+        </UCard>
       </div>
 
-      <div class="rounded-lg border border-default bg-muted/60 p-4">
-        <p class="text-xs uppercase tracking-wide text-dimmed">Description</p>
-        <p class="whitespace-pre-line text-sm text-default">
+      <UCard :ui="{ body: 'fx-card-body-stack' }">
+        <p>Description</p>
+        <p class="whitespace-pre-line">
           {{ description || 'No description yet.' }}
         </p>
-      </div>
+      </UCard>
     </div>
   </UCard>
 </template>
@@ -115,7 +113,9 @@ const BusinessPill = defineComponent({
     const businessId = computed(() => String(props.id || '').trim())
     const { place: businessData } = useBusinessDetail(businessId)
     const businessInterface = useBusinessInterface()
-    const businessCard = computed(() => businessInterface.pill(businessData.value))
+    const businessCard = computed(() =>
+      businessInterface.pill(businessData.value)
+    )
     return { businessCard }
   },
   template: `

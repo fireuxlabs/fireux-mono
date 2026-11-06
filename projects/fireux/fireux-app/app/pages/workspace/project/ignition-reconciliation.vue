@@ -13,7 +13,7 @@
       color="neutral"
       variant="soft"
     />
-    <p class="text-muted">
+    <p class="fx-type-body">
       Use Misebox’s build as evidence for improving the reusable Ignition
       process. Compare business requirements first, then inspect implementation
       decisions.
@@ -25,32 +25,32 @@
       icon="i-lucide-info"
     />
     <UCard
-      ><h2 class="text-lg font-semibold">The business brief</h2>
+      ><h2 class="fx-type-section-title">The business brief</h2>
       <p class="mt-2">{{ brief.outcome }}</p>
-      <p class="mt-2 text-sm text-muted">
+      <p class="mt-2 fx-type-caption">
         {{ brief.actors.join(' · ') }}
       </p></UCard
     >
     <UCard>
-      <h2 class="text-lg font-semibold">Search plan</h2>
+      <h2 class="fx-type-section-title">Search plan</h2>
       <p class="mt-2">{{ searchStatusLabels[report.search.status] }}</p>
       <ul
         v-if="report.search.findings.length"
-        class="mt-3 list-disc space-y-2 pl-5 text-sm"
+        class="mt-3 list-disc space-y-2 pl-5"
       >
         <li v-for="finding in report.search.findings" :key="finding">
           {{ finding }}
         </li>
       </ul>
-      <p class="mt-3 text-sm text-muted">
+      <p class="mt-3 fx-type-caption">
         This reviews declared policy. Deployed pages, indexation and search
         performance need separate evidence.
       </p>
     </UCard>
     <UCard v-for="item in report.coverage" :key="item.id">
-      <h2 class="font-semibold">{{ item.need }}</h2>
-      <p class="mt-2 text-sm text-muted">{{ item.acceptance }}</p>
-      <p class="mt-3 text-sm">
+      <h2 class="fx-type-section-title">{{ item.need }}</h2>
+      <p class="mt-2 fx-type-caption">{{ item.acceptance }}</p>
+      <p class="mt-3 fx-type-caption">
         Reference {{ item.observed.length ? 'mapped' : 'not mapped' }} ·
         independent proposal pending ·
         {{
@@ -63,11 +63,11 @@
         title="Reference implementation"
         :default-open="false"
       >
-        <ul class="mt-3 space-y-2 text-sm">
+        <ul class="mt-3 space-y-2">
           <li v-for="element in item.observed" :key="element.id">
             <strong>{{ element.id }}</strong> · {{ element.role }} ·
             {{ element.owner }}
-            <ul class="mt-1 pl-4 text-muted">
+            <ul class="mt-1 pl-4">
               <li v-for="path in element.sourcePaths" :key="path">
                 {{ path }}
               </li>
@@ -77,24 +77,24 @@
       </FireDisclosurePanel>
     </UCard>
     <UCard
-      ><h2 class="text-lg font-semibold">What the build taught us</h2>
+      ><h2 class="fx-type-section-title">What the build taught us</h2>
       <ul class="mt-3 space-y-4">
         <li v-for="learning in report.learnings" :key="learning.decision">
-          <h3 class="font-semibold">{{ learning.decision }}</h3>
-          <p class="mt-1 text-sm text-muted">{{ learning.reason }}</p>
+          <h3 class="fx-type-card-heading">{{ learning.decision }}</h3>
+          <p class="mt-1 fx-type-caption">{{ learning.reason }}</p>
         </li>
       </ul></UCard
     >
     <UCard
-      ><h2 class="text-lg font-semibold">The Ignition loop</h2>
+      ><h2 class="fx-type-section-title">The Ignition loop</h2>
       <ol class="mt-3 list-decimal space-y-3 pl-5">
         <li v-for="step in ignitionMethod" :key="step.id">
-          <h3 class="font-semibold">{{ step.title }}</h3>
-          <p class="mt-1 text-sm text-muted">{{ step.instruction }}</p>
+          <h3 class="fx-type-card-heading">{{ step.title }}</h3>
+          <p class="mt-1 fx-type-caption">{{ step.instruction }}</p>
         </li>
       </ol></UCard
     >
-    <p class="text-sm text-muted">{{ report.boundary }}</p>
+    <p class="fx-type-caption">{{ report.boundary }}</p>
   </div>
 </template>
 <script setup lang="ts">

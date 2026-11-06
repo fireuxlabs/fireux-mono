@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
-    <p class="text-sm font-medium text-highlighted">Avatar</p>
+    <p>Avatar</p>
     <FireFormsEditableImagePicker
       :src="proxiedAvatarUrl"
       :alt="user.display_name || user.handle || 'Your avatar'"

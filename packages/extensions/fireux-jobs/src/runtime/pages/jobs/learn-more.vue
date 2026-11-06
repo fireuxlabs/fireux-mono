@@ -8,8 +8,8 @@
 
     <UPageBody class="pagebody">
       <section class="space-y-3">
-        <h2 class="text-lg font-semibold">What you can do today</h2>
-        <p class="text-sm text-toned">
+        <h2 class="fx-type-section-title">What you can do today</h2>
+        <p>
           Explore open public roles connected to canonical employers and
           workplaces. Signed-in professionals can prepare their profile, while
           authorised employers can create, review, and publish employer-owned
@@ -18,33 +18,25 @@
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Current capabilities</h3>
-        <ul class="space-y-2 text-sm text-toned">
+        <h3 class="fx-type-card-title">Current capabilities</h3>
+        <ul class="space-y-2">
           <li>
-            <strong class="font-medium text-highlighted"
-              >Published job directory</strong
-            >
+            <strong>Published job directory</strong>
             &nbsp;— open public roles are projected with bounded Business and
             Place information.
           </li>
           <li>
-            <strong class="font-medium text-highlighted"
-              >Employer-authored drafts</strong
-            >
+            <strong>Employer-authored drafts</strong>
             &nbsp;— authorised employers can create and manage private drafts
             before publishing them.
           </li>
           <li>
-            <strong class="font-medium text-highlighted"
-              >Professional profiles</strong
-            >
+            <strong>Professional profiles</strong>
             &nbsp;— job seekers can maintain a reusable professional profile
             without duplicating their core User identity.
           </li>
           <li>
-            <strong class="font-medium text-highlighted"
-              >Applications and engagements</strong
-            >
+            <strong>Applications and engagements</strong>
             &nbsp;— professionals can apply, employers can make an offer, and an
             accepted offer becomes a private engagement.
           </li>
@@ -52,8 +44,8 @@
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Direct employment</h3>
-        <p class="text-sm text-toned">
+        <h3 class="fx-type-card-title">Direct employment</h3>
+        <p>
           The named employer—not the platform—employs and pays each person
           directly. The platform records applications, offers, and engagement
           progress without becoming the employer or moving wages.
@@ -61,7 +53,7 @@
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Choose your next step</h3>
+        <h3 class="fx-type-card-title">Choose your next step</h3>
         <div class="flex flex-wrap gap-2">
           <UButton to="/jobs" color="primary">Browse jobs</UButton>
           <UButton to="/dashboard/professional/profile" variant="soft">

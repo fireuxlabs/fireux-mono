@@ -18,7 +18,7 @@
 
     <UPageBody>
       <section id="read">
-        <h2>Read</h2>
+        <h2 class="fx-type-section-title">Read</h2>
         <p>
           FireUX Core exposes this read as <code>useAppRead()</code>. Pass the
           configured App id from <code>useFireUXConfig()</code>. It reads after
@@ -32,7 +32,7 @@
       </section>
 
       <section>
-        <h2>Input</h2>
+        <h2 class="fx-type-section-title">Input</h2>
         <dl>
           <dt><code>id: MaybeRef&lt;string | null | undefined&gt;</code></dt>
           <dd>
@@ -43,7 +43,7 @@
       </section>
 
       <section>
-        <h2>Returns</h2>
+        <h2 class="fx-type-section-title">Returns</h2>
         <dl>
           <dt><code>app</code></dt>
           <dd>
@@ -67,7 +67,7 @@
       </section>
 
       <section>
-        <h2>Stored and derived values</h2>
+        <h2 class="fx-type-section-title">Stored and derived values</h2>
         <p>
           <code>status</code> is stored on the App. A page can derive a
           convenient boolean from it. <code>outcome</code> describes the read;

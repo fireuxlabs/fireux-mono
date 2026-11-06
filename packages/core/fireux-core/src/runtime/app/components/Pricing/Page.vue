@@ -2,23 +2,17 @@
   <main>
     <UPageHero :title="props.title" :description="props.description" />
 
-    <UContainer
-      v-if="planGroups.length"
-      class="flex flex-col gap-12 pb-16 sm:pb-24"
-    >
+    <UContainer v-if="planGroups.length">
       <section
         v-for="group in planGroups"
         :key="group.id || group.title || 'plans'"
         class="space-y-6"
       >
-        <div v-if="group.title || group.description" class="space-y-2">
-          <h2
-            v-if="group.title"
-            class="text-2xl font-semibold text-highlighted"
-          >
+        <div v-if="group.title || group.description" class="pagebody">
+          <h2 v-if="group.title">
             {{ group.title }}
           </h2>
-          <p v-if="group.description" class="text-muted">
+          <p v-if="group.description">
             {{ group.description }}
           </p>
         </div>

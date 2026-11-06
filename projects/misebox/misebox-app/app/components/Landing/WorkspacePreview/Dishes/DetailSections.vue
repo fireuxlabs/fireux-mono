@@ -10,10 +10,10 @@
     />
     <div
       v-else
-      class="absolute inset-0 flex items-center justify-center text-muted"
+      class="absolute inset-0 flex items-center justify-center"
       aria-hidden="true"
     >
-      <UIcon name="i-lucide-utensils" class="size-9" />
+      <UIcon name="i-lucide-utensils" />
     </div>
     <div class="absolute inset-0 bg-default/40" aria-hidden="true" />
 
@@ -21,23 +21,18 @@
       class="relative flex min-h-28 flex-wrap items-end gap-1.5 p-3"
       aria-label="Dish detail sections"
     >
-      <button
+      <UButton
         v-for="section in sectionItems"
         :key="section.id"
         type="button"
-        class="flex size-9 shrink-0 items-center justify-center rounded-md border text-toned shadow-sm transition-colors hover:bg-default/90 hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        :class="
-          section.id === selected
-            ? 'border-primary bg-default/90 text-primary ring-1 ring-primary/20'
-            : 'border-default/80 bg-default/70'
-        "
+        :icon="section.icon"
+        :color="section.id === selected ? 'primary' : 'neutral'"
+        :variant="section.id === selected ? 'soft' : 'outline'"
         :aria-label="section.label"
         :aria-current="section.id === selected ? 'page' : undefined"
         :title="`${section.label}: ${section.summary}`"
         @click="$emit('select', section.id)"
-      >
-        <UIcon :name="section.icon" class="size-4" aria-hidden="true" />
-      </button>
+      />
     </nav>
   </div>
 </template>

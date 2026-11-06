@@ -5,7 +5,7 @@
     :show-structured-details="false"
   />
   <ClientOnly>
-    <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+    <UDashboardToolbar v-if="isSignedIn"
       ><WorkspaceProjectSelector />
     </UDashboardToolbar> </ClientOnly
   ><UPageHeader :title="intro.title" :description="intro.purpose" />
@@ -18,7 +18,7 @@
     <WorkspaceProject ref="surface" />
     <WorkspaceProjectHomeExploreProjects />
     <template #fallback>
-      <p role="status" class="py-6 text-muted">Loading your Workspace…</p>
+      <p role="status" class="py-6 fx-type-body">Loading your Workspace…</p>
     </template>
   </ClientOnly>
 </template>

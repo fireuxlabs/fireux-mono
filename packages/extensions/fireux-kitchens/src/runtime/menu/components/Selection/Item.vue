@@ -4,7 +4,7 @@
       :enabled="offer.presentation.showItemImages"
       :image-url="offer.item.imageUrl"
     />
-    <p v-if="offer.item.description" class="text-sm text-muted">
+    <p v-if="offer.item.description">
       {{ offer.item.description }}
     </p>
     <MenuSelectionBottle
@@ -56,19 +56,18 @@
           min="1"
           max="99"
           step="1"
-          class="w-24"
         />
       </UFormField>
-      <span class="text-lg font-semibold">{{
+      <span>{{
         preview.line
           ? money((preview.line.unitMinor * choices.quantity) / 100)
           : money(offer.item.price)
       }}</span>
     </div>
-    <p v-if="preview.issue" class="text-sm text-muted" role="status">
+    <p v-if="preview.issue" role="status">
       {{ preview.issue }}
     </p>
-    <p v-if="error" class="text-sm text-error" role="alert">{{ error }}</p>
+    <p v-if="error" role="alert">{{ error }}</p>
     <UButton
       :label="initialChoices ? 'Update basket' : 'Add to basket'"
       block

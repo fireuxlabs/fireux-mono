@@ -13,10 +13,8 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Products collection
-            </p>
-            <p class="text-xs text-muted">
+            <p>Products collection</p>
+            <p>
               Inspect model drift separately from the public products collection
               manager.
             </p>

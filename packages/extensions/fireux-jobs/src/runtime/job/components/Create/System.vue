@@ -7,11 +7,9 @@
       <UCard v-if="agentCard">
         <template #header>
           <div class="space-y-1">
-            <p class="text-sm text-muted">Creator</p>
-            <h2 class="text-lg font-semibold">Current hiring profile</h2>
-            <p class="text-sm text-muted">
-              This hiring profile will own the job posting.
-            </p>
+            <p>Creator</p>
+            <h2 class="fx-type-card-heading">Current hiring profile</h2>
+            <p>This hiring profile will own the job posting.</p>
           </div>
         </template>
 
@@ -55,7 +53,13 @@ const agentCard = computed(() =>
 )
 
 const submitting = ref(false)
-watch(scopeEpoch, () => { submitting.value = false }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    submitting.value = false
+  },
+  { flush: 'sync' }
+)
 
 function onReset() {
   reset()

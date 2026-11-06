@@ -18,11 +18,11 @@
       :disabled="disabled"
       @update:model-value="emit('update', $event)"
     />
-    <p v-else class="text-sm text-muted">Create a menu to get started.</p>
+    <p v-else>Create a menu to get started.</p>
     <p
       v-for="option in unavailable"
       :key="option.value"
-      class="mt-2 text-sm text-warning"
+      class="mt-2"
       role="status"
     >
       {{ option.label }}: {{ option.description }}

@@ -1,8 +1,5 @@
 <template>
-  <UDashboardToolbar
-    v-if="!fireux.isTenant || ready"
-    :ui="{ root: 'border-b-0' }"
-  >
+  <UDashboardToolbar v-if="!fireux.isTenant || ready">
     <WorkspaceKitchenSelector />
   </UDashboardToolbar>
   <div class="flex items-center gap-3">

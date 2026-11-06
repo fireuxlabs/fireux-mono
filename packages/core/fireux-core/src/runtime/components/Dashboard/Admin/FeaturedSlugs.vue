@@ -4,9 +4,9 @@
       <div
         class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
       >
-        <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
-          <p v-if="description" class="text-sm text-muted">{{ description }}</p>
+        <div class="fx-card__stack">
+          <h2>{{ title }}</h2>
+          <p v-if="description">{{ description }}</p>
         </div>
 
         <UBadge color="neutral" variant="soft">
@@ -15,10 +15,10 @@
       </div>
     </template>
 
-    <div class="space-y-4">
+    <div class="fx-card-body-stack">
       <UTextarea v-model="draft" :rows="5" :placeholder="placeholder" />
 
-      <div v-if="slugs.length" class="flex flex-wrap gap-2">
+      <div v-if="slugs.length" class="fx-card__actions">
         <UBadge
           v-for="slug in slugs"
           :key="slug"
@@ -29,7 +29,7 @@
         </UBadge>
       </div>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton
           color="primary"
           icon="i-lucide-save"

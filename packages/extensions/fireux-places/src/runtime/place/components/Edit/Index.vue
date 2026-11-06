@@ -5,10 +5,10 @@
         <PlaceEditGoogleReview :place="place" />
       </div>
       <UAlert v-if="!place" title="Identity unavailable" color="neutral" />
-      <div v-else :class="section ? 'space-y-6' : 'place-edit__layout'">
+      <div v-else :class="section ? 'workspace-profile__sections' : 'place-edit__layout'">
         <div
           v-if="!section || ['profile', 'brand', 'photos'].includes(section)"
-          class="min-w-0 space-y-6"
+          class="workspace-profile__sections"
         >
           <PlaceEditProfile
             v-if="!section || section === 'profile'"
@@ -28,7 +28,7 @@
         </div>
         <div
           v-if="!section || ['contact', 'visit'].includes(section)"
-          class="min-w-0 space-y-6"
+          class="workspace-profile__sections"
         >
           <template v-if="!section || section === 'contact'">
             <PlaceEditContact

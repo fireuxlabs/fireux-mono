@@ -1,7 +1,7 @@
 <template>
   <FireDisclosurePanel title="Page architecture" icon="i-lucide-code">
-    <div class="flex flex-col gap-5">
-      <p class="text-sm text-muted">
+    <div class="workspace-surface">
+      <p>
         For development: what each page does, where its data comes from, and
         what is missing. These notes do not verify access or release readiness.
       </p>
@@ -10,24 +10,24 @@
         :key="entry.key"
         class="space-y-2 border-t border-default pt-4"
       >
-        <h3 class="font-semibold">{{ entry.label }}</h3>
-        <dl class="space-y-3 text-sm">
+        <h3>{{ entry.label }}</h3>
+        <dl class="workspace-surface workspace-surface--compact">
           <template
             v-for="(value, label) in notes[entry.key || '']?.explanation"
             :key="label"
           >
             <div>
-              <dt class="font-medium">{{ label }}</dt>
-              <dd class="mt-1 break-words text-muted">{{ value }}</dd>
+              <dt>{{ label }}</dt>
+              <dd class="mt-1 break-words">{{ value }}</dd>
             </div>
           </template>
         </dl>
-        <details class="text-xs text-muted">
+        <details>
           <summary class="cursor-pointer py-2">Source references</summary>
           <dl class="space-y-2 rounded-lg bg-elevated p-3">
             <div>
-              <dt class="font-medium">Routes</dt>
-              <dd class="mt-1 break-all font-mono">
+              <dt>Routes</dt>
+              <dd class="mt-1 break-all">
                 {{ entry.to }}
                 <template v-if="entry.key === 'workspace-kitchen-dishes'">
                   · {{ drinksRoute }}
@@ -38,8 +38,8 @@
               v-for="(value, label) in notes[entry.key || '']?.references"
               :key="label"
             >
-              <dt class="font-medium">{{ label }}</dt>
-              <dd class="mt-1 break-words font-mono">{{ value }}</dd>
+              <dt>{{ label }}</dt>
+              <dd class="mt-1 break-words">{{ value }}</dd>
             </div>
           </dl>
         </details>

@@ -5,8 +5,7 @@
     raw
     :to="props.to"
     :disabled="props.disabled"
-    class="fx-action-surface appearance-none text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-    :class="disabledClass"
+    class="fx-action-surface"
     data-action-surface="link"
     :data-disabled="props.disabled || undefined"
   >
@@ -18,8 +17,7 @@
     v-bind="$attrs"
     type="button"
     :disabled="props.disabled"
-    class="fx-action-surface appearance-none text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-    :class="disabledClass"
+    class="fx-action-surface"
     data-action-surface="button"
     :data-disabled="props.disabled || undefined"
     @click="emit('activate')"
@@ -31,7 +29,6 @@
     v-else
     v-bind="$attrs"
     class="fx-action-surface"
-    :class="disabledClass"
     data-action-surface="static"
     :data-disabled="props.disabled || undefined"
     :aria-disabled="props.disabled ? 'true' : undefined"
@@ -41,7 +38,6 @@
 </template>
 
 <script setup lang="ts" generic="T extends RouteLocationRaw">
-import { computed } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 defineOptions({
@@ -64,8 +60,4 @@ const props = withDefaults(
 const emit = defineEmits<{
   (event: 'activate'): void
 }>()
-
-const disabledClass = computed(() =>
-  props.disabled ? 'cursor-not-allowed opacity-75' : ''
-)
 </script>

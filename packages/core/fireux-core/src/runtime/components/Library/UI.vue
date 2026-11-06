@@ -1,13 +1,11 @@
 <template>
   <div class="p-6 space-y-6">
-    <div class="space-y-2">
-      <h1 class="text-2xl font-semibold">Nuxt UI 4 demo</h1>
-      <p class="text-sm opacity-70">
-        Quick sanity check for @nuxt/ui v4 components.
-      </p>
+    <div class="pagebody">
+      <h1>Nuxt UI 4 demo</h1>
+      <p class="opacity-70">Quick sanity check for @nuxt/ui v4 components.</p>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="fx-card__actions">
       <UButton color="primary">Primary</UButton>
       <UButton color="neutral" variant="soft">Neutral</UButton>
       <UButton
@@ -20,16 +18,16 @@
 
     <UCard>
       <template #header>
-        <div class="font-medium">Card header</div>
+        <div>Card header</div>
       </template>
-      <div class="space-y-4">
+      <div class="fx-card-body-stack">
         <UInput v-model="name" placeholder="Your name" />
         <USelect
           v-model="flavor"
           :items="flavors"
           placeholder="Pick a flavor"
         />
-        <div class="text-sm opacity-70">
+        <div class="opacity-70">
           Hello, {{ name || '—' }}. Flavor: {{ flavor || '—' }}
         </div>
       </div>
@@ -39,7 +37,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
 
 const name = ref('')
 const flavor = ref<string | undefined>(undefined)

@@ -10,7 +10,7 @@
         :disabled="disabled"
       />
     </UFormField>
-    <p class="text-sm text-muted">
+    <p>
       The set price includes the choices below. Add a supplement only when a
       choice costs more.
     </p>
@@ -19,15 +19,14 @@
       :key="group.id"
       class="min-w-0 space-y-4 rounded-xl border border-default p-4"
     >
-      <legend class="px-1 font-medium">Choice group {{ index + 1 }}</legend>
+      <legend class="px-1">Choice group {{ index + 1 }}</legend>
       <div
         class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 sm:grid-cols-[minmax(0,1fr)_7rem_auto]"
       >
-        <UFormField label="Group name" class="col-span-2 min-w-0 sm:col-span-1"
+        <UFormField label="Group name" class="col-span-2 sm:col-span-1"
           ><UInput
             v-model="group.name"
             placeholder="For example: Pizza"
-            class="w-full"
             :disabled="disabled"
         /></UFormField>
         <UFormField label="Number to choose"
@@ -37,7 +36,6 @@
             type="number"
             min="1"
             step="1"
-            class="w-full"
             :disabled="disabled"
         /></UFormField>
         <UButton
@@ -58,7 +56,6 @@
           multiple
           value-key="value"
           :items="dishOptions"
-          class="w-full"
           placeholder="Choose dishes"
           :disabled="disabled"
         />
@@ -68,7 +65,7 @@
         :key="dish.dishId"
         class="promotion-choice"
       >
-        <label :for="`supplement-${group.id}-${dish.dishId}`" class="text-sm">{{
+        <label :for="`supplement-${group.id}-${dish.dishId}`">{{
           dishOptions.find((option) => option.value === dish.dishId)?.label ||
           'Unavailable dish'
         }}</label>
@@ -76,7 +73,6 @@
           <!-- @vue-generic {string | number, {}} -->
           <UInput
             :id="`supplement-${group.id}-${dish.dishId}`"
-            class="w-full"
             v-model="dish.supplement"
             type="number"
             min="0"
@@ -85,9 +81,7 @@
           />
         </UFormField>
       </div>
-      <p v-if="group.dishes.length" class="text-sm text-muted">
-        A supplement of 0 means included.
-      </p>
+      <p v-if="group.dishes.length">A supplement of 0 means included.</p>
     </fieldset>
     <UButton
       type="button"

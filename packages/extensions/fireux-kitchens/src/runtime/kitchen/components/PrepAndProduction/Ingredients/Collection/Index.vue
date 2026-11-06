@@ -1,8 +1,6 @@
 <template>
   <div class="grid min-w-0 gap-6">
-    <WorkspaceKitchenCollectionHeader
-      title="Ingredients"
-    >
+    <WorkspaceKitchenCollectionHeader title="Ingredients">
       <template #actions>
         <UButton
           v-if="canWrite"
@@ -61,13 +59,11 @@
             value-key="value"
             label-key="label"
             aria-label="Ingredient category"
-            class="min-w-48"
           />
           <USelect
             v-model="imageFilter"
             :items="imageOptions"
             aria-label="Filter ingredient images"
-            class="min-w-40"
           />
         </template>
       </WorkspaceKitchenCollectionToolbar>
@@ -75,13 +71,11 @@
         <div class="min-w-0 flex-1 space-y-6">
           <div
             v-if="hasFilters && cards.length"
-            class="flex items-center justify-between gap-3 text-sm"
+            class="flex items-center justify-between gap-3"
             role="status"
             aria-live="polite"
           >
-            <span class="text-muted"
-              >{{ visibleCount }} of {{ cards.length }} ingredients</span
-            >
+            <span>{{ visibleCount }} of {{ cards.length }} ingredients</span>
             <UButton
               label="Clear filters"
               color="neutral"
@@ -99,15 +93,10 @@
               class="space-y-3"
             >
               <div class="flex items-center gap-2">
-                <h2
-                  :id="`ingredients-${group.value}`"
-                  class="text-base font-semibold text-highlighted"
-                >
+                <h2 :id="`ingredients-${group.value}`">
                   {{ group.label }}
                 </h2>
-                <span class="text-xs tabular-nums text-dimmed">{{
-                  group.cards.length
-                }}</span>
+                <span class="tabular-nums">{{ group.cards.length }}</span>
               </div>
               <div
                 :class="
@@ -132,24 +121,23 @@
           </div>
           <div
             v-else
-            class="flex flex-col items-center rounded-2xl border border-dashed border-default px-6 py-16 text-center"
+            class="flex flex-col items-center rounded-2xl border border-dashed border-default px-6 py-16"
           >
             <div
               class="mb-4 flex size-14 items-center justify-center rounded-2xl bg-elevated"
             >
               <UIcon
                 :name="cards.length ? 'i-lucide-search' : 'i-lucide-carrot'"
-                class="size-6 text-muted"
               />
             </div>
-            <h2 class="text-lg font-semibold text-highlighted">
+            <h2>
               {{
                 cards.length
                   ? 'No matching ingredients'
                   : 'Start your ingredient library'
               }}
             </h2>
-            <p class="mt-2 max-w-sm text-sm text-muted">
+            <p class="mt-2 max-w-sm">
               {{
                 cards.length
                   ? 'Try another name, category or image filter.'
@@ -161,14 +149,12 @@
               label="Clear filters"
               color="neutral"
               variant="soft"
-              class="mt-5"
               @click="clearFilters"
             />
             <UButton
               v-else-if="canWrite"
               label="Create Ingredient"
               icon="i-lucide-plus"
-              class="mt-5"
               @click="addOpen = true"
             />
           </div>
@@ -210,14 +196,8 @@ import { useIngredientInterface } from '../../../../../ingredient/composables/us
 import { useKitchenIngredientsContext } from '../../../../composables/workspace/ingredients/useKitchenIngredientsContext'
 import { INGREDIENT_CATEGORY_OPTIONS } from '../../../../../ingredient/models/ingredient-taxonomy'
 
-const {
-  ingredients,
-  kitchenId,
-  pending,
-  loadError,
-  canWrite,
-  debug,
-} = useKitchenIngredientsContext()
+const { ingredients, kitchenId, pending, loadError, canWrite, debug } =
+  useKitchenIngredientsContext()
 const { pill } = useIngredientInterface()
 const query = ref('')
 const category = ref('all')

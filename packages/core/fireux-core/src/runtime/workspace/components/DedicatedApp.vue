@@ -1,15 +1,12 @@
 <template>
-  <div class="space-y-3 rounded-lg bg-muted/30 p-3">
+  <div class="space-y-3 p-3">
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
-        <div class="text-sm font-medium text-highlighted">Dedicated App</div>
-        <p class="truncate text-xs text-dimmed">{{ description }}</p>
+        <div>Dedicated App</div>
+        <p class="truncate">{{ description }}</p>
       </div>
 
-      <UBadge
-        :color="hasDedicatedApp ? 'success' : 'neutral'"
-        variant="soft"
-      >
+      <UBadge :color="hasDedicatedApp ? 'success' : 'neutral'" variant="soft">
         {{ hasDedicatedApp ? 'Yes' : 'No' }}
       </UBadge>
     </div>

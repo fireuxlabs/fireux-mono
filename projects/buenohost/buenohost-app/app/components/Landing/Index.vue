@@ -9,7 +9,7 @@
     :pricing-plans="landingTiers"
     :surface-items="surfaceItems"
   >
-    <UContainer class="py-16">
+    <UContainer>
       <FireLandingProductProofSection
         section-id="buenohost-guest-guide"
         eyebrow="Guest guide"
@@ -39,30 +39,27 @@
 
       <section class="mt-16 space-y-6" aria-labelledby="host-workspace-title">
         <div class="max-w-3xl space-y-2">
-          <h2
-            id="host-workspace-title"
-            class="text-2xl font-semibold text-highlighted"
-          >
+          <h2 id="host-workspace-title" class="fx-type-section-title">
             Work from the Host Workspace.
           </h2>
-          <p class="text-muted">
+          <p class="fx-type-body">
             Manage the property information used by guest guides and
             reservations.
           </p>
         </div>
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <UPageGrid>
           <UCard
             v-for="feature in workspaceFeatures"
             :key="feature.title"
             variant="subtle"
           >
-            <UIcon :name="feature.icon" class="size-6 text-primary" />
-            <h3 class="mt-3 font-semibold text-highlighted">
+            <UIcon :name="feature.icon" />
+            <h3 class="mt-3 fx-type-card-heading">
               {{ feature.title }}
             </h3>
-            <p class="mt-1 text-sm text-muted">{{ feature.description }}</p>
+            <p class="mt-1 fx-type-caption">{{ feature.description }}</p>
           </UCard>
-        </div>
+        </UPageGrid>
       </section>
 
       <section
@@ -70,13 +67,10 @@
         aria-labelledby="host-integrations-title"
       >
         <div class="max-w-3xl space-y-2">
-          <h2
-            id="host-integrations-title"
-            class="text-2xl font-semibold text-highlighted"
-          >
+          <h2 id="host-integrations-title" class="fx-type-section-title">
             Connect services around the stay.
           </h2>
-          <p class="text-muted">
+          <p class="fx-type-body">
             Add translation, local services and related FireUX products without
             changing the guest guide.
           </p>
@@ -90,12 +84,12 @@
             :rel="isExternalUrl(card.href) ? 'noopener noreferrer' : undefined"
             class="block h-full"
           >
-            <UCard variant="subtle" class="h-full">
-              <UIcon :name="card.icon" class="size-6 text-primary" />
-              <h3 class="mt-3 font-semibold text-highlighted">
+            <UCard variant="subtle">
+              <UIcon :name="card.icon" />
+              <h3 class="mt-3 fx-type-card-heading">
                 {{ card.title }}
               </h3>
-              <p class="mt-1 text-sm text-muted">{{ card.description }}</p>
+              <p class="mt-1 fx-type-caption">{{ card.description }}</p>
             </UCard>
           </NuxtLink>
         </div>

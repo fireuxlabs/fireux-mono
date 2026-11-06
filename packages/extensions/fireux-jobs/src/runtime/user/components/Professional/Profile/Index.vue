@@ -81,9 +81,7 @@
           eyebrow="Profile"
           title="About"
         >
-          <p
-            class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
-          >
+          <p class="whitespace-pre-line sm:text-base">
             {{ aboutCopy }}
           </p>
         </UserProfileSection>
@@ -151,10 +149,10 @@
               :key="`${project.name}-${project.role}`"
               class="professional-profile__project-card"
             >
-              <h3 class="font-semibold text-highlighted">
+              <h3 class="fx-type-card-title">
                 {{ project.name }}
               </h3>
-              <p class="mt-1 text-xs font-medium text-primary">
+              <p class="mt-1">
                 {{ project.role }} ·
                 {{
                   formatRange(
@@ -166,7 +164,7 @@
               </p>
               <p
                 v-if="project.responsibilities"
-                class="mt-3 whitespace-pre-line text-sm leading-6 text-toned"
+                class="mt-3 whitespace-pre-line"
               >
                 {{ project.responsibilities }}
               </p>
@@ -197,7 +195,7 @@
               class="professional-profile__current-role"
             >
               <div class="professional-profile__role-heading">
-                <h3>{{ entry.item.role || 'Professional role' }}</h3>
+                <h3 class="fx-type-card-title">{{ entry.item.role || 'Professional role' }}</h3>
                 <span v-if="formatExperienceDates(entry.item)">
                   {{ formatExperienceDates(entry.item) }}
                 </span>
@@ -209,7 +207,7 @@
 
               <p
                 v-if="entry.item.responsibilities"
-                class="mt-4 whitespace-pre-line text-sm leading-6 text-toned"
+                class="mt-4 whitespace-pre-line"
               >
                 {{ entry.item.responsibilities }}
               </p>
@@ -240,7 +238,7 @@
             >
               <div class="professional-profile__timeline-marker" />
               <div class="professional-profile__role-heading">
-                <h3>{{ entry.item.role || 'Professional role' }}</h3>
+                <h3 class="fx-type-card-title">{{ entry.item.role || 'Professional role' }}</h3>
                 <span v-if="formatExperienceDates(entry.item)">
                   {{ formatExperienceDates(entry.item) }}
                 </span>
@@ -252,7 +250,7 @@
 
               <p
                 v-if="entry.item.responsibilities"
-                class="mt-3 whitespace-pre-line text-sm leading-6 text-toned"
+                class="mt-3 whitespace-pre-line"
               >
                 {{ entry.item.responsibilities }}
               </p>
@@ -275,7 +273,7 @@
             >
               <div class="professional-profile__role-heading">
                 <div class="flex flex-wrap items-center gap-2">
-                  <h3>{{ entry.item.role || 'Professional role' }}</h3>
+                  <h3 class="fx-type-card-title">{{ entry.item.role || 'Professional role' }}</h3>
                   <UBadge
                     v-if="entry.item.ongoing"
                     label="Active"
@@ -295,7 +293,7 @@
 
               <p
                 v-if="entry.item.responsibilities"
-                class="mt-3 whitespace-pre-line text-sm leading-6 text-toned"
+                class="mt-3 whitespace-pre-line"
               >
                 {{ entry.item.responsibilities }}
               </p>
@@ -318,8 +316,8 @@
             >
               <div class="professional-profile__role-heading">
                 <div>
-                  <h3>{{ entry.organization }}</h3>
-                  <p class="mt-1 text-sm font-medium text-primary">
+                  <h3 class="fx-type-card-title">{{ entry.organization }}</h3>
+                  <p class="mt-1">
                     {{ entry.role }}
                   </p>
                 </div>
@@ -329,10 +327,7 @@
                   }}
                 </span>
               </div>
-              <p
-                v-if="entry.responsibilities"
-                class="mt-3 whitespace-pre-line text-sm leading-6 text-toned"
-              >
+              <p v-if="entry.responsibilities" class="mt-3 whitespace-pre-line">
                 {{ entry.responsibilities }}
               </p>
             </article>

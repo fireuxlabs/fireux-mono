@@ -1,12 +1,10 @@
 <template>
   <UCard v-if="dish">
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="card__header">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">
-            {{ singularTitle }} details
-          </h2>
-          <p class="text-sm text-dimmed">
+          <h2>{{ singularTitle }} details</h2>
+          <p>
             Update the {{ catalogue.singular }} image, name, and description.
           </p>
         </div>
@@ -15,7 +13,7 @@
 
     <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
       <UFormField label="Image">
-        <div class="flex flex-col items-center gap-2">
+        <div class="fx-card-body-stack">
           <FireFormsEditableImagePicker
             v-if="canWrite"
             :src="dishImageUrl"
@@ -33,17 +31,15 @@
             icon="i-lucide-utensils"
             size="3xl"
           />
-          <p v-if="imageUploading" class="text-xs text-dimmed">
-            Uploading image...
-          </p>
-          <p v-else-if="canWrite" class="text-center text-xs text-dimmed">
+          <p v-if="imageUploading">Uploading image...</p>
+          <p v-else-if="canWrite">
             Use a transparent-background source. Storage keeps a 1200 × 1200
             WebP.
           </p>
         </div>
       </UFormField>
 
-      <div class="grid gap-4">
+      <div class="fx-card-body-stack">
         <UFormField v-if="catalogue.itemKind === 'food'" label="Category">
           <USelect
             :model-value="dish.category"
@@ -60,7 +56,7 @@
             :disabled="!canWrite || busy"
             @update:model-value="handleFlagship"
           />
-          <p class="mt-1 text-xs text-dimmed">
+          <p class="mt-1">
             Templates feature the one flagship Dish selected for this Kitchen.
           </p>
         </UFormField>

@@ -13,21 +13,20 @@
       v-model:open="open"
       title="Kitchen Workspace"
       :description="`How this page and ${agentName} work together.`"
-      :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
-        <div class="grid gap-5">
-          <p class="m-0 text-sm text-toned">
+        <div class="pagebody">
+          <p class="m-0 fx-type-caption">
             Build and operate a Kitchen through its Menus, preparation, service
             and supporting records. This Workspace operates the Kitchen; it does
             not operate the Misebox SaaS Project.
           </p>
 
-          <section class="grid gap-2" aria-labelledby="kitchen-ai-capabilities">
-            <h3 id="kitchen-ai-capabilities" class="m-0 font-semibold">
+          <section class="pagebody" aria-labelledby="kitchen-ai-capabilities">
+            <h3 id="kitchen-ai-capabilities" class="m-0 fx-type-card-heading">
               {{ agentName }} capabilities
             </h3>
-            <p class="m-0 text-sm text-muted">
+            <p class="m-0 fx-type-caption">
               {{ agentName }} works from this page's Kitchen context. Available
               information and actions follow the selected Kitchen and the
               capability being used.

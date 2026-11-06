@@ -17,7 +17,7 @@
       description="Your authentication works, but your account profile could not be loaded from Firestore right now."
     >
       <template #default>
-        <p class="text-xs text-dimmed">
+        <p>
           This is usually a permissions or setup issue in the active identity
           doc.
         </p>
@@ -37,11 +37,9 @@
             variant="soft"
           />
         </div>
-        <details v-if="isDev" open class="mt-4 text-left">
-          <summary class="cursor-pointer text-xs text-dimmed">
-            Debug details (dev only)
-          </summary>
-          <pre class="mt-2 max-h-48 overflow-auto rounded border p-3 text-xs">{{
+        <details v-if="isDev" open class="mt-4">
+          <summary class="cursor-pointer">Debug details (dev only)</summary>
+          <pre class="mt-2 max-h-48 overflow-auto p-3">{{
             coreErrorDebug
           }}</pre>
         </details>
@@ -49,14 +47,14 @@
     </FireStateCard>
 
     <template v-else-if="coreUser && userCard">
-      <div class="space-y-4">
+      <div class="pagebody">
         <FireDashboardOverviewUser
           :card="userCard"
           :has-custom-avatar="hasCustomAvatar"
           :account-outcome="accountOutcome"
         />
 
-        <div class="space-y-4">
+        <div class="pagebody">
           <FireDashboardOverviewApp
             :app-name="fireux.appName"
             :app-outcome="appOutcome"
@@ -83,7 +81,7 @@
       </div>
     </template>
 
-    <div v-else-if="coreIsMissing" class="space-y-4">
+    <div v-else-if="coreIsMissing" class="pagebody">
       <UPageHeader
         headline="Overview"
         title="Finish your User setup"

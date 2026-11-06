@@ -6,9 +6,9 @@
       description="Project root model and current App relationship diagnostics."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
-        <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4 text-sm">
+        <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
           <div>
             appId:
             <span class="font-mono">{{ resolvedAppId || 'missing' }}</span>
@@ -24,15 +24,16 @@
         </div>
       </UCard>
 
-      <FireDiagnosticsModel :title="'Projects · Model'" :model="projectModelRuntime" />
+      <FireDiagnosticsModel
+        :title="'Projects · Model'"
+        :model="projectModelRuntime"
+      />
 
       <UCard>
         <template #header>
-          <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Project storage inspector
-            </p>
-            <p class="text-xs text-muted">
+          <div class="fx-card-body-stack">
+            <p class="fx-type-caption">Project storage inspector</p>
+            <p class="fx-type-caption">
               Inspect one root Project. The current App may reference it, but
               Project has no public or app-scoped representation.
             </p>
@@ -44,7 +45,7 @@
           </div>
         </template>
 
-        <div class="space-y-4">
+        <div class="fx-card-body-stack">
           <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
             <UBadge variant="soft">
               appId: {{ resolvedAppId || 'missing' }}
@@ -63,14 +64,14 @@
             description="This inspector reads the FireUX control-plane Project only. Apps and Ecosystems point to it through project_id."
           />
 
-<FireDiagnosticsDebugPanel
-  object-origin="fetched"
+          <FireDiagnosticsDebugPanel
+            object-origin="fetched"
             launcher
             include-route
             title="Project storage (JSON)"
             context="dev projects · full storage picture"
             :objects="projectStorageJson"
-  :derived="{}"
+            :derived="{}"
             :default-open="false"
             :hide-when-empty="false"
           />

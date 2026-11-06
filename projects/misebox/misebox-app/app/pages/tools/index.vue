@@ -1,18 +1,11 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-10 sm:py-14">
+  <main class="min-h-screen bg-default">
+    <UContainer>
       <div class="mx-auto grid max-w-4xl gap-10">
         <header class="grid max-w-3xl gap-3">
-          <NuxtLink
-            to="/"
-            class="w-fit text-sm font-semibold text-primary hover:underline"
-          >
-            Misebox
-          </NuxtLink>
-          <h1 class="m-0 text-3xl font-semibold text-highlighted sm:text-4xl">
-            Restaurant tools
-          </h1>
-          <p class="m-0 text-base leading-7 text-muted">
+          <NuxtLink to="/" class="w-fit hover:underline"> Misebox </NuxtLink>
+          <h1 class="m-0 fx-type-page-title">Restaurant tools</h1>
+          <p class="m-0 fx-type-body">
             Open free restaurant tools without signing in. Start one Kitchen
             when a tool needs Kitchen context, or use a standalone calculator
             directly.
@@ -26,18 +19,16 @@
               class="group flex items-center justify-between gap-4 rounded-lg px-3 py-3 hover:bg-elevated"
             >
               <span>
-                <span class="block font-semibold text-highlighted">
+                <span class="block">
                   {{ tool.name }}
                 </span>
-                <span class="mt-1 block text-sm text-muted">
+                <span class="mt-1 block">
                   {{ tool.description }}
                 </span>
               </span>
-              <span
-                class="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
-              >
+              <span class="flex shrink-0 items-center gap-1">
                 Open
-                <UIcon name="i-lucide-arrow-right" class="size-4" />
+                <UIcon name="i-lucide-arrow-right" />
               </span>
             </NuxtLink>
           </li>

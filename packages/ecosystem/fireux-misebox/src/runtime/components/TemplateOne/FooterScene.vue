@@ -2,7 +2,7 @@
   <footer id="footer" class="template-one-footer" data-landing-scene="footer">
     <div class="template-one-footer__lead" data-scene-layer="content" data-landing-reveal="up">
       <img class="template-one-footer__wordmark" :src="wordmarkSrc" :alt="name" loading="lazy">
-      <div><p class="template-one-footer__eyebrow">{{ content.eyebrow }}</p><h2>{{ content.title }}</h2><p>{{ content.description }}</p>
+      <div><p class="template-one-footer__eyebrow">{{ content.eyebrow }}</p><h2 class="fx-type-section-title">{{ content.title }}</h2><p>{{ content.description }}</p>
         <NuxtLink class="template-one-footer__workspace" :to="content.workspaceTo">{{ content.workspaceLabel }} <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </div>

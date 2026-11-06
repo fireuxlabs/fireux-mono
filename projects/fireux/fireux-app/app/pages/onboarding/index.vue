@@ -1,19 +1,17 @@
 <!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
-    <UPageHeader class="border-b-0"
+    <UPageHeader
       title="Onboarding"
       description="Pick a product and run the fulfillment onboarding flow."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
-        <div class="space-y-4">
+        <div class="fx-card-body-stack">
           <div>
-            <p class="text-sm font-medium text-highlighted">Product</p>
-            <p class="text-xs text-muted">
-              Select the product to onboard.
-            </p>
+            <p class="fx-type-caption">Product</p>
+            <p class="fx-type-caption">Select the product to onboard.</p>
           </div>
           <USelect
             v-model="selectedSlug"

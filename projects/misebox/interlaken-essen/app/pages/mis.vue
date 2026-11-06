@@ -39,7 +39,6 @@
                 <span>Interlaken Essen</span>
                 <strong>{{ profileDisplayName }}</strong>
                 <UButton
-                  class="mt-2"
                   size="sm"
                   variant="soft"
                   color="neutral"

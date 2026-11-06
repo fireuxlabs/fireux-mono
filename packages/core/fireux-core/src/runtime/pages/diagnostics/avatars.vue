@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <div v-if="loading" class="text-sm text-muted">Loading avatars…</div>
+      <div v-if="loading">Loading avatars…</div>
       <div v-else class="space-y-10">
         <section
           v-for="group in avatarGroups"
@@ -15,18 +15,16 @@
           class="space-y-4"
         >
           <div class="flex items-baseline justify-between gap-4">
-            <h2 class="text-lg font-medium">Avatars in {{ group.prefix }}/</h2>
-            <span class="text-xs text-muted"
-              >{{ group.items.length }} user(s)</span
-            >
+            <h2>Avatars in {{ group.prefix }}/</h2>
+            <span>{{ group.items.length }} user(s)</span>
           </div>
 
-          <div class="rounded-xl border border-default bg-muted p-4">
-            <p class="mb-2 text-xs text-muted">
+          <div class="p-4">
+            <p class="mb-2">
               Copy-ready JSON mapping of id → download URL (null when no avatar
               file is present).
             </p>
-            <pre class="text-xs overflow-x-auto whitespace-pre-wrap break-all">{{
+            <pre class="overflow-x-auto whitespace-pre-wrap break-all">{{
               group.json
             }}</pre>
           </div>
@@ -38,30 +36,27 @@
             <div
               v-for="avatar in group.items"
               :key="avatar.path"
-              class="flex flex-col items-center rounded-xl border border-default bg-muted p-3"
+              class="flex flex-col items-center p-3"
             >
               <img
                 v-if="avatar.url"
                 :src="avatar.url"
                 :alt="avatar.path"
-                class="h-20 w-20 rounded-full border border-default object-cover"
+                class="h-20 w-20 object-cover"
               />
-              <div
-                v-else
-                class="flex h-20 w-20 items-center justify-center rounded-full bg-elevated"
-              >
-                <span class="text-xs text-dimmed">No Image</span>
+              <div v-else class="flex h-20 w-20 items-center justify-center">
+                <span>No Image</span>
               </div>
-              <p class="mt-2 text-[11px] font-mono break-all text-center">
+              <p class="mt-2 break-all">
                 {{ avatar.id }} : {{ avatar.url ?? '(no download URL)' }}
               </p>
-              <p class="mt-1 break-all text-center text-[10px] text-muted">
+              <p class="mt-1 break-all">
                 {{ avatar.file }}
               </p>
             </div>
           </div>
 
-          <p v-else class="text-sm text-muted">No avatar files found.</p>
+          <p v-else>No avatar files found.</p>
         </section>
       </div>
     </UPageBody>

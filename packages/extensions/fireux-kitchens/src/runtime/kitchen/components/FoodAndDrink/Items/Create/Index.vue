@@ -10,7 +10,7 @@
           :disabled="saving || !canCreateDish"
           :update="stageImage"
         />
-        <p class="text-xs text-dimmed">
+        <p>
           Use a transparent-background source. It will be stored as a 1200 ×
           1200 WebP when the Dish is created.
         </p>
@@ -59,7 +59,7 @@
         Create {{ singular }}
       </UButton>
 
-      <p v-if="message" class="text-xs text-dimmed">
+      <p v-if="message">
         {{ message }}
       </p>
     </div>

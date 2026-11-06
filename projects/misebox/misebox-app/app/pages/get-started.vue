@@ -2,23 +2,19 @@
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section class="border-b border-default bg-default/70 py-16">
-      <UContainer class="grid gap-10 md:grid-cols-2">
-        <div class="space-y-4">
+      <UContainer>
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.getStarted.hero.eyebrow }}
           </p>
           <h1 class="fx-type-display-title">
             {{ appMeta.getStarted.hero.title }}
           </h1>
-          <p class="fx-type-description text-toned">
+          <p class="fx-type-description">
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton
-              :to="workspaceEntryHref"
-              color="primary"
-              size="lg"
-            >
+            <UButton :to="workspaceEntryHref" color="primary" size="lg">
               {{ appMeta.getStarted.hero.primaryAction.label }}
             </UButton>
             <UButton
@@ -31,10 +27,8 @@
             </UButton>
           </div>
         </div>
-        <div
-          class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
-        >
-          <p class="fx-type-label mb-4 text-primary">
+        <UCard>
+          <p class="fx-type-label mb-4">
             {{ appMeta.getStarted.snapshotTitle }}
           </p>
           <ul class="space-y-3">
@@ -43,81 +37,71 @@
               :key="tick"
               class="flex items-start gap-3"
             >
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
+              <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
           </ul>
-        </div>
+        </UCard>
       </UContainer>
     </section>
 
     <section>
       <UContainer>
-        <div class="mb-10 space-y-2 text-center">
+        <div class="mb-10 space-y-2">
           <p class="fx-type-headline">
             {{ appMeta.getStarted.stepsHeading.eyebrow }}
           </p>
           <h2 class="fx-type-section-title">
             {{ appMeta.getStarted.stepsHeading.title }}
           </h2>
-          <p class="text-toned">
+          <p class="fx-type-body">
             {{ appMeta.getStarted.stepsHeading.description }}
           </p>
         </div>
         <div class="grid gap-6 md:grid-cols-3">
-          <article
-            v-for="step in steps"
-            :key="step.title"
-            class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
-          >
-            <p class="fx-type-label text-primary">
+          <UCard as="article" v-for="step in steps" :key="step.title">
+            <p class="fx-type-label">
               {{ step.badge }}
             </p>
-            <h3 class="fx-type-card-title mt-3 text-xl">
+            <h3 class="fx-type-card-title mt-3">
               {{ step.title }}
             </h3>
-            <p class="fx-type-caption mt-2 text-toned">
+            <p class="fx-type-caption mt-2">
               {{ step.copy }}
             </p>
-            <ul class="mt-4 space-y-2 text-sm text-muted">
+            <ul class="mt-4 space-y-2">
               <li v-for="item in step.items" :key="item" class="flex gap-2">
-                <UIcon
-                  name="i-lucide-arrow-right"
-                  class="mt-0.5 text-primary"
-                />
+                <UIcon name="i-lucide-arrow-right" />
                 <span>{{ item }}</span>
               </li>
             </ul>
-          </article>
+          </UCard>
         </div>
       </UContainer>
     </section>
 
     <section class="bg-muted/80 py-16">
-      <UContainer class="grid gap-8 md:grid-cols-[2fr,1fr]">
+      <UContainer>
         <div>
-          <h2 class="text-2xl font-semibold text-highlighted">
+          <h2 class="fx-type-section-title">
             {{ appMeta.getStarted.afterSetup.title }}
           </h2>
           <dl class="mt-8 space-y-6">
-            <div
+            <UCard
               v-for="faq in appMeta.getStarted.afterSetup.faqs"
               :key="faq.title"
-              class="rounded-2xl border border-default bg-default/80 p-5"
             >
-              <dt class="fx-type-label text-primary">
+              <dt class="fx-type-label">
                 {{ faq.title }}
               </dt>
-              <dd class="mt-2 text-base text-default">
+              <dd class="mt-2">
                 {{ faq.copy }}
               </dd>
-            </div>
+            </UCard>
           </dl>
         </div>
-        <div
-          class="rounded-2xl border border-default bg-default/90 p-6 text-sm text-toned shadow-lg"
-        >
-          <p class="fx-type-label text-primary">
+        <UCard>
+          <p class="fx-type-label">
             {{ appMeta.getStarted.afterSetup.card.eyebrow }}
           </p>
           <p class="fx-type-card-heading mt-3">
@@ -129,19 +113,18 @@
               :key="bullet"
               class="flex gap-2"
             >
-              <UIcon name="i-lucide-zap" class="text-primary" />
+              <UIcon name="i-lucide-zap" />
               <span>{{ bullet }}</span>
             </li>
           </ul>
           <UButton
             :to="appMeta.getStarted.afterSetup.card.action.to"
             block
-            class="mt-6"
             color="primary"
           >
             {{ appMeta.getStarted.afterSetup.card.action.label }}
           </UButton>
-        </div>
+        </UCard>
       </UContainer>
     </section>
   </div>

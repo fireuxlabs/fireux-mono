@@ -1,5 +1,8 @@
 <template>
-  <section class="grid gap-5 md:grid-cols-2" aria-label="Capability summaries">
+  <section
+    class="workspace-surface__grid workspace-surface__grid--2"
+    aria-label="Capability summaries"
+  >
     <Summary
       title="Team"
       icon="i-lucide-users"
@@ -23,9 +26,7 @@
           />
         </UTooltip>
       </div>
-      <p v-if="!team.members.value.length" class="text-sm text-muted">
-        No team members yet.
-      </p>
+      <p v-if="!team.members.value.length">No team members yet.</p>
     </Summary>
     <Summary
       title="Tests"

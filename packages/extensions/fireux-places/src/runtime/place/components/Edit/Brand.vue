@@ -1,6 +1,6 @@
 <template>
   <UCard>
-    <template #header><h2 class="font-semibold">Brand</h2></template>
+    <template #header><h2 class="fx-type-card-heading">Brand</h2></template>
     <div class="space-y-6">
       <section v-for="asset in assets" :key="asset.key" class="brand-asset">
         <div
@@ -17,14 +17,14 @@
             :src="place[asset.key]"
             :alt="asset.label"
           />
-          <UIcon v-else :name="asset.icon" class="size-7 text-muted" />
+          <UIcon v-else :name="asset.icon" />
         </div>
         <div class="min-w-0 space-y-2">
           <div>
-            <h3 class="text-sm font-medium text-highlighted">
+            <h3 class="fx-type-card-heading">
               {{ asset.label }}
             </h3>
-            <p class="mt-1 text-xs text-muted">{{ asset.description }}</p>
+            <p class="mt-1">{{ asset.description }}</p>
           </div>
           <div class="flex flex-wrap gap-2">
             <UButton
@@ -67,7 +67,7 @@
         :mutation-authority="mutationAuthority"
         :can-write="!busy"
       />
-      <div v-if="error" role="alert" class="text-sm text-error">
+      <div v-if="error" role="alert" class="text-error">
         {{ error }}
         <FireCopyError :message="error" />
       </div>
@@ -87,7 +87,13 @@ const props = defineProps<{
   place: Place
   mutationAuthority?: PlaceMutationAuthority | null
 }>()
-const { uploadImage } = useImageStorage({ endpoint: '/api/places/images', fields: () => ({ app_id: props.mutationAuthority?.appId, kitchen_id: props.mutationAuthority?.kitchenId }) })
+const { uploadImage } = useImageStorage({
+  endpoint: '/api/places/images',
+  fields: () => ({
+    app_id: props.mutationAuthority?.appId,
+    kitchen_id: props.mutationAuthority?.kitchenId,
+  }),
+})
 const {
   updatePlaceImage,
   updateLogoImage,

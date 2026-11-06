@@ -28,13 +28,12 @@
         </template>
       </KitchenFoodAndDrinkServicesSetupServiceHours>
     </div>
-    <p
-      v-if="!editor.sameAsKitchen && !editor.hours?.windows.length"
-      class="text-sm text-muted"
-    >
+    <p v-if="!editor.sameAsKitchen && !editor.hours?.windows.length">
       Add serving hours or use Kitchen service hours.
     </p>
-    <KitchenFoodAndDrinkServicesSetupPreOrder v-if="option.key === 'pre_order'" />
+    <KitchenFoodAndDrinkServicesSetupPreOrder
+      v-if="option.key === 'pre_order'"
+    />
   </div>
 </template>
 <script setup lang="ts">

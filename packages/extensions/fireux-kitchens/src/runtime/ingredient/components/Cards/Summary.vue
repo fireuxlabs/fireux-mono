@@ -30,7 +30,7 @@
 
           <div v-if="showBody" class="fx-card__body">
             <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
+            <span v-else>missing</span>
           </div>
         </div>
       </div>

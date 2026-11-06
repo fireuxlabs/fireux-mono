@@ -3,33 +3,21 @@
     :to="link && to ? to : undefined"
     :action="action"
     :disabled="disabled"
-    class="block w-full"
     @activate="emit('action')"
   >
     <div class="fx-card--cell">
-      <UAvatar
-        :alt="title"
-        icon="i-lucide-briefcase-business"
-        size="md"
-        class="shrink-0"
-      />
+      <UAvatar :alt="title" icon="i-lucide-briefcase-business" size="md" />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div
-              v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-dimmed"
-            >
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">{{ title }}</div>
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
             </div>
           </div>
 
-          <div
-            v-if="showBadges && badgeItems.length"
-            class="flex shrink-0 flex-wrap items-center gap-1"
-          >
+          <div v-if="showBadges && badgeItems.length" class="card__badges">
             <UBadge
               v-for="badge in badgeItems"
               :key="badge"
@@ -42,9 +30,9 @@
           </div>
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
+        <div v-if="showMeta" class="card__subtitle">
           <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
+          <span v-else class="fx-card__tagline--empty">missing</span>
         </div>
       </div>
     </div>

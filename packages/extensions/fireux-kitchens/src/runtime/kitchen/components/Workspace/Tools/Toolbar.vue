@@ -3,20 +3,15 @@
 
   <section
     v-else-if="tools.length"
-    class="space-y-3"
+    class="workspace-surface workspace-surface--compact"
     :aria-labelledby="`${capability}-tools-title`"
   >
     <div
       class="flex flex-wrap items-center gap-3 rounded-xl border border-default bg-elevated/50 p-2 shadow-sm"
     >
       <div class="min-w-0 px-2">
-        <h2
-          :id="`${capability}-tools-title`"
-          class="text-xs font-semibold uppercase tracking-wide text-muted"
-        >
-          Tools
-        </h2>
-        <p class="hidden text-xs text-dimmed sm:block">{{ title }} actions</p>
+        <h2 :id="`${capability}-tools-title`">Tools</h2>
+        <p class="hidden sm:block">{{ title }} actions</p>
       </div>
 
       <UButton

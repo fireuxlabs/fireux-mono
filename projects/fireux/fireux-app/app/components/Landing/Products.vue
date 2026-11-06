@@ -1,12 +1,12 @@
 <!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the product catalogue fallback. -->
 <template>
   <div id="products" class="landing-index-section">
-    <div class="mb-6 space-y-2 text-center">
+    <div class="mb-6 space-y-2">
       <div class="flex items-center justify-center gap-2">
-        <h2 class="text-2xl lg:text-3xl font-bold">Our Products</h2>
+        <h2 class="fx-type-section-title">Our Products</h2>
         <div v-if="$slots.action"><slot name="action" /></div>
       </div>
-      <p class="mx-auto max-w-2xl text-muted">
+      <p class="mx-auto max-w-2xl fx-type-body">
         Ecosystem apps you can use, launch, and partner around.
       </p>
     </div>
@@ -20,13 +20,8 @@
       variant="soft"
     />
 
-    <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <UCard
-        v-for="app in items"
-        :key="app.title"
-        :to="app.to"
-        :ui="{ header: 'p-4', body: 'p-4', footer: 'p-4' }"
-      >
+    <UPageGrid v-else>
+      <UCard v-for="app in items" :key="app.title" :to="app.to">
         <template #header>
           <div class="flex items-center gap-3">
             <img
@@ -35,11 +30,11 @@
               :alt="app.title"
               class="h-6 opacity-80"
             />
-            <h3 class="font-semibold">{{ app.title }}</h3>
+            <h3 class="fx-type-card-heading">{{ app.title }}</h3>
           </div>
         </template>
 
-        <p class="text-sm text-muted">
+        <p class="fx-type-caption">
           {{ app.description }}
         </p>
 
@@ -52,7 +47,7 @@
           </div>
         </template>
       </UCard>
-    </div>
+    </UPageGrid>
   </div>
 </template>
 

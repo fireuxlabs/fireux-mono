@@ -60,7 +60,7 @@
       description="The shared ingredient and other Kitchens stay unchanged. Ingredients still in use cannot be removed."
     >
       <template #body>
-        <p class="font-medium">{{ ingredient?.name }}</p>
+        <p>{{ ingredient?.name }}</p>
         <FireStateCard
           v-if="deleteError"
           state="error"

@@ -4,7 +4,7 @@
     :description="toolDescription"
     endpoint="/api/tools/text"
   >
-    <p class="text-sm leading-6 text-muted">
+    <p class="fx-type-caption">
       {{ message }}
     </p>
   </GoQrProviderFrame>
@@ -23,11 +23,14 @@ type TextToolConfig = {
   }
 }
 
-const props = withDefaults(defineProps<{
-  tool?: TextToolConfig | null
-}>(), {
-  tool: null,
-})
+const props = withDefaults(
+  defineProps<{
+    tool?: TextToolConfig | null
+  }>(),
+  {
+    tool: null,
+  }
+)
 
 const text = (value: unknown) => String(value ?? '').trim()
 const toolTitle = computed(() => text(props.tool?.copy?.title))

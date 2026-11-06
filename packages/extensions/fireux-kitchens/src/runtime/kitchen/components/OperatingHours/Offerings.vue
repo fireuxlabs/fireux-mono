@@ -1,9 +1,7 @@
 <template>
   <section class="space-y-4" aria-labelledby="serving-hours-title">
     <header class="flex flex-wrap items-center justify-between gap-3">
-      <h2 id="serving-hours-title" class="text-lg font-semibold">
-        Service hours
-      </h2>
+      <h2 id="serving-hours-title">Service hours</h2>
       <UButton
         to="/workspace/kitchen/food-and-drink/services"
         label="Manage services"
@@ -12,19 +10,15 @@
         trailing-icon="i-lucide-arrow-up-right"
       />
     </header>
-    <p v-if="!offerings.length" class="text-sm text-muted">
+    <p v-if="!offerings.length">
       Enable and configure your services in Services.
     </p>
     <div v-else class="grid gap-4 md:grid-cols-2">
-      <UCard
-        v-for="offering in offerings"
-        :key="offering.id"
-        :ui="{ header: 'p-4', body: 'p-4' }"
-      >
+      <UCard v-for="offering in offerings" :key="offering.id">
         <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex flex-wrap items-center gap-2">
-              <h3 class="font-semibold">{{ offering.name }}</h3>
+          <div class="card__header">
+            <div class="fx-card__chips">
+              <h3>{{ offering.name }}</h3>
               <UBadge
                 :color="offering.enabled ? 'success' : 'neutral'"
                 variant="subtle"
@@ -32,9 +26,7 @@
               >
             </div>
             <UButton
-              :to="
-                '/workspace/kitchen/food-and-drink/services'
-              "
+              :to="'/workspace/kitchen/food-and-drink/services'"
               :aria-label="'Edit ' + offering.name + ' serving hours'"
               label="Edit"
               color="neutral"
@@ -47,15 +39,15 @@
           :hours="offering.hours"
           compact
         />
-        <p v-else class="text-sm text-muted">No serving hours set.</p>
+        <p v-else>No serving hours set.</p>
         <p
           v-if="menusOutcome === 'pending' || menusOutcome === 'idle'"
           role="status"
-          class="mt-3 text-sm text-muted"
+          class="mt-3"
         >
           Loading linked Menus…
         </p>
-        <p v-else-if="menusOutcome === 'error'" class="mt-3 text-sm text-muted">
+        <p v-else-if="menusOutcome === 'error'" class="mt-3">
           Linked Menus could not be loaded.
         </p>
         <KitchenFoodAndDrinkServicesSetupMenuWindows
@@ -64,7 +56,7 @@
           :menus="linkedMenus(offering)"
           :service-hours="offering.hours"
         />
-        <p v-else class="mt-3 text-sm text-muted">No linked Menus</p>
+        <p v-else class="mt-3">No linked Menus</p>
       </UCard>
     </div>
   </section>

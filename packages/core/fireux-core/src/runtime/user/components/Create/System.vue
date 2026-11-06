@@ -1,176 +1,91 @@
 <template>
   <ClientOnly>
-    <div class="mx-auto min-w-0 w-full max-w-lg px-4 py-8 sm:px-6 sm:py-12">
-      <UCard class="min-w-0 overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-        <div class="min-w-0">
+    <UContainer>
+      <UCard>
+        <template #header>
           <UserCreateIntroduction :app-label="appLabel" />
-
-          <main class="min-w-0 px-6 py-8 sm:px-8">
-            <template v-if="isLoading">
-              <div
-                class="flex min-h-72 flex-col items-center justify-center text-center"
-              >
-                <UIcon
-                  name="i-lucide-loader-circle"
-                  class="size-8 animate-spin text-primary"
-                />
-                <h2 class="mt-4 text-lg font-semibold">
-                  Checking your account
-                </h2>
-                <p class="mt-1 text-sm text-muted">
-                  Loading your account.
-                </p>
-              </div>
-            </template>
-
-            <template v-else-if="readError">
-              <div
-                class="flex min-h-72 flex-col items-center justify-center text-center"
-              >
-                <span
-                  class="flex size-14 items-center justify-center rounded-full bg-error/10 text-error"
-                >
-                  <UIcon name="i-lucide-triangle-alert" class="size-7" />
+        </template>
+        <div class="fx-card-body-stack">
+          <FireState v-if="isLoading" outcome="pending" entity="account" />
+          <FireState
+            v-else-if="readError"
+            outcome="error"
+            entity="account"
+            :error="readError"
+            retryable
+            @retry="reloadPage"
+          />
+          <template v-else-if="isSignIn">
+            <h2>Sign in to begin</h2>
+            <p>Sign in to continue.</p>
+            <UButton size="lg" block :to="signInTarget" icon="i-lucide-log-in">
+              Continue to sign in
+            </UButton>
+          </template>
+          <template v-else-if="requiresUser">
+            <UUser
+              :name="displayName"
+              :description="authEmail"
+              :avatar="{ src: authAvatar || undefined, alt: displayName }"
+              size="lg"
+            />
+            <UCheckbox
+              v-model="onboardingConsentAcknowledged"
+              :disabled="isCreatingUser"
+              :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy`"
+            >
+              <template #label>
+                <span>
+                  I accept the
+                  <NuxtLink to="/legal#terms" target="_blank"
+                    >Terms of Service</NuxtLink
+                  >
+                  and acknowledge the
+                  <NuxtLink to="/legal#privacy" target="_blank"
+                    >Privacy Policy</NuxtLink
+                  >.
                 </span>
-                <h2 class="mt-4 text-xl font-semibold">
-                  Account setup is unavailable
-                </h2>
-                <p class="mt-2 max-w-md text-sm leading-6 text-muted">
-                  {{ readError }}
-                </p>
-                <FireCopyError :message="readError" class="mt-4" />
-                <UButton
-                  class="mt-6"
-                  color="neutral"
-                  variant="soft"
-                  icon="i-lucide-refresh-cw"
-                  @click="reloadPage"
-                >
-                  Try again
-                </UButton>
-              </div>
-            </template>
-
-            <template v-else-if="isSignIn">
-              <h2 class="mt-2 text-2xl font-semibold">Sign in to begin</h2>
-              <p class="mt-2 text-sm leading-6 text-muted">
-                Sign in to continue.
-              </p>
-              <UButton
-                class="mt-8"
-                size="lg"
-                block
-                :to="signInTarget"
-                icon="i-lucide-log-in"
-              >
-                Continue to sign in
-              </UButton>
-            </template>
-
-            <template v-else-if="requiresUser">
-              <div class="flex items-center gap-4 py-2">
-                <UAvatar
-                  :src="authAvatar || undefined"
-                  :alt="displayName"
-                  size="xl"
-                />
-                <div class="min-w-0">
-                  <p class="truncate font-semibold text-highlighted">
-                    {{ displayName }}
-                  </p>
-                  <p class="truncate text-sm text-muted">{{ authEmail }}</p>
-                </div>
-              </div>
-
-              <div class="mt-8">
-                <UCheckbox
-                  v-model="onboardingConsentAcknowledged"
-                  :disabled="isCreatingUser"
-                  :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy`"
-                >
-                  <template #label>
-                    <span class="text-sm leading-6 text-muted">
-                      I accept the
-                      <NuxtLink
-                        class="font-medium text-primary hover:underline"
-                        to="/legal#terms"
-                        target="_blank"
-                        >Terms of Service</NuxtLink
-                      >
-                      and acknowledge the
-                      <NuxtLink
-                        class="font-medium text-primary hover:underline"
-                        to="/legal#privacy"
-                        target="_blank"
-                        >Privacy Policy</NuxtLink
-                      >.
-                    </span>
-                  </template>
-                </UCheckbox>
-              </div>
-
-              <UAlert
-                v-if="error"
-                class="mt-4"
-                color="error"
-                variant="subtle"
-                icon="i-lucide-circle-alert"
-                title="We couldn’t create your profile"
-                :description="error"
-              />
-
-              <FireCopyError v-if="error" :message="error" class="mt-2" />
-              <UButton
-                class="mt-6"
-                size="lg"
-                block
-                icon="i-lucide-arrow-right"
-                trailing
-                :loading="isCreatingUser"
-                :disabled="isCreatingUser || !onboardingConsentAcknowledged"
-                @click="handleCreateUser"
-              >
-                {{ isCreatingUser ? 'Creating profile…' : 'Continue' }}
-              </UButton>
-            </template>
-
-            <template v-else>
-              <div
-                class="flex min-h-72 flex-col items-center justify-center text-center"
-              >
-                <span
-                  class="flex size-14 items-center justify-center rounded-full bg-success/10 text-success"
-                >
-                  <UIcon name="i-lucide-check" class="size-7" />
-                </span>
-                <h2 class="mt-4 text-2xl font-semibold">You’re ready</h2>
-                <p class="mt-2 text-sm text-muted">
-                  {{ completionDescription }}
-                </p>
-                <UButton
-                  class="mt-6"
-                  size="lg"
-                  :to="returnTarget"
-                  trailing-icon="i-lucide-arrow-right"
-                  >Continue</UButton
-                >
-              </div>
-            </template>
-          </main>
+              </template>
+            </UCheckbox>
+            <UAlert
+              v-if="error"
+              color="error"
+              variant="subtle"
+              icon="i-lucide-circle-alert"
+              title="We couldn’t create your profile"
+              :description="error"
+            />
+            <FireCopyError v-if="error" :message="error" />
+            <UButton
+              size="lg"
+              block
+              icon="i-lucide-arrow-right"
+              trailing
+              :loading="isCreatingUser"
+              :disabled="isCreatingUser || !onboardingConsentAcknowledged"
+              @click="handleCreateUser"
+            >
+              {{ isCreatingUser ? 'Creating profile…' : 'Continue' }}
+            </UButton>
+          </template>
+          <template v-else>
+            <UPageFeature
+              title="You’re ready"
+              :description="completionDescription"
+              icon="i-lucide-check"
+            />
+            <UButton
+              size="lg"
+              :to="returnTarget"
+              trailing-icon="i-lucide-arrow-right"
+              >Continue</UButton
+            >
+          </template>
         </div>
       </UCard>
-    </div>
-
+    </UContainer>
     <template #fallback>
-      <div
-        class="flex min-h-72 flex-col items-center justify-center text-center"
-      >
-        <UIcon
-          name="i-lucide-loader-circle"
-          class="size-8 animate-spin text-primary"
-        />
-        <h2 class="mt-4 text-lg font-semibold">Checking your account</h2>
-      </div>
+      <FireState outcome="pending" entity="account" />
     </template>
   </ClientOnly>
 </template>
@@ -189,11 +104,7 @@ const route = useRoute()
 const router = useRouter()
 const config = useFireUXConfig()
 const { appName } = config
-const {
-  coreError,
-  coreOutcome,
-  coreUser,
-} = useUserSession()
+const { coreError, coreOutcome, coreUser } = useUserSession()
 const {
   account,
   error: accountError,

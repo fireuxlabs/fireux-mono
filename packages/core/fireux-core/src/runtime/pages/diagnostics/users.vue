@@ -7,9 +7,9 @@
 
     <UPageBody class="pagebody">
       <UCard variant="subtle">
-        <div class="text-xs text-muted">
+        <div>
           Mode:
-          <span class="font-mono">
+          <span>
             {{ modeLabel }}
           </span>
         </div>
@@ -22,26 +22,26 @@
 
       <UCard v-if="signedInUserPreview || signedInUserSummary" variant="subtle">
         <template #header>
-          <div class="text-sm font-semibold">Current user</div>
+          <div>Current user</div>
         </template>
 
-        <div class="space-y-4">
+        <div class="fx-card-body-stack">
           <UserCardsSummary
             v-if="signedInUserPreview"
             v-bind="signedInUserPreview"
           />
 
-          <div v-if="signedInUserSummary" class="space-y-1 text-xs text-dimmed">
+          <div v-if="signedInUserSummary" class="fx-card__stack">
             <div>
-              UID: <span class="font-mono">{{ signedInUserSummary.id }}</span>
+              UID: <span>{{ signedInUserSummary.id }}</span>
             </div>
             <div v-if="signedInUserSummary.email">
               Email:
-              <span class="font-mono">{{ signedInUserSummary.email }}</span>
+              <span>{{ signedInUserSummary.email }}</span>
             </div>
             <div v-if="signedInUserSummary.handle">
               Handle:
-              <span class="font-mono">{{ signedInUserSummary.handle }}</span>
+              <span>{{ signedInUserSummary.handle }}</span>
             </div>
           </div>
 
@@ -69,11 +69,9 @@
 
       <UCard>
         <template #header>
-          <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Users collection
-            </p>
-            <p class="text-xs text-muted">
+          <div class="fx-card-body-stack">
+            <p>Users collection</p>
+            <p>
               Inspect model drift separately from the public users collection
               manager.
             </p>

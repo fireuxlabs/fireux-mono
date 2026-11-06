@@ -1,34 +1,55 @@
 <template>
-  <section class="grid gap-6">
+  <section class="pagebody">
     <header class="grid gap-2">
-      <p class="fx-type-label m-0 text-primary">{{ product.role }}</p>
-      <h2 class="m-0 text-3xl font-black text-highlighted">{{ product.name }}</h2>
-      <p class="m-0 max-w-2xl text-muted">
-        Start with the neutral Misebox product. Apply an App or Kitchen identity to the front panel.
+      <p class="fx-type-label m-0">{{ product.role }}</p>
+      <h2 class="m-0 fx-type-section-title">{{ product.name }}</h2>
+      <p class="m-0 max-w-2xl fx-type-body">
+        Start with the neutral Misebox product. Apply an App or Kitchen identity
+        to the front panel.
       </p>
     </header>
 
-    <div class="grid gap-4 lg:grid-cols-3">
-      <UCard :ui="{ body: 'grid gap-4' }">
-        <UBadge class="w-fit" color="neutral" variant="soft">Neutral · Misebox</UBadge>
-        <img :src="product.neutralImage" alt="Neutral black serving carton" class="aspect-square w-full object-contain">
-        <p class="m-0 text-sm text-muted">Branding surface: front panel · wordmark or mark</p>
+    <UPageGrid>
+      <UCard>
+        <UBadge color="neutral" variant="soft">Neutral · Misebox</UBadge>
+        <img
+          :src="product.neutralImage"
+          alt="Neutral black serving carton"
+          class="aspect-square w-full object-contain"
+        />
+        <p class="m-0 fx-type-caption">
+          Branding surface: front panel · wordmark or mark
+        </p>
       </UCard>
 
-      <UCard v-for="treatment in product.treatments" :key="treatment.id" :ui="{ body: 'grid gap-4' }">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <UBadge color="primary" variant="soft">{{ treatment.owner.type }} brand</UBadge>
-          <UBadge color="neutral" variant="subtle">{{ treatment.status }}</UBadge>
+      <UCard v-for="treatment in product.treatments" :key="treatment.id">
+        <div class="card__header">
+          <UBadge color="primary" variant="soft"
+            >{{ treatment.owner.type }} brand</UBadge
+          >
+          <UBadge color="neutral" variant="subtle">{{
+            treatment.status
+          }}</UBadge>
         </div>
-        <img :src="treatment.image" :alt="`${treatment.owner.name} serving carton`" class="aspect-square w-full object-contain">
-        <p class="m-0 font-semibold text-highlighted">{{ treatment.owner.name }}</p>
+        <img
+          :src="treatment.image"
+          :alt="`${treatment.owner.name} serving carton`"
+          class="aspect-square w-full object-contain"
+        />
+        <p class="m-0 fx-type-body">{{ treatment.owner.name }}</p>
       </UCard>
-    </div>
+    </UPageGrid>
 
     <div class="flex flex-wrap gap-2">
-      <UBadge color="neutral" variant="soft">Minimum {{ product.commerce.minimumQuantity }}</UBadge>
-      <UBadge color="neutral" variant="soft">Order in {{ product.commerce.orderIncrement }}s</UBadge>
-      <UBadge color="neutral" variant="soft">Unit: {{ product.commerce.unit }}</UBadge>
+      <UBadge color="neutral" variant="soft"
+        >Minimum {{ product.commerce.minimumQuantity }}</UBadge
+      >
+      <UBadge color="neutral" variant="soft"
+        >Order in {{ product.commerce.orderIncrement }}s</UBadge
+      >
+      <UBadge color="neutral" variant="soft"
+        >Unit: {{ product.commerce.unit }}</UBadge
+      >
     </div>
   </section>
 </template>

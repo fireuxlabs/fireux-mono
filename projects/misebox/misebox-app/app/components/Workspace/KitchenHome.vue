@@ -5,7 +5,6 @@
     :show-structured-details="false"
   />
   <UDashboardToolbar
-    :ui="{ root: 'border-b-0' }"
     v-if="
       workspace.multipleKitchenView.value &&
       workspace.collection.value.length > 1

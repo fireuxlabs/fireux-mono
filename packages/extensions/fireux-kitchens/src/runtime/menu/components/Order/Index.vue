@@ -1,5 +1,5 @@
 <template>
-  <UContainer class="py-8">
+  <UContainer>
     <FireStateCard
       v-if="flow.menu.pending"
       entity="Menu"
@@ -28,24 +28,22 @@
       title="This service is unavailable"
       description="Choose another service from the menus page."
     />
-    <div v-else class="space-y-6">
-      <header class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p class="text-sm text-muted">
-            {{ flow.manifest.presentation.kitchenName }}
-          </p>
-          <h1 class="text-2xl font-bold">
-            {{ flow.title }} · {{ flow.manifest.content.name }}
-          </h1>
-        </div>
-        <UButton
-          v-if="flow.cart.length && !flow.submission"
-          aria-controls="menu-order-cart"
-          @click="cartRegion?.scrollIntoView({ block: 'start' })"
-          :label="`Your order · ${flow.cart.reduce((sum, line) => sum + line.quantity, 0)}`"
-          variant="soft"
-        />
-      </header>
+    <UPage v-else>
+      <UPageHeader
+        :title="`${flow.title} · ${flow.manifest.content.name}`"
+        :description="flow.manifest.presentation.kitchenName"
+      >
+        <template #links>
+          <UButton
+            v-if="flow.cart.length && !flow.submission"
+            aria-controls="menu-order-cart"
+            @click="cartRegion?.scrollIntoView({ block: 'start' })"
+            :label="`Your order · ${flow.cart.reduce((sum, line) => sum + line.quantity, 0)}`"
+            variant="soft"
+          />
+        </template>
+      </UPageHeader>
+      <UPageBody>
       <UAlert
         v-if="!flow.submission && !flow.serviceOpen"
         color="neutral"
@@ -75,12 +73,13 @@
             />
           </UFormField>
         </MenuOrderMenuItems>
-        <aside ref="cartRegion" id="menu-order-cart" class="space-y-4">
+        <aside ref="cartRegion" id="menu-order-cart">
           <MenuOrderCheckout :flow="flow" :context="context" />
         </aside>
       </div>
       <UAlert v-if="flow.error" color="error" :description="flow.error" />
-    </div>
+      </UPageBody>
+    </UPage>
   </UContainer>
 </template>
 <script setup lang="ts">

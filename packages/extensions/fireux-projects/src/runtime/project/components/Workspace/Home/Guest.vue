@@ -10,11 +10,11 @@
       <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
     <UCard v-else-if="project">
-      <h2 class="text-xl font-semibold">{{ project.identity.name }}</h2>
-      <p class="text-sm text-muted">Saved for this browser’s guest identity.</p>
+      <h2 class="fx-type-card-heading">{{ project.identity.name }}</h2>
+      <p>Saved for this browser’s guest identity.</p>
     </UCard>
     <WorkspaceProjectHomeCreateForm v-else-if="canCreate" />
-    <p v-else class="text-sm text-muted">Project creation is unavailable.</p>
+    <p v-else>Project creation is unavailable.</p>
   </section>
 </template>
 

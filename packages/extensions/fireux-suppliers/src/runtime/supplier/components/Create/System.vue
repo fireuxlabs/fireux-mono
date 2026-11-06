@@ -1,15 +1,15 @@
 <template>
   <section class="mx-auto flex w-full max-w-2xl justify-center">
-    <UCard class="w-full" :ui="{ body: 'space-y-6' }">
+    <UCard class="w-full" :ui="{ body: 'fx-card-body-stack' }">
       <template #header>
         <div class="space-y-3">
           <div class="space-y-1">
             <p class="fx-type-label">Supplier workspace</p>
-            <h2 class="text-2xl font-semibold">
+            <h2 class="fx-type-card-heading">
               {{ headerTitle }}
             </h2>
           </div>
-          <p class="text-sm text-dimmed">
+          <p>
             {{ headerDescription }}
           </p>
         </div>
@@ -19,10 +19,10 @@
         v-if="showDevNotes"
         data-dev-note="true"
         :data-dev-note-title="developerNoteTitle"
-        class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
+        class="fireux-dev-note rounded-lg px-4 py-3"
       >
         <p class="fireux-dev-note__label mb-1">Developer Note</p>
-        <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+        <ul data-dev-note-body class="fx-list-stack">
           <li>
             The supplier mutation creates
             <code>suppliers/&lt;id&gt;</code>.

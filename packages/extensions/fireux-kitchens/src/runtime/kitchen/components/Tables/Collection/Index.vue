@@ -2,24 +2,24 @@
   <div class="space-y-4">
     <div class="grid gap-3 sm:grid-cols-3">
       <UCard v-for="summary in summaries" :key="summary.label">
-        <div class="flex items-center justify-between gap-3">
+        <div class="card__header">
           <div>
-            <p class="m-0 text-xs font-bold text-muted">{{ summary.label }}</p>
-            <strong class="text-2xl font-black text-highlighted">
+            <p>{{ summary.label }}</p>
+            <strong>
               {{ summary.count }}
             </strong>
           </div>
-          <UIcon :name="summary.icon" class="size-5 text-primary" />
+          <UIcon :name="summary.icon" />
         </div>
       </UCard>
     </div>
 
     <UCard>
       <template #header>
-        <div class="flex items-center justify-between gap-3">
+        <div class="card__header">
           <div>
-            <h2 class="m-0 text-lg font-black text-highlighted">Tables</h2>
-            <p class="m-0 text-sm text-muted">
+            <h2>Tables</h2>
+            <p>
               Front-of-house tabs, staged rounds, and end-of-service billing.
             </p>
           </div>
@@ -27,25 +27,23 @@
         </div>
       </template>
 
-      <p v-if="pending" class="m-0 text-sm font-semibold text-muted">
-        Loading table tabs...
-      </p>
+      <p v-if="pending">Loading table tabs...</p>
 
       <div
         v-else-if="tableRows.length"
         class="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
       >
-        <article
+        <UCard as="article" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
           v-for="row in tableRows"
           :key="row.key"
-          class="grid gap-3 rounded-lg border border-default bg-elevated/40 p-4"
+          
         >
-          <header class="flex items-start justify-between gap-3">
+          <header class="card__header">
             <div>
-              <h3 class="m-0 text-lg font-black text-highlighted">
+              <h3>
                 {{ row.label }}
               </h3>
-              <p class="m-0 text-xs font-semibold text-muted">
+              <p>
                 {{ row.tab ? roundLabel(row.tab) : 'No open tab' }}
               </p>
             </div>
@@ -57,36 +55,36 @@
             </UBadge>
           </header>
 
-          <dl class="grid grid-cols-2 gap-2 text-sm">
+          <dl class="grid grid-cols-2 gap-2">
             <div>
-              <dt class="text-muted">Guests</dt>
-              <dd class="m-0 font-black text-highlighted">
+              <dt>Guests</dt>
+              <dd>
                 {{ row.tab?.guest_count || 0 }}
               </dd>
             </div>
             <div>
-              <dt class="text-muted">Staged items</dt>
-              <dd class="m-0 font-black text-highlighted">
+              <dt>Staged items</dt>
+              <dd>
                 {{ row.tab?.staged_line_count || 0 }}
               </dd>
             </div>
             <div>
-              <dt class="text-muted">Sent rounds</dt>
-              <dd class="m-0 font-black text-highlighted">
+              <dt>Sent rounds</dt>
+              <dd>
                 {{ row.tab?.submitted_round_count || 0 }}
               </dd>
             </div>
             <div>
-              <dt class="text-muted">Outstanding</dt>
-              <dd class="m-0 font-black text-highlighted">
+              <dt>Outstanding</dt>
+              <dd>
                 {{ row.tab ? money(row.tab) : '—' }}
               </dd>
             </div>
           </dl>
-        </article>
+        </UCard>
       </div>
 
-      <p v-else class="m-0 text-sm text-muted">No table tabs are open.</p>
+      <p v-else>No table tabs are open.</p>
     </UCard>
 
     <FireDiagnosticsDebugPanel

@@ -2,7 +2,7 @@
   <UCard v-if="ecosystem">
     <template #header>Ecosystem</template>
     <ULink :to="ecosystem.detail_url">{{ ecosystem.name }}</ULink>
-    <p class="text-sm text-muted">{{ ecosystem.description }}</p>
+    <p class="fx-type-caption">{{ ecosystem.description }}</p>
   </UCard>
 </template>
 

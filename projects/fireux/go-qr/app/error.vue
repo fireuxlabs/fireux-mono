@@ -1,16 +1,14 @@
 <template>
   <UApp>
-    <main class="min-h-screen bg-default text-default">
-      <UContainer class="py-10">
+    <main class="min-h-screen bg-default">
+      <UContainer>
         <div class="mx-auto max-w-2xl space-y-6">
-          <div class="space-y-2">
-            <p class="text-sm font-semibold uppercase text-primary">
-              Go QR
-            </p>
-            <h1 class="text-4xl font-semibold tracking-normal text-highlighted">
+          <div class="pagebody">
+            <p class="fx-type-caption">Go QR</p>
+            <h1 class="fx-type-page-title">
               {{ title }}
             </h1>
-            <p class="text-muted">
+            <p class="fx-type-body">
               {{ description }}
             </p>
           </div>
@@ -35,6 +33,15 @@ const props = defineProps<{
   }
 }>()
 
-const title = computed(() => props.error.statusCode ? `Error ${props.error.statusCode}` : 'Something went wrong')
-const description = computed(() => props.error.statusMessage || props.error.message || 'The page could not be loaded.')
+const title = computed(() =>
+  props.error.statusCode
+    ? `Error ${props.error.statusCode}`
+    : 'Something went wrong'
+)
+const description = computed(
+  () =>
+    props.error.statusMessage ||
+    props.error.message ||
+    'The page could not be loaded.'
+)
 </script>

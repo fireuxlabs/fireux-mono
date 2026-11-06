@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-start gap-2 text-xs text-muted">
+  <div class="flex flex-col items-start gap-2">
     <UButton
       v-if="showButton"
       size="xs"
@@ -13,7 +13,7 @@
       {{ buttonLabel }}
     </UButton>
 
-    <p v-if="message" class="text-xs text-dimmed">
+    <p v-if="message">
       {{ message }}
     </p>
 
@@ -26,16 +26,19 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-const props = withDefaults(defineProps<{
-  placeId: string
-  autoLoad?: boolean
-  showButton?: boolean
-  buttonLabel?: string
-}>(), {
-  autoLoad: false,
-  showButton: true,
-  buttonLabel: 'View Google hours',
-})
+const props = withDefaults(
+  defineProps<{
+    placeId: string
+    autoLoad?: boolean
+    showButton?: boolean
+    buttonLabel?: string
+  }>(),
+  {
+    autoLoad: false,
+    showButton: true,
+    buttonLabel: 'View Google hours',
+  }
+)
 
 const pending = ref(false)
 const message = ref('')
@@ -80,9 +83,12 @@ onMounted(() => {
   if (props.autoLoad) load()
 })
 
-watch(() => props.placeId, () => {
-  hours.value = []
-  message.value = ''
-  if (props.autoLoad) load()
-})
+watch(
+  () => props.placeId,
+  () => {
+    hours.value = []
+    message.value = ''
+    if (props.autoLoad) load()
+  }
+)
 </script>

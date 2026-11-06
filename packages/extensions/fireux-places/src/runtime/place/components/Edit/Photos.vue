@@ -2,7 +2,7 @@
   <UCard>
     <template #header>
       <div>
-        <div class="text-base font-semibold text-highlighted">Photos</div>
+        <div>Photos</div>
       </div>
     </template>
 
@@ -12,8 +12,8 @@
           class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <h3 class="text-sm font-medium text-highlighted">Cover image</h3>
-            <p class="mt-1 text-xs text-muted">Recommended: 1280 × 720 px.</p>
+            <h3 class="fx-type-card-heading">Cover image</h3>
+            <p class="mt-1">Recommended: 1280 × 720 px.</p>
           </div>
           <div class="flex flex-wrap gap-2">
             <UButton
@@ -54,10 +54,7 @@
             :alt="`${place?.name || 'Place'} cover`"
             class="size-full object-cover"
           />
-          <div
-            v-else
-            class="flex size-full items-center justify-center text-sm text-muted"
-          >
+          <div v-else class="flex size-full items-center justify-center">
             1280 × 720
           </div>
         </div>
@@ -68,10 +65,8 @@
           class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <h3 class="text-sm font-medium text-highlighted">Gallery</h3>
-            <p class="mt-1 text-xs text-muted">
-              Up to 24 images. Recommended: 1200 × 1200 px.
-            </p>
+            <h3 class="fx-type-card-heading">Gallery</h3>
+            <p class="mt-1">Up to 24 images. Recommended: 1200 × 1200 px.</p>
           </div>
           <UButton
             label="Add images"
@@ -122,7 +117,7 @@
         </div>
         <div
           v-else
-          class="mt-4 flex aspect-square w-full max-w-44 items-center justify-center rounded-xl bg-elevated text-xs text-muted"
+          class="mt-4 flex aspect-square w-full max-w-44 items-center justify-center rounded-xl bg-elevated"
         >
           1200 × 1200
         </div>
@@ -155,7 +150,13 @@ const galleryImages = computed(() =>
     : []
 )
 const toast = useToastify()
-const { uploadImage } = useImageStorage({ endpoint: '/api/places/images', fields: () => ({ app_id: props.mutationAuthority?.appId, kitchen_id: props.mutationAuthority?.kitchenId }) })
+const { uploadImage } = useImageStorage({
+  endpoint: '/api/places/images',
+  fields: () => ({
+    app_id: props.mutationAuthority?.appId,
+    kitchen_id: props.mutationAuthority?.kitchenId,
+  }),
+})
 const coverInput = ref<HTMLInputElement | null>(null)
 const galleryInput = ref<HTMLInputElement | null>(null)
 const coverUploading = ref(false)

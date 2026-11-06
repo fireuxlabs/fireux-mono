@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="workspace-surface workspace-surface--compact">
     <UAlert
       v-if="outcome === 'error'"
       color="error"
@@ -8,8 +8,7 @@
       description="Supplier ingredients could not be loaded."
     >
       <template #actions
-        ><FireCopyError
-          message="Supplier ingredients could not be loaded."
+        ><FireCopyError message="Supplier ingredients could not be loaded."
       /></template>
     </UAlert>
 
@@ -20,20 +19,17 @@
       title="Loading Ingredient details"
     />
 
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Supplier to view ingredients.
     </p>
     <UPageCard v-else>
       <template #header>
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0">
-            <h2 class="text-base font-semibold text-highlighted">
+            <h2 class="fx-type-section-title">
               {{ ingredientsTitle }}
             </h2>
-            <p class="text-sm text-dimmed">
+            <p>
               {{ ingredientsDescription }}
             </p>
           </div>
@@ -44,7 +40,10 @@
         </div>
       </template>
 
-      <div v-if="cards.length" class="grid gap-3 md:grid-cols-2">
+      <div
+        v-if="cards.length"
+        class="workspace-surface__grid workspace-surface__grid--2"
+      >
         <UPageCard v-for="card in cards" :key="card.id" variant="subtle">
           <div class="flex items-start gap-3">
             <UAvatar
@@ -53,10 +52,10 @@
               size="sm"
             />
             <div class="min-w-0 flex-1">
-              <p class="truncate text-sm font-semibold text-highlighted">
+              <p class="truncate">
                 {{ card.title }}
               </p>
-              <p class="truncate text-xs text-dimmed">
+              <p class="truncate">
                 {{ card.subtitle }}
               </p>
             </div>
@@ -71,7 +70,7 @@
           </div>
         </UPageCard>
       </div>
-      <p v-else class="text-sm text-dimmed">No supplier ingredients found.</p>
+      <p v-else>No supplier ingredients found.</p>
     </UPageCard>
 
     <FireDiagnosticsDebugPanel

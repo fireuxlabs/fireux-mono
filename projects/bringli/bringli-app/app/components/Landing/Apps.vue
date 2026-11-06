@@ -1,15 +1,20 @@
 <template>
   <section class="landing-index-section">
     <UCard>
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-1">
-          <p class="text-sm font-semibold">Run Bringli operations from one workspace</p>
-          <p class="text-sm text-muted">
-            Start with suppliers, then scale into full order and delivery orchestration.
+      <div
+        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="fx-card-body-stack">
+          <p class="fx-type-caption">
+            Run Bringli operations from one workspace
+          </p>
+          <p class="fx-type-caption">
+            Start with suppliers, then scale into full order and delivery
+            orchestration.
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-3">
+        <div class="fx-card__actions">
           <UButton to="/suppliers" color="primary" icon="i-lucide-store">
             Open suppliers
           </UButton>

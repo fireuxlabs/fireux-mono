@@ -5,7 +5,7 @@
 <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
 <template>
   <div class="min-h-full">
-    <UDashboardPanel id="user-profile" :ui="{ body: 'lg:py-12' }">
+    <UDashboardPanel id="user-profile">
       <template #header>
         <FireLayoutsDashboardNavbar title="Profile" />
       </template>
@@ -17,19 +17,14 @@
               :src="userCard?.avatarUrl || undefined"
               :alt="userCard?.displayName || 'Your profile'"
               size="2xl"
-              class="ring-2 ring-default"
             />
 
             <div class="min-w-0 flex-1">
-              <h1
-                class="truncate text-2xl font-semibold tracking-tight text-highlighted"
-              >
+              <h1 class="truncate">
                 {{ userCard?.displayName || 'Your profile' }}
               </h1>
               <div class="mt-2 flex flex-wrap items-center gap-2">
-                <span class="text-sm text-muted">{{
-                  userCard?.handle || 'No handle'
-                }}</span>
+                <span>{{ userCard?.handle || 'No handle' }}</span>
                 <UserAccessBadge :subscription="subscription" />
               </div>
             </div>
@@ -41,7 +36,6 @@
               icon="i-lucide-external-link"
               color="neutral"
               variant="soft"
-              class="shrink-0"
             />
           </div>
 
@@ -82,14 +76,12 @@
             >
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="font-medium text-highlighted">Your plan</p>
-                  <UBadge color="neutral" variant="soft" class="capitalize">
+                  <p>Your plan</p>
+                  <UBadge color="neutral" variant="soft">
                     {{ appUser.subscription }}
                   </UBadge>
                 </div>
-                <p class="mt-1 text-sm text-muted">
-                  Compare Free, Pro and Business.
-                </p>
+                <p class="mt-1">Compare Free, Pro and Business.</p>
               </div>
               <UButton
                 label="View plans"
@@ -131,34 +123,22 @@
               icon="i-lucide-shield-check"
               variant="subtle"
             >
-              <dl class="divide-y divide-default text-sm">
+              <dl class="divide-y divide-default">
                 <div class="py-3 first:pt-0">
-                  <dt
-                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                  >
-                    Email
-                  </dt>
-                  <dd class="mt-1 break-words font-medium text-highlighted">
+                  <dt>Email</dt>
+                  <dd class="mt-1 break-words">
                     {{ account.email || 'Not available' }}
                   </dd>
                 </div>
                 <div class="py-3">
-                  <dt
-                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                  >
-                    Terms accepted
-                  </dt>
-                  <dd class="mt-1 font-medium text-highlighted">
+                  <dt>Terms accepted</dt>
+                  <dd class="mt-1">
                     {{ termsAcceptedLabel || 'Not recorded' }}
                   </dd>
                 </div>
                 <div class="py-3 last:pb-0">
-                  <dt
-                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                  >
-                    Terms version
-                  </dt>
-                  <dd class="mt-1 font-mono text-highlighted">
+                  <dt>Terms version</dt>
+                  <dd class="mt-1">
                     {{ account.terms.version || 'Not recorded' }}
                   </dd>
                 </div>

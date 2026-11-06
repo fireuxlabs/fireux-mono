@@ -1,11 +1,14 @@
 <template>
   <ClientOnly>
-    <section class="space-y-4">
+    <section class="workspace-surface workspace-surface--compact">
       <UCard v-if="isLoading">
         <p class="preview__state">Loading supplier preview…</p>
       </UCard>
 
-      <UCard v-else-if="hasPreview" class="space-y-6">
+      <UCard
+        v-else-if="hasPreview"
+        class="workspace-surface workspace-surface--compact"
+      >
         <header class="preview__header">
           <div class="preview__header-content">
             <p class="preview__eyebrow">Directory preview</p>

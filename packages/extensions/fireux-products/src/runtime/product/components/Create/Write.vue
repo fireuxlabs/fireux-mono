@@ -25,7 +25,7 @@
             </template>
             <UIcon
               name="i-lucide-help-circle"
-              class="w-4 h-4 text-dimmed hover:text-toned cursor-help"
+              class="hover:text-toned cursor-help"
             />
           </UTooltip>
         </div>
@@ -134,7 +134,9 @@ const productTypeOptions = computed(() =>
 .write-system {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing) * 6); /* Increased from space-4 to space-6 for more breathing room */
+  gap: calc(
+    var(--spacing) * 6
+  ); /* Increased from space-4 to space-6 for more breathing room */
 }
 
 .product-type-grid {

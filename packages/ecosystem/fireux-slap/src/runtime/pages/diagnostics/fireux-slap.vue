@@ -9,29 +9,30 @@
       <UCard>
         <template #header>
           <div class="flex flex-col gap-1">
-            <h2 class="text-base font-semibold">Ecosystem status</h2>
-            <p class="text-sm text-muted">
-              Apps That Slap is configured as an ecosystem package for this runtime.
+            <h2 class="fx-type-card-heading">Ecosystem status</h2>
+            <p>
+              Apps That Slap is configured as an ecosystem package for this
+              runtime.
             </p>
           </div>
         </template>
 
-        <dl class="grid gap-4 sm:grid-cols-2 text-sm">
+        <dl class="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt class="text-muted">Ecosystem</dt>
-            <dd class="font-medium">{{ cfg.ecosystem }}</dd>
+            <dt>Ecosystem</dt>
+            <dd>{{ cfg.ecosystem }}</dd>
           </div>
           <div>
-            <dt class="text-muted">Role</dt>
-            <dd class="font-medium capitalize">{{ cfg.role }}</dd>
+            <dt>Role</dt>
+            <dd>{{ cfg.role }}</dd>
           </div>
           <div>
-            <dt class="text-muted">App ID</dt>
-            <dd class="font-mono">{{ cfg.appId || 'not set' }}</dd>
+            <dt>App ID</dt>
+            <dd>{{ cfg.appId || 'not set' }}</dd>
           </div>
           <div>
-            <dt class="text-muted">Modules</dt>
-            <dd class="font-mono">{{ cfg.modules.length ? cfg.modules.join(', ') : 'none' }}</dd>
+            <dt>Modules</dt>
+            <dd>{{ cfg.modules.length ? cfg.modules.join(', ') : 'none' }}</dd>
           </div>
         </dl>
       </UCard>

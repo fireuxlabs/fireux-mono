@@ -1,14 +1,10 @@
 <template>
   <section class="space-y-3">
     <div>
-      <h3 class="text-sm font-medium">{{ label }}</h3>
-      <p v-if="!timezone" class="text-xs text-muted">
-        Set the venue timezone in Identity first.
-      </p>
+      <h3>{{ label }}</h3>
+      <p v-if="!timezone">Set the venue timezone in Identity first.</p>
     </div>
-    <p v-if="ranges.length" class="text-xs font-medium text-muted">
-      Time range
-    </p>
+    <p v-if="ranges.length">Time range</p>
     <div class="divide-y divide-default">
       <KitchenFoodAndDrinkServicesSetupHoursRange
         v-for="(range, index) in ranges"
@@ -20,12 +16,10 @@
         @remove="remove(index)"
       />
     </div>
-    <p v-if="incomplete" class="text-xs text-muted" role="status">
+    <p v-if="incomplete" role="status">
       Choose days and both times to update these hours.
     </p>
-    <p v-else-if="!ranges.length" class="text-sm text-muted">
-      No serving times set.
-    </p>
+    <p v-else-if="!ranges.length">No serving times set.</p>
     <UButton
       :label="ranges.length ? 'Add another time range' : 'Add time range'"
       icon="i-lucide-plus"

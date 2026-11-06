@@ -1,31 +1,27 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
-        <div class="text-sm font-semibold">Add Ingredient</div>
-        <p class="text-xs text-dimmed">
-          Create a global ingredient for this runtime.
-        </p>
+      <div class="fx-card-body-stack">
+        <div>Add Ingredient</div>
+        <p>Create a global ingredient for this runtime.</p>
       </div>
     </template>
 
     <UFormField label="Image" hint="Optional">
-      <div class="flex flex-col items-center gap-2">
+      <div class="fx-card-body-stack">
         <FireFormsEditableImagePicker
           :src="form.image_url || ''"
           :alt="form.name || 'Ingredient'"
           :initials="imageInitials"
           :update="handleImageUpload"
         />
-        <p v-if="imageUploading" class="text-xs text-muted">
-          Uploading image...
-        </p>
+        <p v-if="imageUploading">Uploading image...</p>
       </div>
     </UFormField>
 
     <IngredientCreateWrite v-model:form="form" />
 
-    <div class="mt-4 flex justify-end gap-2">
+    <div class="fx-card__actions">
       <UButton
         variant="ghost"
         color="neutral"

@@ -1,153 +1,117 @@
 <template>
-  <main class="min-h-screen overflow-hidden bg-default text-default">
-    <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.18),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_36%)]"
-    />
-
-    <UContainer class="relative py-16 lg:py-24">
-      <div class="grid gap-8 lg:grid-cols-[1.35fr,0.85fr]">
-        <section class="space-y-6">
-          <div class="space-y-4">
-            <UBadge color="primary" variant="soft">
-              {{ appName }}
-            </UBadge>
-
-            <div class="space-y-3">
-              <p class="text-sm font-semibold uppercase tracking-[0.32em] text-primary">
-                Error Surface
-              </p>
-              <h1 class="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-                {{ title }}
-              </h1>
-              <p class="max-w-2xl text-lg text-toned">
-                {{ description }}
-              </p>
-              <p class="max-w-2xl text-sm text-muted">
-                {{ supportCopy }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
-            <UButton to="/" color="primary" size="lg">
-              Back to Home
-            </UButton>
+  <UMain>
+    <UContainer>
+      <UPage>
+        <UPageHeader :title="title" :description="description">
+          <template #headline
+            ><UBadge color="primary" variant="soft">{{
+              appName
+            }}</UBadge></template
+          >
+          <template #links>
+            <UButton to="/" color="primary" size="lg">Back to Home</UButton>
             <UButton
               v-if="authAction"
               :to="authAction.to"
               color="neutral"
               variant="soft"
               size="lg"
+              >{{ authAction.label }}</UButton
             >
-              {{ authAction.label }}
-            </UButton>
             <UButton
               v-if="showGetStarted"
               to="/get-started"
               color="neutral"
               variant="soft"
               size="lg"
+              >Get Started</UButton
             >
-              Get Started
-            </UButton>
-            <UButton color="neutral" variant="outline" size="lg" @click="reload">
-              Reload
-            </UButton>
-            <UButton color="neutral" variant="ghost" size="lg" @click="clearError({ redirect: '/' })">
-              Dismiss
-            </UButton>
-          </div>
-        </section>
-
-        <UCard class="border-primary/20 bg-default/90 shadow-xl shadow-primary/5 backdrop-blur">
-          <div class="space-y-5">
-            <div class="space-y-2">
-              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-                Status
-              </p>
-              <div class="flex flex-wrap items-center gap-2">
-                <UBadge color="primary" variant="soft">
-                  {{ statusLabel }}
-                </UBadge>
-                <UBadge v-if="resolvedError?.statusCode" color="neutral" variant="soft">
-                  {{ resolvedError.statusCode }}
-                </UBadge>
-              </div>
-            </div>
-
-            <USeparator />
-
-            <div v-if="isFirebaseAdminCredentialError" class="space-y-3">
-              <p class="text-sm font-medium text-highlighted">
-                Firebase Admin could not initialize credentials.
-              </p>
-              <ul class="space-y-2 text-sm text-toned">
-                <li class="flex gap-2">
-                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span>If this runtime uses Application Default Credentials, verify its workload identity or default service account and Firebase IAM access.</span>
-                </li>
-                <li class="flex gap-2">
-                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span>Otherwise configure <code>GOOGLE_APPLICATION_CREDENTIALS</code>, <code>FIREBASE_SERVICE_ACCOUNT_FILE</code>, inline service-account JSON, or the split <code>FIREBASE_*</code> keys.</span>
-                </li>
-                <li class="flex gap-2">
-                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span>Local ADC that mints custom tokens may also need <code>FIREBASE_SERVICE_ACCOUNT_ID</code> and IAM <code>signBlob</code> permission.</span>
-                </li>
-              </ul>
-            </div>
-
-            <div v-else class="space-y-3">
-              <p class="text-sm font-medium text-highlighted">
-                What you can do now
-              </p>
-              <ul class="space-y-2 text-sm text-toned">
-                <li
-                  v-for="step in recoverySteps"
-                  :key="step"
-                  class="flex gap-2"
-                >
-                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span>{{ step }}</span>
-                </li>
-              </ul>
-            </div>
-
-            <UAlert
-              v-if="contactEmail"
+            <UButton color="neutral" variant="outline" size="lg" @click="reload"
+              >Reload</UButton
+            >
+            <UButton
               color="neutral"
-              variant="soft"
-              title="Support"
-              :description="`If this keeps happening, contact ${contactEmail}.`"
-            />
-          </div>
-        </UCard>
-      </div>
-
-      <section
-        v-if="resolvedError?.message"
-        class="mt-8 rounded-3xl border border-default bg-default/80 p-6 shadow-sm"
-      >
-        <div class="space-y-3">
-          <div class="space-y-1">
-            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-              Technical details
-            </p>
-            <p class="text-sm text-muted">
-              Raw error output for debugging and support.
-            </p>
-          </div>
-
-          <pre class="max-h-[28rem] overflow-auto rounded-2xl bg-inverted px-4 py-4 text-xs text-inverted">{{ resolvedError.message }}</pre>
-        </div>
-      </section>
+              variant="ghost"
+              size="lg"
+              @click="clearError({ redirect: '/' })"
+              >Dismiss</UButton
+            >
+          </template>
+        </UPageHeader>
+        <UPageBody>
+          <p>{{ supportCopy }}</p>
+          <UCard>
+            <template #header>
+              <UBadge color="primary" variant="soft">{{ statusLabel }}</UBadge>
+              <UBadge
+                v-if="resolvedError?.statusCode"
+                color="neutral"
+                variant="soft"
+                >{{ resolvedError.statusCode }}</UBadge
+              >
+            </template>
+            <div class="fx-card-body-stack">
+              <template v-if="isFirebaseAdminCredentialError">
+                <p>Firebase Admin could not initialize credentials.</p>
+                <ul class="fx-list-stack">
+                  <li>
+                    If this runtime uses Application Default Credentials, verify
+                    its workload identity or default service account and
+                    Firebase IAM access.
+                  </li>
+                  <li>
+                    Otherwise configure
+                    <code>GOOGLE_APPLICATION_CREDENTIALS</code>,
+                    <code>FIREBASE_SERVICE_ACCOUNT_FILE</code>, inline
+                    service-account JSON, or the split
+                    <code>FIREBASE_*</code> keys.
+                  </li>
+                  <li>
+                    Local ADC that mints custom tokens may also need
+                    <code>FIREBASE_SERVICE_ACCOUNT_ID</code> and IAM
+                    <code>signBlob</code> permission.
+                  </li>
+                </ul>
+              </template>
+              <template v-else>
+                <h2 class="fx-type-card-heading">What you can do now</h2>
+                <ul class="fx-list-stack">
+                  <li v-for="step in recoverySteps" :key="step">{{ step }}</li>
+                </ul>
+              </template>
+              <UAlert
+                v-if="contactEmail"
+                color="neutral"
+                variant="soft"
+                title="Support"
+                :description="`If this keeps happening, contact ${contactEmail}.`"
+              />
+            </div>
+          </UCard>
+          <UCard v-if="resolvedError?.message">
+            <template #header>
+              <h2 class="fx-type-card-heading">Technical details</h2>
+              <p>Raw error output for debugging and support.</p>
+            </template>
+            <pre class="max-h-[28rem] overflow-auto">{{
+              resolvedError.message
+            }}</pre>
+          </UCard>
+        </UPageBody>
+      </UPage>
     </UContainer>
-  </main>
+  </UMain>
 </template>
 
 <script setup lang="ts">
-import { clearError, useError, useRouter, useRuntimeConfig, type NuxtError } from 'nuxt/app';
-import { computed } from 'vue';
+import {
+  clearError,
+  useError,
+  useRouter,
+  useRuntimeConfig,
+  type NuxtError,
+} from 'nuxt/app'
+import { computed } from 'vue'
 
 const props = defineProps<{
   error?: NuxtError
@@ -173,7 +137,9 @@ const contactEmail = computed(() => {
   return typeof value === 'string' && value.trim() ? value.trim() : ''
 })
 
-const resolvedError = computed<NuxtError | null>(() => props.error ?? useError().value ?? null)
+const resolvedError = computed<NuxtError | null>(
+  () => props.error ?? useError().value ?? null
+)
 
 const hasRoutePath = (path: string) =>
   router.getRoutes().some((route) => route.path === path)
@@ -188,9 +154,12 @@ const title = computed(() => {
 })
 
 const description = computed(() => {
-  if (statusCode.value === 401) return `You need to sign in before ${appName.value} can open this page.`
-  if (statusCode.value === 403) return `${appName.value} rejected this request because your account does not have access to this surface.`
-  if (statusCode.value === 404) return `The page you requested does not exist in ${appName.value}.`
+  if (statusCode.value === 401)
+    return `You need to sign in before ${appName.value} can open this page.`
+  if (statusCode.value === 403)
+    return `${appName.value} rejected this request because your account does not have access to this surface.`
+  if (statusCode.value === 404)
+    return `The page you requested does not exist in ${appName.value}.`
   return `A server error occurred while rendering ${appName.value}.`
 })
 
@@ -206,8 +175,12 @@ const statusLabel = computed(() => {
 const isFirebaseAdminCredentialError = computed(() => {
   const message = String(resolvedError.value?.message ?? '')
   return (
-    message.includes('Service account object must contain a string "private_key"') ||
-    message.includes('private_key is missing in GOOGLE_APPLICATION_CREDENTIALS') ||
+    message.includes(
+      'Service account object must contain a string "private_key"'
+    ) ||
+    message.includes(
+      'private_key is missing in GOOGLE_APPLICATION_CREDENTIALS'
+    ) ||
     message.includes('Failed to parse service account') ||
     message.includes('Could not load the default credentials') ||
     message.includes('Unable to detect a Project Id') ||
@@ -215,12 +188,15 @@ const isFirebaseAdminCredentialError = computed(() => {
   )
 })
 
-const showGetStarted = computed(() =>
-  isFirebaseAdminCredentialError.value && hasRoutePath('/get-started')
+const showGetStarted = computed(
+  () => isFirebaseAdminCredentialError.value && hasRoutePath('/get-started')
 )
 
 const authAction = computed(() => {
-  if ((statusCode.value === 401 || statusCode.value === 403) && hasRoutePath('/auth')) {
+  if (
+    (statusCode.value === 401 || statusCode.value === 403) &&
+    hasRoutePath('/auth')
+  ) {
     return {
       label: statusCode.value === 401 ? 'Sign In' : 'Go to Auth',
       to: '/auth',

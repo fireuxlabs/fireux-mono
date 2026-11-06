@@ -28,8 +28,8 @@
       <JobAuthorFlowProgress :current-step="3" :published="isPublicAndOpen" />
 
       <div v-if="pending" class="space-y-3">
-        <USkeleton class="h-14 rounded-xl" />
-        <USkeleton class="h-40 rounded-xl" />
+        <USkeleton class="h-14" />
+        <USkeleton class="h-40" />
       </div>
 
       <UAlert
@@ -63,10 +63,8 @@
             <UCard>
               <template #header>
                 <div>
-                  <h2 class="text-base font-semibold text-highlighted">
-                    Availability
-                  </h2>
-                  <p class="mt-1 text-sm text-muted">
+                  <h2 class="fx-type-card-heading">Availability</h2>
+                  <p class="mt-1">
                     Closed jobs stay in your workspace but disappear from public
                     discovery.
                   </p>
@@ -77,10 +75,10 @@
               </UFormField>
             </UCard>
 
-            <div
-              class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-default bg-muted/30 p-4"
+            <UCard
+              class="flex flex-wrap items-center justify-between gap-3" :ui="{ body: 'fx-card-body-stack' }"
             >
-              <span class="text-sm text-muted">
+              <span>
                 {{
                   isDirty
                     ? 'You have unsaved changes.'
@@ -107,7 +105,7 @@
                   Save changes
                 </UButton>
               </div>
-            </div>
+            </UCard>
           </div>
 
           <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
@@ -181,7 +179,13 @@ function editForm(source?: Job | null): JobCreateForm {
 const form = ref<JobCreateForm>(editForm())
 const status = ref<JobStatus>('open')
 const saving = ref(false)
-watch(scopeEpoch, () => { saving.value = false }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
 const publishing = ref(false)
 
 const statusOptions = [
@@ -242,34 +246,37 @@ function onReset() {
 }
 
 async function onSave() {
-    const isCurrent = captureIntent()
-    if (!job.value || !jobId.value || !isDirty.value || publishing.value) return
-    saving.value = true
-    const patch = {
-      ...form.value,
-      title: form.value.title.trim(),
-      description: form.value.description.trim(),
-      compensation: form.value.compensation
-        ? {
-            ...form.value.compensation,
-            currency_code: form.value.compensation.currency_code
-              .trim()
-              .toUpperCase(),
-          }
-        : null,
-      status: status.value,
-    }
+  const isCurrent = captureIntent()
+  if (!job.value || !jobId.value || !isDirty.value || publishing.value) return
+  saving.value = true
+  const patch = {
+    ...form.value,
+    title: form.value.title.trim(),
+    description: form.value.description.trim(),
+    compensation: form.value.compensation
+      ? {
+          ...form.value.compensation,
+          currency_code: form.value.compensation.currency_code
+            .trim()
+            .toUpperCase(),
+        }
+      : null,
+    status: status.value,
+  }
 
-    try {
-      await updateJob({ jobId: jobId.value, changes: patch })
-      if (!isCurrent()) return
-      await refresh()
-      if (isCurrent()) toast.success('Job updated')
-    } catch (error) {
-      if (isCurrent()) toast.error(error instanceof Error ? error.message : 'Failed to update job')
-    } finally {
-      if (isCurrent()) saving.value = false
-    }
+  try {
+    await updateJob({ jobId: jobId.value, changes: patch })
+    if (!isCurrent()) return
+    await refresh()
+    if (isCurrent()) toast.success('Job updated')
+  } catch (error) {
+    if (isCurrent())
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update job'
+      )
+  } finally {
+    if (isCurrent()) saving.value = false
+  }
 }
 
 async function onPublished() {

@@ -36,7 +36,7 @@
         :key="group.name"
         class="core-library-group"
       >
-        <h2>
+        <h2 class="fx-type-section-title">
           {{ group.name }} <span>({{ group.entries.length }})</span>
         </h2>
         <div class="core-library-grid">
@@ -45,7 +45,7 @@
             :key="entry.id"
             variant="subtle"
           >
-            <h3>
+            <h3 class="fx-type-card-heading">
               <ULink :to="`/docs/components/core/${entry.id}`">{{
                 entry.name
               }}</ULink>

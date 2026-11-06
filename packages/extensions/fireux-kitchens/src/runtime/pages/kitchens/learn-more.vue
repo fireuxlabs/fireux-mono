@@ -6,13 +6,13 @@
       description="How kitchen records connect runtime operations, place identity, and service execution."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">What kitchens are</h2>
+          <h2>What kitchens are</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack text-sm">
+        <ul class="list-disc fx-list-stack">
           <li>
             Kitchens are the runtime records used to manage service operations.
           </li>
@@ -29,10 +29,10 @@
 
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">How to use kitchens</h2>
+          <h2>How to use kitchens</h2>
         </template>
 
-        <ol class="list-decimal fx-list-stack text-sm">
+        <ol class="list-decimal fx-list-stack">
           <li>Create or claim a kitchen record inside the active runtime.</li>
           <li>
             Use the kitchen workspace to move from overview into menus,

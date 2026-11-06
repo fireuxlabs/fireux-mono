@@ -3,7 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
+          <h2 class="fx-type-card-heading">{{ title }}</h2>
           <p>{{ description }}</p>
         </div>
 

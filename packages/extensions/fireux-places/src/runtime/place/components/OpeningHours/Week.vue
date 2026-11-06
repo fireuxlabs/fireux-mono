@@ -1,7 +1,7 @@
 <template>
   <div class="hours-week" :class="{ 'hours-week--compact': compact }">
     <div v-for="day in openingDays" :key="day" class="hours-day">
-      <span class="font-medium text-highlighted">{{ label(day) }}</span>
+      <span>{{ label(day) }}</span>
       <div class="hours-day__times">
         <template v-if="rangesFor(day).length">
           <span v-for="(range, index) in rangesFor(day)" :key="index">
@@ -9,17 +9,13 @@
               >Open 24 hours</template
             >
             <template v-else
-              >{{ range.open }} <span class="text-muted">–</span>
+              >{{ range.open }} <span>–</span>
               {{ range.close }}
-              <small v-if="range.close <= range.open" class="text-muted"
-                >next day</small
-              ></template
+              <small v-if="range.close <= range.open">next day</small></template
             >
           </span>
         </template>
-        <span v-else class="text-muted">{{
-          hours.windows.length ? 'Closed' : 'Not set'
-        }}</span>
+        <span v-else>{{ hours.windows.length ? 'Closed' : 'Not set' }}</span>
       </div>
       <UButton
         icon="i-lucide-pencil"

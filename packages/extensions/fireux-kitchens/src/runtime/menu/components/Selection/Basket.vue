@@ -1,14 +1,10 @@
 <template>
   <div class="space-y-5">
-    <p
-      v-if="lines.length && !catalogueReady"
-      role="status"
-      class="text-sm text-muted"
-    >
+    <p v-if="lines.length && !catalogueReady" role="status">
       Your basket is kept. Availability will be checked when food and drinks
       reload.
     </p>
-    <p v-if="!lines.length" class="text-muted">Your basket is empty.</p>
+    <p v-if="!lines.length">Your basket is empty.</p>
     <article
       v-for="line in lines"
       :key="line.key"
@@ -16,29 +12,23 @@
     >
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h3 class="font-medium">{{ line.name }}</h3>
-          <p v-if="line.details.length" class="mt-1 text-sm text-muted">
+          <h3>{{ line.name }}</h3>
+          <p v-if="line.details.length" class="mt-1">
             {{ line.details.join(' · ') }}
           </p>
-          <p
-            v-if="staleKeys.includes(line.key)"
-            class="mt-1 text-sm text-warning"
-          >
+          <p v-if="staleKeys.includes(line.key)" class="mt-1">
             This selection has changed or is unavailable. Remove it and choose
             again.
           </p>
         </div>
-        <span class="shrink-0 font-medium">{{
+        <span class="shrink-0">{{
           money(
             ((line.unitMinor - line.depositUnitMinor) * line.choices.quantity) /
               100
           )
         }}</span>
       </div>
-      <div
-        v-if="line.choices.bottle"
-        class="flex justify-between gap-4 text-sm text-muted"
-      >
+      <div v-if="line.choices.bottle" class="flex justify-between gap-4">
         <span>{{
           line.choices.bottle === 'exchange'
             ? 'Bottle exchange · no deposit'
@@ -80,7 +70,6 @@
           :aria-label="`Edit ${line.name}`"
           color="neutral"
           variant="ghost"
-          class="ml-auto"
           :disabled="
             disabled || !catalogueReady || staleKeys.includes(line.key)
           "
@@ -95,10 +84,7 @@
         />
       </div>
     </article>
-    <div
-      v-if="lines.length"
-      class="flex items-center justify-between text-lg font-semibold"
-    >
+    <div v-if="lines.length" class="flex items-center justify-between">
       <span>Total</span><span>{{ money(totalMinor / 100) }}</span>
     </div>
     <UButton

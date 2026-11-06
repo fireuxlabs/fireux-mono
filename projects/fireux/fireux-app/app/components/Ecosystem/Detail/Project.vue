@@ -4,7 +4,7 @@
     <ULink :to="`/projects/${encodeURIComponent(project.id)}`">
       {{ project.identity.name || project.id }}
     </ULink>
-    <p class="text-sm text-muted">{{ project.identity.description }}</p>
+    <p class="fx-type-caption">{{ project.identity.description }}</p>
   </UCard>
   <FireDiagnosticsDebugPanel
     title="Ecosystem Project relation"

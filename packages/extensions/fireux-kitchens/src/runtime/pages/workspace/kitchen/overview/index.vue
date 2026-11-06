@@ -7,7 +7,7 @@
     placement="top"
     hide-description
   />
-  <section class="space-y-4">
+  <section class="workspace-surface workspace-surface--compact">
     <WorkspaceKitchenOverview @state="pageState.publish" />
   </section>
 </template>

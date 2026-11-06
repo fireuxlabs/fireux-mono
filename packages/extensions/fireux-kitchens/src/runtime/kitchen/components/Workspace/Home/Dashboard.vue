@@ -1,14 +1,15 @@
 <template>
-  <section class="space-y-4" aria-label="Your Kitchens">
+  <section
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Your Kitchens"
+  >
     <UAlert
       v-if="adoption.error.value"
       color="error"
       :title="adoption.error.value"
     >
       <template #actions
-        ><UButton
-          label="Try again"
-          @click="adoption.adopt()" /><FireCopyError
+        ><UButton label="Try again" @click="adoption.adopt()" /><FireCopyError
           :message="adoption.error.value"
       /></template>
     </UAlert>

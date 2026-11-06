@@ -9,25 +9,20 @@
         @error="logoFailed = true"
       />
       <div class="min-w-0">
-        <p class="text-xl font-semibold text-highlighted">
+        <p>
           {{ venue.display_name }}
         </p>
-        <p
-          v-if="venue.short_address || venue.formatted_address"
-          class="mt-1 text-sm text-muted"
-        >
+        <p v-if="venue.short_address || venue.formatted_address" class="mt-1">
           {{ venue.short_address || venue.formatted_address }}
         </p>
       </div>
     </div>
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="space-y-1">
-        <h1 class="text-3xl font-semibold tracking-tight">
+        <h1>
           {{ title || 'Menu' }}
         </h1>
-        <p v-if="currencyCode" class="text-sm text-muted">
-          Prices in {{ currencyCode }}
-        </p>
+        <p v-if="currencyCode">Prices in {{ currencyCode }}</p>
       </div>
       <UButton
         :to="venuePath"

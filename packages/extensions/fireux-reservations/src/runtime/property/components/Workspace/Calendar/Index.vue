@@ -1,8 +1,6 @@
 <template>
-  <div class="space-y-5">
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading reservations…
-    </p>
+  <div class="workspace-surface workspace-surface--compact">
+    <p v-if="outcome === 'pending'" role="status">Loading reservations…</p>
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -11,10 +9,7 @@
     >
       <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Property to view reservations.
     </p>
     <template v-else>
@@ -28,49 +23,33 @@
         <UCard>
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p
-                class="text-xs font-medium uppercase tracking-wide text-dimmed"
-              >
-                Upcoming stays
-              </p>
-              <p class="mt-1 text-2xl font-semibold">{{ summary.upcoming }}</p>
+              <p>Upcoming stays</p>
+              <p class="mt-1">{{ summary.upcoming }}</p>
             </div>
-            <UIcon
-              name="i-lucide-calendar-check-2"
-              class="size-6 text-primary"
-            />
+            <UIcon name="i-lucide-calendar-check-2" />
           </div>
         </UCard>
 
         <UCard>
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p
-                class="text-xs font-medium uppercase tracking-wide text-dimmed"
-              >
-                Recorded nights
-              </p>
-              <p class="mt-1 text-2xl font-semibold">
+              <p>Recorded nights</p>
+              <p class="mt-1">
                 {{ summary.occupiedNights }}
               </p>
             </div>
-            <UIcon name="i-lucide-moon-star" class="size-6 text-primary" />
+            <UIcon name="i-lucide-moon-star" />
           </div>
         </UCard>
 
         <UCard>
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p
-                class="text-xs font-medium uppercase tracking-wide text-dimmed"
-              >
-                Needs attention
-              </p>
-              <p class="mt-1 text-2xl font-semibold">{{ attentionCount }}</p>
+              <p>Needs attention</p>
+              <p class="mt-1">{{ attentionCount }}</p>
             </div>
             <UIcon
               name="i-lucide-refresh-cw"
-              class="size-6"
               :class="attentionCount ? 'text-warning' : 'text-success'"
             />
           </div>
@@ -81,10 +60,8 @@
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="text-lg font-semibold">{{ monthLabel }}</p>
-              <p class="text-xs text-dimmed">
-                {{ propertyName }} · Recorded stays
-              </p>
+              <p>{{ monthLabel }}</p>
+              <p>{{ propertyName }} · Recorded stays</p>
             </div>
 
             <div class="flex items-center gap-1">
@@ -115,10 +92,7 @@
         </template>
 
         <div v-if="pending" class="grid min-h-96 place-items-center">
-          <UIcon
-            name="i-lucide-loader-circle"
-            class="size-7 animate-spin text-dimmed"
-          />
+          <UIcon name="i-lucide-loader-circle" class="animate-spin" />
         </div>
 
         <div v-else class="overflow-x-auto">
@@ -127,7 +101,7 @@
               <div
                 v-for="weekday in weekdays"
                 :key="weekday"
-                class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wide text-dimmed"
+                class="px-2 py-2 text-center"
               >
                 {{ weekday }}
               </div>
@@ -147,7 +121,7 @@
               >
                 <div class="mb-2 flex items-center justify-between">
                   <span
-                    class="grid size-6 place-items-center rounded-full text-xs font-medium"
+                    class="grid size-6 place-items-center rounded-full"
                     :class="
                       day.isToday
                         ? 'bg-primary text-inverted'
@@ -165,7 +139,7 @@
                     v-for="reservation in day.reservations"
                     :key="reservation.id"
                     :to="`/workspace/property/reservations/${reservation.id}`"
-                    class="block truncate rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset transition hover:brightness-95"
+                    class="block truncate rounded-md px-2 py-1 ring-1 ring-inset transition hover:brightness-95"
                     :class="sourceClasses(reservation.source)"
                     :title="`${reservation.guest.display_name} · ${sourceLabel(reservation.source)}`"
                   >
@@ -178,9 +152,7 @@
         </div>
 
         <template #footer>
-          <div
-            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-dimmed"
-          >
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span
               v-for="legend in sourceLegend"
               :key="legend.source"

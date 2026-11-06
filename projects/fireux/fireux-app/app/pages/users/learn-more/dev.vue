@@ -6,13 +6,13 @@
       description="Technical reference for FireUX User routes, handles, and endpoint surfaces."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Canonical records</h2>
+          <h2 class="fx-type-section-title">Canonical records</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack text-sm">
+        <ul class="list-disc fx-list-stack">
           <li>Core identity collection: <code>users</code>.</li>
           <li>Profile route contract: <code>/users/[handle]</code>.</li>
           <li>
@@ -24,19 +24,19 @@
 
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Primary endpoints</h2>
+          <h2 class="fx-type-section-title">Primary endpoints</h2>
         </template>
 
-        <div class="space-y-2 text-sm">
+        <div class="space-y-2">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/users</p>
-            <p class="text-dimmed">
+            <p class="fx-type-code">GET /api/users</p>
+            <p class="fx-type-body">
               Returns User rows for the Users index surface.
             </p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">/users/[handle]</p>
-            <p class="text-dimmed">
+            <p class="fx-type-code">/users/[handle]</p>
+            <p class="fx-type-body">
               Canonical profile route resolved from the stored User handle.
             </p>
           </div>

@@ -6,7 +6,6 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-full min-w-0 max-w-full"
       :ui="{ list: 'flex-wrap justify-start', trigger: 'shrink-0' }"
       @update:model-value="emit('select', String($event))"
     />

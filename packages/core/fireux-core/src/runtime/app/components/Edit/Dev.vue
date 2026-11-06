@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-21 20:23 CEST — Developer Dashboard cleanup: prioritize media and build context while folding technical detail away. -->
 <template>
   <ClientOnly>
-    <div class="space-y-4">
+    <div class="pagebody">
       <div
         class="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(18rem,0.8fr)] xl:items-start"
       >
@@ -13,7 +13,6 @@
           description="The identifiers this App resolves at runtime."
           icon="i-lucide-braces"
           variant="subtle"
-          class="h-full"
         >
           <dl class="divide-y divide-default">
             <div
@@ -21,15 +20,13 @@
               :key="row.label"
               class="grid gap-1 py-3 first:pt-0 last:pb-0"
             >
-              <dt
-                class="text-xs font-medium uppercase tracking-wide text-dimmed"
-              >
+              <dt>
                 {{ row.label }}
               </dt>
-              <dd class="break-words font-mono text-sm text-highlighted">
+              <dd class="break-words">
                 {{ row.value }}
               </dd>
-              <dd v-if="row.detail" class="text-xs text-muted">
+              <dd v-if="row.detail">
                 {{ row.detail }}
               </dd>
             </div>
@@ -55,17 +52,15 @@
                 :key="section.key"
                 class="grid gap-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
               >
-                <div
-                  class="flex items-center gap-2 font-medium text-highlighted"
-                >
-                  <UIcon :name="section.icon" class="size-4 text-primary" />
+                <div class="flex items-center gap-2">
+                  <UIcon :name="section.icon" class="size-4" />
                   <span>{{ section.label }}</span>
                 </div>
                 <div class="min-w-0">
-                  <p class="text-sm leading-6 text-muted">
+                  <p>
                     {{ section.description }}
                   </p>
-                  <p class="mt-1 break-words font-mono text-xs text-dimmed">
+                  <p class="mt-1 break-words">
                     {{ section.fields.join(' · ') }}
                   </p>
                 </div>
@@ -88,11 +83,7 @@
     </div>
 
     <template #fallback>
-      <FireStateCard
-        entity="developer workspace"
-        kind="document"
-        loading
-      />
+      <FireStateCard entity="developer workspace" kind="document" loading />
     </template>
   </ClientOnly>
 </template>
@@ -111,13 +102,7 @@ const display = (value: unknown) => {
 
 const appFieldGroups = {
   developer: ['media'],
-  control: [
-    'ecosystem_id',
-    'status',
-    'role',
-    'name',
-    'short_name',
-  ],
+  control: ['ecosystem_id', 'status', 'role', 'name', 'short_name'],
   admin: ['description'],
   system: ['id', 'created', 'updated'],
 } as const

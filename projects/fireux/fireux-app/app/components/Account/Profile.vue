@@ -31,8 +31,8 @@
       </ClientOnly>
       <USeparator />
       <div>
-        <p class="text-sm font-medium text-highlighted">Sign-in email</p>
-        <p class="mt-1 break-words text-sm text-muted">
+        <p class="fx-type-caption">Sign-in email</p>
+        <p class="mt-1 break-words fx-type-caption">
           {{ currentUser?.email || 'Not available' }}
         </p>
       </div>

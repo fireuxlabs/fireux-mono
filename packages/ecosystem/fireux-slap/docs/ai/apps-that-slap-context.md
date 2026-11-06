@@ -48,10 +48,12 @@ App-owned pages and components differ.
 
 Interlaken Bike Tours (`projects/slap/interlaken-bike-tours`) uses
 `defineFireuxApp` and selects its Slap and Business layers. The App bundle
-supplies Core, Blogs, Products and AI. Its App-owned `tours` layout
-uses Core's public header and the App's footer for the cycling pages. Core retains shared account, management,
-initialization, SEO and PWA manifest responsibilities. The dedicated prototype
-Hosting site uses the App's Firebase SSR function. Its custom footer consumes Core's `FireLayoutsSharedPlatformFooter`; landing/detail metadata consumes Core SEO helpers, with preview indexing policy configured explicitly. The App-owned `app/ignition/search.ts` supplies its reviewed preview origin,
+supplies Core, Blogs, Products and AI. Public cycling routes use Core's stock
+`default` layout, header, container and footer. Core retains shared account,
+management, initialization, SEO and PWA manifest responsibilities. The dedicated
+prototype Hosting site uses the App's Firebase SSR function. Landing/detail
+metadata consumes Core SEO helpers, with preview indexing policy configured
+explicitly. The App-owned `app/ignition/search.ts` supplies its reviewed preview origin,
 page metadata and sitemap policy to the brief and runtime configuration; Ignition
 reviews this declared plan without certifying live indexation. Tour and destination content (`app/content/tours.ts` and `app/content/destinations.ts`) and external
 enquiry drafts remain App-owned. Interlaken Bike Tours consumes
@@ -60,8 +62,10 @@ contracts and Business Workspace management follow the
 [Bookings context](../../../../extensions/fireux-bookings/docs/ai/bookings-context.md);
 App tour policy and catalogue facts stay local. Its thin tour route composes
 `ToursDetail`, reusing Core SEO and native Nuxt UI page, header, section, grid, feature and
-card composition. `ToursCompare` extends Core's `FireDisclosurePanel` with App-owned ride
-facts. These do not introduce another Ecosystem design system or booking owner.
+card composition. Landing sections follow the existing FireUX landing and page
+composition references. The App does not maintain a separate site-wide CSS
+system. `Booking` (`components/Booking/Index.vue`) owns the visitor form and consumes the existing App
+booking API; shared domain authority stays in Bookings.
 
 Bike Tours owns its noindex preview release commands in its
 [App manifest](../../../../../projects/slap/interlaken-bike-tours/package.json).

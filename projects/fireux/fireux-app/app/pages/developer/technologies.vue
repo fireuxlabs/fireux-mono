@@ -5,7 +5,7 @@
       FireUX Apps use one shared Nuxt runtime and explicit Firebase bindings.
       Extension Modules add capability at build time.
     </p>
-    <ul class="fx-type-description tech-list text-default">
+    <ul class="fx-type-description tech-list">
       <li>
         <Icon name="skill-icons:nuxtjs-dark" class="list-icon" />
         <strong>Nuxt 4</strong>: App routing, server rendering, and Module

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="pagebody">
     <UAlert
       v-if="pending"
       color="primary"
@@ -18,7 +18,7 @@
         variant="soft"
       />
 
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="fx-card__actions">
         <UBadge :color="requiredBadgeColor" variant="soft">
           Required: {{ summaryRequired }}
         </UBadge>
@@ -48,9 +48,9 @@
 
       <UCard v-if="requiredVars.length">
         <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-medium">🔐 Required Configuration</span>
-            <div class="flex items-center gap-2">
+          <div class="fx-card__header">
+            <span>🔐 Required Configuration</span>
+            <div class="fx-card__actions">
               <UButton
                 size="xs"
                 variant="soft"
@@ -66,13 +66,13 @@
             </div>
           </div>
         </template>
-        <div class="space-y-2">
+        <div class="fx-card__stack">
           <div
             v-for="envVar in requiredVars"
             :key="envVar.key"
-            class="flex items-center justify-between rounded-lg border border-default px-3 py-2"
+            class="collection-manager__header"
           >
-            <span class="font-mono text-sm">{{ envVar.key }}</span>
+            <span>{{ envVar.key }}</span>
             <UBadge
               :color="envVar.present ? 'success' : 'error'"
               variant="soft"
@@ -81,19 +81,17 @@
             </UBadge>
           </div>
         </div>
-        <div v-if="showProceed" class="mt-4 border-t border-default pt-4">
-          <button
+        <div v-if="showProceed" class="fx-card-body-stack">
+          <UButton
             type="button"
-            class="inline-flex min-h-10 w-full items-center justify-center rounded-md bg-inverted px-4 py-2 text-sm font-semibold text-inverted shadow-sm transition hover:bg-inverted/90 disabled:cursor-not-allowed disabled:opacity-50"
+            block
+            :loading="proceedPending"
             :disabled="proceedDisabled"
             @click="emit('proceed')"
           >
             {{ proceedPending ? 'Initializing...' : 'Continue' }}
-          </button>
-          <p
-            v-if="proceedDisabled && !proceedPending"
-            class="mt-2 text-xs text-muted"
-          >
+          </UButton>
+          <p v-if="proceedDisabled && !proceedPending">
             Finish the required checks above to continue.
           </p>
         </div>
@@ -101,20 +99,20 @@
 
       <UCard v-if="optionalClientVars.length">
         <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-medium">⚙️ Optional Configuration (Client)</span>
+          <div class="fx-card__header">
+            <span>⚙️ Optional Configuration (Client)</span>
             <UBadge color="primary" variant="subtle">{{
               summaryOptionalClient
             }}</UBadge>
           </div>
         </template>
-        <div class="space-y-2">
+        <div class="fx-card__stack">
           <div
             v-for="envVar in optionalClientVars"
             :key="envVar.key"
-            class="flex items-center justify-between rounded-lg border border-default px-3 py-2"
+            class="collection-manager__header"
           >
-            <span class="font-mono text-sm">{{ envVar.key }}</span>
+            <span>{{ envVar.key }}</span>
             <UBadge
               :color="envVar.present ? 'success' : 'warning'"
               variant="soft"
@@ -127,8 +125,8 @@
 
       <UCard v-if="brandAssets.length">
         <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-medium">🎨 Brand Assets</span>
+          <div class="fx-card__header">
+            <span>🎨 Brand Assets</span>
             <UBadge :color="brandBadgeColor" variant="soft">
               {{ summaryBrand }}
             </UBadge>
@@ -138,20 +136,20 @@
           <div
             v-for="asset in brandAssets"
             :key="asset.name"
-            class="space-y-2 rounded-lg border border-default p-4"
+            class="fx-card-body-stack"
           >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
+            <div class="fx-card__header">
+              <div class="fx-card__actions">
                 <UIcon
                   :name="asset.ok ? 'i-ph-check-circle' : 'i-ph-warning'"
                 />
-                <span class="capitalize">{{ asset.name }}</span>
+                <span>{{ asset.name }}</span>
               </div>
               <UBadge :color="asset.ok ? 'success' : 'error'" variant="soft">
                 {{ asset.ok ? 'Ready' : 'Issue' }}
               </UBadge>
             </div>
-            <p class="text-sm text-muted">
+            <p>
               <template v-if="asset.ok">
                 {{ asset.width }}×{{ asset.height }} detected.
               </template>
@@ -168,7 +166,7 @@
             />
           </div>
         </div>
-        <p class="text-sm text-muted">
+        <p>
           Complete the App's standard <code>/public/img/app</code> asset family
           before onboarding. Every App uses the same runtime paths; never loan
           another App's export to fill a missing asset.
@@ -180,7 +178,7 @@
         :items="configurationMessages"
       >
         <template #body="{ item }">
-          <ul class="mt-2 list-disc pl-5 text-sm">
+          <ul class="fx-list-stack">
             <li v-for="(message, index) in item.messages" :key="index">
               {{ message }}
             </li>
@@ -195,7 +193,7 @@
         icon="i-ph-list-checks"
         title="Next steps"
       >
-        <ol class="list-decimal space-y-1 pl-5 text-sm">
+        <ol class="fx-list-stack">
           <li>
             Update the missing configuration in ecosystem config, app config, or
             local <code>.env</code>.

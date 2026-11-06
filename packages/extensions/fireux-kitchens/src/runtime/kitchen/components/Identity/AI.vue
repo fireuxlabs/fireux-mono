@@ -1,6 +1,6 @@
 <template>
   <WorkspaceAI aria-label="Kitchen Identity AI" compact>
-    <p v-if="message" role="status" class="text-sm text-muted">{{ message }}</p>
+    <p v-if="message" role="status">{{ message }}</p>
     <WorkspaceAIComposer
       v-model="prompt"
       :can-submit="

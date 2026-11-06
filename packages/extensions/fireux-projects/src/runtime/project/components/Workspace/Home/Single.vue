@@ -35,7 +35,7 @@
     color="error"
     title="Project could not be loaded"
   />
-  <p v-else class="text-sm text-muted">Choose a Project from the collection.</p>
+  <p v-else>Choose a Project from the collection.</p>
 </template>
 <script setup lang="ts">
 import type { useProjectWorkspaceIdentity } from '../../../composables/workspace/useProjectWorkspaceIdentity'

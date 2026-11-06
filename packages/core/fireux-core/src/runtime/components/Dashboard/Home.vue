@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="home">
     <template #header>
-      <FireLayoutsDashboardNavbar title="Overview" :ui="{ right: 'gap-3' }" />
+      <FireLayoutsDashboardNavbar title="Overview" />
     </template>
 
     <template #body>

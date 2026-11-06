@@ -6,7 +6,7 @@
       placeholder="Find a dish"
       icon="i-lucide-search"
     />
-    <p class="text-sm text-muted">
+    <p>
       Category describes the food. Menus decide where and when it is served.
     </p>
     <FireCopyError v-if="error" :message="error" />
@@ -16,14 +16,12 @@
         :key="dish.id"
         class="grid grid-cols-[minmax(0,1fr)_10rem] items-center gap-4 py-3"
       >
-        <label :for="`category-${dish.id}`" class="font-medium">{{
-          dish.name
-        }}</label>
+        <label :for="`category-${dish.id}`">{{ dish.name }}</label>
         <select
           :id="`category-${dish.id}`"
           :value="dish.category || ''"
           :disabled="busy || readOnly"
-          class="rounded-lg border border-default bg-default p-2 text-sm"
+          class="rounded-lg border border-default bg-default p-2"
           @change="save(dish.id, ($event.target as HTMLSelectElement).value)"
         >
           <option value="" disabled>Uncategorised</option>
@@ -37,7 +35,7 @@
         </select>
       </div>
     </div>
-    <p v-if="saved" role="status" class="text-sm text-muted">{{ saved }}</p>
+    <p v-if="saved" role="status">{{ saved }}</p>
   </div>
 </template>
 <script setup lang="ts">

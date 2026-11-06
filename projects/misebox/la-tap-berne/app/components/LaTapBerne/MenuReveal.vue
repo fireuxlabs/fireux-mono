@@ -10,16 +10,10 @@
           type="button"
           @click="openMenu"
         >
-          <UIcon name="i-ph-fork-knife" class="size-5 shrink-0" />
-          <span class="grid min-w-32 gap-0.5 text-left">
-            <span
-              class="text-sm font-black uppercase leading-none tracking-wider"
-            >
-              View menu
-            </span>
-            <small
-              class="font-serif text-sm font-semibold italic leading-none opacity-[0.84]"
-            >
+          <UIcon name="i-ph-fork-knife" />
+          <span class="grid min-w-32 gap-0.5">
+            <span> View menu </span>
+            <small class="font-serif italic opacity-[0.84]">
               Comida Casera
             </small>
           </span>
@@ -39,11 +33,7 @@
           aria-label="Close menu"
           @click="closeMenu"
         >
-          <UIcon
-            aria-hidden="true"
-            class="size-8 sm:size-10"
-            name="i-lucide-x"
-          />
+          <UIcon aria-hidden="true" name="i-lucide-x" />
         </button>
 
         <MenuDetail menu-id="food" :menu-route-scope="menuRouteScope" />

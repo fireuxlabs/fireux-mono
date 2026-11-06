@@ -2,64 +2,59 @@
   <div
     v-show="links.length"
     class="w-full space-y-6 transition-all duration-700 ease-out motion-reduce:transition-none"
-    :class="contentVisible
-      ? 'translate-y-0 opacity-100'
-      : 'translate-y-3 opacity-0 motion-reduce:translate-y-0'"
+    :class="
+      contentVisible
+        ? 'translate-y-0 opacity-100'
+        : 'translate-y-3 opacity-0 motion-reduce:translate-y-0'
+    "
   >
-      <div class="min-h-20">
-        <dl
-          v-if="combinedMetrics.length"
-          class="share-metrics"
-          aria-label="Reported social metrics"
-        >
-          <div
-            v-for="metric in combinedMetrics"
-            :key="metric.label"
-            class="share-metric"
-          >
-            <dd class="text-lg font-semibold tracking-tight text-highlighted">
-              {{ metric.value }}
-            </dd>
-            <dt class="mt-0.5 text-xs font-medium uppercase tracking-widest text-muted">
-              {{ metric.label }}
-            </dt>
-          </div>
-        </dl>
-      </div>
-
-      <div class="share-apps">
-        <button
-          v-for="link in links"
-          :key="link.id"
-          type="button"
-          class="share-app-card"
-          :aria-label="`Show ${link.label} QR code`"
-          :title="link.label"
-          @click="openLink(link)"
-        >
-          <span
-            class="share-app-icon"
-            :style="{ background: platformMeta(link).background }"
-          >
-            <UIcon :name="platformMeta(link).icon" class="size-7" />
-          </span>
-        </button>
-      </div>
-
-      <UModal
-        v-model:open="modalOpen"
-        :ui="{ content: 'max-w-sm' }"
+    <div class="min-h-20">
+      <dl
+        v-if="combinedMetrics.length"
+        class="share-metrics"
+        aria-label="Reported social metrics"
       >
-        <template #body>
-          <div v-if="selectedLink">
-            <ProviderGoQrTools
-              tool="url"
-              :payload="qrPayload"
-              bare
-            />
-          </div>
-        </template>
-      </UModal>
+        <div
+          v-for="metric in combinedMetrics"
+          :key="metric.label"
+          class="share-metric"
+        >
+          <dd>
+            {{ metric.value }}
+          </dd>
+          <dt class="mt-0.5">
+            {{ metric.label }}
+          </dt>
+        </div>
+      </dl>
+    </div>
+
+    <div class="share-apps">
+      <button
+        v-for="link in links"
+        :key="link.id"
+        type="button"
+        class="share-app-card"
+        :aria-label="`Show ${link.label} QR code`"
+        :title="link.label"
+        @click="openLink(link)"
+      >
+        <span
+          class="share-app-icon"
+          :style="{ background: platformMeta(link).background }"
+        >
+          <UIcon :name="platformMeta(link).icon" />
+        </span>
+      </button>
+    </div>
+
+    <UModal v-model:open="modalOpen">
+      <template #body>
+        <div v-if="selectedLink">
+          <ProviderGoQrTools tool="url" :payload="qrPayload" bare />
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -113,11 +108,16 @@ const combinedMetrics = computed(() => {
       .map((source) => source[key])
       .filter((value): value is number => typeof value === 'number')
     if (!values.length) return []
-    return [{ label, value: formatCount(values.reduce((sum, value) => sum + value, 0)) }]
+    return [
+      {
+        label,
+        value: formatCount(values.reduce((sum, value) => sum + value, 0)),
+      },
+    ]
   })
 })
 
-const platformStyles: Record<string, { icon: string, background: string }> = {
+const platformStyles: Record<string, { icon: string; background: string }> = {
   youtube: {
     icon: 'i-simple-icons-youtube',
     background: '#ff0033',
@@ -164,9 +164,7 @@ const qrPayload = computed(() => ({
 const selectedQrTarget = computed(() => {
   const link = selectedLink.value
   if (!link) return ''
-  return platformId(link) === 'email'
-    ? `mailto:${link.url}`
-    : link.url
+  return platformId(link) === 'email' ? `mailto:${link.url}` : link.url
 })
 
 function openLink(link: ShareProfileLink) {
@@ -211,7 +209,9 @@ function revealContent() {
 async function enrichYouTube() {
   const youtube = links.value.find((link) => platformId(link) === 'youtube')
   if (!youtube) {
-    metricSources.value = metricSources.value.filter((source) => source.platform !== 'youtube')
+    metricSources.value = metricSources.value.filter(
+      (source) => source.platform !== 'youtube'
+    )
     return
   }
   const response = await $fetch<{ metrics?: SocialMetrics }>(
@@ -231,10 +231,12 @@ function platformId(link: ShareProfileLink) {
 }
 
 function platformMeta(link: ShareProfileLink) {
-  return platformStyles[platformId(link)] || {
-    icon: 'i-lucide-link',
-    background: '#3f3f46',
-  }
+  return (
+    platformStyles[platformId(link)] || {
+      icon: 'i-lucide-link',
+      background: '#3f3f46',
+    }
+  )
 }
 
 function formatCount(value: number) {
@@ -271,7 +273,9 @@ function formatCount(value: number) {
   border: 0;
   border-radius: calc(var(--ui-radius) * 2);
   background: transparent;
-  transition: transform 160ms ease, filter 160ms ease;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
 }
 
 .share-app-card:hover {
@@ -289,5 +293,4 @@ function formatCount(value: number) {
   color: white;
   box-shadow: 0 0.65rem 1.5rem rgb(0 0 0 / 0.2);
 }
-
 </style>

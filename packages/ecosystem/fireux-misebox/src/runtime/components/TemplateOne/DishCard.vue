@@ -2,7 +2,7 @@
   <article class="template-one-dish-card" :class="{ 'template-one-dish-card--featured': featured }">
     <div class="template-one-dish-card__copy">
       <p v-if="eyebrow" class="template-one-dish-card__eyebrow">{{ eyebrow }}</p>
-      <h3>{{ item.name }}</h3>
+      <h3 class="fx-type-card-title">{{ item.name }}</h3>
       <p>{{ item.description }}</p>
     </div>
     <img :src="item.imageUrl" :alt="item.name" loading="lazy" decoding="async">

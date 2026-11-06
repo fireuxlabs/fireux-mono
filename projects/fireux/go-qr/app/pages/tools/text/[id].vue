@@ -1,5 +1,5 @@
 <template>
-  <main ref="toolRoot" class="bg-transparent text-default">
+  <main ref="toolRoot" class="bg-transparent">
     <GoQrProviderToolsText
       v-if="toolConfig"
       class="w-full"

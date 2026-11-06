@@ -1,7 +1,6 @@
 <template>
   <FireActionSurface
     :to="link && record.to ? record.to : undefined"
-    class="block w-full"
     :action="action"
     @activate="emit('action')"
   >
@@ -11,34 +10,28 @@
         :alt="record.title"
         icon="i-lucide-package-open"
         size="md"
-        class="shrink-0"
       />
 
-      <div class="min-w-0 flex-1 space-y-2">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">
               {{ record.title }}
             </div>
-            <div
-              v-if="showSubtitle && record.subtitle"
-              class="truncate text-xs text-dimmed"
-            >
+            <div v-if="showSubtitle && record.subtitle" class="card__subtitle">
               {{ record.subtitle }}
             </div>
           </div>
 
           <div class="shrink-0 text-right">
-            <div class="text-sm font-semibold">
+            <div>
               {{ record.packPriceLabel }}
             </div>
-            <div class="text-xs text-dimmed">
-              {{ record.unitPriceLabel }} / {{ record.unit }}
-            </div>
+            <div>{{ record.unitPriceLabel }} / {{ record.unit }}</div>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-1">
+        <div class="card__badges">
           <UBadge
             v-if="record.productId"
             variant="soft"
@@ -110,5 +103,4 @@ const visibleBadges = computed(() =>
       badge !== `Unit ${record.value.unitPriceLabel}`
   )
 )
-
 </script>

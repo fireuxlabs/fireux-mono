@@ -1,5 +1,5 @@
 <template>
-  <main ref="toolRoot" class="bg-transparent text-default">
+  <main ref="toolRoot" class="bg-transparent">
     <GoQrProviderToolsDoc v-if="toolConfig" class="w-full" :tool="toolConfig" />
     <GoQrProviderToolsComingSoon v-else name="Doc" />
   </main>

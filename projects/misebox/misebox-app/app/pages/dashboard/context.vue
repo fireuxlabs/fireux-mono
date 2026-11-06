@@ -5,7 +5,7 @@
     /></template>
     <template #body>
       <div class="space-y-5 max-w-3xl">
-        <p class="text-muted">
+        <p class="fx-type-body">
           App product background used by this AI. Workspace records remain
           separate.
         </p>
@@ -25,16 +25,14 @@
         <FireCopyError v-if="error" :message="error" />
         <UCard v-if="data">
           <template #header
-            ><div class="flex justify-between gap-3">
-              <h1 class="text-xl font-semibold">{{ data.context.title }}</h1>
+            ><div class="card__header">
+              <h1 class="fx-type-page-title">{{ data.context.title }}</h1>
               <UBadge color="neutral">{{ data.context.reviewStatus }}</UBadge>
             </div></template
           >
           <p class="whitespace-pre-line">{{ data.context.summary }}</p>
-          <p class="mt-4 text-sm text-muted">
-            Source: {{ data.context.source }}
-          </p>
-          <p class="mt-2 text-xs text-muted">{{ data.sourcePath }}</p>
+          <p class="mt-4 fx-type-caption">Source: {{ data.context.source }}</p>
+          <p class="mt-2 fx-type-caption">{{ data.sourcePath }}</p>
           <template #footer
             ><UButton
               label="Copy AI context"
@@ -43,11 +41,10 @@
               @click="copy"
           /></template>
         </UCard>
-        <form v-if="data" class="space-y-3" @submit.prevent="ask">
+        <form v-if="data" class="pagebody" @submit.prevent="ask">
           <UFormField label="Ask about Misebox"
             ><UTextarea
               v-model="prompt"
-              class="w-full"
               maxlength="1000"
               placeholder="What does Misebox mean by Team?"
           /></UFormField>
@@ -59,7 +56,7 @@
           />
           <p v-if="answer" class="whitespace-pre-line">{{ answer }}</p>
         </form>
-        <p class="text-sm text-muted">
+        <p class="fx-type-caption">
           Sharing grants the owning FireUX Project’s managers read access to
           this product context. Misebox keeps the original.
         </p>

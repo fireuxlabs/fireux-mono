@@ -1,5 +1,5 @@
 <template>
-  <section class="grid min-w-0 gap-6">
+  <section class="pagebody">
     <FireStateCard
       v-if="readState"
       :state="readState"
@@ -13,15 +13,17 @@
       "
     />
     <UCard v-else-if="selectedBlank">
-      <template #header><h2 class="font-semibold">Profile</h2></template>
-      <div class="space-y-3">
-        <h3 class="break-words text-xl font-semibold text-highlighted">
+      <template #header
+        ><h2 class="fx-type-section-title">Profile</h2></template
+      >
+      <div class="fx-card-body-stack">
+        <h3 class="break-words fx-type-card-heading">
           {{ selectedBlank.name || selectedBlank.slug || 'Untitled blank' }}
         </h3>
         <WorkspaceDedicatedApp :entity="selectedBlank" />
       </div>
       <template #footer
-        ><p class="text-sm text-muted">
+        ><p class="fx-type-caption">
           Identity editing is not connected here yet.
         </p></template
       >

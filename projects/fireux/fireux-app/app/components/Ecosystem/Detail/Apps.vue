@@ -1,19 +1,19 @@
 <template>
-  <section class="space-y-4">
-    <h2 class="text-xl font-semibold">Apps</h2>
-    <div class="grid gap-4 md:grid-cols-2">
+  <section class="pagebody">
+    <h2 class="fx-type-section-title">Apps</h2>
+    <UPageGrid>
       <UCard v-for="app in apps" :key="app.id">
         <ULink :to="`/apps/${encodeURIComponent(app.id)}`">
           {{ app.name || app.id }}
         </ULink>
-        <p class="text-sm text-muted">
+        <p class="fx-type-caption">
           {{ app.description || app.tagline }}
         </p>
       </UCard>
-    </div>
-    <p v-if="pending" class="text-sm text-muted">Loading Apps...</p>
+    </UPageGrid>
+    <p v-if="pending" class="fx-type-caption">Loading Apps...</p>
     <FireCopyError v-else-if="error" :message="String(error)" />
-    <p v-else-if="!apps.length" class="text-sm text-muted">No published Apps.</p>
+    <p v-else-if="!apps.length" class="fx-type-caption">No published Apps.</p>
   </section>
 </template>
 

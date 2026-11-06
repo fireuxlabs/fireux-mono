@@ -10,7 +10,7 @@
       :validation-function="validate"
       :update="update"
     />
-    <p class="text-sm text-muted">
+    <p>
       Set 0 for no deposit. Takeaway customers choose a new bottle with this
       deposit or exchange a matching bottle. The drink price stays unchanged.
     </p>

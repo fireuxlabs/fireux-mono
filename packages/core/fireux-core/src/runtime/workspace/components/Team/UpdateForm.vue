@@ -1,7 +1,7 @@
 <template>
   <form
     v-if="member && !member.userId"
-    class="space-y-5"
+    class="workspace-surface workspace-surface--compact"
     @submit.prevent="save"
   >
     <UFormField v-if="!member?.userId" label="Name" :error="error || undefined">
@@ -12,12 +12,11 @@
         autocomplete="off"
         maxlength="120"
         :autofocus="false"
-        class="w-full"
       />
     </UFormField>
     <FireCopyError v-if="error" :message="error" />
     <slot name="edit-fields" />
-    <div class="flex justify-end gap-2">
+    <div class="fx-card__actions">
       <UButton
         label="Cancel"
         color="neutral"

@@ -1,5 +1,5 @@
 <template>
-  <UPageGrid class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6">
+  <UPageGrid>
     <UPageCard
       v-for="capability in capabilities"
       :key="capability.to"
@@ -7,12 +7,6 @@
       :description="capability.description"
       :icon="capability.icon"
       :to="capability.to"
-      class="aspect-square"
-      :ui="{
-        container: 'p-4 sm:p-4',
-        title: 'line-clamp-2',
-        description: 'line-clamp-3',
-      }"
       spotlight
     />
   </UPageGrid>

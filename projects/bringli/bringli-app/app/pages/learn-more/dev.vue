@@ -1,10 +1,10 @@
 <template>
   <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
-      <UContainer class="space-y-4">
+      <UContainer>
         <UBadge color="primary" variant="soft">Bringli Dev Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More: Dev</h1>
-        <p class="fx-type-description text-toned">
+        <p class="fx-type-description">
           Operator reference for Bringli entities, order flow, and partner
           implementation surfaces.
         </p>
@@ -24,12 +24,12 @@
     </section>
 
     <section>
-      <UContainer class="grid gap-6 md:grid-cols-2">
+      <UContainer>
         <UCard>
           <template #header>
             <h2 class="fx-type-card-heading">Primary entities</h2>
           </template>
-          <ul class="list-disc fx-list-stack text-sm">
+          <ul class="list-disc fx-list-stack">
             <li>Supply-side and buyer-side profile records</li>
             <li>Catalog and order flow entities</li>
             <li>Fulfillment and tracking state records</li>
@@ -40,18 +40,18 @@
           <template #header>
             <h2 class="fx-type-card-heading">Operational endpoints</h2>
           </template>
-          <div class="space-y-2 text-sm">
+          <div class="space-y-2">
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/free</p>
-              <p class="text-dimmed">Functional Workspace access.</p>
+              <p class="fx-type-code">GET /pricing/free</p>
+              <p class="fx-type-body">Functional Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/your-app</p>
-              <p class="text-dimmed">Branded App setup and monthly plan.</p>
+              <p class="fx-type-code">GET /pricing/your-app</p>
+              <p class="fx-type-body">Branded App setup and monthly plan.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/business</p>
-              <p class="text-dimmed">Managed product and assistance.</p>
+              <p class="fx-type-code">GET /pricing/business</p>
+              <p class="fx-type-body">Managed product and assistance.</p>
             </div>
           </div>
         </UCard>

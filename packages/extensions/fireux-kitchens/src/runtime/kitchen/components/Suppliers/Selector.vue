@@ -5,7 +5,6 @@
     :items="items"
     value-key="value"
     aria-label="Select Supplier"
-    class="w-full sm:max-w-72"
   />
 </template>
 

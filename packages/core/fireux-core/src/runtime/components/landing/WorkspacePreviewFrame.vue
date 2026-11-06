@@ -1,12 +1,7 @@
 <template>
-  <UCard
-    as="section"
-    :aria-label="label"
-    class="overflow-hidden"
-    :ui="{ body: 'p-0 sm:p-0' }"
-  >
+  <UCard as="section" :aria-label="label" class="overflow-hidden">
     <div class="landing-workspace-preview__layout">
-      <aside class="border-r border-default bg-elevated/70 p-2">
+      <aside class="p-2">
         <div class="flex min-w-0 justify-center overflow-hidden py-2">
           <slot name="target" />
         </div>
@@ -16,8 +11,8 @@
             v-for="item in items"
             :key="item.id"
             type="button"
-            class="flex min-h-9 w-full items-center justify-center rounded-lg text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            :class="item.id === modelValue ? 'bg-primary/10 text-primary' : ''"
+            class="flex min-h-9 w-full items-center justify-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            :class="item.id === modelValue ? '' : ''"
             :aria-label="item.title"
             :aria-current="item.id === modelValue ? 'page' : undefined"
             :title="item.title"
@@ -29,18 +24,18 @@
 
         <nav
           v-if="secondaryItems.length"
-          class="mt-3 border-t border-default pt-3"
+          class="mt-3 pt-3"
           :aria-label="secondaryNavigationLabel"
         >
-          <p class="mb-1 hidden px-2 text-xs font-semibold text-muted sm:block">
+          <p class="mb-1 hidden px-2 sm:block">
             {{ secondaryLabel }}
           </p>
           <button
             v-for="item in secondaryItems"
             :key="item.id"
             type="button"
-            class="flex min-h-9 w-full items-center justify-center rounded-lg text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            :class="item.id === modelValue ? 'bg-primary/10 text-primary' : ''"
+            class="flex min-h-9 w-full items-center justify-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            :class="item.id === modelValue ? '' : ''"
             :aria-label="item.title"
             :aria-current="item.id === modelValue ? 'page' : undefined"
             :title="item.title"
@@ -51,11 +46,9 @@
         </nav>
       </aside>
 
-      <div v-if="selectedItem" class="min-w-0 bg-default p-4 sm:p-5">
-        <header
-          class="flex min-h-9 items-center gap-2 border-b border-default pb-4"
-        >
-          <p class="min-w-0 flex-1 truncate font-semibold text-highlighted">
+      <div v-if="selectedItem" class="min-w-0 p-4 sm:p-5">
+        <header class="flex min-h-9 items-center gap-2 pb-4">
+          <p class="min-w-0 flex-1 truncate">
             {{ selectedItem.title }}
           </p>
           <UButton
@@ -64,7 +57,6 @@
             variant="soft"
             size="xs"
             trailing-icon="i-lucide-arrow-up-right"
-            class="shrink-0"
             :aria-label="openWorkspaceAriaLabel"
             @click="emit('openWorkspace', $event)"
           >
@@ -115,13 +107,12 @@ const emit = defineEmits<{
 const selectedItem = computed(
   () =>
     [...props.items, ...props.secondaryItems].find(
-      item => item.id === props.modelValue
-    )
-    ?? props.items[0]
-    ?? props.secondaryItems[0]
-    ?? null
+      (item) => item.id === props.modelValue
+    ) ??
+    props.items[0] ??
+    props.secondaryItems[0] ??
+    null
 )
-
 </script>
 
 <style scoped>

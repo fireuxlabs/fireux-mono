@@ -24,7 +24,6 @@
       icon="i-lucide-search"
       placeholder="Search team members…"
       aria-label="Search team members by name or role"
-      class="w-full"
     />
     <div class="grid min-w-0 gap-2">
       <WorkspaceSelectionRow
@@ -41,11 +40,7 @@
         <span class="truncate">{{ member.name }}</span>
       </WorkspaceSelectionRow>
     </div>
-    <p
-      v-if="query && !visibleItems.length"
-      class="text-sm text-muted"
-      role="status"
-    >
+    <p v-if="query && !visibleItems.length" role="status">
       No team members match this search.
     </p>
   </WorkspaceEntityCollection>

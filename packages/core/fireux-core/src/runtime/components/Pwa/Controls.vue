@@ -1,34 +1,30 @@
 <template>
-  <div class="space-y-6">
+  <div class="pagebody">
     <UCard>
       <template #header>
-        <h2 class="text-lg font-semibold">Install app</h2>
+        <h2>Install app</h2>
       </template>
-      <p v-if="installed" class="text-sm text-muted">
-        This window is running as an installed app.
-      </p>
+      <p v-if="installed">This window is running as an installed app.</p>
       <UButton
         v-else-if="canInstall"
         label="Install app"
         :disabled="busy"
         @click="install"
       />
-      <p v-else class="text-sm text-muted">{{ installHint }}</p>
+      <p v-else>{{ installHint }}</p>
     </UCard>
 
     <UCard>
       <template #header>
-        <h2 class="text-lg font-semibold">Offline support</h2>
+        <h2>Offline support</h2>
       </template>
-      <div class="space-y-4">
-        <p class="text-sm text-muted">
+      <div class="fx-card-body-stack">
+        <p>
           Shows a reconnect page when a page cannot load. Live data and actions
           need a connection.
         </p>
-        <p v-if="!supported" class="text-sm text-muted">
-          Offline support is unavailable in this browser.
-        </p>
-        <p v-else-if="offlineEnabled" class="text-sm" role="status">
+        <p v-if="!supported">Offline support is unavailable in this browser.</p>
+        <p v-else-if="offlineEnabled" role="status">
           {{
             offlineReady ? 'Reconnect page ready.' : 'Preparing reconnect page…'
           }}
@@ -49,7 +45,7 @@
           :disabled="busy || !online"
           @click="enableOffline"
         />
-        <p v-if="!online" class="text-sm text-muted">
+        <p v-if="!online">
           You are offline. Reconnect to enable support or check for updates.
         </p>
       </div>
@@ -57,13 +53,13 @@
 
     <UCard v-if="offlineEnabled">
       <template #header>
-        <h2 class="text-lg font-semibold">Updates</h2>
+        <h2>Updates</h2>
       </template>
-      <div class="space-y-4">
-        <p v-if="updateAvailable" class="text-sm" role="status">
+      <div class="fx-card-body-stack">
+        <p v-if="updateAvailable" role="status">
           An update is ready. Reload to apply it.
         </p>
-        <div class="flex flex-wrap gap-3">
+        <div class="fx-card__actions">
           <UButton
             v-if="updateAvailable"
             label="Update and reload"
@@ -90,8 +86,8 @@
       </div>
     </UCard>
 
-    <div v-if="error" class="space-y-2" role="alert">
-      <p class="break-words text-sm text-error">{{ error }}</p>
+    <div v-if="error" class="pagebody" role="alert">
+      <p class="break-words">{{ error }}</p>
       <FireCopyError :message="error" />
     </div>
   </div>

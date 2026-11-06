@@ -1,6 +1,6 @@
 <template>
   <div class="recipe-preparation">
-    <p v-if="recipe.description" class="text-toned">{{ recipe.description }}</p>
+    <p v-if="recipe.description">{{ recipe.description }}</p>
     <div class="recipe-facts">
       <UBadge
         :color="preparation.status === 'ready' ? 'success' : 'neutral'"
@@ -22,7 +22,7 @@
               ><span>{{ row.quantity }} {{ row.unit }}</span>
             </li>
           </ul>
-          <p v-else class="text-sm text-muted">No ingredients added.</p>
+          <p v-else>No ingredients added.</p>
         </section>
         <section class="prep-panel">
           <h3><UIcon name="i-lucide-containers" /> Prep items</h3>
@@ -34,10 +34,8 @@
                   row.prep_item_id.replace(/-/g, ' ')
                 }}</strong
                 ><small v-if="row.note">{{ row.note }}</small>
-                <details v-if="prepById[row.prep_item_id]" class="mt-3 text-sm">
-                  <summary class="cursor-pointer text-primary">
-                    View preparation
-                  </summary>
+                <details v-if="prepById[row.prep_item_id]" class="mt-3">
+                  <summary class="cursor-pointer">View preparation</summary>
                   <div class="mt-3 space-y-2">
                     <p
                       v-for="input in prepById[row.prep_item_id]?.inputs"
@@ -46,7 +44,7 @@
                       {{ ingredientName(input.ingredient_id) }} ·
                       {{ input.quantity }} {{ input.unit }}
                     </p>
-                    <p class="text-muted">
+                    <p>
                       Yield: {{ prepById[row.prep_item_id]?.yield.quantity }}
                       {{ prepById[row.prep_item_id]?.yield.unit }}
                     </p>
@@ -63,7 +61,7 @@
               <span>{{ row.quantity }} {{ row.unit }}</span>
             </li>
           </ul>
-          <p v-else class="text-sm text-muted">No prep items.</p>
+          <p v-else>No prep items.</p>
         </section>
       </div>
       <section class="method-panel">
@@ -74,7 +72,7 @@
             <p>{{ step }}</p>
           </li>
         </ol>
-        <p v-else class="text-sm text-muted">No method added.</p>
+        <p v-else>No method added.</p>
       </section>
     </div>
     <details v-if="preparation.source_note" class="recipe-source">

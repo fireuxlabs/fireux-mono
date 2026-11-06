@@ -11,30 +11,27 @@
         :src="avatarUrl"
         :alt="title"
         size="md"
-        class="shrink-0"
+        class="fx-card__badge"
       />
       <div
         v-else
-        class="flex size-10 shrink-0 items-center justify-center rounded-md border border-default bg-elevated/40 text-dimmed"
+        class="flex size-10 shrink-0 items-center justify-center rounded-md border border-default bg-elevated/40"
       >
-        <UIcon name="i-lucide-scroll-text" class="size-5" />
+        <UIcon name="i-lucide-scroll-text" />
       </div>
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold text-highlighted">
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">
               {{ title }}
             </div>
-            <div
-              v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-dimmed"
-            >
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
             </div>
           </div>
 
-          <div class="flex shrink-0 items-center gap-1">
+          <div class="card__badges">
             <UBadge
               v-if="showStatus && status"
               variant="soft"
@@ -46,10 +43,7 @@
           </div>
         </div>
 
-        <div
-          v-if="showBadges && badges.length"
-          class="flex flex-wrap items-center gap-1"
-        >
+        <div v-if="showBadges && badges.length" class="card__badges">
           <UBadge
             v-for="badge in badges"
             :key="badge"
@@ -61,9 +55,9 @@
           </UBadge>
         </div>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
+        <div v-if="showTagline" class="card__tagline">
           <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">No summary yet</span>
+          <span v-else>No summary yet</span>
         </div>
       </div>
     </div>
@@ -103,5 +97,4 @@ withDefaults(defineProps<Props>(), {
   link: false,
   action: false,
 })
-
 </script>

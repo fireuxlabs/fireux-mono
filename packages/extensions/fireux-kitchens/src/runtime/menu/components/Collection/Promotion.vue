@@ -11,7 +11,7 @@
           :key="`${action.label}-${action.to}`"
           class="space-y-2"
         >
-          <p class="text-sm font-semibold">{{ action.label }}</p>
+          <p>{{ action.label }}</p>
           <UButton
             block
             color="primary"

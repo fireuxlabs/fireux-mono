@@ -16,8 +16,8 @@
       :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
-        <div class="grid gap-6">
-          <section class="grid gap-2">
+        <div class="workspace-surface__grid">
+          <section class="workspace-surface__grid">
             <div class="flex flex-wrap gap-2">
               <UBadge color="neutral" variant="soft">
                 {{ maturityLabel }}
@@ -26,39 +26,38 @@
                 Shared KitchenAI conversation
               </UBadge>
             </div>
-            <p class="m-0 text-sm text-toned">
+            <p>
               {{ summary }}
             </p>
           </section>
 
-          <section class="grid gap-2" :aria-labelledby="`${agent.id}-context`">
-            <h3 :id="`${agent.id}-context`" class="m-0 font-semibold">
-              Information it can use
-            </h3>
-            <ul class="grid gap-2">
-              <li
+          <section
+            class="workspace-surface__grid"
+            :aria-labelledby="`${agent.id}-context`"
+          >
+            <h3 :id="`${agent.id}-context`">Information it can use</h3>
+            <ul class="workspace-surface__grid">
+              <UCard as="li"
                 v-for="provider in agent.contextProviders"
                 :key="provider.id"
-                class="rounded-lg border border-default px-3 py-2 text-sm"
+                
               >
-                <span class="font-medium text-highlighted">
+                <span>
                   {{ contextLabel(provider.id) }}
                 </span>
-                <span class="text-muted">
+                <span>
                   · supplied by {{ provider.owner }}
                   {{ provider.required ? '· required' : '· when available' }}
                 </span>
-              </li>
+              </UCard>
             </ul>
           </section>
 
           <section
-            class="grid gap-2"
+            class="workspace-surface__grid"
             :aria-labelledby="`${agent.id}-abilities`"
           >
-            <h3 :id="`${agent.id}-abilities`" class="m-0 font-semibold">
-              What it may do
-            </h3>
+            <h3 :id="`${agent.id}-abilities`">What it may do</h3>
             <div class="flex flex-wrap gap-2">
               <UBadge
                 v-for="capability in agent.capabilities"
@@ -71,29 +70,30 @@
             </div>
           </section>
 
-          <section class="grid gap-2" :aria-labelledby="`${agent.id}-tools`">
-            <h3 :id="`${agent.id}-tools`" class="m-0 font-semibold">Tools</h3>
-            <p v-if="!tools.length" class="m-0 text-sm text-muted">
+          <section
+            class="workspace-surface__grid"
+            :aria-labelledby="`${agent.id}-tools`"
+          >
+            <h3 :id="`${agent.id}-tools`">Tools</h3>
+            <p v-if="!tools.length">
               No tools are registered for this capability yet.
             </p>
-            <ul v-else class="grid gap-3">
-              <li
+            <ul v-else class="workspace-surface__grid">
+              <UCard as="li" :ui="{ body: 'fx-card-body-stack' }"
                 v-for="tool in tools"
                 :key="tool.id"
-                class="grid gap-1 rounded-lg border border-default p-3"
+                
               >
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <span class="font-medium text-highlighted">{{
-                    tool.label
-                  }}</span>
+                <div class="card__header">
+                  <span>{{ tool.label }}</span>
                   <UBadge :color="statusColor(tool.status)" variant="soft">
                     {{ statusLabel(tool.status) }}
                   </UBadge>
                 </div>
-                <p class="m-0 text-sm text-toned">{{ tool.description }}</p>
-                <p class="m-0 text-xs text-muted">{{ tool.authority }}</p>
-                <p class="m-0 text-xs text-muted">{{ tool.approval }}</p>
-              </li>
+                <p>{{ tool.description }}</p>
+                <p>{{ tool.authority }}</p>
+                <p>{{ tool.approval }}</p>
+              </UCard>
             </ul>
           </section>
 

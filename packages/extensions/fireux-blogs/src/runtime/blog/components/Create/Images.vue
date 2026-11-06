@@ -27,7 +27,7 @@
 
     <!-- Upload Progress Display -->
     <div v-if="showProgress" class="upload-progress">
-      <h4>Uploading Images...</h4>
+      <h4 class="fx-type-card-title">Uploading Images...</h4>
       <div class="uploading-spinner">
         <UIcon name="i-lucide-loader-2" class="animate-spin" />
         <span>Processing images...</span>

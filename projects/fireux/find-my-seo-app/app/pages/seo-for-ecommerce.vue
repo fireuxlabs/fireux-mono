@@ -5,18 +5,26 @@
       description="Compare eCommerce SEO providers who understand category growth, merchandising, technical fixes, and revenue-led search strategy."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody>
       <UCard>
-        <div class="space-y-4">
-          <p class="fx-type-headline text-dimmed">Why this page exists</p>
-          <h2 class="text-2xl font-semibold">eCommerce SEO needs category thinking, not generic traffic promises</h2>
-          <p class="leading-7 text-toned">
-            Good eCommerce SEO connects search demand to category structure, internal linking, merchandising, and commercial priorities.
-            This landing page sends buyers straight into the providers already strongest in that work.
+        <div class="fx-card-body-stack">
+          <p class="fx-type-headline">Why this page exists</p>
+          <h2 class="fx-type-section-title">
+            eCommerce SEO needs category thinking, not generic traffic promises
+          </h2>
+          <p class="fx-type-body">
+            Good eCommerce SEO connects search demand to category structure,
+            internal linking, merchandising, and commercial priorities. This
+            landing page sends buyers straight into the providers already
+            strongest in that work.
           </p>
-          <div class="flex gap-3">
-            <UButton to="/get-started" color="primary">Browse eCommerce SEO providers</UButton>
-            <UButton to="/get-started" variant="soft">See all providers</UButton>
+          <div class="fx-card__actions">
+            <UButton to="/get-started" color="primary"
+              >Browse eCommerce SEO providers</UButton
+            >
+            <UButton to="/get-started" variant="soft"
+              >See all providers</UButton
+            >
           </div>
         </div>
       </UCard>
@@ -27,6 +35,7 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'SEO for eCommerce | Find My SEO',
-  description: 'Compare eCommerce SEO consultants and agencies with category, technical, and commercial proof.',
+  description:
+    'Compare eCommerce SEO consultants and agencies with category, technical, and commercial proof.',
 })
 </script>

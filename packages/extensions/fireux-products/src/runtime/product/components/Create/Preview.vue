@@ -1,24 +1,24 @@
 <template>
   <div class="preview-layout">
-    <h1>Cell</h1>
+    <h1 class="fx-type-page-title">Cell</h1>
     <ProductCardsPurchase
       preview
       :product="previewProduct"
       :default-price="defaultPrice"
     />
-    <h1>Customer</h1>
+    <h1 class="fx-type-page-title">Customer</h1>
     <ProductDetailSummary
       preview
       :product="previewProduct"
       :default-price="defaultPrice"
     />
-    <h1>Info</h1>
+    <h1 class="fx-type-page-title">Info</h1>
     <ProductRecord
       preview
       :product="previewProduct"
       :default-price="defaultPrice"
     />
-    <h1>Page</h1>
+    <h1 class="fx-type-page-title">Page</h1>
     <ProductDetail
       preview
       :product="previewProduct"

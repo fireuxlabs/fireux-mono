@@ -2,12 +2,12 @@
   <section class="space-y-6">
     <UPageHeader :title="current.title" :description="current.description" />
     <UCard>
-      <div class="flex items-start gap-4">
-        <UIcon :name="current.icon" class="size-8 shrink-0 text-primary" />
-        <div class="space-y-2">
+      <div class="fx-card__chips">
+        <UIcon :name="current.icon" class="shrink-0" />
+        <div class="fx-card-body-stack">
           <UBadge color="warning" variant="subtle">Coming soon</UBadge>
-          <h2 class="font-semibold">{{ current.empty }}</h2>
-          <p class="text-sm text-muted">{{ current.next }}</p>
+          <h2>{{ current.empty }}</h2>
+          <p>{{ current.next }}</p>
         </div>
       </div>
     </UCard>
@@ -22,10 +22,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-const props = withDefaults(
-  defineProps<{ view?: 'plan' | 'batches' }>(),
-  { view: 'plan' }
-)
+const props = withDefaults(defineProps<{ view?: 'plan' | 'batches' }>(), {
+  view: 'plan',
+})
 const views = {
   plan: {
     title: 'Prep plan',

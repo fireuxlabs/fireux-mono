@@ -4,11 +4,11 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-muted">Step 1 · Employer</p>
-        <h2 class="text-lg font-semibold">
+        <p>Step 1 · Employer</p>
+        <h2 class="fx-type-card-heading">
           {{ chosenPlaceCard ? 'Selected employer' : 'Choose the employer' }}
         </h2>
-        <p class="text-sm text-muted">
+        <p>
           Search for the organisation advertising this role. We connect it to
           the canonical Business record.
         </p>
@@ -41,7 +41,9 @@ import type { JobCreateForm } from '../../composables/firestore/mutations/useJob
 
 const form = defineModel<JobCreateForm>('form', { required: true })
 const { createBusiness } = useBusinessCreate()
-const { ensurePlaceExists, captureIntent } = usePlaceCreate({ sources: [() => form.value] })
+const { ensurePlaceExists, captureIntent } = usePlaceCreate({
+  sources: [() => form.value],
+})
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
@@ -66,7 +68,8 @@ async function onPlaceConfirmed(payload: {
   placeId: string
   place: PlaceUpsertInput
 }) {
-  const sequence = ++selectionSequence, contextCurrent = captureIntent()
+  const sequence = ++selectionSequence,
+    contextCurrent = captureIntent()
   const isCurrent = () => contextCurrent() && sequence === selectionSequence
   payload = JSON.parse(JSON.stringify(payload))
   const id = payload.placeId

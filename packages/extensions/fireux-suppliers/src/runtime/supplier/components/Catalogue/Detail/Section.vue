@@ -1,19 +1,18 @@
 <template>
-  <section class="space-y-3 rounded-md border border-default bg-muted/20 p-3">
+  <UCard class="space-y-3" as="section" :ui="{ body: 'fx-card-body-stack' }">
     <div class="flex items-start gap-3">
       <UAvatar
         v-if="section.imageUrl"
         :src="section.imageUrl"
         :alt="section.label"
         size="lg"
-        class="shrink-0"
       />
 
       <div class="min-w-0 space-y-1">
-        <h4 class="text-sm font-semibold text-highlighted">
+        <h4 class="fx-type-card-title">
           {{ section.label }}
         </h4>
-        <p v-if="section.description" class="text-xs leading-5 text-muted">
+        <p v-if="section.description">
           {{ section.description }}
         </p>
       </div>
@@ -28,19 +27,16 @@
         <div class="space-y-2">
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-              <h5 class="truncate text-sm font-semibold text-highlighted">
+              <h5 class="truncate">
                 {{ option.packLabel || option.label }}
               </h5>
             </div>
 
             <div v-if="option.packPriceLabel" class="shrink-0 text-right">
-              <p class="text-sm font-semibold text-highlighted">
+              <p>
                 {{ option.packPriceLabel }}
               </p>
-              <p
-                v-if="option.unitPriceLabel && option.unit"
-                class="text-xs text-muted"
-              >
+              <p v-if="option.unitPriceLabel && option.unit">
                 {{ option.unitPriceLabel }} / {{ option.unit }}
               </p>
             </div>
@@ -67,7 +63,7 @@
         </div>
       </li>
     </ul>
-  </section>
+  </UCard>
 </template>
 <script setup lang="ts">
 import type { SupplierCatalogueItemCard } from '../../../composables/firestore/utils/view/useSupplierCatalogueInterface'

@@ -9,12 +9,8 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Places</div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('places')"
-            >
+            <div>Places</div>
+            <UButton variant="ghost" size="xs" @click="toggleSection('places')">
               {{ openSections.places ? 'Hide' : 'Show' }}
             </UButton>
           </div>

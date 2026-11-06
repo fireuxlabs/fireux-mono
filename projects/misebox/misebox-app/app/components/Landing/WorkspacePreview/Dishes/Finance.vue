@@ -3,46 +3,54 @@
     class="min-h-[24rem] rounded-xl border border-default bg-default p-4 shadow-sm sm:p-5"
     aria-label="Dish Finance preview"
   >
-    <p class="text-xs font-semibold uppercase tracking-wide text-primary">Finance</p>
-    <h3 class="mt-1 text-lg font-semibold text-highlighted">{{ dish.name }}</h3>
+    <p class="fx-type-caption">Finance</p>
+    <h3 class="mt-1 fx-type-card-heading">{{ dish.name }}</h3>
 
     <dl v-if="dish.finance" class="mt-5 grid grid-cols-2 gap-3">
-      <div class="col-span-2 flex items-center justify-between gap-3 rounded-lg bg-elevated/40 p-3">
-        <dt class="text-sm text-muted">Selling price</dt>
-        <dd class="font-semibold text-highlighted">{{ formatMoney(dish.finance.sellingPriceMinor) }}</dd>
+      <div
+        class="col-span-2 flex items-center justify-between gap-3 rounded-lg bg-elevated/40 p-3"
+      >
+        <dt>Selling price</dt>
+        <dd>{{ formatMoney(dish.finance.sellingPriceMinor) }}</dd>
       </div>
-      <div class="rounded-lg border border-primary/20 bg-primary/5 p-3">
-        <dt class="text-xs text-muted">Quantity sold</dt>
-        <dd class="mt-1 text-lg font-semibold text-highlighted">
+      <UCard>
+        <dt>Quantity sold</dt>
+        <dd class="mt-1">
           {{ dish.finance.quantitySold ?? 'No completed sales' }}
         </dd>
-      </div>
-      <div class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-right">
-        <dt class="text-xs text-muted">Total sales</dt>
-        <dd class="mt-1 text-lg font-semibold text-highlighted">
-          {{ dish.finance.totalSalesMinor === null
-            ? '—'
-            : formatMoney(dish.finance.totalSalesMinor) }}
+      </UCard>
+      <UCard>
+        <dt>Total sales</dt>
+        <dd class="mt-1">
+          {{
+            dish.finance.totalSalesMinor === null
+              ? '—'
+              : formatMoney(dish.finance.totalSalesMinor)
+          }}
         </dd>
+      </UCard>
+      <div class="rounded-lg bg-elevated/40 p-3">
+        <dt>Cost of sales</dt>
+        <dd class="mt-1">{{ formatMoney(dish.finance.costOfSalesMinor) }}</dd>
       </div>
       <div class="rounded-lg bg-elevated/40 p-3">
-        <dt class="text-xs text-muted">Cost of sales</dt>
-        <dd class="mt-1 font-semibold text-highlighted">{{ formatMoney(dish.finance.costOfSalesMinor) }}</dd>
+        <dt>Gross profit</dt>
+        <dd class="mt-1">{{ formatMoney(dish.finance.grossProfitMinor) }}</dd>
       </div>
-      <div class="rounded-lg bg-elevated/40 p-3 text-right">
-        <dt class="text-xs text-muted">Gross profit</dt>
-        <dd class="mt-1 font-semibold text-highlighted">{{ formatMoney(dish.finance.grossProfitMinor) }}</dd>
-      </div>
-      <div class="rounded-lg border border-default p-3">
-        <dt class="text-xs text-muted">Food cost</dt>
-        <dd class="mt-1 text-lg font-semibold text-highlighted">{{ formatPercentage(dish.finance.foodCostPercentage) }}</dd>
-      </div>
-      <div class="rounded-lg border border-default p-3 text-right">
-        <dt class="text-xs text-muted">Gross margin</dt>
-        <dd class="mt-1 text-lg font-semibold text-highlighted">{{ formatPercentage(dish.finance.grossMarginPercentage) }}</dd>
-      </div>
+      <UCard>
+        <dt>Food cost</dt>
+        <dd class="mt-1">
+          {{ formatPercentage(dish.finance.foodCostPercentage) }}
+        </dd>
+      </UCard>
+      <UCard>
+        <dt>Gross margin</dt>
+        <dd class="mt-1">
+          {{ formatPercentage(dish.finance.grossMarginPercentage) }}
+        </dd>
+      </UCard>
     </dl>
-    <p v-else class="mt-5 rounded-lg bg-elevated/40 p-3 text-sm text-muted">
+    <p v-else class="mt-5 rounded-lg bg-elevated/40 p-3 fx-type-caption">
       Finance estimate unavailable.
     </p>
   </article>

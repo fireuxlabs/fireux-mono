@@ -1,7 +1,6 @@
 <template>
   <UCard
     :class="cardClass"
-    :ui="cardUi"
     :role="liveRole"
     :aria-live="liveMode"
     :aria-busy="showSpinner"
@@ -178,15 +177,6 @@ const cardClass = computed(() => [
   props.surface === 'bare' ? 'fx-state-card--bare' : '',
   `fx-state-card--${resolvedState.value}`,
 ])
-
-const cardUi = computed(() =>
-  props.surface === 'bare' || props.surface === 'collection'
-    ? {
-        root: 'rounded-none overflow-visible bg-transparent ring-0 divide-y-0 shadow-none',
-        body: 'p-0 sm:p-0',
-      }
-    : undefined
-)
 
 const bannerClass = computed(() => ({
   'fx-state-banner--loading': showSpinner.value,

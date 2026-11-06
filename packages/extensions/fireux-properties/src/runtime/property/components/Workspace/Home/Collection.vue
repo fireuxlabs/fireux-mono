@@ -7,7 +7,7 @@
     empty-title="No properties yet"
     empty-description="Your available properties will appear here."
   >
-    <template #header><h2 class="font-semibold">My Properties</h2></template>
+    <template #header><h2 class="fx-type-section-title">My Properties</h2></template>
     <WorkspaceTargetCard
       v-for="card in cards"
       :key="card.id"

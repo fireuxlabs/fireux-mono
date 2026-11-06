@@ -1,6 +1,6 @@
 <template>
   <fieldset class="space-y-3">
-    <legend class="mb-2 font-medium">Extras</legend>
+    <legend class="mb-2">Extras</legend>
     <div
       v-for="(extra, index) in extras"
       :key="index"

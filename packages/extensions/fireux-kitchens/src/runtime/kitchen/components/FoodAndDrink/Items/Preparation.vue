@@ -1,8 +1,8 @@
 <template>
   <div class="grid gap-6">
     <header>
-      <h2 class="text-xl font-semibold">Mise en place</h2>
-      <p class="mt-1 text-sm text-muted">
+      <h2>Mise en place</h2>
+      <p class="mt-1">
         Quantities for {{ dish?.spec?.portion || 1 }} portion{{
           dish?.spec?.portion === 1 ? '' : 's'
         }}. These are requirements, not available stock.
@@ -17,12 +17,12 @@
     <p v-else-if="pending" role="status">Loading preparations…</p>
     <div v-else class="grid gap-7">
       <section v-for="group in groups" :key="group.station">
-        <h3 class="font-semibold mb-3">{{ group.station }}</h3>
+        <h3 class="mb-3">{{ group.station }}</h3>
         <div class="grid gap-4 lg:grid-cols-2">
           <UCard v-for="row in group.rows" :key="row.prep_item_id">
-            <div class="flex items-start justify-between gap-3">
+            <div class="card__header">
               <div>
-                <h3 class="font-semibold text-lg mt-1">
+                <h3 class="mt-1">
                   {{ row.item?.name || row.prep_item_id }}
                 </h3>
               </div>
@@ -30,19 +30,17 @@
                 >{{ row.quantity }} {{ row.unit }}</UBadge
               >
             </div>
-            <p v-if="row.note" class="mt-3 text-sm text-muted">
+            <p v-if="row.note" class="mt-3">
               {{ row.note }}
             </p>
-            <p v-if="!row.item" class="mt-3 text-sm text-warning">
-              Preparation record unavailable.
-            </p>
+            <p v-if="!row.item" class="mt-3">Preparation record unavailable.</p>
             <template v-else
               ><details class="mt-4">
-                <summary class="text-sm font-medium cursor-pointer">
+                <summary class="cursor-pointer">
                   Batch method · {{ row.item.yield.quantity }}
                   {{ row.item.yield.unit }}
                 </summary>
-                <ol class="list-decimal pl-5 mt-3 space-y-2 text-sm">
+                <ol class="list-decimal pl-5 mt-3 space-y-2">
                   <li v-for="step in row.item.method" :key="step">
                     {{ step }}
                   </li>
@@ -55,7 +53,6 @@
                 icon="i-lucide-book-open"
                 color="neutral"
                 variant="soft"
-                class="mt-4"
             /></template>
           </UCard>
         </div>

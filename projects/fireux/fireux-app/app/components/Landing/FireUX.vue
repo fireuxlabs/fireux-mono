@@ -1,12 +1,12 @@
 <template>
   <section>
-    <div class="grid">
+    <div class="pagebody">
       <div
         v-for="feature in filteredFeatures"
         :key="feature.key"
         class="feature"
       >
-        <UIcon :name="feature.icon" class="size-8" />
+        <UIcon :name="feature.icon" />
         <div class="feature-content">
           <h3 class="fx-type-card-title">{{ feature.title }}</h3>
           <p>{{ feature.description }}</p>

@@ -10,7 +10,13 @@
       :pending="selectionPending"
       :error="selectionError"
       @associate="associateContribution"
-      @back="directoryResult = null; associating = false; clearSelection()"
+      @back="
+        () => {
+          directoryResult = null
+          associating = false
+          clearSelection()
+        }
+      "
     />
     <FireStateCard
       v-else-if="initialSelectionPending || selectionPending"
@@ -68,14 +74,14 @@
       />
     </div>
 
-    <FireOnboardingShell v-else-if="preview" family="kitchen" :stage="shellStage">
+    <FireOnboardingShell
+      v-else-if="preview"
+      family="kitchen"
+      :stage="shellStage"
+    >
       <template #intro>
-        <h1
-          class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
-        >
-          Add a kitchen
-        </h1>
-        <p class="mt-3 text-sm leading-6 text-muted">
+        <h1 class="mt-2">Add a kitchen</h1>
+        <p class="mt-3">
           {{
             isDirectory
               ? 'Review this directory listing.'
@@ -121,7 +127,6 @@
             variant="soft"
             icon="i-lucide-arrow-left"
             :disabled="pending"
-            class="w-full justify-center sm:w-auto"
             @click="onBack"
           >
             {{ backLabel }}
@@ -132,7 +137,6 @@
             :icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
             :loading="pending || finishing"
             :disabled="continueDisabled"
-            class="w-full justify-center sm:w-auto"
             @click="onContinue"
           >
             {{ continueLabel }}

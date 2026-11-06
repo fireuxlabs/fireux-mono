@@ -8,13 +8,8 @@
         icon="i-lucide-search"
         size="xl"
         class="directory-search"
-        :ui="{ base: 'rounded-xl py-3 bg-elevated/40' }"
       />
-      <span
-        class="text-xs font-medium tracking-wide text-muted"
-        aria-live="polite"
-        >{{ countLabel }}</span
-      >
+      <span aria-live="polite">{{ countLabel }}</span>
     </div>
 
     <div
@@ -29,7 +24,6 @@
         :variant="selectedCategory === filter.value ? 'soft' : 'ghost'"
         :aria-pressed="selectedCategory === filter.value"
         size="sm"
-        class="rounded-full px-4"
         @click="selectedCategory = filter.value"
       >
         {{ filter.label }}

@@ -1,6 +1,6 @@
 <template>
   <WorkspaceIntroInfo :intro="liveIntro" />
-  <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+  <UDashboardToolbar
     ><UTabs
       v-if="team.state.value.team.members.length"
       :model-value="team.state.value.team.selectedTeamMemberId"

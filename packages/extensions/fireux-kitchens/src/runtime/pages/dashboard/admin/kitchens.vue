@@ -5,12 +5,12 @@
       description="Provision a Place-backed Kitchen for an App member, or curate public Kitchen surfaces."
     />
 
-    <UPageBody class="space-y-6">
+    <UPageBody>
       <UCard>
         <template #header>
           <div>
-            <h2 class="font-semibold text-highlighted">Create for a member</h2>
-            <p class="mt-1 text-sm text-muted">
+            <h2>Create for a member</h2>
+            <p class="mt-1">
               You remain the authenticated administrator. The selected member
               becomes the Kitchen owner.
             </p>
@@ -24,14 +24,9 @@
           label-key="label"
           placeholder="Choose an App member"
           :loading="pending"
-          class="w-full max-w-md"
         />
         <FireCopyError v-if="error" :message="String(error)" />
-        <UButton
-          v-if="membersHasMore"
-          class="mt-3"
-          variant="soft"
-          @click="loadMoreMembers"
+        <UButton v-if="membersHasMore" variant="soft" @click="loadMoreMembers"
           >Load more members</UButton
         >
       </UCard>

@@ -15,15 +15,24 @@
         <UInput v-model="item.language" placeholder="Language" />
         <select
           v-model="item.proficiency"
-          class="w-full rounded-md border border-default bg-transparent px-3 py-2 text-sm"
+          class="w-full rounded-md border border-default bg-transparent px-3 py-2"
         >
           <option value="">Proficiency</option>
-          <option v-for="option in proficiencyOptions" :key="option" :value="option">
+          <option
+            v-for="option in proficiencyOptions"
+            :key="option"
+            :value="option"
+          >
             {{ option }}
           </option>
         </select>
         <div class="flex gap-2">
-          <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
+          <UButton
+            size="xs"
+            variant="solid"
+            icon="i-lucide-check"
+            @click="save"
+          >
             Save
           </UButton>
           <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
@@ -47,8 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { LanguageProficiency } from '../../../../utils/profiles/Professional/professional';
+import { computed } from 'vue'
+import type { LanguageProficiency } from '../../../../utils/profiles/Professional/professional'
 
 const props = defineProps<{
   items: LanguageProficiency[]
@@ -68,7 +77,9 @@ const proficiencyOptions = [
 ]
 
 const proficiencyRank = (value: string | undefined) => {
-  const raw = String(value ?? '').trim().toLowerCase()
+  const raw = String(value ?? '')
+    .trim()
+    .toLowerCase()
   if (!raw) return 99
   if (raw === 'native') return 0
   if (raw === 'fluent') return 1
@@ -83,12 +94,14 @@ const proficiencyRank = (value: string | undefined) => {
 
 const sortedItems = computed(() =>
   [...(props.items ?? [])].sort((a, b) => {
-    const rankDiff = proficiencyRank(a.proficiency) - proficiencyRank(b.proficiency)
+    const rankDiff =
+      proficiencyRank(a.proficiency) - proficiencyRank(b.proficiency)
     if (rankDiff !== 0) return rankDiff
     return String(a.language ?? '').localeCompare(String(b.language ?? ''))
   })
 )
 
 const itemTitle = (item: LanguageProficiency) => item.language || 'Language'
-const itemDate = (item: LanguageProficiency) => item.proficiency || 'Proficiency not set'
+const itemDate = (item: LanguageProficiency) =>
+  item.proficiency || 'Proficiency not set'
 </script>

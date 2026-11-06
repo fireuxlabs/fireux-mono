@@ -39,7 +39,6 @@
             <div class="bangin-roast-mark">BC</div>
           </div>
           <UPageCard
-            class="mt-4"
             variant="subtle"
             :title="content.roast.title"
             :description="content.roast.body"
@@ -62,7 +61,10 @@
 </template>
 
 <script setup lang="ts">
-import { banginCoffeeContent as content, banginCoffeeLinks as links } from '../config/content.config'
+import {
+  banginCoffeeContent as content,
+  banginCoffeeLinks as links,
+} from '../config/content.config'
 
 definePageMeta({
   layout: 'landing',

@@ -1,25 +1,22 @@
 <template>
-  <UCard class="max-w-2xl">
-    <div class="space-y-4">
-      <div class="flex items-start gap-3">
-        <UIcon
-          name="i-lucide-key-round"
-          class="mt-1 size-5 shrink-0 text-muted"
-        />
-        <div class="space-y-2">
-          <h2 class="text-lg font-semibold">Kitchen access needed</h2>
-          <p class="text-sm text-muted">
+  <UCard>
+    <div class="workspace-surface workspace-surface--compact">
+      <div class="card__media">
+        <UIcon name="i-lucide-key-round" class="shrink-0" />
+        <div class="workspace-surface workspace-surface--compact">
+          <h2>Kitchen access needed</h2>
+          <p>
             You’re signed in{{ accountName ? ` as ${accountName}` : '' }}, but
             this account has no Kitchen connected in {{ appName }}.
           </p>
-          <p class="text-sm text-muted">
+          <p>
             Connect a Kitchen you already manage. If the access review does not
             allow it, ask an app administrator for help. Access in another app
             does not automatically give access here.
           </p>
         </div>
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton
           to="/workspace/kitchen/create"
           label="Connect existing Kitchen"

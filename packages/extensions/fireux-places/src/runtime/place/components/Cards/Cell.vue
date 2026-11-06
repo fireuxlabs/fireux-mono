@@ -7,8 +7,17 @@
     @activate="emit('action')"
   >
     <div class="place-collection-card__media">
-      <img v-if="resolvedImageUrl" :src="resolvedImageUrl" alt="" loading="lazy">
-      <UIcon v-else name="i-lucide-map-pin" aria-label="Venue photo not published" />
+      <img
+        v-if="resolvedImageUrl"
+        :src="resolvedImageUrl"
+        alt=""
+        loading="lazy"
+      />
+      <UIcon
+        v-else
+        name="i-lucide-map-pin"
+        aria-label="Venue photo not published"
+      />
     </div>
     <div class="place-collection-card__body">
       <UBadge
@@ -19,7 +28,7 @@
       >
         {{ sourceLabel }}
       </UBadge>
-      <h3>{{ name }}</h3>
+      <h3 class="fx-type-card-title">{{ name }}</h3>
       <span class="place-cell__address">
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
         <span>{{ resolvedAddress }}</span>
@@ -41,19 +50,18 @@
       size="md"
       icon="i-lucide-image"
       :class="avatarShadeClass"
-      class="shrink-0"
     />
 
-    <div class="min-w-0 flex-1 space-y-1">
-      <div class="flex items-start justify-between gap-2">
-        <div class="min-w-0">
-          <div class="truncate text-sm font-semibold">{{ name }}</div>
+    <div class="card__content card__stack">
+      <div class="card__header">
+        <div class="card__content">
+          <div class="card__title">{{ name }}</div>
 
           <div
             v-if="showSubtitle && resolvedAddress"
-            class="flex items-center gap-1 truncate text-xs text-dimmed"
+            class="flex items-center gap-1 truncate"
           >
-            <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
+            <UIcon name="i-lucide-map-pin" />
             <span class="truncate">{{ resolvedAddress }}</span>
           </div>
         </div>
@@ -63,15 +71,14 @@
           variant="soft"
           color="neutral"
           size="xs"
-          class="shrink-0"
         >
           {{ sourceLabel }}
         </UBadge>
       </div>
 
-      <div v-if="showTagline" class="truncate text-xs text-dimmed">
+      <div v-if="showTagline" class="card__subtitle">
         <span v-if="prop">{{ prop }}</span>
-        <span v-else class="italic">missing</span>
+        <span v-else class="fx-card__tagline--empty">missing</span>
       </div>
     </div>
   </FireActionSurface>
@@ -112,7 +119,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const resolvedAddress = computed(() => props.formattedAddress || '')
 const resolvedImageUrl = computed(() => props.imageUrl || '')
-const surfaceTo = computed(() => props.link && props.to ? props.to : undefined)
+const surfaceTo = computed(() =>
+  props.link && props.to ? props.to : undefined
+)
 
 const avatarShadeClass = computed(() => {
   const shade = props.imageShade
@@ -132,12 +141,36 @@ const sourceLabel = computed(() =>
 </script>
 
 <style scoped>
-.place-collection-card { display: block; overflow: hidden; padding: 0; }
-.place-collection-card__media { aspect-ratio: 16 / 10; background: var(--ui-bg-elevated); }
-.place-collection-card__media > img { width: 100%; height: 100%; object-fit: cover; }
-.place-collection-card__media > svg { width: 100%; height: 100%; padding: calc(var(--spacing) * 16); color: var(--ui-text-dimmed); }
-.place-collection-card__body { display: grid; gap: calc(var(--spacing) * 3); padding: calc(var(--spacing) * 5); }
-.place-collection-card__body h3 { margin: 0; color: var(--ui-text-highlighted); font-size: var(--text-xl); }
+.place-collection-card {
+  display: block;
+  overflow: hidden;
+  padding: 0;
+}
+.place-collection-card__media {
+  aspect-ratio: 16 / 10;
+  background: var(--ui-bg-elevated);
+}
+.place-collection-card__media > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.place-collection-card__media > svg {
+  width: 100%;
+  height: 100%;
+  padding: calc(var(--spacing) * 16);
+  color: var(--ui-text-dimmed);
+}
+.place-collection-card__body {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 5);
+}
+.place-collection-card__body h3 {
+  margin: 0;
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-xl);
+}
 .place-cell__address {
   display: flex;
   min-width: 0;

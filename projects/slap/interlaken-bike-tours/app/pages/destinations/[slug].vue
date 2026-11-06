@@ -1,3 +1,6 @@
+<template>
+  <DestinationsDetail v-if="destination" :destination="destination" />
+</template>
 <script setup lang="ts">
 import {
   useSeo,
@@ -5,7 +8,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { searchPage } from '~/ignition/search'
 import { destinations } from '~/content/destinations'
-definePageMeta({ layout: 'tours' })
+definePageMeta({ layout: 'default' })
 const route = useRoute()
 const destination = computed(() =>
   destinations.find(
@@ -27,9 +30,3 @@ useSeo({
   jsonLdBuilder: (context) => buildPublicPageJsonLd(context),
 })
 </script>
-<template>
-  <div class="wrap section">
-    <NuxtLink to="/destinations" class="back-link">← All destinations</NuxtLink>
-    <DestinationsDetail v-if="destination" :destination="destination" />
-  </div>
-</template>

@@ -1,12 +1,12 @@
 <template>
   <section class="min-w-0 space-y-4" aria-label="Calendar">
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
+    <UCard>
       <template #header>
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <h1 class="text-xl font-semibold text-highlighted" aria-live="polite">
+          <h1 aria-live="polite">
             {{ monthLabel }}
           </h1>
-          <div class="flex items-center gap-2">
+          <div class="fx-card__actions">
             <UButton
               label="Today"
               color="neutral"
@@ -54,7 +54,7 @@
       </div>
     </UCard>
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2 class="font-medium text-highlighted">{{ selectedLabel }}</h2>
+      <h2>{{ selectedLabel }}</h2>
       <UInput
         :model-value="modelValue"
         type="date"

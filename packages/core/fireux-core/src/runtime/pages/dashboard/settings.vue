@@ -58,45 +58,33 @@
               icon="i-lucide-lock-keyhole"
               variant="subtle"
             >
-              <dl class="divide-y divide-default text-sm">
+              <dl class="divide-y divide-default">
                 <div class="py-3 first:pt-0">
-                  <dt
-                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                  >
-                    Email
-                  </dt>
-                  <dd class="mt-1 break-words font-medium text-highlighted">
+                  <dt>Email</dt>
+                  <dd class="mt-1 break-words">
                     {{ accountEmail || 'Not available' }}
                   </dd>
                 </div>
                 <div class="py-3">
-                  <dt
-                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                  >
-                    Terms accepted
-                  </dt>
-                  <dd class="mt-1 font-medium text-highlighted">
+                  <dt>Terms accepted</dt>
+                  <dd class="mt-1">
                     {{ termsAcceptedLabel || 'Not recorded' }}
                   </dd>
                 </div>
                 <div class="py-3 last:pb-0">
-                  <dt
-                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                  >
-                    Terms version
-                  </dt>
-                  <dd class="mt-1 font-mono text-highlighted">
+                  <dt>Terms version</dt>
+                  <dd class="mt-1">
                     {{ account.terms.version || 'Not recorded' }}
                   </dd>
                 </div>
               </dl>
 
               <div
-                class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4"
+                class="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4"
               >
                 <div>
-                  <p class="font-medium text-highlighted">Current session</p>
-                  <p class="mt-1 text-sm text-muted">
+                  <p>Current session</p>
+                  <p class="mt-1">
                     Signed in as {{ accountEmail || 'your account' }}.
                   </p>
                 </div>

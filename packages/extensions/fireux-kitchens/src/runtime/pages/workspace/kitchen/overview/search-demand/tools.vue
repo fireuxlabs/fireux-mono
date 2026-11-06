@@ -5,13 +5,9 @@
       current="tools"
     />
     <header class="grid gap-3 border-b border-default pb-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Stage 3 · Composition
-      </p>
-      <h1 class="m-0 text-3xl font-semibold text-highlighted">
-        No Overview Tools
-      </h1>
-      <p class="m-0 max-w-3xl text-base text-muted">
+      <p>Stage 3 · Composition</p>
+      <h1>No Overview Tools</h1>
+      <p class="max-w-3xl">
         Overview composes the capability map and source-labelled summaries.
         Operators continue into the owning capability to work.
       </p>
@@ -19,11 +15,11 @@
     <section class="grid gap-4 md:grid-cols-2">
       <UCard v-for="group in demand.groups" :key="group.title"
         ><template #header
-          ><h2 class="font-semibold text-highlighted">
+          ><h2>
             {{ group.title }}
           </h2></template
         >
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__chips">
           <UBadge
             v-for="capability in group.capabilities"
             :key="capability"
@@ -34,46 +30,30 @@
         </div></UCard
       >
     </section>
-    <section
-      class="grid gap-4 rounded-xl border border-default bg-elevated/30 p-5"
+    <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
+      
     >
       <div>
-        <p
-          class="m-0 text-xs font-semibold uppercase tracking-wide text-primary"
-        >
-          Owns
-        </p>
-        <p class="m-0 text-sm text-muted">{{ demand.boundary.owns }}</p>
+        <p>Owns</p>
+        <p>{{ demand.boundary.owns }}</p>
       </div>
       <div>
-        <p
-          class="m-0 text-xs font-semibold uppercase tracking-wide text-primary"
-        >
-          Does not own
-        </p>
-        <p class="m-0 text-sm text-muted">
+        <p>Does not own</p>
+        <p>
           {{ demand.boundary.doesNotOwn }}
         </p>
       </div>
       <div>
-        <p
-          class="m-0 text-xs font-semibold uppercase tracking-wide text-primary"
-        >
-          Today distinction
-        </p>
-        <p class="m-0 text-sm text-muted">{{ demand.boundary.today }}</p>
+        <p>Today distinction</p>
+        <p>{{ demand.boundary.today }}</p>
       </div>
       <div>
-        <p
-          class="m-0 text-xs font-semibold uppercase tracking-wide text-primary"
-        >
-          KitchenAI
-        </p>
-        <p class="m-0 text-sm text-muted">
+        <p>KitchenAI</p>
+        <p>
           {{ demand.boundary.kitchenAI }}
         </p>
       </div>
-    </section>
+    </UCard>
   </section>
 </template>
 

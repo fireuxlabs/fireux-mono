@@ -1,18 +1,14 @@
 <template>
-  <UCard
-    variant="subtle"
-    class="w-full"
-  >
+  <UCard variant="subtle">
     <details :open="open">
-      <summary class="flex cursor-pointer list-none items-center justify-between gap-3">
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-3"
+      >
         <span class="space-y-1">
-          <span class="block text-base font-semibold text-highlighted">
+          <span class="block">
             {{ title }}
           </span>
-          <span
-            v-if="description"
-            class="block text-sm font-normal text-muted"
-          >
+          <span v-if="description" class="block">
             {{ description }}
           </span>
         </span>
@@ -23,7 +19,7 @@
             color="neutral"
             variant="soft"
           />
-          <UIcon name="i-lucide-chevron-down" class="size-4 text-muted" />
+          <UIcon name="i-lucide-chevron-down" class="size-4" />
         </span>
       </summary>
 
@@ -35,14 +31,17 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  title: string
-  description?: string
-  provider?: string
-  open?: boolean
-}>(), {
-  description: '',
-  provider: '',
-  open: false,
-})
+withDefaults(
+  defineProps<{
+    title: string
+    description?: string
+    provider?: string
+    open?: boolean
+  }>(),
+  {
+    description: '',
+    provider: '',
+    open: false,
+  }
+)
 </script>

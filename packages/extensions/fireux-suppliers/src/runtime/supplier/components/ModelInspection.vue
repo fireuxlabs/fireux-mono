@@ -3,7 +3,7 @@
     <UCard>
       <template #header>
         <div class="space-y-3">
-          <div class="text-sm font-semibold">Supplier model</div>
+          <div>Supplier model</div>
           <div class="flex flex-wrap gap-2">
             <UBadge variant="soft">Total: {{ totalCount }}</UBadge>
             <UBadge variant="soft">Active: {{ officialCount }}</UBadge>
@@ -16,14 +16,17 @@
         </div>
       </template>
 
-      <FireDiagnosticsModel :title="'Suppliers · Model'" :model="supplierModelRuntime" />
+      <FireDiagnosticsModel
+        :title="'Suppliers · Model'"
+        :model="supplierModelRuntime"
+      />
     </UCard>
 
     <UCard>
       <template #header>
         <div class="space-y-2">
-          <div class="text-sm font-semibold">Suppliers</div>
-          <p class="text-xs text-muted">
+          <div>Suppliers</div>
+          <p>
             Developer-selected supplier source. This is a scoped dev list, not
             the public supplier collection manager.
           </p>
@@ -38,17 +41,17 @@
           v-for="supplier in suppliers"
           :key="getSupplierId(supplier)"
           type="button"
-          class="rounded-lg border border-default bg-elevated/30 p-3 text-left text-sm transition hover:bg-elevated"
+          class="rounded-lg border border-default bg-elevated/30 p-3 text-left transition hover:bg-elevated"
           :class="{
             'ring-2 ring-primary':
               getSupplierId(supplier) === selectedSupplierId,
           }"
           @click="selectSupplier(getSupplierId(supplier))"
         >
-          <div class="font-semibold text-highlighted">
+          <div>
             {{ getSupplierLabel(supplier) }}
           </div>
-          <div class="mt-1 font-mono text-xs text-dimmed">
+          <div class="mt-1">
             {{ getSupplierId(supplier) }}
           </div>
           <div class="mt-2 flex flex-wrap gap-1">
@@ -62,9 +65,7 @@
         </button>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No suppliers found for this source.
-      </p>
+      <p v-else>No suppliers found for this source.</p>
 
       <FireDiagnosticsDebugPanel
         object-origin="fetched"
@@ -83,10 +84,8 @@
       <template #header>
         <div class="space-y-3">
           <div class="space-y-1">
-            <div class="text-sm font-semibold">Supplier ingredients</div>
-            <p class="text-xs text-muted">
-              Search every supplier ingredient link in the selected source.
-            </p>
+            <div>Supplier ingredients</div>
+            <p>Search every supplier ingredient link in the selected source.</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
@@ -185,15 +184,15 @@
         "
         class="grid gap-2 md:grid-cols-2 xl:grid-cols-3"
       >
-        <div
+        <UCard
           v-for="row in filteredSupplierIngredientRows"
           :key="row.key"
-          class="rounded-lg border border-default p-3 text-sm"
+          :ui="{ body: 'fx-card-body-stack' }"
         >
-          <div class="font-mono text-xs text-muted">
+          <div>
             {{ row.ingredientId }}
           </div>
-          <div class="mt-1 font-medium">
+          <div class="mt-1">
             {{ row.supplierLabel }}
           </div>
           <div class="mt-2 flex flex-wrap gap-1">
@@ -204,14 +203,14 @@
               {{ row.catalogueState || 'missing catalogue' }}
             </UBadge>
           </div>
-        </div>
+        </UCard>
       </div>
 
-      <p v-else-if="supplierIngredientsFetched" class="text-sm text-dimmed">
+      <p v-else-if="supplierIngredientsFetched">
         No supplier ingredient links match this search.
       </p>
 
-      <p v-else class="text-sm text-dimmed">
+      <p v-else>
         Click fetch to build a supplier ingredient snapshot for the current
         source.
       </p>
@@ -232,8 +231,8 @@
     <UCard>
       <template #header>
         <div class="space-y-1">
-          <div class="text-sm font-semibold">Linked ingredients</div>
-          <p class="text-xs text-muted">
+          <div>Linked ingredients</div>
+          <p>
             Supplier-side ingredient links stay visible here without expanding
             the public collection manager.
           </p>
@@ -270,14 +269,10 @@
           </UBadge>
         </div>
 
-        <p v-else class="text-sm text-dimmed">
-          This supplier does not list linked ingredient ids yet.
-        </p>
+        <p v-else>This supplier does not list linked ingredient ids yet.</p>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        Select a supplier above to inspect its linked ingredients.
-      </p>
+      <p v-else>Select a supplier above to inspect its linked ingredients.</p>
 
       <FireDiagnosticsDebugPanel
         object-origin="fetched"

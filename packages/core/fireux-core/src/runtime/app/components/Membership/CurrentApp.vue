@@ -23,20 +23,16 @@
         :tagline="appCard.tagline"
         link
       />
-      <dl class="mt-5 divide-y divide-default text-sm">
+      <dl class="mt-5 divide-y divide-default">
         <div class="py-3 first:pt-0">
-          <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
-            App ID
-          </dt>
-          <dd class="mt-1 break-words font-mono text-highlighted">
+          <dt>App ID</dt>
+          <dd class="mt-1 break-words">
             {{ appCard.id }}
           </dd>
         </div>
         <div class="py-3 last:pb-0">
-          <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
-            Ecosystem ID
-          </dt>
-          <dd class="mt-1 font-medium text-highlighted">
+          <dt>Ecosystem ID</dt>
+          <dd class="mt-1">
             {{ appCard.ecosystemId }}
           </dd>
         </div>

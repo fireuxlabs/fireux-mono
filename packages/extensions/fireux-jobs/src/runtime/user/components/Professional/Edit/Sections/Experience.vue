@@ -24,7 +24,7 @@
           :show-badges="false"
         />
 
-        <p v-if="item.responsibilities" class="text-sm text-dimmed">
+        <p v-if="item.responsibilities">
           {{ item.responsibilities }}
         </p>
       </div>
@@ -101,20 +101,20 @@
         <!-- Dates + ongoing -->
         <div class="grid gap-2 sm:grid-cols-3">
           <div class="space-y-1">
-            <div class="text-xs font-medium text-dimmed">From</div>
+            <div>From</div>
             <UPopover>
               <UButton
                 color="neutral"
                 variant="subtle"
                 icon="i-lucide-calendar"
-                class="w-full justify-start"
+                class="justify-start"
+                block
               >
                 {{ formatDateLabel(getStartDate(item)) || 'Select start date' }}
               </UButton>
 
               <template #content>
                 <UCalendar
-                  class="p-2"
                   :model-value="getStartDate(item)"
                   @update:model-value="
                     (value: ExperienceCalendarUpdateValue) =>
@@ -126,7 +126,7 @@
           </div>
 
           <div class="space-y-1">
-            <div class="text-xs font-medium text-dimmed">Ongoing</div>
+            <div>Ongoing</div>
             <UCheckbox
               :model-value="Boolean(item.ongoing)"
               label=""
@@ -138,20 +138,20 @@
           </div>
 
           <div v-if="!item.ongoing" class="space-y-1">
-            <div class="text-xs font-medium text-dimmed">To</div>
+            <div>To</div>
             <UPopover>
               <UButton
                 color="neutral"
                 variant="subtle"
                 icon="i-lucide-calendar"
-                class="w-full justify-start"
+                class="justify-start"
+                block
               >
                 {{ formatDateLabel(getEndDate(item)) || 'Select end date' }}
               </UButton>
 
               <template #content>
                 <UCalendar
-                  class="p-2"
                   :model-value="getRangeValue(item)"
                   range
                   @update:model-value="

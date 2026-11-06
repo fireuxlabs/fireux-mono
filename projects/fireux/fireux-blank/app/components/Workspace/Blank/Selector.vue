@@ -10,7 +10,6 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-fit max-w-full"
       @update:model-value="workspace.select(String($event))"
     />
     <span v-if="workspace.collectionOutcome.value === 'pending'" role="status"

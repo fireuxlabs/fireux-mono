@@ -10,7 +10,7 @@
     <button
       type="button"
       :class="[
-        'sproochli-language-trigger h-11 w-11 rounded-full',
+        'sproochli-language-trigger',
         triggerUsesDefaultMark
           ? 'sproochli-language-trigger--default'
           : 'sproochli-language-trigger--emoji',
@@ -22,11 +22,7 @@
         v-if="triggerUsesDefaultMark"
         class="size-8 shrink-0"
       />
-      <span
-        v-else
-        class="sproochli-language-trigger__emoji text-2xl leading-none"
-        aria-hidden="true"
-      >
+      <span v-else class="sproochli-language-trigger__emoji" aria-hidden="true">
         {{ triggerSymbol }}
       </span>
     </button>
@@ -61,7 +57,7 @@
                 showGroupLabels &&
                 (group.key === 'cached' || group.key === 'onDemand')
               "
-              class="px-3 text-xs font-semibold uppercase tracking-wide text-dimmed"
+              class="px-3"
             >
               {{
                 group.key === 'cached'
@@ -89,12 +85,12 @@
                 <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
                   <span
                     v-if="option.label"
-                    class="inline-flex w-10 shrink-0 justify-center text-sm font-semibold text-highlighted"
+                    class="inline-flex w-10 shrink-0 justify-center"
                   >
                     {{ option.label }}
                   </span>
                   <span
-                    class="min-w-0 whitespace-normal text-sm font-medium leading-snug"
+                    class="min-w-0 whitespace-normal"
                     :dir="languageDirection(option.code)"
                   >
                     {{ optionName(option) }}
@@ -104,7 +100,6 @@
                 <UIcon
                   v-if="languageOptionActive(option.code)"
                   name="i-lucide-check"
-                  class="shrink-0 text-primary"
                 />
               </UButton>
             </div>

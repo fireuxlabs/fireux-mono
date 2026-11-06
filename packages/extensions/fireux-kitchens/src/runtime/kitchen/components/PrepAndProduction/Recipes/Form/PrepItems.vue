@@ -1,7 +1,7 @@
 <template>
   <section class="grid gap-4">
     <div class="flex items-center justify-between gap-3">
-      <h3 class="font-semibold">Prep items</h3>
+      <h3>Prep items</h3>
       <UButton
         label="Add prep item"
         icon="i-lucide-plus"
@@ -26,7 +26,6 @@
           :items="options"
           placeholder="Prep item"
           :aria-label="`Prep item ${index + 1}`"
-          class="w-full"
         />
       </div>
       <UInput

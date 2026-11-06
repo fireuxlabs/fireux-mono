@@ -13,15 +13,14 @@
       v-model:open="open"
       title="Portfolio Workspace"
       description="How this page and PortfolioAI fit together."
-      :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
-        <div class="grid gap-5">
-          <p class="m-0 text-sm text-toned">
+        <div class="pagebody">
+          <p class="m-0 fx-type-caption">
             Operate one property Portfolio through its properties, compliance,
             documents, tasks and financial signals.
           </p>
-          <p class="m-0 text-sm text-muted">
+          <p class="m-0 fx-type-caption">
             PortfolioAI actions are not connected yet.
           </p>
         </div>

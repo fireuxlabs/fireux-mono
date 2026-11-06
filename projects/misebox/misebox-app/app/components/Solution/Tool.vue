@@ -6,14 +6,11 @@
       </div>
 
       <template #fallback>
-        <UCard
-          class="w-full max-w-xl"
-          variant="subtle"
-        >
-          <div class="space-y-3">
-            <USkeleton class="h-5 w-2/3" />
-            <USkeleton class="h-32 w-full" />
-            <USkeleton class="h-10 w-full" />
+        <UCard variant="subtle">
+          <div class="fx-card-body-stack">
+            <USkeleton />
+            <USkeleton />
+            <USkeleton />
           </div>
         </UCard>
       </template>

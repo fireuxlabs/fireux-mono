@@ -32,7 +32,7 @@
                 :validation-function="Handle.validate"
                 :formatting-function="Handle.format"
               />
-              <p class="mt-2 font-mono text-xs text-dimmed">
+              <p class="mt-2">
                 {{ profileAddress }}
               </p>
             </div>
@@ -58,8 +58,8 @@
           <div
             class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
           >
-            <p class="text-sm font-medium text-highlighted">User ID</p>
-            <UInput :model-value="user.id" disabled class="w-full font-mono" />
+            <p>User ID</p>
+            <UInput :model-value="user.id" disabled />
           </div>
         </div>
       </UPageCard>

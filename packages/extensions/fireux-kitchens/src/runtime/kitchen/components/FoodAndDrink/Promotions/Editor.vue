@@ -1,11 +1,11 @@
 <template>
   <UCard>
     <template #header
-      ><h2 class="font-semibold">
+      ><h2>
         {{ promotion ? 'Edit promotion' : 'New promotion' }}
       </h2></template
     >
-    <form class="space-y-5" @submit.prevent="save">
+    <form class="fx-card-body-stack" @submit.prevent="save">
       <UFormField label="Promotion type">
         <USelect
           v-model="form"
@@ -13,12 +13,11 @@
             { label: 'Dish offer', value: 'dish_offer' },
             { label: 'Meal deal', value: 'meal_deal' },
           ]"
-          class="w-full"
           :disabled="disabled"
         />
       </UFormField>
       <UFormField label="Name"
-        ><UInput v-model="name" class="w-full" :disabled="disabled"
+        ><UInput v-model="name" :disabled="disabled"
       /></UFormField>
       <FireCopyError v-if="readError" :message="String(readError)" />
       <p v-else-if="editorPending" role="status">
@@ -54,7 +53,7 @@
         />
       </UFormField>
       <UCheckbox v-model="active" label="Active" :disabled="disabled" />
-      <p class="text-sm text-muted">
+      <p>
         {{
           form === 'meal_deal'
             ? 'Set the meal-deal price, included choices and any supplements.'
@@ -62,7 +61,7 @@
         }}
         Normal Dish prices stay unchanged.
       </p>
-      <div class="flex gap-3">
+      <div class="fx-card__actions">
         <UButton
           type="submit"
           label="Save promotion"

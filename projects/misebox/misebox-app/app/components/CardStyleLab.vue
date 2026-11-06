@@ -45,10 +45,8 @@
           <div class="flex min-w-0 items-center gap-3">
             <UAvatar :src="deanosClassicImage" alt="Deanos Classic" size="lg" />
             <div class="min-w-0 flex-1">
-              <p class="truncate font-semibold text-highlighted">
-                Deanos Classic
-              </p>
-              <p class="card-style-lab__data truncate text-sm text-muted">
+              <p class="truncate fx-type-body">Deanos Classic</p>
+              <p class="card-style-lab__data truncate fx-type-caption">
                 Main Menu · 18 CHF
               </p>
             </div>
@@ -63,7 +61,6 @@
           color="neutral"
           variant="outline"
           size="xl"
-          class="w-full justify-start"
           :class="surfaceClass('pill')"
         >
           <UAvatar
@@ -72,17 +69,15 @@
             size="sm"
             class="card-style-lab__pill-avatar"
           />
-          <span class="card-style-lab__pill-copy min-w-0 flex-1 text-left">
-            <span class="block truncate font-semibold">Main Menu</span>
-            <span
-              class="card-style-lab__data block truncate text-xs opacity-70"
-            >
+          <span class="card-style-lab__pill-copy min-w-0 flex-1">
+            <span class="block truncate">Main Menu</span>
+            <span class="card-style-lab__data block truncate opacity-70">
               Deanos Kitchen
             </span>
           </span>
           <UIcon
             name="i-lucide-chevron-right"
-            class="card-style-lab__pill-arrow size-4 shrink-0"
+            class="card-style-lab__pill-arrow"
           />
         </UButton>
       </article>
@@ -93,12 +88,10 @@
         <span>Summary</span>
         <UCard :class="surfaceClass('preview')">
           <template #header>
-            <div class="flex items-start justify-between gap-4">
+            <div class="card__header">
               <div>
                 <p class="card-style-lab__eyebrow">Kitchen signature</p>
-                <h3 class="mt-1 text-xl font-bold text-highlighted">
-                  Deanos Classic
-                </h3>
+                <h3 class="mt-1 fx-type-card-heading">Deanos Classic</h3>
               </div>
               <UBadge color="primary" variant="soft">18 CHF</UBadge>
             </div>
@@ -111,7 +104,7 @@
             loading="lazy"
           />
 
-          <p class="mt-4 text-sm leading-relaxed text-muted">
+          <p class="mt-4 fx-type-caption">
             Double smash patties, cheddar, pickles, lettuce and house sauce.
           </p>
 
@@ -125,8 +118,8 @@
           </div>
 
           <template #footer>
-            <div class="flex items-center justify-between gap-3">
-              <div class="flex gap-1">
+            <div class="card__header">
+              <div class="card__badges">
                 <UBadge color="neutral" variant="outline" size="xs"
                   >Popular</UBadge
                 >

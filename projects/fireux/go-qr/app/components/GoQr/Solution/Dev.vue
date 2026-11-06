@@ -1,38 +1,22 @@
 <template>
-  <UCard
-    v-if="dev"
-    variant="subtle"
-  >
+  <UCard v-if="dev" variant="subtle">
     <template #header>
-      <h2 class="text-lg font-semibold text-highlighted">
-        Dev
-      </h2>
+      <h2 class="fx-type-section-title">Dev</h2>
     </template>
 
-    <div class="space-y-4">
-      <div
-        v-if="dev.endpoints?.length"
-        class="grid gap-3 sm:grid-cols-2"
-      >
-        <div
-          v-for="endpoint in dev.endpoints"
-          :key="endpoint.path"
-          class="rounded-md border border-default bg-default p-3"
-        >
+    <div class="fx-card-body-stack">
+      <div v-if="dev.endpoints?.length" class="grid gap-3 sm:grid-cols-2">
+        <UCard v-for="endpoint in dev.endpoints" :key="endpoint.path">
           <div class="flex items-center gap-2">
-            <UBadge
-              :label="endpoint.method"
-              color="neutral"
-              variant="soft"
-            />
-            <code class="break-all text-sm text-highlighted">
+            <UBadge :label="endpoint.method" color="neutral" variant="soft" />
+            <code class="break-all">
               {{ endpoint.path }}
             </code>
           </div>
-          <p class="mt-2 text-xs leading-5 text-muted">
+          <p class="mt-2 fx-type-caption">
             {{ endpoint.description }}
           </p>
-        </div>
+        </UCard>
       </div>
 
       <div
@@ -40,10 +24,10 @@
         :key="example.title"
         class="overflow-hidden rounded-md border border-default bg-elevated"
       >
-        <div class="border-b border-default px-4 py-2 text-xs font-medium uppercase text-muted">
+        <div class="border-b border-default px-4 py-2">
           {{ example.title }}
         </div>
-        <pre class="overflow-x-auto p-4 text-sm leading-6"><code>{{ example.code }}</code></pre>
+        <pre class="overflow-x-auto p-4"><code>{{ example.code }}</code></pre>
       </div>
     </div>
   </UCard>

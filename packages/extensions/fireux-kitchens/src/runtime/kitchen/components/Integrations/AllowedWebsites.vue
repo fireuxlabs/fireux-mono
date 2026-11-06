@@ -1,10 +1,8 @@
 <template>
   <section class="space-y-3" aria-labelledby="allowed-websites-title">
     <div>
-      <h3 id="allowed-websites-title" class="font-semibold">
-        Allowed websites
-      </h3>
-      <p class="mt-1 text-sm text-muted">
+      <h3 id="allowed-websites-title">Allowed websites</h3>
+      <p class="mt-1">
         Only these websites may embed ordering. Add the www address separately
         if you use it.
       </p>
@@ -25,7 +23,6 @@
           :rows="4"
           placeholder="https://baeren-ringgenberg.ch&#10;https://www.baeren-ringgenberg.ch"
           :disabled="!canWrite || busy"
-          class="w-full"
         />
       </UFormField>
       <div class="flex flex-wrap items-center gap-3">
@@ -34,16 +31,12 @@
           :loading="busy"
           :disabled="!canWrite || busy || !changed"
           @click="save"
-        /><span v-if="saved" role="status" class="text-sm text-success"
-          >Saved</span
-        >
+        /><span v-if="saved" role="status">Saved</span>
       </div>
       <FireCopyError v-if="saveError" :message="saveError" />
-      <p v-if="!origins.length" class="text-sm text-muted">
-        No external websites are allowed yet.
-      </p>
+      <p v-if="!origins.length">No external websites are allowed yet.</p>
     </template>
-    <p class="text-xs text-muted">
+    <p>
       The workspace preview is allowed automatically. Public ordering links can
       still be opened or shared directly.
     </p>

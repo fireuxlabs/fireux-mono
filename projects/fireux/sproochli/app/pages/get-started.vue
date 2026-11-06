@@ -1,15 +1,13 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> Sproochli </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> Sproochli </UButton>
         <UPageHeader
           title="Get Started"
           description="Create a QR-ready language surface for public visitor information."
         />
-        <UPageBody class="space-y-4">
-          <section class="space-y-4">
-            <ol class="list-decimal fx-list-stack text-muted">
+        <UPageBody>
+          <section class="pagebody">
+            <ol class="list-decimal fx-list-stack">
               <li>Choose the public content you want visitors to scan.</li>
               <li>Publish a simple QR-ready page.</li>
               <li>Add translation when the content is ready for it.</li>
@@ -23,8 +21,6 @@
           </div>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

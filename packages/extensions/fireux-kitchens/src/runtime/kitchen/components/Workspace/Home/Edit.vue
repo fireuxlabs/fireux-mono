@@ -7,12 +7,12 @@
     @update:open="emit('update:open', $event)"
   >
     <template #body>
-      <form class="space-y-5" @submit.prevent="save">
+      <form class="workspace-surface" @submit.prevent="save">
         <UFormField label="URL name" :error="updateError || undefined">
-          <UInput v-model="slug" maxlength="80" autofocus class="w-full" />
+          <UInput v-model="slug" maxlength="80" autofocus />
         </UFormField>
         <UFormField label="Status">
-          <USelect v-model="status" :items="statusItems" class="w-full" />
+          <USelect v-model="status" :items="statusItems" />
         </UFormField>
         <UFormField label="Show in directory">
           <USwitch v-model="visibility" />

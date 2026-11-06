@@ -27,7 +27,7 @@
               class="kitchen-discovery-card__image"
             />
             <div v-else class="kitchen-discovery-card__placeholder">
-              <UIcon name="i-lucide-chef-hat" class="size-10" />
+              <UIcon name="i-lucide-chef-hat" />
             </div>
           </div>
         </template>
@@ -52,12 +52,12 @@
             <div class="kitchen-discovery-card__heading">
               <h2>{{ cell.title }}</h2>
               <p v-if="cell.meta" class="kitchen-discovery-card__location">
-                <UIcon name="i-lucide-map-pin" class="size-4 shrink-0" />
+                <UIcon name="i-lucide-map-pin" class="shrink-0" />
                 {{ cell.meta }}
               </p>
             </div>
             <span class="kitchen-discovery-card__open" aria-hidden="true">
-              <UIcon name="i-lucide-arrow-up-right" class="size-5" />
+              <UIcon name="i-lucide-arrow-up-right" />
             </span>
           </div>
         </template>
@@ -68,8 +68,16 @@
           >
             {{ cell.description }}
           </p>
-          <div class="mt-4 flex flex-wrap gap-2" :aria-label="`Services at ${cell.title}`">
-            <UBadge v-if="cell.hasPublishedMenu" color="neutral" variant="subtle">Browse menus</UBadge>
+          <div
+            class="mt-4 flex flex-wrap gap-2"
+            :aria-label="`Services at ${cell.title}`"
+          >
+            <UBadge
+              v-if="cell.hasPublishedMenu"
+              color="neutral"
+              variant="subtle"
+              >Browse menus</UBadge
+            >
             <UBadge
               v-for="service in cell.services"
               :key="service"
@@ -100,13 +108,21 @@ import type { KitchenCard } from '../../models/kitchen-interface.model'
 const props = defineProps<{ cards: KitchenCard.Card[] }>()
 const cells = computed<
   Array<
-    CollectionCellData & { logo: string; logoText: string; backdrop?: string; services: string[]; hasPublishedMenu: boolean }
+    CollectionCellData & {
+      logo: string
+      logoText: string
+      backdrop?: string
+      services: string[]
+      hasPublishedMenu: boolean
+    }
   >
 >(() =>
   props.cards.map((card) => ({
     title: card.name,
     hasPublishedMenu: card.hasPublishedMenu === true,
-    services: (card.serviceLabels || []).filter(label => label !== 'Browse menus'),
+    services: (card.serviceLabels || []).filter(
+      (label) => label !== 'Browse menus'
+    ),
     description: card.tagline,
     image: card.discoveryImageUrl,
     logo: card.logoImageUrl,

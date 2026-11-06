@@ -27,7 +27,7 @@
       description="Discard your draft to use the latest saved details."
       color="warning"
     />
-    <div v-if="error" role="alert" class="text-sm text-error">
+    <div v-if="error" role="alert" class="text-error">
       {{ error }}<FireCopyError :message="error" />
     </div>
     <div v-if="dirty" class="flex flex-wrap justify-end gap-2">

@@ -11,7 +11,7 @@
     orientation="horizontal"
   >
     <template #links>
-      <div v-if="actions.length" class="flex flex-wrap gap-2">
+      <div v-if="actions.length" class="fx-card__actions">
         <UButton
           v-for="action in actions"
           :key="`${action.label}-${action.to}`"
@@ -26,7 +26,7 @@
     </template>
 
     <template #default>
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UBadge v-if="countLabel" color="neutral" variant="soft">
           {{ countLabel }}
         </UBadge>
@@ -45,14 +45,17 @@ type WorkspaceCtaAction = {
   icon?: string
 }
 
-const props = withDefaults(defineProps<{
-  title: string
-  description: string
-  countLabel?: string
-  actions?: readonly WorkspaceCtaAction[]
-}>(), {
-  actions: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    title: string
+    description: string
+    countLabel?: string
+    actions?: readonly WorkspaceCtaAction[]
+  }>(),
+  {
+    actions: () => [],
+  }
+)
 
 const singularTitle = computed(() => {
   const value = props.title.trim()

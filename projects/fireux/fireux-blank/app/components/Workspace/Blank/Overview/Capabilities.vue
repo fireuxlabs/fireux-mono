@@ -23,7 +23,7 @@
           />
         </UTooltip>
       </div>
-      <p v-if="!team.members.value.length" class="text-sm text-muted">
+      <p v-if="!team.members.value.length" class="fx-type-caption">
         No team members yet.
       </p>
     </Summary>

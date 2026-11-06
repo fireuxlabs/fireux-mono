@@ -1,8 +1,8 @@
 <template>
   <UCard v-if="dish || editing">
     <template #header
-      ><div class="flex justify-between items-center">
-        <h2 class="font-semibold">Dish specification</h2>
+      ><div class="card__header">
+        <h2>Dish specification</h2>
         <UButton
           v-if="canWrite"
           :label="editing ? 'Cancel' : 'Edit specification'"
@@ -12,7 +12,7 @@
         /></div
     ></template>
     <form v-if="editing" @submit.prevent="save">
-      <fieldset class="grid gap-4" :disabled="saving || creating || !canWrite">
+      <fieldset class="fx-card-body-stack" :disabled="saving || creating || !canWrite">
         <div class="grid grid-cols-2 gap-4">
           <UFormField label="Portions"
             ><UInput
@@ -24,8 +24,8 @@
             ><UInput v-model="draft.station" aria-label="Dish stations"
           /></UFormField>
         </div>
-        <section class="grid gap-2">
-          <h3 class="font-medium">Ingredients</h3>
+        <section class="fx-card-body-stack">
+          <h3>Ingredients</h3>
           <div
             v-for="(row, i) in draft.ingredients"
             :key="i"
@@ -72,8 +72,8 @@
             "
           />
         </section>
-        <section class="grid gap-2">
-          <h3 class="font-medium">Mise en place</h3>
+        <section class="fx-card-body-stack">
+          <h3>Mise en place</h3>
           <div
             v-for="(row, i) in draft.prep_items"
             :key="i"
@@ -119,7 +119,7 @@
         </section>
         <details class="border border-default rounded-lg p-3">
           <summary>Create mise en place</summary>
-          <div class="grid gap-3 mt-3">
+          <div class="fx-card-body-stack">
             <UInput
               v-model="newPrep.name"
               aria-label="New prep name"
@@ -171,21 +171,15 @@
             :items="recipeOptions"
             multiple
             aria-label="Dish recipes"
-            class="w-full"
         /></UFormField>
         <UFormField label="Assembly · one step per line"
-          ><UTextarea
-            v-model="assembly"
-            aria-label="Dish assembly"
-            :rows="8"
-            class="w-full"
+          ><UTextarea v-model="assembly" aria-label="Dish assembly" :rows="8"
         /></UFormField>
         <UFormField label="Kitchen notes"
           ><UTextarea
             v-model="draft.source_note"
             aria-label="Dish kitchen notes"
             :rows="3"
-            class="w-full"
         /></UFormField>
         <UButton
           type="submit"
@@ -198,34 +192,32 @@
     <div v-else-if="dish && dish.spec" class="dish-spec-layout">
       <div class="grid content-start gap-7">
         <section v-if="dish.spec.ingredients.length">
-          <h3 class="font-semibold mb-3">Ingredients</h3>
+          <h3 class="mb-3">Ingredients</h3>
           <ul class="divide-y divide-default">
             <li
               v-for="row in dish.spec.ingredients"
               :key="row.ingredient_id"
               class="py-3"
             >
-              <div class="flex justify-between gap-4">
+              <div class="card__header">
                 <span>{{
                   ingredientOptions.find((x) => x.value === row.ingredient_id)
                     ?.label || row.ingredient_id
                 }}</span
-                ><strong class="whitespace-nowrap text-sm"
+                ><strong class="whitespace-nowrap"
                   >{{ row.quantity }} {{ row.unit }}</strong
                 >
               </div>
-              <p v-if="row.note" class="text-sm text-muted mt-1">
+              <p v-if="row.note" class="mt-1">
                 {{ row.note }}
               </p>
             </li>
           </ul>
         </section>
         <section v-if="dish.spec.prep_items.length">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-semibold">Mise en place</h3>
-            <NuxtLink
-              :to="{ query: { ...route.query, view: 'preparation' } }"
-              class="text-sm text-primary"
+          <div class="card__header">
+            <h3>Mise en place</h3>
+            <NuxtLink :to="{ query: { ...route.query, view: 'preparation' } }"
               >Batch methods →</NuxtLink
             >
           </div>
@@ -235,16 +227,16 @@
               :key="row.prep_item_id"
               class="py-3"
             >
-              <div class="flex justify-between gap-4">
+              <div class="card__header">
                 <span>{{
                   prepOptions.find((x) => x.value === row.prep_item_id)
                     ?.label || row.prep_item_id
                 }}</span
-                ><strong class="whitespace-nowrap text-sm"
+                ><strong class="whitespace-nowrap"
                   >{{ row.quantity }} {{ row.unit }}</strong
                 >
               </div>
-              <p v-if="row.note" class="text-sm text-muted mt-1">
+              <p v-if="row.note" class="mt-1">
                 {{ row.note }}
               </p>
             </li>
@@ -253,30 +245,28 @@
       </div>
       <div class="grid content-start gap-7">
         <section>
-          <h3 class="font-semibold mb-4">Assembly & service</h3>
-          <ol class="space-y-5">
+          <h3 class="mb-4">Assembly & service</h3>
+          <ol class="fx-card-body-stack">
             <li
               v-for="(step, index) in dish.spec.assembly"
               :key="index"
               class="flex gap-4"
             >
               <span
-                class="shrink-0 rounded-full bg-elevated size-7 flex items-center justify-center text-sm font-semibold"
+                class="shrink-0 rounded-full bg-elevated size-7 flex items-center justify-center"
                 >{{ index + 1 }}</span
               >
-              <p class="leading-relaxed">{{ step }}</p>
+              <p>{{ step }}</p>
             </li>
           </ol>
-          <p v-if="!dish.spec.assembly.length" class="text-muted">
-            No assembly recorded.
-          </p>
+          <p v-if="!dish.spec.assembly.length">No assembly recorded.</p>
         </section>
         <section
           v-if="dish.spec.recipe_ids.length"
           class="border-t border-default pt-5"
         >
-          <h3 class="font-semibold mb-3">Recipes</h3>
-          <div class="flex flex-wrap gap-2">
+          <h3 class="mb-3">Recipes</h3>
+          <div class="fx-card__actions">
             <UButton
               v-for="id in dish.spec.recipe_ids"
               :key="id"
@@ -292,16 +282,14 @@
           v-if="dish.spec.source_note"
           class="border-t border-default pt-5"
         >
-          <summary class="cursor-pointer text-sm font-medium">
-            Kitchen notes & assumptions
-          </summary>
-          <p class="mt-3 whitespace-pre-line text-sm text-muted">
+          <summary class="cursor-pointer">Kitchen notes & assumptions</summary>
+          <p class="mt-3 whitespace-pre-line">
             {{ dish.spec.source_note }}
           </p>
         </details>
       </div>
     </div>
-    <p v-else class="text-muted">No specification yet.</p>
+    <p v-else>No specification yet.</p>
     <FireStateCard
       v-if="error || readError"
       state="error"

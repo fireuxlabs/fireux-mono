@@ -17,11 +17,23 @@
       </template>
     </UPageHeader>
 
-    <UPageBody class="space-y-8">
+    <UPageBody>
       <div class="grid gap-4 md:grid-cols-3">
-        <UPageCard title="Weddings" description="Celebrate, dine and accommodate guests in one place." icon="i-lucide-heart" />
-        <UPageCard title="Celebrations" description="Flexible spaces for family occasions and group gatherings." icon="i-lucide-party-popper" />
-        <UPageCard title="Live events" description="A long-standing venue for concerts and community events." icon="i-lucide-music" />
+        <UPageCard
+          title="Weddings"
+          description="Celebrate, dine and accommodate guests in one place."
+          icon="i-lucide-heart"
+        />
+        <UPageCard
+          title="Celebrations"
+          description="Flexible spaces for family occasions and group gatherings."
+          icon="i-lucide-party-popper"
+        />
+        <UPageCard
+          title="Live events"
+          description="A long-standing venue for concerts and community events."
+          icon="i-lucide-music"
+        />
       </div>
 
       <UAlert

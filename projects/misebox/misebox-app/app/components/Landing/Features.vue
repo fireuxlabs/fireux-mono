@@ -8,7 +8,7 @@
         Built by chefs, for chefs who demand precision and efficiency
       </p>
     </div>
-    <div class="grid">
+    <div class="pagebody">
       <div
         v-for="feature in filteredFeatures"
         :key="feature.key"

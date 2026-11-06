@@ -20,14 +20,12 @@
           : 'group flex items-center gap-4 rounded-2xl border border-default bg-elevated/40 p-5 transition-colors hover:border-primary hover:bg-elevated focus-visible:outline-primary'
       "
     >
-      <UIcon :name="choice.icon" class="size-5 shrink-0" aria-hidden="true" />
-      <span :class="active ? '' : 'flex-1 text-lg font-semibold'">{{
-        choice.label
-      }}</span>
+      <UIcon :name="choice.icon" class="shrink-0" aria-hidden="true" />
+      <span :class="active ? '' : 'flex-1'">{{ choice.label }}</span>
       <UIcon
         v-if="!active"
         name="i-lucide-arrow-right"
-        class="size-5 text-muted transition-transform group-hover:translate-x-1"
+        class="group-hover:translate-x-1"
         aria-hidden="true"
       />
     </NuxtLink>

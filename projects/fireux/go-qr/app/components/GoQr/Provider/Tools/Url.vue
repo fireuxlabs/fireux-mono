@@ -1,14 +1,11 @@
 <template>
-  <div
-    v-if="qrOnly"
-    class="mx-auto aspect-square w-full max-w-80 bg-white p-3"
-  >
+  <div v-if="qrOnly" class="mx-auto aspect-square w-full max-w-80 bg-white p-3">
     <img
       v-if="qrDataUrl"
       :src="qrDataUrl"
       :alt="`QR code for ${normalizedUrl}`"
       class="size-full"
-    >
+    />
   </div>
 
   <GoQrProviderFrame
@@ -17,23 +14,13 @@
     :description="toolDescription"
     endpoint="/api/tools/url"
   >
-    <form
-      class="space-y-4"
-      @submit.prevent="createQr"
-    >
-      <UFormField :label="urlLabel">
-        <UInput
-          v-model="urlInput"
-          :placeholder="urlPlaceholder"
-          class="w-full"
-        />
-        <p
-          v-if="urlMessage"
-          class="mt-1 text-xs"
-          :class="validUrl ? 'text-muted' : 'text-error'"
-        >
-          {{ urlMessage }}
-        </p>
+    <form class="pagebody" @submit.prevent="createQr">
+      <UFormField
+        :label="urlLabel"
+        :help="validUrl ? urlMessage : undefined"
+        :error="!validUrl ? urlMessage : undefined"
+      >
+        <UInput v-model="urlInput" :placeholder="urlPlaceholder" />
       </UFormField>
 
       <UButton
@@ -46,19 +33,18 @@
       </UButton>
     </form>
 
-    <div
-      v-if="qrDataUrl"
-      class="space-y-3"
-    >
-      <div class="relative mx-auto aspect-square w-full max-w-80 rounded-md border border-default bg-white p-3">
+    <div v-if="qrDataUrl" class="pagebody">
+      <div
+        class="relative mx-auto aspect-square w-full max-w-80 rounded-md border border-default bg-white p-3"
+      >
         <img
           :src="qrDataUrl"
           :alt="`QR code for ${normalizedUrl}`"
           class="size-full"
-        >
+        />
         <div
           v-if="qrCentreLabel"
-          class="absolute left-1/2 top-1/2 grid size-[22%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.35rem] border-white bg-[#4f2df4] px-1 text-center text-[clamp(0.45rem,4vw,1rem)] font-black uppercase leading-none text-white shadow-sm"
+          class="absolute left-1/2 top-1/2 grid size-[22%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.35rem] border-white bg-[#4f2df4] px-1 text-[clamp(0.45rem,4vw,1rem)] text-white shadow-sm"
           aria-hidden="true"
         >
           {{ qrCentreLabel }}
@@ -113,38 +99,40 @@ type UrlToolConfig = {
   }
 }
 
-const props = withDefaults(defineProps<{
-  tool?: UrlToolConfig | null
-}>(), {
-  tool: null,
-})
+const props = withDefaults(
+  defineProps<{
+    tool?: UrlToolConfig | null
+  }>(),
+  {
+    tool: null,
+  }
+)
 
 const urlInput = ref('')
 const qrDataUrl = ref('')
 const text = (value: unknown) => String(value ?? '').trim()
 
 const toolTitle = computed(() => text(props.tool?.copy?.title))
-const toolDescription = computed(() =>
-  text(props.tool?.copy?.description)
-)
+const toolDescription = computed(() => text(props.tool?.copy?.description))
 const urlLabel = computed(() => text(props.tool?.url?.label))
 const urlPlaceholder = computed(() => text(props.tool?.url?.placeholder))
 const ctaLabel = computed(() => text(props.tool?.copy?.ctaLabel))
 const downloadLabel = computed(() => text(props.tool?.copy?.downloadLabel))
-const openTargetLabel = computed(() =>
-  text(props.tool?.copy?.openTargetLabel)
-)
+const openTargetLabel = computed(() => text(props.tool?.copy?.openTargetLabel))
 const qrCentreLabel = computed(() => text(props.tool?.qr?.centreLabel))
 const qrOnly = computed(() => props.tool?.presentation?.qrOnly === true)
 const normalizedUrl = computed(() => normalizeUrl(urlInput.value))
 const validUrl = computed(() => Boolean(normalizedUrl.value))
 const urlMessage = computed(() => {
   if (!urlInput.value.trim()) return ''
-  return validUrl.value ? normalizedUrl.value : text(props.tool?.url?.invalidMessage)
+  return validUrl.value
+    ? normalizedUrl.value
+    : text(props.tool?.url?.invalidMessage)
 })
 const downloadName = computed(() => {
   const parsed = normalizedUrl.value ? new URL(normalizedUrl.value) : null
-  const host = parsed?.protocol === 'mailto:' ? 'email' : parsed?.hostname || 'url'
+  const host =
+    parsed?.protocol === 'mailto:' ? 'email' : parsed?.hostname || 'url'
   return `go-qr-${host.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.svg`
 })
 
@@ -186,7 +174,11 @@ function normalizeUrl(value: string) {
   try {
     const url = new URL(candidate)
     if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return ''
-    if (url.protocol === 'mailto:' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url.pathname)) return ''
+    if (
+      url.protocol === 'mailto:' &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url.pathname)
+    )
+      return ''
     return url.toString()
   } catch {
     return ''

@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-3">
+  <section class="workspace-surface__grid">
     <WorkspaceKitchenAIAssistant
       :kitchen-id="kitchenId || ''"
       compact
@@ -21,27 +21,24 @@
       class="grid gap-3 border-t border-default pt-4"
       :aria-labelledby="`${capability}-suggestions-title`"
     >
-      <div class="grid gap-1">
-        <h3
-          :id="`${capability}-suggestions-title`"
-          class="m-0 text-sm font-semibold text-highlighted"
-        >
+      <div class="workspace-surface__grid">
+        <h3 :id="`${capability}-suggestions-title`">
           Suggestions from current {{ title.toLowerCase() }}
         </h3>
-        <p class="m-0 text-sm text-muted">
+        <p>
           These were deduced from the selected Kitchen's current data. Nothing
           changes until you choose an action.
         </p>
       </div>
 
-      <div class="grid gap-3 lg:grid-cols-2">
+      <div class="workspace-surface__grid workspace-surface__grid--2">
         <UCard v-for="suggestion in suggestions" :key="suggestion.id">
-          <div class="grid gap-3">
-            <div class="grid gap-1">
-              <h4 class="m-0 font-semibold text-highlighted">
+          <div class="workspace-surface__grid">
+            <div class="workspace-surface__grid">
+              <h4>
                 {{ suggestion.title }}
               </h4>
-              <p class="m-0 text-sm text-muted">
+              <p>
                 {{ suggestion.description }}
               </p>
             </div>
@@ -52,7 +49,6 @@
               color="neutral"
               variant="soft"
               size="sm"
-              class="w-fit"
             >
               {{ suggestion.actionLabel || 'Review' }}
             </UButton>

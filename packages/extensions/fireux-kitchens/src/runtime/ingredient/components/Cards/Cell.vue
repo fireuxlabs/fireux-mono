@@ -10,36 +10,35 @@
         :src="imageUrl || undefined"
         icon="i-lucide-carrot"
         size="md"
-        class="shrink-0"
+        class="fx-card__badge"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ name }}</div>
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">{{ name }}</div>
 
-            <div
-              v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-dimmed"
-            >
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
             </div>
-            <code
-              v-if="showSlug && slug"
-              class="fx-type-code block truncate text-dimmed"
-            >
+            <code v-if="showSlug && slug" class="fx-type-code fx-truncate">
               {{ slug }}
             </code>
           </div>
 
-          <div class="flex items-center gap-1">
+          <div class="card__badges">
             <UTooltip
               v-if="warningLabel && warningDescription"
               :text="warningDescription"
               :popper="{ placement: 'top' }"
             >
-              <UBadge color="warning" variant="soft" size="xs" class="shrink-0">
-                <UIcon name="i-lucide-triangle-alert" class="mr-1" />
+              <UBadge
+                color="warning"
+                variant="soft"
+                size="xs"
+                class="fx-card__badge"
+              >
+                <UIcon name="i-lucide-triangle-alert" />
                 {{ warningLabel }}
               </UBadge>
             </UTooltip>
@@ -48,9 +47,9 @@
               color="warning"
               variant="soft"
               size="xs"
-              class="shrink-0"
+              class="fx-card__badge"
             >
-              <UIcon name="i-lucide-triangle-alert" class="mr-1" />
+              <UIcon name="i-lucide-triangle-alert" />
               {{ warningLabel }}
             </UBadge>
 
@@ -59,7 +58,7 @@
               variant="soft"
               color="neutral"
               size="xs"
-              class="shrink-0"
+              class="fx-card__badge"
             >
               {{ status }}
             </UBadge>
@@ -122,5 +121,4 @@ const warningDescription = computed(() => {
 
   return ''
 })
-
 </script>

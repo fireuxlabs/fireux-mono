@@ -13,20 +13,19 @@
       v-model:open="open"
       title="Project Workspace"
       description="How this page and ProjectAI fit together."
-      :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
-        <div class="grid gap-5">
-          <p class="m-0 text-sm text-toned">
+        <div class="pagebody">
+          <p class="m-0 fx-type-caption">
             Create, compose, launch and operate a SaaS Project. The resulting
             business Workspaces operate their own Entities.
           </p>
 
-          <section class="grid gap-2" aria-labelledby="project-ai-capabilities">
-            <h3 id="project-ai-capabilities" class="m-0 font-semibold">
+          <section class="pagebody" aria-labelledby="project-ai-capabilities">
+            <h3 id="project-ai-capabilities" class="m-0 fx-type-card-heading">
               ProjectAI capabilities
             </h3>
-            <p class="m-0 text-sm text-muted">
+            <p class="m-0 fx-type-caption">
               ProjectAI coordinates registered Project specialists. No Project
               AI actions are connected yet.
             </p>

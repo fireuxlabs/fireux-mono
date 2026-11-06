@@ -8,7 +8,7 @@
     :default-open="false"
   >
     <pre
-      class="mt-3 overflow-auto text-sm"
+      class="mt-3 overflow-auto"
       :data-testid="`${name}-json`"
     ><code>{{ JSON.stringify(order, null, 2) }}</code></pre>
   </FireDisclosurePanel>

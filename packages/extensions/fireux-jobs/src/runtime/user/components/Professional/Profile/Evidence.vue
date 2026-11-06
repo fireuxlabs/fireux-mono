@@ -1,109 +1,105 @@
 <template>
-<aside
-  class="public-profile-detail__sidebar"
-  aria-label="Professional evidence"
->
-  <UserProfileSection
-    v-if="model.languages.length"
-    compact
-    icon="i-lucide-languages"
-    eyebrow="Communication"
-    title="Languages"
+  <aside
+    class="public-profile-detail__sidebar"
+    aria-label="Professional evidence"
   >
-    <div class="space-y-3">
-      <div
-        v-for="language in model.languages"
-        :key="`${language.language}-${language.proficiency}`"
-        class="flex items-center justify-between gap-3"
-      >
-        <span class="text-sm font-medium text-highlighted">{{
-          language.language
-        }}</span>
-        <UBadge
-          v-if="language.proficiency"
-          :label="formatProficiency(language.proficiency)"
-          color="neutral"
-          variant="soft"
-          size="xs"
-        />
+    <UserProfileSection
+      v-if="model.languages.length"
+      compact
+      icon="i-lucide-languages"
+      eyebrow="Communication"
+      title="Languages"
+    >
+      <div class="space-y-3">
+        <div
+          v-for="language in model.languages"
+          :key="`${language.language}-${language.proficiency}`"
+          class="flex items-center justify-between gap-3"
+        >
+          <span>{{ language.language }}</span>
+          <UBadge
+            v-if="language.proficiency"
+            :label="formatProficiency(language.proficiency)"
+            color="neutral"
+            variant="soft"
+            size="xs"
+          />
+        </div>
       </div>
-    </div>
-  </UserProfileSection>
+    </UserProfileSection>
 
-  <UserProfileSection
-    v-if="model.certifications.length"
-    compact
-    icon="i-lucide-award"
-    eyebrow="Credentials"
-    title="Certifications"
-  >
-    <div class="professional-profile__evidence-list">
-      <article
-        v-for="cert in model.certifications"
-        :key="`${cert.name}-${cert.year}`"
-        class="professional-profile__evidence-item"
-      >
-        <h3 class="text-sm font-semibold text-highlighted">
-          {{ cert.name }}
-        </h3>
-        <p
-          v-if="[cert.place_name, cert.year].filter(Boolean).length"
-          class="mt-1 text-xs leading-5 text-muted"
+    <UserProfileSection
+      v-if="model.certifications.length"
+      compact
+      icon="i-lucide-award"
+      eyebrow="Credentials"
+      title="Certifications"
+    >
+      <div class="professional-profile__evidence-list">
+        <article
+          v-for="cert in model.certifications"
+          :key="`${cert.name}-${cert.year}`"
+          class="professional-profile__evidence-item"
         >
-          {{ [cert.place_name, cert.year].filter(Boolean).join(' · ') }}
-        </p>
-        <a
-          v-if="cert.document_url"
-          :href="cert.document_url"
-          :aria-label="`View ${cert.name || 'certification'} credential`"
-          target="_blank"
-          rel="noreferrer"
-          class="professional-profile__evidence-link"
-        >
-          View credential
-          <UIcon name="i-lucide-external-link" class="size-3" />
-        </a>
-      </article>
-    </div>
-  </UserProfileSection>
+          <h3 class="fx-type-card-title">
+            {{ cert.name }}
+          </h3>
+          <p
+            v-if="[cert.place_name, cert.year].filter(Boolean).length"
+            class="mt-1"
+          >
+            {{ [cert.place_name, cert.year].filter(Boolean).join(' · ') }}
+          </p>
+          <a
+            v-if="cert.document_url"
+            :href="cert.document_url"
+            :aria-label="`View ${cert.name || 'certification'} credential`"
+            target="_blank"
+            rel="noreferrer"
+            class="professional-profile__evidence-link"
+          >
+            View credential
+            <UIcon name="i-lucide-external-link" />
+          </a>
+        </article>
+      </div>
+    </UserProfileSection>
 
-  <UserProfileSection
-    v-if="model.education.length"
-    compact
-    icon="i-lucide-graduation-cap"
-    eyebrow="Training"
-    title="Education"
-  >
-    <div class="professional-profile__evidence-list">
-      <article
-        v-for="entry in model.education"
-        :key="`${entry.institution}-${entry.degree}`"
-        class="professional-profile__evidence-item"
-      >
-        <h3 class="text-sm font-semibold text-highlighted">
-          {{ entry.degree || 'Professional training' }}
-        </h3>
-        <p class="mt-1 text-xs leading-5 text-muted">
-          {{ entry.institution }} ·
-          {{
-            formatRange(entry.start_year, entry.end_year, entry.ongoing)
-          }}
-        </p>
-        <a
-          v-if="entry.document_url"
-          :href="entry.document_url"
-          :aria-label="`View ${entry.degree || 'education'} document`"
-          target="_blank"
-          rel="noreferrer"
-          class="professional-profile__evidence-link"
+    <UserProfileSection
+      v-if="model.education.length"
+      compact
+      icon="i-lucide-graduation-cap"
+      eyebrow="Training"
+      title="Education"
+    >
+      <div class="professional-profile__evidence-list">
+        <article
+          v-for="entry in model.education"
+          :key="`${entry.institution}-${entry.degree}`"
+          class="professional-profile__evidence-item"
         >
-          View document
-          <UIcon name="i-lucide-external-link" class="size-3" />
-        </a>
-      </article>
-    </div>
-  </UserProfileSection>
-</aside>
+          <h3 class="fx-type-card-title">
+            {{ entry.degree || 'Professional training' }}
+          </h3>
+          <p class="mt-1">
+            {{ entry.institution }} ·
+            {{ formatRange(entry.start_year, entry.end_year, entry.ongoing) }}
+          </p>
+          <a
+            v-if="entry.document_url"
+            :href="entry.document_url"
+            :aria-label="`View ${entry.degree || 'education'} document`"
+            target="_blank"
+            rel="noreferrer"
+            class="professional-profile__evidence-link"
+          >
+            View document
+            <UIcon name="i-lucide-external-link" />
+          </a>
+        </article>
+      </div>
+    </UserProfileSection>
+  </aside>
 </template>
 
 <script setup lang="ts">

@@ -1,18 +1,18 @@
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section class="border-b border-default bg-default/70 py-16">
-      <UContainer class="grid gap-10 md:grid-cols-2">
-        <div class="space-y-4">
+      <UContainer>
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.about.label }}
           </p>
           <h1 class="fx-type-display-title">
             {{ appMeta.about.tagline }}
           </h1>
-          <p class="fx-type-description text-toned">
+          <p class="fx-type-description">
             {{ appMeta.about.description }}
           </p>
-          <p class="fx-type-caption text-toned">
+          <p class="fx-type-caption">
             {{ appMeta.about.supportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
@@ -25,39 +25,37 @@
           </div>
         </div>
 
-        <div class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
-          <p class="fx-type-label mb-4 text-primary">
-            Boundary
-          </p>
+        <UCard>
+          <p class="fx-type-label mb-4">Boundary</p>
           <ul class="space-y-3">
             <li
               v-for="tick in appMeta.about.ticks"
               :key="tick"
               class="flex items-start gap-3"
             >
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
+              <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
           </ul>
-        </div>
+        </UCard>
       </UContainer>
     </section>
 
     <section>
-      <UContainer class="grid gap-6 md:grid-cols-3">
-        <article
+      <UContainer>
+        <UCard
+          as="article"
           v-for="item in appMeta.heroPanelItems"
           :key="item.title"
-          class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
         >
-          <UIcon :name="item.icon" class="text-2xl text-primary" />
+          <UIcon :name="item.icon" />
           <h2 class="fx-type-card-heading mt-4">
             {{ item.title }}
           </h2>
-          <p class="fx-type-caption mt-2 text-toned">
+          <p class="fx-type-caption mt-2">
             {{ item.description }}
           </p>
-        </article>
+        </UCard>
       </UContainer>
     </section>
   </div>

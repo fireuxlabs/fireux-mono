@@ -3,10 +3,8 @@
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 class="text-lg font-semibold text-highlighted">
-            Your job postings
-          </h2>
-          <p class="mt-1 text-sm text-muted">
+          <h2 class="fx-type-card-heading">Your job postings</h2>
+          <p class="mt-1">
             Return to any private draft or live posting owned by your account.
           </p>
         </div>
@@ -17,8 +15,8 @@
     </template>
 
     <div v-if="outcome === 'pending'" class="space-y-3">
-      <USkeleton class="h-20 rounded-xl" />
-      <USkeleton class="h-20 rounded-xl" />
+      <USkeleton class="h-20" />
+      <USkeleton class="h-20" />
     </div>
 
     <UAlert
@@ -70,19 +68,14 @@
                         {{ job.category_id }}
                       </UBadge>
                     </div>
-                    <h3
-                      class="text-base font-semibold leading-tight text-highlighted"
-                    >
+                    <h3 class="fx-type-card-heading">
                       {{ job.title || 'Untitled job' }}
                     </h3>
                   </div>
-                  <UIcon
-                    name="i-lucide-briefcase-business"
-                    class="size-5 shrink-0 text-muted"
-                  />
+                  <UIcon name="i-lucide-briefcase-business" />
                 </div>
 
-                <p class="line-clamp-3 text-sm leading-6 text-muted">
+                <p class="line-clamp-3">
                   {{ job.description || 'No job description yet.' }}
                 </p>
 

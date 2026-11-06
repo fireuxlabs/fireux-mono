@@ -1,47 +1,37 @@
 <template>
-  <UContainer class="py-10 sm:py-14">
+  <UContainer>
     <div class="mx-auto grid max-w-5xl gap-8">
       <header class="grid gap-3">
-        <NuxtLink
-          to="/tools"
-          class="w-fit text-sm font-semibold text-primary hover:underline"
-          >Tools</NuxtLink
-        >
-        <h1 class="m-0 text-3xl font-semibold text-highlighted">
-          Kitchen tools
-        </h1>
-        <p class="m-0 max-w-3xl text-muted">
+        <NuxtLink to="/tools" class="w-fit hover:underline">Tools</NuxtLink>
+        <h1>Kitchen tools</h1>
+        <p class="max-w-3xl">
           Workspace actions, callable Team tools and Menu workflow descriptions.
         </p>
       </header>
       <section v-for="group in groups" :key="group.title" class="grid gap-3">
         <div class="grid gap-1">
-          <h2 class="m-0 text-xl font-semibold text-highlighted">
+          <h2>
             {{ group.title }}
           </h2>
-          <p class="m-0 text-sm text-muted">{{ group.description }}</p>
+          <p>{{ group.description }}</p>
         </div>
-        <ul class="m-0 grid gap-4 p-0">
+        <ul class="grid gap-4 p-0">
           <li v-for="item in group.items" :key="item.id" class="list-none">
             <NuxtLink
               :to="item.to"
               class="group flex items-center justify-between gap-4 rounded-lg px-3 py-3 hover:bg-elevated"
             >
               <span class="grid gap-1">
-                <span class="font-semibold text-highlighted">
+                <span>
                   {{ item.label }}
                 </span>
-                <span class="text-sm text-muted">{{ item.description }}</span>
-                <code class="text-xs text-dimmed">{{ item.id }}</code>
-                <span class="text-xs text-dimmed">
-                  Capability family: {{ item.family }}
-                </span>
+                <span>{{ item.description }}</span>
+                <code>{{ item.id }}</code>
+                <span> Capability family: {{ item.family }} </span>
               </span>
-              <span
-                class="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
-              >
+              <span class="flex shrink-0 items-center gap-1">
                 {{ item.actionLabel }}
-                <UIcon name="i-lucide-arrow-right" class="size-4" />
+                <UIcon name="i-lucide-arrow-right" />
               </span>
             </NuxtLink>
           </li>
@@ -50,36 +40,29 @@
 
       <section class="grid gap-3" aria-labelledby="menu-import-inventory">
         <div class="grid gap-1">
-          <h2
-            id="menu-import-inventory"
-            class="m-0 text-xl font-semibold text-highlighted"
-          >
-            Menu import capability inventory
-          </h2>
-          <p class="m-0 text-sm text-muted">
+          <h2 id="menu-import-inventory">Menu import capability inventory</h2>
+          <p>
             The implementation stages described by
             <code>{{ kitchenMenuImportFromSourceTool.id }}</code
             >.
           </p>
         </div>
-        <ol class="m-0 grid gap-3 pl-5">
+        <ol class="grid gap-3 pl-5">
           <li
             v-for="step in kitchenMenuImportFromSourceTool.steps"
             :key="step.capability"
             class="pl-1"
           >
             <div class="grid gap-1">
-              <code class="text-sm text-highlighted">
+              <code>
                 {{ step.capability }}
               </code>
-              <span class="text-sm text-muted">{{ step.role }}</span>
-              <span class="text-xs text-dimmed">
-                {{ step.classification }} · {{ step.status }}
-              </span>
+              <span>{{ step.role }}</span>
+              <span> {{ step.classification }} · {{ step.status }} </span>
             </div>
           </li>
         </ol>
-        <p class="m-0 text-xs leading-5 text-dimmed">
+        <p>
           No standalone merge primitive is registered. FireUX AI deliberately
           receives the owning domain's merge policy; Kitchen decides how menu
           sections and dishes combine.
@@ -88,36 +71,31 @@
 
       <section class="grid gap-3" aria-labelledby="menu-ai-context">
         <div class="grid gap-1">
-          <h2
-            id="menu-ai-context"
-            class="m-0 text-xl font-semibold text-highlighted"
-          >
-            Menu workflow context
-          </h2>
-          <p class="m-0 text-sm text-muted">
+          <h2 id="menu-ai-context">Menu workflow context</h2>
+          <p>
             These describe the AI-assisted Workspace import workflow. They are
             not registered as standalone agent-callable tools.
           </p>
         </div>
-        <article
+        <UCard as="article" :ui="{ body: 'fx-card-body-stack' }"
           v-for="tool in kitchenMenuTools"
           :key="tool.id"
-          class="grid gap-2 rounded-lg border border-default p-4"
+          
         >
-          <header class="grid gap-1">
-            <h3 class="m-0 font-semibold text-highlighted">
+          <header class="fx-card-body-stack">
+            <h3>
               {{ tool.name }}
             </h3>
-            <code class="text-xs text-dimmed">{{ tool.id }}</code>
+            <code>{{ tool.id }}</code>
           </header>
-          <p class="m-0 text-sm leading-6 text-toned">
+          <p>
             {{ tool.ai.baked.purpose }}
           </p>
-          <p class="m-0 text-xs leading-5 text-dimmed">
+          <p>
             Required: {{ tool.ai.runtime.required.join(', ') || 'none' }} ·
             optional: {{ tool.ai.runtime.optional.join(', ') || 'none' }}
           </p>
-          <ul class="m-0 grid gap-1 pl-5 text-sm text-toned">
+          <ul class="grid gap-1 pl-5">
             <li
               v-for="constraint in tool.ai.baked.constraints"
               :key="constraint"
@@ -125,46 +103,41 @@
               {{ constraint }}
             </li>
           </ul>
-        </article>
+        </UCard>
       </section>
 
       <section class="grid gap-3" aria-labelledby="team-ai-context">
         <div class="grid gap-1">
-          <h2
-            id="team-ai-context"
-            class="m-0 text-xl font-semibold text-highlighted"
-          >
-            Team tool AI context
-          </h2>
-          <p class="m-0 text-sm text-muted">
+          <h2 id="team-ai-context">Team tool AI context</h2>
+          <p>
             These Team definitions have registered server executors. Agent-only
             actions are listed for reference, without a direct action link.
           </p>
         </div>
-        <article
+        <UCard as="article" :ui="{ body: 'fx-card-body-stack' }"
           v-for="tool in kitchenTeamTools"
           :key="tool.id"
-          class="grid gap-2 rounded-lg border border-default p-4"
+          
         >
-          <header class="grid gap-1">
-            <h3 class="m-0 font-semibold text-highlighted">
+          <header class="fx-card-body-stack">
+            <h3>
               {{ teamToolLabel(tool) }}
             </h3>
-            <span class="text-xs text-muted">{{
+            <span>{{
               tool.surfaces.human === false
                 ? 'Agent only'
                 : 'Workspace and agent'
             }}</span>
-            <code class="text-xs text-dimmed">{{ tool.id }}</code>
+            <code>{{ tool.id }}</code>
           </header>
-          <p class="m-0 text-sm leading-6 text-toned">
+          <p>
             {{ tool.ai.baked.purpose }}
           </p>
-          <p class="m-0 text-xs leading-5 text-dimmed">
+          <p>
             Required: {{ tool.ai.runtime.required.join(', ') || 'none' }} ·
             optional: {{ tool.ai.runtime.optional.join(', ') || 'none' }}
           </p>
-          <ul class="m-0 grid gap-1 pl-5 text-sm text-toned">
+          <ul class="grid gap-1 pl-5">
             <li
               v-for="constraint in tool.ai.baked.constraints"
               :key="constraint"
@@ -172,17 +145,14 @@
               {{ constraint }}
             </li>
           </ul>
-        </article>
+        </UCard>
       </section>
     </div>
   </UContainer>
 </template>
 
 <script setup lang="ts">
-import {
-  kitchenTeamTools,
-  kitchenTeamHumanTools,
-} from '../../tools/team'
+import { kitchenTeamTools, kitchenTeamHumanTools } from '../../tools/team'
 import {
   kitchenMenuCompoundTools,
   kitchenMenuDomainTools,
@@ -241,6 +211,4 @@ const groups = [
     ],
   },
 ]
-
-
 </script>

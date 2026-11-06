@@ -1,5 +1,5 @@
 <template>
-  <article class="space-y-8">
+  <article class="pagebody">
     <EcosystemDetailHeader :ecosystem="ecosystem" />
     <EcosystemDetailApps :ecosystem="ecosystem" />
     <EcosystemDetailProject :ecosystem="ecosystem" />

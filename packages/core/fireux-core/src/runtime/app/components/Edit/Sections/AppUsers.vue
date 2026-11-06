@@ -53,7 +53,6 @@
               value-key="value"
               label-key="label"
               size="sm"
-              class="w-32"
               :loading="subscriptionActionUid === appUser.id"
               :disabled="subscriptionActionUid !== null"
               :aria-label="`Subscription for ${appUser.display_name}`"
@@ -64,12 +63,7 @@
       </ul>
     </div>
     <p v-else class="section__empty">No AppUsers yet.</p>
-    <UButton
-      v-if="hasMore"
-      class="mt-4"
-      variant="soft"
-      @click="$emit('load-more')"
-    >
+    <UButton v-if="hasMore" variant="soft" @click="$emit('load-more')">
       Load more members
     </UButton>
   </UCard>

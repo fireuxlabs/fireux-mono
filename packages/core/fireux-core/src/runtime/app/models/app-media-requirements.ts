@@ -1,4 +1,9 @@
-import type { AppImageKind, AppImageFirestoreField, AppLocalOnlyAssetKind, AppPublicAssetRequirement } from './app-media'
+import type {
+  AppImageKind,
+  AppImageFirestoreField,
+  AppLocalOnlyAssetKind,
+  AppPublicAssetRequirement,
+} from './app-media'
 
 export const APP_IMAGE_STORAGE_OBJECT_NAMES = {
   thumbnail: 'thumbnail.png',
@@ -47,8 +52,7 @@ export const APP_SYNCABLE_IMAGE_REQUIREMENTS = [
     localPublicPath: APP_IMAGE_LOCAL_PUBLIC_PATHS.logo,
     localRelativePath: relativePath(APP_IMAGE_LOCAL_PUBLIC_PATHS.logo),
     requirementsText: 'Required. PNG, exactly 512x512.',
-    requirementsHtml:
-      'Required. PNG, exactly <span class="font-mono">512&times;512</span>.',
+    requirementsHtml: 'Required. PNG, exactly <code>512&times;512</code>.',
     dimensions: {
       requiredWidth: 512,
       requiredHeight: 512,
@@ -65,7 +69,7 @@ export const APP_SYNCABLE_IMAGE_REQUIREMENTS = [
     localRelativePath: relativePath(APP_IMAGE_LOCAL_PUBLIC_PATHS.wordmarkLight),
     requirementsText: 'Required. PNG, at least 256x64, aspect at least 3:1.',
     requirementsHtml:
-      'Required. PNG, at least <span class="font-mono">256&times;64</span> with aspect <span class="font-mono">&ge;3:1</span>.',
+      'Required. PNG, at least <code>256&times;64</code> with aspect <code>&ge;3:1</code>.',
     dimensions: {
       minWidth: 256,
       minHeight: 64,
@@ -83,7 +87,7 @@ export const APP_SYNCABLE_IMAGE_REQUIREMENTS = [
     localRelativePath: relativePath(APP_IMAGE_LOCAL_PUBLIC_PATHS.wordmarkDark),
     requirementsText: 'Required. PNG, at least 256x64, aspect at least 3:1.',
     requirementsHtml:
-      'Required. PNG, at least <span class="font-mono">256&times;64</span> with aspect <span class="font-mono">&ge;3:1</span>.',
+      'Required. PNG, at least <code>256&times;64</code> with aspect <code>&ge;3:1</code>.',
     dimensions: {
       minWidth: 256,
       minHeight: 64,
@@ -100,8 +104,7 @@ export const APP_SYNCABLE_IMAGE_REQUIREMENTS = [
     localPublicPath: APP_IMAGE_LOCAL_PUBLIC_PATHS.thumbnail,
     localRelativePath: relativePath(APP_IMAGE_LOCAL_PUBLIC_PATHS.thumbnail),
     requirementsText: 'Required. PNG, exactly 1200x630.',
-    requirementsHtml:
-      'Required. PNG, exactly <span class="font-mono">1200&times;630</span>.',
+    requirementsHtml: 'Required. PNG, exactly <code>1200&times;630</code>.',
     dimensions: {
       requiredWidth: 1200,
       requiredHeight: 630,
@@ -118,7 +121,7 @@ export const APP_SYNCABLE_IMAGE_REQUIREMENTS = [
     localRelativePath: relativePath(APP_IMAGE_LOCAL_PUBLIC_PATHS.cover),
     requirementsText: 'Required. PNG, 16:9, at least 1280x720.',
     requirementsHtml:
-      'Required. PNG, <span class="font-mono">16:9</span>, at least <span class="font-mono">1280&times;720</span>.',
+      'Required. PNG, <code>16:9</code>, at least <code>1280&times;720</code>.',
     dimensions: {
       minWidth: 1280,
       minHeight: 720,
@@ -140,7 +143,7 @@ export const APP_LOCAL_ONLY_ASSET_REQUIREMENTS = [
     localRelativePath: relativePath(APP_LOCAL_ONLY_PUBLIC_PATHS.favicon),
     requirementsText: 'Required. ICO or PNG, square, at least 32x32.',
     requirementsHtml:
-      'Required. ICO or PNG, square, at least <span class="font-mono">32&times;32</span>.',
+      'Required. ICO or PNG, square, at least <code>32&times;32</code>.',
     dimensions: {
       minWidth: 32,
       minHeight: 32,
@@ -155,8 +158,7 @@ export const APP_LOCAL_ONLY_ASSET_REQUIREMENTS = [
     localPublicPath: APP_LOCAL_ONLY_PUBLIC_PATHS.pwaIcon192,
     localRelativePath: relativePath(APP_LOCAL_ONLY_PUBLIC_PATHS.pwaIcon192),
     requirementsText: 'Required. PNG, exactly 192x192.',
-    requirementsHtml:
-      'Required. PNG, exactly <span class="font-mono">192&times;192</span>.',
+    requirementsHtml: 'Required. PNG, exactly <code>192&times;192</code>.',
     dimensions: {
       requiredWidth: 192,
       requiredHeight: 192,
@@ -169,8 +171,7 @@ export const APP_LOCAL_ONLY_ASSET_REQUIREMENTS = [
     localPublicPath: APP_LOCAL_ONLY_PUBLIC_PATHS.pwaIcon512,
     localRelativePath: relativePath(APP_LOCAL_ONLY_PUBLIC_PATHS.pwaIcon512),
     requirementsText: 'Required. PNG, exactly 512x512.',
-    requirementsHtml:
-      'Required. PNG, exactly <span class="font-mono">512&times;512</span>.',
+    requirementsHtml: 'Required. PNG, exactly <code>512&times;512</code>.',
     dimensions: {
       requiredWidth: 512,
       requiredHeight: 512,

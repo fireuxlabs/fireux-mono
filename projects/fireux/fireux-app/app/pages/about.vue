@@ -2,37 +2,42 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
-    <section
-      class="border-b border-default bg-default/70 py-16"
-    >
-      <UContainer class="grid gap-10 md:grid-cols-2">
-        <div class="space-y-4">
+    <section class="border-b border-default bg-default/70 py-16">
+      <UContainer>
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.aboutLabel }}
           </p>
           <h1 class="fx-type-display-title">
             {{ appSpec.tagline }}
           </h1>
-          <p class="fx-type-description text-toned">
+          <p class="fx-type-description">
             {{ appSpec.description }}
           </p>
-          <p class="fx-type-caption text-toned">
+          <p class="fx-type-caption">
             {{ appMeta.aboutSupportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton :to="appMeta.aboutPrimaryAction.to" color="primary" size="lg">
+            <UButton
+              :to="appMeta.aboutPrimaryAction.to"
+              color="primary"
+              size="lg"
+            >
               {{ appMeta.aboutPrimaryAction.label }}
             </UButton>
-            <UButton :to="appMeta.aboutSecondaryAction.to" color="neutral" variant="ghost" size="lg">
+            <UButton
+              :to="appMeta.aboutSecondaryAction.to"
+              color="neutral"
+              variant="ghost"
+              size="lg"
+            >
               {{ appMeta.aboutSecondaryAction.label }}
             </UButton>
           </div>
         </div>
 
-        <div
-          class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
-        >
-          <p class="fx-type-label mb-4 text-primary">
+        <UCard>
+          <p class="fx-type-label mb-4">
             {{ appMeta.aboutPanelTitle }}
           </p>
           <ul class="space-y-3">
@@ -41,24 +46,28 @@
               :key="tick"
               class="flex items-start gap-3"
             >
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
+              <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
           </ul>
-        </div>
+        </UCard>
       </UContainer>
     </section>
 
     <section>
       <UContainer>
         <UCard>
-          <div class="space-y-4">
-            <h2 class="text-2xl font-semibold text-highlighted">
+          <div class="fx-card-body-stack">
+            <h2 class="fx-type-section-title">
               {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
-            <ol class="space-y-3 text-sm text-default">
-              <li v-for="(concept, index) in appMeta.keyConcepts" :key="concept.title">
-                <span class="font-semibold text-highlighted">{{ index + 1 }}. {{ concept.title }}</span><br>
+            <ol class="space-y-3">
+              <li
+                v-for="(concept, index) in appMeta.keyConcepts"
+                :key="concept.title"
+              >
+                <span>{{ index + 1 }}. {{ concept.title }}</span
+                ><br />
                 {{ concept.description }}
               </li>
             </ol>
@@ -69,20 +78,20 @@
 
     <section>
       <UContainer>
-        <div class="mb-10 space-y-2 text-center">
+        <div class="mb-10 space-y-2">
           <p class="fx-type-headline">
             {{ appMeta.aboutSections.modulesEyebrow }}
           </p>
           <h2 class="fx-type-section-title">
             {{ appMeta.aboutSections.modulesTitle }}
           </h2>
-          <p class="text-toned">
+          <p class="fx-type-body">
             {{ appMeta.aboutSections.modulesDescription }}
           </p>
         </div>
 
         <UCard>
-          <UAccordion type="multiple" class="space-y-2">
+          <UAccordion type="multiple">
             <UAccordionItem
               v-for="(module, index) in appSpec.modules"
               :key="module.name"
@@ -90,9 +99,9 @@
               :title="module.name"
             >
               <template #body>
-                <div class="space-y-3 text-sm">
-                  <p class="text-toned">{{ module.summary }}</p>
-                  <div class="flex flex-wrap gap-2">
+                <div class="space-y-3">
+                  <p class="fx-type-body">{{ module.summary }}</p>
+                  <div class="card__badges">
                     <UBadge
                       v-for="entityName in module.entities"
                       :key="`${module.name}-${entityName}`"
@@ -112,7 +121,7 @@
 
     <section>
       <UContainer>
-        <div class="mb-10 space-y-2 text-center">
+        <div class="mb-10 space-y-2">
           <p class="fx-type-headline">
             {{ appMeta.aboutSections.entitiesEyebrow }}
           </p>
@@ -122,33 +131,33 @@
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
-          <article
+          <UCard
+            as="article"
             v-for="entity in appSpec.entities"
             :key="entity.name"
-            class="rounded-2xl border border-default bg-default/80 p-6 shadow-sm"
           >
             <h3 class="fx-type-card-heading">
               {{ entity.name }}
             </h3>
-            <p class="fx-type-caption mt-2 text-toned">
+            <p class="fx-type-caption mt-2">
               {{ entity.purpose }}
             </p>
-            <p class="fx-type-caption mt-3 text-toned">
-              <span class="font-semibold text-highlighted">Key fields:</span>
+            <p class="fx-type-caption mt-3">
+              <span>Key fields:</span>
               {{ entity.keyFields.join(', ') }}
             </p>
-            <p class="fx-type-caption mt-2 text-toned">
-              <span class="font-semibold text-highlighted">Links to:</span>
+            <p class="fx-type-caption mt-2">
+              <span>Links to:</span>
               {{ entity.linksTo.join(', ') }}
             </p>
-          </article>
+          </UCard>
         </div>
       </UContainer>
     </section>
 
     <section class="bg-muted/80 py-16">
-      <UContainer class="space-y-8">
-        <div class="space-y-2 text-center">
+      <UContainer>
+        <div class="space-y-2">
           <p class="fx-type-headline">
             {{ appMeta.aboutSections.structureEyebrow }}
           </p>
@@ -158,7 +167,9 @@
         </div>
 
         <UCard>
-          <pre class="overflow-x-auto rounded-sm bg-default p-4 text-xs leading-6">{{ relationshipMap }}</pre>
+          <pre class="overflow-x-auto rounded-sm bg-default p-4">{{
+            relationshipMap
+          }}</pre>
         </UCard>
 
         <UCard>
@@ -167,12 +178,16 @@
               {{ appMeta.aboutSections.routesTitle }}
             </h3>
           </template>
-          <div class="flex flex-wrap gap-2">
+          <div class="fx-card__actions">
             <UButton
               v-for="route in appSpec.routes"
               :key="route.path"
               :to="route.path"
-              :icon="route.kind === 'workspace' ? 'i-lucide-terminal' : 'i-lucide-link'"
+              :icon="
+                route.kind === 'workspace'
+                  ? 'i-lucide-terminal'
+                  : 'i-lucide-link'
+              "
               :color="route.kind === 'workspace' ? 'primary' : 'neutral'"
               variant="soft"
             >
@@ -192,14 +207,22 @@ type AppSpec = {
   name: string
   tagline: string
   description: string
-  modules: ReadonlyArray<{ name: string; summary: string; entities: readonly string[] }>
+  modules: ReadonlyArray<{
+    name: string
+    summary: string
+    entities: readonly string[]
+  }>
   entities: ReadonlyArray<{
     name: string
     purpose: string
     keyFields: readonly string[]
     linksTo: readonly string[]
   }>
-  routes: ReadonlyArray<{ label: string; path: string; kind: 'public' | 'workspace' }>
+  routes: ReadonlyArray<{
+    label: string
+    path: string
+    kind: 'public' | 'workspace'
+  }>
 }
 
 definePageMeta({
@@ -230,5 +253,4 @@ const appSpec: AppSpec = {
   routes: appMeta.routes,
 }
 const relationshipMap = appMeta.relationshipMap
-
 </script>

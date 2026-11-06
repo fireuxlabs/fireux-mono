@@ -1,30 +1,57 @@
 <template>
   <div class="fx-page-stack fx-page-stack--compact">
     <section class="border-b border-default bg-default/70 py-16">
-      <UContainer class="space-y-4">
+      <UContainer>
         <UBadge color="primary" variant="soft">Granite Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More</h1>
-        <p class="fx-type-description text-toned">
-          Granite provides portfolio oversight with structured control across properties, compliance, documents, incidents, and financial signals.
+        <p class="fx-type-description">
+          Granite provides portfolio oversight with structured control across
+          properties, compliance, documents, incidents, and financial signals.
         </p>
         <div class="flex flex-wrap gap-2">
-          <UButton to="/about" color="primary" icon="i-lucide-info">About</UButton>
-          <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
-          <UButton to="/get-started" color="neutral" variant="ghost" icon="i-lucide-rocket">Get started</UButton>
-          <UButton to="/learn-more/dev" color="neutral" variant="soft" icon="i-lucide-code-2">Dev</UButton>
+          <UButton to="/about" color="primary" icon="i-lucide-info"
+            >About</UButton
+          >
+          <UButton
+            to="/pricing"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-badge-dollar-sign"
+            >Pricing</UButton
+          >
+          <UButton
+            to="/get-started"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-rocket"
+            >Get started</UButton
+          >
+          <UButton
+            to="/learn-more/dev"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-code-2"
+            >Dev</UButton
+          >
         </div>
       </UContainer>
     </section>
 
     <section>
-      <UContainer class="grid gap-6 md:grid-cols-2">
+      <UContainer>
         <UCard>
           <template #header>
             <h2 class="fx-type-card-heading">Core concepts</h2>
           </template>
-          <ul class="list-disc fx-list-stack text-sm">
-            <li>Portfolios are the operational center for property strategy and control.</li>
-            <li>Properties, compliance, documents, and incidents feed one management surface.</li>
+          <ul class="list-disc fx-list-stack">
+            <li>
+              Portfolios are the operational center for property strategy and
+              control.
+            </li>
+            <li>
+              Properties, compliance, documents, and incidents feed one
+              management surface.
+            </li>
             <li>Financial signals help teams prioritize risk and execution.</li>
           </ul>
         </UCard>
@@ -33,10 +60,28 @@
           <template #header>
             <h2 class="fx-type-card-heading">Primary surfaces</h2>
           </template>
-          <div class="flex flex-wrap gap-2">
-            <UButton to="/workspace/portfolio" color="primary" variant="soft" icon="i-lucide-terminal">Portfolio workspace</UButton>
-            <UButton to="/pricing/your-app" color="neutral" variant="soft" icon="i-lucide-app-window">Your App</UButton>
-            <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
+          <div class="fx-card__actions">
+            <UButton
+              to="/workspace/portfolio"
+              color="primary"
+              variant="soft"
+              icon="i-lucide-terminal"
+              >Portfolio workspace</UButton
+            >
+            <UButton
+              to="/pricing/your-app"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-app-window"
+              >Your App</UButton
+            >
+            <UButton
+              to="/pricing"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-badge-dollar-sign"
+              >Pricing</UButton
+            >
           </div>
         </UCard>
       </UContainer>
@@ -52,6 +97,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More · Granite',
-  description: 'Guide to Granite portfolio concepts, pricing paths, and workspace routes.',
+  description:
+    'Guide to Granite portfolio concepts, pricing paths, and workspace routes.',
 })
 </script>

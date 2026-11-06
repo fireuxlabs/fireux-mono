@@ -1,6 +1,6 @@
 <template>
   <UCard class="preview">
-    <div class="space-y-5">
+    <div class="fx-card-body-stack">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
         <UAvatar
           :src="resolvedImageUrl || undefined"
@@ -11,24 +11,18 @@
         />
 
         <div class="min-w-0 flex-1 space-y-3">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0 space-y-1">
+          <div class="card__header">
+            <div class="fx-card-body-stack">
               <p class="fx-type-label">
                 {{ eyebrow }}
               </p>
 
-              <h2 class="truncate text-2xl font-semibold text-highlighted">
+              <h2 class="truncate">
                 {{ name }}
               </h2>
 
-              <div
-                v-if="primaryAddress"
-                class="flex items-start gap-2 text-sm text-toned"
-              >
-                <UIcon
-                  name="i-lucide-map-pin"
-                  class="mt-0.5 size-4 shrink-0 text-muted"
-                />
+              <div v-if="primaryAddress" class="card__media">
+                <UIcon name="i-lucide-map-pin" class="shrink-0" />
                 <span>{{ primaryAddress }}</span>
               </div>
             </div>
@@ -49,7 +43,7 @@
             </div>
           </div>
 
-          <p v-if="showBody && prop" class="max-w-2xl text-sm text-dimmed">
+          <p v-if="showBody && prop" class="max-w-2xl">
             {{ prop }}
           </p>
 
@@ -62,7 +56,7 @@
               <div class="fx-type-label">
                 {{ item.label }}
               </div>
-              <div class="mt-1 truncate text-sm text-toned">
+              <div class="mt-1 truncate">
                 {{ formatValue(item.value) }}
               </div>
             </div>
@@ -160,11 +154,7 @@ const avatarShadeClass = computed(() => {
 })
 
 const visibleBadges = computed(() =>
-  props.showBadges
-    ? [
-        ...(props.badges ?? []),
-      ].filter(Boolean)
-    : []
+  props.showBadges ? [...(props.badges ?? [])].filter(Boolean) : []
 )
 const visibleDetails = computed(() =>
   (props.details ?? [])

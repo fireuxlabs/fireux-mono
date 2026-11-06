@@ -6,10 +6,7 @@
     :data-menu-item-id="item.id"
     data-menu-item-mode="read-only"
   >
-    <MenuItemImage
-      :enabled="showItemImages"
-      :image-url="item.imageUrl"
-    />
+    <MenuItemImage :enabled="showItemImages" :image-url="item.imageUrl" />
 
     <div class="menu-browse-item__copy">
       <div class="menu-browse-item__heading">
@@ -23,7 +20,7 @@
         </span>
       </div>
 
-      <p v-if="item.promotionLabel" class="mt-1 text-sm text-primary">
+      <p v-if="item.promotionLabel" class="mt-1">
         {{ item.promotionLabel }}
       </p>
       <p v-if="item.description" class="menu-browse-item__description">

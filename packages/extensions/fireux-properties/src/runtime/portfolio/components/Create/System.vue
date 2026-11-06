@@ -2,8 +2,8 @@
   <UCard :ui="{ body: 'fx-card-body-stack' }">
     <template #header>
       <div class="space-y-1">
-        <div class="text-sm font-semibold">{{ headerTitle }}</div>
-        <div class="text-xs text-dimmed">
+        <div>{{ headerTitle }}</div>
+        <div>
           {{ headerDescription }}
         </div>
       </div>
@@ -13,10 +13,10 @@
       v-if="showDevNotes"
       data-dev-note="true"
       :data-dev-note-title="developerNoteTitle"
-      class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
+      class="fireux-dev-note rounded-lg px-4 py-3"
     >
       <p class="fireux-dev-note__label mb-1">Developer Note</p>
-      <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+      <ul data-dev-note-body class="fx-list-stack">
         <li>
           Creates
           <code>portfolios/&lt;id&gt;</code>

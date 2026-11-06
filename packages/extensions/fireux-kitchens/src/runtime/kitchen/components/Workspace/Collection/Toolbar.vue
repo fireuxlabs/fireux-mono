@@ -1,14 +1,14 @@
 <template>
-  <div class="grid min-w-0 gap-3">
+  <div class="workspace-surface__grid">
     <div class="flex flex-wrap items-center gap-3">
       <UInput
         v-model="query"
         icon="i-lucide-search"
         :placeholder="`Search ${label}`"
         :aria-label="`Search ${label}`"
-        class="min-w-48 flex-1"
+        class="flex-1"
       />
-      <span role="status" class="text-sm tabular-nums text-muted"
+      <span role="status" class="tabular-nums"
         >{{ count }} {{ count === 1 ? singular : label }}</span
       >
       <slot name="controls" />

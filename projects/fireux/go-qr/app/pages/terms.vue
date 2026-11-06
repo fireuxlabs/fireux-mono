@@ -1,14 +1,12 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> Go QR </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> Go QR </UButton>
         <UPageHeader
           title="Terms"
           description="Go QR hosts public docs and QR pages."
         />
-        <UPageBody class="space-y-4">
-          <section class="space-y-4 text-muted">
+        <UPageBody>
+          <section class="space-y-4">
             <p>
               Go QR lets you upload a doc, publish it at a public link, and
               create a QR code for that link.
@@ -33,8 +31,6 @@
           </section>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

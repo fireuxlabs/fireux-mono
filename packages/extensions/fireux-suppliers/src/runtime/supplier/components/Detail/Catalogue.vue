@@ -3,11 +3,11 @@
     <template #header>Catalogue</template>
     <dl class="grid gap-3 sm:grid-cols-2">
       <div>
-        <dt class="text-xs text-muted">State</dt>
+        <dt>State</dt>
         <dd>{{ supplier.catalogue.mode }}</dd>
       </div>
       <div>
-        <dt class="text-xs text-muted">Supplier status</dt>
+        <dt>Supplier status</dt>
         <dd>{{ supplier.identity.status }}</dd>
       </div>
     </dl>

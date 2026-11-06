@@ -5,10 +5,12 @@
     title="Test could not be loaded"
     color="error"
   >
-    <template #description><FireCopyError message="Test could not be loaded" /></template>
+    <template #description
+      ><FireCopyError message="Test could not be loaded"
+    /></template>
   </UAlert>
   <UCard v-else-if="record">
-    <div class="space-y-5">
+    <div class="fx-card-body-stack">
       <h1 class="fx-type-card-heading">{{ record.value }}</h1>
       <TestForm
         :key="record.id"
@@ -49,8 +51,19 @@ const update = (value: string) =>
   record.value
     ? props.test.update(record.value.id, value)
     : Promise.reject(new Error('Test not found.'))
-const capture = useCommandScope([() => props.recordId, () => props.test.id.value, () => props.test])
-watch([() => props.recordId, () => props.test.id.value], () => { deleting.value = false; error.value = '' }, { flush: 'sync' })
+const capture = useCommandScope([
+  () => props.recordId,
+  () => props.test.id.value,
+  () => props.test,
+])
+watch(
+  [() => props.recordId, () => props.test.id.value],
+  () => {
+    deleting.value = false
+    error.value = ''
+  },
+  { flush: 'sync' }
+)
 async function remove() {
   if (!record.value || deleting.value) return
   const local = capture()

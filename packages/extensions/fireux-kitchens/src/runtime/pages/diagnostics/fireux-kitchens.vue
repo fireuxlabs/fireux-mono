@@ -8,8 +8,8 @@
     <UPageBody class="pagebody">
       <div class="space-y-4">
         <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Ingredients</div>
+          <div class="card__header">
+            <div>Ingredients</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -24,8 +24,8 @@
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Chefs</div>
+          <div class="card__header">
+            <div>Chefs</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('chefs')">
               {{ openSections.chefs ? 'Hide' : 'Show' }}
             </UButton>

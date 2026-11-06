@@ -5,11 +5,8 @@
   >
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <p class="text-sm font-medium text-primary">Discover</p>
-        <h2
-          id="explore-projects-title"
-          class="mt-1 text-2xl font-semibold tracking-tight"
-        >
+        <p class="fx-type-caption">Discover</p>
+        <h2 id="explore-projects-title" class="mt-1 fx-type-section-title">
           Explore Projects
         </h2>
       </div>
@@ -55,16 +52,19 @@
           class="aspect-video rounded-lg object-cover"
           loading="lazy"
         />
-        <h3 class="font-semibold text-highlighted group-hover:text-primary">
+        <h3 class="fx-type-card-heading">
           {{ project.identity.name }}
         </h3>
-        <p v-if="project.identity.description" class="line-clamp-2 text-sm text-muted">
+        <p
+          v-if="project.identity.description"
+          class="line-clamp-2 fx-type-caption"
+        >
           {{ project.identity.description }}
         </p>
-        <span class="mt-auto text-sm text-primary">Explore Project →</span>
+        <span class="mt-auto">Explore Project →</span>
       </NuxtLink>
     </div>
-    <p v-else class="text-sm text-muted">
+    <p v-else class="fx-type-caption">
       Projects available to explore will appear here.
     </p>
   </section>

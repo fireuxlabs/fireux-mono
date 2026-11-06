@@ -2,16 +2,14 @@
   <UCard>
     <template #header>
       <div>
-        <h2 class="text-lg font-semibold text-highlighted">
-          Restaurant labour cost calculator
-        </h2>
-        <p class="mt-1 text-sm text-muted">
+        <h2>Restaurant labour cost calculator</h2>
+        <p class="mt-1">
           Compare total labour cost with sales. Nothing is saved.
         </p>
       </div>
     </template>
 
-    <form class="grid gap-4" @submit.prevent="calculate">
+    <form class="fx-card-body-stack" @submit.prevent="calculate">
       <div class="grid gap-4 sm:grid-cols-2">
         <UFormField label="Sales" required>
           <UInput v-model="sales" type="number" min="0.01" step="0.01">
@@ -35,31 +33,27 @@
         </UFormField>
       </div>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="fx-card__actions">
         <UButton
           type="submit"
           label="Calculate labour cost"
           icon="i-lucide-calculator"
         />
-        <p v-if="error" class="text-sm text-error">{{ error }}</p>
+        <p v-if="error">{{ error }}</p>
       </div>
     </form>
 
     <template v-if="result" #footer>
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
-          <p class="text-xs font-medium uppercase tracking-wide text-muted">
-            Total labour cost
-          </p>
-          <p class="mt-2 text-2xl font-semibold tabular-nums text-highlighted">
+          <p>Total labour cost</p>
+          <p class="mt-2 tabular-nums">
             {{ formatMoney(result.totalLabourCost) }}
           </p>
         </div>
         <div>
-          <p class="text-xs font-medium uppercase tracking-wide text-muted">
-            Labour percentage
-          </p>
-          <p class="mt-2 text-2xl font-semibold tabular-nums text-primary">
+          <p>Labour percentage</p>
+          <p class="mt-2 tabular-nums">
             {{ formatPercentage(result.labourPercentage) }}
           </p>
         </div>

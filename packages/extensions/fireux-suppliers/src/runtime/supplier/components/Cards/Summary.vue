@@ -30,7 +30,7 @@
             <span v-else class="italic">missing</span>
           </div>
 
-          <div class="preview__line text-dimmed">
+          <div class="preview__line">
             <span v-if="categoriesCsv">{{ categoriesCsv }}</span>
             <span v-else class="italic">missing</span>
           </div>

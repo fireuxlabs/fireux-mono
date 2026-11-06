@@ -25,7 +25,6 @@
           <UButton
             size="xs"
             variant="soft"
-            class="shrink-0"
             :loading="actionUid === admin.id"
             :disabled="actionUid !== null"
             @click="onRemoveAdmin(admin.id)"
@@ -36,12 +35,7 @@
       </ul>
     </div>
     <p v-else class="section__empty">No admins yet.</p>
-    <UButton
-      v-if="hasMore"
-      class="mt-4"
-      variant="soft"
-      @click="$emit('load-more')"
-    >
+    <UButton v-if="hasMore" variant="soft" @click="$emit('load-more')">
       Load more admins
     </UButton>
   </UCard>

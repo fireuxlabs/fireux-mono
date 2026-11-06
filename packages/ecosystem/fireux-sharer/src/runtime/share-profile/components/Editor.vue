@@ -8,14 +8,18 @@
             :key="platform.label"
             class="grid items-center gap-3 py-3 sm:grid-cols-[9rem_minmax(0,1fr)]"
           >
-            <div class="flex items-center gap-3 font-medium text-highlighted">
-              <UIcon :name="platform.icon" class="size-5 shrink-0" />
+            <div class="flex items-center gap-3">
+              <UIcon :name="platform.icon" />
               <span>{{ platform.label }}</span>
             </div>
             <UInput
               :model-value="platformUrl(platform.label)"
               :type="platform.inputType || 'url'"
-              :aria-label="platform.inputType === 'email' ? `${platform.label} address` : `${platform.label} URL`"
+              :aria-label="
+                platform.inputType === 'email'
+                  ? `${platform.label} address`
+                  : `${platform.label} URL`
+              "
               :placeholder="platform.placeholder"
               @update:model-value="setPlatformUrl(platform.label, $event)"
             />
@@ -48,9 +52,7 @@
         />
       </div>
 
-      <p v-if="!profile.links.length" class="text-muted">
-        No social links yet.
-      </p>
+      <p v-if="!profile.links.length">No social links yet.</p>
 
       <div class="flex flex-wrap gap-3">
         <UButton
@@ -178,8 +180,7 @@ function setPlatformUrl(label: string, value: string | number) {
     if (url) {
       profile.links[index]!.id = platformId(label)
       profile.links[index]!.url = url
-    }
-    else profile.links.splice(index, 1)
+    } else profile.links.splice(index, 1)
     return
   }
   if (url) profile.links.push({ id: crypto.randomUUID(), label, url })
@@ -277,7 +278,10 @@ async function save() {
 onMounted(load)
 
 function platformId(label: string) {
-  return label.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  return label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
 }
 
 function isEmailAddress(value: string) {

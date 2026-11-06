@@ -7,7 +7,6 @@
         multiple
         value-key="value"
         :items="dishOptions"
-        class="w-full"
         placeholder="Choose dishes"
         :disabled="disabled"
       />
@@ -32,14 +31,13 @@
       />
     </div>
     <div v-for="row in rows" :key="row.dishId" class="promotion-dish-price">
-      <label :for="`promotion-price-${row.dishId}`" class="text-sm">{{
+      <label :for="`promotion-price-${row.dishId}`">{{
         dishOptions.find((dish) => dish.value === row.dishId)?.label ||
         'Unavailable dish'
       }}</label>
       <!-- @vue-generic {string | number, {}} -->
       <UInput
         :id="`promotion-price-${row.dishId}`"
-        class="w-full"
         v-model="row.price"
         type="number"
         min="0"

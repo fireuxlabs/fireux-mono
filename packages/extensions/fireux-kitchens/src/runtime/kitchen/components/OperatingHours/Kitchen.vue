@@ -1,19 +1,17 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="card__header">
         <div>
-          <h2 class="text-lg font-semibold text-highlighted">
-            Kitchen service hours
-          </h2>
-          <p class="mt-1 text-sm text-muted">
+          <h2>Kitchen service hours</h2>
+          <p class="mt-1">
             The window for all customer services, within venue opening hours.
           </p>
         </div>
-        <UIcon name="i-lucide-chef-hat" class="size-6 text-muted" />
+        <UIcon name="i-lucide-chef-hat" />
       </div>
     </template>
-    <div class="space-y-5">
+    <div class="fx-card-body-stack">
       <UAlert
         v-if="hoursConflict"
         color="warning"
@@ -22,11 +20,11 @@
       />
       <div
         v-if="usesVenueHours && !customRequested"
-        class="flex flex-wrap items-center justify-between gap-4"
+        class="card__header"
       >
-        <div class="space-y-1">
-          <p class="font-medium text-highlighted">Same as venue</p>
-          <p class="text-sm text-muted">
+        <div class="fx-card-body-stack">
+          <p>Same as venue</p>
+          <p>
             {{
               effectiveHours.windows.length
                 ? 'Changes to venue hours apply here automatically.'
@@ -43,8 +41,8 @@
         />
       </div>
       <template v-else>
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm text-muted">
+        <div class="card__header">
+          <p>
             {{
               customRequested && usesVenueHours
                 ? 'Choose Kitchen hours within venue opening hours.'
@@ -93,7 +91,7 @@
         <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
       <footer
-        class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4 text-sm text-muted"
+        class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4"
       >
         <UButton
           to="/workspace/kitchen/food-and-drink/services"

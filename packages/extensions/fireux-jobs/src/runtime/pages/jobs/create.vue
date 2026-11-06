@@ -33,14 +33,8 @@
         <UCard v-if="agentCard" variant="subtle">
           <template #header>
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-widest text-primary"
-              >
-                Posting as
-              </p>
-              <h2 class="mt-1 text-base font-semibold text-highlighted">
-                Your hiring profile owns this draft
-              </h2>
+              <p>Posting as</p>
+              <h2 class="mt-1 fx-type-card-heading">Your hiring profile owns this draft</h2>
             </div>
           </template>
           <AgentCardsPill
@@ -119,7 +113,14 @@ const router = useRouter()
 const toast = useToastify()
 const submitting = ref(false)
 const errorMessage = ref('')
-watch(scopeEpoch, () => { submitting.value = false; errorMessage.value = '' }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    submitting.value = false
+    errorMessage.value = ''
+  },
+  { flush: 'sync' }
+)
 
 function onReset() {
   reset()
@@ -139,8 +140,11 @@ async function onSubmit() {
     await router.push(`/jobs/edit/${encodeURIComponent(id)}`)
   } catch (error) {
     if (!isCurrent()) return
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to create draft'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Unable to create draft'
     toast.error(errorMessage.value)
-  } finally { if (isCurrent()) submitting.value = false }
+  } finally {
+    if (isCurrent()) submitting.value = false
+  }
 }
 </script>

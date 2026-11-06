@@ -1,39 +1,39 @@
 <template>
-  <fieldset :disabled="pending" class="space-y-6">
+  <fieldset :disabled="pending" class="collection-stack">
     <slot />
-    <section v-for="section in sections" :key="section.id" class="space-y-3">
-      <h2 class="text-xl font-semibold">{{ section.label }}</h2>
-      <article
+    <section v-for="section in sections" :key="section.id" class="collection-stack">
+      <h2>{{ section.label }}</h2>
+      <UCard
         v-for="item in section.items"
         :key="item.id"
-        class="rounded-xl border border-default p-4"
+        as="article"
+        :description="item.description || undefined"
       >
-        <h3 class="font-semibold">{{ item.name }}</h3>
-        <p v-if="item.description" class="mt-1 text-sm text-muted">
-          {{ item.description }}
-        </p>
-        <template v-if="item.mealDeal">
-          <p class="mt-2 font-semibold">{{ money(item.price) }}</p>
-          <MenuDetailMealDeal :deal="item.mealDeal" :format-price="money" />
-        </template>
-        <div v-else class="mt-3 flex flex-wrap gap-2">
-          <UButton
-            v-if="!item.priceOptions.length"
-            :label="`Add · ${money(item.price)}`"
-            size="lg"
-            variant="soft"
-            @click="emit('add', section.id, item)"
-          />
-          <UButton
-            v-for="option in item.priceOptions"
-            :key="option.id"
-            :label="`${option.label} · ${money(option.price)}`"
-            size="lg"
-            variant="soft"
-            @click="emit('add', section.id, item, option)"
-          />
+        <template #title><h3>{{ item.name }}</h3></template>
+        <div class="fx-card-body-stack">
+          <template v-if="item.mealDeal">
+            <p>{{ money(item.price) }}</p>
+            <MenuDetailMealDeal :deal="item.mealDeal" :format-price="money" />
+          </template>
+          <div v-else class="fx-card__actions">
+            <UButton
+              v-if="!item.priceOptions.length"
+              :label="`Add · ${money(item.price)}`"
+              size="lg"
+              variant="soft"
+              @click="emit('add', section.id, item)"
+            />
+            <UButton
+              v-for="option in item.priceOptions"
+              :key="option.id"
+              :label="`${option.label} · ${money(option.price)}`"
+              size="lg"
+              variant="soft"
+              @click="emit('add', section.id, item, option)"
+            />
+          </div>
         </div>
-      </article>
+      </UCard>
     </section>
   </fieldset>
 </template>

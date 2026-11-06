@@ -1,8 +1,6 @@
 <template>
   <section class="recipe-catalogue">
-    <WorkspaceKitchenCollectionHeader
-      title="Recipes"
-    >
+    <WorkspaceKitchenCollectionHeader title="Recipes">
       <template #actions>
         <UButton
           v-if="canCreateRecipe"
@@ -46,7 +44,7 @@
       <USkeleton v-for="n in 6" :key="n" class="h-48 rounded-xl" />
     </div>
     <div v-else-if="!visibleRecipes.length" class="recipe-empty">
-      <UIcon name="i-lucide-notebook-tabs" class="size-8 text-muted" />
+      <UIcon name="i-lucide-notebook-tabs" />
       <h2>{{ recipes.length ? 'No matching recipes' : 'No recipes yet' }}</h2>
       <UButton
         v-if="recipes.length"

@@ -9,12 +9,10 @@
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Ingredients collection
-            </p>
-            <p class="text-xs text-muted">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
+            <p>Ingredients collection</p>
+            <p>
               Browse ingredients resolved for this runtime and filter by model
               drift.
             </p>

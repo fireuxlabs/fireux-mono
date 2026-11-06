@@ -1,7 +1,7 @@
 <template>
-  <aside v-if="canEdit" class="rounded-xl bg-elevated/50 px-4 py-3 text-sm">
+  <aside v-if="canEdit" class="rounded-xl bg-elevated/50 px-4 py-3">
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <h2 class="font-semibold">Place management</h2>
+      <h2 class="fx-type-section-title">Place management</h2>
       <div class="flex flex-wrap gap-3">
         <UButton
           :to="`/places/${encodeURIComponent(place.id)}/edit`"

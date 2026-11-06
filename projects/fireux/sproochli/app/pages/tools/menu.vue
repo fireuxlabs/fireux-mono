@@ -1,8 +1,5 @@
 <template>
-  <main
-    ref="toolRoot"
-    class="bg-transparent text-default"
-  >
+  <main ref="toolRoot" class="bg-transparent">
     <SproochliProviderToolsMenu
       class="w-full"
       :title="config.title"

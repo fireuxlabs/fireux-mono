@@ -6,7 +6,6 @@
       icon="i-lucide-arrow-left"
       color="neutral"
       variant="soft"
-      class="w-fit"
     />
     <template v-if="kitchen && !loading && !error">
       <UAvatar
@@ -16,10 +15,10 @@
         size="3xl"
       />
       <div>
-        <h1 class="text-2xl font-semibold text-highlighted">
+        <h1>
           {{ kitchen.presentation?.display_name }}
         </h1>
-        <p v-if="kitchen.presentation?.tagline" class="mt-1 text-muted">
+        <p v-if="kitchen.presentation?.tagline" class="mt-1">
           {{ kitchen.presentation?.tagline }}
         </p>
       </div>

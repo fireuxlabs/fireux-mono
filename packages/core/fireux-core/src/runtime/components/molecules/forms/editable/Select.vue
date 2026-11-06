@@ -13,10 +13,7 @@
       @delete="clear"
     />
 
-    <div
-      v-if="!isEditing"
-      class="rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-dimmed"
-    >
+    <div v-if="!isEditing" class="px-3 py-2">
       {{ displayValue }}
     </div>
 
@@ -28,7 +25,6 @@
       label-key="label"
       :placeholder="placeholder"
       :disabled="saving || disabled"
-      class="w-full"
     />
   </div>
 </template>

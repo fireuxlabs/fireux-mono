@@ -1,142 +1,84 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-10 sm:py-14">
-      <div class="mx-auto grid max-w-4xl gap-10">
-        <header class="grid max-w-3xl gap-3">
-          <NuxtLink
-            to="/tools"
-            class="w-fit text-sm font-semibold text-primary hover:underline"
-          >
-            Tools
-          </NuxtLink>
-          <h1 class="m-0 text-3xl font-semibold text-highlighted sm:text-4xl">
-            FireUX Core primitives
-          </h1>
-          <p class="m-0 text-base leading-7 text-muted">
-            Shared capability contracts and server building blocks that packages
-            specialize and compose.
+  <UPage>
+    <UPageHeader
+      title="FireUX Core primitives"
+      description="Shared capability contracts and server building blocks that packages specialize and compose."
+    >
+      <template #links
+        ><UButton to="/tools" label="Tools" color="neutral" variant="ghost"
+      /></template>
+    </UPageHeader>
+    <UPageBody>
+      <UPageCard
+        v-for="primitive in coreToolPrimitives"
+        :id="primitive.documentation.slug"
+        :key="primitive.id"
+        :title="primitive.name"
+        :description="primitive.description"
+      >
+        <div class="fx-card-body-stack">
+          <code>{{ primitive.id }}</code>
+          <p>Capability family: {{ primitive.family }}</p>
+          <UPageFeature title="Problem" :description="primitive.problem" />
+          <section>
+            <h3 class="fx-type-card-heading">Search intent</h3>
+            <ul class="fx-list-stack">
+              <li
+                v-for="intent in primitive.searchIntents"
+                :key="`${intent.kind}:${intent.phrase}`"
+              >
+                {{ intent.phrase }} ({{ intent.kind }}, {{ intent.status }})
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h3 class="fx-type-card-heading">AI context</h3>
+            <p>{{ primitive.ai.baked.purpose }}</p>
+            <p>
+              Runtime required:
+              {{ primitive.ai.runtime.required.join(', ') || 'none' }} ·
+              optional: {{ primitive.ai.runtime.optional.join(', ') || 'none' }}
+            </p>
+            <ul class="fx-list-stack">
+              <li
+                v-for="constraint in primitive.ai.baked.constraints"
+                :key="constraint"
+              >
+                {{ constraint }}
+              </li>
+            </ul>
+          </section>
+          <UPageFeature
+            title="When to use it"
+            :description="primitive.documentation.guide"
+          />
+          <section>
+            <h3 class="fx-type-card-heading">Import</h3>
+            <pre
+              class="overflow-x-auto"
+            ><code>{{ importExample(primitive) }}</code></pre>
+          </section>
+          <section>
+            <h3 class="fx-type-card-heading">Example</h3>
+            <pre
+              class="overflow-x-auto"
+            ><code>{{ primitive.documentation.example }}</code></pre>
+          </section>
+          <p>
+            Execution: {{ primitive.execution.environment }} · authorization
+            {{ primitive.execution.authorization }} · confirmation
+            {{ primitive.execution.confirmation }}. Human surface:
+            {{ primitive.surfaces.human ? 'yes' : 'no' }} · AI surface:
+            {{ primitive.surfaces.ai ? 'yes' : 'no' }}.
           </p>
-        </header>
-
-        <div class="grid gap-4">
-          <!-- TODO: Consider optional disclosure controls only when the Core catalogue is long enough to make scanning difficult. -->
-          <article
-            v-for="primitive in coreToolPrimitives"
-            :id="primitive.documentation.slug"
-            :key="primitive.id"
-            class="scroll-mt-6 rounded-lg border border-default"
-          >
-            <header class="grid gap-1 p-4">
-              <h2 class="m-0 text-lg font-semibold text-highlighted">
-                {{ primitive.name }}
-              </h2>
-              <p class="m-0 text-sm text-muted">
-                {{ primitive.description }}
-              </p>
-              <code class="text-xs text-dimmed">
-                {{ primitive.id }}
-              </code>
-              <span class="text-xs text-dimmed">
-                Capability family: {{ primitive.family }}
-              </span>
-            </header>
-
-            <div class="grid gap-6 border-t border-default p-4">
-              <div class="grid gap-2">
-                <h3 class="m-0 text-base font-semibold text-highlighted">
-                  Problem
-                </h3>
-                <p class="m-0 text-sm leading-6 text-toned">
-                  {{ primitive.problem }}
-                </p>
-              </div>
-
-              <div class="grid gap-2">
-                <h3 class="m-0 text-base font-semibold text-highlighted">
-                  Search intent
-                </h3>
-                <ul class="m-0 grid gap-1 pl-5 text-sm text-toned">
-                  <li
-                    v-for="searchIntent in primitive.searchIntents"
-                    :key="`${searchIntent.kind}:${searchIntent.phrase}`"
-                  >
-                    {{ searchIntent.phrase }}
-                    <span class="text-dimmed">
-                      ({{ searchIntent.kind }}, {{ searchIntent.status }})
-                    </span>
-                  </li>
-                </ul>
-              </div>
-
-              <div class="grid gap-2">
-                <h3 class="m-0 text-base font-semibold text-highlighted">
-                  AI context
-                </h3>
-                <p class="m-0 text-sm leading-6 text-toned">
-                  {{ primitive.ai.baked.purpose }}
-                </p>
-                <p class="m-0 text-xs leading-5 text-dimmed">
-                  Runtime required:
-                  {{ primitive.ai.runtime.required.join(', ') || 'none' }} ·
-                  optional:
-                  {{ primitive.ai.runtime.optional.join(', ') || 'none' }}
-                </p>
-                <ul class="m-0 grid gap-1 pl-5 text-sm text-toned">
-                  <li
-                    v-for="constraint in primitive.ai.baked.constraints"
-                    :key="constraint"
-                  >
-                    {{ constraint }}
-                  </li>
-                </ul>
-              </div>
-
-              <div class="grid gap-2">
-                <h3 class="m-0 text-base font-semibold text-highlighted">
-                  When to use it
-                </h3>
-                <p class="m-0 text-sm leading-6 text-toned">
-                  {{ primitive.documentation.guide }}
-                </p>
-              </div>
-
-              <div class="grid gap-2">
-                <h3 class="m-0 text-base font-semibold text-highlighted">
-                  Import
-                </h3>
-                <pre
-                  class="overflow-x-auto rounded-lg bg-elevated p-4 text-sm"
-                ><code>{{ importExample(primitive) }}</code></pre>
-              </div>
-
-              <div class="grid gap-2">
-                <h3 class="m-0 text-base font-semibold text-highlighted">
-                  Example
-                </h3>
-                <pre
-                  class="overflow-x-auto rounded-lg bg-elevated p-4 text-sm"
-                ><code>{{ primitive.documentation.example }}</code></pre>
-              </div>
-
-              <p class="m-0 text-xs leading-5 text-dimmed">
-                Execution: {{ primitive.execution.environment }} · authorization
-                {{ primitive.execution.authorization }} · confirmation
-                {{ primitive.execution.confirmation }}. Human surface:
-                {{ primitive.surfaces.human ? 'yes' : 'no' }} · AI surface:
-                {{ primitive.surfaces.ai ? 'yes' : 'no' }}.
-              </p>
-
-              <p class="m-0 text-xs leading-5 text-dimmed">
-                Authorize the request and choose an owner-controlled target
-                before using this primitive. Core does not decide domain
-                ownership.
-              </p>
-            </div>
-          </article>
+          <p>
+            Authorize the request and choose an owner-controlled target before
+            using this primitive. Core does not decide domain ownership.
+          </p>
         </div>
-      </div>
-    </UContainer>
-  </main>
+      </UPageCard>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

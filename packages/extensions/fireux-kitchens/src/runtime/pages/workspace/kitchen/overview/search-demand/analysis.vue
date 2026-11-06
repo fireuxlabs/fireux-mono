@@ -5,45 +5,37 @@
       current="analysis"
     />
     <header class="grid gap-3 border-b border-default pb-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Stage 2 · Analysis
-      </p>
-      <h1 class="m-0 text-3xl font-semibold text-highlighted">
-        The operator jobs behind Overview
-      </h1>
-      <p class="m-0 max-w-3xl text-base text-muted">
+      <p>Stage 2 · Analysis</p>
+      <h1>The operator jobs behind Overview</h1>
+      <p class="max-w-3xl">
         Give operators a stable map of the Kitchen while every fact and action
         retains an explicit owner.
       </p>
     </header>
-    <ol class="grid gap-4">
-      <li
+    <ol class="workspace-surface__grid">
+      <UCard as="li" :ui="{ body: 'fx-card-body-stack' }"
         v-for="(cluster, index) in demand.clusters"
         :key="cluster.id"
-        class="grid gap-3 rounded-xl border border-default p-5"
+        
       >
-        <div class="flex items-start gap-3">
+        <div class="fx-card__chips">
           <UBadge color="neutral" variant="soft">{{ index + 1 }}</UBadge>
           <div>
-            <h2 class="m-0 font-semibold text-highlighted">
+            <h2>
               {{ cluster.title }}
             </h2>
-            <p class="m-0 text-sm text-toned">
+            <p>
               {{ cluster.operatorJob }}
             </p>
           </div>
         </div>
-        <p class="m-0 text-sm text-muted">{{ cluster.interpretation }}</p>
-        <p class="m-0 text-xs text-dimmed">
-          Owners: {{ cluster.owners.join(' · ') }}
-        </p>
-      </li>
+        <p>{{ cluster.interpretation }}</p>
+        <p>Owners: {{ cluster.owners.join(' · ') }}</p>
+      </UCard>
     </ol>
     <section class="grid gap-3 border-t border-default pt-8">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
-        Required record questions
-      </p>
-      <ul class="fx-list-stack list-disc text-sm text-muted">
+      <p>Required record questions</p>
+      <ul class="fx-list-stack list-disc">
         <li v-for="question in demand.recordQuestions" :key="question">
           {{ question }}
         </li>
@@ -58,7 +50,6 @@
     <UButton
       to="/workspace/kitchen/overview/search-demand/tools"
       trailing-icon="i-lucide-arrow-right"
-      class="w-fit"
       >Review Overview boundary</UButton
     >
   </section>

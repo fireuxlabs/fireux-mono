@@ -21,7 +21,7 @@
     state="empty"
   />
 
-  <div v-else class="space-y-6">
+  <div v-else class="pagebody">
     <UPageHeader :title="appDisplayName">
       <template #links>
         <UButton
@@ -35,11 +35,11 @@
       </template>
     </UPageHeader>
 
-    <details open class="rounded-lg border border-default">
-      <summary class="cursor-pointer px-4 py-3 font-medium text-highlighted">
+    <details open>
+      <summary class="cursor-pointer px-4 py-3">
         App identity and members
       </summary>
-      <div class="border-t border-default p-4 sm:p-6">
+      <div class="p-4 sm:p-6">
         <AppEditAdmin :app="appSnapshot" />
       </div>
     </details>
@@ -49,17 +49,17 @@
       :key="group.owner"
       class="space-y-2"
     >
-      <h2 class="text-sm font-semibold text-muted">{{ group.label }}</h2>
+      <h2>{{ group.label }}</h2>
       <div class="divide-y divide-default">
         <div
           v-for="tool in group.tools"
           :key="tool.key"
           class="flex items-center gap-4 py-4 first:pt-0"
         >
-          <UIcon :name="tool.icon" class="size-5 shrink-0 text-primary" />
+          <UIcon :name="tool.icon" class="size-5 shrink-0" />
           <div class="min-w-0 flex-1">
-            <h3 class="font-medium text-highlighted">{{ tool.label }}</h3>
-            <p v-if="tool.description" class="text-sm text-muted">
+            <h3>{{ tool.label }}</h3>
+            <p v-if="tool.description">
               {{ tool.description }}
             </p>
           </div>
@@ -109,9 +109,7 @@ const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? (app.value ?? null) : null
 )
 const appCard = computed(() => toCard(appSnapshot.value))
-const appDisplayName = computed(
-  () => appCard.value?.name || fireux.appName
-)
+const appDisplayName = computed(() => appCard.value?.name || fireux.appName)
 const appPath = computed(() => appCard.value?.to)
 
 const adminTools = computed(() => {

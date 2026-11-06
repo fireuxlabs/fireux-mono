@@ -1,12 +1,12 @@
 <template>
-  <UContainer class="py-12 sm:py-16">
+  <UContainer>
     <div class="mx-auto grid max-w-3xl gap-8">
-      <header class="text-center">
-        <p class="text-sm font-semibold text-primary">Free restaurant tool</p>
-        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
+      <header>
+        <p class="fx-type-caption">Free restaurant tool</p>
+        <h1 class="mt-3 fx-type-page-title">
           Restaurant labour cost calculator
         </h1>
-        <p class="mx-auto mt-4 max-w-2xl text-muted">
+        <p class="mx-auto mt-4 max-w-2xl fx-type-body">
           Add sales, wages and employment costs to calculate total labour cost
           and labour percentage. No sign-in is required.
         </p>

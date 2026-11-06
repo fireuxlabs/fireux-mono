@@ -2,14 +2,12 @@
   <ClientOnly>
     <div v-if="chef" class="space-y-6">
       <UCard>
-        <div class="space-y-2">
-          <h3 class="text-base font-semibold text-highlighted">
-            App-level Chef Settings
-          </h3>
-          <p class="text-sm text-muted">
+        <div class="fx-card-body-stack">
+          <h3>App-level Chef Settings</h3>
+          <p>
             There are currently no app-specific fields for the chef profile.
           </p>
-          <p class="text-xs text-dimmed">
+          <p>
             This section is reserved for tenant-specific overrides when they are
             needed.
           </p>
@@ -17,12 +15,7 @@
       </UCard>
     </div>
 
-    <FireStateCard
-      v-else
-      entity="chef app profile"
-      kind="document"
-      loading
-    />
+    <FireStateCard v-else entity="chef app profile" kind="document" loading />
   </ClientOnly>
 </template>
 

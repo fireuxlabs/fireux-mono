@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section class="workspace-surface workspace-surface--compact">
     <UAlert
       v-if="writeError"
       color="error"
@@ -9,9 +9,7 @@
       <template #actions><FireCopyError :message="writeError" /></template>
     </UAlert>
 
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading documents…
-    </p>
+    <p v-if="outcome === 'pending'" role="status">Loading documents…</p>
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -21,35 +19,32 @@
         ><FireCopyError message="Could not load documents."
       /></template>
     </UAlert>
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Portfolio to view documents.
     </p>
     <template v-else>
       <UCard>
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="workspace-surface__grid workspace-surface__grid--2">
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Documents</div>
-            <div class="text-xl font-semibold">{{ documents.length }}</div>
+            <div>Documents</div>
+            <div>{{ documents.length }}</div>
           </div>
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Links</div>
-            <div class="text-xl font-semibold">{{ links.length }}</div>
+            <div>Links</div>
+            <div>{{ links.length }}</div>
           </div>
         </div>
       </UCard>
 
       <UCard v-if="canWrite">
         <template #header>
-          <div class="text-sm font-semibold">Upload document</div>
+          <div>Upload document</div>
         </template>
 
         <div class="space-y-3">
           <input
             type="file"
-            class="block w-full rounded border border-default p-2 text-sm"
+            class="block w-full rounded border border-default p-2"
             :disabled="!canWrite"
             @change="handleFileInput"
           />
@@ -70,7 +65,7 @@
             Upload to vault
           </UButton>
 
-          <div class="text-xs text-dimmed">
+          <div>
             If interrupted, retry the same file and notes before starting
             another upload.
           </div>
@@ -79,10 +74,10 @@
 
       <UCard v-if="canWrite">
         <template #header>
-          <div class="text-sm font-semibold">Link document to entity</div>
+          <div>Link document to entity</div>
         </template>
 
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="workspace-surface__grid workspace-surface__grid--2">
           <UInput
             v-model="linkDocumentId"
             :disabled="!canWrite"
@@ -127,26 +122,24 @@
           </UButton>
         </div>
 
-        <div class="mt-2 text-xs text-dimmed">
+        <div class="mt-2">
           Allowed target types: {{ allowedTargetTypesLabel }}
         </div>
       </UCard>
 
       <UCard>
         <template #header>
-          <div class="text-sm font-semibold">Vault documents</div>
+          <div>Vault documents</div>
         </template>
 
         <div v-if="cards.length" class="space-y-3">
           <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
-                <div class="text-sm font-semibold">{{ item.title }}</div>
-                <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                <div class="text-xs text-dimmed">{{ item.meta }}</div>
-                <div class="text-xs text-dimmed">
-                  Links: {{ linkCountByDocument[item.id] || 0 }}
-                </div>
+                <div>{{ item.title }}</div>
+                <div>{{ item.subtitle }}</div>
+                <div>{{ item.meta }}</div>
+                <div>Links: {{ linkCountByDocument[item.id] || 0 }}</div>
               </div>
 
               <UButton

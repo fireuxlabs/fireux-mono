@@ -1,14 +1,11 @@
 <template>
-  <UCard
-    variant="subtle"
-    class="w-full rounded-lg shadow-none ring-0"
-  >
-    <div class="space-y-5">
+  <UCard variant="subtle">
+    <div class="fx-card-body-stack">
       <a
         :href="providerUrl"
         target="_blank"
         rel="noopener"
-        class="inline-flex items-center gap-2 text-xs font-medium text-muted hover:text-highlighted"
+        class="inline-flex items-center gap-2"
       >
         <AppBrandLogo
           size="small"
@@ -18,15 +15,9 @@
         <span>Powered by {{ providerName }}</span>
       </a>
 
-      <header
-        v-if="title || description"
-        class="space-y-2"
-      >
+      <header v-if="title || description" class="space-y-2">
         <div class="flex flex-wrap items-center gap-2">
-          <h2
-            v-if="title"
-            class="text-lg font-semibold text-highlighted"
-          >
+          <h2 v-if="title">
             {{ title }}
           </h2>
           <UBadge
@@ -36,10 +27,7 @@
             variant="soft"
           />
         </div>
-        <p
-          v-if="description"
-          class="text-sm leading-6 text-muted"
-        >
+        <p v-if="description">
           {{ description }}
         </p>
       </header>

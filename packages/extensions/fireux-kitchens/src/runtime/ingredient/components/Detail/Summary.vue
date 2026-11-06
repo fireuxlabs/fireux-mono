@@ -1,6 +1,6 @@
 <template>
   <UCard>
-    <div class="flex items-start gap-3">
+    <div class="fx-card__chips">
       <UAvatar
         :src="model.card.imageUrl || undefined"
         icon="i-lucide-carrot"
@@ -8,12 +8,12 @@
       />
 
       <div class="min-w-0 flex-1 space-y-2">
-        <div class="flex items-start justify-between gap-2">
+        <div class="card__header">
           <div class="min-w-0">
-            <div class="truncate text-base font-semibold">
+            <div class="truncate">
               {{ model.title }}
             </div>
-            <div v-if="model.subtitle" class="truncate text-xs text-dimmed">
+            <div v-if="model.subtitle" class="truncate">
               {{ model.subtitle }}
             </div>
           </div>
@@ -23,9 +23,9 @@
           </UBadge>
         </div>
 
-        <div class="grid gap-2 text-xs text-dimmed sm:grid-cols-2">
+        <div class="grid gap-2 sm:grid-cols-2">
           <div v-for="detail in model.details" :key="detail.label">
-            <span class="font-medium text-toned">{{ detail.label }}:</span>
+            <span>{{ detail.label }}:</span>
             {{ detail.value }}
           </div>
         </div>

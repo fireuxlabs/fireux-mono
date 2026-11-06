@@ -1,14 +1,13 @@
 <template>
   <div class="grid gap-6">
     <UFormField label="Name" required
-      ><UInput v-model="name" aria-label="Recipe name" class="w-full"
+      ><UInput v-model="name" aria-label="Recipe name"
     /></UFormField>
     <UFormField label="Description"
       ><UTextarea
         v-model="description"
         aria-label="Recipe description"
         :rows="2"
-        class="w-full"
     /></UFormField>
     <div class="grid grid-cols-2 gap-3">
       <UFormField label="Yield" required
@@ -18,14 +17,12 @@
           min="0.001"
           step="any"
           aria-label="Yield quantity"
-          class="w-full"
       /></UFormField>
       <UFormField label="Unit" required
         ><UInput
           v-model="yieldValue.unit"
           placeholder="portions, kg, litres…"
           aria-label="Yield unit"
-          class="w-full"
       /></UFormField>
     </div>
   </div>

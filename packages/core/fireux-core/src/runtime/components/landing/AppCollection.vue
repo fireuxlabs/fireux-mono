@@ -36,7 +36,7 @@
         variant="subtle"
         class="landing-app-collection__card"
       >
-        <USkeleton class="aspect-[16/9] w-full rounded-xl" />
+        <USkeleton class="aspect-[16/9] w-full" />
         <USkeleton class="h-5 w-2/3" />
         <USkeleton class="h-12 w-full" />
       </UPageCard>

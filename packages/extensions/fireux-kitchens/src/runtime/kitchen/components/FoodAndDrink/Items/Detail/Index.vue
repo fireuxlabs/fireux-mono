@@ -1,11 +1,9 @@
 <template>
   <section class="dish-workspace">
-    <NuxtLink
-      :to="catalogueReturn"
-      class="text-sm text-muted inline-flex items-center gap-2"
+    <NuxtLink :to="catalogueReturn" class="inline-flex items-center gap-2"
       ><UIcon name="i-lucide-arrow-left" />Food &amp; drinks</NuxtLink
     >
-    <NuxtLink v-if="menuReturn" :to="menuReturn" class="text-sm text-primary"
+    <NuxtLink v-if="menuReturn" :to="menuReturn"
       >← Back to menu selection</NuxtLink
     >
     <UAlert
@@ -35,7 +33,7 @@
           class="dish-image"
         />
         <div class="min-w-0 flex-1">
-          <p class="text-xs uppercase tracking-widest text-muted">
+          <p>
             {{ selectedKitchen?.name }} ·
             {{
               catalogue.itemKind === 'food'
@@ -43,10 +41,10 @@
                 : catalogue.singular
             }}
           </p>
-          <h1 class="text-3xl font-semibold tracking-tight mt-2">
+          <h1 class="mt-2">
             {{ dish.name }}
           </h1>
-          <p v-if="dish.description" class="mt-2 text-muted max-w-2xl">
+          <p v-if="dish.description" class="mt-2 max-w-2xl">
             {{ dish.description }}
           </p>
           <div v-if="dish.spec" class="flex flex-wrap gap-2 mt-3">
@@ -54,7 +52,7 @@
               >{{ dish.spec.portion }} portion{{
                 dish.spec.portion === 1 ? '' : 's'
               }}</UBadge
-            ><span class="text-sm text-muted">{{ dish.spec.station }}</span>
+            ><span>{{ dish.spec.station }}</span>
           </div>
         </div>
         <UButton
@@ -90,9 +88,7 @@
           ><div class="grid gap-5">
             <KitchenFoodAndDrinkItemsEdit />
             <details>
-              <summary class="text-sm text-muted cursor-pointer">
-                Remove dish
-              </summary>
+              <summary class="cursor-pointer">Remove dish</summary>
               <div class="mt-4">
                 <KitchenFoodAndDrinkItemsDelete :remove="removeDish" />
               </div>

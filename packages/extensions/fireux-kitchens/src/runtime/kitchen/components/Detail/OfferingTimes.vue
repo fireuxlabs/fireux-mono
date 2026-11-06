@@ -7,28 +7,21 @@
     }"
     aria-label="Serving times"
   >
-    <div
-      v-if="!compact"
-      class="flex items-center gap-2 text-sm font-semibold text-highlighted"
-    >
-      <UIcon name="i-lucide-utensils" class="size-4" aria-hidden="true" />
+    <div v-if="!compact" class="flex items-center gap-2">
+      <UIcon name="i-lucide-utensils" aria-hidden="true" />
       Serving times
     </div>
-    <p v-if="!offerings.length" class="text-sm text-muted">
+    <p v-if="!offerings.length">
       {{ emptyMessage }}
     </p>
     <div
       v-for="row in rows"
       :key="row.id"
-      class="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm"
+      class="flex flex-wrap items-baseline gap-x-2 gap-y-1"
     >
-      <span v-if="showNames" class="font-medium text-highlighted">{{
-        row.name
-      }}</span>
-      <span :class="row.open ? 'font-medium text-success' : 'text-muted'">{{
-        row.label
-      }}</span>
-      <span v-if="row.closes" class="text-muted">· Until {{ row.closes }}</span>
+      <span v-if="showNames">{{ row.name }}</span>
+      <span>{{ row.label }}</span>
+      <span v-if="row.closes">· Until {{ row.closes }}</span>
     </div>
     <PlaceOpeningHoursWeek
       v-for="offering in offerings.filter(
@@ -38,12 +31,9 @@
       :hours="offering.hours || { windows: [] }"
       compact
     />
-    <p
-      v-if="next && !compact"
-      class="border-t border-default pt-3 text-sm text-muted"
-    >
+    <p v-if="next && !compact" class="border-t border-default pt-3">
       Next offering:
-      <span class="font-medium text-highlighted">{{ next.name }}</span> ·
+      <span>{{ next.name }}</span> ·
       {{ next.next }}
     </p>
   </section>

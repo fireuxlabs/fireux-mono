@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: show which public surface produced each request. -->
 <template>
-  <section class="space-y-4">
+  <section class="pagebody">
     <UButton
       to="/workspace/project/ignition-reconciliation"
       label="Reconcile the Misebox reference build"
@@ -10,10 +10,8 @@
     />
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h2 class="text-lg font-semibold text-highlighted">
-          Ignition requests
-        </h2>
-        <p class="text-sm text-muted">
+        <h2 class="fx-type-section-title">Ignition requests</h2>
+        <p class="fx-type-caption">
           Accept a request, then work through its launch checklist.
         </p>
       </div>
@@ -47,22 +45,22 @@
     />
 
     <UCard v-if="pending && !items.length">
-      <p class="text-sm text-muted">Loading requests...</p>
+      <p class="fx-type-caption">Loading requests...</p>
     </UCard>
 
     <UCard v-else-if="!items.length && !error">
-      <p class="font-medium text-highlighted">No Ignition requests yet.</p>
-      <p class="mt-1 text-sm text-muted">
+      <p class="fx-type-body">No Ignition requests yet.</p>
+      <p class="mt-1 fx-type-caption">
         New requests from /get-started will appear here.
       </p>
     </UCard>
 
     <UCard v-for="request in items" :key="request.id">
       <template #header>
-        <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="card__header">
           <div>
             <div class="flex flex-wrap items-center gap-2">
-              <h3 class="text-base font-semibold text-highlighted">
+              <h3 class="fx-type-card-heading">
                 {{ request.business.name || 'Unnamed business' }}
               </h3>
               <UBadge :color="statusColor(request.status)" variant="soft">
@@ -71,19 +69,18 @@
               <NuxtLink
                 v-if="request.origin"
                 :to="originTo(request.origin)"
-                class="text-xs font-medium text-primary hover:underline"
+                class="hover:underline"
               >
                 {{ originLabel(request.origin) }}
               </NuxtLink>
             </div>
-            <p class="mt-1 text-sm text-muted">
+            <p class="mt-1 fx-type-caption">
               {{ request.contact.name }} · {{ formatDate(request.created_at) }}
             </p>
           </div>
 
           <USelect
             :model-value="request.status"
-            class="w-40"
             :items="statusOptions"
             :disabled="isUpdating(request.id, 'status')"
             @update:model-value="setStatus(request, String($event))"
@@ -92,92 +89,72 @@
       </template>
 
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.7fr)]">
-        <div class="space-y-5">
-          <div class="grid gap-3 text-sm sm:grid-cols-2">
+        <div class="fx-card-body-stack">
+          <div class="grid gap-3 sm:grid-cols-2">
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide text-muted"
-              >
-                Contact
-              </p>
+              <p class="fx-type-caption">Contact</p>
               <a
                 :href="`mailto:${request.contact.email}`"
-                class="mt-1 block text-primary hover:underline"
+                class="mt-1 block hover:underline"
               >
                 {{ request.contact.email }}
               </a>
             </div>
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide text-muted"
-              >
-                Website
-              </p>
+              <p class="fx-type-caption">Website</p>
               <a
                 v-if="request.business.website"
                 :href="request.business.website"
-                class="mt-1 block break-all text-primary hover:underline"
+                class="mt-1 block break-all hover:underline"
                 target="_blank"
                 rel="noreferrer"
               >
                 {{ request.business.website }}
               </a>
-              <p v-else class="mt-1 text-muted">None</p>
+              <p v-else class="mt-1 fx-type-body">None</p>
             </div>
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide text-muted"
-              >
-                Branding
-              </p>
-              <p class="mt-1 text-highlighted">
+              <p class="fx-type-caption">Branding</p>
+              <p class="mt-1 fx-type-body">
                 {{ brandingLabel(request.business.branding) }}
               </p>
             </div>
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide text-muted"
-              >
-                Pages
-              </p>
-              <p class="mt-1 text-highlighted">
+              <p class="fx-type-caption">Pages</p>
+              <p class="mt-1 fx-type-body">
                 {{ request.pages.join(', ') || 'None' }}
               </p>
             </div>
           </div>
 
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-              One job
-            </p>
-            <p class="mt-1 whitespace-pre-wrap text-highlighted">
+            <p class="fx-type-caption">One job</p>
+            <p class="mt-1 whitespace-pre-wrap fx-type-body">
               {{ request.app_job }}
             </p>
           </div>
 
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-              Access
-            </p>
-            <p class="mt-1 whitespace-pre-wrap text-highlighted">
+            <p class="fx-type-caption">Access</p>
+            <p class="mt-1 whitespace-pre-wrap fx-type-body">
               {{ request.access }}
             </p>
           </div>
         </div>
 
         <div class="space-y-3 rounded-lg border border-default p-4">
-          <div class="flex items-center justify-between gap-3">
-            <h4 class="font-semibold text-highlighted">Delivery</h4>
+          <div class="card__header">
+            <h4 class="fx-type-card-heading">Delivery</h4>
             <UBadge color="neutral" variant="soft">
               {{ completedCount(request) }}/{{ checklist.length }}
             </UBadge>
           </div>
 
-          <p v-if="request.status === 'new'" class="text-sm text-muted">
+          <p v-if="request.status === 'new'" class="fx-type-caption">
             Accept this request to start delivery.
           </p>
 
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <UCheckbox
               v-for="step in checklist"
               :key="step.key"
@@ -197,7 +174,7 @@
       </div>
 
       <template #footer>
-        <p class="font-mono text-xs text-dimmed">{{ request.id }}</p>
+        <p class="fx-type-code">{{ request.id }}</p>
       </template>
     </UCard>
   </section>

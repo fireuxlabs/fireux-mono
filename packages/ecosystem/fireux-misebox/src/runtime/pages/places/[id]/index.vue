@@ -31,14 +31,12 @@
                 variant="soft"
                 @click="kitchens.refresh()"
               />
-              <FireCopyError
-                message="Kitchen information is unavailable"
-              />
+              <FireCopyError message="Kitchen information is unavailable" />
             </template>
           </UAlert>
           <USkeleton
             v-else-if="kitchens.pending.value"
-            class="h-36 rounded-2xl"
+            class="h-36"
             aria-label="Loading Kitchen information"
           />
           <!-- Supplier public content is intentionally disconnected for this pass. -->

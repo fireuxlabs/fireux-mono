@@ -3,7 +3,7 @@
   <UCard>
     <template #header>
       <div>
-        <div class="text-base font-semibold text-highlighted">Contact</div>
+        <div>Contact</div>
       </div>
     </template>
 

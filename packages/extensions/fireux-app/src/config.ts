@@ -23,7 +23,6 @@ import {
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import {
-  configureDashboardPanelDefaults,
   configureFireuxModuleRestartWatch,
   configureCoreCss,
   configureIconServerBundle,
@@ -73,7 +72,6 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
   configureAppModules(nuxt, app, appDatabaseRuntimeModule)
   configureFireuxModuleRestartWatch(nuxt)
   configureIconServerBundle(nuxt)
-  configureDashboardPanelDefaults(nuxt)
   configureCoreCss(nuxt)
 
   const envDomain = reqEnv('APP_DOMAIN')

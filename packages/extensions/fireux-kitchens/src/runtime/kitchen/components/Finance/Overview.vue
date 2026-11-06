@@ -1,8 +1,6 @@
 <template>
   <section class="space-y-5">
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading sales…
-    </p>
+    <p v-if="outcome === 'pending'" role="status">Loading sales…</p>
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -11,42 +9,37 @@
     >
       <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Kitchen to view sales.
     </p>
     <template v-else>
       <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <UCard class="sm:col-span-2">
-          <div class="flex items-start justify-between gap-4">
+          <div class="card__header">
             <div>
-              <p class="text-sm font-medium text-muted">Gross sales</p>
-              <p
-                class="mt-3 text-4xl font-semibold tracking-tight tabular-nums text-highlighted sm:text-5xl"
-              >
+              <p>Gross sales</p>
+              <p class="mt-3 tabular-nums">
                 {{ formatMoney(grossSalesMinor) }}
               </p>
-              <p class="mt-3 text-sm text-muted">{{ periodLabel }}</p>
+              <p class="mt-3">{{ periodLabel }}</p>
             </div>
             <span
-              class="flex size-11 items-center justify-center rounded-xl bg-success/10 text-success"
+              class="flex size-11 items-center justify-center rounded-xl bg-success/10"
             >
-              <UIcon name="i-lucide-trending-up" class="size-5" />
+              <UIcon name="i-lucide-trending-up" />
             </span>
           </div>
         </UCard>
 
         <UCard v-for="metric in supportingMetrics" :key="metric.label">
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-sm font-medium text-muted">{{ metric.label }}</p>
-            <UIcon :name="metric.icon" class="size-4 text-dimmed" />
+          <div class="card__header">
+            <p>{{ metric.label }}</p>
+            <UIcon :name="metric.icon" />
           </div>
-          <p class="mt-4 text-2xl font-semibold tabular-nums text-highlighted">
+          <p class="mt-4 tabular-nums">
             {{ metric.value }}
           </p>
-          <p class="mt-2 text-xs text-muted">{{ metric.description }}</p>
+          <p class="mt-2">{{ metric.description }}</p>
         </UCard>
       </div>
 
@@ -67,10 +60,7 @@
             :trend="salesTrend"
             size="lg"
           />
-          <div
-            v-else
-            class="flex min-h-64 items-center justify-center text-sm text-muted"
-          >
+          <div v-else class="flex min-h-64 items-center justify-center">
             More than one reporting point is needed to show a trend.
           </div>
         </UCard>
@@ -78,10 +68,8 @@
         <UCard>
           <template #header>
             <div>
-              <h2 class="font-semibold text-highlighted">Management picture</h2>
-              <p class="mt-1 text-xs text-muted">
-                What the connected sources can prove.
-              </p>
+              <h2>Management picture</h2>
+              <p class="mt-1">What the connected sources can prove.</p>
             </div>
           </template>
           <dl class="divide-y divide-default">
@@ -90,8 +78,8 @@
               :key="item.label"
               class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
             >
-              <dt class="text-sm text-muted">{{ item.label }}</dt>
-              <dd class="text-right text-sm font-semibold text-highlighted">
+              <dt>{{ item.label }}</dt>
+              <dd>
                 {{ item.value }}
               </dd>
             </div>
@@ -101,11 +89,7 @@
 
       <div class="grid gap-4 lg:grid-cols-2">
         <UCard>
-          <template #header
-            ><h2 class="font-semibold text-highlighted">
-              Sales by service
-            </h2></template
-          >
+          <template #header><h2>Sales by service</h2></template>
           <ul class="divide-y divide-default">
             <li
               v-for="service in serviceBreakdown"
@@ -113,14 +97,12 @@
               class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
             >
               <div>
-                <p class="text-sm font-medium text-highlighted">
+                <p>
                   {{ formatTransactionType(service.type) }}
                 </p>
-                <p class="mt-1 text-xs text-muted">
-                  {{ formatCount(service.checks) }} completed
-                </p>
+                <p class="mt-1">{{ formatCount(service.checks) }} completed</p>
               </div>
-              <p class="text-sm font-semibold tabular-nums text-highlighted">
+              <p class="tabular-nums">
                 {{ formatMoney(service.amountMinor) }}
               </p>
             </li>
@@ -128,11 +110,7 @@
         </UCard>
 
         <UCard>
-          <template #header
-            ><h2 class="font-semibold text-highlighted">
-              Best sellers
-            </h2></template
-          >
+          <template #header><h2>Best sellers</h2></template>
           <ul class="divide-y divide-default">
             <li
               v-for="item in bestSellers"
@@ -140,14 +118,12 @@
               class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
             >
               <div class="min-w-0">
-                <p class="truncate text-sm font-medium text-highlighted">
+                <p class="truncate">
                   {{ item.label }}
                 </p>
-                <p class="mt-1 text-xs text-muted">
-                  {{ formatCount(item.quantity) }} sold
-                </p>
+                <p class="mt-1">{{ formatCount(item.quantity) }} sold</p>
               </div>
-              <p class="text-sm font-semibold tabular-nums text-highlighted">
+              <p class="tabular-nums">
                 {{ formatMoney(item.line_gross.amount_minor) }}
               </p>
             </li>

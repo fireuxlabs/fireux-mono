@@ -3,13 +3,11 @@
     description="Pricing for SEO profile, discovery, and lead products."
   >
     <section class="rounded-md border border-default bg-default p-5">
-      <p class="text-sm font-semibold uppercase tracking-wide text-muted">
-        Product pricing
-      </p>
-      <h2 class="mt-2 text-2xl font-semibold text-highlighted">
+      <p class="fx-type-caption">Product pricing</p>
+      <h2 class="mt-2 fx-type-section-title">
         SEO marketplace products live in Products.
       </h2>
-      <p class="mt-3 text-muted">
+      <p class="mt-3 fx-type-body">
         Find My SEO pricing explains profile, discovery, and lead packages. The
         actual buyable records belong in the shared Products system.
       </p>

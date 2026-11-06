@@ -48,7 +48,7 @@
           :pending="subscriptionActionPending"
           :on-set-subscription="setSubscription"
         />
-        <p v-else class="text-sm text-muted">
+        <p v-else>
           No {{ appName }} membership record exists for {{ user.display_name }}.
           This is not the same as a Free subscription.
         </p>

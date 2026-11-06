@@ -5,17 +5,13 @@
     <template #intro>
       <slot name="intro">
         <span
-          class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
+          class="flex size-12 items-center justify-center rounded-xl bg-primary/10"
         >
-          <UIcon name="i-lucide-map-pin" class="size-6" />
+          <UIcon name="i-lucide-map-pin" />
         </span>
-        <p class="mt-6 text-sm font-semibold text-primary">Place setup</p>
-        <h1
-          class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
-        >
-          Add a Place
-        </h1>
-        <p class="mt-3 text-sm leading-6 text-muted">
+        <p class="mt-6">Place setup</p>
+        <h1 class="mt-2 sm:text-3xl fx-type-page-title">Add a Place</h1>
+        <p class="mt-3">
           Find the location, confirm its defaults, and review the Place before
           it is added.
         </p>
@@ -102,7 +98,8 @@
           variant="soft"
           icon="i-lucide-arrow-left"
           :disabled="pending"
-          class="w-full justify-center sm:w-auto"
+          class="justify-center sm:w-auto"
+          block
           @click="onBack"
         >
           Back
@@ -113,7 +110,8 @@
           :icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
           :loading="pending || resolvingExisting"
           :disabled="continueDisabled"
-          class="w-full justify-center sm:w-auto"
+          class="justify-center sm:w-auto"
+          block
           @click="onContinue"
         >
           {{ continueLabel }}

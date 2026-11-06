@@ -1,6 +1,6 @@
 <template>
   <WorkspacePortfolioHomeInfo />
-  <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+  <UDashboardToolbar v-if="isSignedIn"
     ><WorkspacePortfolioSelector /> </UDashboardToolbar
   ><WorkspacePortfolioHomeHero />
   <WorkspaceGuestWelcome />

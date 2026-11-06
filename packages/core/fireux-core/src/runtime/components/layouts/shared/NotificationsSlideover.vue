@@ -88,11 +88,11 @@ async function markNotificationRead(notificationId: string) {
         />
         <WorkspaceIntroInfo :intro="intro" />
       </div>
-      <p v-if="notifications.length === 50" class="mb-4 text-sm text-muted">
+      <p v-if="notifications.length === 50" class="mb-4">
         Showing your latest 50 notifications. {{ liveUnreadCount }} unread in
         total.
       </p>
-      <div v-if="pending" class="space-y-3">
+      <div v-if="pending" class="pagebody">
         <USkeleton v-for="index in 3" :key="index" class="h-24" />
       </div>
 
@@ -104,14 +104,8 @@ async function markNotificationRead(notificationId: string) {
         description="Please try again shortly."
       />
 
-      <div
-        v-else-if="!visibleNotifications.length"
-        class="py-12 text-center text-sm text-muted"
-      >
-        <UIcon
-          name="i-lucide-check-check"
-          class="mx-auto mb-4 block size-8 text-primary"
-        />
+      <div v-else-if="!visibleNotifications.length" class="py-12">
+        <UIcon name="i-lucide-check-check" class="mx-auto mb-4 block size-8" />
         {{
           filter === 'unread'
             ? liveUnreadCount > 0
@@ -121,7 +115,7 @@ async function markNotificationRead(notificationId: string) {
         }}
       </div>
 
-      <div v-else class="space-y-3">
+      <div v-else class="pagebody">
         <FireCopyError v-if="mutationError" :message="mutationError" />
         <UAlert
           v-if="mutationError"

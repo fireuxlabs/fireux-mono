@@ -47,9 +47,7 @@
               :save="saveItemEditing"
               :cancel="cancelItemEditing"
             >
-              <div
-                class="mt-2 rounded border border-dashed border-primary/30 bg-primary/10 p-4"
-              >
+              <div class="mt-2 p-4">
                 Default create/edit rendering for index {{ editingIndex }}
               </div>
             </slot>
@@ -140,10 +138,7 @@
                     :remove="() => remove(index)"
                   />
                   <div v-else>
-                    <div
-                      v-if="getItemSubtitle(item, index)"
-                      class="text-sm leading-normal text-muted"
-                    >
+                    <div v-if="getItemSubtitle(item, index)">
                       {{ getItemSubtitle(item, index) }}
                     </div>
                   </div>
@@ -157,22 +152,17 @@
                     :mode="'edit'"
                     :is-editing="true"
                     :capture-intent="captureIntent"
-              :save="saveItemEditing"
+                    :save="saveItemEditing"
                     :cancel="cancelItemEditing"
                   >
-                    <div
-                      class="rounded border border-dashed border-primary/30 bg-primary/10 p-4"
-                    >
-                      <div v-if="hasSchema" class="space-y-3">
+                    <div class="p-4">
+                      <div v-if="hasSchema" class="fx-card-body-stack">
                         <div
                           v-for="field in fields"
                           :key="field.key"
-                          class="space-y-1"
+                          class="fx-card__stack"
                         >
-                          <div
-                            v-if="field.label && field.type !== 'checkbox'"
-                            class="text-xs font-medium text-dimmed"
-                          >
+                          <div v-if="field.label && field.type !== 'checkbox'">
                             {{ field.label }}
                           </div>
 

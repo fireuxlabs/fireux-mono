@@ -19,12 +19,7 @@
       class="avatar-button"
       @click="openPicker"
     >
-      <UChip
-        position="bottom-right"
-        inset
-        color="primary"
-        :ui="{ base: 'size-5 p-0 ring-2 ring-bg' }"
-      >
+      <UChip position="bottom-right" inset color="primary">
         <UAvatar
           :src="src || ''"
           :alt="alt || 'Image'"

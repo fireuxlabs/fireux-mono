@@ -1,7 +1,7 @@
 <template>
   <form class="grid min-w-0 gap-6" @submit.prevent="save">
     <div class="flex items-center justify-between gap-3">
-      <h2 class="text-xl font-semibold">
+      <h2>
         {{ recipe ? 'Edit recipe' : 'New recipe' }}
       </h2>
       <UButton

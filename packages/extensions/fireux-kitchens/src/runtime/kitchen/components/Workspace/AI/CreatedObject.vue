@@ -7,15 +7,15 @@
       size="sm"
     />
     <span class="min-w-0 flex-1">
-      <span class="block truncate text-sm font-medium text-highlighted">
+      <span class="block truncate">
         {{ name }}
       </span>
-      <span class="block truncate text-xs text-toned">{{ kind }}</span>
+      <span class="block truncate">{{ kind }}</span>
     </span>
-    <span class="shrink-0 text-xs font-medium text-primary">
+    <span class="shrink-0">
       {{ actionLabel || `View ${name}` }}
     </span>
-    <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-primary" />
+    <UIcon name="i-lucide-arrow-right" class="shrink-0" />
   </NuxtLink>
 </template>
 

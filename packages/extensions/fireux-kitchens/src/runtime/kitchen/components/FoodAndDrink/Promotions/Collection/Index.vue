@@ -40,7 +40,7 @@
         @edit="editPromotion(promotion)"
       />
     </template>
-    <p v-else class="rounded-xl border border-default p-5 text-muted">
+    <p v-else class="rounded-xl border border-default p-5">
       No promotions yet.
     </p>
   </div>

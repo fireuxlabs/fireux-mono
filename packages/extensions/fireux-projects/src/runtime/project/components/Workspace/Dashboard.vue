@@ -1,5 +1,8 @@
 <template>
-  <section class="space-y-4" aria-label="Your Projects">
+  <section
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Your Projects"
+  >
     <Collection
       :workspace="workspace"
       :can-create="creation.canCreate.value"

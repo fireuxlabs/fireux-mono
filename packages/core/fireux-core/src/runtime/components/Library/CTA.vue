@@ -1,8 +1,8 @@
 <template>
   <div class="p-6 space-y-8">
     <div>
-      <h1 class="text-2xl font-semibold">Call to Action demo</h1>
-      <p class="text-sm opacity-70">Using Nuxt UI 4 UPageCTA</p>
+      <h1>Call to Action demo</h1>
+      <p class="opacity-70">Using Nuxt UI 4 UPageCTA</p>
     </div>
 
     <UPageCTA
@@ -27,9 +27,9 @@
 
     <UCard>
       <template #header>
-        <div class="font-medium">Inline CTA</div>
+        <div>Inline CTA</div>
       </template>
-      <div class="flex items-center gap-3">
+      <div class="fx-card__actions">
         <UButton color="primary">Primary action</UButton>
         <UButton variant="soft" color="neutral">Secondary</UButton>
       </div>

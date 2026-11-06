@@ -2,10 +2,8 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <h2 class="text-lg font-semibold">Solutions</h2>
-        <p class="text-sm text-muted">
-          Jump to dedicated pages for selected FireUX offers.
-        </p>
+        <h2 class="fx-type-card-heading">Solutions</h2>
+        <p>Jump to dedicated pages for selected FireUX offers.</p>
       </div>
     </template>
 
@@ -31,7 +29,6 @@
       color="warning"
       title="No solution products found"
       description="Create FireUX starter products to show solution previews here."
-      class="mt-3"
     />
   </UCard>
 </template>
@@ -52,10 +49,9 @@ const { products } = useProductCollection()
 const { pill: mapCard } = useProductInterface()
 
 const solutionItems = computed(() =>
-  SOLUTION_PRODUCT_IDS
-    .map((productId) =>
-      (products.value ?? []).find((product) => product.id === productId)
-    )
+  SOLUTION_PRODUCT_IDS.map((productId) =>
+    (products.value ?? []).find((product) => product.id === productId)
+  )
     .filter((product): product is Product => Boolean(product))
     .map((product) => {
       const card = mapCard(product)

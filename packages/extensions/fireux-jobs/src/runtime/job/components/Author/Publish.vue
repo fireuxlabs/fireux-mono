@@ -3,22 +3,18 @@
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p
-            class="text-xs font-semibold uppercase tracking-widest text-primary"
-          >
-            Publication
-          </p>
-          <h2 class="mt-1 text-lg font-semibold text-highlighted">
+          <p>Publication</p>
+          <h2 class="mt-1 fx-type-card-heading">
             {{ title }}
           </h2>
-          <p class="mt-1 text-sm leading-6 text-muted">{{ description }}</p>
+          <p class="mt-1">{{ description }}</p>
         </div>
         <UBadge :color="badgeColor" variant="soft">{{ badgeLabel }}</UBadge>
       </div>
     </template>
 
     <div class="space-y-5">
-      <ul v-if="!isPublic" class="space-y-3 text-sm">
+      <ul v-if="!isPublic" class="space-y-3">
         <li
           v-for="item in checklist"
           :key="item.label"
@@ -28,10 +24,8 @@
             :name="
               item.ready ? 'i-lucide-circle-check' : 'i-lucide-circle-dashed'
             "
-            class="mt-0.5 size-4 shrink-0"
-            :class="item.ready ? 'text-success' : 'text-muted'"
           />
-          <span :class="item.ready ? 'text-toned' : 'text-muted'">{{
+          <span>{{
             item.label
           }}</span>
         </li>
@@ -143,7 +137,16 @@ const { publishJob, captureIntent, scopeEpoch } = useJobPublish()
 const isConfirmOpen = ref(false)
 const publishing = ref(false)
 const publishedLocally = ref(false)
-watch([scopeEpoch, () => props.job.id], () => { publishing.value = false; publishedLocally.value = false; isConfirmOpen.value = false; emit('publishing', false) }, { flush: 'sync' })
+watch(
+  [scopeEpoch, () => props.job.id],
+  () => {
+    publishing.value = false
+    publishedLocally.value = false
+    isConfirmOpen.value = false
+    emit('publishing', false)
+  },
+  { flush: 'sync' }
+)
 const isPublic = computed(
   () => publishedLocally.value || props.job.visibility === 'public'
 )
@@ -200,7 +203,8 @@ const publishHint = computed(() => {
 
 async function onPublish() {
   if (!canPublish.value || publishing.value) return
-  const context = captureIntent(), id = props.job.id
+  const context = captureIntent(),
+    id = props.job.id
   const isCurrent = () => context() && props.job.id === id
   publishing.value = true
   emit('publishing', true)

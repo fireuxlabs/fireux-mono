@@ -51,16 +51,13 @@
 
           <UChatPrompt
             v-model="draft"
-            class="mt-4"
             placeholder="Write your message"
             :loading="submitting"
             @submit.prevent="sendMessage"
           >
             <template #footer>
               <div class="flex items-center justify-between gap-3">
-                <p class="text-xs text-muted">
-                  Your recovery key stays in this browser for 30 days.
-                </p>
+                <p>Your recovery key stays in this browser for 30 days.</p>
                 <UChatPromptSubmit :status="chatStatus" label="Send" />
               </div>
             </template>

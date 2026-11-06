@@ -2,7 +2,7 @@
   <section class="product-section">
     <div class="stepper-header">
       <div>
-        <h2>Onboarding Sequence</h2>
+        <h2 class="fx-type-section-title">Onboarding Sequence</h2>
         <p class="stepper-meta">4 steps, accordion view.</p>
       </div>
     </div>
@@ -17,7 +17,7 @@
           disabled
           color="primary"
           :variant="stepIsComplete(item.value) ? 'solid' : 'subtle'"
-          class="step-pill font-bold rounded-full"
+          class="step-pill"
         >
           {{ index + 1 }}
         </UButton>

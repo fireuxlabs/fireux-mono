@@ -17,21 +17,35 @@
       </template>
     </UPageHeader>
 
-    <UPageBody class="space-y-8">
+    <UPageBody>
       <div class="grid gap-4 md:grid-cols-3">
-        <UPageCard title="37 guest rooms" description="Rooms for solo travellers, couples, families and groups." icon="i-lucide-bed-double" />
-        <UPageCard title="1–8 guests" description="Room options range from compact stays to larger group rooms." icon="i-lucide-users" />
-        <UPageCard title="Well connected" description="Around 10 minutes from Lake Brienz and 3 km from Interlaken." icon="i-lucide-map-pin" />
+        <UPageCard
+          title="37 guest rooms"
+          description="Rooms for solo travellers, couples, families and groups."
+          icon="i-lucide-bed-double"
+        />
+        <UPageCard
+          title="1–8 guests"
+          description="Room options range from compact stays to larger group rooms."
+          icon="i-lucide-users"
+        />
+        <UPageCard
+          title="Well connected"
+          description="Around 10 minutes from Lake Brienz and 3 km from Interlaken."
+          icon="i-lucide-map-pin"
+        />
       </div>
 
       <UCard>
-        <div class="max-w-3xl space-y-3 text-toned">
-          <h2 class="text-xl font-semibold text-highlighted">A base for the Bernese Oberland</h2>
+        <div class="max-w-3xl space-y-3">
+          <h2 class="fx-type-section-title">A base for the Bernese Oberland</h2>
           <p>
-            The chalet-style Hotel Bären stands in the centre of Ringgenberg, with walking and cycling routes close by.
+            The chalet-style Hotel Bären stands in the centre of Ringgenberg,
+            with walking and cycling routes close by.
           </p>
           <p>
-            Guest rooms include a shower, toilet, washbasin and television. The restaurant, bar and event spaces are in the same building.
+            Guest rooms include a shower, toilet, washbasin and television. The
+            restaurant, bar and event spaces are in the same building.
           </p>
         </div>
       </UCard>

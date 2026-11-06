@@ -10,7 +10,7 @@
         class="directory-search"
         maxlength="120"
       />
-      <span v-if="!hideResults" class="text-sm text-muted" aria-live="polite">
+      <span v-if="!hideResults" aria-live="polite">
         {{ groups.length }} {{ groups.length === 1 ? 'result' : 'results' }}
       </span>
     </div>

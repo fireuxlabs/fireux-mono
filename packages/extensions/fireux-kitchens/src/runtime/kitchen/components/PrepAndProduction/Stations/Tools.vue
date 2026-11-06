@@ -4,13 +4,8 @@
       class="flex items-center gap-3 rounded-xl border border-default bg-elevated/50 p-2 shadow-sm"
     >
       <div class="min-w-0 px-2">
-        <h2
-          id="station-tools-title"
-          class="text-xs font-semibold uppercase tracking-wide text-muted"
-        >
-          Tools
-        </h2>
-        <p class="hidden text-xs text-dimmed sm:block">Station actions</p>
+        <h2 id="station-tools-title">Tools</h2>
+        <p class="hidden sm:block">Station actions</p>
       </div>
       <UButton
         :label="tool.label"

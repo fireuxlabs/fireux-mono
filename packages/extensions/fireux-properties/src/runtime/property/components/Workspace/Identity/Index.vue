@@ -15,7 +15,7 @@
     <UCard v-else-if="selectedProperty">
       <template #header>
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <h2 class="font-semibold">Property profile</h2>
+          <h2 class="fx-type-card-heading">Property profile</h2>
           <UButton
             v-if="identity.canWrite.value"
             label="Edit profile"
@@ -34,18 +34,18 @@
           size="3xl"
         />
         <div class="min-w-0 space-y-3">
-          <h3 class="break-words text-xl font-semibold text-highlighted">
+          <h3 class="break-words">
             {{ name }}
           </h3>
-          <dl class="grid gap-3 text-sm sm:grid-cols-2">
+          <dl class="workspace-surface__grid workspace-surface__grid--2">
             <div>
-              <dt class="text-muted">Property type</dt>
-              <dd class="capitalize">
+              <dt>Property type</dt>
+              <dd>
                 {{ selectedProperty.identity.property_type }}
               </dd>
             </div>
             <div>
-              <dt class="text-muted">Units</dt>
+              <dt>Units</dt>
               <dd>{{ selectedProperty.identity.unit_count }}</dd>
             </div>
           </dl>

@@ -8,7 +8,7 @@
             size="xs"
             :items="categoryOptions"
             aria-label="Filter Ingredient category"
-            class="min-w-36 shrink-0"
+            class="shrink-0"
           />
           <UInput
             v-if="showSearchInput"
@@ -16,7 +16,7 @@
             size="xs"
             :placeholder="searchPlaceholder"
             :aria-label="searchPlaceholder"
-            class="min-w-36 shrink-0"
+            class="shrink-0"
           />
           <UButton
             v-if="showVariantToggle"

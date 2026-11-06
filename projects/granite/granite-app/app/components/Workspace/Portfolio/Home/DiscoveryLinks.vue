@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-5">
+  <div class="pagebody">
     <div class="grid gap-4 lg:grid-cols-2">
       <UPageCard
         title="Discover Properties"
@@ -19,14 +19,9 @@
 
     <nav
       aria-label="Explore Granite"
-      class="flex flex-wrap gap-x-5 gap-y-2 border-t border-default pt-5 text-sm"
+      class="flex flex-wrap gap-x-5 gap-y-2 border-t border-default pt-5"
     >
-      <NuxtLink
-        v-for="link in links"
-        :key="link.to"
-        :to="link.to"
-        class="font-medium text-muted hover:text-highlighted"
-      >
+      <NuxtLink v-for="link in links" :key="link.to" :to="link.to">
         {{ link.label }}
       </NuxtLink>
     </nav>

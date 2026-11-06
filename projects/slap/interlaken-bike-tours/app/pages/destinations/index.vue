@@ -1,10 +1,29 @@
+<template>
+  <UPage>
+    <UPageHeader
+      title="Cycling destinations"
+      description="Explore destinations on our existing rides, or ask about a custom trip in Bern or Lausanne. Custom routes and availability are confirmed directly with your guide."
+    />
+    <UPageBody><DestinationsCollection /></UPageBody>
+  </UPage>
+</template>
 <script setup lang="ts">
 import {
   useSeo,
   buildPublicPageJsonLd,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { searchPage } from '~/ignition/search'
-definePageMeta({ layout: 'tours' })
+definePageMeta({
+  layout: 'default',
+  nav: {
+    key: 'cycling-destinations',
+    label: 'Destinations',
+    order: 20,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
+})
 const page = searchPage('/destinations')
 useSeo({
   title: page.title,
@@ -14,15 +33,3 @@ useSeo({
   jsonLdBuilder: (context) => buildPublicPageJsonLd(context),
 })
 </script>
-<template>
-  <div class="wrap section">
-    <p class="eyebrow">Choose a place. Plan a ride.</p>
-    <h1>Cycling destinations</h1>
-    <p class="destination-intro">
-      Explore destinations on our existing rides, or ask about a custom trip in
-      Bern or Lausanne. Custom routes and availability are confirmed directly
-      with your guide.
-    </p>
-    <DestinationsCollection />
-  </div>
-</template>

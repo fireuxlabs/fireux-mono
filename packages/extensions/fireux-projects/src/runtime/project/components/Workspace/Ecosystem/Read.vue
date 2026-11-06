@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Workspace Spine project cleanup: render Ecosystem operation outcomes explicitly. -->
 <template>
-  <div class="space-y-6">
+  <div class="workspace-surface workspace-surface--compact">
     <UCard>
       <template #header>
         <div class="workspace-card-header">

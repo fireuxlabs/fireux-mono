@@ -20,8 +20,8 @@
     @created="emit('created', $event)"
   >
     <template #intro>
-      <h1 class="text-2xl font-semibold text-highlighted">Find your kitchen</h1>
-      <p class="mt-2 text-sm text-muted">Choose your venue or add one that is not listed.</p>
+      <h1>Find your kitchen</h1>
+      <p class="mt-2">Choose your venue or add one that is not listed.</p>
     </template>
     <template #find-secondary>
       <UButton

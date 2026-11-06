@@ -13,8 +13,8 @@
       </p>
 
       <div>
-        <h2 class="font-semibold">With a hiring profile you can:</h2>
-        <ul class="mt-2 list-disc space-y-1 pl-6">
+        <h2 class="fx-type-section-title">With a hiring profile you can:</h2>
+        <ul class="fx-list-stack">
           <li>Post jobs that surface across the FireUX network.</li>
           <li>Manage applicants with a consistent brand presence.</li>
           <li>Build a trusted identity that professionals can evaluate.</li>

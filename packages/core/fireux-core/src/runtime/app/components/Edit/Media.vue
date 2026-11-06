@@ -6,13 +6,12 @@
       description="Review repository assets and sync them to the canonical App record."
       icon="i-lucide-images"
       variant="subtle"
-      class="h-full"
     >
-      <div class="space-y-4">
+      <div class="fx-card-body-stack">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p class="text-sm font-medium text-highlighted">Storage status</p>
-            <p class="mt-0.5 text-xs text-muted">
+            <p>Storage status</p>
+            <p class="mt-0.5">
               {{ syncedCount }} of {{ syncableItems.length }} media assets are
               recorded on this App.
             </p>
@@ -25,9 +24,7 @@
           </UBadge>
         </div>
 
-        <div
-          class="overflow-hidden rounded-lg border border-default bg-default"
-        >
+        <div class="overflow-hidden">
           <div class="divide-y divide-default">
             <div
               v-for="item in syncableItems"
@@ -52,7 +49,7 @@
 
                 <div class="min-w-0">
                   <div class="flex flex-wrap items-center gap-1.5">
-                    <div class="text-sm font-medium">{{ item.label }}</div>
+                    <div>{{ item.label }}</div>
                     <UBadge
                       :color="item.url ? 'success' : 'neutral'"
                       variant="soft"
@@ -61,7 +58,7 @@
                       {{ item.url ? 'URL recorded' : 'Missing' }}
                     </UBadge>
                   </div>
-                  <div class="text-xs text-dimmed" v-html="item.requirements" />
+                  <div v-html="item.requirements" />
                 </div>
               </div>
 
@@ -70,7 +67,7 @@
                   :href="item.path"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex h-7 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+                  class="inline-flex h-7 items-center px-2"
                 >
                   Source
                 </a>
@@ -79,7 +76,7 @@
                   :href="item.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex h-7 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+                  class="inline-flex h-7 items-center px-2"
                   :aria-label="`Open ${item.label} Storage URL`"
                 >
                   Stored
@@ -99,9 +96,7 @@
           </div>
         </div>
 
-        <p v-if="!canSync" class="text-sm text-muted">
-          Sync App media from a development build.
-        </p>
+        <p v-if="!canSync">Sync App media from a development build.</p>
 
         <FireDisclosurePanel
           title="Install assets"
@@ -109,9 +104,7 @@
           icon="i-lucide-monitor-down"
           :default-open="false"
         >
-          <div
-            class="mt-3 overflow-hidden rounded-lg border border-default bg-default"
-          >
+          <div class="mt-3 overflow-hidden">
             <div class="divide-y divide-default">
               <div
                 v-for="item in requiredOnlyItems"
@@ -130,11 +123,8 @@
                   </div>
 
                   <div class="min-w-0">
-                    <div class="text-sm font-medium">{{ item.label }}</div>
-                    <div
-                      class="text-xs text-dimmed"
-                      v-html="item.requirements"
-                    />
+                    <div>{{ item.label }}</div>
+                    <div v-html="item.requirements" />
                   </div>
                 </div>
 
@@ -142,7 +132,7 @@
                   :href="item.path"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex h-7 shrink-0 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+                  class="inline-flex h-7 shrink-0 items-center px-2"
                 >
                   Source
                 </a>
@@ -151,12 +141,11 @@
           </div>
         </FireDisclosurePanel>
 
-        <p class="text-xs leading-5 text-dimmed">
-          Source files live in <span class="font-mono">/public/img/app</span>.
-          Sync validates dimensions, writes to
-          <span class="font-mono">apps/{appId}/img/app/*</span>, and updates the
-          App record. A recorded URL does not verify that it matches the current
-          source file.
+        <p>
+          Source files live in <span>/public/img/app</span>. Sync validates
+          dimensions, writes to <span>apps/{appId}/img/app/*</span>, and updates
+          the App record. A recorded URL does not verify that it matches the
+          current source file.
         </p>
       </div>
     </UPageCard>
@@ -167,7 +156,11 @@
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { syncAppMediaToStorage } from '../../utils/sync-app-media'
-import { appImageLocalPublicPath, appImageRequirement, appPublicAssetRequirement } from '../../utils/app-media'
+import {
+  appImageLocalPublicPath,
+  appImageRequirement,
+  appPublicAssetRequirement,
+} from '../../utils/app-media'
 import { type AppImageKind } from '../../models/app-media'
 import type { App } from '../../models/app.model.ts'
 

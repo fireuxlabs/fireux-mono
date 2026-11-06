@@ -2,11 +2,11 @@
   <a
     v-if="place.place_type !== 'non_physical'"
     href="#opening-hours"
-    class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm no-underline"
+    class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 no-underline"
     aria-label="Venue opening status and opening hours"
   >
     <span
-      class="inline-flex items-center gap-2 font-semibold"
+      class="inline-flex items-center gap-2"
       :class="status.open ? 'text-success' : 'text-highlighted'"
     >
       <span
@@ -24,18 +24,14 @@
             : 'Closed now'
       }}
     </span>
-    <span v-if="status.open && status.nextToday" class="text-muted">
+    <span v-if="status.open && status.nextToday">
       · Reopens {{ status.next }}
     </span>
-    <span v-else-if="!status.open && status.next" class="text-muted">
+    <span v-else-if="!status.open && status.next">
       · Opens {{ status.next }}
     </span>
-    <UIcon
-      name="i-lucide-chevron-down"
-      class="size-3.5 text-muted"
-      aria-hidden="true"
-    />
-    <span v-if="status.todayHours.length" class="w-full text-xs text-muted">
+    <UIcon name="i-lucide-chevron-down" aria-hidden="true" />
+    <span v-if="status.todayHours.length" class="w-full">
       Today: {{ status.todayHours.join(' · ') }}
     </span>
   </a>

@@ -12,10 +12,8 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Places collection
-            </p>
-            <p class="text-xs text-muted">
+            <p>Places collection</p>
+            <p>
               Browse places resolved for this runtime and filter by model drift.
             </p>
             <FireDiagnosticsDriftToolbar
@@ -31,14 +29,14 @@
         </div>
       </template>
 
-<FireDiagnosticsDebugPanel
-  object-origin="fetched"
+      <FireDiagnosticsDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Places (JSON)"
         context="dev places · filtered collection"
         :objects="filteredCollection"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />
@@ -83,7 +81,8 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts',
+  modelPath:
+    'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts',
   itemsKey: 'places',
   items: filteredDriftPayload,
 })

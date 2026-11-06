@@ -3,9 +3,9 @@
     <div class="flex w-full min-w-0 items-center gap-2">
       <div
         v-if="loading && !imageUrl"
-        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-dashed text-muted"
+        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-dashed"
       >
-        <UIcon name="i-lucide-loader-2" class="h-3 w-3 animate-spin" />
+        <UIcon name="i-lucide-loader-2" class="animate-spin" />
       </div>
       <UAvatar
         v-else
@@ -15,10 +15,10 @@
         :class="avatarClass"
       />
       <div class="min-w-0 flex-1">
-        <p class="truncate text-sm font-medium">
+        <p class="truncate">
           {{ name }}
         </p>
-        <p v-if="address" class="truncate text-xs text-muted">
+        <p v-if="address" class="truncate">
           {{ address }}
         </p>
       </div>

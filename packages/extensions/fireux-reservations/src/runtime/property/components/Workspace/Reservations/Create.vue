@@ -2,15 +2,16 @@
   <UCard>
     <template #header>
       <div>
-        <p class="font-semibold">Direct booking</p>
-        <p class="text-xs text-dimmed">
-          Add a phone, email or walk-in reservation to the shared calendar.
-        </p>
+        <p>Direct booking</p>
+        <p>Add a phone, email or walk-in reservation to the shared calendar.</p>
       </div>
     </template>
 
-    <form class="space-y-5" @submit.prevent="submit">
-      <div class="grid gap-4 sm:grid-cols-2">
+    <form
+      class="workspace-surface workspace-surface--compact"
+      @submit.prevent="submit"
+    >
+      <div class="workspace-surface__grid workspace-surface__grid--2">
         <UFormField label="Guest name" required>
           <UInput v-model="form.guestName" class="w-full" />
         </UFormField>
@@ -55,11 +56,7 @@
           />
         </UFormField>
         <UFormField label="Currency">
-          <UInput
-            v-model="form.currency"
-            maxlength="3"
-            class="w-full uppercase"
-          />
+          <UInput v-model="form.currency" maxlength="3" class="w-full" />
         </UFormField>
       </div>
 
@@ -79,9 +76,7 @@
         title="Booking not saved"
         :description="formError"
       >
-        <template #actions
-          ><FireCopyError :message="formError"
-        /></template>
+        <template #actions><FireCopyError :message="formError" /></template>
       </UAlert>
 
       <div class="flex justify-end gap-2">

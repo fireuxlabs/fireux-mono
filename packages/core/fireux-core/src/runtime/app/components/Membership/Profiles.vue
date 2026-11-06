@@ -9,11 +9,11 @@
       <div
         v-for="entry in profileEntries"
         :key="entry.profileId"
-        class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-4 py-3"
+        class="flex items-center justify-between gap-3 px-4 py-3"
       >
         <div class="min-w-0">
-          <p class="truncate text-sm font-medium">{{ entry.label }}</p>
-          <p class="text-xs text-dimmed">Available to add</p>
+          <p class="truncate">{{ entry.label }}</p>
+          <p>Available to add</p>
         </div>
         <UButton
           :to="entry.to"

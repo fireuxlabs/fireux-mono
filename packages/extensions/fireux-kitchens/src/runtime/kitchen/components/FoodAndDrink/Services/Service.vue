@@ -8,12 +8,8 @@
   >
     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
       <div class="flex items-center gap-2">
-        <UIcon
-          :name="option.icon"
-          class="size-5 shrink-0 text-primary"
-          aria-hidden="true"
-        />
-        <h2 class="font-semibold">{{ option.label }}</h2>
+        <UIcon :name="option.icon" class="shrink-0" aria-hidden="true" />
+        <h2>{{ option.label }}</h2>
       </div>
       <USwitch
         :model-value="editor.enabled"
@@ -22,26 +18,16 @@
         :disabled="disabled"
         @update:model-value="editor.setEnabled"
       />
-      <span
-        v-if="editor.enabled && !readiness.canEnable"
-        class="text-xs text-warning"
-        >{{
-          !editor.menuIds.length
-            ? 'Needs menus'
-            : !readiness.validSelection
-              ? 'Replace unavailable menus'
-              : 'Publish a selected menu'
-        }}</span
-      >
-      <span v-if="editor.busy" class="text-xs text-muted" role="status"
-        >Updating…</span
-      >
+      <span v-if="editor.enabled && !readiness.canEnable">{{
+        !editor.menuIds.length
+          ? 'Needs menus'
+          : !readiness.validSelection
+            ? 'Replace unavailable menus'
+            : 'Publish a selected menu'
+      }}</span>
+      <span v-if="editor.busy" role="status">Updating…</span>
     </div>
-    <FireCopyError
-      v-if="editor.error"
-      :message="editor.error"
-      class="mt-3"
-    />
+    <FireCopyError v-if="editor.error" :message="editor.error" class="mt-3" />
     <KitchenFoodAndDrinkServicesSetup v-if="editor.enabled" class="mt-4" />
   </section>
 </template>

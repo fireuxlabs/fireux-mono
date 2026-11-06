@@ -1,25 +1,26 @@
 <template>
   <FireActionSurface
     :to="link && record.to ? record.to : undefined"
-    class="block w-full"
     :action="action"
     @activate="emit('action')"
   >
-    <div
-      class="fx-card--cell"
-    >
-      <UAvatar :src="record.imageUrl || undefined" :alt="record.title" size="md" class="shrink-0" />
+    <div class="fx-card--cell">
+      <UAvatar
+        :src="record.imageUrl || undefined"
+        :alt="record.title"
+        size="md"
+      />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ record.title }}</div>
-            <div v-if="showSubtitle && record.subtitle" class="truncate text-xs text-dimmed">
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">{{ record.title }}</div>
+            <div v-if="showSubtitle && record.subtitle" class="card__subtitle">
               {{ record.subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && record.badges?.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div v-if="showBadges && record.badges?.length" class="card__badges">
             <UBadge
               v-for="badge in record.badges"
               :key="badge"
@@ -32,11 +33,11 @@
           </div>
         </div>
 
-        <div v-if="showMeta && metaText" class="truncate text-xs text-dimmed">
+        <div v-if="showMeta && metaText" class="card__subtitle">
           {{ metaText }}
         </div>
 
-        <div v-if="showTagline && taglineText" class="truncate text-xs text-dimmed">
+        <div v-if="showTagline && taglineText" class="card__subtitle">
           {{ taglineText }}
         </div>
       </div>
@@ -83,5 +84,4 @@ const metaText = computed(() => {
 const taglineText = computed(() =>
   String(props.prop || record.value.subtitle || '').trim()
 )
-
 </script>

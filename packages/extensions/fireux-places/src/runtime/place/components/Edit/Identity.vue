@@ -1,9 +1,5 @@
 <template>
-  <UModal
-    v-model:open="open"
-    title="Edit venue identity"
-    :ui="{ content: 'sm:max-w-2xl' }"
-  >
+  <UModal v-model:open="open" title="Edit venue identity">
     <template #body>
       <form class="space-y-5" @submit.prevent="save">
         <div class="grid gap-4 sm:grid-cols-2">

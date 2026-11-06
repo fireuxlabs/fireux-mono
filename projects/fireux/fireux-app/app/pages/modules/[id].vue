@@ -3,13 +3,13 @@
   <UPage>
     <UPageHeader :title="moduleTitle" :description="moduleTagline" />
 
-    <UPageBody class="pagebody space-y-10">
-      <div v-if="moduleProduct" class="space-y-8">
+    <UPageBody class="pagebody">
+      <div v-if="moduleProduct" class="pagebody">
         <div class="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
           <UCard>
-            <div class="space-y-5">
-              <div class="space-y-3">
-                <div class="flex flex-wrap items-center gap-2">
+            <div class="fx-card-body-stack">
+              <div class="fx-card-body-stack">
+                <div class="card__badges">
                   <UBadge variant="soft" color="primary">Module</UBadge>
                   <UBadge
                     v-if="requiresTemplate"
@@ -19,19 +19,19 @@
                     Requires FireUX Template
                   </UBadge>
                 </div>
-                <h2 class="text-2xl font-semibold text-highlighted">
+                <h2 class="fx-type-section-title">
                   {{ moduleTitle }}
                 </h2>
-                <p class="text-sm text-muted">
+                <p class="fx-type-caption">
                   {{ moduleTagline }}
                 </p>
               </div>
 
-              <p class="text-base text-toned">
+              <p class="fx-type-body">
                 {{ moduleDescription }}
               </p>
 
-              <div v-if="moduleFeatures.length" class="flex flex-wrap gap-2">
+              <div v-if="moduleFeatures.length" class="card__badges">
                 <UBadge
                   v-for="feature in moduleFeatures"
                   :key="feature"
@@ -46,17 +46,15 @@
           </UCard>
 
           <UCard>
-            <div class="space-y-5">
+            <div class="fx-card-body-stack">
               <div>
-                <p class="text-xs uppercase tracking-wide text-muted">
-                  One-time module
-                </p>
-                <div class="text-3xl font-semibold text-highlighted">
+                <p class="fx-type-caption">One-time module</p>
+                <div>
                   {{ priceLabel }}
                 </div>
               </div>
 
-              <div class="space-y-2">
+              <div class="fx-card-body-stack">
                 <UButton
                   color="primary"
                   :disabled="isBuying"
@@ -64,7 +62,7 @@
                 >
                   {{ isBuying ? 'Starting checkout...' : 'Add module' }}
                 </UButton>
-                <p class="text-xs text-muted">
+                <p class="fx-type-caption">
                   {{ ctaHint }}
                 </p>
               </div>
@@ -81,23 +79,19 @@
 
         <UCard>
           <div class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-            <div class="space-y-3">
-              <div class="text-xs uppercase tracking-wide text-muted">
-                Overview
-              </div>
-              <div v-if="moduleContent" class="text-sm text-toned">
+            <div class="fx-card-body-stack">
+              <div>Overview</div>
+              <div v-if="moduleContent">
                 <div v-html="moduleContent" />
               </div>
-              <p v-else class="text-sm text-muted">No overview yet.</p>
+              <p v-else class="fx-type-caption">No overview yet.</p>
             </div>
 
-            <div class="space-y-3">
-              <div class="text-xs uppercase tracking-wide text-muted">
-                Questions
-              </div>
-              <div class="space-y-1">
-                <p class="font-medium text-highlighted">{{ moduleQ }}</p>
-                <p class="text-sm text-toned">{{ moduleA }}</p>
+            <div class="fx-card-body-stack">
+              <div>Questions</div>
+              <div class="fx-card-body-stack">
+                <p class="fx-type-body">{{ moduleQ }}</p>
+                <p class="fx-type-caption">{{ moduleA }}</p>
               </div>
             </div>
           </div>
@@ -105,9 +99,9 @@
 
         <UCard>
           <template #header>
-            <div class="space-y-1">
-              <p class="text-sm font-semibold text-highlighted">Roadmap</p>
-              <p class="text-xs text-muted">
+            <div class="fx-card-body-stack">
+              <p class="fx-type-caption">Roadmap</p>
+              <p class="fx-type-caption">
                 What exists now and what we are building next.
               </p>
             </div>

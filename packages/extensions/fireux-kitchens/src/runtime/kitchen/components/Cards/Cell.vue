@@ -5,8 +5,17 @@
     class="kitchen-collection-card"
   >
     <div class="kitchen-collection-card__media">
-      <img v-if="resolvedImageUrl" :src="resolvedImageUrl" alt="" loading="lazy">
-      <UIcon v-else name="i-lucide-image-off" aria-label="Venue photo unavailable" />
+      <img
+        v-if="resolvedImageUrl"
+        :src="resolvedImageUrl"
+        alt=""
+        loading="lazy"
+      />
+      <UIcon
+        v-else
+        name="i-lucide-image-off"
+        aria-label="Venue photo unavailable"
+      />
       <UAvatar
         v-if="logoImageUrl"
         :src="logoImageUrl"
@@ -17,35 +26,46 @@
     </div>
     <div class="kitchen-collection-card__body">
       <div v-if="visibleBadges.length" class="kitchen-collection-card__badges">
-      <UBadge
-        v-for="badge in visibleBadges"
-        :key="badge"
-        color="neutral"
-        variant="solid"
-      >
-        {{ badge }}
-      </UBadge>
+        <UBadge
+          v-for="badge in visibleBadges"
+          :key="badge"
+          color="neutral"
+          variant="solid"
+        >
+          {{ badge }}
+        </UBadge>
       </div>
       <h3>{{ displayName }}</h3>
-      <div v-if="categoryLabels.length" class="kitchen-collection-card__categories">
-        <span v-for="label in categoryLabels" :key="label">{{ label.replaceAll('_', ' ') }}</span>
+      <div
+        v-if="categoryLabels.length"
+        class="kitchen-collection-card__categories"
+      >
+        <span v-for="label in categoryLabels" :key="label">{{
+          label.replaceAll('_', ' ')
+        }}</span>
       </div>
       <p class="kitchen-card-cell__address">
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
         <span>{{ resolvedAddress || 'Location available on profile' }}</span>
       </p>
-      <p v-if="tagline || about || prop" class="kitchen-card-cell__directory-tagline">
+      <p
+        v-if="tagline || about || prop"
+        class="kitchen-card-cell__directory-tagline"
+      >
         {{ tagline || about || prop }}
       </p>
-    <div v-if="estimatedMinutes || fulfilmentModes.length || priceLevel" class="kitchen-card-cell__directory-facts">
-      <span v-if="estimatedMinutes">
-        {{ estimatedMinutes.min }}–{{ estimatedMinutes.max }} min
-      </span>
-      <span v-if="priceLevel">Price {{ priceLevel }}/4</span>
-      <span v-for="mode in fulfilmentModes" :key="mode">
-        {{ fulfilmentLabel(mode) }}
-      </span>
-    </div>
+      <div
+        v-if="estimatedMinutes || fulfilmentModes.length || priceLevel"
+        class="kitchen-card-cell__directory-facts"
+      >
+        <span v-if="estimatedMinutes">
+          {{ estimatedMinutes.min }}–{{ estimatedMinutes.max }} min
+        </span>
+        <span v-if="priceLevel">Price {{ priceLevel }}/4</span>
+        <span v-for="mode in fulfilmentModes" :key="mode">
+          {{ fulfilmentLabel(mode) }}
+        </span>
+      </div>
     </div>
   </FireActionSurface>
 
@@ -56,7 +76,6 @@
     :disabled="disabled"
     :data-selected="selected || undefined"
     class="card card--cell kitchen-card-cell"
-    :class="cardClass"
     @activate="emit('action')"
   >
     <div class="card__media">
@@ -71,15 +90,12 @@
 
       <div class="card__content card__stack">
         <div class="card__header">
-          <div class="min-w-0">
+          <div class="card__content">
             <div class="card__title">{{ displayName }}</div>
 
-            <div
-              v-if="showSubtitle && resolvedAddress"
-              class="card__subtitle inline-flex max-w-full items-center gap-1"
-            >
-              <UIcon name="i-lucide-map-pin" class="h-3 w-3" />
-              <span class="truncate">{{ resolvedAddress }}</span>
+            <div v-if="showSubtitle && resolvedAddress" class="card__subtitle">
+              <UIcon name="i-lucide-map-pin" />
+              <span class="fx-truncate">{{ resolvedAddress }}</span>
             </div>
           </div>
 
@@ -90,7 +106,7 @@
               variant="soft"
               color="neutral"
               size="xs"
-              class="shrink-0"
+              class="fx-card__badge"
             >
               {{ badge }}
             </UBadge>
@@ -198,10 +214,6 @@ const visibleBadges = computed(() =>
         (badge) => String(badge).trim().toLocaleLowerCase() !== 'active'
       )
 )
-const cardClass = computed(() => ({
-  'cursor-pointer':
-    !props.disabled && (props.action || (props.link && props.to)),
-}))
 </script>
 
 <style scoped>
@@ -209,15 +221,56 @@ const cardClass = computed(() => ({
   min-height: 6.5rem;
 }
 
-.kitchen-collection-card { display: block; overflow: hidden; padding: 0; }
-.kitchen-collection-card__media { position: relative; aspect-ratio: 16 / 10; background: var(--ui-bg-elevated); }
-.kitchen-collection-card__media > img { width: 100%; height: 100%; object-fit: cover; }
-.kitchen-collection-card__media > svg { width: 100%; height: 100%; padding: calc(var(--spacing) * 16); color: var(--ui-text-dimmed); }
-.kitchen-collection-card__logo { position: absolute; right: calc(var(--spacing) * 4); bottom: calc(var(--spacing) * -6); border: 3px solid var(--ui-bg); background: var(--ui-bg); }
-.kitchen-collection-card__body { display: grid; gap: calc(var(--spacing) * 3); padding: calc(var(--spacing) * 6); }
-.kitchen-collection-card__body h3 { margin: 0; color: var(--ui-text-highlighted); font-size: var(--text-xl); }
-.kitchen-collection-card__badges { display: flex; gap: var(--spacing); }
-.kitchen-collection-card__categories { display: flex; flex-wrap: wrap; gap: calc(var(--spacing) * 2); color: var(--ui-text-muted); font-size: var(--text-xs); text-transform: capitalize; }
+.kitchen-collection-card {
+  display: block;
+  overflow: hidden;
+  padding: 0;
+}
+.kitchen-collection-card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--ui-bg-elevated);
+}
+.kitchen-collection-card__media > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.kitchen-collection-card__media > svg {
+  width: 100%;
+  height: 100%;
+  padding: calc(var(--spacing) * 16);
+  color: var(--ui-text-dimmed);
+}
+.kitchen-collection-card__logo {
+  position: absolute;
+  right: calc(var(--spacing) * 4);
+  bottom: calc(var(--spacing) * -6);
+  border: 3px solid var(--ui-bg);
+  background: var(--ui-bg);
+}
+.kitchen-collection-card__body {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 6);
+}
+.kitchen-collection-card__body h3 {
+  margin: 0;
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-xl);
+}
+.kitchen-collection-card__badges {
+  display: flex;
+  gap: var(--spacing);
+}
+.kitchen-collection-card__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+  text-transform: capitalize;
+}
 
 .kitchen-card-cell__directory-facts {
   display: flex;

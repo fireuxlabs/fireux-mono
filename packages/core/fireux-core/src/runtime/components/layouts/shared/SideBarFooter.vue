@@ -11,9 +11,6 @@
       v-if="profileUser"
       :items="userMenuItems"
       :content="{ align: 'center', collisionPadding: 12 }"
-      :ui="{
-        content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)',
-      }"
     >
       <UButton
         :label="collapsed ? undefined : profileUser.displayName"
@@ -23,8 +20,6 @@
         size="sm"
         block
         :square="collapsed"
-        class="data-[state=open]:bg-elevated"
-        :ui="{ trailingIcon: 'text-dimmed' }"
         aria-label="Open user menu"
       >
         <template #leading>
@@ -47,11 +42,7 @@
       variant="ghost"
       size="sm"
       :square="collapsed"
-      :class="
-        collapsed
-          ? 'mx-auto mt-auto rounded-full'
-          : 'mt-auto w-full justify-start rounded-full'
-      "
+      :class="collapsed ? 'mx-auto mt-auto' : 'mt-auto w-full justify-start'"
       aria-label="Sign in"
     />
   </div>

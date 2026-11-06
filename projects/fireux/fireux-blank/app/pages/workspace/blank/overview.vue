@@ -5,7 +5,7 @@
   <WorkspaceAI compact aria-label="Blank Overview AI"
     ><UAlert title="Overview AI is not connected yet" color="neutral" />
   </WorkspaceAI>
-  <section class="space-y-4">
+  <section class="workspace-surface">
     <WorkspaceBlankOverview />
   </section>
 </template>

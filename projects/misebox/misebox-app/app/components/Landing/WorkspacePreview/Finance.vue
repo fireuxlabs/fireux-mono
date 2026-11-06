@@ -15,7 +15,7 @@
           </UButton>
         </div>
 
-        <span class="text-xs font-semibold text-muted">Deanos · Demo</span>
+        <span>Deanos · Demo</span>
       </div>
 
       <KitchenFinanceSummary
@@ -33,9 +33,11 @@
       color="neutral"
       variant="soft"
       :title="error ? 'Finance preview unavailable' : 'No sales available'"
-      :description="error
-        ? 'The Deanos aggregate report could not be loaded.'
-        : 'This Kitchen does not have a Demo Finance report.'"
+      :description="
+        error
+          ? 'The Deanos aggregate report could not be loaded.'
+          : 'This Kitchen does not have a Demo Finance report.'
+      "
     />
   </div>
 </template>
@@ -53,10 +55,13 @@ const props = defineProps<{
 }>()
 
 const selectedPeriod = ref<KitchenFinanceReportPeriod>('30d')
-const selectedSummary = computed(() =>
-  props.finance.periods.find(period => period.id === selectedPeriod.value)
-  || props.finance.periods[0]
-  || null
+const selectedSummary = computed(
+  () =>
+    props.finance.periods.find(
+      (period) => period.id === selectedPeriod.value
+    ) ||
+    props.finance.periods[0] ||
+    null
 )
 </script>
 

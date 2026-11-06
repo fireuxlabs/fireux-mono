@@ -39,15 +39,15 @@
     </UFormField>
 
     <ul class="grid gap-3">
-      <li class="flex items-center gap-3 text-sm text-dimmed">
+      <li class="flex items-center gap-3">
         <UIcon name="i-lucide-badge-check" />
         <span>Create one canonical Supplier identity</span>
       </li>
-      <li class="flex items-center gap-3 text-sm text-dimmed">
+      <li class="flex items-center gap-3">
         <UIcon name="i-lucide-briefcase" />
         <span>Manage your business profile and brand</span>
       </li>
-      <li class="flex items-center gap-3 text-sm text-dimmed">
+      <li class="flex items-center gap-3">
         <UIcon name="i-lucide-sparkles" />
         <span>Open Supplier Items, Ingredients, Catalogue, and Team</span>
       </li>

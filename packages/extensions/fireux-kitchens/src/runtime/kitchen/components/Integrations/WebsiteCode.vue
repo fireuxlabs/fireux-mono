@@ -6,10 +6,10 @@
       <div
         class="flex items-center justify-between gap-3 border-b border-default px-4 py-2.5"
       >
-        <div class="flex min-w-0 items-center gap-2 text-sm">
-          <UIcon name="i-lucide-code-xml" class="size-4 shrink-0 text-muted" />
-          <span class="font-medium">Embed code</span>
-          <span class="text-xs text-muted">HTML</span>
+        <div class="flex min-w-0 items-center gap-2">
+          <UIcon name="i-lucide-code-xml" class="shrink-0" />
+          <span>Embed code</span>
+          <span>HTML</span>
         </div>
         <UButton
           :label="copied ? 'Copied' : 'Copy code'"
@@ -26,15 +26,13 @@
         tabindex="0"
         role="region"
         aria-label="Website ordering HTML code"
-        class="m-0 overflow-auto p-4 font-mono text-xs leading-6 text-toned outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+        class="overflow-auto p-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
         :class="expanded ? 'max-h-128' : 'max-h-56'"
       ><code>{{ code }}</code></pre>
       <div
         class="flex items-center justify-between gap-3 border-t border-default px-4 py-2"
       >
-        <span class="text-xs text-muted"
-          >Copy the whole snippet into an HTML block.</span
-        >
+        <span>Copy the whole snippet into an HTML block.</span>
         <UButton
           :label="expanded ? 'Collapse' : 'Expand'"
           :icon="expanded ? 'i-lucide-minimize-2' : 'i-lucide-maximize-2'"

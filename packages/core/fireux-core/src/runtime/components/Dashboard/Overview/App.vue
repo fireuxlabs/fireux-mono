@@ -2,10 +2,7 @@
 <template>
   <UPageCard variant="subtle">
     <div v-if="appOutcome !== 'ready'">
-      <p
-        v-if="appOutcome === 'idle' || appOutcome === 'pending'"
-        class="text-sm text-muted"
-      >
+      <p v-if="appOutcome === 'idle' || appOutcome === 'pending'">
         Loading workspace details…
       </p>
       <UAlert
@@ -40,10 +37,10 @@
     <div v-if="membershipOutcome !== 'ready' || canManageApp">
       <div
         v-if="membershipOutcome === 'idle' || membershipOutcome === 'pending'"
-        class="space-y-3"
+        class="fx-card-body-stack"
       >
-        <USkeleton class="h-10 w-52 rounded-lg" />
-        <USkeleton class="h-5 w-40 rounded" />
+        <USkeleton class="h-10 w-52" />
+        <USkeleton class="h-5 w-40" />
       </div>
 
       <UAlert
@@ -65,7 +62,7 @@
       />
 
       <div v-else-if="membership">
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             v-if="canManageApp"
             to="/dashboard/admin"
@@ -76,15 +73,14 @@
           />
         </div>
       </div>
-
     </div>
 
     <template v-if="membershipOutcome === 'ready' && profileEntries.length">
-      <USeparator class="my-5" />
+      <USeparator />
 
       <div>
-        <h3 class="font-medium text-highlighted">Profiles in this app</h3>
-        <p class="mt-1 text-sm text-muted">
+        <h3>Profiles in this app</h3>
+        <p class="mt-1">
           Open active profiles or create one of the profiles this app supports.
         </p>
 
@@ -92,18 +88,18 @@
           <div
             v-for="entry in profileEntries"
             :key="entry.profileId"
-            class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2.5"
+            class="flex items-center justify-between gap-3 px-3 py-2.5"
           >
             <div class="flex min-w-0 items-center gap-3">
               <UIcon
                 :name="entry.icon || 'i-lucide-user-round'"
-                class="size-5 shrink-0 text-dimmed"
+                class="size-5 shrink-0"
               />
               <div class="min-w-0">
-                <p class="truncate text-sm font-medium text-highlighted">
+                <p class="truncate">
                   {{ entry.label }}
                 </p>
-                <p class="text-xs text-muted">
+                <p>
                   {{ entry.active ? 'Active profile' : 'Available to create' }}
                 </p>
               </div>

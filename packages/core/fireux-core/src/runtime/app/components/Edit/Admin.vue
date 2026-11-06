@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: make App context explicit and preserve truthful people outcomes. -->
 <template>
-  <div class="space-y-6">
+  <div class="pagebody">
     <AppEditSectionsAbout :app="app" />
 
     <AppEditSectionsSocial :app="app" />
@@ -14,17 +14,13 @@
     <section class="space-y-4">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h3 class="text-lg font-semibold text-highlighted">
-            App users and access
-          </h3>
-          <p class="mt-1 text-sm text-muted">
-            Manage the members and access for this App.
-          </p>
+          <h3>App users and access</h3>
+          <p class="mt-1">Manage the members and access for this App.</p>
         </div>
 
         <div
           v-if="appUsersOutcome === 'ready' || appUsersOutcome === 'empty'"
-          class="flex flex-wrap gap-2"
+          class="fx-card__actions"
         >
           <UBadge color="neutral" variant="soft">
             {{ appUserCount }}
@@ -288,10 +284,7 @@ const makeMemberAdmin = withToast(
 )
 
 const setMemberSubscription = withToast(
-  async (value: {
-    uid: string
-    subscription: 'free' | 'pro' | 'business'
-  }) => {
+  async (value: { uid: string; subscription: 'free' | 'pro' | 'business' }) => {
     const isCurrent = captureIntent()
     subscriptionActionUid.value = value.uid
     try {
@@ -303,5 +296,4 @@ const setMemberSubscription = withToast(
   'Subscription updated',
   'Failed to update subscription'
 )
-
 </script>

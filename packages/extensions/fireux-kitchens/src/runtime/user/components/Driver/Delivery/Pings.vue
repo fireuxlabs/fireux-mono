@@ -2,8 +2,8 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="space-y-1">
+      <div class="card__header">
+        <div class="fx-card-body-stack">
           <h2>Delivery beacons</h2>
           <p>Open delivery work without customer or payment details.</p>
         </div>
@@ -14,7 +14,7 @@
       </div>
     </template>
 
-    <div v-if="dispatches.length" class="grid gap-3">
+    <div v-if="dispatches.length" class="fx-card-body-stack">
       <UPageCard
         v-for="dispatch in dispatches"
         :key="`${dispatch.kitchen.id}:${dispatch.id}`"
@@ -49,7 +49,7 @@
           description="Customer, destination, and payment details are not part of this dispatch beacon."
         />
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="fx-card__actions">
           <UButton
             size="sm"
             color="neutral"
@@ -62,10 +62,7 @@
             {{ dispatch.watching ? 'Watching' : 'Watch' }}
           </UButton>
 
-          <span
-            v-if="dispatch.watcher_count"
-            class="text-xs font-medium text-dimmed"
-          >
+          <span v-if="dispatch.watcher_count">
             {{ dispatch.watcher_count }} watching
           </span>
         </div>
@@ -80,12 +77,12 @@
       :description="error.message"
     />
 
-    <div v-else-if="pending" class="grid gap-3">
+    <div v-else-if="pending" class="fx-card-body-stack">
       <USkeleton class="h-32 w-full" />
       <USkeleton class="h-32 w-full" />
     </div>
 
-    <p v-else class="text-sm text-dimmed">No delivery beacons right now.</p>
+    <p v-else>No delivery beacons right now.</p>
   </UCard>
 </template>
 

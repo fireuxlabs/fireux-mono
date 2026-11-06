@@ -27,9 +27,7 @@
           eyebrow="Hiring team"
           title="About"
         >
-          <p
-            class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
-          >
+          <p class="whitespace-pre-line sm:text-base">
             {{ aboutCopy }}
           </p>
         </UserProfileSection>
@@ -41,20 +39,20 @@
           title="Placement focus"
         >
           <div class="grid gap-3 sm:grid-cols-2">
-            <div
+            <UCard
               v-for="focusArea in focusAreas"
               :key="focusArea"
-              class="flex items-center gap-3 rounded-2xl border border-default bg-elevated/45 p-4"
+              class="flex items-center gap-3" :ui="{ body: 'fx-card-body-stack' }"
             >
               <div
                 class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-info/10 text-info"
               >
-                <UIcon name="i-lucide-user-search" class="size-4" />
+                <UIcon name="i-lucide-user-search" />
               </div>
-              <span class="text-sm font-medium text-highlighted">
+              <span>
                 {{ focusArea }}
               </span>
-            </div>
+            </UCard>
           </div>
         </UserProfileSection>
       </div>

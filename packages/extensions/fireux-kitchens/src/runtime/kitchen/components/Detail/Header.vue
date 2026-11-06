@@ -16,11 +16,7 @@
       </div>
     </div>
     <PlaceDetailHeader :place="place" />
-    <UNavigationMenu
-      :items="navigation"
-      class="border-b border-default pt-2"
-      aria-label="Kitchen"
-    />
+    <UNavigationMenu :items="navigation" aria-label="Kitchen" />
   </div>
 </template>
 

@@ -6,7 +6,7 @@
         <p class="preview__fallback">Loading chef preview…</p>
       </UCard>
 
-      <UCard v-else-if="hasPreview" class="space-y-6">
+      <UCard v-else-if="hasPreview">
         <header class="preview__header">
           <div class="preview__header-content">
             <p class="preview__eyebrow">Directory preview</p>

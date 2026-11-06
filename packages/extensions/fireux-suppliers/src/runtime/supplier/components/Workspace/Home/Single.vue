@@ -1,5 +1,5 @@
 <template>
-  <h2 class="font-semibold">{{ card?.title || 'Details' }}</h2>
+  <h2 class="fx-type-section-title">{{ card?.title || 'Details' }}</h2>
   <FireStateCard
     v-if="outcome === 'pending' || outcome === 'error'"
     :loading="outcome === 'pending'"
@@ -16,7 +16,7 @@
       variant="soft"
     />
   </template>
-  <p v-else class="text-sm text-muted">Choose a supplier to see its details.</p>
+  <p v-else>Choose a supplier to see its details.</p>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

@@ -23,16 +23,16 @@
 
       <div
         v-else-if="outcome === 'pending'"
-        class="py-10 text-sm opacity-70"
+        class="py-10 opacity-70"
         role="status"
       >
         Loading ingredient...
       </div>
 
       <div v-else-if="!ingredient" class="space-y-2">
-        <h1 class="text-lg font-semibold">Ingredient Not Found</h1>
+        <h1>Ingredient Not Found</h1>
         <p>The ingredient you are looking for does not exist.</p>
-        <NuxtLink to="/ingredients" class="text-primary hover:underline">
+        <NuxtLink to="/ingredients" class="hover:underline">
           &larr; Back
         </NuxtLink>
       </div>

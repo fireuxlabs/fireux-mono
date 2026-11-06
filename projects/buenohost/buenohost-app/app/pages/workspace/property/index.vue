@@ -1,5 +1,5 @@
 <template>
-  <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
+  <UDashboardToolbar v-if="isSignedIn"
     ><WorkspacePropertySelector /> </UDashboardToolbar
   ><UPageHeader
     title="Build your Property Workspace"

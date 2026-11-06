@@ -16,15 +16,11 @@
     </div>
 
     <UserCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
-    <div
-      v-else
-      class="rounded-2xl border border-dashed border-default px-6 py-10 text-center"
-      role="status"
-    >
-      <p class="font-medium text-highlighted">
+    <div v-else class="px-6 py-10" role="status">
+      <p>
         {{ hasMore ? 'No matches in loaded users' : 'No matching people' }}
       </p>
-      <p class="mt-1 text-sm text-muted">
+      <p class="mt-1">
         {{
           hasMore
             ? 'Load more users below or try another name.'
@@ -33,7 +29,6 @@
       </p>
       <UButton
         v-if="query"
-        class="mt-4"
         label="Clear search"
         variant="soft"
         color="neutral"

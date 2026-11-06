@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="workspace-surface workspace-surface--compact">
     <FireStateCard
       v-if="readState"
       :state="readState"
@@ -17,7 +17,7 @@
       <UCard>
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="font-semibold">Profile</h2>
+            <h2 class="fx-type-card-heading">Profile</h2>
             <slot name="actions" />
           </div>
         </template>
@@ -30,15 +30,15 @@
           />
 
           <div class="min-w-0 space-y-1">
-            <h3 class="break-words text-xl font-semibold text-highlighted">
+            <h3 class="break-words">
               {{ name || 'Untitled portfolio' }}
             </h3>
-            <p v-if="tagline" class="text-sm text-muted">
+            <p v-if="tagline">
               {{ tagline }}
             </p>
           </div>
         </div>
-        <p v-if="regionLabel" class="mt-4 text-sm text-muted">
+        <p v-if="regionLabel" class="mt-4">
           {{ regionLabel }}
         </p>
       </UCard>
@@ -46,10 +46,10 @@
       <UCard>
         <template #header
           ><div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="font-semibold">Internal context</h2>
+            <h2 class="fx-type-card-heading">Internal context</h2>
             <slot name="context-actions" /></div
         ></template>
-        <p class="mb-4 text-sm text-muted">
+        <p class="mb-4">
           Owner, strategy and notes are for your team. They are not shown in the
           public directory.
         </p>

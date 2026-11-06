@@ -5,7 +5,7 @@
     :action="action"
     @activate="emit('action')"
   >
-    <div class="flex min-w-0 items-start gap-2">
+    <div class="card__media fx-card__media--start">
       <UAvatar
         v-if="imageUrl"
         :src="imageUrl || undefined"
@@ -13,17 +13,14 @@
         size="sm"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
+      <div class="card__content card__stack">
+        <p class="card__title">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+        <p v-if="showSubtitle && subtitle" class="card__subtitle">
           {{ subtitle }}
         </p>
-        <div
-          v-if="showBadges && (badges?.length ?? 0)"
-          class="flex flex-wrap items-center gap-1"
-        >
+        <div v-if="showBadges && (badges?.length ?? 0)" class="card__badges">
           <UBadge
             v-for="badge in badges"
             :key="badge"
@@ -36,13 +33,7 @@
         </div>
       </div>
 
-      <UBadge
-        v-if="packPriceLabel"
-        variant="soft"
-        color="primary"
-        size="xs"
-        class="shrink-0"
-      >
+      <UBadge v-if="packPriceLabel" variant="soft" color="primary" size="xs">
         {{ packPriceLabel }}
       </UBadge>
     </div>
@@ -50,7 +41,6 @@
 </template>
 
 <script setup lang="ts">
-
 import type { SupplierItemCard } from '../../../composables/item/useSupplierItemInterface'
 
 const emit = defineEmits<{
@@ -77,5 +67,4 @@ withDefaults(
     action: false,
   }
 )
-
 </script>

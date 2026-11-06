@@ -1,15 +1,13 @@
 <!-- Concurrent edit — 2026-07-21 12:17 CEST — Cleanbox-to-Werkbox app migration: add cleaning as a neutral Werkbox category. -->
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/" variant="link" class="px-0"> Werkbox </UButton>
+  <UPage>
+        <UButton to="/" variant="link"> Werkbox </UButton>
         <UPageHeader
           title="Cleaning"
           description="Find cleaning work, skilled professionals, and service organisations in one practical-work network."
           headline="Practical work · Cleaning"
         />
-        <UPageBody class="space-y-4">
+        <UPageBody>
           <figure
             class="overflow-hidden rounded-2xl border border-default bg-muted"
           >
@@ -22,11 +20,9 @@
             />
           </figure>
 
-          <section class="space-y-3">
-            <h2 class="text-xl font-semibold text-highlighted">
-              Keep places ready for people
-            </h2>
-            <p class="text-muted">
+          <section class="pagebody">
+            <h2 class="fx-type-section-title">Keep places ready for people</h2>
+            <p class="fx-type-body">
               Browse current opportunities, discover cleaning organisations, or
               publish a Professional profile you can reuse when you apply.
               Employers manage roles and applications directly through Werkbox.
@@ -67,8 +63,6 @@
           </div>
         </UPageBody>
       </UPage>
-    </UContainer>
-  </main>
 </template>
 
 <script setup lang="ts">

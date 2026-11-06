@@ -7,15 +7,13 @@
 
     <UPageBody class="pagebody space-y-4">
       <UCard>
-        <div class="text-sm">
-          Runtime anchor: <span class="font-medium">portfolio</span>
-        </div>
-        <div class="text-sm">
+        <div>Runtime anchor: <span>portfolio</span></div>
+        <div>
           Selected portfolio:
-          <span class="font-mono">{{ runtimeId || 'unset' }}</span>
+          <span>{{ runtimeId || 'unset' }}</span>
         </div>
-        <div class="text-sm">
-          Read state: <span class="font-medium">{{ runtimeOutcome }}</span>
+        <div>
+          Read state: <span>{{ runtimeOutcome }}</span>
         </div>
       </UCard>
     </UPageBody>

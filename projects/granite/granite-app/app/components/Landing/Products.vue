@@ -1,23 +1,22 @@
 <template>
   <section class="landing-index-section">
-    <div class="space-y-6">
-      <div class="space-y-2">
-        <h2 class="text-3xl font-semibold">
-          What the workspace covers.
-        </h2>
-        <p class="text-muted">
-          Granite is built for branch-level oversight across multiple client portfolios.
+    <div class="pagebody">
+      <div class="pagebody">
+        <h2 class="fx-type-section-title">What the workspace covers.</h2>
+        <p class="fx-type-body">
+          Granite is built for branch-level oversight across multiple client
+          portfolios.
         </p>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <UPageGrid>
         <UCard v-for="item in items" :key="item.title">
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <div class="flex items-center gap-2">
               <UIcon :name="item.icon" />
-              <p class="font-medium">{{ item.title }}</p>
+              <p class="fx-type-body">{{ item.title }}</p>
             </div>
-            <p class="text-sm text-muted">
+            <p class="fx-type-caption">
               {{ item.description }}
             </p>
             <div>
@@ -27,7 +26,7 @@
             </div>
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
     </div>
   </section>
 </template>

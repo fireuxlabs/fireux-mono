@@ -17,7 +17,7 @@
       :id="`service-section-${index}`"
       class="scroll-mt-6"
     >
-      <h2 class="text-xl font-semibold">{{ section.label }}</h2>
+      <h2>{{ section.label }}</h2>
       <KitchenDetailOfferingTimes
         v-if="section.offerings.length"
         :offerings="section.offerings"
@@ -47,12 +47,11 @@
               row.label !== row.item.name &&
               row.alternatives.length
             "
-            class="text-sm text-muted"
           >
             {{ row.label }}
           </p>
-          <details v-if="row.alternatives.length" class="my-3 text-sm">
-            <summary class="cursor-pointer text-muted">
+          <details v-if="row.alternatives.length" class="my-3">
+            <summary class="cursor-pointer">
               Other serving times and prices
             </summary>
             <div
@@ -60,7 +59,7 @@
               :key="offerIndex"
               class="mt-3 space-y-1"
             >
-              <p class="font-medium">
+              <p>
                 {{ offer.label }} ·
                 {{
                   formatCurrencyAmount(offer.item.price, {

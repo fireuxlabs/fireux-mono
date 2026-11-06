@@ -3,7 +3,7 @@
   <UCard v-if="outcome !== 'idle'">
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <h2 class="text-base font-semibold text-highlighted">Project apps</h2>
+        <h2 class="fx-type-card-heading">Project apps</h2>
         <UBadge
           v-if="outcome === 'ready' || outcome === 'empty'"
           color="neutral"
@@ -14,9 +14,7 @@
       </div>
     </template>
 
-    <div v-if="outcome === 'pending'" class="text-sm text-dimmed">
-      Loading apps...
-    </div>
+    <div v-if="outcome === 'pending'">Loading apps...</div>
 
     <UAlert
       v-else-if="outcome === 'error'"
@@ -38,15 +36,18 @@
           :tagline="card.tagline"
           :link="false"
         />
-        <UButton variant="soft" @click="previewId = card.id">Preview {{ card.id }}</UButton>
+        <UButton variant="soft" @click="previewId = card.id"
+          >Preview {{ card.id }}</UButton
+        >
       </div>
       <AppPreviewHtml v-if="previewApp" :app="previewApp" />
     </div>
 
-    <p v-else class="text-sm text-dimmed">
-      No app records point to this project.
-    </p>
-    <FireCopyError v-if="outcome === 'error'" :message="error?.message || 'Project apps could not be loaded.'" />
+    <p v-else>No app records point to this project.</p>
+    <FireCopyError
+      v-if="outcome === 'error'"
+      :message="error?.message || 'Project apps could not be loaded.'"
+    />
   </UCard>
 </template>
 
@@ -59,9 +60,13 @@ import {
 import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 
-const { apps, outcome, error } = useProjectApps(useProjectWorkspace().id, { management: true })
+const { apps, outcome, error } = useProjectApps(useProjectWorkspace().id, {
+  management: true,
+})
 const previewId = ref('')
-const previewApp = computed(() => apps.value.find(app => app.id === previewId.value))
+const previewApp = computed(() =>
+  apps.value.find((app) => app.id === previewId.value)
+)
 const { toCard: appCell } = useAppView()
 
 const cards = computed(() =>

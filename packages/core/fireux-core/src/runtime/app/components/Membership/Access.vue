@@ -23,19 +23,15 @@
     icon="i-lucide-user-round-check"
     variant="subtle"
   >
-    <dl class="divide-y divide-default text-sm">
+    <dl class="divide-y divide-default">
       <div class="py-3 first:pt-0">
-        <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
-          Role
-        </dt>
-        <dd class="mt-1 font-medium capitalize text-highlighted">
+        <dt>Role</dt>
+        <dd class="mt-1">
           {{ appUser.role }}
         </dd>
       </div>
       <div class="py-3">
-        <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
-          Subscription
-        </dt>
+        <dt>Subscription</dt>
         <dd class="mt-1">
           <UserAccessBadge :subscription="appUser.subscription" />
         </dd>

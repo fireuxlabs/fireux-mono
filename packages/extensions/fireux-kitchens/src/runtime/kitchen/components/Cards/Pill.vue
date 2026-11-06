@@ -6,7 +6,7 @@
     class="pill"
     @activate="emit('action')"
   >
-    <div class="flex min-w-0 items-start gap-2">
+    <div class="card__media fx-card__media--start">
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title || ''"
@@ -14,17 +14,14 @@
         :class="avatarClass"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
+      <div class="card__content card__stack">
+        <p class="card__title">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+        <p v-if="showSubtitle && subtitle" class="card__subtitle">
           {{ subtitle }}
         </p>
-        <div
-          v-if="showBadges && (badges?.length ?? 0)"
-          class="flex flex-wrap items-center gap-1"
-        >
+        <div v-if="showBadges && (badges?.length ?? 0)" class="card__badges">
           <UBadge
             v-for="badge in badges"
             :key="badge"

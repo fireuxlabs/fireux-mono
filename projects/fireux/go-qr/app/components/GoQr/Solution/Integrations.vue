@@ -1,16 +1,11 @@
 <template>
-  <UCard
-    v-if="integrations"
-    variant="subtle"
-  >
+  <UCard v-if="integrations" variant="subtle">
     <template #header>
-      <h2 class="text-lg font-semibold text-highlighted">
-        Integrations
-      </h2>
+      <h2 class="fx-type-section-title">Integrations</h2>
     </template>
 
-    <div class="space-y-4">
-      <p class="text-sm leading-6 text-muted">
+    <div class="fx-card-body-stack">
+      <p class="fx-type-caption">
         {{ integrations.body }}
       </p>
 
@@ -18,21 +13,17 @@
         v-if="integrations.consumers?.length"
         class="grid gap-3 md:grid-cols-3"
       >
-        <div
-          v-for="consumer in integrations.consumers"
-          :key="consumer.name"
-          class="rounded-md border border-default bg-default p-3"
-        >
+        <UCard v-for="consumer in integrations.consumers" :key="consumer.name">
           <div class="flex items-center gap-2">
-            <UIcon :name="consumer.icon" class="size-4 text-primary" />
-            <h3 class="text-sm font-semibold text-highlighted">
+            <UIcon :name="consumer.icon" />
+            <h3 class="fx-type-card-heading">
               {{ consumer.name }}
             </h3>
           </div>
-          <p class="mt-2 text-xs leading-5 text-muted">
+          <p class="mt-2 fx-type-caption">
             {{ consumer.useGoQr }}
           </p>
-          <p class="mt-2 text-xs leading-5 text-muted">
+          <p class="mt-2 fx-type-caption">
             {{ consumer.useApp }}
           </p>
           <UButton
@@ -43,17 +34,13 @@
             variant="ghost"
             size="xs"
             trailing-icon="i-lucide-arrow-up-right"
-            class="mt-3"
           >
             {{ consumer.cta }}
           </UButton>
-        </div>
+        </UCard>
       </div>
 
-      <div
-        v-if="integrations.links?.length"
-        class="flex flex-wrap gap-2"
-      >
+      <div v-if="integrations.links?.length" class="fx-card__actions">
         <UButton
           v-for="link in integrations.links"
           :key="link.to"

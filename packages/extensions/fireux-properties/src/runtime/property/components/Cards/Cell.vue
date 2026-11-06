@@ -3,7 +3,6 @@
     :to="link && props.to ? props.to : undefined"
     :action="action"
     :disabled="disabled"
-    class="block w-full"
     @activate="emit('action')"
   >
     <div class="fx-card--cell">
@@ -12,25 +11,21 @@
         :alt="props.title"
         size="md"
         icon="i-lucide-building"
-        class="shrink-0"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ props.title }}</div>
-            <div
-              v-if="showSubtitle && props.subtitle"
-              class="truncate text-xs text-dimmed"
-            >
+      <div class="card__content card__stack">
+        <div class="card__header">
+          <div class="card__content">
+            <div class="card__title">{{ props.title }}</div>
+            <div v-if="showSubtitle && props.subtitle" class="card__subtitle">
               {{ props.subtitle }}
             </div>
           </div>
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
+        <div v-if="showMeta" class="card__subtitle">
           <span v-if="props.meta">{{ props.meta }}</span>
-          <span v-else class="italic">missing</span>
+          <span v-else class="fx-card__tagline--empty">missing</span>
         </div>
       </div>
     </div>

@@ -1,10 +1,7 @@
 <template>
-  <div class="space-y-5">
+  <div class="workspace-surface workspace-surface--compact">
     <div v-if="pending" class="grid min-h-64 place-items-center">
-      <UIcon
-        name="i-lucide-loader-circle"
-        class="size-7 animate-spin text-dimmed"
-      />
+      <UIcon name="i-lucide-loader-circle" class="animate-spin" />
     </div>
 
     <UAlert
@@ -41,14 +38,14 @@
             <div class="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <h2 class="text-xl font-semibold">
+                  <h2 class="fx-type-card-heading">
                     {{ selected.guest.display_name || 'Unnamed guest' }}
                   </h2>
                   <UBadge :color="sourceColor(selected.source)" variant="soft">
                     {{ sourceLabel(selected.source) }}
                   </UBadge>
                 </div>
-                <p class="mt-1 text-sm text-dimmed">
+                <p class="mt-1">
                   {{ formatDate(selected.arrival_date) }} →
                   {{ formatDate(selected.departure_date) }}
                 </p>
@@ -60,10 +57,10 @@
             </div>
           </template>
 
-          <dl class="grid gap-4 sm:grid-cols-2">
+          <dl class="workspace-surface__grid workspace-surface__grid--2">
             <div class="fx-inset-panel">
-              <dt class="text-xs text-dimmed">Stay</dt>
-              <dd class="mt-1 font-medium">
+              <dt>Stay</dt>
+              <dd class="mt-1">
                 {{ nights(selected) }} nights · {{ selected.adults }} adults
                 <template v-if="selected.children">
                   · {{ selected.children }} children
@@ -71,17 +68,17 @@
               </dd>
             </div>
             <div class="fx-inset-panel">
-              <dt class="text-xs text-dimmed">Value</dt>
-              <dd class="mt-1 font-medium">{{ formattedTotal }}</dd>
+              <dt>Value</dt>
+              <dd class="mt-1">{{ formattedTotal }}</dd>
             </div>
             <div class="fx-inset-panel">
-              <dt class="text-xs text-dimmed">Channel reference</dt>
-              <dd class="mt-1 font-medium">
+              <dt>Channel reference</dt>
+              <dd class="mt-1">
                 {{ selected.external_reference || 'Direct / none' }}
               </dd>
             </div>
             <div class="fx-inset-panel">
-              <dt class="text-xs text-dimmed">Sync</dt>
+              <dt>Sync</dt>
               <dd class="mt-1">
                 <UBadge
                   :color="syncColor(selected.sync.state)"
@@ -94,25 +91,25 @@
           </dl>
 
           <div class="mt-4">
-            <p class="text-xs text-dimmed">Host notes</p>
-            <p class="mt-1 whitespace-pre-wrap text-sm">
+            <p>Host notes</p>
+            <p class="mt-1 whitespace-pre-wrap">
               {{ selected.notes || 'No private notes.' }}
             </p>
           </div>
         </UCard>
 
-        <div class="space-y-4">
+        <div class="workspace-surface workspace-surface--compact">
           <UCard>
             <template #header>
-              <p class="font-semibold">Guest contact</p>
+              <p>Guest contact</p>
             </template>
-            <div class="space-y-3 text-sm">
+            <div class="space-y-3">
               <a
                 v-if="selected.guest.email"
                 :href="`mailto:${selected.guest.email}`"
                 class="flex items-center gap-2 hover:text-primary"
               >
-                <UIcon name="i-lucide-mail" class="size-4 text-dimmed" />
+                <UIcon name="i-lucide-mail" />
                 {{ selected.guest.email }}
               </a>
               <a
@@ -120,13 +117,10 @@
                 :href="`tel:${selected.guest.phone}`"
                 class="flex items-center gap-2 hover:text-primary"
               >
-                <UIcon name="i-lucide-phone" class="size-4 text-dimmed" />
+                <UIcon name="i-lucide-phone" />
                 {{ selected.guest.phone }}
               </a>
-              <p
-                v-if="!selected.guest.email && !selected.guest.phone"
-                class="text-dimmed"
-              >
+              <p v-if="!selected.guest.email && !selected.guest.phone">
                 No contact details recorded.
               </p>
             </div>
@@ -134,7 +128,7 @@
 
           <UCard>
             <template #header>
-              <p class="font-semibold">Stay status</p>
+              <p>Stay status</p>
             </template>
             <div class="grid gap-2">
               <UButton

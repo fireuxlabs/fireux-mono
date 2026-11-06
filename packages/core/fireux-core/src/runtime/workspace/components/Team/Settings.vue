@@ -1,7 +1,7 @@
 <template>
   <UCard>
-    <div class="space-y-5">
-      <h2 class="font-medium">{{ member.name }}</h2>
+    <div class="workspace-surface workspace-surface--compact">
+      <h2>{{ member.name }}</h2>
       <WorkspaceTeamUpdateForm
         ref="form"
         :key="member.id"

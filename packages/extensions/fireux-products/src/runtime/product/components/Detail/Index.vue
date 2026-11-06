@@ -3,7 +3,7 @@
     <ProductDetailHeader :product="product" :default-price="defaultPrice" />
 
     <section v-if="product?.content" class="product-section">
-      <h2>Overview</h2>
+      <h2 class="fx-type-section-title">Overview</h2>
       <div v-html="product.content" />
     </section>
 

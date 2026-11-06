@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="pagebody">
     <UCard>
       <div
         class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
@@ -17,9 +17,9 @@
             size="3xl"
           />
           <div class="min-w-0">
-            <p v-if="label" class="text-sm text-muted">{{ label }}</p>
-            <h1 class="text-2xl font-semibold text-highlighted">{{ title }}</h1>
-            <p v-if="description" class="mt-2 max-w-2xl text-sm text-toned">
+            <p v-if="label">{{ label }}</p>
+            <h1>{{ title }}</h1>
+            <p v-if="description" class="mt-2 max-w-2xl">
               {{ description }}
             </p>
           </div>
@@ -49,10 +49,8 @@
         <slot />
       </div>
       <UCard v-if="$slots.attention">
-        <template #header
-          ><h2 class="font-semibold">Needs attention</h2></template
-        >
-        <div class="space-y-3"><slot name="attention" /></div>
+        <template #header><h2>Needs attention</h2></template>
+        <div class="fx-card-body-stack"><slot name="attention" /></div>
       </UCard>
     </div>
   </div>

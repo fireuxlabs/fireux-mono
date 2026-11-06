@@ -1,33 +1,22 @@
 <!-- Concurrent edit — 2026-07-21 12:28 CEST — FireUX solutions hub: curate FireUX offers before exposing ecosystem catalogues. -->
 <!-- Concurrent edit — 2026-07-21 12:57 CEST — FireUX project positioning: surface the current Project Workspace as a restrained solution. -->
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-10 sm:py-14">
+  <main class="min-h-screen bg-default">
+    <UContainer>
       <div class="mx-auto grid max-w-5xl gap-10">
         <header class="grid max-w-3xl gap-3">
-          <NuxtLink
-            to="/"
-            class="w-fit text-sm font-semibold text-primary hover:underline"
-          >
-            FireUX
-          </NuxtLink>
-          <h1
-            class="m-0 text-3xl font-semibold leading-tight text-highlighted sm:text-4xl"
-          >
-            FireUX solutions
-          </h1>
-          <p class="m-0 text-base leading-7 text-muted">
+          <NuxtLink to="/" class="w-fit hover:underline"> FireUX </NuxtLink>
+          <h1 class="m-0 fx-type-page-title">FireUX solutions</h1>
+          <p class="m-0 fx-type-body">
             Search-led pages for specific jobs a FireUX App or Ecosystem can
             support.
           </p>
         </header>
 
-        <section class="grid gap-5">
-          <div class="grid gap-1">
-            <h2 class="m-0 text-xl font-semibold text-highlighted">
-              Start here
-            </h2>
-            <p class="m-0 text-sm leading-6 text-muted">
+        <section class="pagebody">
+          <div class="pagebody">
+            <h2 class="m-0 fx-type-section-title">Start here</h2>
+            <p class="m-0 fx-type-caption">
               Choose the job closest to the App you need.
             </p>
           </div>
@@ -45,10 +34,8 @@
           </UPageGrid>
         </section>
 
-        <section class="grid gap-5">
-          <h2 class="m-0 text-xl font-semibold text-highlighted">
-            More solutions
-          </h2>
+        <section class="pagebody">
+          <h2 class="m-0 fx-type-section-title">More solutions</h2>
           <UCard variant="subtle">
             <div class="divide-y divide-default">
               <NuxtLink
@@ -58,22 +45,16 @@
                 :target="solution.external ? '_blank' : undefined"
                 class="flex min-w-0 items-center gap-4 py-4 first:pt-0 last:pb-0"
               >
-                <UIcon
-                  :name="solution.icon || 'i-lucide-lightbulb'"
-                  class="size-5 shrink-0 text-primary"
-                />
+                <UIcon :name="solution.icon || 'i-lucide-lightbulb'" />
                 <span class="min-w-0 flex-1">
-                  <span class="block font-semibold text-highlighted">
+                  <span class="block">
                     {{ solution.title }}
                   </span>
-                  <span class="block text-sm leading-6 text-muted">
+                  <span class="block">
                     {{ solution.description }}
                   </span>
                 </span>
-                <UIcon
-                  name="i-lucide-arrow-right"
-                  class="size-4 shrink-0 text-muted"
-                />
+                <UIcon name="i-lucide-arrow-right" />
               </NuxtLink>
             </div>
           </UCard>
@@ -83,11 +64,9 @@
           v-if="platformSolutions.length"
           class="grid gap-4 border-t border-default pt-8"
         >
-          <div class="grid gap-1">
-            <h2 class="m-0 text-lg font-semibold text-highlighted">
-              FireUX App options
-            </h2>
-            <p class="m-0 text-sm leading-6 text-muted">
+          <div class="pagebody">
+            <h2 class="m-0 fx-type-section-title">FireUX App options</h2>
+            <p class="m-0 fx-type-caption">
               Use Ignition to request a FireUX App, or explore published
               Ecosystems and their Apps.
             </p>
@@ -97,7 +76,7 @@
               v-for="solution in platformSolutions"
               :key="solution.slug"
               :to="`/solutions/${solution.slug}`"
-              class="text-sm font-semibold text-primary hover:underline"
+              class="hover:underline"
             >
               {{ solution.title }}
             </NuxtLink>

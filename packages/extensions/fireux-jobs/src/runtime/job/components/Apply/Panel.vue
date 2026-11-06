@@ -2,10 +2,8 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <h3 class="font-semibold">Apply for this job</h3>
-        <p class="text-xs text-muted">
-          Your Professional profile is shared privately with the employer.
-        </p>
+        <h3 class="fx-type-card-heading">Apply for this job</h3>
+        <p>Your Professional profile is shared privately with the employer.</p>
       </div>
     </template>
 
@@ -81,12 +79,22 @@ const props = defineProps<{
   applicationDoorway?: JobApplicationDoorway
 }>()
 
-const { applyToJobRequest, captureIntent, scopeEpoch } = useJobHiringCommands([() => props.jobId])
+const { applyToJobRequest, captureIntent, scopeEpoch } = useJobHiringCommands([
+  () => props.jobId,
+])
 const message = ref('')
 const submitting = ref(false)
 const submitted = ref(false)
 const errorMessage = ref('')
-watch(scopeEpoch, () => { submitting.value = false; submitted.value = false; errorMessage.value = '' }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    submitting.value = false
+    submitted.value = false
+    errorMessage.value = ''
+  },
+  { flush: 'sync' }
+)
 
 function requestError(error: unknown): string {
   if (!error || typeof error !== 'object') {

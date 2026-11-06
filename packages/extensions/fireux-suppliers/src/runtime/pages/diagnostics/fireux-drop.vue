@@ -9,7 +9,7 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Model</div>
+            <div>Model</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('model')">
               {{ openSections.model ? 'Hide' : 'Show' }}
             </UButton>
@@ -24,7 +24,7 @@
 
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Collection</div>
+            <div>Collection</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -37,10 +37,8 @@
             <UCard>
               <template #header>
                 <div class="space-y-3">
-                  <p class="text-sm font-semibold text-highlighted">
-                    Suppliers collection
-                  </p>
-                  <p class="text-xs text-muted">
+                  <p>Suppliers collection</p>
+                  <p>
                     Filter suppliers by model drift (extra fields) before
                     browsing records.
                   </p>
@@ -73,7 +71,7 @@
 
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Storage</div>
+            <div>Storage</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -84,9 +82,7 @@
           </div>
           <div v-show="openSections.storage" class="mt-4 space-y-4">
             <div class="space-y-3">
-              <p class="text-xs text-muted">
-                Inspect one Supplier root and its owned operation paths.
-              </p>
+              <p>Inspect one Supplier root and its owned operation paths.</p>
 
               <USelect
                 v-model="selectedSupplierId"

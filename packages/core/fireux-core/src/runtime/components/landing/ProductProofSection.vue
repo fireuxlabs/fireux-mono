@@ -22,14 +22,14 @@
       <h2
         :id="sectionId"
         class="fx-type-section-display"
-        :class="{ 'text-4xl sm:text-5xl': copyEmphasis }"
+        :class="{ '': copyEmphasis }"
       >
         {{ title }}
       </h2>
       <p
         v-if="description"
         class="fx-type-description"
-        :class="{ 'text-xl': copyEmphasis }"
+        :class="{ '': copyEmphasis }"
       >
         {{ description }}
       </p>
@@ -37,7 +37,7 @@
       <ul
         v-if="items?.length"
         class="landing-product-proof__items"
-        :class="{ 'text-base sm:text-lg': copyEmphasis }"
+        :class="{ '': copyEmphasis }"
         :aria-label="`${eyebrow || title} includes`"
       >
         <li v-for="item in items" :key="item">

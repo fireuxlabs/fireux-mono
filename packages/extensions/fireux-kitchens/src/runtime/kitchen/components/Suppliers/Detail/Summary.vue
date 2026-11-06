@@ -15,28 +15,25 @@
           :style="{ objectFit: media.imageFit }"
           loading="lazy"
         />
-        <div
-          v-else
-          class="flex h-full w-full items-center justify-center text-dimmed"
-        >
-          <UIcon name="i-lucide-truck" class="size-8" />
+        <div v-else class="flex h-full w-full items-center justify-center">
+          <UIcon name="i-lucide-truck" />
         </div>
       </div>
 
       <div class="min-w-0 flex-1 space-y-5">
-        <div class="space-y-2">
+        <div class="fx-card-body-stack">
           <div class="flex items-center gap-2">
             <UChip :color="status ? 'success' : 'neutral'" inset />
-            <h2 class="text-2xl font-semibold text-highlighted">
+            <h2>
               {{ title }}
             </h2>
           </div>
 
-          <p v-if="headline" class="text-sm text-toned">
+          <p v-if="headline">
             {{ headline }}
           </p>
 
-          <p v-if="summary" class="max-w-2xl text-sm text-dimmed">
+          <p v-if="summary" class="max-w-2xl">
             {{ summary }}
           </p>
         </div>
@@ -64,7 +61,7 @@
           </div>
         </div>
 
-        <div v-if="categories.length" class="flex flex-wrap items-center gap-1">
+        <div v-if="categories.length" class="fx-card__chips">
           <UBadge
             v-for="category in categories"
             :key="category"

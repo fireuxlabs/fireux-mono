@@ -2,8 +2,8 @@
 <template>
   <ClientOnly>
     <div class="landing-index-section">
-      <div class="mb-6 text-center">
-        <h2 class="text-2xl lg:text-3xl font-bold">Fuel</h2>
+      <div class="mb-6">
+        <h2 class="fx-type-section-title">Fuel</h2>
       </div>
 
       <div class="flex flex-col md:flex-row items-center justify-center gap-8">

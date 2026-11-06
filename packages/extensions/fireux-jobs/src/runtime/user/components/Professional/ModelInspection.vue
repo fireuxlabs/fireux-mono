@@ -11,10 +11,8 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-highlighted">
-              Professionals collection
-            </p>
-            <p class="text-xs text-muted">
+            <p>Professionals collection</p>
+            <p>
               Inspect model drift separately from the public professionals
               collection manager.
             </p>
@@ -35,9 +33,7 @@
         <ProfessionalDirectory />
 
         <div v-if="professionalPreviewCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-            Preview cards
-          </p>
+          <p>Preview cards</p>
           <div class="space-y-3">
             <ProfessionalCardsSummary
               v-for="card in professionalPreviewCards"
@@ -48,9 +44,7 @@
         </div>
 
         <div v-if="professionalProfileEntries.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
-            Profile cards
-          </p>
+          <p>Profile cards</p>
           <div class="space-y-4">
             <ProfessionalProfile
               v-for="entry in professionalProfileEntries"

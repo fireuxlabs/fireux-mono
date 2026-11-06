@@ -1,5 +1,9 @@
+<template>
+  <ToursDetail v-if="tour" :tour="tour" />
+</template>
+
 <script setup lang="ts">
-definePageMeta({ layout: 'tours' })
+definePageMeta({ layout: 'default' })
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { tours } from '~/content/tours'
 import { searchPage } from '~/ignition/search'
@@ -32,6 +36,3 @@ useSeo({
     }),
 })
 </script>
-<template>
-  <ToursDetail v-if="tour" :tour="tour" />
-</template>

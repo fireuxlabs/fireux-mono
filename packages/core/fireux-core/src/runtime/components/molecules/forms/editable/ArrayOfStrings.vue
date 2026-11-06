@@ -31,7 +31,6 @@
           :disabled="saving"
           :maxlength="maxLength"
           :placeholder="itemPlaceholder"
-          class="w-full"
         />
         <UIcon
           name="i-lucide-x-circle"
@@ -45,7 +44,6 @@
           :disabled="saving || !canAdd"
           :maxlength="maxLength"
           :placeholder="newItemPlaceholder"
-          class="w-full"
         />
         <UIcon
           name="i-lucide-plus-circle"

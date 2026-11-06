@@ -22,7 +22,7 @@
     />
 
     <UCard v-else :key="portfolioId">
-      <div class="space-y-4">
+      <div class="workspace-surface workspace-surface--compact">
         <FireFormsEditableSimpleField
           :capture-intent="captureIntent"
           v-if="section === 'profile'"

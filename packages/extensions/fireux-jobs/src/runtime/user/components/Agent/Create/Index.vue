@@ -5,7 +5,7 @@
         <div class="header">
           <div>
             <p class="eyebrow">{{ eyebrow }}</p>
-            <h2>{{ title }}</h2>
+            <h2 class="fx-type-card-heading">{{ title }}</h2>
           </div>
           <p class="lede">
             {{ description }}

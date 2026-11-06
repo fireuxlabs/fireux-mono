@@ -3,7 +3,7 @@
     ref="toolFrame"
     :src="src"
     :title="title"
-    class="block w-full overflow-hidden rounded-lg"
+    class="block w-full overflow-hidden"
     :style="{ height: `${toolHeight}px` }"
     @load="onToolFrameLoad"
   />
@@ -17,18 +17,21 @@ import type {
   ToolProviderResultMessage,
 } from '../../../types/tool-provider.types'
 
-const props = withDefaults(defineProps<{
-  src: string
-  title: string
-  providerOrigin: string
-  messageSource?: string
-  authToken?: string
-  initialHeight?: number
-}>(), {
-  messageSource: '',
-  authToken: '',
-  initialHeight: 280,
-})
+const props = withDefaults(
+  defineProps<{
+    src: string
+    title: string
+    providerOrigin: string
+    messageSource?: string
+    authToken?: string
+    initialHeight?: number
+  }>(),
+  {
+    messageSource: '',
+    authToken: '',
+    initialHeight: 280,
+  }
+)
 const emit = defineEmits<{
   'tool-result': [message: ToolProviderResultMessage]
 }>()

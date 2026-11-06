@@ -4,13 +4,10 @@
       <template #header>
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0">
-            <h2 class="text-base font-semibold text-highlighted">
+            <h2 class="fx-type-section-title">
               {{ itemsTitle }}
             </h2>
-            <p
-              v-if="outcome === 'ready' || outcome === 'empty'"
-              class="text-sm text-dimmed"
-            >
+            <p v-if="outcome === 'ready' || outcome === 'empty'">
               {{ itemsDescription }}
             </p>
           </div>
@@ -25,11 +22,7 @@
         </div>
       </template>
 
-      <div
-        v-if="outcome === 'pending'"
-        role="status"
-        class="text-sm text-dimmed"
-      >
+      <div v-if="outcome === 'pending'" role="status">
         Loading supplier items...
       </div>
       <UAlert
@@ -41,13 +34,13 @@
           ><FireCopyError message="Could not load supplier items."
         /></template>
       </UAlert>
-      <p
-        v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-        class="text-sm text-muted"
-      >
+      <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
         Select an available Supplier to view supplier items.
       </p>
-      <div v-else-if="cards.length" class="grid gap-3 md:grid-cols-2">
+      <div
+        v-else-if="cards.length"
+        class="workspace-surface__grid workspace-surface__grid--2"
+      >
         <SupplierItemCardsCell
           v-for="card in cards"
           :key="card.id"
@@ -56,10 +49,10 @@
         />
       </div>
       <div v-else class="space-y-1">
-        <p class="text-sm font-medium text-highlighted">
+        <p>
           {{ emptyTitle }}
         </p>
-        <p class="text-sm text-dimmed">
+        <p>
           {{ emptyDescription }}
         </p>
       </div>

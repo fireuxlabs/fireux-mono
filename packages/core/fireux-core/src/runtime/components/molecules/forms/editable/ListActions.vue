@@ -1,6 +1,6 @@
 <!-- packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ListActions.vue -->
 <template>
-  <div class="space-y-3">
+  <div class="pagebody">
     <div
       v-for="item in items"
       :key="item.id"
@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <div v-if="!items?.length" class="text-sm text-muted">
+    <div v-if="!items?.length">
       {{ emptyText }}
     </div>
   </div>

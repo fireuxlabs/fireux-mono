@@ -1,5 +1,8 @@
 <template>
-  <form class="space-y-5" @submit.prevent="save">
+  <form
+    class="workspace-surface workspace-surface--compact"
+    @submit.prevent="save"
+  >
     <UFormField label="Name" required
       ><UInput
         v-model="draft.name"

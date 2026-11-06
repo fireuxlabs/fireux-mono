@@ -9,12 +9,9 @@
       icon="i-lucide-arrow-left"
       variant="link"
       color="neutral"
-      class="px-0"
       >All apps</UButton
     >
-    <div
-      class="overflow-hidden rounded-3xl border border-default bg-elevated/30"
-    >
+    <div class="overflow-hidden">
       <img
         v-if="card.coverUrl"
         :src="card.coverUrl"
@@ -29,19 +26,14 @@
             :alt="card.name"
             size="3xl"
           />
-          <h1
-            class="min-w-0 text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl"
-          >
+          <h1 class="min-w-0">
             {{ card.name }}
           </h1>
         </div>
-        <p v-if="card.tagline" class="text-xl text-highlighted">
+        <p v-if="card.tagline">
           {{ card.tagline }}
         </p>
-        <p
-          v-if="card.description"
-          class="whitespace-pre-line text-base leading-relaxed text-muted"
-        >
+        <p v-if="card.description" class="whitespace-pre-line">
           {{ card.description }}
         </p>
         <UButton
@@ -55,9 +47,7 @@
           size="lg"
           >Open {{ card.name }}</UButton
         >
-        <p v-else class="text-sm text-muted">
-          This app hasn’t added a public address yet.
-        </p>
+        <p v-else>This app hasn’t added a public address yet.</p>
       </div>
     </div>
   </article>

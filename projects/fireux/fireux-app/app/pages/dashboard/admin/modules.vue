@@ -30,33 +30,29 @@
                     :key="module.id"
                     action
                     :aria-label="`${isSelected(module.id, selectedValues) ? 'Remove' : 'Feature'} ${module.name}`"
-                    :class="
-                      selectionClass(isSelected(module.id, selectedValues))
-                    "
+                    class="card card--cell"
+                    :data-selected="isSelected(module.id, selectedValues)"
                     @activate="toggleSlug(module.id)"
                   >
                     <div class="flex items-start gap-3 p-2 pr-20">
                       <div
                         class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-elevated"
                       >
-                        <UIcon
-                          :name="module.icon"
-                          class="size-5 text-primary"
-                        />
+                        <UIcon :name="module.icon" />
                       </div>
                       <div class="min-w-0">
-                        <p class="font-semibold text-highlighted">
+                        <p class="fx-type-body">
                           {{ module.name }}
                         </p>
-                        <code class="text-xs text-dimmed">{{ module.id }}</code>
-                        <p class="mt-2 text-sm leading-6 text-muted">
+                        <code>{{ module.id }}</code>
+                        <p class="mt-2 fx-type-caption">
                           {{ module.description }}
                         </p>
                       </div>
                     </div>
 
                     <UBadge
-                      class="absolute right-3 top-3"
+                      class="absolute"
                       :color="
                         isSelected(module.id, selectedValues)
                           ? 'primary'
@@ -94,13 +90,6 @@ const modules = [...fireuxExtensionModules].sort((a, b) =>
 
 const isSelected = (slug: string, selectedValues: string[]) =>
   selectedValues.includes(slug)
-
-const selectionClass = (selected: boolean) => [
-  'relative w-full rounded-lg border p-2 transition',
-  selected
-    ? 'border-primary bg-primary/5'
-    : 'border-default bg-default hover:border-primary/50',
-]
 
 definePageMeta({
   layout: 'dashboard',

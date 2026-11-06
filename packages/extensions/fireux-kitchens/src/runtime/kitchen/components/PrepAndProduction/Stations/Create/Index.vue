@@ -9,7 +9,7 @@
       </div>
     </template>
 
-    <form class="space-y-4" @submit.prevent="addStation">
+    <form class="fx-card-body-stack" @submit.prevent="addStation">
       <UFormField label="Station name">
         <UInput
           v-model="name"
@@ -18,7 +18,7 @@
         />
       </UFormField>
 
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="fx-card__actions">
         <UButton
           type="submit"
           :loading="saving"
@@ -27,7 +27,7 @@
           Add station
         </UButton>
 
-        <p v-if="message" class="text-xs text-dimmed">
+        <p v-if="message">
           {{ message }}
         </p>
       </div>
@@ -56,7 +56,13 @@ const config = useFireUXConfig()
 const { appUser } = useUserSession()
 let revision = 0
 watch(
-  [kitchenId, rootCollection, () => currentUser.value?.uid || '', () => config.appId, () => JSON.stringify(appUser.value)],
+  [
+    kitchenId,
+    rootCollection,
+    () => currentUser.value?.uid || '',
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+  ],
   () => {
     revision += 1
     name.value = ''

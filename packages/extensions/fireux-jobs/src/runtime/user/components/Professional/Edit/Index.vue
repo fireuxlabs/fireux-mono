@@ -40,9 +40,7 @@
               :initials="imageInitials"
               :update="handleImageUpload"
             />
-            <p v-if="imageUploading" class="text-xs text-muted">
-              Uploading image…
-            </p>
+            <p v-if="imageUploading">Uploading image…</p>
           </div>
 
           <FireFormsEditableArrayOfStrings

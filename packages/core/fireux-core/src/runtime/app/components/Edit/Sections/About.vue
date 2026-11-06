@@ -9,7 +9,7 @@
       </div>
     </template>
 
-    <div class="space-y-5">
+    <div class="fx-card-body-stack">
       <FireFormsEditableSimpleField
         :capture-intent="captureIntent"
         label="Name"

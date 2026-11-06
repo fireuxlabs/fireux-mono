@@ -1,6 +1,6 @@
 <template>
   <section v-if="place.about" class="place-about">
-    <h2>About {{ place.short_name || place.name }}</h2>
+    <h2 class="fx-type-section-title">About {{ place.short_name || place.name }}</h2>
     <p>{{ place.about }}</p>
   </section>
 </template>

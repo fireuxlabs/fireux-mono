@@ -4,7 +4,7 @@
       <!-- ✅ Shadows -->
       <template #shadows>
         <h2>Shadows</h2>
-        <div class="grid">
+        <div class="token-grid">
           <div
             v-for="token in shadowTokens"
             :key="token.name"
@@ -14,7 +14,7 @@
               <span class="token-name">{{ token.name }}</span>
               <span class="stacked-value">{{ token.value }}</span>
             </div>
-            <div class="shadow-block" :class="token.class" />
+            <div class="shadow-block" :style="{ boxShadow: token.value }" />
           </div>
         </div>
       </template>
@@ -22,7 +22,7 @@
       <!-- ✅ Opacity -->
       <template #opacity>
         <h2>Opacity</h2>
-        <div class="grid">
+        <div class="token-grid">
           <div
             v-for="token in opacityTokens"
             :key="token.name"
@@ -40,7 +40,7 @@
       <!-- ✅ Border Radius -->
       <template #borderRadius>
         <h2>Border Radius</h2>
-        <div class="grid">
+        <div class="token-grid">
           <div
             v-for="token in radiusTokens"
             :key="token.name"
@@ -58,7 +58,7 @@
       <!-- ✅ Spacing -->
       <template #spacing>
         <h2>Spacing</h2>
-        <div class="grid spacing-mobile">
+        <div class="token-grid spacing-mobile">
           <div
             v-for="token in spacingTokens"
             :key="token.name"
@@ -77,7 +77,6 @@
 </template>
 
 <script setup lang="ts">
-
 const items = [
   { icon: 'i-lucide-cloudy', label: 'Shadows', slot: 'shadows' },
   { icon: 'i-lucide-rainbow', label: 'Opacity', slot: 'opacity' },
@@ -86,12 +85,12 @@ const items = [
 ]
 
 const shadowTokens = [
-  { name: '--shadow-none', value: 'none', class: 'shadow-none' },
-  { name: '--shadow-sm', value: 'var(--shadow-sm)', class: 'shadow-sm' },
-  { name: '--shadow-md', value: 'var(--shadow-md)', class: 'shadow-md' },
-  { name: '--shadow-lg', value: 'var(--shadow-lg)', class: 'shadow-lg' },
-  { name: '--shadow-xl', value: 'var(--shadow-xl)', class: 'shadow-xl' },
-  { name: '--shadow-2xl', value: 'var(--shadow-2xl)', class: 'shadow-2xl' },
+  { name: '--shadow-none', value: 'none' },
+  { name: '--shadow-sm', value: 'var(--shadow-sm)' },
+  { name: '--shadow-md', value: 'var(--shadow-md)' },
+  { name: '--shadow-lg', value: 'var(--shadow-lg)' },
+  { name: '--shadow-xl', value: 'var(--shadow-xl)' },
+  { name: '--shadow-2xl', value: 'var(--shadow-2xl)' },
 ]
 
 const opacityTokens = [
@@ -135,7 +134,7 @@ h2 {
   text-align: center;
   width: 100%;
 }
-.grid {
+.token-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: calc(var(--spacing) * 4);
@@ -180,12 +179,12 @@ h2 {
   width: 100%;
 }
 @media (min-width: 640px) {
-  .grid {
+  .token-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 @media (min-width: 1024px) {
-  .grid {
+  .token-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }

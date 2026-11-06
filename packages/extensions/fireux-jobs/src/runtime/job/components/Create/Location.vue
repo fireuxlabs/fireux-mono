@@ -6,13 +6,11 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-muted">Step 2 · Workplace</p>
-        <h2 class="text-lg font-semibold">
+        <p>Step 2 · Workplace</p>
+        <h2 class="fx-type-card-heading">
           {{ chosenPlaceCard ? 'Selected location' : 'Choose a location' }}
         </h2>
-        <p class="text-sm text-muted">
-          Choose the canonical Place where the professional will work.
-        </p>
+        <p>Choose the canonical Place where the professional will work.</p>
       </div>
     </template>
 
@@ -49,7 +47,9 @@ import { computed, ref } from 'vue'
 import type { JobCreateForm } from '../../composables/firestore/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
-const { ensurePlaceExists, captureIntent } = usePlaceCreate({ sources: [() => form.value] })
+const { ensurePlaceExists, captureIntent } = usePlaceCreate({
+  sources: [() => form.value],
+})
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
@@ -75,7 +75,8 @@ async function onPlaceConfirmed(payload: {
   placeId: string
   place: PlaceUpsertInput
 }) {
-  const sequence = ++selectionSequence, contextCurrent = captureIntent()
+  const sequence = ++selectionSequence,
+    contextCurrent = captureIntent()
   const isCurrent = () => contextCurrent() && sequence === selectionSequence
   payload = JSON.parse(JSON.stringify(payload))
   locationError.value = ''

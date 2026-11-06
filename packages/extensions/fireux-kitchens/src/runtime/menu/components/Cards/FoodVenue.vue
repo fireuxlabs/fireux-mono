@@ -7,23 +7,19 @@
         :alt="venue.name"
         size="lg"
       />
-      <p class="font-medium text-toned">{{ venue.name }}</p>
+      <p>{{ venue.name }}</p>
     </header>
 
     <div class="space-y-3">
-      <h2 class="text-3xl font-semibold tracking-tight text-highlighted">
+      <h2>
         {{ venue.title }}
       </h2>
-      <p
-        v-for="description in venue.descriptions"
-        :key="description"
-        class="text-sm leading-relaxed text-muted"
-      >
+      <p v-for="description in venue.descriptions" :key="description">
         {{ description }}
       </p>
       <ul
         v-if="venue.matchingDishes.length"
-        class="space-y-1 font-medium text-highlighted"
+        class="space-y-1"
         aria-label="Matching food"
       >
         <li v-for="dish in venue.matchingDishes" :key="dish.id">
@@ -40,10 +36,10 @@
         class="food-venue__service group focus-visible:outline-primary"
       >
         <span class="food-venue__service-icon" aria-hidden="true">
-          <UIcon :name="action.icon" class="size-5" />
+          <UIcon :name="action.icon" />
         </span>
         <div class="min-w-0 flex-1 space-y-1">
-          <p class="font-medium text-highlighted">
+          <p>
             {{ action.label
             }}<span class="sr-only"> from {{ venue.name }}</span>
           </p>
@@ -55,7 +51,7 @@
         </div>
         <UIcon
           name="i-lucide-arrow-right"
-          class="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-1 group-hover:text-primary"
+          class="shrink-0 group-hover:translate-x-1"
           aria-hidden="true"
         />
       </NuxtLink>
@@ -70,7 +66,7 @@
         v-for="offering in venue.otherOfferings"
         :key="offering.id"
         :to="offering.to"
-        class="text-sm text-muted transition-colors hover:text-primary"
+        class="transition-colors"
       >
         {{ offering.name }} <span aria-hidden="true">→</span>
       </NuxtLink>

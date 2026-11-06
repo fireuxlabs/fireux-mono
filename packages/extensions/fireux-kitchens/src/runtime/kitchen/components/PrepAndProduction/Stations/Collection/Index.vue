@@ -15,32 +15,26 @@
         </div>
       </template>
 
-      <p v-if="outcome === 'pending'" role="status" class="text-sm text-dimmed">
-        Loading stations…
-      </p>
+      <p v-if="outcome === 'pending'" role="status">Loading stations…</p>
       <div v-else-if="outcome === 'error'" role="alert">
-        <p class="text-sm text-dimmed">Stations could not be loaded.</p>
+        <p>Stations could not be loaded.</p>
         <FireCopyError message="Stations could not be loaded." />
       </div>
-      <div v-else-if="outcome === 'ready'" class="flex flex-wrap gap-2">
+      <div v-else-if="outcome === 'ready'" class="card__media">
         <div
           v-for="station in sortedStations"
           :key="station.id"
           class="inline-flex items-center gap-2 rounded-full border border-default bg-elevated/30 px-3 py-2"
         >
-          <UIcon name="i-lucide-map-pinned" class="size-4 text-dimmed" />
-          <span class="text-sm font-semibold text-highlighted">
+          <UIcon name="i-lucide-map-pinned" />
+          <span>
             {{ stationDisplayName(station) }}
           </span>
         </div>
       </div>
 
-      <p v-else-if="outcome === 'empty'" class="text-sm text-dimmed">
-        No stations found.
-      </p>
-      <p v-else class="text-sm text-dimmed">
-        Select a kitchen to view stations.
-      </p>
+      <p v-else-if="outcome === 'empty'">No stations found.</p>
+      <p v-else>Select a kitchen to view stations.</p>
     </UCard>
   </div>
 </template>

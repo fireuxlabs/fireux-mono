@@ -1,8 +1,6 @@
 <template>
   <details class="rounded-xl border border-default p-4">
-    <summary class="cursor-pointer text-sm font-medium">
-      Create prep item
-    </summary>
+    <summary class="cursor-pointer">Create prep item</summary>
     <FireStateCard
       v-if="message"
       state="error"

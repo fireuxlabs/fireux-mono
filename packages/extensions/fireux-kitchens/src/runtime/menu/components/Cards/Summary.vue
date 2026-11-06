@@ -1,12 +1,7 @@
 <template>
-  <UCard
-    as="article"
-    class="menu-card-preview rounded-2xl"
-    :ui="{ body: 'p-5 sm:p-6' }"
-    data-menu-card-preview
-  >
-    <div class="flex flex-col gap-4">
-      <div class="flex min-w-0 items-start gap-4">
+  <UCard as="article" class="menu-card-preview" data-menu-card-preview>
+    <div class="fx-card-body-stack">
+      <div class="card__media">
         <UAvatar
           v-if="routeScope.kind !== 'directory'"
           :class="avatarClass"
@@ -16,25 +11,22 @@
         />
         <div
           v-else
-          class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elevated text-toned"
+          class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elevated"
         >
-          <UIcon name="i-lucide-book-open" class="size-5" aria-hidden="true" />
+          <UIcon name="i-lucide-book-open" aria-hidden="true" />
         </div>
-        <div class="min-w-0 space-y-2">
+        <div class="fx-card-body-stack">
           <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-xl font-semibold tracking-tight text-highlighted">
+            <h3>
               {{ menuName }}
             </h3>
           </div>
-          <p
-            v-if="kitchenName && routeScope.kind !== 'directory'"
-            class="text-sm text-toned"
-          >
+          <p v-if="kitchenName && routeScope.kind !== 'directory'">
             {{ kitchenName }}
           </p>
           <p
             v-if="menuDescription && menuDescription !== kitchenName"
-            class="max-w-prose text-sm leading-relaxed text-muted"
+            class="max-w-prose"
           >
             {{ menuDescription }}
           </p>

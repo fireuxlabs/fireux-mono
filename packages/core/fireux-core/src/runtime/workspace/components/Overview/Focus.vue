@@ -40,7 +40,7 @@
       The selected {{ entityLower }} no longer exists.
     </p>
 
-    <div v-else-if="focus.hasSelection" class="space-y-4">
+    <div v-else-if="focus.hasSelection" class="fx-card-body-stack">
       <WorkspaceTargetCard v-if="card" :card="card" :show-badges="showBadges" />
 
       <div class="workspace-summary-grid">

@@ -1,14 +1,10 @@
 <!-- Concurrent edit — 2026-07-21 13:12 CEST — Operation detail surfaces: add catalogue-backed factual pages. -->
 <!-- Concurrent edit — 2026-07-21 13:16 CEST — Project Operation copy: use the authored description instead of generating an awkward title. -->
 <template>
-  <main v-if="operation" class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton
-          :to="`/operations#${operation.workspace.id}`"
-          variant="link"
-          class="px-0"
-        >
+  <main v-if="operation" class="min-h-screen">
+    <UContainer>
+      <UPage>
+        <UButton :to="`/operations#${operation.workspace.id}`" variant="link">
           Operations
         </UButton>
         <UPageHeader
@@ -16,10 +12,10 @@
           :description="operation.description"
           :headline="operation.workspace.name"
         />
-        <UPageBody class="space-y-4">
+        <UPageBody>
           <AppOperationGuidingLiterature :operation="operation" />
 
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton
               :to="operation.to"
               :icon="operation.icon"

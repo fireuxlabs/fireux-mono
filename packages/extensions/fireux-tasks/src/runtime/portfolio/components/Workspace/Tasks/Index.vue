@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section class="workspace-surface workspace-surface--compact">
     <UAlert
       v-if="writeError"
       color="error"
@@ -9,9 +9,7 @@
       <template #actions><FireCopyError :message="writeError" /></template>
     </UAlert>
 
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading tasks…
-    </p>
+    <p v-if="outcome === 'pending'" role="status">Loading tasks…</p>
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -21,38 +19,35 @@
         ><FireCopyError message="Could not load tasks."
       /></template>
     </UAlert>
-    <p
-      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
-      class="text-sm text-muted"
-    >
+    <p v-else-if="outcome !== 'ready' && outcome !== 'empty'">
       Select an available Portfolio to view tasks.
     </p>
     <template v-else>
       <UCard>
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Open</div>
-            <div class="text-xl font-semibold">{{ summary.open }}</div>
+            <div>Open</div>
+            <div>{{ summary.open }}</div>
           </div>
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">In progress</div>
-            <div class="text-xl font-semibold">
+            <div>In progress</div>
+            <div>
               {{ summary.inProgress }}
             </div>
           </div>
           <div class="fx-inset-panel">
-            <div class="text-xs text-dimmed">Done</div>
-            <div class="text-xl font-semibold">{{ summary.done }}</div>
+            <div>Done</div>
+            <div>{{ summary.done }}</div>
           </div>
         </div>
       </UCard>
 
       <UCard v-if="canWrite">
         <template #header>
-          <div class="text-sm font-semibold">Create task</div>
+          <div>Create task</div>
         </template>
 
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="workspace-surface__grid workspace-surface__grid--2">
           <UInput
             v-model="newTaskTitle"
             :disabled="!canWrite"
@@ -86,15 +81,15 @@
 
       <UCard>
         <template #header>
-          <div class="text-sm font-semibold">Task list</div>
+          <div>Task list</div>
         </template>
 
         <div v-if="cards.length" class="space-y-3">
           <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
-                <div class="text-sm font-semibold">{{ item.title }}</div>
-                <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
+                <div>{{ item.title }}</div>
+                <div>{{ item.subtitle }}</div>
               </div>
 
               <div class="flex items-center gap-2">

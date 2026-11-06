@@ -8,7 +8,13 @@
       </div>
 
       <div v-else-if="post">
-        <UButton v-if="canPublishBlog" :to="`/dashboard/admin/blogs/${post.slug}`" color="neutral" variant="soft" class="mb-4">Edit post</UButton>
+        <UButton
+          v-if="canPublishBlog"
+          :to="`/dashboard/admin/blogs/${post.slug}`"
+          color="neutral"
+          variant="soft"
+          >Edit post</UButton
+        >
         <BlogDetail :post="post" />
       </div>
 
@@ -25,10 +31,8 @@
       />
 
       <div v-else class="space-y-2">
-        <h1 class="text-xl font-semibold">404 – Blog post not found</h1>
-        <p class="text-sm text-muted">
-          The requested article could not be loaded.
-        </p>
+        <h1 class="fx-type-page-title">404 – Blog post not found</h1>
+        <p>The requested article could not be loaded.</p>
       </div>
     </UPageBody>
   </UPage>

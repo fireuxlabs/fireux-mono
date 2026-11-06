@@ -6,13 +6,13 @@
       description="Technical reference for kitchen records, runtime modes, and workspace surfaces."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Canonical records</h2>
+          <h2>Canonical records</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack text-sm">
+        <ul class="list-disc fx-list-stack">
           <li>
             Live runtime path: <code>misebox/kitchens/&lt;kitchenId&gt;</code>.
           </li>
@@ -29,21 +29,21 @@
 
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Primary surfaces</h2>
+          <h2>Primary surfaces</h2>
         </template>
 
-        <div class="space-y-2 text-sm">
+        <div class="fx-card-body-stack">
           <div class="fx-inset-panel">
-            <p class="font-mono">/kitchens</p>
-            <p class="text-dimmed">Public runtime index for kitchen records.</p>
+            <p>/kitchens</p>
+            <p>Public runtime index for kitchen records.</p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">/workspace/kitchen</p>
-            <p class="text-dimmed">Canonical kitchen workspace entry point.</p>
+            <p>/workspace/kitchen</p>
+            <p>Canonical kitchen workspace entry point.</p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">/workspace/kitchen/&lt;page&gt;</p>
-            <p class="text-dimmed">
+            <p>/workspace/kitchen/&lt;page&gt;</p>
+            <p>
               Scoped kitchen workspace pages such as menu, recipes, ingredients,
               and team.
             </p>

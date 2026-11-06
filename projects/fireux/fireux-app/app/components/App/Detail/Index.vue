@@ -1,5 +1,5 @@
 <template>
-  <article class="space-y-8">
+  <article class="pagebody">
     <AppDetailHeader :app="app" />
     <div class="grid gap-4 md:grid-cols-2">
       <AppDetailProject :app="app" />
@@ -18,15 +18,15 @@ const props = defineProps<{ app: App }>()
 
 useSeo({
   title: computed(() => `${props.app.name} · FireUX App`),
-  description: computed(
-    () => props.app.description || 'FireUX App.'
-  ),
+  description: computed(() => props.app.description || 'FireUX App.'),
   path: computed(() => `/apps/${encodeURIComponent(props.app.id)}`),
   image: computed(
     () => props.app.media?.cover_url || props.app.media?.thumbnail_url
   ),
   robots: computed(() =>
-    isDirectoryAppIndexable(props.app.id) ? 'index, follow' : 'noindex, nofollow'
+    isDirectoryAppIndexable(props.app.id)
+      ? 'index, follow'
+      : 'noindex, nofollow'
   ),
 })
 </script>

@@ -28,8 +28,8 @@
       <JobAuthorFlowProgress v-if="!canPostJob" :current-step="1" />
 
       <div v-if="isChecking" class="space-y-3">
-        <USkeleton class="h-24 rounded-2xl" />
-        <USkeleton class="h-48 rounded-2xl" />
+        <USkeleton class="h-24" />
+        <USkeleton class="h-48" />
       </div>
 
       <JobAuthorGate
@@ -42,12 +42,8 @@
         <UCard v-if="agentCard" variant="subtle">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-widest text-primary"
-              >
-                Employer workspace
-              </p>
-              <p class="mt-1 text-sm text-muted">
+              <p>Employer workspace</p>
+              <p class="mt-1">
                 Every posting is owned by this hiring profile and linked to a
                 Business and Place.
               </p>

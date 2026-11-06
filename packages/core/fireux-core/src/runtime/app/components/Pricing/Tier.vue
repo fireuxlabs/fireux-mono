@@ -1,41 +1,30 @@
 <template>
-  <main v-if="tier" class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-10">
-      <UPage class="mx-auto max-w-2xl">
-        <UButton to="/pricing" variant="link" class="px-0"> Pricing </UButton>
+  <main v-if="tier" class="min-h-screen">
+    <UContainer>
+      <UPage>
+        <UButton to="/pricing" variant="link"> Pricing </UButton>
         <UPageHeader
           :title="tier.title"
           :description="tier.description"
           :headline="tier.eyebrow"
         />
-        <UPageBody class="space-y-4">
+        <UPageBody>
           <UCard variant="subtle">
-            <p class="text-sm text-muted">Price</p>
-            <p class="mt-1 text-3xl font-semibold text-highlighted">
+            <p>Price</p>
+            <p class="mt-1">
               {{ tier.price
-              }}<small v-if="tier.billingCycle" class="text-base text-muted">{{
-                tier.billingCycle
-              }}</small>
+              }}<small v-if="tier.billingCycle">{{ tier.billingCycle }}</small>
             </p>
-            <p class="mt-2 text-sm text-muted">{{ tier.priceNote }}</p>
+            <p class="mt-2">{{ tier.priceNote }}</p>
           </UCard>
 
           <UCard>
             <template #header>
-              <h2 class="text-lg font-semibold text-highlighted">
-                What you get
-              </h2>
+              <h2>What you get</h2>
             </template>
             <ul class="space-y-3">
-              <li
-                v-for="item in tier.included"
-                :key="item"
-                class="flex gap-2 text-sm text-muted"
-              >
-                <UIcon
-                  name="i-lucide-check"
-                  class="mt-0.5 shrink-0 text-primary"
-                />
+              <li v-for="item in tier.included" :key="item" class="flex gap-2">
+                <UIcon name="i-lucide-check" class="mt-0.5 shrink-0" />
                 <span>{{ item }}</span>
               </li>
             </ul>
@@ -43,21 +32,19 @@
 
           <UCard v-if="tier.id === 'your-ecosystem'">
             <template #header>
-              <h2 class="text-lg font-semibold text-highlighted">
-                Customer App revenue
-              </h2>
+              <h2>Customer App revenue</h2>
             </template>
             <div class="overflow-x-auto">
-              <table class="w-full min-w-[34rem] text-left text-sm">
-                <thead class="text-muted">
+              <table class="w-full min-w-[34rem]">
+                <thead>
                   <tr>
-                    <th class="pb-3 pr-4 font-medium">Customer purchase</th>
-                    <th class="pb-3 pr-4 font-medium">Retail</th>
-                    <th class="pb-3 pr-4 font-medium">FireUX</th>
-                    <th class="pb-3 font-medium">Ecosystem owner</th>
+                    <th class="pb-3 pr-4">Customer purchase</th>
+                    <th class="pb-3 pr-4">Retail</th>
+                    <th class="pb-3 pr-4">FireUX</th>
+                    <th class="pb-3">Ecosystem owner</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-default text-highlighted">
+                <tbody class="divide-y divide-default">
                   <tr v-for="row in ecosystemRevenue" :key="row.purchase">
                     <td class="py-3 pr-4">{{ row.purchase }}</td>
                     <td class="py-3 pr-4">{{ row.retail }}</td>
@@ -67,7 +54,7 @@
                 </tbody>
               </table>
             </div>
-            <p class="mt-4 text-sm text-muted">
+            <p class="mt-4">
               The customer pays the standard retail price. FireUX invoices the
               ecosystem owner for half, leaving the other half as the owner’s
               sales margin.
@@ -76,20 +63,15 @@
 
           <UCard>
             <template #header>
-              <h2 class="text-lg font-semibold text-highlighted">
-                Not included
-              </h2>
+              <h2>Not included</h2>
             </template>
             <ul class="space-y-3">
               <li
                 v-for="item in tier.notIncluded"
                 :key="item"
-                class="flex gap-2 text-sm text-muted"
+                class="flex gap-2"
               >
-                <UIcon
-                  name="i-lucide-minus"
-                  class="mt-0.5 shrink-0 text-muted"
-                />
+                <UIcon name="i-lucide-minus" class="mt-0.5 shrink-0" />
                 <span>{{ item }}</span>
               </li>
             </ul>
@@ -102,7 +84,7 @@
             :description="tier.nextStep"
           />
 
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton :href="contactHref" icon="i-lucide-mail"
               >Ask about {{ tier.title }}</UButton
             >

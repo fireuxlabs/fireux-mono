@@ -14,8 +14,8 @@
       </p>
 
       <div>
-        <h2 class="font-semibold">With a supplier workspace you can:</h2>
-        <ul class="mt-2 list-disc space-y-1 pl-6">
+        <h2 class="fx-type-section-title">With a supplier workspace you can:</h2>
+        <ul class="fx-list-stack">
           <li>Maintain one public Supplier identity.</li>
           <li>Work with Supplier items, catalogues and linked ingredients.</li>
           <li>Control Supplier Workspace access for your team.</li>

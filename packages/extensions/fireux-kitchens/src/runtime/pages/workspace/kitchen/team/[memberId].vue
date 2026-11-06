@@ -5,7 +5,6 @@
     icon="i-lucide-arrow-left"
     color="neutral"
     variant="ghost"
-    class="w-fit"
   />
   <p v-if="team.derived.value.status === 'loading'" role="status">
     Loading person…

@@ -6,35 +6,38 @@
       description="Technical reference for ecosystem directory data and integration points."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Entity fields</h2>
+          <h2 class="fx-type-section-title">Entity fields</h2>
         </template>
 
-        <p class="text-sm text-dimmed">
+        <p class="fx-type-caption">
           Canonical Ecosystem documents are projected into an allowlisted
           directory shape:
-          <code>{ id, project_id, status, name, description, image_url, website_url, detail_url, app_count }</code>.
+          <code
+            >{ id, project_id, status, name, description, image_url,
+            website_url, detail_url, app_count }</code
+          >.
         </p>
       </UCard>
 
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Primary endpoints</h2>
+          <h2 class="fx-type-section-title">Primary endpoints</h2>
         </template>
 
-        <div class="space-y-2 text-sm">
+        <div class="space-y-2">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/directory</p>
-            <p class="text-dimmed">
+            <p class="fx-type-code">GET /api/directory</p>
+            <p class="fx-type-body">
               Shared platform projection for the landing page and
               <code>/ecosystems</code>.
             </p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">GET/POST /api/registry · retired</p>
-            <p class="text-dimmed">
+            <p class="fx-type-code">GET/POST /api/registry · retired</p>
+            <p class="fx-type-body">
               The mixed registry database is not an entity or directory
               authority. Publication belongs to the projection pipeline.
             </p>

@@ -8,10 +8,10 @@
   >
     <div v-if="showHeader" class="flex flex-wrap items-start gap-2">
       <div class="min-w-0 flex-1">
-        <h3 class="text-base font-semibold text-highlighted">
+        <h3 class="fx-type-card-title">
           {{ title }}
         </h3>
-        <p v-if="subtitle" class="mt-1 text-sm leading-6 text-muted">
+        <p v-if="subtitle" class="mt-1">
           {{ subtitle }}
         </p>
       </div>

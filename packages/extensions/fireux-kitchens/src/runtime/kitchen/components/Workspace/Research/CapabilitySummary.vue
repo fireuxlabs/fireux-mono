@@ -1,7 +1,7 @@
 <template>
-  <div class="grid gap-1">
-    <h2 class="m-0 text-lg font-semibold text-highlighted">View</h2>
-    <p class="m-0 text-sm text-muted">{{ description }}</p>
+  <div class="workspace-surface__grid">
+    <h2>View</h2>
+    <p>{{ description }}</p>
   </div>
 </template>
 

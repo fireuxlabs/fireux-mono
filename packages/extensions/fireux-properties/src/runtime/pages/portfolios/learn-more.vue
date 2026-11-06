@@ -9,31 +9,54 @@
     <UPageBody class="pagebody space-y-6">
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">What portfolios are</h2>
+          <h2 class="fx-type-card-heading">What portfolios are</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack text-sm">
-          <li>Portfolios are the operational containers used to manage property work.</li>
-          <li>A portfolio groups properties, clients, documents, finance, compliance, and tasks.</li>
-          <li>The portfolio workspace is where operators move from overview into the working surfaces.</li>
+        <ul class="fx-list-stack">
+          <li>
+            Portfolios are the operational containers used to manage property
+            work.
+          </li>
+          <li>
+            A portfolio groups properties, clients, documents, finance,
+            compliance, and tasks.
+          </li>
+          <li>
+            The portfolio workspace is where operators move from overview into
+            the working surfaces.
+          </li>
         </ul>
       </UCard>
 
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">How to use portfolios</h2>
+          <h2 class="fx-type-card-heading">How to use portfolios</h2>
         </template>
 
-        <ol class="list-decimal fx-list-stack text-sm">
+        <ol class="fx-list-stack">
           <li>Select a live or demo portfolio from the portfolio CTA.</li>
-          <li>Open the portfolio workspace to work across properties, clients, incidents, and documents.</li>
-          <li>Keep portfolio identity and operational state aligned through the same runtime record.</li>
+          <li>
+            Open the portfolio workspace to work across properties, clients,
+            incidents, and documents.
+          </li>
+          <li>
+            Keep portfolio identity and operational state aligned through the
+            same runtime record.
+          </li>
         </ol>
       </UCard>
 
       <div class="flex flex-wrap gap-2">
-        <UButton to="/portfolios" color="primary" icon="i-lucide-building">Open portfolios</UButton>
-        <UButton to="/workspace/portfolio" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Portfolio Workspace</UButton>
+        <UButton to="/portfolios" color="primary" icon="i-lucide-building"
+          >Open portfolios</UButton
+        >
+        <UButton
+          to="/workspace/portfolio"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-layout-dashboard"
+          >Enter Portfolio Workspace</UButton
+        >
       </div>
     </UPageBody>
   </UPage>
@@ -53,6 +76,7 @@ useHead({ title: `${appName} | Portfolios · Learn more` })
 
 useSeoMeta({
   title: `${appName} | Portfolios · Learn more`,
-  description: 'How portfolio records group operational property work inside the Granite stack.',
+  description:
+    'How portfolio records group operational property work inside the Granite stack.',
 })
 </script>

@@ -10,7 +10,6 @@
     v-model:open="open"
     title="Compare Google details"
     description="Read-only comparison. Your saved details stay unchanged."
-    :ui="{ content: 'sm:max-w-3xl' }"
   >
     <template #body>
       <div v-if="loading" class="space-y-4" aria-label="Loading Google details">
@@ -25,20 +24,16 @@
         <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
       <div v-else-if="review" class="space-y-5">
-        <p class="text-sm text-muted">{{ place.name }}</p>
+        <p>{{ place.name }}</p>
         <div class="google-review">
-          <div class="google-review__head text-xs text-muted">
+          <div class="google-review__head">
             <span>Detail</span><span>Saved</span
             ><span class="google-attribution" translate="no">Google Maps</span>
           </div>
           <div v-for="row in rows" :key="row.label" class="google-review__row">
-            <div class="font-medium text-highlighted">
+            <div>
               {{ row.label
-              }}<span
-                v-if="row.same"
-                class="mt-1 block text-xs font-normal text-muted"
-                >Matches</span
-              >
+              }}<span v-if="row.same" class="mt-1 block">Matches</span>
             </div>
             <p class="google-review__value">{{ row.saved || 'Not set' }}</p>
             <p class="google-review__value">
@@ -46,19 +41,16 @@
             </p>
           </div>
         </div>
-        <p class="text-xs text-muted">
+        <p>
           Times are local to the timezone shown in each column. Google’s regular
           weekly hours exclude holiday exceptions and separate service
           schedules.
         </p>
-        <p
-          v-if="review.hoursStatus === 'unsupported'"
-          class="text-sm text-muted"
-        >
+        <p v-if="review.hoursStatus === 'unsupported'">
           Google returned hours that cannot be represented by this weekly
           schedule. Check them on Google Maps.
         </p>
-        <div v-if="attributions.length" class="text-xs text-muted">
+        <div v-if="attributions.length">
           <template v-for="(attribution, index) in attributions" :key="index">
             <a
               v-if="attribution.url"

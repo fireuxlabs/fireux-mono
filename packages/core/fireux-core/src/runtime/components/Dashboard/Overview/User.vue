@@ -12,21 +12,17 @@
           class="shrink-0"
         />
         <div class="min-w-0">
-          <p class="text-sm font-medium text-primary">
-            Welcome back, {{ firstName }}
-          </p>
-          <h1
-            class="mt-1 truncate text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
-          >
+          <p>Welcome back, {{ firstName }}</p>
+          <h1 class="mt-1 truncate">
             {{ card.displayName }}
           </h1>
-          <p v-if="card.handle" class="mt-1 text-sm text-muted">
+          <p v-if="card.handle" class="mt-1">
             {{ card.handle }}
           </p>
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton
           v-if="card.to"
           :to="card.to"
@@ -52,7 +48,6 @@
 
     <UAlert
       v-if="completionPrompt"
-      class="mt-6"
       :color="completionPrompt.color"
       variant="subtle"
       :icon="completionPrompt.icon"

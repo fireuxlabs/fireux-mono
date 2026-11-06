@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-2">
-    <h3 v-if="modeMenus" class="font-medium">{{ label }}</h3>
+    <h3 v-if="modeMenus">{{ label }}</h3>
     <KitchenFoodAndDrinkServicesSetupMenus
       v-if="modeMenus"
       :menu-ids="config.menu_ids || []"

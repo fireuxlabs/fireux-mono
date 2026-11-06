@@ -63,11 +63,7 @@
                 role="alert"
                 title="Translation unavailable. Showing the original menu."
               >
-                <UIcon
-                  name="i-lucide-triangle-alert"
-                  class="size-3"
-                  aria-hidden="true"
-                />
+                <UIcon name="i-lucide-triangle-alert" aria-hidden="true" />
                 <span class="sr-only">
                   Translation unavailable. Showing the original menu.
                 </span>

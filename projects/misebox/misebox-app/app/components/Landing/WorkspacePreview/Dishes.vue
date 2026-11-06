@@ -1,39 +1,37 @@
 <template>
   <div class="mt-4" aria-label="Dishes preview">
     <nav
-      class="mb-3 flex min-w-0 items-center gap-1 text-xs text-muted"
+      class="mb-3 flex min-w-0 items-center gap-1"
       aria-label="Dish preview breadcrumb"
     >
       <button
         v-if="dish"
         type="button"
-        class="font-semibold transition-colors hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        class="transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         @click="$emit('show-collection')"
       >
         Dishes
       </button>
-      <span v-else class="font-semibold text-highlighted">Dishes</span>
+      <span v-else>Dishes</span>
 
       <template v-if="dish">
-        <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0" />
+        <UIcon name="i-lucide-chevron-right" />
         <button
           v-if="page !== 'detail'"
           type="button"
-          class="min-w-0 truncate font-semibold transition-colors hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          class="min-w-0 truncate transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           @click="$emit('show-detail')"
         >
           {{ dish.name }}
         </button>
-        <span v-else class="min-w-0 truncate font-semibold text-highlighted">
+        <span v-else class="min-w-0 truncate">
           {{ dish.name }}
         </span>
       </template>
 
       <template v-if="dish && page !== 'detail'">
-        <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0" />
-        <span class="truncate font-semibold text-highlighted">{{
-          pageLabel
-        }}</span>
+        <UIcon name="i-lucide-chevron-right" />
+        <span class="truncate">{{ pageLabel }}</span>
       </template>
     </nav>
 

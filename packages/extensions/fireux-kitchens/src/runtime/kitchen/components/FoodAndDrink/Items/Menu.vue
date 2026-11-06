@@ -1,11 +1,10 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-center justify-between gap-3">
+      <div class="card__header">
         <NuxtLink
           :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menu.slug)}`"
           @click="rememberView(menu.slug, 'content', $event)"
-          class="font-semibold"
           >{{ menu.name }}</NuxtLink
         >
         <UBadge color="neutral" variant="soft">{{
@@ -23,7 +22,7 @@
         :section="section"
         @result="results[section.id] = $event"
       />
-      <p v-if="settledEmpty" class="text-sm text-muted">Not on this menu.</p>
+      <p v-if="settledEmpty">Not on this menu.</p>
     </template>
   </UCard>
 </template>

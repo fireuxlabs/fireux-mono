@@ -7,7 +7,7 @@
         color="neutral"
     /></template>
     <template #single
-      ><p class="text-sm text-muted">
+      ><p>
         Connect Test storage before selecting or editing a string.
       </p></template
     >

@@ -14,15 +14,15 @@
 
     <div
       v-if="!isEditing"
-      class="flex items-center justify-between gap-3 rounded-md border border-default bg-muted/30 px-3 py-2"
+      class="flex items-center justify-between gap-3 px-3 py-2"
     >
-      <span class="text-sm text-dimmed">{{ displayLabel }}</span>
+      <span>{{ displayLabel }}</span>
       <UBadge :color="effectiveValue ? 'success' : 'neutral'" variant="soft">
         {{ effectiveValue ? trueLabel : falseLabel }}
       </UBadge>
     </div>
 
-    <div v-else class="rounded-md border border-primary/25 bg-primary/5 p-3">
+    <div v-else class="p-3">
       <USwitch
         v-model="draft"
         :label="checkboxLabel"

@@ -6,7 +6,7 @@
     icon="i-lucide-truck"
     :default-open="false"
   >
-    <UCard class="mt-4">
+    <UCard>
       <ClientOnly>
         <KitchenDetailDeliveryZonesMap
           :zones="deliveryZones"

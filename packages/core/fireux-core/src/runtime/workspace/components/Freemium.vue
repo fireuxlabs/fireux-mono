@@ -17,7 +17,7 @@
         >
       </UBadge>
     </NuxtLink>
-    <p v-if="!hideDescription" class="text-sm text-muted">
+    <p v-if="!hideDescription">
       {{ currentAllowance
       }}<template v-if="capability !== 'test' && capability !== 'team'">
         {{ ' ' + upgradeAllowance }}</template
@@ -51,11 +51,7 @@ const visible = computed(
     (props.placement === 'top' || props.placement === 'discovery')
 )
 const planLabel = computed(() =>
-  plan.value === 'pro'
-    ? 'Pro'
-    : plan.value === 'business'
-      ? 'Business'
-      : 'Free'
+  plan.value === 'pro' ? 'Pro' : plan.value === 'business' ? 'Business' : 'Free'
 )
 const scopedCapacity = computed(() =>
   props.capability

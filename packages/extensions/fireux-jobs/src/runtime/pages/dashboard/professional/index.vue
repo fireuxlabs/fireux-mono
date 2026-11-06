@@ -10,10 +10,8 @@
       <div class="grid gap-4 lg:grid-cols-3">
         <UCard class="lg:col-span-2">
           <div class="space-y-2">
-            <p class="text-sm font-medium">Welcome back</p>
-            <p class="text-sm text-dimmed">
-              Keep your professional profile fresh to boost discovery.
-            </p>
+            <p>Welcome back</p>
+            <p>Keep your professional profile fresh to boost discovery.</p>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2">
@@ -35,7 +33,7 @@
 
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2 text-sm font-semibold">
+            <div class="flex items-center gap-2">
               <UIcon name="i-lucide-sparkles" />
               Quick actions
             </div>
@@ -60,22 +58,22 @@
 
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2 text-sm font-semibold">
+          <div class="flex items-center gap-2">
             <UIcon name="i-lucide-flag" />
             Profile checklist
           </div>
         </template>
-        <ul class="space-y-2 text-sm text-dimmed">
+        <ul class="space-y-2">
           <li class="flex items-center gap-2">
-            <UIcon name="i-lucide-check-circle" class="text-primary" />
+            <UIcon name="i-lucide-check-circle" />
             Add a summary that explains your focus.
           </li>
           <li class="flex items-center gap-2">
-            <UIcon name="i-lucide-check-circle" class="text-primary" />
+            <UIcon name="i-lucide-check-circle" />
             List positions you’re open to.
           </li>
           <li class="flex items-center gap-2">
-            <UIcon name="i-lucide-check-circle" class="text-primary" />
+            <UIcon name="i-lucide-check-circle" />
             Upload a profile image for credibility.
           </li>
         </ul>
