@@ -2,9 +2,9 @@ import { createError, type H3Event } from 'h3'
 import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
-  findMiseboxOperationAgent,
-  findMiseboxWorkspaceAgent,
-} from '../../../models/workspace-agents'
+  findKitchenOperationAgent,
+  kitchenWorkspaceAgent,
+} from '../../models/workspace-agent'
 import { readKitchenAgentOrientation } from './orientation'
 import { buildKitchenCoordinatorContext } from './operations/coordinator'
 import type { KitchenAgentRequest } from './types'
@@ -16,9 +16,9 @@ export async function answerKitchenAgentOrientation(
   request: KitchenAgentRequest
 ) {
   const identity = await firebaseBearerUser(event, { allowAnonymous: true })
-  const workspaceAgent = findMiseboxWorkspaceAgent('kitchen')
+  const workspaceAgent = kitchenWorkspaceAgent
   const requestedAgent = request.operation
-    ? findMiseboxOperationAgent('kitchen', request.operation)
+    ? findKitchenOperationAgent(request.operation)
     : undefined
   const operationAgents = requestedAgent
     ? [requestedAgent]
@@ -47,7 +47,7 @@ export async function answerKitchenAgentOrientation(
           business: 'multiple Kitchens',
         },
         current_product_state:
-          'Misebox /workspace/kitchen is the Kitchen Workspace root. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
+          '/workspace/kitchen is the Kitchen Workspace root. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
       },
       workspace_agent: buildKitchenCoordinatorContext(operationAgents),
     },

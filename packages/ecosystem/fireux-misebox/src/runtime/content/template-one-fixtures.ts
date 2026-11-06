@@ -1,13 +1,14 @@
 import {
   type TemplateOneKitchenSpecimen,
 } from '../models/template-one'
-import { MISEBOX_BASIC_PRIMARY_COLOR } from '../models/kitchen-basic-presentation'
 import {
   compactAppPalette,
   workspacePaletteFromApp,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { AppPalette } from 'fireux-core/types/theme'
 export { createTemplateOneFixtureProjection } from '../utils/template-one-fixture-projection'
+
+const TEMPLATE_ONE_PRIMARY_COLOR = '#2563eb'
 
 const rootProps = (
   placePrimaryColor: string,
@@ -89,7 +90,7 @@ export const landingTemplateBrands = [
     demo: false,
     assetSources: {},
     rootProps: rootProps(
-      MISEBOX_BASIC_PRIMARY_COLOR,
+      TEMPLATE_ONE_PRIMARY_COLOR,
       'Misebox Basic default primary colour'
     ),
   },
@@ -102,7 +103,7 @@ export const landingTemplateBrands = [
       logo: 'demo:kitchens/pizza-the-action/logo.png',
     },
     rootProps: rootProps(
-      MISEBOX_BASIC_PRIMARY_COLOR,
+      TEMPLATE_ONE_PRIMARY_COLOR,
       'Misebox Basic default primary colour',
       '',
       '',

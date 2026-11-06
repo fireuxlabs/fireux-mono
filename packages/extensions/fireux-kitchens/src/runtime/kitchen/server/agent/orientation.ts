@@ -3,12 +3,12 @@ import {
   readKitchenRelatedRecords,
   resolveKitchen,
   type KitchenRootRecord,
-} from 'fireux-kitchens/runtime/kitchen/server/identity/read'
+} from '../identity/read'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import {
   KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAccessIds,
-} from 'fireux-kitchens/runtime/kitchen/utils/kitchen-access'
+} from '../../utils/kitchen-access'
 
 export async function readKitchenAgentOrientation(uid: string, appId: string) {
   const db = getRuntimeFirestore()

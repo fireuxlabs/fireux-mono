@@ -1,5 +1,5 @@
-import { kitchenDrinksSearchDemand } from 'fireux-kitchens/runtime/kitchen/models/drinks-search-demand'
-import type { Dish } from 'fireux-kitchens/runtime/kitchen/utils/dish'
+import { kitchenDrinksSearchDemand } from '../../../models/drinks-search-demand'
+import type { Dish } from '../../../utils/dish'
 
 type ToolSummary = {
   id: string

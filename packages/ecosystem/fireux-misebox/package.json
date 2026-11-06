@@ -62,8 +62,7 @@
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",
-    "fireux-places": "workspace:*",
-    "h3": "^1.15.4"
+    "fireux-places": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

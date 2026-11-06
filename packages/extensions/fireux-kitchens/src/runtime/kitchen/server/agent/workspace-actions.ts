@@ -2,9 +2,9 @@ import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import type { KitchenAgentRequest, KitchenWorkspaceActionId } from './types'
 import {
-  findMiseboxOperationAgent,
-  findMiseboxWorkspaceAgent,
-} from '../../../models/workspace-agents'
+  findKitchenOperationAgent,
+  kitchenWorkspaceAgent,
+} from '../../models/workspace-agent'
 
 const definitions: Record<
   KitchenWorkspaceActionId,
@@ -22,10 +22,6 @@ const definitions: Record<
     label: 'Sign up',
     description: 'Open account registration for the current guest.',
   },
-  'explore-misebox': {
-    label: 'Explore Misebox',
-    description: 'Open the Misebox product information page.',
-  },
 }
 
 export async function selectKitchenWorkspaceAction(
@@ -34,17 +30,23 @@ export async function selectKitchenWorkspaceAction(
 ) {
   if (!request.availableActions.length) return null
   const operationAgent = request.operation
-    ? findMiseboxOperationAgent('kitchen', request.operation)
+    ? findKitchenOperationAgent(request.operation)
     : undefined
   const operationAgents = operationAgent
     ? [operationAgent]
-    : findMiseboxWorkspaceAgent('kitchen')?.operationAgents || []
-  const capabilityDefinitions = new Map(
+    : kitchenWorkspaceAgent?.operationAgents || []
+  const capabilityDefinitions = new Map<
+    string,
+    { label: string; description: string }
+  >(
     operationAgents.flatMap((agent) =>
-      (agent.toolCatalogue || []).map((tool) => [
-        tool.id,
-        { label: tool.label, description: tool.description },
-      ] as const)
+      (agent.toolCatalogue || []).map(
+        (tool) =>
+          [
+            tool.id,
+            { label: tool.label, description: tool.description },
+          ] as const
+      )
     )
   )
   const targetedActionIds = new Set(
@@ -59,13 +61,14 @@ export async function selectKitchenWorkspaceAction(
         capabilityDefinitions.get(id)),
     }))
     .filter(
-      (action): action is {
+      (
+        action
+      ): action is {
         selectionId: string
         actionId: string
         label: string
         description: string
-      } =>
-        Boolean(action.label && action.description)
+      } => Boolean(action.label && action.description)
     )
   const targeted = request.actionTargets.flatMap((target) => {
     const definition = capabilityDefinitions.get(target.actionId)

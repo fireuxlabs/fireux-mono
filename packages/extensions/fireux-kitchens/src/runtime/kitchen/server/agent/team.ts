@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { findKitchenTeamServerTool } from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
-import { kitchenTeamMembersRemoveTool } from 'fireux-kitchens/runtime/kitchen/tools/team/index'
+import { findKitchenTeamServerTool } from '../team/tools/index'
+import { kitchenTeamMembersRemoveTool } from '../../tools/team/index'
 import {
   selectKitchenTeamTool,
   teamToolConfirmation,

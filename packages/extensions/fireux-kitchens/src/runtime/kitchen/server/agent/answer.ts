@@ -1,22 +1,22 @@
-import { operatorContextInstruction } from 'fireux-kitchens/runtime/kitchen/server/context/read'
+import { operatorContextInstruction } from '../context/read'
 import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
   extractFireuxAgentTip,
   fireuxAgentTipInstruction,
 } from 'fireux-ai/runtime/models/agents/agent-tip'
-import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/kitchen/server/ai/usage'
-import { kitchenFoodSafetySearchDemand } from 'fireux-kitchens/runtime/kitchen/models/food-safety-search-demand'
-import { kitchenIngredientsSearchDemand } from 'fireux-kitchens/runtime/kitchen/models/ingredients-search-demand'
-import { kitchenInventorySearchDemand } from 'fireux-kitchens/runtime/kitchen/models/inventory-search-demand'
-import { kitchenPurchasingSearchDemand } from 'fireux-kitchens/runtime/kitchen/models/purchasing-search-demand'
-import { kitchenReceivingSearchDemand } from 'fireux-kitchens/runtime/kitchen/models/receiving-search-demand'
+import { writeKitchenAgentUsage } from '../ai/usage'
+import { kitchenFoodSafetySearchDemand } from '../../models/food-safety-search-demand'
+import { kitchenIngredientsSearchDemand } from '../../models/ingredients-search-demand'
+import { kitchenInventorySearchDemand } from '../../models/inventory-search-demand'
+import { kitchenPurchasingSearchDemand } from '../../models/purchasing-search-demand'
+import { kitchenReceivingSearchDemand } from '../../models/receiving-search-demand'
 import { readKitchenAgentContext } from './context'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 import {
-  findMiseboxOperationAgent,
-  findMiseboxWorkspaceAgent,
-} from '../../../models/workspace-agents'
+  findKitchenOperationAgent,
+  kitchenWorkspaceAgent,
+} from '../../models/workspace-agent'
 import { buildKitchenCoordinatorContext } from './operations/coordinator'
 import { buildDrinksAgentContext } from './operations/drinks'
 
@@ -31,7 +31,7 @@ export async function answerKitchenAgent(
   const context = await readKitchenAgentContext(access, request)
   const operation = request.operation || 'coordinator'
   const requestedAgent = request.operation
-    ? findMiseboxOperationAgent('kitchen', operation)
+    ? findKitchenOperationAgent(operation)
     : undefined
   const agentName = requestedAgent?.name || 'KitchenAI'
   const toolCatalogue = (requestedAgent?.toolCatalogue || []).map((tool) => ({
@@ -45,7 +45,7 @@ export async function answerKitchenAgent(
   let operationContext: Record<string, unknown>
   if (!requestedAgent) {
     operationContext = buildKitchenCoordinatorContext(
-      findMiseboxWorkspaceAgent('kitchen')?.operationAgents || []
+      kitchenWorkspaceAgent?.operationAgents || []
     )
   } else if (operation === 'dishes') {
     operationContext = {
@@ -270,7 +270,7 @@ export async function answerKitchenAgent(
   })
   const result = extractFireuxAgentTip(response.text, {
     agentId: 'KitchenAI',
-    parentId: 'MiseboxAI',
+    parentId: 'CoreAI',
   })
   const answer = text(result.answer)
   if (!response.ok || !answer) {

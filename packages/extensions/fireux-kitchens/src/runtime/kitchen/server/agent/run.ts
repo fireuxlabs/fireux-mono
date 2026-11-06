@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
+import { requireKitchenWriter } from '../core/operator-access'
 import { answerKitchenAgent } from './answer'
 import { answerKitchenAgentOrientation } from './orientation-answer'
 import { runKitchenTeamAI } from './team'

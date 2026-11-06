@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { runKitchenAgentSuggestions } from '../../../../agent/kitchen/suggestions'
+import { runKitchenAgentSuggestions } from '../../../../../kitchen/server/agent/suggestions'
 
 export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as Record<string, unknown> | null

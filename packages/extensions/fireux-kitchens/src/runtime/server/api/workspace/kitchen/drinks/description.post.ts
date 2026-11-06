@@ -1,8 +1,11 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
-import { DishStorage, readDishItemKind } from 'fireux-kitchens/runtime/kitchen/utils/dish'
+import { requireKitchenWriter } from '../../../../../kitchen/server/core/operator-access'
+import {
+  DishStorage,
+  readDishItemKind,
+} from '../../../../../kitchen/utils/dish'
 
 const NOTES_MAX_LENGTH = 1_200
 const DESCRIPTION_MAX_LENGTH = 800
@@ -48,7 +51,8 @@ export default defineEventHandler(async (event) => {
   if (!response.ok || !proposal) {
     throw createError({
       statusCode: response.disabled ? 503 : 502,
-      statusMessage: response.reason || 'DrinksAI could not propose a description.',
+      statusMessage:
+        response.reason || 'DrinksAI could not propose a description.',
     })
   }
 

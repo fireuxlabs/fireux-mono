@@ -238,7 +238,7 @@ test('KitchenAI reads Kitchen and venue strings, reuses Menu root data, and neve
     { readRecordString }
   )
   const read = load(
-    '../../../../ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/context.ts',
+    '../runtime/kitchen/server/agent/context.ts',
     'readKitchenAgentContext',
     {
       ...readers,

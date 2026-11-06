@@ -1,4 +1,4 @@
-import { projectProductContext } from 'fireux-misebox/runtime/app/server/context/product'
+import { projectProductContext } from './product'
 import { createHash } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'

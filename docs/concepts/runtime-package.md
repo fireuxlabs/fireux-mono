@@ -1,7 +1,7 @@
 # Runtime package family
 
 Updated: 2026-11-06
-Ref: f2fbf2242
+Ref: b8e3b2348
 Role: map, not canon
 
 ## Package root spine
@@ -264,7 +264,9 @@ parity.
 
 Ecosystem-owned agent composition is pure metadata under
 `runtime/models/workspace-agents.ts`, not an `ai` Entity or discovery root.
-Misebox's four Kitchen agent server consumers import that module explicitly.
+Kitchen agent server consumers import the Kitchen-owned coordinator from
+`fireux-kitchens/runtime/kitchen/models/workspace-agent`. Misebox's metadata
+only composes that definition beneath its ecosystem agent.
 Bringli, BuenoHost, FireUX and Granite retain equivalent exported metadata;
 placement does not assert that those declarations have an active consumer.
 The existing `./runtime/*` package export resolves these model paths; no Nuxt
@@ -298,3 +300,12 @@ register Project on unrelated hosts. Core's App user-joined endpoint, event
 publication and optional OIDC transport remain generic and available to every
 host; the existing wire envelope belongs to the Core App event owner. Project
 monitor models/validation are domain-owned, without inventing a receiver route.
+
+### Kitchen AI ownership
+
+`fireux-kitchens` owns Kitchen AI coordination, Team tool selection, Menu summaries,
+Drinks descriptions and the Kitchen voice-input HTTP adapter. Its native layer
+registers the existing routes. Domain implementation lives under
+`kitchen/server/agent`; provider transport stays in `fireux-ai`. Misebox keeps
+its ecosystem identity and cross-extension composition. Kitchen does not import
+Misebox or require a Misebox-owned provider.

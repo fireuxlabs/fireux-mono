@@ -1,24 +1,24 @@
-import { readKitchenOperatorContext } from 'fireux-kitchens/runtime/kitchen/server/context/read'
+import { readKitchenOperatorContext } from '../context/read'
 import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { readKitchenMenuSections } from 'fireux-kitchens/runtime/menu/server/manifest/sections'
-import { KitchenIngredientStorage } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-ingredient'
-import { normalizeIngredient } from 'fireux-kitchens/runtime/ingredient/server/normalize'
-import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient.model'
+import { readKitchenMenuSections } from '../../../menu/server/manifest/sections'
+import { KitchenIngredientStorage } from '../../utils/kitchen-ingredient'
+import { normalizeIngredient } from '../../../ingredient/server/normalize'
+import type { Ingredient } from '../../../ingredient/models/ingredient.model'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   normalizeDish,
   type Dish,
-} from 'fireux-kitchens/runtime/kitchen/utils/dish'
+} from '../../utils/dish'
 import {
   normalizeRecipe,
   type Recipe,
-} from 'fireux-kitchens/runtime/kitchen/utils/recipe'
+} from '../../utils/recipe'
 import {
   normalizeKitchenStation,
   type KitchenStation,
-} from 'fireux-kitchens/runtime/kitchen/utils/station'
+} from '../../utils/station'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 
 const MAX_MENUS = 12
@@ -115,10 +115,10 @@ async function readDishes(
     .get()
 
   return snapshot.docs
-    .map((document) =>
-      ({ ...normalizeDish({ id: document.id, ...(document.data() || {}) }),
-        context: readRecordString(document.data() || {}, 'context') })
-    )
+    .map((document) => ({
+      ...normalizeDish({ id: document.id, ...(document.data() || {}) }),
+      context: readRecordString(document.data() || {}, 'context'),
+    }))
     .filter((dish) =>
       request.operation === 'drinks'
         ? dish.item_kind === 'drink'
@@ -137,10 +137,10 @@ async function readRecipes(
     .limit(MAX_RECIPES)
     .get()
 
-  return snapshot.docs.map((document) =>
-    ({ ...normalizeRecipe({ id: document.id, ...(document.data() || {}) }),
-      context: readRecordString(document.data() || {}, 'context') })
-  )
+  return snapshot.docs.map((document) => ({
+    ...normalizeRecipe({ id: document.id, ...(document.data() || {}) }),
+    context: readRecordString(document.data() || {}, 'context'),
+  }))
 }
 
 async function readIngredients(

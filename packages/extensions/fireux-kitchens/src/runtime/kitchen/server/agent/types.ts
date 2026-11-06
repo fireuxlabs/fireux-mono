@@ -1,4 +1,4 @@
-import type { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
+import type { requireKitchenWriter } from '../core/operator-access'
 import type { PendingTeamTool } from './team-tools'
 
 export type KitchenAgentAccess = Awaited<
@@ -25,4 +25,3 @@ export type KitchenWorkspaceActionId =
   | 'create-kitchen'
   | 'complete-kitchen'
   | 'sign-up'
-  | 'explore-misebox'

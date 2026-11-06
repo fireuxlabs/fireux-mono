@@ -1,10 +1,8 @@
 import {
   advisoryAgentCapabilities,
   defineFireuxAgentNode,
-  defineFireuxWorkspaceAgent,
-  findFireuxOperationAgent,
 } from 'fireux-ai/runtime/models/agents/operation-agent'
-import { kitchenCapabilityAgents } from 'fireux-kitchens/runtime/kitchen/models/capability-agents'
+import { kitchenWorkspaceAgent } from 'fireux-kitchens/runtime/kitchen/models/workspace-agent'
 
 export const miseboxAgent = defineFireuxAgentNode({
   id: 'misebox.ai',
@@ -21,38 +19,5 @@ export const miseboxAgent = defineFireuxAgentNode({
 })
 
 export const miseboxWorkspaceAgents = [
-  defineFireuxWorkspaceAgent({
-    id: 'misebox.kitchen.ai',
-    name: 'KitchenAI',
-    parentId: 'MiseboxAI',
-    workspaceId: 'kitchen',
-    entityTarget: {
-      kind: 'Kitchen',
-      idParam: 'kitchenId',
-      selection: 'required',
-      authority: 'kitchen-writer',
-    },
-    contextProviders: [
-      { id: 'user.context', owner: 'User', required: false },
-      { id: 'kitchen.identity', owner: 'Kitchen', required: true },
-      { id: 'kitchen.context', owner: 'Kitchen', required: false },
-    ],
-    operationAgents: kitchenCapabilityAgents,
-  }),
+  { ...kitchenWorkspaceAgent, parentId: 'MiseboxAI' },
 ] as const
-
-export function findMiseboxWorkspaceAgent(workspaceId: string) {
-  return miseboxWorkspaceAgents.find(
-    (agent) => agent.workspaceId === workspaceId
-  )
-}
-
-export function findMiseboxOperationAgent(
-  workspaceId: string,
-  operationSlug: string
-) {
-  const coordinator = findMiseboxWorkspaceAgent(workspaceId)
-  return coordinator
-    ? findFireuxOperationAgent(coordinator, operationSlug)
-    : undefined
-}

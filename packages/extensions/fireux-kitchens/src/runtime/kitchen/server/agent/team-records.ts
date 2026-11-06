@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
-import { readKitchenTeamMembers } from 'fireux-kitchens/runtime/kitchen/server/team/read'
-import type { KitchenTeamToolMember } from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
+import { readKitchenTeamMembers } from '../team/read'
+import type { KitchenTeamToolMember } from '../team/tools/index'
 import type { KitchenAgentRequest } from './types'
 
 export async function readKitchenTeamToolMembers(

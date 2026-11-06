@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
-Updated: 2026-10-21
-Ref: d05ded3fd
+Updated: 2026-11-06
+Ref: b8e3b2348
 Role: map, not canon
 
 ## Purpose
@@ -377,8 +377,8 @@ sources exist.
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
   and `TemplateOne*.vue`
-- Misebox Basic resolver:
-  `packages/ecosystem/fireux-misebox/src/runtime/models/kitchen-basic-presentation.ts`
+- Template One fixture colour:
+  `packages/ecosystem/fireux-misebox/src/runtime/content/template-one-fixtures.ts`
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`

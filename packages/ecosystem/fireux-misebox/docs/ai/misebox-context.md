@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-05
-Ref: 71d4618ec
+Updated: 2026-11-06
+Ref: b8e3b2348
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -1118,7 +1118,7 @@ remain visible. Context is omitted from public Kitchen/Place/Menu projections.
 `kitchen/server/context/authorized.ts` supplies the current Home and Menus intent
 interpreters with saved strings after selected-Kitchen authority. Menus includes
 up to 12 listed Menu contexts, prioritizing the selected Menu. Client page facts
-cannot override that context. The ecosystem agents and Menu summary endpoint
+cannot override that context. The Kitchen-owned agents and Menu summary endpoint
 reuse their already-read Kitchen/Menu/Dish/Recipe documents and read the linked Place's
 context through `kitchen/server/context/read.ts`. Saved text is background, not
 instructions or measured evidence. Questions and provisional assumptions remain
@@ -1126,7 +1126,7 @@ unconfirmed until the owner decides. Editing context never changes hours, prices
 or other operational settings. These are human Workspace commands, not new
 agent-callable write tools. Verify `fireux-kitchens/src/test/record-context.test.mjs`.
 
-- KitchenAI is Misebox’s Kitchen coordinator over registered capability agents,
+- KitchenAI is the Kitchen-owned coordinator over registered capability agents,
   evidence, and named tools.
 - It never invents live operational facts or bypasses selection, subscription,
   authority, confirmation, or approval.
@@ -1143,16 +1143,17 @@ real shared definitions and server executors; agent-only actions are reference
 entries, not direct human action links. Verify the rendered distinction and
 doorways with `src/test/kitchen/tool-catalogue.test.mjs`.
 
-Current source has an unresolved ownership seam: Kitchen-extension Workspace AI
-components call Misebox ecosystem `/api/workspace/kitchen/agent*` endpoints.
-Do not deepen that implicit upward dependency. Before changing it, decide whether
-Misebox owns AI composition mounted above Kitchen Workspace, or Kitchen receives
-one explicit optional provider contract. Two real consumers are required before
-creating shared provider infrastructure.
+Kitchen AI implementation and its `/api/workspace/kitchen/agent*`, Menu AI,
+Drinks description and voice-input adapters belong to `fireux-kitchens`. Native
+Kitchen runtime discovery registers the routes once; Misebox does not provide
+their implementation. Kitchen-owned `kitchen/models/workspace-agent.ts` defines
+the coordinator and operation lookup. Misebox may compose that metadata beneath
+its ecosystem agent without becoming its runtime owner. Provider transport stays
+in `fireux-ai`. Authority, confirmation and domain commands remain Kitchen-owned.
 
-Inspect current source under Kitchen `components/Workspace/AI*` and
-`models/operation-*`, Misebox `runtime/ai` and `runtime/server/agent/kitchen`,
-and the owning tool/command consumers. The capability-tools guard is removed.
+Inspect Kitchen `kitchen/server/agent`, `menu/server/ai`, Workspace AI components
+and their source-owned tests. The App-only product-context projection stays in
+Misebox App’s `server/app/context/product.ts`.
 
 Kitchen Home, Menus, Identity and Team intent interpreters, plus the shared Test
 interpreter, use the existing Codex development transport without a forced model

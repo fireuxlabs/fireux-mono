@@ -3,9 +3,9 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { pendingTeamTool } from './team-tools'
 import type { KitchenAgentRequest, KitchenWorkspaceActionId } from './types'
 import {
-  findMiseboxOperationAgent,
-  findMiseboxWorkspaceAgent,
-} from '../../../models/workspace-agents'
+  findKitchenOperationAgent,
+  kitchenWorkspaceAgent,
+} from '../../models/workspace-agent'
 
 const PROMPT_MAX_LENGTH = 2_000
 const text = (value: unknown) => String(value ?? '').trim()
@@ -13,7 +13,6 @@ const workspaceActionIds = new Set<KitchenWorkspaceActionId>([
   'create-kitchen',
   'complete-kitchen',
   'sign-up',
-  'explore-misebox',
 ])
 
 function readPrompt(value: unknown) {
@@ -40,18 +39,17 @@ export async function readKitchenAgentRequest(
   const prompt = readPrompt(body?.prompt)
   const operation = text(body?.operation)
   const operationAgent = operation
-    ? findMiseboxOperationAgent('kitchen', operation)
+    ? findKitchenOperationAgent(operation)
     : undefined
   const operationAgents = operationAgent
     ? [operationAgent]
-    : findMiseboxWorkspaceAgent('kitchen')?.operationAgents || []
+    : kitchenWorkspaceAgent?.operationAgents || []
   const allowedActions = new Set<string>([
     ...workspaceActionIds,
     ...operationAgents.flatMap((agent) =>
       (agent.toolCatalogue || [])
         .filter(
-          (tool) =>
-            tool.status === 'available' || tool.status === 'agent-ready'
+          (tool) => tool.status === 'available' || tool.status === 'agent-ready'
         )
         .map((tool) => tool.id)
     ),
