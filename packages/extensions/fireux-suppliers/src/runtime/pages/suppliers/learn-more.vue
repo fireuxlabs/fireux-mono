@@ -14,7 +14,9 @@
       </p>
 
       <div>
-        <h2 class="fx-type-section-title">With a supplier workspace you can:</h2>
+        <h2 class="fx-type-section-title">
+          With a supplier workspace you can:
+        </h2>
         <ul class="fx-list-stack">
           <li>Maintain one public Supplier identity.</li>
           <li>Work with Supplier items, catalogues and linked ingredients.</li>

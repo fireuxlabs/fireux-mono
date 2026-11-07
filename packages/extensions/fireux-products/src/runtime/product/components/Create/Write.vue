@@ -9,7 +9,7 @@
       description="Choose the type that best describes your product"
     >
       <template #label>
-        <div class="flex items-center gap-2">
+        <div>
           <span>Product Type</span>
           <UTooltip :popper="{ placement: 'right' }">
             <template #text>
@@ -23,10 +23,7 @@
                 </div>
               </div>
             </template>
-            <UIcon
-              name="i-lucide-help-circle"
-              class="hover:text-toned cursor-help"
-            />
+            <UIcon name="i-lucide-help-circle" />
           </UTooltip>
         </div>
       </template>
@@ -47,7 +44,7 @@
             @click="product.product_type = option.value as string"
             class="product-type-button"
           >
-            <Icon :name="option.icon" class="w-5 h-5 mr-2" />
+            <Icon :name="option.icon" />
             {{ option.label }}
           </UButton>
         </UTooltip>

@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-10-25
-Ref: ce2861c77
+Updated: 2026-11-06
+Ref: 614700fd9
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -135,10 +135,13 @@ Domain capabilities are not universal Workspace machinery. Kitchen Services,
 for example, owns menu selection and serving policy; other industries do not
 inherit that meaning merely because they also use the word service.
 
-Property Team now lives in `property/components/Team/Index.vue` and is consumed
-as `PropertyTeam`; its roles and commands remain Property-owned. Other Property
-capabilities, Portfolio, Project, Supplier and Blank still retain capability
-components under their `components/Workspace` directories. This is bounded
+Property Team lives in `property/components/Team/Index.vue` and is consumed
+as `PropertyTeam`; its roles and commands remain Property-owned. Project's
+Identity and Team live in `project/components/Identity` and
+`project/components/Team`, consumed as `ProjectIdentity` and `ProjectTeam`.
+Project Home, Overview, Navigation and selection remain Workspace composition.
+Other Property capabilities, Portfolio, Supplier, Blank and Project's other
+capabilities still retain components under `components/Workspace`. This is bounded
 placement migration, not completed repository alignment. Inspect registration,
 real consumers, relative imports and checks before each move. Preserve domain
 differences; remove retired paths rather than adding forwarding aliases.
@@ -198,13 +201,13 @@ system. Notifications remain User-owned shared presentation.
 
 ## Adoption and future industries
 
-| Family               | Current boundary                                                                                                            |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Kitchen              | Shared foundation plus capability-first component arrangement and composed group indexes.                                   |
-| Property / Portfolio | Shared foundation with domain-owned accommodation/property capabilities; capability placement still uses Workspace folders. |
-| Project              | Shared foundation with FireUX control-plane capabilities; capability placement still uses Workspace folders.                |
-| Supplier             | Shared foundation with Supplier-owned catalogue work; capability placement still uses Workspace folders.                    |
-| Blank                | App-local development harness, not a complete industry product.                                                             |
+| Family               | Current boundary                                                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Kitchen              | Shared foundation plus capability-first component arrangement and composed group indexes.                                                                    |
+| Property / Portfolio | Shared foundation with domain-owned accommodation/property capabilities; capability placement still uses Workspace folders.                                  |
+| Project              | Shared foundation with FireUX control-plane capabilities; Identity and Team use capability folders, while remaining capabilities retain Workspace placement. |
+| Supplier             | Shared foundation with Supplier-owned catalogue work; capability placement still uses Workspace folders.                                                     |
+| Blank                | App-local development harness, not a complete industry product.                                                                                              |
 
 Use [the family map](family-workspace-entity.md) for exact accepted differences,
 authority boundaries and proving checks. A shared foundation does not establish

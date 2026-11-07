@@ -1,19 +1,10 @@
 <template>
-  <a
+  <ULink
     v-if="place.place_type !== 'non_physical'"
-    href="#opening-hours"
-    class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 no-underline"
+    to="#opening-hours"
     aria-label="Venue opening status and opening hours"
   >
-    <span
-      class="inline-flex items-center gap-2"
-      :class="status.open ? 'text-success' : 'text-highlighted'"
-    >
-      <span
-        class="size-2 rounded-full"
-        :class="status.open ? 'bg-success' : 'bg-dimmed'"
-        aria-hidden="true"
-      />
+    <UBadge :color="status.open ? 'success' : 'neutral'" variant="soft">
       {{
         !status.known
           ? 'Venue hours unavailable'
@@ -23,7 +14,7 @@
               : 'Open now'
             : 'Closed now'
       }}
-    </span>
+    </UBadge>
     <span v-if="status.open && status.nextToday">
       · Reopens {{ status.next }}
     </span>
@@ -31,10 +22,10 @@
       · Opens {{ status.next }}
     </span>
     <UIcon name="i-lucide-chevron-down" aria-hidden="true" />
-    <span v-if="status.todayHours.length" class="w-full">
+    <p v-if="status.todayHours.length">
       Today: {{ status.todayHours.join(' · ') }}
-    </span>
-  </a>
+    </p>
+  </ULink>
 </template>
 
 <script setup lang="ts">

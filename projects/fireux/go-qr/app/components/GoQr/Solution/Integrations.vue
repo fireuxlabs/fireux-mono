@@ -9,21 +9,18 @@
         {{ integrations.body }}
       </p>
 
-      <div
-        v-if="integrations.consumers?.length"
-        class="grid gap-3 md:grid-cols-3"
-      >
+      <div v-if="integrations.consumers?.length" class="pagebody">
         <UCard v-for="consumer in integrations.consumers" :key="consumer.name">
-          <div class="flex items-center gap-2">
+          <div>
             <UIcon :name="consumer.icon" />
             <h3 class="fx-type-card-heading">
               {{ consumer.name }}
             </h3>
           </div>
-          <p class="mt-2 fx-type-caption">
+          <p class="fx-type-caption">
             {{ consumer.useGoQr }}
           </p>
-          <p class="mt-2 fx-type-caption">
+          <p class="fx-type-caption">
             {{ consumer.useApp }}
           </p>
           <UButton

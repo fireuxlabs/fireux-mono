@@ -1,11 +1,11 @@
 <template>
-  <main class="min-h-screen bg-default">
+  <UPage>
     <UContainer>
-      <section class="max-w-2xl space-y-8" aria-labelledby="menus-title">
-        <NuxtLink to="/" class="inline-flex items-center gap-2">
-          <Icon name="i-lucide-arrow-left" class="size-4" />
+      <section class="pagebody" aria-labelledby="menus-title">
+        <ULink to="/">
+          <Icon name="i-lucide-arrow-left" />
           Sproochli
-        </NuxtLink>
+        </ULink>
 
         <div class="pagebody">
           <p class="fx-type-caption">Menus</p>
@@ -17,14 +17,14 @@
         </div>
 
         <UCard>
-          <div class="grid min-h-40 place-items-center gap-3">
-            <Icon name="i-lucide-utensils" class="size-8" />
+          <div class="pagebody">
+            <Icon name="i-lucide-utensils" />
             <p>Read-only menu translations will appear here.</p>
           </div>
         </UCard>
       </section>
     </UContainer>
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

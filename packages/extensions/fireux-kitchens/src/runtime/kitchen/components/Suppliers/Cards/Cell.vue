@@ -2,7 +2,6 @@
   <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
-    class="block w-full"
     @activate="emit('action')"
   >
     <div class="fx-card--cell">
@@ -13,9 +12,7 @@
             ? { backgroundColor: imageBackground }
             : undefined
         "
-        :ui="
-          imageFit === 'contain' ? { image: 'object-contain p-1' } : undefined
-        "
+        :ui="imageFit === 'contain' ? { image: 'object-contain' } : undefined"
         icon="i-lucide-store"
         size="md"
         class="fx-card__badge"

@@ -33,12 +33,12 @@
         />
       </FireLandingProductProofSection>
 
-      <div class="mt-16">
+      <div>
         <FireLandingSolutions variant="preview" />
       </div>
 
-      <section class="mt-16 space-y-6" aria-labelledby="host-workspace-title">
-        <div class="max-w-3xl space-y-2">
+      <section class="pagebody" aria-labelledby="host-workspace-title">
+        <div class="pagebody">
           <h2 id="host-workspace-title" class="fx-type-section-title">
             Work from the Host Workspace.
           </h2>
@@ -54,19 +54,16 @@
             variant="subtle"
           >
             <UIcon :name="feature.icon" />
-            <h3 class="mt-3 fx-type-card-heading">
+            <h3 class="fx-type-card-heading">
               {{ feature.title }}
             </h3>
-            <p class="mt-1 fx-type-caption">{{ feature.description }}</p>
+            <p class="fx-type-caption">{{ feature.description }}</p>
           </UCard>
         </UPageGrid>
       </section>
 
-      <section
-        class="mt-16 space-y-6"
-        aria-labelledby="host-integrations-title"
-      >
-        <div class="max-w-3xl space-y-2">
+      <section class="pagebody" aria-labelledby="host-integrations-title">
+        <div class="pagebody">
           <h2 id="host-integrations-title" class="fx-type-section-title">
             Connect services around the stay.
           </h2>
@@ -75,23 +72,22 @@
             changing the guest guide.
           </p>
         </div>
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <NuxtLink
+        <div class="pagebody">
+          <ULink
             v-for="card in resolvedIntegrationCards"
             :key="card.title"
             :to="card.href"
             :target="isExternalUrl(card.href) ? '_blank' : undefined"
             :rel="isExternalUrl(card.href) ? 'noopener noreferrer' : undefined"
-            class="block h-full"
           >
             <UCard variant="subtle">
               <UIcon :name="card.icon" />
-              <h3 class="mt-3 fx-type-card-heading">
+              <h3 class="fx-type-card-heading">
                 {{ card.title }}
               </h3>
-              <p class="mt-1 fx-type-caption">{{ card.description }}</p>
+              <p class="fx-type-caption">{{ card.description }}</p>
             </UCard>
-          </NuxtLink>
+          </ULink>
         </div>
       </section>
     </UContainer>

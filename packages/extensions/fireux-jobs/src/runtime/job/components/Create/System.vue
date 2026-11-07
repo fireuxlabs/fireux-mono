@@ -2,11 +2,11 @@
 <!-- Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: send new drafts to the authenticated edit route. -->
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: diagnose the canonical Job authoring shape. -->
 <template>
-  <div class="space-y-3">
+  <div>
     <ClientOnly>
       <UCard v-if="agentCard">
         <template #header>
-          <div class="space-y-1">
+          <div class="fx-card-body-stack">
             <p>Creator</p>
             <h2 class="fx-type-card-heading">Current hiring profile</h2>
             <p>This hiring profile will own the job posting.</p>

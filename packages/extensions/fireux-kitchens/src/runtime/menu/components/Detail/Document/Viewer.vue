@@ -9,7 +9,7 @@
     >
       Open original
       <span aria-hidden="true">↗</span>
-      <span class="sr-only">(opens in a new tab)</span>
+      <span>(opens in a new tab)</span>
     </a>
 
     <div v-if="isPhoto" class="menu-document__photo">

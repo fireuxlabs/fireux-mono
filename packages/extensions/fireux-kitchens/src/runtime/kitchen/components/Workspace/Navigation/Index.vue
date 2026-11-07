@@ -5,7 +5,7 @@
       :src="backdropImage"
       alt=""
       aria-hidden="true"
-      class="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+      class="pointer-events-none absolute inset-0 h-full w-full object-cover"
       style="opacity: 0.35; filter: blur(3px); transform: scale(1.25)"
     />
     <div
@@ -22,17 +22,14 @@
       "
     />
   </template>
-  <div
-    v-else-if="identityOnly && selected"
-    class="flex min-w-0 items-center gap-2"
-  >
+  <div v-else-if="identityOnly && selected" class="workspace-navbar__identity">
     <UAvatar
       v-bind="item.avatar"
       :alt="item.label"
       :icon="item.icon"
       size="2xs"
     />
-    <span class="truncate">{{ item.label }}</span>
+    <span class="fx-truncate">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
     v-else-if="!identityOnly"

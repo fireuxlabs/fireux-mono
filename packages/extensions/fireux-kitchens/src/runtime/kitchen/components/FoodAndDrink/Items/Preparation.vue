@@ -1,8 +1,8 @@
 <template>
-  <div class="grid gap-6">
+  <div>
     <header>
       <h2>Mise en place</h2>
-      <p class="mt-1">
+      <p>
         Quantities for {{ dish?.spec?.portion || 1 }} portion{{
           dish?.spec?.portion === 1 ? '' : 's'
         }}. These are requirements, not available stock.
@@ -15,14 +15,14 @@
       :description="String(error)"
     />
     <p v-else-if="pending" role="status">Loading preparations…</p>
-    <div v-else class="grid gap-7">
+    <div v-else>
       <section v-for="group in groups" :key="group.station">
-        <h3 class="mb-3">{{ group.station }}</h3>
-        <div class="grid gap-4 lg:grid-cols-2">
+        <h3>{{ group.station }}</h3>
+        <UPageGrid as="div">
           <UCard v-for="row in group.rows" :key="row.prep_item_id">
             <div class="card__header">
               <div>
-                <h3 class="mt-1">
+                <h3>
                   {{ row.item?.name || row.prep_item_id }}
                 </h3>
               </div>
@@ -30,17 +30,17 @@
                 >{{ row.quantity }} {{ row.unit }}</UBadge
               >
             </div>
-            <p v-if="row.note" class="mt-3">
+            <p v-if="row.note">
               {{ row.note }}
             </p>
-            <p v-if="!row.item" class="mt-3">Preparation record unavailable.</p>
+            <p v-if="!row.item">Preparation record unavailable.</p>
             <template v-else
-              ><details class="mt-4">
-                <summary class="cursor-pointer">
+              ><details>
+                <summary>
                   Batch method · {{ row.item.yield.quantity }}
                   {{ row.item.yield.unit }}
                 </summary>
-                <ol class="list-decimal pl-5 mt-3 space-y-2">
+                <ol>
                   <li v-for="step in row.item.method" :key="step">
                     {{ step }}
                   </li>
@@ -55,7 +55,7 @@
                 variant="soft"
             /></template>
           </UCard>
-        </div>
+        </UPageGrid>
       </section>
     </div>
     <UAlert
@@ -64,7 +64,7 @@
       title="No mise en place linked"
       description="Add prep items in the dish specification."
     />
-    <div class="border-t border-default pt-5 flex flex-wrap gap-3">
+    <div>
       <UButton
         to="/workspace/kitchen/prep"
         label="Kitchen preparation"

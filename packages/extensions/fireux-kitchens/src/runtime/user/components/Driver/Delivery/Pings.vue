@@ -77,10 +77,11 @@
       :description="error.message"
     />
 
-    <div v-else-if="pending" class="fx-card-body-stack">
-      <USkeleton class="h-32 w-full" />
-      <USkeleton class="h-32 w-full" />
-    </div>
+    <FireState
+      v-else-if="pending"
+      outcome="pending"
+      entity="delivery dispatches"
+    />
 
     <p v-else>No delivery beacons right now.</p>
   </UCard>

@@ -18,7 +18,7 @@
       :context="menuTarget.context as 'collection' | 'delivery' | 'table'"
       :route-scope="menuRouteScope"
     />
-    <template #fallback><p class="p-6">Loading ordering…</p></template>
+    <template #fallback><p>Loading ordering…</p></template>
   </ClientOnly>
   <UAlert
     v-else-if="projection === 'order'"

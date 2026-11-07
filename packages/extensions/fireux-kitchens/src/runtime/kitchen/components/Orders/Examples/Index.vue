@@ -1,7 +1,7 @@
 <template>
-  <section class="space-y-6 py-8">
+  <section>
     <h1>Order ticket</h1>
-    <section class="space-y-3" aria-labelledby="init-heading">
+    <section aria-labelledby="init-heading">
       <h2 id="init-heading">1. Init</h2>
       <UFormField label="Channel">
         <URadioGroup
@@ -35,7 +35,6 @@
     </section>
     <section
       v-if="channel === 'pos' || channel === 'kiosk' || channel === 'website'"
-      class="space-y-3"
       aria-labelledby="pre-info-heading"
     >
       <h2 id="pre-info-heading">2. Pre-info</h2>
@@ -62,10 +61,7 @@
           indicator="hidden"
         />
       </UFormField>
-      <div
-        v-if="channel === 'website' && websiteEntry === 'table'"
-        class="grid max-w-sm gap-3"
-      >
+      <div v-if="channel === 'website' && websiteEntry === 'table'">
         <UFormField label="Table name supplied by QR"
           ><UInput v-model="tableName" :maxlength="200"
         /></UFormField>
@@ -80,7 +76,7 @@
         label="pre-info"
       />
     </section>
-    <section class="space-y-3" aria-labelledby="items-heading">
+    <section aria-labelledby="items-heading">
       <h2 id="items-heading">3. Items</h2>
       <UButton
         :label="itemsAdded ? 'Clear example items' : 'Add fixed food items'"
@@ -94,11 +90,7 @@
         label="items"
       />
     </section>
-    <section
-      v-if="itemsAdded"
-      class="max-w-sm space-y-3"
-      aria-labelledby="post-info-heading"
-    >
+    <section v-if="itemsAdded" aria-labelledby="post-info-heading">
       <h2 id="post-info-heading">4. Post-info</h2>
       <p v-if="!selectedFulfilment">Choose fulfilment in Pre-info first.</p>
       <template v-else>
@@ -129,20 +121,16 @@
       </template>
       <KitchenOrdersExamplesPreview :order="order" name="order" label="order" />
     </section>
-    <section class="max-w-sm space-y-3" aria-labelledby="review-heading">
+    <section aria-labelledby="review-heading">
       <h2 id="review-heading">5. Review and submit</h2>
       <KitchenOrdersTicket
         :order="order"
         :editable="false"
         data-testid="review-ticket-preview"
       />
-      <div
-        v-if="reviewIssues.length"
-        class="rounded-lg border border-default p-4"
-        role="status"
-      >
-        <p class="mb-2">Still needed</p>
-        <ul class="list-disc space-y-1 pl-5">
+      <div v-if="reviewIssues.length" role="status">
+        <p>Still needed</p>
+        <ul>
           <li v-for="issue in reviewIssues" :key="issue">{{ issue }}</li>
         </ul>
       </div>
@@ -155,14 +143,13 @@
       <p>Preview only. No order is sent.</p>
       <FireDisclosurePanel title="View review data" :default-open="false">
         <pre
-          class="mt-3 overflow-auto"
+          class="overflow-auto"
           data-testid="review-json"
         ><code>{{ JSON.stringify(submittedOrder || order, null, 2) }}</code></pre>
       </FireDisclosurePanel>
     </section>
     <section
       v-if="submittedOrder && successView"
-      class="max-w-sm space-y-3"
       aria-labelledby="success-heading"
     >
       <h2 id="success-heading">6. Success</h2>

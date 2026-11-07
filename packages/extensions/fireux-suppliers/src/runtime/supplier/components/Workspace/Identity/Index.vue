@@ -1,5 +1,5 @@
 <template>
-  <section class="grid min-w-0 gap-6">
+  <section>
     <SupplierIdentityRead :identity="identity" @edit="section = $event" />
     <USlideover
       :open="Boolean(section) && identity.canWrite.value"
@@ -11,7 +11,7 @@
       "
     >
       <template #body>
-        <p class="mb-4">
+        <p>
           Changes apply wherever this business profile is used. Save each field
           or image as you edit.
         </p>

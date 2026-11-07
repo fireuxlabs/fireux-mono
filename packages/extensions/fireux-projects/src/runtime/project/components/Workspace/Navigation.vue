@@ -1,30 +1,7 @@
 <template>
-  <template v-if="backdropOnly">
-    <img
-      v-if="backdropImage"
-      :src="backdropImage"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
-      style="opacity: 0.35; filter: blur(3px); transform: scale(1.25)"
-    />
-    <div
-      v-if="backdropImage"
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0"
-      style="
-        background: linear-gradient(
-          90deg,
-          color-mix(in srgb, var(--ui-bg) 80%, transparent),
-          color-mix(in srgb, var(--ui-bg) 45%, transparent),
-          color-mix(in srgb, var(--ui-bg) 90%, transparent)
-        );
-      "
-    />
-  </template>
   <div
-    v-else-if="identityOnly && selected"
-    class="flex min-w-0 items-center gap-2"
+    v-if="!backdropOnly && identityOnly && selected"
+    class="workspace-navbar__identity"
   >
     <UAvatar
       v-bind="item.avatar"
@@ -32,10 +9,10 @@
       :icon="item.icon"
       size="2xs"
     />
-    <span class="truncate">{{ item.label }}</span>
+    <span class="fx-truncate">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
-    v-else-if="!identityOnly"
+    v-else-if="!backdropOnly && !identityOnly"
     :item="item"
     :to="workspaceEntryPath"
     :collapsed="collapsed"
@@ -73,7 +50,6 @@ const selected = computed(() =>
     (project) => project.id === workspace.id.value
   )
 )
-const backdropImage = computed(() => '')
 function avatar(project: Project | null | undefined) {
   return {
     src: project?.identity.image_url || undefined,

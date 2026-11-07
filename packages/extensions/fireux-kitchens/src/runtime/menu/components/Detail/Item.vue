@@ -20,7 +20,7 @@
         </span>
       </div>
 
-      <p v-if="item.promotionLabel" class="mt-1">
+      <p v-if="item.promotionLabel">
         {{ item.promotionLabel }}
       </p>
       <p v-if="item.description" class="menu-browse-item__description">
@@ -65,7 +65,6 @@
             :is="collapseExtras ? 'summary' : 'p'"
             :id="addOnsLabelId"
             class="menu-browse-item__options-label"
-            :class="{ 'cursor-pointer': collapseExtras }"
           >
             {{ optionalExtrasLabel }}
           </component>

@@ -1,7 +1,7 @@
 # Brand asset authority map
 
-Updated: 2026-10-04
-Ref: e5d8cf8d5
+Updated: 2026-11-07
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -25,7 +25,9 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
 - Local paths and fallback resolver:
   `packages/core/fireux-core/src/utils/brandAssets.ts`
 - Asset catalogue:
-  `packages/core/fireux-core/src/runtime/pages/assets.vue`
+  `packages/core/fireux-core/src/runtime/pages/assets.vue`, with App-owned
+  presentation under `runtime/app/components/Assets` and the catalogue in
+  `runtime/app/models/asset-catalogue.ts`
 - App logo and wordmark renderers:
   `packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue` and
   `packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue`
@@ -47,6 +49,12 @@ declare artwork ownership or approval state. Core and ecosystem source families
 retain their design authority; branded Apps own their artwork. Never borrow
 another App's export to fill a missing asset.
 
+The [asset brief](../assets.md) lists the eight required runtime exports. Their
+executable constraints remain in `app-media-requirements.ts`. Retain original
+masters outside `public`, such as an App-owned `brand` directory. Correcting an
+export's size or surface colour preserves its approved geometry and wording;
+it does not authorize a replacement identity.
+
 The runtime wordmark roles are raster: `wordmark-light.png` and
 `wordmark-dark.png`. Additional SVG wordmarks must preserve approved geometry
 as outlined paths or come from a reviewed vector master. Do not rebuild an
@@ -62,6 +70,29 @@ The former FireUX and BuenoHost rendering/projection scripts and guards were
 removed. There is no supported automated projection command; retained render
 manifests do not prove current files match. Compare source and exports when
 editing artwork.
+
+## Enforcement
+
+Core's `runtime/app/server/onboarding/brand-assets.ts` owns the file inspector
+and assertion, using the canonical App media requirements. It verifies all eight
+files, actual formats, complete image decoding, dimensions, equal wordmark
+canvases and PNG-encoded ICO frames at 16, 32, 48 and 64 pixels. ICO directory
+dimensions and byte ranges must match the embedded images.
+
+- `pnpm check:assets` audits every `projects/*/*` Nuxt App, including the starter;
+  add an App directory to check one. CI runs it after dependency installation.
+- Core's native `build:before` hook rejects invalid production App assets.
+  Development remains available for editing, and independent Core consumers do
+  not acquire an App asset obligation.
+- `tools/firebase-release/output.mjs` checks the packaged `.output/public`
+  family before release. Both generic and Misebox release flows use this gate.
+- `src/test/app-brand-assets.test.mjs` covers the validator and build hook;
+  IDE tooling and release tests cover discovery and packaged-file rejection.
+
+These checks do not approve an identity, prove faithful letterforms or certify
+contrast. Review actual light/dark previews and the named master for those.
+
+## Surface variants
 
 Light and dark name the intended surface:
 
@@ -99,10 +130,14 @@ owner artwork fails; there is no implicit parent-App fallback.
 
 Storage objects use `apps/{appId}/img/app/*`; favicon and PWA files stay local.
 A recorded URL does not prove that Storage matches the current source file.
-The `/assets` library presents the standard family grouped by its renderer or
-browser role, with the consuming component named on each asset. An App may
-append its own product assets through `app.config.ts` at
-`fireuxAssets.catalogue`, under its `/img/app` contract.
+The `/assets` library groups the standard family into Brand, App images, and
+Browser and install. It previews the exact file without brand fallback, reports
+image-load failures and observed dimensions, and provides original-file and
+download links. Preview background controls affect only the artwork frame.
+Requirements come from the canonical App media model; a decoded preview is not
+proof of byte validation, publication or Storage sync. An App may append its own
+product assets through `app.config.ts` at `fireuxAssets.catalogue`, under its
+`/img/app` contract.
 
 ## Ecosystem identity
 
@@ -124,14 +159,14 @@ not undo a saved avatar or imply that background retries exist.
 
 ## Differences
 
-| Difference | State | Rule |
-| --- | --- | --- |
-| Branded Apps use different artwork | accepted | Product identity belongs to the App |
-| Approved PNG has no faithful SVG master | accepted | Keep the PNG; do not invent replacement geometry |
-| Core artwork is exported into App/ecosystem public paths | accepted | Preserve its source identity and compare exports when editing |
-| An export is edited as an independent FireUX brand | drift | Restore source authority or declare a genuine product brand |
-| Light/dark variants lose their surface semantics | drift | Restore the intended visible contrast |
-| Artwork is awaiting approval | migration | Track it in product/design work, not runtime configuration |
+| Difference                                               | State     | Rule                                                          |
+| -------------------------------------------------------- | --------- | ------------------------------------------------------------- |
+| Branded Apps use different artwork                       | accepted  | Product identity belongs to the App                           |
+| Approved PNG has no faithful SVG master                  | accepted  | Keep the PNG; do not invent replacement geometry              |
+| Core artwork is exported into App/ecosystem public paths | accepted  | Preserve its source identity and compare exports when editing |
+| An export is edited as an independent FireUX brand       | drift     | Restore source authority or declare a genuine product brand   |
+| Light/dark variants lose their surface semantics         | drift     | Restore the intended visible contrast                         |
+| Artwork is awaiting approval                             | migration | Track it in product/design work, not runtime configuration    |
 
 ## Verification and maintenance
 

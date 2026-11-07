@@ -6,16 +6,14 @@
       </div>
     </template>
 
-    <div class="grid gap-5">
-      <section class="space-y-4">
-        <div
-          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        >
+    <div class="fx-card-body-stack">
+      <section class="fx-card-body-stack">
+        <div>
           <div>
             <h3 class="fx-type-card-heading">Cover image</h3>
-            <p class="mt-1">Recommended: 1280 × 720 px.</p>
+            <p>Recommended: 1280 × 720 px.</p>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div>
             <UButton
               label="Choose image"
               icon="i-lucide-image-up"
@@ -40,33 +38,27 @@
               ref="coverInput"
               type="file"
               accept="image/*"
-              class="sr-only"
+              hidden
               @change="uploadCover"
             />
           </div>
         </div>
-        <div
-          class="place-story__cover mt-4 aspect-video w-full overflow-hidden rounded-xl bg-elevated"
-        >
+        <div class="place-story__cover aspect-video w-full overflow-hidden">
           <img
             v-if="coverImage"
             :src="coverImage"
             :alt="`${place?.name || 'Place'} cover`"
             class="size-full object-cover"
           />
-          <div v-else class="flex size-full items-center justify-center">
-            1280 × 720
-          </div>
+          <div v-else>1280 × 720</div>
         </div>
       </section>
 
-      <section class="border-t border-default pt-5">
-        <div
-          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        >
+      <section>
+        <div>
           <div>
             <h3 class="fx-type-card-heading">Gallery</h3>
-            <p class="mt-1">Up to 24 images. Recommended: 1200 × 1200 px.</p>
+            <p>Up to 24 images. Recommended: 1200 × 1200 px.</p>
           </div>
           <UButton
             label="Add images"
@@ -83,19 +75,16 @@
             type="file"
             accept="image/*"
             multiple
-            class="sr-only"
+            hidden
             @change="uploadGallery"
           />
         </div>
 
-        <div
-          v-if="galleryImages.length"
-          class="place-story__gallery mt-4 grid gap-3"
-        >
+        <UPageGrid v-if="galleryImages.length" class="place-story__gallery">
           <div
             v-for="(image, index) in galleryImages"
             :key="image"
-            class="group relative aspect-square overflow-hidden rounded-xl bg-elevated"
+            class="relative aspect-square overflow-hidden"
           >
             <img
               :src="image"
@@ -114,13 +103,8 @@
               @click="removeGalleryImage(image)"
             />
           </div>
-        </div>
-        <div
-          v-else
-          class="mt-4 flex aspect-square w-full max-w-44 items-center justify-center rounded-xl bg-elevated"
-        >
-          1200 × 1200
-        </div>
+        </UPageGrid>
+        <p v-else>1200 × 1200</p>
       </section>
     </div>
   </UCard>

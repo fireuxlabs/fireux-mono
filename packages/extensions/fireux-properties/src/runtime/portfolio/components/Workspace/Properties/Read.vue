@@ -2,7 +2,7 @@
   <section class="workspace-surface workspace-surface--compact">
     <UCard>
       <template #header>
-        <div class="flex items-center justify-between gap-3">
+        <div class="card__header">
           <h2 class="fx-type-card-heading">Portfolio Properties</h2>
           <UBadge
             v-if="outcome === 'ready' || outcome === 'empty'"
@@ -22,19 +22,15 @@
           ><FireCopyError message="Properties could not be loaded."
         /></template>
       </UAlert>
-      <ul v-else-if="outcome === 'ready'" class="divide-y divide-default">
-        <li
-          v-for="property in properties"
-          :key="property.id"
-          class="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-        >
+      <ul v-else-if="outcome === 'ready'">
+        <li v-for="property in properties" :key="property.id">
           <UAvatar
             :src="property.identity.image_url || undefined"
             :alt="property.identity.name"
             icon="i-lucide-building-2"
           />
-          <div class="min-w-0 flex-1">
-            <p class="truncate">{{ property.identity.name }}</p>
+          <div>
+            <p>{{ property.identity.name }}</p>
             <p>
               {{ property.identity.property_type }} ·
               {{ property.identity.unit_count }} units

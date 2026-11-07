@@ -1,6 +1,7 @@
 # FireUX Bookings context
 
-Updated: 2026-11-05
+Updated: 2026-11-06
+Ref: 614700fd9
 Role: living context
 Scope: reusable booking lifecycle and calendar integrations
 
@@ -12,7 +13,7 @@ authority, and documentation rules in those sources remain authoritative.
 
 ## Purpose and ownership
 
-`fireux-bookings` is an optional Extension owning the reusable reservation-to-confirmation lifecycle and provider integrations. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. Its optional Business Workspace owns Business-scoped availability settings, booking records and exclusive allocation locks. These are Business-owned child records, not a universal Booking Entity. Service catalogue, pricing, timezone, allocation-key policy, payments, cancellation and notification remain with their named consumers.
+`fireux-bookings` is an optional Extension owning a provider-independent customer booking presentation, reservation-to-confirmation lifecycle, and provider integrations. `BookingsCustomerForm` owns shared customer fields and the presentation of availability, errors and confirmation; Apps provide reservation inputs through slots and own the service catalogue, schedules, prices, booking commands, and confirmation content. The component and its Docs placeholder must remain ignorant of any named business. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. Its optional Business Workspace owns Business-scoped availability settings, booking records and exclusive allocation locks. These are Business-owned child records, not a universal Booking Entity. Timezone, allocation-key policy, payments, cancellation and notification remain with their named consumers.
 
 Outside the optional Business integration, the consuming domain or App owns its records and authority. All consumers retain service-specific time-slot rules,
 calendar connection lifecycle, confirmation policy, durable reconciliation and storage adapters. The shared lifecycle retains capacity after an external effect starts if completion is uncertain; consumers must resolve that held state before retrying. A FreeBusy response is a
@@ -27,7 +28,9 @@ verify how external conflicts and failed event writes affect their own workflow.
   `docs/concepts/entities.md`. Firestore write authority is governed by
   `docs/ai/firestore-mutations-context.md` when a consumer persists records.
 - Package identity, exports, and commands: `package.json`.
-- Nuxt registration and optional `businessWorkspace` module option: `src/module.ts`; explicit native layer `src/runtime/nuxt.config.ts`.
+- Nuxt registration of `BookingsCustomerForm`, server imports, and optional `businessWorkspace` module option: `src/module.ts`; explicit native layer `src/runtime/nuxt.config.ts`.
+- Shared customer form and display contracts: `src/runtime/components/Customer/Form.vue` and `src/runtime/types/customer-booking-form.ts`. The form presents customer fields and supplied view state; consumer pages own domain inputs, availability queries and booking submissions.
+- Generic library preview: `packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue`; its sample data must remain business-neutral. Blank's configurable simulator is `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue`.
 - Business management: `src/runtime/server/business/management.ts`, `store.ts` and `targets.ts`. Settings, records and locks live beneath `businesses/{id}` and protected management reuses Business membership-bound authority.
 - Schedule validation: `src/runtime/utils/availability.ts`. Revision checks reject stale operator saves and schedule changes during reservation. Existing reservations are preserved when closing days.
 - Business Workspace route and focused UI: `src/runtime/pages/workspace/business/bookings.vue` and `business/components/Workspace`. Private list reads use bounded cursor pages with explicit refresh.
@@ -84,6 +87,9 @@ status, and speculative integration plans out of this file.
   changes.
 - Run the consuming App's typecheck and source-owned tests when its adapter or
   registration changes.
+- For shared-form changes, verify the generic Docs preview, Blank sandbox, and
+  Interlaken Bike Tours customer flow compile and retain their distinct
+  App-owned rules.
 - Verify registration and the route-to-command path for any future UI/API
   consumer; the package build alone does not prove a booking workflow or live
   Calendar connection.

@@ -1,11 +1,11 @@
 <template>
-  <section class="space-y-3">
+  <section>
     <div>
       <h3>{{ label }}</h3>
       <p v-if="!timezone">Set the venue timezone in Identity first.</p>
     </div>
     <p v-if="ranges.length">Time range</p>
-    <div class="divide-y divide-default">
+    <div>
       <KitchenFoodAndDrinkServicesSetupHoursRange
         v-for="(range, index) in ranges"
         :key="range.key"

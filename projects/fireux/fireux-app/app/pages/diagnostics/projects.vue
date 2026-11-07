@@ -8,18 +8,18 @@
 
     <UPageBody class="pagebody">
       <UCard>
-        <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+        <div class="pagebody">
           <div>
             appId:
-            <span class="font-mono">{{ resolvedAppId || 'missing' }}</span>
+            <span>{{ resolvedAppId || 'missing' }}</span>
           </div>
           <div>
             selectedId:
-            <span class="font-mono">{{ selectedId || 'unset' }}</span>
+            <span>{{ selectedId || 'unset' }}</span>
           </div>
           <div>
             project count:
-            <span class="font-mono">{{ projects.length }}</span>
+            <span>{{ projects.length }}</span>
           </div>
         </div>
       </UCard>
@@ -46,7 +46,7 @@
         </template>
 
         <div class="fx-card-body-stack">
-          <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+          <div class="pagebody">
             <UBadge variant="soft">
               appId: {{ resolvedAppId || 'missing' }}
             </UBadge>

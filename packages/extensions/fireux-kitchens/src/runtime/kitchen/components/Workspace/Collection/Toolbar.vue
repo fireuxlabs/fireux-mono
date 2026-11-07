@@ -1,19 +1,18 @@
 <template>
   <div class="workspace-surface__grid">
-    <div class="flex flex-wrap items-center gap-3">
+    <div>
       <UInput
         v-model="query"
         icon="i-lucide-search"
         :placeholder="`Search ${label}`"
         :aria-label="`Search ${label}`"
-        class="flex-1"
       />
-      <span role="status" class="tabular-nums"
+      <span role="status"
         >{{ count }} {{ count === 1 ? singular : label }}</span
       >
       <slot name="controls" />
     </div>
-    <div v-if="$slots.filters" class="flex flex-wrap items-center gap-2">
+    <div v-if="$slots.filters">
       <slot name="filters" />
     </div>
   </div>

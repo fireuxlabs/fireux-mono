@@ -36,6 +36,15 @@
             <h2 class="workspace-profile__title">
               {{ name || 'Untitled project' }}
             </h2>
+            <UBadge
+              :label="identity.projectStatus.value"
+              :color="
+                identity.projectStatus.value === 'active'
+                  ? 'success'
+                  : 'neutral'
+              "
+              variant="subtle"
+            />
             <p v-if="description" class="workspace-profile__description">
               {{ description }}
             </p>
@@ -76,7 +85,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+import type { ProjectWorkspaceIdentityState } from '../../composables/workspace/useProjectWorkspaceIdentity'
 const props = defineProps<{ identity: ProjectWorkspaceIdentityState }>()
 defineEmits<{ edit: [] }>()
 const { name, description, imageUrl } = props.identity

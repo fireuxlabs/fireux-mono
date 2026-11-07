@@ -6,7 +6,7 @@
   >
     Add booking
   </UButton>
-  <section class="space-y-5">
+  <section>
     <UPageHeader
       title="Property Calendar"
       description="View reservations and property availability."

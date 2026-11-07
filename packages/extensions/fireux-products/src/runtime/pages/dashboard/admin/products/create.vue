@@ -27,9 +27,7 @@
             </template>
           </UPageHeader>
 
-          <div v-if="permissionsPending" class="space-y-3">
-            <USkeleton v-for="n in 3" :key="n" class="h-20" />
-          </div>
+          <FireState v-if="permissionsPending" outcome="pending" />
 
           <UAlert
             v-else-if="!canManageProducts"
@@ -63,7 +61,7 @@
               ><FireCopyError :message="writeError"
             /></template>
           </UAlert>
-          <div class="mt-6">
+          <div>
             <FireDiagnosticsDebugPanel
               object-origin="fetched"
               launcher

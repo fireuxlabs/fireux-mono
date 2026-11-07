@@ -1,8 +1,8 @@
 <template>
-  <section class="space-y-3" aria-labelledby="allowed-websites-title">
+  <section aria-labelledby="allowed-websites-title">
     <div>
       <h3 id="allowed-websites-title">Allowed websites</h3>
-      <p class="mt-1">
+      <p>
         Only these websites may embed ordering. Add the www address separately
         if you use it.
       </p>
@@ -25,7 +25,7 @@
           :disabled="!canWrite || busy"
         />
       </UFormField>
-      <div class="flex flex-wrap items-center gap-3">
+      <div>
         <UButton
           label="Save allowed websites"
           :loading="busy"

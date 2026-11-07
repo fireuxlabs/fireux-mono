@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
-Updated: 2026-11-06
-Ref: b8e3b2348
+Updated: 2026-11-07
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -65,12 +65,14 @@ Identity preparation is progressive and validates both availability and dimensio
   their canonical App-owned Firebase Storage paths rather than browser fixture
   URLs.
 
-The owning App bundle additionally carries `wordmark.png`, `favicon.ico`,
-`pwa/icon-192.png` and `pwa/icon-512.png`. Those are build outputs and runtime
-assets, not extra Storage-master decisions for template readiness. Core owns
-the runtime PWA manifest and composes its identity, colours, and versioned icon
-URLs from App config plus this bundle; tenant Apps must not add a static local
-manifest.
+The owning App additionally provides `favicon.ico`, `pwa/icon-192.png` and
+`pwa/icon-512.png` under `public/img/app`, completing the eight required runtime
+exports. The older generic `wordmark.png` is not required. These browser and
+install icons stay local; they do not add Storage-master decisions to template
+readiness. The [brand asset map](brand-assets.md#enforcement) describes the
+shared file checks. Core owns the runtime PWA manifest and composes its identity,
+colours, and versioned icon URLs from App config plus this bundle; tenant Apps
+must not add a static local manifest.
 
 The executable stage contract lives in
 `runtime/models/operations/entity-asset-onboarding.ts`. Inspection surfaces

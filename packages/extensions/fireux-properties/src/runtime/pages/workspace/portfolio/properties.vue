@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 16:22 CEST — Extension Workspace Spine pass: move route access metadata and park the unwired Properties view. -->
 <template>
   <WorkspaceAICapabilityPlaceholder capability="Portfolio Properties" />
-  <section class="space-y-4">
+  <section>
     <WorkspacePortfolioProperties />
   </section>
 </template>

@@ -23,7 +23,7 @@
     </p>
     <template v-else>
       <UCard>
-        <div class="grid gap-3 sm:grid-cols-3">
+        <div>
           <div class="fx-inset-panel">
             <div>Total records</div>
             <div>
@@ -50,16 +50,16 @@
           <div>Compliance board</div>
         </template>
 
-        <div v-if="cards.length" class="space-y-3">
+        <div v-if="cards.length" class="fx-card-body-stack">
           <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
-            <div class="flex items-start justify-between gap-3">
-              <div class="space-y-1">
+            <div class="card__header">
+              <div class="fx-card-body-stack">
                 <div>{{ item.title }}</div>
                 <div>{{ item.subtitle }}</div>
                 <div>Expiry: {{ item.expiryDate || 'empty' }}</div>
               </div>
 
-              <div class="flex items-center gap-2">
+              <div>
                 <UBadge :color="statusColor(item.status)" variant="soft">
                   {{ statusLabel(item.status) }}
                 </UBadge>

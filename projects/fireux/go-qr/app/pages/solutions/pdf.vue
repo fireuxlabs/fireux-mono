@@ -1,6 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolPdf class="w-full max-w-xl" />
+    <GoQrToolPdf />
   </GoQrSolutionPage>
 </template>
 

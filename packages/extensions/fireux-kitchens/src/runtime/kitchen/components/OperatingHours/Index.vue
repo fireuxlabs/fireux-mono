@@ -83,7 +83,6 @@
       v-bind="debug"
       title="Operating hours debug"
       context="Place → Kitchen → Service → Menu availability"
-      class="mt-6 w-full min-w-0"
     />
   </ClientOnly>
 </template>

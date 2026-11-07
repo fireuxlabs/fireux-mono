@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-4">
-    <div v-if="isAdmin && ingredient" class="flex flex-wrap gap-2">
+  <div>
+    <div v-if="isAdmin && ingredient">
       <UButton
         size="xs"
         variant="soft"

@@ -2,18 +2,7 @@
   <UPage>
     <UPageBody class="pagebody">
       <slot v-if="pending" name="loading">
-        <div
-          class="public-profile-detail"
-          role="status"
-          aria-live="polite"
-          aria-busy="true"
-        >
-          <USkeleton class="h-72" />
-          <div class="public-profile-detail__content">
-            <USkeleton class="h-96" />
-            <USkeleton class="h-64" />
-          </div>
-        </div>
+        <FireState outcome="pending" :entity="`${entityLabel} profile`" />
       </slot>
 
       <UPageCard

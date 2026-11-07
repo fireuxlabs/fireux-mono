@@ -1,9 +1,6 @@
 <template>
   <ClientOnly>
-    <div
-      v-if="showChatButton"
-      class="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6"
-    >
+    <div v-if="showChatButton" class="fixed bottom-4 right-4 z-40">
       <UButton
         to="/chat"
         icon="i-lucide-message-circle"

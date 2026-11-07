@@ -1,8 +1,8 @@
 <template>
   <UModal v-model:open="open" title="Edit venue identity">
     <template #body>
-      <form class="space-y-5" @submit.prevent="save">
-        <div class="grid gap-4 sm:grid-cols-2">
+      <form @submit.prevent="save">
+        <div>
           <UFormField
             v-for="field in placeIdentityFields"
             :key="field.key"
@@ -13,7 +13,6 @@
               v-model="draft[field.key]"
               :maxlength="field.max"
               :disabled="saving"
-              class="w-full"
             />
           </UFormField>
         </div>
@@ -25,7 +24,7 @@
         >
           <template #actions><FireCopyError :message="error" /></template>
         </UAlert>
-        <div class="flex justify-end gap-2">
+        <div>
           <UButton
             label="Cancel"
             color="neutral"

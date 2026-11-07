@@ -7,7 +7,7 @@
     <section
       v-if="hours.length"
       id="opening-hours"
-      class="place-visit-info__section scroll-mt-24"
+      class="place-visit-info__section"
     >
       <h2 class="fx-type-card-heading">Venue opening hours</h2>
       <dl class="place-visit-info__list place-visit-info__hours">
@@ -56,10 +56,10 @@
       />
       <div v-if="place.website" class="place-visit-info__website">
         <span>Website</span>
-        <a :href="place.website" target="_blank" rel="noopener noreferrer">
+        <ULink :to="place.website" target="_blank" rel="noopener noreferrer">
           {{ websiteLabel }}
           <UIcon name="i-lucide-external-link" aria-hidden="true" />
-        </a>
+        </ULink>
       </div>
     </section>
 

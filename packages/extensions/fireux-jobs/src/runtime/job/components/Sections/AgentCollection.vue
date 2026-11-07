@@ -1,10 +1,10 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="card__header">
         <div>
           <h2 class="fx-type-card-heading">Your job postings</h2>
-          <p class="mt-1">
+          <p>
             Return to any private draft or live posting owned by your account.
           </p>
         </div>
@@ -14,10 +14,7 @@
       </div>
     </template>
 
-    <div v-if="outcome === 'pending'" class="space-y-3">
-      <USkeleton class="h-20" />
-      <USkeleton class="h-20" />
-    </div>
+    <FireState v-if="outcome === 'pending'" outcome="pending" />
 
     <UAlert
       v-else-if="outcome === 'error'"
@@ -28,8 +25,8 @@
     />
 
     <template v-else>
-      <div v-if="jobs.length" class="space-y-5">
-        <div class="grid gap-3 sm:grid-cols-3">
+      <div v-if="jobs.length" class="fx-card-body-stack">
+        <UPageGrid>
           <UPageCard
             title="Total"
             :description="String(total)"
@@ -48,15 +45,15 @@
             icon="i-lucide-radio-tower"
             variant="subtle"
           />
-        </div>
+        </UPageGrid>
 
-        <ul class="grid gap-4 lg:grid-cols-2">
+        <UPageGrid as="ul">
           <li v-for="job in jobs" :key="job.id">
-            <UCard class="h-full">
-              <div class="flex h-full flex-col gap-5">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0 space-y-2">
-                    <div class="flex flex-wrap items-center gap-2">
+            <UCard>
+              <div>
+                <div class="card__header">
+                  <div class="fx-card-body-stack">
+                    <div class="card__badges">
                       <UBadge
                         size="xs"
                         :color="publicationColor(job)"
@@ -75,13 +72,11 @@
                   <UIcon name="i-lucide-briefcase-business" />
                 </div>
 
-                <p class="line-clamp-3">
+                <p>
                   {{ job.description || 'No job description yet.' }}
                 </p>
 
-                <div
-                  class="mt-auto flex flex-wrap gap-2 border-t border-default pt-4"
-                >
+                <div>
                   <UButton
                     :to="`/jobs/edit/${encodeURIComponent(job.id)}`"
                     color="primary"
@@ -103,7 +98,7 @@
               </div>
             </UCard>
           </li>
-        </ul>
+        </UPageGrid>
       </div>
 
       <UPageCard

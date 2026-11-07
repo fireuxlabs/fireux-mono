@@ -1,9 +1,9 @@
 <template>
   <section class="pagebody">
-    <header class="grid gap-2">
-      <p class="fx-type-label m-0">{{ product.role }}</p>
-      <h2 class="m-0 fx-type-section-title">{{ product.name }}</h2>
-      <p class="m-0 max-w-2xl fx-type-body">
+    <header class="pagebody">
+      <p class="fx-type-label">{{ product.role }}</p>
+      <h2 class="fx-type-section-title">{{ product.name }}</h2>
+      <p class="fx-type-body">
         Start with the neutral Misebox product. Apply an App or Kitchen identity
         to the front panel.
       </p>
@@ -12,12 +12,8 @@
     <UPageGrid>
       <UCard>
         <UBadge color="neutral" variant="soft">Neutral · Misebox</UBadge>
-        <img
-          :src="product.neutralImage"
-          alt="Neutral black serving carton"
-          class="aspect-square w-full object-contain"
-        />
-        <p class="m-0 fx-type-caption">
+        <img :src="product.neutralImage" alt="Neutral black serving carton" />
+        <p class="fx-type-caption">
           Branding surface: front panel · wordmark or mark
         </p>
       </UCard>
@@ -34,13 +30,12 @@
         <img
           :src="treatment.image"
           :alt="`${treatment.owner.name} serving carton`"
-          class="aspect-square w-full object-contain"
         />
-        <p class="m-0 fx-type-body">{{ treatment.owner.name }}</p>
+        <p class="fx-type-body">{{ treatment.owner.name }}</p>
       </UCard>
     </UPageGrid>
 
-    <div class="flex flex-wrap gap-2">
+    <div>
       <UBadge color="neutral" variant="soft"
         >Minimum {{ product.commerce.minimumQuantity }}</UBadge
       >

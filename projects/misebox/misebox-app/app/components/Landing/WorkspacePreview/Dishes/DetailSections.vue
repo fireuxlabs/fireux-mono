@@ -1,26 +1,12 @@
 <template>
-  <div
-    class="relative mb-3 min-h-28 overflow-hidden rounded-xl border border-default bg-elevated shadow-sm"
-  >
-    <img
-      v-if="dish.imageUrl"
-      :src="dish.imageUrl"
-      alt=""
-      class="absolute inset-0 size-full object-cover"
-    />
-    <div
-      v-else
-      class="absolute inset-0 flex items-center justify-center"
-      aria-hidden="true"
-    >
+  <UCard>
+    <img v-if="dish.imageUrl" :src="dish.imageUrl" alt="" />
+    <div v-else aria-hidden="true">
       <UIcon name="i-lucide-utensils" />
     </div>
-    <div class="absolute inset-0 bg-default/40" aria-hidden="true" />
+    <div aria-hidden="true" />
 
-    <nav
-      class="relative flex min-h-28 flex-wrap items-end gap-1.5 p-3"
-      aria-label="Dish detail sections"
-    >
+    <nav aria-label="Dish detail sections">
       <UButton
         v-for="section in sectionItems"
         :key="section.id"
@@ -34,7 +20,7 @@
         @click="$emit('select', section.id)"
       />
     </nav>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">

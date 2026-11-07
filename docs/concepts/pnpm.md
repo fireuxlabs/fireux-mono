@@ -1,7 +1,7 @@
 # pnpm concept map
 
-Updated: 2026-11-06
-Ref: ec4d84d58
+Updated: 2026-11-07
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -39,10 +39,14 @@ workspaces from App manifests; `pnpm ide:check` detects drift. See the
 - `pnpm typecheck:packages` and `pnpm typecheck:apps`: broader checks.
 - `pnpm lint`: run the current ESLint configuration.
 - `pnpm check:changed`: check changed files and their direct owners.
+- `pnpm check:assets [App-directory]`: validate App artwork; defaults to every
+  Nuxt App, including the starter.
 - `pnpm check:scope <path>`, `pnpm test:scope <path>` and
   `pnpm typecheck:scope <path>`: check one owner.
 - `pnpm test:unit`: run the bounded offline Core and IDE suite.
 - `pnpm ide:sync` / `pnpm ide:check`: update / verify generated IDE files.
+- `pnpm ide:doctor`: inspect local toolchain and editor prerequisites.
+- `pnpm ide:open [file[:line[:column]]]`: open this checkout in VS Code.
 - `pnpm gitsave`: require `main`, stage all changes, commit, and push to
   `origin/main` through `.github/gitsave.sh`. Run only when the user requests a
   save and the shared tree is stable.
@@ -65,6 +69,6 @@ smoke wrapper's port ownership and readiness checks. Do not stop an occupied
 port merely to make a new command succeed.
 
 The current CI workflow is `.github/workflows/ci.yml`; it verifies generated IDE
-configuration, runs the bounded offline unit suite, package typing, lint,
+configuration and all App assets, runs the bounded offline unit suite, package typing, lint,
 package builds, and the baseline App build. No shape workflow or script
 lifecycle guard remains.

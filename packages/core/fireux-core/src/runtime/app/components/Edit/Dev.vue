@@ -3,9 +3,7 @@
 <template>
   <ClientOnly>
     <div class="pagebody">
-      <div
-        class="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(18rem,0.8fr)] xl:items-start"
-      >
+      <div>
         <AppEditMedia :app="app" />
 
         <UPageCard
@@ -14,16 +12,12 @@
           icon="i-lucide-braces"
           variant="subtle"
         >
-          <dl class="divide-y divide-default">
-            <div
-              v-for="row in appSummary"
-              :key="row.label"
-              class="grid gap-1 py-3 first:pt-0 last:pb-0"
-            >
+          <dl class="fx-card__detail-grid">
+            <div v-for="row in appSummary" :key="row.label">
               <dt>
                 {{ row.label }}
               </dt>
-              <dd class="break-words">
+              <dd>
                 {{ row.value }}
               </dd>
               <dd v-if="row.detail">
@@ -40,27 +34,23 @@
         icon="i-lucide-git-branch"
         :default-open="false"
       >
-        <div class="space-y-4 pt-3">
+        <div>
           <UPageCard
             title="Field ownership"
             description="The product surface responsible for each App field family."
             variant="subtle"
           >
-            <div class="divide-y divide-default">
-              <div
-                v-for="section in ownershipSections"
-                :key="section.key"
-                class="grid gap-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
-              >
-                <div class="flex items-center gap-2">
-                  <UIcon :name="section.icon" class="size-4" />
+            <div>
+              <div v-for="section in ownershipSections" :key="section.key">
+                <div>
+                  <UIcon :name="section.icon" />
                   <span>{{ section.label }}</span>
                 </div>
-                <div class="min-w-0">
+                <div>
                   <p>
                     {{ section.description }}
                   </p>
-                  <p class="mt-1 break-words">
+                  <p>
                     {{ section.fields.join(' · ') }}
                   </p>
                 </div>

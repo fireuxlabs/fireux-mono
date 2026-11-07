@@ -5,10 +5,10 @@
       description="Apps That Slap ecosystem overview for the active runtime."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <div class="flex flex-col gap-1">
+          <div>
             <h2 class="fx-type-card-heading">Ecosystem status</h2>
             <p>
               Apps That Slap is configured as an ecosystem package for this
@@ -17,7 +17,7 @@
           </div>
         </template>
 
-        <dl class="grid gap-4 sm:grid-cols-2">
+        <dl>
           <div>
             <dt>Ecosystem</dt>
             <dd>{{ cfg.ecosystem }}</dd>

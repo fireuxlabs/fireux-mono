@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div>
     <UFormField label="Food and drinks">
       <USelectMenu
         v-model="selected"
@@ -11,7 +11,7 @@
         :disabled="disabled"
       />
     </UFormField>
-    <div v-if="rows.length" class="flex flex-wrap items-end gap-2">
+    <div v-if="rows.length">
       <UFormField :label="`Set all prices (${currency})`"
         ><!-- @vue-generic {string | number, {}} -->
         <UInput

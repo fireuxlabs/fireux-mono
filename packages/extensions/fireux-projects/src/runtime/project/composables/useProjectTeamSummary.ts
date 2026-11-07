@@ -2,25 +2,11 @@ import { useAsyncData } from 'nuxt/app'
 
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
-import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
-// Concurrent edit — 2026-07-20 16:26 CEST — Workspace Spine pass: carry Project target outcome into overview.
 import { computed } from 'vue'
-import { useProjectWorkspace } from './useProjectWorkspace'
+import { useProjectWorkspace } from './workspace/useProjectWorkspace'
 
-export function useProjectWorkspaceHome() {
+export function useProjectTeamSummary() {
   const workspace = useProjectWorkspace()
-
-  const { focus } = useOverview({
-    entity: workspace.data,
-    id: workspace.id,
-    outcome: workspace.outcome,
-  })
-  const multiple = computed(() => ({
-    items: workspace.collection.value,
-    count: workspace.collection.value.length,
-    hasItems: workspace.collection.value.length > 0,
-    outcome: workspace.collectionOutcome.value,
-  }))
 
   const { currentUser } = useAuth()
   const key = computed(
@@ -44,7 +30,7 @@ export function useProjectWorkspaceHome() {
     },
     { server: false }
   )
-  const team = {
+  return {
     members: computed(() =>
       workspace.outcome.value === 'ready' &&
       !error.value &&
@@ -58,13 +44,5 @@ export function useProjectWorkspaceHome() {
       () => status.value === 'pending' || status.value === 'idle'
     ),
     error,
-  }
-  return {
-    team,
-    focus,
-    multiple,
-    outcome: workspace.outcome,
-    selectedProject: workspace.data,
-    projectId: workspace.id,
   }
 }

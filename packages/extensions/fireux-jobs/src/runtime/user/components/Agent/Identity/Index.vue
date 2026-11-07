@@ -5,7 +5,6 @@
         v-if="agentCard"
         v-bind="agentCard"
         :link="Boolean(agentCard.to)"
-        class="block"
       />
     </div>
 
@@ -26,7 +25,7 @@
         @click="createProfile"
       />
 
-      <p v-if="createError" class="mt-3">
+      <p v-if="createError">
         {{ createError }}
       </p>
     </UPageCard>

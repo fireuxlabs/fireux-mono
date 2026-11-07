@@ -19,9 +19,7 @@
     <UPageBody class="pagebody">
       <JobAuthorFlowProgress :current-step="canPostJob ? 2 : 1" />
 
-      <div v-if="isChecking" class="space-y-3">
-        <USkeleton v-for="n in 3" :key="n" class="h-20" />
-      </div>
+      <FireState v-if="isChecking" outcome="pending" entity="access" />
 
       <JobAuthorGate
         v-else-if="!canPostJob"
@@ -29,12 +27,14 @@
         return-to="/jobs/create"
       />
 
-      <div v-else class="space-y-3">
+      <div v-else>
         <UCard v-if="agentCard" variant="subtle">
           <template #header>
             <div>
               <p>Posting as</p>
-              <h2 class="mt-1 fx-type-card-heading">Your hiring profile owns this draft</h2>
+              <h2 class="fx-type-card-heading">
+                Your hiring profile owns this draft
+              </h2>
             </div>
           </template>
           <AgentCardsPill

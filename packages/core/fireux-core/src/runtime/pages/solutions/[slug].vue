@@ -1,5 +1,5 @@
 <template>
-  <main v-if="solution" class="min-h-screen">
+  <main v-if="solution">
     <UContainer>
       <UPage>
         <UButton to="/solutions" variant="link"> Solutions </UButton>
@@ -8,8 +8,8 @@
           :description="solution.description"
         />
         <UPageBody>
-          <div class="grid min-w-0 gap-5">
-            <p class="whitespace-pre-line">
+          <div>
+            <p>
               {{ solution.body || solution.description }}
             </p>
 
@@ -18,13 +18,12 @@
                 <h2>How this comes to life</h2>
               </template>
 
-              <ol class="grid gap-3 p-0">
+              <ol>
                 <li
                   v-for="(step, index) in solution.steps"
                   :key="`${index}-${step}`"
-                  class="flex min-w-0 gap-3"
                 >
-                  <span class="mt-0.5 grid size-6 shrink-0 place-items-center">
+                  <span>
                     {{ index + 1 }}
                   </span>
                   <span>{{ step }}</span>
@@ -37,7 +36,7 @@
                 <h2>Related FireUX app</h2>
               </template>
 
-              <div class="grid min-w-0 gap-3">
+              <div>
                 <p>
                   {{
                     solution.relatedApp.description ||
@@ -61,12 +60,11 @@
                 <h2>Related operations</h2>
               </template>
 
-              <div class="grid gap-3 sm:grid-cols-2">
+              <div>
                 <NuxtLink
                   v-for="operation in relatedOperations"
                   :key="operation.id"
                   :to="`/operations/${operation.slug}`"
-                  class="grid gap-1 p-3"
                 >
                   <span>
                     {{ operation.title }}
@@ -80,23 +78,20 @@
 
             <UCard v-if="isAdmin && hasAdminPlanning" variant="subtle">
               <template #header>
-                <div class="flex flex-wrap items-center gap-2">
+                <div>
                   <h2>Admin planning</h2>
                   <UBadge color="neutral" variant="soft"> Internal </UBadge>
                 </div>
               </template>
 
-              <div class="grid min-w-0 gap-4">
-                <p v-if="solution.businessCase" class="whitespace-pre-line">
+              <div>
+                <p v-if="solution.businessCase">
                   {{ solution.businessCase }}
                 </p>
 
-                <div
-                  v-if="solution.keywords?.length"
-                  class="grid min-w-0 gap-2"
-                >
+                <div v-if="solution.keywords?.length">
                   <h3>Search intent</h3>
-                  <div class="flex flex-wrap gap-1.5">
+                  <div>
                     <UBadge
                       v-for="keyword in solution.keywords"
                       :key="keyword"
@@ -108,37 +103,25 @@
                   </div>
                 </div>
 
-                <div
-                  v-if="solution.provisioning?.length"
-                  class="grid min-w-0 gap-2"
-                >
+                <div v-if="solution.provisioning?.length">
                   <h3>Provisioning</h3>
-                  <ul class="grid gap-1.5 pl-4">
+                  <ul>
                     <li v-for="item in solution.provisioning" :key="item">
                       {{ item }}
                     </li>
                   </ul>
                 </div>
 
-                <div
-                  v-if="solution.checklist?.length"
-                  class="grid min-w-0 gap-2"
-                >
+                <div v-if="solution.checklist?.length">
                   <h3>Checklist</h3>
-                  <ul class="grid list-none gap-2 p-0">
-                    <li
-                      v-for="item in solution.checklist"
-                      :key="item.label"
-                      class="flex min-w-0 gap-2.5"
-                    >
+                  <ul>
+                    <li v-for="item in solution.checklist" :key="item.label">
                       <UIcon
                         :name="
                           item.done
                             ? 'i-lucide-square-check'
                             : 'i-lucide-square'
                         "
-                        class="mt-1 size-4 shrink-0"
-                        :class="item.done ? '' : ''"
                       />
                       <span>{{ item.label }}</span>
                     </li>

@@ -28,23 +28,21 @@
         :alt="project.identity.name"
         icon="i-lucide-briefcase-business"
       />
-      <span class="truncate">{{ project.identity.name || project.id }}</span>
+      <span>{{ project.identity.name || project.id }}</span>
     </WorkspaceSelectionRow>
   </WorkspaceEntityCollection>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import type { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 
 const props = defineProps<{
   workspace: ReturnType<typeof useProjectWorkspace>
   canCreate: boolean
-  openOnSelect?: boolean
 }>()
-const emit = defineEmits<{ create: [] }>()
+const emit = defineEmits<{ create: []; selected: [id: string] }>()
 async function select(id: string) {
   await props.workspace.select(id)
-  if (props.openOnSelect) void navigateTo('/')
+  emit('selected', id)
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <UPageGrid as="ul" class="list-none" aria-label="Suppliers">
+  <UPageGrid as="ul" aria-label="Suppliers">
     <li v-for="cell in cells" :key="cell.to">
       <FireCollectionCell :cell="cell" />
     </li>

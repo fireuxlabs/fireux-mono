@@ -1,5 +1,5 @@
 <template>
-  <div class="grid min-w-0 gap-6">
+  <div>
     <WorkspaceKitchenCollectionHeader title="Ingredients">
       <template #actions>
         <UButton
@@ -18,14 +18,7 @@
       :description="errorMessage"
       icon="i-lucide-triangle-alert"
     />
-    <div
-      v-else-if="pending"
-      class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
-      aria-label="Loading ingredients"
-      aria-busy="true"
-    >
-      <USkeleton v-for="n in 8" :key="n" class="h-56 rounded-2xl" />
-    </div>
+    <FireState v-else-if="pending" outcome="pending" entity="ingredients" />
     <template v-else>
       <WorkspaceKitchenCollectionToolbar
         v-if="cards.length"
@@ -35,11 +28,7 @@
         :count="visibleCount"
       >
         <template #controls>
-          <div
-            class="flex items-center gap-1"
-            role="group"
-            aria-label="Ingredient layout"
-          >
+          <div role="group" aria-label="Ingredient layout">
             <UButton
               v-for="view in views"
               :key="view.value"
@@ -68,10 +57,9 @@
         </template>
       </WorkspaceKitchenCollectionToolbar>
       <div class="ingredient-catalogue-layout">
-        <div class="min-w-0 flex-1 space-y-6">
+        <div>
           <div
             v-if="hasFilters && cards.length"
-            class="flex items-center justify-between gap-3"
             role="status"
             aria-live="polite"
           >
@@ -85,22 +73,21 @@
             />
           </div>
 
-          <div v-if="groups.length" class="space-y-8">
+          <div v-if="groups.length">
             <section
               v-for="group in groups"
               :key="group.value"
               :aria-labelledby="`ingredients-${group.value}`"
-              class="space-y-3"
             >
-              <div class="flex items-center gap-2">
+              <div>
                 <h2 :id="`ingredients-${group.value}`">
                   {{ group.label }}
                 </h2>
-                <span class="tabular-nums">{{ group.cards.length }}</span>
+                <span>{{ group.cards.length }}</span>
               </div>
               <div
                 :class="
-                  layout === 'grid' ? 'ingredient-grid' : 'flex flex-col gap-2'
+                  layout === 'grid' ? 'ingredient-grid' : 'collection-stack'
                 "
               >
                 <KitchenPrepAndProductionIngredientsCardsCell
@@ -113,19 +100,13 @@
                   :icon="group.icon"
                   :category-label="group.label"
                   :variant="layout"
-                  fluid
                   @image-error="failedImages[card.id] = card.imageUrl"
                 />
               </div>
             </section>
           </div>
-          <div
-            v-else
-            class="flex flex-col items-center rounded-2xl border border-dashed border-default px-6 py-16"
-          >
-            <div
-              class="mb-4 flex size-14 items-center justify-center rounded-2xl bg-elevated"
-            >
+          <div v-else>
+            <div>
               <UIcon
                 :name="cards.length ? 'i-lucide-search' : 'i-lucide-carrot'"
               />
@@ -137,7 +118,7 @@
                   : 'Start your ingredient library'
               }}
             </h2>
-            <p class="mt-2 max-w-sm">
+            <p>
               {{
                 cards.length
                   ? 'Try another name, category or image filter.'
@@ -166,7 +147,6 @@
         :total="visibleCount"
         :items-per-page="pageSize"
         :sibling-count="1"
-        class="justify-center"
       />
     </template>
 
@@ -174,7 +154,6 @@
       v-model:open="addOpen"
       title="Create Ingredient"
       description="Choose from the shared ingredient catalogue."
-      :ui="{ content: 'sm:max-w-xl' }"
     >
       <template #body
         ><KitchenPrepAndProductionIngredientsAdd v-if="addOpen && canWrite"

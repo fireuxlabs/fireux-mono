@@ -6,7 +6,6 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-fit max-w-full"
       @update:model-value="emit('select', String($event))"
     />
   </section>

@@ -1,14 +1,10 @@
 <template>
-  <div class="w-full max-w-sm" :data-testid="`${name}-ticket-preview`">
+  <div :data-testid="`${name}-ticket-preview`">
     <KitchenOrdersTicket :order="order" :editable="false" />
   </div>
-  <FireDisclosurePanel
-    :title="`View ${label} data`"
-    class="max-w-sm"
-    :default-open="false"
-  >
+  <FireDisclosurePanel :title="`View ${label} data`" :default-open="false">
     <pre
-      class="mt-3 overflow-auto"
+      class="overflow-auto"
       :data-testid="`${name}-json`"
     ><code>{{ JSON.stringify(order, null, 2) }}</code></pre>
   </FireDisclosurePanel>

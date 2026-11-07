@@ -1,6 +1,6 @@
 <template>
-  <div class="grid gap-5">
-    <div v-if="!compact" class="grid gap-4 lg:grid-cols-2">
+  <div>
+    <UPageGrid as="div" v-if="!compact">
       <UPageCard
         title="Kitchen Team evidence"
         description="Review the evidence and operator jobs behind the Kitchen Team capability."
@@ -15,12 +15,9 @@
         to="/workspace/kitchen/team/search-demand/tools"
         variant="subtle"
       />
-    </div>
+    </UPageGrid>
 
-    <nav
-      aria-label="Explore Kitchen Team research"
-      class="flex flex-wrap gap-x-5 gap-y-2 border-t border-default pt-5"
-    >
+    <nav aria-label="Explore Kitchen Team research">
       <NuxtLink v-for="link in links" :key="link.to" :to="link.to">
         {{ link.label }}
       </NuxtLink>

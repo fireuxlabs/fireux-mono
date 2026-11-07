@@ -1,6 +1,6 @@
 <template>
-  <section class="space-y-3">
-    <div class="flex items-center justify-between gap-3">
+  <section>
+    <div>
       <h3>Advance notice</h3>
       <UButton
         :label="editing ? 'Done' : 'Edit notice'"

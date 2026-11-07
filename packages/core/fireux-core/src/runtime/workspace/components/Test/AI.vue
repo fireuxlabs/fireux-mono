@@ -19,7 +19,7 @@
     >
       <template #body>
         <template v-if="prepared">
-          <p v-if="prepared.action !== 'create'" class="mb-4 break-words">
+          <p v-if="prepared.action !== 'create'">
             {{ test.selected.value?.value }}
           </p>
           <TestForm

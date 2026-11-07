@@ -87,7 +87,7 @@
     </UCard>
 
     <div v-if="error" class="pagebody" role="alert">
-      <p class="break-words">{{ error }}</p>
+      <p>{{ error }}</p>
       <FireCopyError :message="error" />
     </div>
   </div>

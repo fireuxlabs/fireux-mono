@@ -1,13 +1,11 @@
 <template>
-  <article
-    class="min-h-[20rem] overflow-hidden rounded-xl border border-default bg-default shadow-sm"
-  >
-    <div class="flex min-w-0 flex-col p-4 sm:p-5">
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div class="min-w-0">
+  <UCard as="article">
+    <div class="pagebody">
+      <div>
+        <div>
           <p class="fx-type-caption">Dish</p>
-          <h3 class="mt-1 fx-type-card-heading">{{ dish.name }}</h3>
-          <p v-if="dish.priceLabel" class="mt-1 fx-type-caption">
+          <h3 class="fx-type-card-heading">{{ dish.name }}</h3>
+          <p v-if="dish.priceLabel" class="fx-type-caption">
             {{ dish.priceLabel }}
           </p>
         </div>
@@ -16,24 +14,20 @@
         </UBadge>
       </div>
 
-      <div v-if="dish.spec.id" class="mt-5">
+      <div v-if="dish.spec.id">
         <p class="fx-type-caption">Build spec</p>
-        <p class="mt-2 fx-type-caption">{{ dish.spec.summary }}</p>
+        <p class="fx-type-caption">{{ dish.spec.summary }}</p>
 
-        <h4 class="mt-4 fx-type-card-heading">Assembly</h4>
-        <ol class="mt-2 grid gap-1.5">
-          <li
-            v-for="(step, index) in dish.spec.assembly"
-            :key="step"
-            class="flex gap-2"
-          >
+        <h4 class="fx-type-card-heading">Assembly</h4>
+        <ol class="fx-list-stack">
+          <li v-for="(step, index) in dish.spec.assembly" :key="step">
             <span>{{ Number(index) + 1 }}.</span>
             <span>{{ step }}</span>
           </li>
         </ol>
       </div>
     </div>
-  </article>
+  </UCard>
 </template>
 
 <script setup lang="ts">

@@ -1,16 +1,16 @@
 <template>
   <AppPricingPage description="Create your first QR doc free.">
-    <section class="rounded-md border border-default bg-default p-5">
+    <UCard as="section">
       <p class="fx-type-caption">Current MVP</p>
-      <h2 class="mt-2 fx-type-section-title">One public doc, one QR code</h2>
-      <p class="mt-3 fx-type-body">
+      <h2 class="fx-type-section-title">One public doc, one QR code</h2>
+      <p class="fx-type-body">
         Upload one doc, choose a public path, and get a shareable QR page.
       </p>
-      <p class="mt-3 fx-type-caption">
+      <p class="fx-type-caption">
         More docs, private access, custom domains, and owner tools can come
         later. Today the product is intentionally simple.
       </p>
-    </section>
+    </UCard>
 
     <template #actions>
       <UButton to="/" icon="i-lucide-qr-code" size="lg">

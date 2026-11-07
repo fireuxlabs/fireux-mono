@@ -41,13 +41,8 @@
           <div>Upload document</div>
         </template>
 
-        <div class="space-y-3">
-          <input
-            type="file"
-            class="block w-full rounded border border-default p-2"
-            :disabled="!canWrite"
-            @change="handleFileInput"
-          />
+        <div class="fx-card-body-stack">
+          <input type="file" :disabled="!canWrite" @change="handleFileInput" />
 
           <UInput
             v-model="uploadNotes"
@@ -100,7 +95,7 @@
           />
         </div>
 
-        <div class="mt-3 flex items-center gap-2">
+        <div>
           <UButton
             size="sm"
             icon="i-lucide-link"
@@ -122,9 +117,7 @@
           </UButton>
         </div>
 
-        <div class="mt-2">
-          Allowed target types: {{ allowedTargetTypesLabel }}
-        </div>
+        <div>Allowed target types: {{ allowedTargetTypesLabel }}</div>
       </UCard>
 
       <UCard>
@@ -132,10 +125,10 @@
           <div>Vault documents</div>
         </template>
 
-        <div v-if="cards.length" class="space-y-3">
+        <div v-if="cards.length" class="fx-card-body-stack">
           <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
-            <div class="flex items-start justify-between gap-3">
-              <div class="space-y-1">
+            <div class="card__header">
+              <div class="fx-card-body-stack">
                 <div>{{ item.title }}</div>
                 <div>{{ item.subtitle }}</div>
                 <div>{{ item.meta }}</div>

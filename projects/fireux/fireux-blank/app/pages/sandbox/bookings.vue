@@ -1,148 +1,141 @@
 <template>
-  <main class="booking-sandbox">
+  <UPage>
     <UPageHeader
       title="Booking simulator"
-      description="Set an input, then try the booking surface."
+      description="Configure the input, then try the shared booking surface."
     />
 
-    <section class="simulator-inputs" aria-labelledby="simulator-inputs-title">
-      <h2 id="simulator-inputs-title">Input</h2>
-      <p>Set the booking title that appears on the surface below.</p>
-      <label>
-        Booking title
-        <input
-          v-model="serviceName"
-          autocomplete="off"
-          maxlength="100"
-          required
-          @input="clearBookingResult"
-        />
-      </label>
-    </section>
-
-    <section class="booking-surface" aria-labelledby="booking-surface-title">
-      <h2 id="booking-surface-title">Surface</h2>
-      <div class="surface-card">
-        <header class="surface-intro">
-          <p>Booking</p>
-          <h3>{{ serviceName.trim() || 'Your private tour' }}</h3>
-          <p>Choose a time and enter your details to book.</p>
-        </header>
-
-        <form class="sandbox-form" @submit.prevent="submitBooking">
-          <label>
-            Guest name
-            <input
-              v-model="guestName"
-              autocomplete="name"
-              maxlength="100"
-              placeholder="Your name"
-              required
-              @input="clearBookingResult"
-            />
-          </label>
-
-          <label>
-            Guest email
-            <input
-              v-model="guestEmail"
-              type="email"
-              autocomplete="email"
-              maxlength="254"
-              placeholder="you@example.com"
-              required
-              @input="clearBookingResult"
-            />
-          </label>
-
-          <label>
-            Group size
-            <input
-              v-model.number="groupSize"
-              type="number"
-              min="1"
-              max="50"
-              step="1"
-              required
-              @input="clearBookingResult"
-            />
-          </label>
-
-          <div class="sandbox-time-grid">
-            <label>
-              Start time (your local time)
-              <input v-model="startAt" type="datetime-local" required @input="clearAvailability" />
-            </label>
-            <label>
-              End time (your local time)
-              <input v-model="endAt" type="datetime-local" required @input="clearAvailability" />
-            </label>
+    <UPageBody>
+      <UPageSection title="Input">
+        <UCard>
+          <div class="booking-sandbox__configuration">
+            <UFormField label="Booking title" name="bookingTitle">
+              <UInput
+                class="booking-sandbox__input"
+                :model-value="serviceName"
+                autocomplete="off"
+                maxlength="100"
+                required
+                @update:model-value="updateServiceName"
+              />
+            </UFormField>
+            <UFormField label="Description" name="description">
+              <UInput
+                class="booking-sandbox__input"
+                :model-value="description"
+                maxlength="200"
+                @update:model-value="updateDescription"
+              />
+            </UFormField>
+            <UFormField label="Confirm button" name="confirmLabel">
+              <UInput
+                class="booking-sandbox__input"
+                :model-value="confirmLabel"
+                maxlength="60"
+                @update:model-value="updateConfirmLabel"
+              />
+            </UFormField>
+            <UFormField label="Maximum group size" name="maxGroupSize">
+              <UInput
+                class="booking-sandbox__input"
+                :model-value="maxGroupSize"
+                type="number"
+                min="1"
+                max="50"
+                step="1"
+                @update:model-value="updateMaxGroupSize"
+              />
+            </UFormField>
           </div>
+        </UCard>
+      </UPageSection>
 
-          <div class="sandbox-actions">
+      <UPageSection title="Surface">
+        <BookingsCustomerForm
+          :title="serviceName.trim() || 'Your booking'"
+          :description="description"
+          :customer="customer"
+          :availability="availabilityView"
+          :confirmation="confirmation"
+          :error="bookingError"
+          :pending="bookingPending"
+          :can-confirm="Boolean(serviceName.trim())"
+          :confirm-label="confirmLabel || 'Confirm booking'"
+          :max-group-size="maxGroupSize"
+          @update:customer="updateCustomer"
+          @submit="submitBooking"
+        >
+          <template #reservation>
+            <div class="booking-sandbox__time-fields">
+              <UFormField label="Start time (your local time)" name="startAt">
+                <UInput
+                  class="booking-sandbox__input"
+                  v-model="startAt"
+                  type="datetime-local"
+                  required
+                  @update:model-value="clearAvailability"
+                />
+              </UFormField>
+              <UFormField label="End time (your local time)" name="endAt">
+                <UInput
+                  class="booking-sandbox__input"
+                  v-model="endAt"
+                  type="datetime-local"
+                  required
+                  @update:model-value="clearAvailability"
+                />
+              </UFormField>
+            </div>
+          </template>
+
+          <template #availability-actions>
             <UButton
               type="button"
               color="neutral"
               variant="outline"
               :loading="checking"
+              :disabled="checking || bookingPending"
               @click="checkAvailability"
             >
               Check availability
             </UButton>
-            <UButton
-              type="submit"
-              :disabled="!availability?.available || checking || bookingPending || !serviceName.trim()"
-              :loading="bookingPending"
-            >
-              Confirm booking
-            </UButton>
-          </div>
-        </form>
+          </template>
+        </BookingsCustomerForm>
+      </UPageSection>
 
+      <UPageSection title="Recent bookings">
         <UAlert
-          v-if="availability && !bookingResult"
-          class="sandbox-result"
-          :title="availability.available ? 'Time is available' : 'Time is busy'"
-          :description="availability.available
-            ? 'This time is available. Confirm your booking to continue.'
-            : 'This time is unavailable. Choose another time.'"
-          :color="availability.available ? 'success' : 'warning'"
-        />
-
-        <UAlert
-          v-if="bookingResult"
-          class="sandbox-result"
-          title="Booking confirmed"
-          :description="`${bookingResult.summary} · group of ${bookingResult.groupSize} · ${bookingResult.guestEmail}`"
-          color="success"
-        />
-
-        <UAlert
-          v-if="errorMessage"
-          class="sandbox-result"
-          title="Booking could not be completed"
-          :description="errorMessage"
+          v-if="historyError"
           color="error"
+          title="Recent bookings could not be loaded"
+          :description="historyError"
         />
-      </div>
-
-      <section class="sandbox-history" aria-labelledby="sandbox-history-title">
-        <h3 id="sandbox-history-title">Recent bookings</h3>
-        <p v-if="bookings.length === 0">No bookings yet.</p>
-        <ul v-else>
+        <p v-else-if="bookings.length === 0">No bookings yet.</p>
+        <ul v-else class="booking-sandbox__history">
           <li v-for="booking in bookings" :key="booking.id">
-            <strong>{{ booking.summary }}</strong>
-            <span>{{ formatTime(booking.startAt) }} – {{ formatTime(booking.endAt) }}</span>
-            <span>Group of {{ booking.groupSize }} · {{ booking.guestEmail }}</span>
-            <span>Confirmed</span>
+            <UCard>
+              <strong>{{ booking.summary }}</strong>
+              <p>
+                {{ formatTime(booking.startAt) }} –
+                {{ formatTime(booking.endAt) }}
+              </p>
+              <p>Group of {{ booking.groupSize }} · {{ booking.guestEmail }}</p>
+              <UBadge color="success" variant="subtle">Confirmed</UBadge>
+            </UCard>
           </li>
         </ul>
-      </section>
-    </section>
-  </main>
+      </UPageSection>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
+import type {
+  BookingAvailabilityView,
+  BookingConfirmationView,
+  BookingCustomerDetails,
+} from 'fireux-bookings/runtime/types/customer-booking-form'
+
 type SandboxBooking = {
   id: string
   serviceName: string
@@ -179,24 +172,103 @@ function toLocalInputValue(date: Date) {
 const startAt = ref(toLocalInputValue(new Date(Date.now() + 60 * 60 * 1000)))
 const endAt = ref(toLocalInputValue(new Date(Date.now() + 2 * 60 * 60 * 1000)))
 const serviceName = ref('Private Tour')
-const guestName = ref('')
-const guestEmail = ref('')
-const groupSize = ref(2)
+const description = ref('Choose a time and enter your details to book.')
+const confirmLabel = ref('Confirm booking')
+const maxGroupSize = ref(50)
+const customer = ref<BookingCustomerDetails>({
+  guestName: '',
+  guestEmail: '',
+  groupSize: 2,
+})
 const availability = ref<AvailabilityResult | null>(null)
+const availabilityError = ref('')
 const bookingResult = ref<SandboxBooking | null>(null)
 const bookings = ref<SandboxBooking[]>([])
-const errorMessage = ref('')
+const bookingError = ref('')
+const historyError = ref('')
 const checking = ref(false)
 const bookingPending = ref(false)
 
+const availabilityView = computed<BookingAvailabilityView>(() => {
+  if (checking.value) {
+    return {
+      status: 'pending',
+      message: 'Checking this time against the sandbox calendar.',
+    }
+  }
+  if (availabilityError.value) {
+    return { status: 'error', message: availabilityError.value }
+  }
+  if (!availability.value) {
+    return {
+      status: 'idle',
+      message: 'Choose a time, then check its availability.',
+    }
+  }
+  return availability.value.available
+    ? {
+        status: 'available',
+        message: 'This time is available. You can confirm the booking.',
+      }
+    : {
+        status: 'unavailable',
+        message: 'This time is unavailable. Choose another time.',
+      }
+})
+
+const confirmation = computed<BookingConfirmationView | null>(() => {
+  if (!bookingResult.value) return null
+  return {
+    title: 'Booking confirmed',
+    message: `${bookingResult.value.summary} has been added to recent bookings.`,
+    details: [
+      {
+        label: 'Time',
+        value: `${formatTime(bookingResult.value.startAt)} – ${formatTime(bookingResult.value.endAt)}`,
+      },
+      { label: 'Group', value: String(bookingResult.value.groupSize) },
+      { label: 'Email', value: bookingResult.value.guestEmail },
+    ],
+  }
+})
+
 function clearAvailability() {
   availability.value = null
+  availabilityError.value = ''
   clearBookingResult()
 }
 
 function clearBookingResult() {
   bookingResult.value = null
-  errorMessage.value = ''
+  bookingError.value = ''
+}
+
+function updateCustomer(value: BookingCustomerDetails) {
+  customer.value = value
+  clearBookingResult()
+}
+
+function updateServiceName(value: unknown) {
+  serviceName.value = typeof value === 'string' ? value : ''
+  clearBookingResult()
+}
+
+function updateDescription(value: unknown) {
+  description.value = typeof value === 'string' ? value : ''
+  clearBookingResult()
+}
+
+function updateConfirmLabel(value: unknown) {
+  confirmLabel.value = typeof value === 'string' ? value : ''
+  clearBookingResult()
+}
+
+function updateMaxGroupSize(value: unknown) {
+  const next = Number(value)
+  if (Number.isInteger(next)) {
+    maxGroupSize.value = Math.min(50, Math.max(1, next))
+    clearBookingResult()
+  }
 }
 
 function toUtcRange() {
@@ -232,15 +304,16 @@ async function refreshBookings() {
       '/api/sandbox/bookings'
     )
     bookings.value = response.bookings
+    historyError.value = ''
   } catch {
-    errorMessage.value = 'Could not load recent bookings.'
+    historyError.value = 'Could not load recent bookings.'
   }
 }
 
 async function checkAvailability() {
   checking.value = true
-  errorMessage.value = ''
-  bookingResult.value = null
+  availabilityError.value = ''
+  clearBookingResult()
   try {
     availability.value = await $fetch<AvailabilityResult>(
       '/api/sandbox/bookings/availability',
@@ -248,7 +321,7 @@ async function checkAvailability() {
     )
   } catch (error) {
     availability.value = null
-    errorMessage.value = messageFromError(
+    availabilityError.value = messageFromError(
       error,
       'Could not check availability. Try again.'
     )
@@ -257,10 +330,10 @@ async function checkAvailability() {
   }
 }
 
-async function submitBooking() {
-  if (!availability.value?.available) return
+async function submitBooking(details: BookingCustomerDetails) {
+  if (!availability.value?.available || !serviceName.value.trim()) return
   bookingPending.value = true
-  errorMessage.value = ''
+  bookingError.value = ''
   try {
     const response = await $fetch<{ booking: SandboxBooking }>(
       '/api/sandbox/bookings',
@@ -268,9 +341,7 @@ async function submitBooking() {
         method: 'POST',
         body: {
           serviceName: serviceName.value,
-          guestName: guestName.value,
-          guestEmail: guestEmail.value,
-          groupSize: groupSize.value,
+          ...details,
           ...toUtcRange(),
         },
       }
@@ -282,7 +353,7 @@ async function submitBooking() {
       busy: [{ start: response.booking.startAt, end: response.booking.endAt }],
     }
   } catch (error) {
-    errorMessage.value = messageFromError(
+    bookingError.value = messageFromError(
       error,
       'Could not complete the booking. Try again.'
     )
@@ -302,131 +373,43 @@ onMounted(refreshBookings)
 </script>
 
 <style scoped>
-.booking-sandbox {
-  max-width: 54rem;
-  margin: 2.5rem auto;
-  padding: 0 1.25rem 3rem;
-}
-
-.simulator-inputs,
-.surface-card,
-.sandbox-result {
-  margin-top: 1.25rem;
-}
-
-.simulator-inputs,
-.surface-card {
-  padding: 1.5rem;
-  border: 1px solid #d6d8d5;
-  border-radius: 0.75rem;
-  background: #fff;
-}
-
-.simulator-inputs h2,
-.surface-card h3 {
-  color: #15201d;
-}
-
-.simulator-inputs > p,
-.surface-intro {
-  color: #3c4843;
-}
-
-.simulator-inputs label,
-.sandbox-form label {
+.booking-sandbox__configuration,
+.booking-sandbox__time-fields {
   display: grid;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #15201d;
+  gap: calc(var(--spacing) * 4);
 }
 
-.simulator-inputs label {
-  max-width: 32rem;
-  margin-top: 1.25rem;
-}
-
-.simulator-inputs input,
-.sandbox-form input {
-  width: 100%;
-  min-height: 2.75rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #a9aeaa;
-  border-radius: 0.4rem;
-  background: #fff;
-  color: #15201d;
-  font: inherit;
-}
-
-.sandbox-time-grid {
-  display: grid;
+.booking-sandbox__configuration {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
 }
 
-.sandbox-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+.booking-sandbox__configuration :deep(.booking-sandbox__input) {
+  width: 100%;
 }
 
-.booking-surface {
-  margin-top: 2rem;
+.booking-sandbox__time-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.surface-intro > p:first-child {
-  margin: 0;
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
+.booking-sandbox__time-fields :deep(.booking-sandbox__input) {
+  width: 100%;
 }
 
-.surface-intro h3 {
-  margin: 0.35rem 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.surface-intro > p:last-child {
-  margin-bottom: 0;
-}
-
-.sandbox-form {
+.booking-sandbox__history {
   display: grid;
-  gap: 1.25rem;
-  margin-top: 1.5rem;
-}
-
-.sandbox-history {
-  margin-top: 2rem;
-}
-
-.sandbox-history h3 {
-  margin-bottom: 0.75rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: inherit;
-}
-
-.sandbox-history ul {
-  display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 4);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.sandbox-history li {
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid #d6d8d5;
-  border-radius: 0.5rem;
-  background: #fff;
-  color: #15201d;
+.booking-sandbox__history p {
+  margin-top: calc(var(--spacing) * 2);
 }
 
 @media (max-width: 38rem) {
-  .sandbox-time-grid {
+  .booking-sandbox__configuration,
+  .booking-sandbox__time-fields {
     grid-template-columns: 1fr;
   }
 }

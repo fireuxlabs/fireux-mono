@@ -1,6 +1,6 @@
 <template>
-  <header class="space-y-5 border-b border-default pb-6">
-    <div class="flex items-center gap-4">
+  <header>
+    <div>
       <img
         v-if="venue.logo_image_url && !logoFailed"
         :src="venue.logo_image_url"
@@ -8,17 +8,17 @@
         class="venue-menu-logo"
         @error="logoFailed = true"
       />
-      <div class="min-w-0">
+      <div>
         <p>
           {{ venue.display_name }}
         </p>
-        <p v-if="venue.short_address || venue.formatted_address" class="mt-1">
+        <p v-if="venue.short_address || venue.formatted_address">
           {{ venue.short_address || venue.formatted_address }}
         </p>
       </div>
     </div>
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="space-y-1">
+    <div>
+      <div>
         <h1>
           {{ title || 'Menu' }}
         </h1>

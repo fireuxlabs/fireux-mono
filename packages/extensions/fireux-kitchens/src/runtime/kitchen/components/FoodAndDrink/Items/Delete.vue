@@ -16,12 +16,12 @@
         Remove this {{ catalogue.singular }} from these Menus and Promotions
         before deleting it.
       </p>
-      <ul class="list-disc space-y-1 pl-5">
+      <ul>
         <li
           v-for="usage in usages"
           :key="`${usage.kind}:${usage.id}:${usage.section || ''}`"
         >
-          <NuxtLink :to="usage.to" class="underline"
+          <NuxtLink :to="usage.to"
             >{{ usage.name
             }}<template v-if="usage.section">
               · {{ usage.section }}</template

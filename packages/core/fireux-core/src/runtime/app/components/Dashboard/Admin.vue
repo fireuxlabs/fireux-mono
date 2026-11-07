@@ -36,28 +36,18 @@
     </UPageHeader>
 
     <details open>
-      <summary class="cursor-pointer px-4 py-3">
-        App identity and members
-      </summary>
-      <div class="p-4 sm:p-6">
+      <summary>App identity and members</summary>
+      <div>
         <AppEditAdmin :app="appSnapshot" />
       </div>
     </details>
 
-    <section
-      v-for="group in adminToolGroups"
-      :key="group.owner"
-      class="space-y-2"
-    >
+    <section v-for="group in adminToolGroups" :key="group.owner">
       <h2>{{ group.label }}</h2>
-      <div class="divide-y divide-default">
-        <div
-          v-for="tool in group.tools"
-          :key="tool.key"
-          class="flex items-center gap-4 py-4 first:pt-0"
-        >
-          <UIcon :name="tool.icon" class="size-5 shrink-0" />
-          <div class="min-w-0 flex-1">
+      <div>
+        <div v-for="tool in group.tools" :key="tool.key">
+          <UIcon :name="tool.icon" />
+          <div>
             <h3>{{ tool.label }}</h3>
             <p v-if="tool.description">
               {{ tool.description }}

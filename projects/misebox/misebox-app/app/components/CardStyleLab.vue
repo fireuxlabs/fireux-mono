@@ -42,11 +42,11 @@
       <article class="card-style-lab__specimen">
         <span>Cell</span>
         <UCard :class="surfaceClass('cell')">
-          <div class="flex min-w-0 items-center gap-3">
+          <div>
             <UAvatar :src="deanosClassicImage" alt="Deanos Classic" size="lg" />
-            <div class="min-w-0 flex-1">
-              <p class="truncate fx-type-body">Deanos Classic</p>
-              <p class="card-style-lab__data truncate fx-type-caption">
+            <div>
+              <p class="fx-type-body">Deanos Classic</p>
+              <p class="card-style-lab__data fx-type-caption">
                 Main Menu · 18 CHF
               </p>
             </div>
@@ -69,11 +69,9 @@
             size="sm"
             class="card-style-lab__pill-avatar"
           />
-          <span class="card-style-lab__pill-copy min-w-0 flex-1">
-            <span class="block truncate">Main Menu</span>
-            <span class="card-style-lab__data block truncate opacity-70">
-              Deanos Kitchen
-            </span>
+          <span class="card-style-lab__pill-copy">
+            <span>Main Menu</span>
+            <span class="card-style-lab__data"> Deanos Kitchen </span>
           </span>
           <UIcon
             name="i-lucide-chevron-right"
@@ -91,7 +89,7 @@
             <div class="card__header">
               <div>
                 <p class="card-style-lab__eyebrow">Kitchen signature</p>
-                <h3 class="mt-1 fx-type-card-heading">Deanos Classic</h3>
+                <h3 class="fx-type-card-heading">Deanos Classic</h3>
               </div>
               <UBadge color="primary" variant="soft">18 CHF</UBadge>
             </div>
@@ -104,7 +102,7 @@
             loading="lazy"
           />
 
-          <p class="mt-4 fx-type-caption">
+          <p class="fx-type-caption">
             Double smash patties, cheddar, pickles, lettuce and house sauce.
           </p>
 

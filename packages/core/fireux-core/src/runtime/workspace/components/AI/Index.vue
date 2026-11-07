@@ -1,6 +1,6 @@
 <template>
-  <section v-if="compact" :aria-label="ariaLabel" class="py-4 sm:py-6">
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 sm:px-6">
+  <section v-if="compact" :aria-label="ariaLabel">
+    <div>
       <slot />
     </div>
   </section>

@@ -9,9 +9,12 @@ process.exitCode = runCommands([
     args: [
       '--test',
       ...testFiles(path.join(repoRoot, 'tools/ide')),
-      ...['admin-credentials', 'editable-string-field', 'meta-content'].map(
-        (name) => path.join(repoRoot, core, `${name}.test.mjs`)
-      ),
+      ...[
+        'admin-credentials',
+        'editable-string-field',
+        'meta-content',
+        'app-brand-assets',
+      ].map((name) => path.join(repoRoot, core, `${name}.test.mjs`)),
     ],
     cwd: repoRoot,
   },

@@ -14,7 +14,6 @@ const appConfig = defineFireuxEcosystem({
   subscriptionCapacity: {
     project: { free: 1, pro: 1, business: null },
     'project.team': { free: 3, pro: 7, business: null },
-    'project.test': { free: 2, pro: 10, business: null },
   },
   seo: {
     siteUrl: 'https://fireux.app',
@@ -28,6 +27,7 @@ const appConfig = defineFireuxEcosystem({
       '/docs/layouts',
       '/docs/server',
       '/docs/components',
+      '/docs/components/bookings',
       '/docs/components/collections',
       '/docs/components/state-feedback',
       '/docs/components/selection',

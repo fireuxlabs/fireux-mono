@@ -4,6 +4,7 @@ import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { writeAppAssetFixture } from '../../packages/core/fireux-core/src/test/fixtures/app-assets.mjs'
 import {
   inspectTarget,
   prepareManifest,
@@ -94,6 +95,7 @@ for (const [site, entryPoint] of [
       )
       await put('.output/server/package.json', { dependencies })
       await mkdir(resolve(app, '.output/public/_nuxt'), { recursive: true })
+      await writeAppAssetFixture(resolve(app, '.output/public'))
       await prepareOutput(app, { projectId: 'ecosystem-test' })
       await put('.output/server/pnpm-lock.yaml', 'fixture lock')
       await sealOutput(app)
@@ -109,6 +111,14 @@ for (const [site, entryPoint] of [
       await put('.output/server/node_modules/.bin/firebase-functions', '')
       await put('.output/server/node_modules/.bin/functions-framework', '')
       await checkOutput(app, { projectId: 'ecosystem-test' })
+      const logoPath = resolve(app, '.output/public/img/app/logo.png')
+      const logo = await readFile(logoPath)
+      await rm(logoPath)
+      await assert.rejects(
+        checkOutput(app, { projectId: 'ecosystem-test' }),
+        /img\/app\/logo.png: Missing file/
+      )
+      await writeFile(logoPath, logo)
       assert.equal(
         (await json(resolve(app, '.output/server/package.json'))).name,
         `${site}-prod`

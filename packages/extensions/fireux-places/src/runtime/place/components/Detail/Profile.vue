@@ -166,7 +166,7 @@
               <span class="fx-card__detail-label">Formatted address:</span>
               {{ model.card.formattedAddress }}
             </div>
-            <div v-if="model.defaultCurrencyCode" class="pt-1">
+            <div v-if="model.defaultCurrencyCode">
               <span class="fx-card__detail-label">Currency:</span>
               {{ model.defaultCurrencyCode }}
             </div>
@@ -214,12 +214,15 @@ import { useSocialLinks } from 'fireux-core/runtime/composables/public/useSocial
 import { computed, toRefs } from 'vue'
 import type { PlaceProfile } from '../../composables/firestore/utils/view/usePlaceInterface'
 
-const props = withDefaults(defineProps<{
-  model: PlaceProfile
-  showGoogleHours?: boolean
-}>(), {
-  showGoogleHours: true,
-})
+const props = withDefaults(
+  defineProps<{
+    model: PlaceProfile
+    showGoogleHours?: boolean
+  }>(),
+  {
+    showGoogleHours: true,
+  }
+)
 const { model } = toRefs(props)
 
 const avatarShadeClass = computed(() => {

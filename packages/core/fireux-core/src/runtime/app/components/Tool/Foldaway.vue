@@ -1,29 +1,27 @@
 <template>
   <UCard variant="subtle">
     <details :open="open">
-      <summary
-        class="flex cursor-pointer list-none items-center justify-between gap-3"
-      >
-        <span class="space-y-1">
-          <span class="block">
+      <summary>
+        <span>
+          <span>
             {{ title }}
           </span>
-          <span v-if="description" class="block">
+          <span v-if="description">
             {{ description }}
           </span>
         </span>
-        <span class="flex shrink-0 items-center gap-2">
+        <span>
           <UBadge
             v-if="provider"
             :label="provider"
             color="neutral"
             variant="soft"
           />
-          <UIcon name="i-lucide-chevron-down" class="size-4" />
+          <UIcon name="i-lucide-chevron-down" />
         </span>
       </summary>
 
-      <div class="mt-4">
+      <div>
         <slot />
       </div>
     </details>

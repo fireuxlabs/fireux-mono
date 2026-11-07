@@ -131,7 +131,11 @@ test('App status projection excludes stored private context and keeps truthful e
     name: 'App',
     context: 'PRIVATE',
     project_id: 'PRIVATE',
-    created: { at: { seconds: 1, nanoseconds: 0 } },
+    created: {
+      at: { seconds: 1, nanoseconds: 0, private_fixture: 'PRIVATE' },
+      by: 'operator',
+      app_id: 'source-app',
+    },
     updated: { at: { seconds: 1, nanoseconds: 0 } },
   }
   const readStatus = load(
@@ -148,9 +152,54 @@ test('App status projection excludes stored private context and keeps truthful e
     },
     'readAppStatus'
   )
-  assert.equal(JSON.stringify(await readStatus({})).includes('PRIVATE'), false)
+  const status = await readStatus({})
+  assert.equal(status.app.id, 'app')
+  assert.deepEqual(status.app.created, {
+    at: { seconds: 1, nanoseconds: 0 },
+    by: 'operator',
+    app_id: 'source-app',
+  })
+  assert.equal(JSON.stringify(status).includes('PRIVATE'), false)
   raw = { ...raw, name: null }
   const result = await readStatus({})
   assert.equal(result.initialized, true)
   assert.equal(result.app, null)
+})
+
+test('App audit stamps allow App provenance only at creation', () => {
+  const readAppDocument = load(
+    'app/utils/readApp.ts',
+    { APP_ROLES, APP_STATUSES },
+    'readAppDocument'
+  )
+  const stamp = { at: { seconds: 1, nanoseconds: 0 } }
+  const source = {
+    ecosystem_id: 'misebox',
+    role: 'tenant',
+    status: 'active',
+    name: 'App',
+    created: stamp,
+    updated: stamp,
+  }
+  assert.deepEqual(readAppDocument(source, 'app'), { ...source, id: 'app' })
+  for (const appId of [null, 42, {}, []]) {
+    assert.equal(
+      readAppDocument(
+        { ...source, created: { ...stamp, app_id: appId } },
+        'app'
+      ),
+      null
+    )
+  }
+  for (const invalidStamp of [
+    { ...stamp, app_id: 'source-app' },
+    { ...stamp, app_id: undefined },
+    { ...stamp, by: 42 },
+    { ...stamp, private_fixture: 'PRIVATE' },
+  ]) {
+    assert.equal(
+      readAppDocument({ ...source, updated: invalidStamp }, 'app'),
+      null
+    )
+  }
 })

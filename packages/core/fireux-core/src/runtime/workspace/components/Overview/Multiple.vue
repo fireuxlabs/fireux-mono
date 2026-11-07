@@ -11,11 +11,17 @@
       </div>
     </template>
 
-    <p v-if="multiple.outcome === 'idle'" class="workspace-card-header__description">
+    <p
+      v-if="multiple.outcome === 'idle'"
+      class="workspace-card-header__description"
+    >
       No {{ entityPluralLower }} source is active.
     </p>
 
-    <p v-else-if="multiple.outcome === 'pending'" class="workspace-card-header__description">
+    <p
+      v-else-if="multiple.outcome === 'pending'"
+      class="workspace-card-header__description"
+    >
       Loading {{ entityPluralLower }}…
     </p>
 
@@ -35,10 +41,7 @@
       :description="multipleDescription"
     />
 
-    <div
-      v-if="multiple.outcome === 'ready' && cards.length"
-      class="mt-4 space-y-2"
-    >
+    <div v-if="multiple.outcome === 'ready' && cards.length">
       <WorkspaceTargetCard
         v-for="card in cards"
         :key="card.id"
@@ -49,7 +52,7 @@
 
     <p
       v-else-if="multiple.outcome === 'empty'"
-      class="mt-4 workspace-card-header__description"
+      class="workspace-card-header__description"
     >
       {{ emptyMultipleDescription }}
     </p>
@@ -87,10 +90,10 @@ const multipleCountLabel = computed(() =>
     ? String(props.multiple.count)
     : '—'
 )
-const multipleDescription = computed(() =>
-  `Available ${entityPluralLower.value} in your current workspace scope.`
+const multipleDescription = computed(
+  () => `Available ${entityPluralLower.value} in your current workspace scope.`
 )
-const emptyMultipleDescription = computed(() =>
-  `No ${entityPluralLower.value} are currently in scope.`
+const emptyMultipleDescription = computed(
+  () => `No ${entityPluralLower.value} are currently in scope.`
 )
 </script>

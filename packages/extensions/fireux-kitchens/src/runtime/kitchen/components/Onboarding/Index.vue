@@ -80,8 +80,8 @@
       :stage="shellStage"
     >
       <template #intro>
-        <h1 class="mt-2">Add a kitchen</h1>
-        <p class="mt-3">
+        <h1>Add a kitchen</h1>
+        <p>
           {{
             isDirectory
               ? 'Review this directory listing.'
@@ -118,9 +118,7 @@
       />
 
       <template #footer>
-        <div
-          class="flex min-w-0 flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between"
-        >
+        <div>
           <UButton
             type="button"
             color="neutral"

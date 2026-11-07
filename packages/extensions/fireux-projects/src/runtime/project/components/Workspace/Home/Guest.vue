@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-4 py-4" aria-label="Your Project">
+  <section aria-label="Your Project">
     <p v-if="pending" role="status">Opening your Project…</p>
     <UAlert
       v-else-if="error"

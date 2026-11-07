@@ -1,5 +1,6 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import { createError } from 'h3'
+import { APP_STATUSES } from '../../models/app.model'
 
 const TEXT_FIELDS = {
   name: 60,
@@ -55,13 +56,20 @@ function cleanSocialLinks(value: unknown): DocumentData {
   return links
 }
 
-export function normalizeAppSettings(body: unknown): DocumentData {
+export function normalizeAppIdentity(body: unknown): DocumentData {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     fail(400, 'App settings payload must be an object.')
   }
   const input = body as Record<string, unknown>
   const patch: DocumentData = {}
   for (const [field, value] of Object.entries(input)) {
+    if (field === 'status') {
+      if (!APP_STATUSES.some((status) => status === value)) {
+        fail(400, 'App status must be active or inactive.')
+      }
+      patch.status = value
+      continue
+    }
     if (field === 'social_links.website') {
       patch[field] = cleanUrl(value, 'App address')
       continue

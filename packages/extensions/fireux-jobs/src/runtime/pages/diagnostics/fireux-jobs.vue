@@ -6,21 +6,21 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Jobs</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('jobs')">
               {{ openSections.jobs ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.jobs" class="mt-4">
+          <div v-show="openSections.jobs">
             <JobModelInspection />
           </div>
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Professionals</div>
             <UButton
               variant="ghost"
@@ -30,19 +30,19 @@
               {{ openSections.professionals ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.professionals" class="mt-4">
+          <div v-show="openSections.professionals">
             <ProfessionalModelInspection />
           </div>
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Agents</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('agents')">
               {{ openSections.agents ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.agents" class="mt-4">
+          <div v-show="openSections.agents">
             <AgentModelInspection />
           </div>
         </UCard>

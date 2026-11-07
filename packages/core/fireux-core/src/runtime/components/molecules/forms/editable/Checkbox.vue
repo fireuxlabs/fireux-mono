@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2">
+  <div>
     <FireFormsTop
       :label="label"
       :is-editing="isEditing"
@@ -12,17 +12,14 @@
       @cancel="cancel"
     />
 
-    <div
-      v-if="!isEditing"
-      class="flex items-center justify-between gap-3 px-3 py-2"
-    >
+    <div v-if="!isEditing">
       <span>{{ displayLabel }}</span>
       <UBadge :color="effectiveValue ? 'success' : 'neutral'" variant="soft">
         {{ effectiveValue ? trueLabel : falseLabel }}
       </UBadge>
     </div>
 
-    <div v-else class="p-3">
+    <div v-else>
       <USwitch
         v-model="draft"
         :label="checkboxLabel"

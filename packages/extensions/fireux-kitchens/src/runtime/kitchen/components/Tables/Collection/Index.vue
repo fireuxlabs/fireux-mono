@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-4">
-    <div class="grid gap-3 sm:grid-cols-3">
+  <div>
+    <UPageGrid as="div">
       <UCard v-for="summary in summaries" :key="summary.label">
         <div class="card__header">
           <div>
@@ -12,7 +12,7 @@
           <UIcon :name="summary.icon" />
         </div>
       </UCard>
-    </div>
+    </UPageGrid>
 
     <UCard>
       <template #header>
@@ -29,14 +29,13 @@
 
       <p v-if="pending">Loading table tabs...</p>
 
-      <div
-        v-else-if="tableRows.length"
-        class="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
-      >
-        <UCard as="article" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
+      <UPageGrid as="div" v-else-if="tableRows.length">
+        <UCard
+          as="article"
+          variant="subtle"
+          :ui="{ body: 'fx-card-body-stack' }"
           v-for="row in tableRows"
           :key="row.key"
-          
         >
           <header class="card__header">
             <div>
@@ -55,7 +54,7 @@
             </UBadge>
           </header>
 
-          <dl class="grid grid-cols-2 gap-2">
+          <dl>
             <div>
               <dt>Guests</dt>
               <dd>
@@ -82,7 +81,7 @@
             </div>
           </dl>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <p v-else>No table tabs are open.</p>
     </UCard>

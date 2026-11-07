@@ -2,16 +2,16 @@
   <AppPricingPage
     description="Pricing for multilingual QR pages and translation products."
   >
-    <section class="rounded-md border border-default bg-default p-5">
+    <UCard as="section">
       <p class="fx-type-caption">Product pricing</p>
-      <h2 class="mt-2 fx-type-section-title">
+      <h2 class="fx-type-section-title">
         Translation products live in Products.
       </h2>
-      <p class="mt-3 fx-type-body">
+      <p class="fx-type-body">
         Sproochli pricing explains language and localisation packages. The
         actual buyable records belong in the shared Products system.
       </p>
-    </section>
+    </UCard>
 
     <template #actions>
       <UButton to="/products" icon="i-lucide-box" size="lg">

@@ -1,6 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolEvent class="w-full max-w-xl" />
+    <GoQrToolEvent />
   </GoQrSolutionPage>
 </template>
 
@@ -12,7 +12,8 @@ definePageMeta({
 const solution = {
   slug: 'event',
   title: 'Event',
-  description: 'Create a QR code for event details, timing, location, or instructions.',
+  description:
+    'Create a QR code for event details, timing, location, or instructions.',
   badge: 'Coming soon',
 }
 

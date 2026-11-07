@@ -1,57 +1,42 @@
 <template>
-  <div class="min-w-0 space-y-2">
-    <div
-      class="overflow-hidden rounded-xl border border-default bg-elevated/40"
-    >
-      <div
-        class="flex items-center justify-between gap-3 border-b border-default px-4 py-2.5"
-      >
-        <div class="flex min-w-0 items-center gap-2">
-          <UIcon name="i-lucide-code-xml" class="shrink-0" />
-          <span>Embed code</span>
-          <span>HTML</span>
+  <UCard title="Embed code" description="HTML">
+    <UTextarea
+      :id="codeId"
+      :model-value="code"
+      :rows="expanded ? 20 : 8"
+      readonly
+      aria-label="Website ordering HTML code"
+    />
+    <template #footer>
+      <div class="fx-card-body-stack">
+        <p>Copy the whole snippet into an HTML block.</p>
+        <div class="fx-card__actions">
+          <UButton
+            :label="copied ? 'Copied' : 'Copy code'"
+            :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+            :color="copied ? 'success' : 'neutral'"
+            variant="ghost"
+            size="sm"
+            :disabled="!code"
+            @click="copy"
+          />
+          <UButton
+            :label="expanded ? 'Collapse' : 'Expand'"
+            :icon="expanded ? 'i-lucide-minimize-2' : 'i-lucide-maximize-2'"
+            :aria-expanded="expanded"
+            :aria-controls="codeId"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            @click="expanded = !expanded"
+          />
         </div>
-        <UButton
-          :label="copied ? 'Copied' : 'Copy code'"
-          :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
-          :color="copied ? 'success' : 'neutral'"
-          variant="ghost"
-          size="sm"
-          :disabled="!code"
-          @click="copy"
-        />
+        <p role="status">{{ copied ? 'Code copied to clipboard.' : '' }}</p>
+        <FireCopyError v-if="copyError" :message="copyError" />
       </div>
-      <pre
-        :id="codeId"
-        tabindex="0"
-        role="region"
-        aria-label="Website ordering HTML code"
-        class="overflow-auto p-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
-        :class="expanded ? 'max-h-128' : 'max-h-56'"
-      ><code>{{ code }}</code></pre>
-      <div
-        class="flex items-center justify-between gap-3 border-t border-default px-4 py-2"
-      >
-        <span>Copy the whole snippet into an HTML block.</span>
-        <UButton
-          :label="expanded ? 'Collapse' : 'Expand'"
-          :icon="expanded ? 'i-lucide-minimize-2' : 'i-lucide-maximize-2'"
-          :aria-expanded="expanded"
-          :aria-controls="codeId"
-          color="neutral"
-          variant="ghost"
-          size="xs"
-          @click="expanded = !expanded"
-        />
-      </div>
-    </div>
-    <span class="sr-only" role="status">{{
-      copied ? 'Code copied to clipboard.' : ''
-    }}</span>
-    <FireCopyError v-if="copyError" :message="copyError" />
-  </div>
+    </template>
+  </UCard>
 </template>
-
 <script setup lang="ts">
 import { ref, useId, watch } from 'vue'
 

@@ -1,32 +1,32 @@
 <template>
   <UPage>
-        <UButton to="/" variant="link"> Sproochli </UButton>
-        <UPageHeader
-          title="About"
-          description="Sproochli is the FireUX language layer for public visitor information."
-        />
-        <UPageBody>
-          <section class="pagebody">
-            <p class="fx-type-body">
-              Sproochli helps hospitality and local businesses publish
-              visitor-facing information that can later be translated,
-              localised, and shared by QR code.
-            </p>
+    <UButton to="/" variant="link"> Sproochli </UButton>
+    <UPageHeader
+      title="About"
+      description="Sproochli is the FireUX language layer for public visitor information."
+    />
+    <UPageBody>
+      <section class="pagebody">
+        <p class="fx-type-body">
+          Sproochli helps hospitality and local businesses publish
+          visitor-facing information that can later be translated, localised,
+          and shared by QR code.
+        </p>
 
-            <p class="fx-type-body">
-              It is designed to sit alongside FireUX apps such as Misebox,
-              BuenoHost, and Go QR instead of becoming a separate custom website
-              every time.
-            </p>
-          </section>
+        <p class="fx-type-body">
+          It is designed to sit alongside FireUX apps such as Misebox,
+          BuenoHost, and Go QR instead of becoming a separate custom website
+          every time.
+        </p>
+      </section>
 
-          <div class="flex flex-wrap gap-3">
-            <UButton to="/" icon="i-lucide-home" size="lg">
-              Back to Sproochli
-            </UButton>
-          </div>
-        </UPageBody>
-      </UPage>
+      <div class="fx-card__actions">
+        <UButton to="/" icon="i-lucide-home" size="lg">
+          Back to Sproochli
+        </UButton>
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

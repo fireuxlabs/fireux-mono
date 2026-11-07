@@ -1,7 +1,7 @@
 <template>
   <div class="price-entry">
     <div class="input-row">
-      <UInput v-model="price.currency" readonly class="currency-display w-20" />
+      <UInput v-model="price.currency" readonly class="currency-display" />
       <UInputNumber
         v-model="displayAmount"
         :format-options="{
@@ -49,10 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui';
-import { computed } from 'vue';
-import { useCreatePricesState } from '../../composables/create/useCreatePricesState';
-import { useCreateProductState } from '../../composables/create/useCreateProductState';
+import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
+import { computed } from 'vue'
+import { useCreatePricesState } from '../../composables/create/useCreatePricesState'
+import { useCreateProductState } from '../../composables/create/useCreateProductState'
 import type { PriceInterval } from '../../utils/product.ts'
 
 const props = defineProps<{
@@ -75,9 +75,11 @@ const { prices } = useCreatePricesState()
 const { product } = await useCreateProductState()
 const defaultCurrency = 'CHF'
 
-const productType = computed(() => String(product.value.product_type || '').trim())
-const isOneTimeOnly = computed(() =>
-  productType.value === 'physical' || productType.value === 'digital'
+const productType = computed(() =>
+  String(product.value.product_type || '').trim()
+)
+const isOneTimeOnly = computed(
+  () => productType.value === 'physical' || productType.value === 'digital'
 )
 const showBillingFrequency = computed(() => !isOneTimeOnly.value)
 
@@ -148,9 +150,7 @@ const displayAmount = computed<number>({
   get: () => Number(price.value.unit_amount ?? 0) / 100,
   set: (val) => {
     const next = Number(val ?? 0)
-    price.value.unit_amount = Number.isFinite(next)
-      ? Math.round(next * 100)
-      : 0
+    price.value.unit_amount = Number.isFinite(next) ? Math.round(next * 100) : 0
   },
 })
 </script>
@@ -162,7 +162,9 @@ const displayAmount = computed<number>({
   gap: calc(var(--spacing) * 4); /* Uses design system spacing */
   background-color: var(--ui-bg-muted); /* Uses existing design system color */
   padding: calc(var(--spacing) * 6); /* Uses design system padding */
-  border-radius: calc(var(--ui-radius) * 1.5); /* Uses design system border radius */
+  border-radius: calc(
+    var(--ui-radius) * 1.5
+  ); /* Uses design system border radius */
 }
 
 .input-row {

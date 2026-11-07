@@ -6,23 +6,21 @@
     class="workspace-surface workspace-surface--compact"
     :aria-labelledby="`${capability}-tools-title`"
   >
-    <div
-      class="flex flex-wrap items-center gap-3 rounded-xl border border-default bg-elevated/50 p-2 shadow-sm"
-    >
-      <div class="min-w-0 px-2">
-        <h2 :id="`${capability}-tools-title`">Tools</h2>
-        <p class="hidden sm:block">{{ title }} actions</p>
+    <UCard :description="`${title} actions`">
+      <template #title
+        ><h2 :id="`${capability}-tools-title`">Tools</h2></template
+      >
+      <div class="fx-card__actions">
+        <UButton
+          v-for="tool in tools"
+          :key="tool.id"
+          :label="tool.label"
+          icon="i-lucide-plus"
+          size="sm"
+          @click="performAction(tool.id)"
+        />
       </div>
-
-      <UButton
-        v-for="tool in tools"
-        :key="tool.id"
-        :label="tool.label"
-        icon="i-lucide-plus"
-        size="sm"
-        @click="performAction(tool.id)"
-      />
-    </div>
+    </UCard>
   </section>
 </template>
 

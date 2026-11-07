@@ -1,5 +1,5 @@
 <template>
-  <main v-if="tier" class="min-h-screen">
+  <main v-if="tier">
     <UContainer>
       <UPage>
         <UButton to="/pricing" variant="link"> Pricing </UButton>
@@ -11,20 +11,19 @@
         <UPageBody>
           <UCard variant="subtle">
             <p>Price</p>
-            <p class="mt-1">
+            <p>
               {{ tier.price
               }}<small v-if="tier.billingCycle">{{ tier.billingCycle }}</small>
             </p>
-            <p class="mt-2">{{ tier.priceNote }}</p>
+            <p>{{ tier.priceNote }}</p>
           </UCard>
 
           <UCard>
             <template #header>
               <h2>What you get</h2>
             </template>
-            <ul class="space-y-3">
-              <li v-for="item in tier.included" :key="item" class="flex gap-2">
-                <UIcon name="i-lucide-check" class="mt-0.5 shrink-0" />
+            <ul class="fx-list-stack">
+              <li v-for="item in tier.included" :key="item">
                 <span>{{ item }}</span>
               </li>
             </ul>
@@ -34,27 +33,11 @@
             <template #header>
               <h2>Customer App revenue</h2>
             </template>
-            <div class="overflow-x-auto">
-              <table class="w-full min-w-[34rem]">
-                <thead>
-                  <tr>
-                    <th class="pb-3 pr-4">Customer purchase</th>
-                    <th class="pb-3 pr-4">Retail</th>
-                    <th class="pb-3 pr-4">FireUX</th>
-                    <th class="pb-3">Ecosystem owner</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-default">
-                  <tr v-for="row in ecosystemRevenue" :key="row.purchase">
-                    <td class="py-3 pr-4">{{ row.purchase }}</td>
-                    <td class="py-3 pr-4">{{ row.retail }}</td>
-                    <td class="py-3 pr-4">{{ row.fireux }}</td>
-                    <td class="py-3">{{ row.owner }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="mt-4">
+            <UTable
+              :data="ecosystemRevenue"
+              :columns="ecosystemRevenueColumns"
+            />
+            <p>
               The customer pays the standard retail price. FireUX invoices the
               ecosystem owner for half, leaving the other half as the owner’s
               sales margin.
@@ -65,13 +48,8 @@
             <template #header>
               <h2>Not included</h2>
             </template>
-            <ul class="space-y-3">
-              <li
-                v-for="item in tier.notIncluded"
-                :key="item"
-                class="flex gap-2"
-              >
-                <UIcon name="i-lucide-minus" class="mt-0.5 shrink-0" />
+            <ul class="fx-list-stack">
+              <li v-for="item in tier.notIncluded" :key="item">
                 <span>{{ item }}</span>
               </li>
             </ul>
@@ -125,6 +103,13 @@ const contactHref = computed(
     `mailto:${props.contactEmail}?subject=${encodeURIComponent(`${props.appName} ${tier.value?.title || 'pricing'}`)}`
 )
 
+const ecosystemRevenueColumns = [
+  { accessorKey: 'purchase', header: 'Customer purchase' },
+  { accessorKey: 'retail', header: 'Retail' },
+  { accessorKey: 'fireux', header: 'FireUX' },
+  { accessorKey: 'owner', header: 'Ecosystem owner' },
+]
+
 const ecosystemRevenue = [
   {
     purchase: 'App setup',
@@ -144,5 +129,5 @@ const ecosystemRevenue = [
     fireux: 'CHF 25/month',
     owner: 'CHF 25/month',
   },
-] as const
+]
 </script>

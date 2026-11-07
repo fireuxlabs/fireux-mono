@@ -18,10 +18,7 @@
 
       <template #onboarding>
         <FireLandingPricingStrip />
-        <section
-          aria-labelledby="team-access-heading"
-          class="mx-auto max-w-4xl space-y-4 px-6 py-12"
-        >
+        <section aria-labelledby="team-access-heading" class="pagebody">
           <h2 id="team-access-heading" class="fx-type-section-title">
             Your team, your way
           </h2>

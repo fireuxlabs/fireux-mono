@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "bringli — ${activeEditorShort}",
+    "window.title": "bringli — ${activeEditorShort} — ${rootPath}",
     "files.exclude": {
       "projects/buenohost": true,
       "projects/fireux": true,

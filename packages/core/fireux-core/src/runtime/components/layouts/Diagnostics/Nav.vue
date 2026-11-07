@@ -1,8 +1,8 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/diagnostics/Nav.vue -->
 <template>
-  <div class="diagnostics-nav p-2 space-y-4">
+  <div class="diagnostics-nav">
     <section v-if="core.length">
-      <h3 v-if="!collapsed" class="mb-2">Core</h3>
+      <h3 v-if="!collapsed">Core</h3>
       <UNavigationMenu
         orientation="vertical"
         :items="core"
@@ -11,7 +11,7 @@
     </section>
 
     <section v-if="ecosystemNav.length">
-      <h3 v-if="!collapsed" class="mb-2">Ecosystem</h3>
+      <h3 v-if="!collapsed">Ecosystem</h3>
       <UNavigationMenu
         orientation="vertical"
         :items="ecosystemNav"
@@ -20,7 +20,7 @@
     </section>
 
     <section v-if="ext.length">
-      <h3 v-if="!collapsed" class="mb-2">Extensions</h3>
+      <h3 v-if="!collapsed">Extensions</h3>
       <UNavigationMenu
         orientation="vertical"
         :items="ext"
@@ -28,7 +28,7 @@
       />
     </section>
 
-    <section v-if="!collapsed" class="space-y-2">
+    <section v-if="!collapsed">
       <div>
         counts: core {{ core.length }} | eco {{ ecosystemNav.length }} | ext
         {{ ext.length }} | all {{ desktop.length }}

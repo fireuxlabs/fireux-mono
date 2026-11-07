@@ -1,17 +1,17 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
+  <section>
     <WorkspaceKitchenResearchStageNav
       :base-path="basePath"
       current="evidence"
     />
 
-    <header class="grid gap-3 border-b border-default pb-8">
+    <header>
       <p>Stage 1 · Evidence</p>
       <h1>
         {{ demand.question }}
       </h1>
-      <p class="max-w-3xl">{{ demand.method }}</p>
-      <div class="flex flex-wrap gap-2">
+      <p>{{ demand.method }}</p>
+      <div>
         <UBadge color="neutral" variant="soft">
           Observed {{ demand.observedAt }}
         </UBadge>
@@ -25,9 +25,9 @@
     <section class="workspace-surface__grid">
       <div>
         <p>Search results</p>
-        <h2 class="mt-1">What people search for</h2>
+        <h2>What people search for</h2>
       </div>
-      <div class="grid gap-3 md:grid-cols-2">
+      <UPageGrid as="div">
         <UCard v-for="group in demand.seeds" :key="group.seed" variant="subtle">
           <template #header>
             <h3>{{ group.seed }}</h3>
@@ -36,10 +36,10 @@
             <li v-for="query in group.queries" :key="query">{{ query }}</li>
           </ul>
         </UCard>
-      </div>
+      </UPageGrid>
     </section>
 
-    <section class="grid gap-3 border-t border-default pt-8">
+    <section>
       <p>Validation literature</p>
       <p>
         These sources validate the operational subject. Product claims are not

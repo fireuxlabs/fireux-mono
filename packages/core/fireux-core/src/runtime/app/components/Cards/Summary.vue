@@ -35,7 +35,7 @@
           </div>
           <div class="preview__meta">
             <span v-if="shortName">@{{ shortName }}</span>
-            <span v-if="id" class="break-all">{{ id }}</span>
+            <span v-if="id">{{ id }}</span>
           </div>
         </div>
       </div>

@@ -6,7 +6,6 @@
       <section
         v-for="group in planGroups"
         :key="group.id || group.title || 'plans'"
-        class="space-y-6"
       >
         <div v-if="group.title || group.description" class="pagebody">
           <h2 v-if="group.title">
@@ -22,10 +21,10 @@
     </UContainer>
 
     <UPageSection v-if="$slots.intro || $slots.default || $slots.actions">
-      <div class="mx-auto max-w-3xl space-y-6">
+      <div>
         <slot name="intro" />
         <slot />
-        <div v-if="$slots.actions" class="flex flex-wrap gap-3">
+        <div v-if="$slots.actions">
           <slot name="actions" />
         </div>
       </div>

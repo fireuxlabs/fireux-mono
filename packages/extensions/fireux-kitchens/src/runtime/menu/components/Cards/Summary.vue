@@ -9,14 +9,11 @@
           :alt="kitchenName || menuName"
           size="lg"
         />
-        <div
-          v-else
-          class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elevated"
-        >
+        <div v-else>
           <UIcon name="i-lucide-book-open" aria-hidden="true" />
         </div>
         <div class="fx-card-body-stack">
-          <div class="flex flex-wrap items-center gap-2">
+          <div>
             <h3>
               {{ menuName }}
             </h3>
@@ -24,10 +21,7 @@
           <p v-if="kitchenName && routeScope.kind !== 'directory'">
             {{ kitchenName }}
           </p>
-          <p
-            v-if="menuDescription && menuDescription !== kitchenName"
-            class="max-w-prose"
-          >
+          <p v-if="menuDescription && menuDescription !== kitchenName">
             {{ menuDescription }}
           </p>
           <KitchenDetailOfferingTimes
@@ -42,7 +36,6 @@
         </div>
       </div>
       <MenuCardsActions
-        class="shrink-0"
         :offerings="menuOfferings"
         :menu-id="menu.slug || menu.source?.menu_slug || ''"
         :menu-name="menuName"

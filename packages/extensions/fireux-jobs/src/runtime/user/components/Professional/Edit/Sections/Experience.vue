@@ -17,7 +17,7 @@
   >
     <!-- DISPLAY -->
     <template #display="{ item }">
-      <div class="space-y-2">
+      <div>
         <PlaceCardsPill
           v-if="getPlaceCard(item.place_id)"
           v-bind="getPlaceCard(item.place_id)"
@@ -34,7 +34,7 @@
     <template
       #edit="{ item, index, save, cancel, captureIntent: captureEditorIntent }"
     >
-      <div class="flex flex-col gap-3">
+      <div>
         <UAlert
           v-if="placeSelectionError"
           color="error"
@@ -44,10 +44,7 @@
         />
 
         <!-- Collection toggle (create only) -->
-        <div
-          v-if="index === items.length && collectionOptions.length > 1"
-          class="flex flex-wrap items-center gap-2"
-        >
+        <div v-if="index === items.length && collectionOptions.length > 1">
           <UButton
             v-for="collection in collectionOptions"
             :key="collection"
@@ -99,15 +96,14 @@
         <UInput v-model="item.role" placeholder="Role (optional)" />
 
         <!-- Dates + ongoing -->
-        <div class="grid gap-2 sm:grid-cols-3">
-          <div class="space-y-1">
+        <div>
+          <div>
             <div>From</div>
             <UPopover>
               <UButton
                 color="neutral"
                 variant="subtle"
                 icon="i-lucide-calendar"
-                class="justify-start"
                 block
               >
                 {{ formatDateLabel(getStartDate(item)) || 'Select start date' }}
@@ -125,7 +121,7 @@
             </UPopover>
           </div>
 
-          <div class="space-y-1">
+          <div>
             <div>Ongoing</div>
             <UCheckbox
               :model-value="Boolean(item.ongoing)"
@@ -137,14 +133,13 @@
             />
           </div>
 
-          <div v-if="!item.ongoing" class="space-y-1">
+          <div v-if="!item.ongoing">
             <div>To</div>
             <UPopover>
               <UButton
                 color="neutral"
                 variant="subtle"
                 icon="i-lucide-calendar"
-                class="justify-start"
                 block
               >
                 {{ formatDateLabel(getEndDate(item)) || 'Select end date' }}
@@ -172,7 +167,7 @@
         />
 
         <!-- Actions -->
-        <div class="flex items-center gap-2">
+        <div>
           <UButton
             size="xs"
             variant="solid"
@@ -190,7 +185,7 @@
 
     <!-- ADD -->
     <template #create="{ push, canPush }">
-      <div v-if="canPush" class="flex items-center gap-2">
+      <div v-if="canPush">
         <UButton
           size="xs"
           variant="solid"

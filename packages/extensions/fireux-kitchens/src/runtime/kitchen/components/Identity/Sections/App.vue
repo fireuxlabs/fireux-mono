@@ -15,8 +15,8 @@
     :description="errorMessage"
   />
 
-  <div v-else-if="state" class="space-y-4">
-    <div class="flex flex-wrap items-center gap-2">
+  <div v-else-if="state">
+    <div>
       <UBadge color="primary" variant="soft" icon="i-lucide-sparkles"
         >App</UBadge
       >
@@ -30,18 +30,14 @@
           <p>The universal asset gate established during App onboarding.</p>
         </div>
       </template>
-      <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-        <UCard as="div"
-          v-for="asset in assets"
-          :key="asset.key"
-          
-        >
+      <UPageGrid as="div">
+        <UCard as="div" v-for="asset in assets" :key="asset.key">
           <p>{{ asset.label }}</p>
           <UBadge :color="asset.present ? 'success' : 'warning'" variant="soft">
             {{ asset.present ? 'Present' : 'Missing' }}
           </UBadge>
         </UCard>
-      </div>
+      </UPageGrid>
     </UCard>
 
     <UCard>
@@ -54,16 +50,15 @@
           </p>
         </div>
       </template>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="fx-card-body-stack">
         <UFormField
           v-for="field in paletteFields"
           :key="field.key"
           :label="field.label"
         >
-          <div class="flex items-center gap-2">
+          <div>
             <input
               v-if="validHex(draftPalette[field.key])"
-              class="size-9 rounded-md border border-default bg-default"
               type="color"
               :value="draftPalette[field.key]"
               :disabled="!state.can_write"
@@ -73,10 +68,7 @@
                 ).value
               "
             />
-            <span
-              v-else
-              class="size-9 rounded-md border border-dashed border-default"
-            />
+            <span v-else />
             <UInput
               v-model="draftPalette[field.key]"
               :disabled="!state.can_write"
@@ -94,7 +86,7 @@
           <p>Two families; templates derive their semantic roles.</p>
         </div>
       </template>
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="fx-card-body-stack">
         <UFormField label="Display family">
           <UInput
             v-model="draftTypography.display_family"
@@ -118,7 +110,7 @@
       description="Dedicated App admin access is required because these values affect every Kitchen attached to the App."
     />
 
-    <div v-else class="flex items-center justify-between gap-3">
+    <div v-else>
       <p>{{ saveState }}</p>
       <UButton :disabled="!valid" :loading="saving" @click="save">
         Save App identity

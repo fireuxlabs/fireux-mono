@@ -2,7 +2,7 @@
   <FireActionSurface
     :to="surfaceTo"
     :action="action && !surfaceTo"
-    class="public-profile-directory-card group"
+    class="public-profile-directory-card"
     :class="[`public-profile-directory-card--${variant}`, variantSurfaceClass]"
     :data-profile-tone="tone"
     @activate="emit('action')"
@@ -40,7 +40,7 @@
 
     <div class="public-profile-directory-card__content">
       <div class="public-profile-directory-card__header">
-        <div class="min-w-0">
+        <div>
           <p class="public-profile-directory-card__name">
             {{ displayName }}
           </p>
@@ -58,7 +58,6 @@
           :color="tone"
           variant="soft"
           size="xs"
-          class="shrink-0"
         />
       </div>
 
@@ -90,7 +89,7 @@
     <UIcon
       v-if="link && to"
       name="i-lucide-arrow-up-right"
-      class="public-profile-directory-card__arrow size-4 shrink-0 transition"
+      class="public-profile-directory-card__arrow"
     />
   </FireActionSurface>
 </template>

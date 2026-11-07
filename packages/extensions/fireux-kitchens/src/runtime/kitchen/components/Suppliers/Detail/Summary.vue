@@ -1,8 +1,7 @@
 <template>
   <UCard v-if="supplier">
-    <div class="flex flex-col gap-5 md:flex-row md:items-start">
+    <div>
       <div
-        class="shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
         style="width: min(100%, 256px); aspect-ratio: 1"
         :style="{ backgroundColor: media.imageBackground }"
       >
@@ -11,18 +10,17 @@
           :src="imageUrl"
           :alt="title"
           class="size-full"
-          :class="{ 'p-4': media.imageFit === 'contain' }"
           :style="{ objectFit: media.imageFit }"
           loading="lazy"
         />
-        <div v-else class="flex h-full w-full items-center justify-center">
+        <div v-else>
           <UIcon name="i-lucide-truck" />
         </div>
       </div>
 
-      <div class="min-w-0 flex-1 space-y-5">
+      <div>
         <div class="fx-card-body-stack">
-          <div class="flex items-center gap-2">
+          <div>
             <UChip :color="status ? 'success' : 'neutral'" inset />
             <h2>
               {{ title }}
@@ -33,7 +31,7 @@
             {{ headline }}
           </p>
 
-          <p v-if="summary" class="max-w-2xl">
+          <p v-if="summary">
             {{ summary }}
           </p>
         </div>

@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "granite — ${activeEditorShort}",
+    "window.title": "granite — ${activeEditorShort} — ${rootPath}",
     "files.exclude": {
       "projects/bringli": true,
       "projects/buenohost": true,

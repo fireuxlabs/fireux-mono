@@ -1,40 +1,34 @@
 <template>
-  <div class="space-y-6">
-    <div
-      class="relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-elevated/60"
-    >
+  <div>
+    <div>
       <img
         v-if="ingredient.image_url && !imageFailed"
         :src="ingredient.image_url"
         :alt="ingredient.name || 'Ingredient'"
-        class="size-full object-contain"
         @error="imageFailed = true"
       />
-      <div v-else class="flex flex-col items-center gap-4">
+      <div v-else>
         <UIcon
           :name="category.icon"
-          class="ingredient-preview-icon opacity-40"
+          class="ingredient-preview-icon"
           aria-hidden="true"
         />
         <span>No image yet</span>
       </div>
     </div>
-    <div class="space-y-3">
+    <div>
       <h1 v-if="showHeading">
         {{ ingredient.name || 'Ingredient unavailable' }}
       </h1>
       <UBadge color="neutral" variant="soft" :icon="category.icon">{{
         category.label
       }}</UBadge>
-      <div v-if="ingredient.aliases?.length" class="space-y-2 pt-2">
+      <div v-if="ingredient.aliases?.length">
         <h2>Also known as</h2>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="alias in ingredient.aliases"
-            :key="alias"
-            class="rounded-md border border-default px-2.5 py-1"
-            >{{ alias }}</span
-          >
+        <div>
+          <span v-for="alias in ingredient.aliases" :key="alias">{{
+            alias
+          }}</span>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@
           <h2 class="fx-type-section-title">What a user means in FireUX</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>
             A user is the core identity record that moves across FireUX apps and
             ecosystems.
@@ -32,7 +32,7 @@
           <h2 class="fx-type-section-title">Public profile flow</h2>
         </template>
 
-        <ol class="list-decimal fx-list-stack">
+        <ol class="fx-list-stack">
           <li>Create or sign in to a FireUX account.</li>
           <li>
             Publish a handle and profile details that are safe for public
@@ -45,7 +45,7 @@
         </ol>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton to="/users" color="primary" icon="i-lucide-users">
           Open users
         </UButton>

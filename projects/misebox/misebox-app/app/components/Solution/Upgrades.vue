@@ -4,8 +4,8 @@
       <h2 class="fx-type-section-title">Upgrades</h2>
     </template>
 
-    <ul class="space-y-3">
-      <li v-for="item in items" :key="item" class="flex gap-3">
+    <ul class="fx-list-stack">
+      <li v-for="item in items" :key="item">
         <UIcon name="i-lucide-plus-circle" />
         <span>{{ item }}</span>
       </li>

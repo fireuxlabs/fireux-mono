@@ -1,11 +1,6 @@
 <template>
-  <div class="space-y-6">
-    <header
-      class="space-y-2"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+  <div>
+    <header role="status" aria-live="polite" aria-atomic="true">
       <p>
         {{
           submission.order.channel === 'kiosk' ? 'Order' : 'Collection order'
@@ -26,11 +21,7 @@
         Kitchen estimate: {{ submission.estimate_minutes }} minutes.
       </p>
     </header>
-    <section
-      v-if="venue"
-      class="space-y-1 border-y border-default py-4"
-      aria-label="Collection details"
-    >
+    <section v-if="venue" aria-label="Collection details">
       <h3>
         {{
           ['declined', 'completed'].includes(submission.state)
@@ -42,58 +33,37 @@
       <p v-if="venue.formatted_address || venue.short_address">
         {{ venue.formatted_address || venue.short_address }}
       </p>
-      <div class="flex flex-wrap gap-x-4 gap-y-2 pt-1">
+      <div>
         <a
           v-if="venue.google_maps_url"
           :href="venue.google_maps_url"
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:underline"
           >Directions</a
         >
-        <a
-          v-if="venue.phone"
-          :href="`tel:${venue.phone}`"
-          class="hover:underline"
-          >{{ venue.phone }}</a
-        >
+        <a v-if="venue.phone" :href="`tel:${venue.phone}`">{{ venue.phone }}</a>
       </div>
     </section>
-    <section aria-label="Order items" class="space-y-4">
-      <ul class="divide-y divide-default">
-        <li
-          v-for="line in submission.order.lines"
-          :key="line.id"
-          class="py-3 first:pt-0"
-        >
-          <div class="flex items-start justify-between gap-4">
-            <p class="min-w-0 break-words">
-              {{ line.quantity }} × {{ line.item.name }}
-            </p>
-            <span
-              v-if="linePrice(line.id) !== undefined"
-              class="shrink-0 tabular-nums"
-              >{{ money(linePrice(line.id)) }}</span
-            >
+    <section aria-label="Order items">
+      <ul>
+        <li v-for="line in submission.order.lines" :key="line.id">
+          <div>
+            <p>{{ line.quantity }} × {{ line.item.name }}</p>
+            <span v-if="linePrice(line.id) !== undefined">{{
+              money(linePrice(line.id))
+            }}</span>
           </div>
-          <ul
-            v-if="line.notes?.length"
-            class="mt-1 space-y-1"
-            aria-label="Item choices"
-          >
+          <ul v-if="line.notes?.length" aria-label="Item choices">
             <li v-for="(note, index) in line.notes" :key="index">{{ note }}</li>
           </ul>
         </li>
       </ul>
-      <div
-        v-if="submission.pricing"
-        class="flex justify-between gap-4 border-t border-default pt-4"
-      >
+      <div v-if="submission.pricing">
         <span>Total · {{ submission.pricing.currency }}</span>
-        <span class="tabular-nums">{{ money(submission.pricing.total) }}</span>
+        <span>{{ money(submission.pricing.total) }}</span>
       </div>
     </section>
-    <div v-if="error" role="alert" class="space-y-2">
+    <div v-if="error" role="alert">
       <p>Order updates are unavailable. Your order is still saved.</p>
       <FireCopyError :message="error" />
       <UButton

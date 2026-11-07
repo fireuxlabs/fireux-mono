@@ -18,12 +18,12 @@
         <h1>
           {{ kitchen.presentation?.display_name }}
         </h1>
-        <p v-if="kitchen.presentation?.tagline" class="mt-1">
+        <p v-if="kitchen.presentation?.tagline">
           {{ kitchen.presentation?.tagline }}
         </p>
       </div>
     </template>
-    <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
+    <FireState v-else-if="loading" outcome="pending" entity="Kitchen" />
     <FireCopyError v-else-if="error" :message="errorMessage" />
     <UAlert
       v-else

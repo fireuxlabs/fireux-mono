@@ -7,11 +7,9 @@
         </template>
       </UDashboardSidebar>
 
-      <div class="w-full h-screen overflow-y-auto">
-        <div class="min-h-full p-0 lg:p-4">
-          <slot />
-        </div>
-      </div>
+      <UDashboardPanel id="core-diagnostics-content">
+        <template #body><slot /></template>
+      </UDashboardPanel>
     </UDashboardGroup>
   </ClientOnly>
 </template>

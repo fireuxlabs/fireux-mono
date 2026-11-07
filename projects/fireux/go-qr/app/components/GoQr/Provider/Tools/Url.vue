@@ -1,5 +1,5 @@
 <template>
-  <div v-if="qrOnly" class="mx-auto aspect-square w-full max-w-80 bg-white p-3">
+  <div v-if="qrOnly" class="aspect-square w-full bg-white p-3">
     <img
       v-if="qrDataUrl"
       :src="qrDataUrl"
@@ -34,23 +34,21 @@
     </form>
 
     <div v-if="qrDataUrl" class="pagebody">
-      <div
-        class="relative mx-auto aspect-square w-full max-w-80 rounded-md border border-default bg-white p-3"
-      >
+      <div class="relative aspect-square w-full bg-white p-3">
         <img
           :src="qrDataUrl"
           :alt="`QR code for ${normalizedUrl}`"
           class="size-full"
         />
-        <div
+        <UBadge
           v-if="qrCentreLabel"
-          class="absolute left-1/2 top-1/2 grid size-[22%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.35rem] border-white bg-[#4f2df4] px-1 text-[clamp(0.45rem,4vw,1rem)] text-white shadow-sm"
+          class="absolute left-1/2 top-1/2 size-[22%] -translate-x-1/2 -translate-y-1/2 border-[0.35rem] border-white"
           aria-hidden="true"
         >
           {{ qrCentreLabel }}
-        </div>
+        </UBadge>
       </div>
-      <div class="flex flex-wrap justify-center gap-2">
+      <div class="fx-card__actions">
         <UButton
           :href="qrDataUrl"
           :download="downloadName"

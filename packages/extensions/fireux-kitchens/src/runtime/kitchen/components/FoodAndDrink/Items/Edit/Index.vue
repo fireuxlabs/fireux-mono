@@ -11,7 +11,7 @@
       </div>
     </template>
 
-    <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
+    <div class="fx-card-body-stack">
       <UFormField label="Image">
         <div class="fx-card-body-stack">
           <FireFormsEditableImagePicker
@@ -56,7 +56,7 @@
             :disabled="!canWrite || busy"
             @update:model-value="handleFlagship"
           />
-          <p class="mt-1">
+          <p>
             Templates feature the one flagship Dish selected for this Kitchen.
           </p>
         </UFormField>

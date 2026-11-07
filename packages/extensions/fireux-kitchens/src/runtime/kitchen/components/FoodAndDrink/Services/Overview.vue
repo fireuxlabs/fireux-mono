@@ -6,36 +6,29 @@
     <div aria-label="Services summary">
       <p v-if="pending" role="status">Loading services…</p>
       <p v-else-if="failed" role="alert">Services could not be loaded.</p>
-      <dl v-else-if="rows.length" class="grid gap-x-8 gap-y-2 sm:grid-cols-2">
-        <div
-          v-for="row in rows"
-          :key="row.key"
-          class="flex flex-wrap justify-between gap-x-4"
-        >
+      <dl v-else-if="rows.length">
+        <div v-for="row in rows" :key="row.key">
           <dt>
-            <NuxtLink
-              :to="row.to"
-              class="relative z-10 hover:underline focus-visible:underline"
-              >{{ row.name }}</NuxtLink
-            >
+            <NuxtLink :to="row.to" class="relative z-10">{{
+              row.name
+            }}</NuxtLink>
           </dt>
-          <dd
-            :class="
-              row.open
-                ? 'text-success'
-                : row.needsSetup
-                  ? 'text-warning'
-                  : 'text-muted'
-            "
-          >
-            <NuxtLink
-              v-if="row.issues.length"
-              :to="row.to"
-              :aria-label="`Configure ${row.name}: ${row.issues.join(' · ')}`"
-              class="relative z-10 hover:underline focus-visible:underline"
-              >{{ row.issues.join(' · ') }}</NuxtLink
+          <dd>
+            <UBadge
+              :color="
+                row.open ? 'success' : row.needsSetup ? 'warning' : 'neutral'
+              "
+              variant="soft"
             >
-            <template v-else>{{ row.label }}</template>
+              <NuxtLink
+                v-if="row.issues.length"
+                :to="row.to"
+                :aria-label="`Configure ${row.name}: ${row.issues.join(' · ')}`"
+                class="relative z-10"
+                >{{ row.issues.join(' · ') }}</NuxtLink
+              >
+              <template v-else>{{ row.label }}</template>
+            </UBadge>
           </dd>
         </div>
       </dl>

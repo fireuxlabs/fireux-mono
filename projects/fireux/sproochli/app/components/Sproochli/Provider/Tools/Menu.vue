@@ -9,7 +9,7 @@
         <UInput v-model="sourceUrlInput" :placeholder="sourceUrlPlaceholder" />
       </UFormField>
 
-      <div class="grid gap-3 sm:grid-cols-2">
+      <div class="workspace-surface__grid workspace-surface__grid--2">
         <UFormField :label="sourceSlugLabel">
           <UInput v-model="sourceSlugInput" placeholder="source-slug" />
         </UFormField>
@@ -19,7 +19,7 @@
         </UFormField>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-2">
+      <div class="workspace-surface__grid workspace-surface__grid--2">
         <UFormField :label="sourceLanguageLabel">
           <UInput v-model="sourceLanguageInput" placeholder="de" />
         </UFormField>
@@ -50,7 +50,7 @@
       <template #header>
         <div>Translation request</div>
       </template>
-      <pre class="overflow-auto rounded-md bg-muted p-3">{{ handoff }}</pre>
+      <pre class="overflow-auto">{{ handoff }}</pre>
     </UCard>
   </SproochliProviderFrame>
 </template>

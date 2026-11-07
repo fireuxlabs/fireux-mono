@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto grid w-full max-w-5xl gap-6">
+  <div class="pagebody">
     <UButton
       to="/workspace/project/ignitions"
       label="Ignition requests"
@@ -26,31 +26,28 @@
     />
     <UCard
       ><h2 class="fx-type-section-title">The business brief</h2>
-      <p class="mt-2">{{ brief.outcome }}</p>
-      <p class="mt-2 fx-type-caption">
+      <p>{{ brief.outcome }}</p>
+      <p class="fx-type-caption">
         {{ brief.actors.join(' · ') }}
       </p></UCard
     >
     <UCard>
       <h2 class="fx-type-section-title">Search plan</h2>
-      <p class="mt-2">{{ searchStatusLabels[report.search.status] }}</p>
-      <ul
-        v-if="report.search.findings.length"
-        class="mt-3 list-disc space-y-2 pl-5"
-      >
+      <p>{{ searchStatusLabels[report.search.status] }}</p>
+      <ul v-if="report.search.findings.length" class="fx-list-stack">
         <li v-for="finding in report.search.findings" :key="finding">
           {{ finding }}
         </li>
       </ul>
-      <p class="mt-3 fx-type-caption">
+      <p class="fx-type-caption">
         This reviews declared policy. Deployed pages, indexation and search
         performance need separate evidence.
       </p>
     </UCard>
     <UCard v-for="item in report.coverage" :key="item.id">
       <h2 class="fx-type-section-title">{{ item.need }}</h2>
-      <p class="mt-2 fx-type-caption">{{ item.acceptance }}</p>
-      <p class="mt-3 fx-type-caption">
+      <p class="fx-type-caption">{{ item.acceptance }}</p>
+      <p class="fx-type-caption">
         Reference {{ item.observed.length ? 'mapped' : 'not mapped' }} ·
         independent proposal pending ·
         {{
@@ -63,11 +60,11 @@
         title="Reference implementation"
         :default-open="false"
       >
-        <ul class="mt-3 space-y-2">
+        <ul class="fx-list-stack">
           <li v-for="element in item.observed" :key="element.id">
             <strong>{{ element.id }}</strong> · {{ element.role }} ·
             {{ element.owner }}
-            <ul class="mt-1 pl-4">
+            <ul>
               <li v-for="path in element.sourcePaths" :key="path">
                 {{ path }}
               </li>
@@ -78,19 +75,19 @@
     </UCard>
     <UCard
       ><h2 class="fx-type-section-title">What the build taught us</h2>
-      <ul class="mt-3 space-y-4">
+      <ul class="fx-list-stack">
         <li v-for="learning in report.learnings" :key="learning.decision">
           <h3 class="fx-type-card-heading">{{ learning.decision }}</h3>
-          <p class="mt-1 fx-type-caption">{{ learning.reason }}</p>
+          <p class="fx-type-caption">{{ learning.reason }}</p>
         </li>
       </ul></UCard
     >
     <UCard
       ><h2 class="fx-type-section-title">The Ignition loop</h2>
-      <ol class="mt-3 list-decimal space-y-3 pl-5">
+      <ol class="fx-list-stack">
         <li v-for="step in ignitionMethod" :key="step.id">
           <h3 class="fx-type-card-heading">{{ step.title }}</h3>
-          <p class="mt-1 fx-type-caption">{{ step.instruction }}</p>
+          <p class="fx-type-caption">{{ step.instruction }}</p>
         </li>
       </ol></UCard
     >

@@ -6,15 +6,15 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Model</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('model')">
               {{ openSections.model ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.model" class="mt-4">
+          <div v-show="openSections.model">
             <FireDiagnosticsModel
               :title="'Suppliers · Model'"
               :model="supplierModelRuntime"
@@ -23,7 +23,7 @@
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Collection</div>
             <UButton
               variant="ghost"
@@ -33,10 +33,10 @@
               {{ openSections.collection ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.collection" class="mt-4">
+          <div v-show="openSections.collection">
             <UCard>
               <template #header>
-                <div class="space-y-3">
+                <div class="fx-card-body-stack">
                   <p>Suppliers collection</p>
                   <p>
                     Filter suppliers by model drift (extra fields) before
@@ -70,7 +70,7 @@
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Storage</div>
             <UButton
               variant="ghost"
@@ -80,8 +80,8 @@
               {{ openSections.storage ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.storage" class="mt-4 space-y-4">
-            <div class="space-y-3">
+          <div v-show="openSections.storage">
+            <div class="fx-card-body-stack">
               <p>Inspect one Supplier root and its owned operation paths.</p>
 
               <USelect
@@ -91,7 +91,7 @@
               />
             </div>
 
-            <div class="grid gap-2 md:grid-cols-3">
+            <div>
               <UBadge variant="soft">
                 root doc: {{ selectedRootSupplier ? 'yes' : 'no' }}
               </UBadge>

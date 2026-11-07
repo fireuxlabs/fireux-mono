@@ -5,10 +5,10 @@
       <h2>Kitchen agenda</h2>
       <UBadge color="neutral" variant="subtle">Not connected</UBadge>
     </div>
-    <div class="py-8">
+    <div>
       <UIcon name="i-lucide-calendar-range" />
       <p>No events connected yet</p>
-      <p class="mx-auto mt-2 max-w-md">
+      <p>
         Scheduled Kitchen work will appear here when a capability provides it.
         Choose a date above to explore the calendar.
       </p>

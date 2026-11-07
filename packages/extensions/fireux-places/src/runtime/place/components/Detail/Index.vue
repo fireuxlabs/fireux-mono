@@ -5,7 +5,7 @@
     <div class="place-detail__layout">
       <div class="place-detail__content">
         <slot name="services" />
-        <PlaceDetailAbout id="about" class="scroll-mt-24" :place="place" />
+        <PlaceDetailAbout id="about" :place="place" />
         <PlaceDetailGallery
           v-if="place.gallery_images.length"
           :name="place.name"

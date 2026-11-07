@@ -5,7 +5,7 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
+      <div class="fx-card-body-stack">
         <p>Step 2 · Workplace</p>
         <h2 class="fx-type-card-heading">
           {{ chosenPlaceCard ? 'Selected location' : 'Choose a location' }}
@@ -14,7 +14,7 @@
       </div>
     </template>
 
-    <div class="space-y-4">
+    <div class="fx-card-body-stack">
       <UAlert
         v-if="locationError"
         color="error"
@@ -32,7 +32,7 @@
         </ClientOnly>
       </div>
 
-      <div v-else class="space-y-2">
+      <div v-else class="fx-card-body-stack">
         <PlaceCardsCell v-bind="chosenPlaceCard" :show-source="true" />
       </div>
     </div>

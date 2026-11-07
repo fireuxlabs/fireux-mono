@@ -44,40 +44,40 @@
         </template>
       </UPageHeader>
       <UPageBody>
-      <UAlert
-        v-if="!flow.submission && !flow.serviceOpen"
-        color="neutral"
-        title="This service is closed"
-        description="Please order during its serving hours."
-      />
-      <MenuOrderResponse
-        v-if="flow.submission"
-        :submission="flow.submission"
-        :response-title="flow.responseTitle"
-        :response-message="flow.responseMessage"
-        :pending="flow.pending"
-        @reset="flow.reset"
-      />
-      <div v-else class="menu-order-layout">
-        <MenuOrderMenuItems
-          :sections="flow.manifest.content.sections"
+        <UAlert
+          v-if="!flow.submission && !flow.serviceOpen"
+          color="neutral"
+          title="This service is closed"
+          description="Please order during its serving hours."
+        />
+        <MenuOrderResponse
+          v-if="flow.submission"
+          :submission="flow.submission"
+          :response-title="flow.responseTitle"
+          :response-message="flow.responseMessage"
           :pending="flow.pending"
-          :money="flow.money"
-          @add="flow.add"
-        >
-          <UFormField v-if="context === 'table'" label="Table / location">
-            <UInput
-              v-model="flow.location"
-              :maxlength="200"
-              placeholder="Your table number"
-            />
-          </UFormField>
-        </MenuOrderMenuItems>
-        <aside ref="cartRegion" id="menu-order-cart">
-          <MenuOrderCheckout :flow="flow" :context="context" />
-        </aside>
-      </div>
-      <UAlert v-if="flow.error" color="error" :description="flow.error" />
+          @reset="flow.reset"
+        />
+        <div v-else class="menu-order-layout">
+          <MenuOrderMenuItems
+            :sections="flow.manifest.content.sections"
+            :pending="flow.pending"
+            :money="flow.money"
+            @add="flow.add"
+          >
+            <UFormField v-if="context === 'table'" label="Table / location">
+              <UInput
+                v-model="flow.location"
+                :maxlength="200"
+                placeholder="Your table number"
+              />
+            </UFormField>
+          </MenuOrderMenuItems>
+          <aside ref="cartRegion" id="menu-order-cart">
+            <MenuOrderCheckout :flow="flow" :context="context" />
+          </aside>
+        </div>
+        <UAlert v-if="flow.error" color="error" :description="flow.error" />
       </UPageBody>
     </UPage>
   </UContainer>

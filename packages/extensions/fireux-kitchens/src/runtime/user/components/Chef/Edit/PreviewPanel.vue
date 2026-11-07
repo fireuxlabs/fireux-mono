@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
-    <section class="space-y-4">
+    <section>
       <UCard v-if="isLoading">
         <p class="preview__fallback">Loading chef preview…</p>
       </UCard>
@@ -30,13 +30,11 @@
           v-if="showCellCard && previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
-          class="block"
         />
         <ChefCardsPill
           v-else-if="previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
-          class="block"
         />
       </UCard>
 

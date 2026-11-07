@@ -1,12 +1,10 @@
 <template>
   <UContainer>
-    <div class="mx-auto grid max-w-3xl gap-8">
+    <div class="pagebody">
       <header>
         <p class="fx-type-caption">Free restaurant tool</p>
-        <h1 class="mt-3 fx-type-page-title">
-          Restaurant labour cost calculator
-        </h1>
-        <p class="mx-auto mt-4 max-w-2xl fx-type-body">
+        <h1 class="fx-type-page-title">Restaurant labour cost calculator</h1>
+        <p class="fx-type-body">
           Add sales, wages and employment costs to calculate total labour cost
           and labour percentage. No sign-in is required.
         </p>

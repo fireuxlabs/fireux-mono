@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p v-if="!hours.windows.length" class="mb-4">
+    <p v-if="!hours.windows.length">
       Add your regular weekly hours to get started.
     </p>
     <PlaceOpeningHoursWeek
@@ -16,10 +16,10 @@
       :dismissible="!saving"
     >
       <template #body>
-        <form class="space-y-6" @submit.prevent="save">
+        <form @submit.prevent="save">
           <fieldset>
-            <legend class="mb-3">Apply to</legend>
-            <div class="flex flex-wrap gap-2">
+            <legend>Apply to</legend>
+            <div>
               <UButton
                 v-for="day in openingDays"
                 :key="day"
@@ -34,34 +34,19 @@
             </div>
           </fieldset>
           <UFormField label="Hours">
-            <USelect
-              v-model="mode"
-              :items="modes"
-              :disabled="saving"
-              class="w-full"
-            />
+            <USelect v-model="mode" :items="modes" :disabled="saving" />
           </UFormField>
-          <div v-if="mode === 'hours'" class="space-y-3">
+          <div v-if="mode === 'hours'">
             <div
               v-for="(range, index) in draft"
               :key="index"
               class="hours-range"
             >
               <UFormField :label="index === 0 ? 'Opens' : 'Reopens'">
-                <UInput
-                  v-model="range.open"
-                  type="time"
-                  :disabled="saving"
-                  class="w-full"
-                />
+                <UInput v-model="range.open" type="time" :disabled="saving" />
               </UFormField>
               <UFormField label="Closes">
-                <UInput
-                  v-model="range.close"
-                  type="time"
-                  :disabled="saving"
-                  class="w-full"
-                />
+                <UInput v-model="range.close" type="time" :disabled="saving" />
               </UFormField>
               <UButton
                 icon="i-lucide-x"
@@ -98,7 +83,7 @@
           >
             <template #actions><FireCopyError :message="error" /></template>
           </UAlert>
-          <div class="flex justify-end gap-2">
+          <div>
             <UButton
               label="Cancel"
               color="neutral"

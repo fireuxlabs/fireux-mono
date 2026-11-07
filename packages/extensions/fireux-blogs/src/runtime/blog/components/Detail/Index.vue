@@ -1,16 +1,15 @@
 <template>
-  <article class="space-y-4">
+  <article>
     <BlogDetailHeader :post="post" />
 
-    <div v-if="post.featuredImage" class="rounded-lg overflow-hidden bg-muted">
+    <div v-if="post.featuredImage">
       <img
         :src="post.featuredImage"
         :alt="post.featuredImageAlt || post.title"
-        class="w-full h-auto object-cover"
       />
     </div>
 
-    <section class="prose max-w-none" v-html="safeContent" />
+    <section class="prose" v-html="safeContent" />
   </article>
 </template>
 

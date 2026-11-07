@@ -6,9 +6,9 @@
     icon="i-lucide-wallet-cards"
     :default-open="false"
   >
-    <div class="mt-4 grid gap-4 lg:grid-cols-2">
+    <UPageGrid as="div">
       <UCard v-for="group in groups" :key="group.id">
-        <p class="mb-3">
+        <p>
           {{ group.description }}
         </p>
 
@@ -23,7 +23,7 @@
           :capture-intent="capturePaymentIntent"
         />
       </UCard>
-    </div>
+    </UPageGrid>
   </FireDisclosurePanel>
 </template>
 

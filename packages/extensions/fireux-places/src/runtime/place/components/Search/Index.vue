@@ -3,7 +3,7 @@
 <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: expose selection clearing without changing existing direct-create consumers. -->
 <!-- Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: keep logo discovery optional and selection-scoped. -->
 <template>
-  <div class="space-y-4">
+  <div>
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
 
     <UCard v-if="selectedCell" :ui="{ body: 'fx-card-body-stack' }">
@@ -16,7 +16,7 @@
         :loading="selectedLogoLoading"
       />
 
-      <div class="flex items-center justify-end gap-2">
+      <div>
         <UButton
           v-if="showClearButton"
           size="sm"

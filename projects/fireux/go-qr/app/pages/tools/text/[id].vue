@@ -1,12 +1,8 @@
 <template>
-  <main ref="toolRoot" class="bg-transparent">
-    <GoQrProviderToolsText
-      v-if="toolConfig"
-      class="w-full"
-      :tool="toolConfig"
-    />
+  <UPage ref="toolRoot">
+    <GoQrProviderToolsText v-if="toolConfig" :tool="toolConfig" />
     <GoQrProviderToolsComingSoon v-else name="Text" />
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

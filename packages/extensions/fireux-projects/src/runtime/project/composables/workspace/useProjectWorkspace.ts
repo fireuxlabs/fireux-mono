@@ -5,17 +5,12 @@ import {
   defineWorkspace,
 } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useProjectCollection } from '../useProjectCollection'
-import { useProjectAccess } from '../useProjectAccess'
 import { useProjectRead } from '../useProjectRead'
 
 export const useProjectWorkspace = defineWorkspace(() => {
   const selection = useWorkspace('project')
   const targets = useProjectCollection()
-  const collectionOutcome = computed<WorkspaceTargetOutcome>(() =>
-    targets.outcome.value === 'empty' && targets.projectIds.value.length
-      ? 'empty'
-      : targets.outcome.value
-  )
+  const collectionOutcome = targets.outcome
 
   watch(
     [targets.projects, collectionOutcome, selection.selectedId],
@@ -30,7 +25,7 @@ export const useProjectWorkspace = defineWorkspace(() => {
   // Opening a Workspace is local selection, not an account-primary mutation.
 
   const id = selection.selectedId
-  const access = useProjectAccess()
+  const access = targets.access
   const readId = computed(() =>
     access.outcome.value === 'ready' && access.ids.value.includes(id.value)
       ? id.value

@@ -2,11 +2,10 @@
   <section
     v-if="links.length"
     id="contact"
-    class="grid scroll-mt-24 gap-4"
     aria-labelledby="venue-contact-heading"
   >
     <h2 class="fx-type-section-title" id="venue-contact-heading">Contact</h2>
-    <div class="flex flex-wrap gap-3">
+    <div>
       <UButton
         v-for="link in links"
         :key="link.label"

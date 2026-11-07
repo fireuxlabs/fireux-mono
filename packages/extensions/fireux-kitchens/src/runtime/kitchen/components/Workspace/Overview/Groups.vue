@@ -1,8 +1,5 @@
 <template>
-  <nav
-    aria-label="Kitchen working areas"
-    class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-  >
+  <nav aria-label="Kitchen working areas">
     <UPageCard
       v-for="area in areas"
       :key="area.key"

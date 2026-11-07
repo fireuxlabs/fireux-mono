@@ -3,7 +3,7 @@
     Loading post…
   </div>
   <UAlert v-else-if="!canPublishBlog" title="Admins only" color="warning" />
-  <div v-else-if="outcome === 'error'" class="space-y-2">
+  <div v-else-if="outcome === 'error'">
     <UAlert title="The post could not be loaded." color="error" />
     <FireCopyError message="The post could not be loaded." />
   </div>
@@ -12,7 +12,7 @@
     title="Post not found"
     color="warning"
   />
-  <form v-else-if="post && baseline" class="space-y-6" @submit.prevent="save">
+  <form v-else-if="post && baseline" @submit.prevent="save">
     <p>Editing /blog/{{ slug }} · {{ post.author.display_name }}</p>
     <UAlert
       v-if="conflict"
@@ -20,22 +20,20 @@
       description="Reload the saved version before making further changes."
       color="warning"
     />
-    <fieldset :disabled="saving || conflict" class="space-y-4">
+    <fieldset :disabled="saving || conflict">
       <UFormField label="Title" name="title"
-        ><UInput v-model="draft.title" aria-label="Title" class="w-full"
+        ><UInput v-model="draft.title" aria-label="Title"
       /></UFormField>
       <UFormField label="Search description" name="description"
         ><UTextarea
           v-model="draft.metaDescription"
           aria-label="Search description"
-          class="w-full"
           :rows="3"
       /></UFormField>
       <UFormField label="Article content (HTML)" name="content"
         ><UTextarea
           v-model="draft.content"
           aria-label="Article content (HTML)"
-          class="w-full"
           :rows="18"
       /></UFormField>
       <UButton
@@ -50,7 +48,7 @@
         title="Article preview"
         sandbox=""
         :srcdoc="previewDocument"
-        class="w-full h-[36rem] rounded border"
+        class="w-full h-[36rem]"
       />
       <p v-if="hasTranslations">
         This edits the original article. Existing translations remain unchanged
@@ -70,12 +68,12 @@
       />
       <UCheckbox v-model="aiAssisted" label="This update was AI-assisted." />
     </fieldset>
-    <div v-if="error" role="alert" class="space-y-2">
+    <div v-if="error" role="alert">
       <p>{{ error }}</p>
       <FireCopyError :message="error" />
     </div>
     <p v-if="saved" role="status">Changes saved.</p>
-    <div class="flex gap-3">
+    <div>
       <UButton type="submit" :loading="saving" :disabled="!canSave"
         >Save changes</UButton
       >

@@ -1,7 +1,12 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatar :src="imageUrl || undefined" :alt="title" size="sm" icon="i-lucide-briefcase" />
+      <UAvatar
+        :src="imageUrl || undefined"
+        :alt="title"
+        size="sm"
+        icon="i-lucide-briefcase"
+      />
 
       <div class="preview__main">
         <div class="preview__top">
@@ -27,7 +32,7 @@
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
             <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
+            <span v-else>missing</span>
           </div>
         </div>
       </div>

@@ -19,12 +19,7 @@
       @update:model-value="emit('update', $event)"
     />
     <p v-else>Create a menu to get started.</p>
-    <p
-      v-for="option in unavailable"
-      :key="option.value"
-      class="mt-2"
-      role="status"
-    >
+    <p v-for="option in unavailable" :key="option.value" role="status">
       {{ option.label }}: {{ option.description }}
     </p>
   </UFormField>

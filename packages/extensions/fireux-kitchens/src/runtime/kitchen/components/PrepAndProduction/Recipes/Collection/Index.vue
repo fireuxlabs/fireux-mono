@@ -40,9 +40,7 @@
       title="Recipes unavailable"
       :description="String(error)"
     />
-    <div v-else-if="pending" class="recipe-grid" aria-busy="true">
-      <USkeleton v-for="n in 6" :key="n" class="h-48 rounded-xl" />
-    </div>
+    <FireState v-else-if="pending" outcome="pending" entity="recipes" />
     <div v-else-if="!visibleRecipes.length" class="recipe-empty">
       <UIcon name="i-lucide-notebook-tabs" />
       <h2>{{ recipes.length ? 'No matching recipes' : 'No recipes yet' }}</h2>
@@ -59,7 +57,7 @@
         @click="createOpen = true"
       />
     </div>
-    <div v-else class="grid gap-2">
+    <div v-else>
       <WorkspaceKitchenCollectionRow
         v-for="recipe in visibleRecipes"
         :key="recipe.id"
@@ -84,7 +82,6 @@
       v-model:open="previewOpen"
       :title="selectedRecipe?.name || 'Recipe'"
       description="Recipe preview"
-      :ui="{ content: 'sm:max-w-5xl' }"
       ><template #body>
         <FireStateCard
           v-if="ingredientsError"
@@ -115,10 +112,7 @@
           trailing
           @click="previewOpen = false" /></template
     ></USlideover>
-    <USlideover
-      v-model:open="createOpen"
-      title="Add recipe"
-      :ui="{ content: 'sm:max-w-2xl' }"
+    <USlideover v-model:open="createOpen" title="Add recipe"
       ><template #body
         ><KitchenPrepAndProductionRecipesForm
           v-if="createOpen"

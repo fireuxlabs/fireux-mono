@@ -1,6 +1,25 @@
 # FireUX Bookings
 
-`fireux-bookings` provides a provider-independent booking lifecycle and server-side Google Calendar transport that domain packages and Apps can compose. Its first App consumer is Interlaken Bike Tours.
+`fireux-bookings` provides a reusable customer booking surface, a provider-independent booking lifecycle, and server-side Google Calendar transport that domain packages and Apps can compose.
+
+## Customer booking surface
+
+The module registers `BookingsCustomerForm` from
+`fireux-bookings/runtime/components/Customer/Form.vue`. It presents customer
+name, email, group size, availability feedback, errors and confirmation. Its
+`reservation`, `availability-actions`, `summary`, `footnote` and
+`confirmation-actions` slots let an App render its own reservation inputs and
+actions around those shared customer fields. `headingLevel` lets a page select
+an appropriate heading level for the form's placement.
+
+The form accepts `BookingCustomerDetails`, `BookingAvailabilityView` and
+`BookingConfirmationView` from
+`fireux-bookings/runtime/types/customer-booking-form`. It emits customer edits
+and a submit event; it does not fetch availability or submit a booking. The
+consuming App owns service choices, schedules, prices, calendar policy, records,
+and booking commands. The FireUX Docs preview and Blank simulator use generic
+placeholder or user-entered configuration; the package component contains no
+business-specific service data.
 
 The current shared API exposes `queryGoogleCalendarBusy` and
 `createGoogleCalendarEvent` from `fireux-bookings/runtime/server/google-calendar`.
@@ -29,14 +48,14 @@ provider effect or failed finalization retains capacity for reconciliation.
 The lifecycle never assumes a tour, daily schedule, price, currency, Firestore
 collection, Google account or customer model.
 
-Ben's App is the first integrated consumer. It owns tour policy, public API and
-Firestore transaction adapters. The package tests also exercise a non-tour
-appointment and failures at the reservation, provider and confirmation boundaries.
-These fixture checks do not establish a second production integration.
+Consuming Apps own service policy, public APIs and storage adapters. The package
+tests exercise a non-tour appointment and failures at the reservation, provider
+and confirmation boundaries. These fixture checks do not establish another
+production integration.
 
-Design and technical SEO remain supplied by Nuxt UI and FireUX Core. A future
-Bookings storefront uses those same owners. This Extension does not introduce
-its own design system, metadata engine or a dependency from Core into Bookings.
+Design and technical SEO remain supplied by Nuxt UI and FireUX Core. The
+Extension does not introduce its own design system, metadata engine or a
+dependency from Core into Bookings.
 
 ## Optional Business Workspace
 

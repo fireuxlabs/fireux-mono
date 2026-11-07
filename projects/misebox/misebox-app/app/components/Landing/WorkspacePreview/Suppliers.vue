@@ -1,7 +1,7 @@
 <template>
-  <div class="mt-5" aria-label="Suppliers preview">
+  <div aria-label="Suppliers preview">
     <template v-if="suppliers.length">
-      <div class="mb-3 flex flex-wrap justify-end gap-2">
+      <div>
         <UBadge color="neutral" variant="soft" size="sm">
           {{ suppliers.length }} suppliers
         </UBadge>
@@ -10,12 +10,12 @@
         </UBadge>
       </div>
 
-      <div class="grid max-h-[24rem] gap-3 overflow-y-auto pr-1">
-        <article
+      <div class="pagebody">
+        <UCard
+          as="article"
           v-for="supplier in suppliers"
           :key="supplier.id"
           :data-supplier-id="supplier.id"
-          class="overflow-hidden rounded-xl border border-default bg-default shadow-sm"
         >
           <KitchenSuppliersCardsCell
             :id="supplier.id"
@@ -26,7 +26,7 @@
             :prop="supplierSummary(supplier)"
             :link="false"
           />
-        </article>
+        </UCard>
       </div>
     </template>
 
@@ -34,10 +34,14 @@
       v-else
       color="neutral"
       variant="soft"
-      :title="error ? 'Suppliers preview unavailable' : 'No suppliers connected'"
-      :description="error
-        ? 'The shared Supplier records could not be loaded.'
-        : 'This Kitchen does not have any Supplier links yet.'"
+      :title="
+        error ? 'Suppliers preview unavailable' : 'No suppliers connected'
+      "
+      :description="
+        error
+          ? 'The shared Supplier records could not be loaded.'
+          : 'This Kitchen does not have any Supplier links yet.'
+      "
     />
   </div>
 </template>
@@ -46,8 +50,7 @@
 import { computed } from 'vue'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 
-type ProductDemoSupplier =
-  MiseboxProductDemo['workspace']['suppliers'][number]
+type ProductDemoSupplier = MiseboxProductDemo['workspace']['suppliers'][number]
 
 const props = defineProps<{
   error: boolean
@@ -67,10 +70,8 @@ const supplierSummary = (supplier: ProductDemoSupplier) => {
   const catalogues = `${supplier.catalogueCount} catalogue${
     supplier.catalogueCount === 1 ? '' : 's'
   }`
-  return [
-    ingredients,
-    catalogues,
-    supplier.headquartersLabel,
-  ].filter(Boolean).join(' · ')
+  return [ingredients, catalogues, supplier.headquartersLabel]
+    .filter(Boolean)
+    .join(' · ')
 }
 </script>

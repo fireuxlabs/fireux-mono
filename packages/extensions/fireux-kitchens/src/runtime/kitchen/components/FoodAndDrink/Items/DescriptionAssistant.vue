@@ -1,7 +1,9 @@
 <template>
-  <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
+  <UCard
+    as="section"
+    variant="subtle"
+    :ui="{ body: 'fx-card-body-stack' }"
     v-if="dish && catalogue.itemKind === 'drink' && canWrite"
-    
   >
     <div class="fx-card-body-stack">
       <h3>DrinksAI description assistance</h3>

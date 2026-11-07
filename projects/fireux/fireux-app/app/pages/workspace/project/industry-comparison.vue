@@ -1,13 +1,13 @@
 <template>
-  <div class="mx-auto grid w-full max-w-6xl gap-6">
+  <div class="workspace-surface">
     <UButton
       to="/workspace/project/ignition-reconciliation"
       label="Ignition reconciliation"
       variant="link"
       icon="i-lucide-arrow-left"
     />
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <p class="max-w-2xl fx-type-body">
+    <div class="workspace-panel-header">
+      <p class="fx-type-body">
         Start with the same architectural responsibilities. Identify domain
         substitutions and real deltas, then assess what the library actually
         supports.
@@ -28,44 +28,33 @@
     />
     <section class="workspace-surface">
       <h2 class="fx-type-section-title">Shared structure</h2>
-      <div class="overflow-x-auto rounded-lg border border-default">
-        <table class="w-full">
-          <thead class="bg-elevated">
-            <tr>
-              <th class="p-3">Area</th>
-              <th class="p-3">Misebox</th>
-              <th class="p-3">{{ report.candidate.name }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="row in report.shared"
-              :key="row.key"
-              class="border-t border-default align-top"
-            >
-              <th class="p-3">{{ row.label }}</th>
-              <td class="p-3">
-                <p>{{ row.contract }}</p>
-                <p class="mt-1 fx-type-caption">
-                  {{ label(row.baseline.level) }}
-                </p>
-              </td>
-              <td class="p-3">
-                <p>{{ row.contract }}</p>
-                <p class="mt-1 fx-type-caption">
-                  {{ label(row.candidate.level) }}
-                </p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UTable
+        :data="report.shared"
+        :columns="[
+          { accessorKey: 'label', header: 'Area' },
+          { id: 'baseline', header: 'Misebox' },
+          { id: 'candidate', header: report.candidate.name },
+        ]"
+      >
+        <template #baseline-cell="{ row }">
+          <p>{{ row.original.contract }}</p>
+          <p class="fx-type-caption">
+            {{ label(row.original.baseline.level) }}
+          </p>
+        </template>
+        <template #candidate-cell="{ row }">
+          <p>{{ row.original.contract }}</p>
+          <p class="fx-type-caption">
+            {{ label(row.original.candidate.level) }}
+          </p>
+        </template>
+      </UTable>
       <FireDisclosurePanel title="Evidence and limits"
-        ><ul class="mt-3 space-y-3">
+        ><ul class="fx-list-stack">
           <li v-for="row in report.shared" :key="row.key">
             <strong>{{ row.label }}</strong>
-            <p class="mt-1 fx-type-body">Misebox: {{ row.baseline.note }}</p>
-            <p class="mt-1 fx-type-body">
+            <p class="fx-type-body">Misebox: {{ row.baseline.note }}</p>
+            <p class="fx-type-body">
               {{ report.candidate.name }}: {{ row.candidate.note }}
             </p>
           </li>
@@ -74,28 +63,21 @@
     </section>
     <section class="workspace-surface">
       <h2 class="fx-type-section-title">Domain substitutions</h2>
-      <div class="overflow-x-auto rounded-lg border border-default">
-        <table class="w-full">
-          <thead class="bg-elevated">
-            <tr>
-              <th class="p-3">Role</th>
-              <th class="p-3">Misebox</th>
-              <th class="p-3">{{ report.candidate.name }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="row in domainRows"
-              :key="row.key"
-              class="border-t border-default align-top"
-            >
-              <th class="p-3">{{ row.label }}</th>
-              <td class="p-3">{{ report.baseline.domain[row.key] }}</td>
-              <td class="p-3">{{ report.candidate.domain[row.key] }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UTable
+        :data="domainRows"
+        :columns="[
+          { accessorKey: 'label', header: 'Role' },
+          { id: 'baseline', header: 'Misebox' },
+          { id: 'candidate', header: report.candidate.name },
+        ]"
+      >
+        <template #baseline-cell="{ row }">{{
+          report.baseline.domain[row.original.key]
+        }}</template>
+        <template #candidate-cell="{ row }">{{
+          report.candidate.domain[row.original.key]
+        }}</template>
+      </UTable>
     </section>
     <section class="workspace-surface">
       <h2 class="fx-type-section-title">Real deltas</h2>
@@ -110,18 +92,18 @@
                 : 'Configuration'
           }}</UBadge>
         </div>
-        <p class="mt-3 fx-type-caption">
+        <p class="fx-type-caption">
           {{ delta.baseline }} → {{ delta.candidate }}
         </p>
-        <p class="mt-3">{{ delta.reason }}</p>
-        <p class="mt-3 fx-type-caption">
+        <p>{{ delta.reason }}</p>
+        <p class="fx-type-caption">
           {{ reuseLabel(delta.reuse) }}
         </p>
-        <p class="mt-2 fx-type-caption">Acceptance: {{ delta.acceptance }}</p>
+        <p class="fx-type-caption">Acceptance: {{ delta.acceptance }}</p>
         <FireDisclosurePanel
           v-if="delta.references.length"
           title="Source references"
-          ><ul class="mt-2 space-y-1">
+          ><ul class="fx-list-stack">
             <li v-for="reference in delta.references" :key="reference">
               {{ reference }}
             </li>

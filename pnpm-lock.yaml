@@ -487,6 +487,9 @@ importers:
 
   packages/extensions/fireux-docs:
     dependencies:
+      fireux-bookings:
+        specifier: workspace:*
+        version: link:../fireux-bookings
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core

@@ -1,11 +1,11 @@
 <template>
-  <aside v-if="showPanel" class="rounded-xl bg-elevated/50 px-4 py-3">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
+  <aside v-if="showPanel">
+    <div>
+      <div>
         <UIcon name="i-lucide-key-round" />
         <h2>Operator panel</h2>
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton
           :to="editTo"
           label="Edit identity"

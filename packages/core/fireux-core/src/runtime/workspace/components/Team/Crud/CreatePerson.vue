@@ -40,11 +40,9 @@
           :alt="person.display_name"
           size="sm"
         />
-        <span class="min-w-0">
-          <span class="block truncate">{{
-            person.display_name || person.handle
-          }}</span>
-          <span class="block truncate">@{{ person.handle }}</span>
+        <span>
+          <span>{{ person.display_name || person.handle }}</span>
+          <span>@{{ person.handle }}</span>
         </span>
       </UButton>
     </div>
@@ -57,7 +55,7 @@
       variant="soft"
     />
 
-    <div class="flex flex-wrap items-center justify-between gap-2">
+    <div>
       <UButton
         v-if="cancellable"
         type="button"

@@ -8,10 +8,10 @@
       variant="subtle"
     >
       <div class="fx-card-body-stack">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
           <div>
             <p>Storage status</p>
-            <p class="mt-0.5">
+            <p>
               {{ syncedCount }} of {{ syncableItems.length }} media assets are
               recorded on this App.
             </p>
@@ -24,14 +24,10 @@
           </UBadge>
         </div>
 
-        <div class="overflow-hidden">
-          <div class="divide-y divide-default">
-            <div
-              v-for="item in syncableItems"
-              :key="item.key"
-              class="grid gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
-            >
-              <div class="flex min-w-0 items-center gap-3">
+        <div>
+          <div>
+            <div v-for="item in syncableItems" :key="item.key">
+              <div>
                 <div
                   class="asset-preview-frame"
                   :class="`asset-preview-frame--${item.shape}`"
@@ -47,8 +43,8 @@
                   />
                 </div>
 
-                <div class="min-w-0">
-                  <div class="flex flex-wrap items-center gap-1.5">
+                <div>
+                  <div>
                     <div>{{ item.label }}</div>
                     <UBadge
                       :color="item.url ? 'success' : 'neutral'"
@@ -62,13 +58,8 @@
                 </div>
               </div>
 
-              <div class="flex items-center gap-1.5 sm:justify-end">
-                <a
-                  :href="item.path"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex h-7 items-center px-2"
-                >
+              <div>
+                <a :href="item.path" target="_blank" rel="noopener noreferrer">
                   Source
                 </a>
                 <a
@@ -76,7 +67,6 @@
                   :href="item.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex h-7 items-center px-2"
                   :aria-label="`Open ${item.label} Storage URL`"
                 >
                   Stored
@@ -104,14 +94,10 @@
           icon="i-lucide-monitor-down"
           :default-open="false"
         >
-          <div class="mt-3 overflow-hidden">
-            <div class="divide-y divide-default">
-              <div
-                v-for="item in requiredOnlyItems"
-                :key="item.key"
-                class="flex items-center justify-between gap-3 p-3"
-              >
-                <div class="flex min-w-0 items-center gap-3">
+          <div>
+            <div>
+              <div v-for="item in requiredOnlyItems" :key="item.key">
+                <div>
                   <div class="asset-preview-frame asset-preview-frame--square">
                     <img
                       :src="item.path"
@@ -122,18 +108,13 @@
                     />
                   </div>
 
-                  <div class="min-w-0">
+                  <div>
                     <div>{{ item.label }}</div>
                     <div v-html="item.requirements" />
                   </div>
                 </div>
 
-                <a
-                  :href="item.path"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex h-7 shrink-0 items-center px-2"
-                >
+                <a :href="item.path" target="_blank" rel="noopener noreferrer">
                   Source
                 </a>
               </div>

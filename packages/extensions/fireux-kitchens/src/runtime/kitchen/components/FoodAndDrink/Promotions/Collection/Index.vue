@@ -11,7 +11,7 @@
   <p v-else-if="!state.kitchenId.value">
     Choose a Kitchen to view its promotions.
   </p>
-  <div v-else class="grid gap-4">
+  <div v-else>
     <FireCopyError
       v-if="state.dishes.error.value"
       :message="String(state.dishes.error.value)"
@@ -40,9 +40,7 @@
         @edit="editPromotion(promotion)"
       />
     </template>
-    <p v-else class="rounded-xl border border-default p-5">
-      No promotions yet.
-    </p>
+    <p v-else>No promotions yet.</p>
   </div>
 </template>
 <script setup lang="ts">

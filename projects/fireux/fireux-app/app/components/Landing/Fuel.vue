@@ -2,11 +2,11 @@
 <template>
   <ClientOnly>
     <div class="landing-index-section">
-      <div class="mb-6">
+      <div>
         <h2 class="fx-type-section-title">Fuel</h2>
       </div>
 
-      <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+      <div class="pagebody">
         <div class="fuel-item">
           <img :src="nuxtSrc" alt="Nuxt logo" />
         </div>

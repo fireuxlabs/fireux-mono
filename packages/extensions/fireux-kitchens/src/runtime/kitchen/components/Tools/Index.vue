@@ -1,27 +1,24 @@
 <template>
   <UContainer>
-    <div class="mx-auto grid max-w-5xl gap-8">
-      <header class="grid gap-3">
-        <NuxtLink to="/tools" class="w-fit hover:underline">Tools</NuxtLink>
+    <div>
+      <header>
+        <NuxtLink to="/tools">Tools</NuxtLink>
         <h1>Kitchen tools</h1>
-        <p class="max-w-3xl">
+        <p>
           Workspace actions, callable Team tools and Menu workflow descriptions.
         </p>
       </header>
-      <section v-for="group in groups" :key="group.title" class="grid gap-3">
-        <div class="grid gap-1">
+      <section v-for="group in groups" :key="group.title">
+        <div>
           <h2>
             {{ group.title }}
           </h2>
           <p>{{ group.description }}</p>
         </div>
-        <ul class="grid gap-4 p-0">
-          <li v-for="item in group.items" :key="item.id" class="list-none">
-            <NuxtLink
-              :to="item.to"
-              class="group flex items-center justify-between gap-4 rounded-lg px-3 py-3 hover:bg-elevated"
-            >
-              <span class="grid gap-1">
+        <ul>
+          <li v-for="item in group.items" :key="item.id">
+            <NuxtLink :to="item.to">
+              <span>
                 <span>
                   {{ item.label }}
                 </span>
@@ -29,7 +26,7 @@
                 <code>{{ item.id }}</code>
                 <span> Capability family: {{ item.family }} </span>
               </span>
-              <span class="flex shrink-0 items-center gap-1">
+              <span>
                 {{ item.actionLabel }}
                 <UIcon name="i-lucide-arrow-right" />
               </span>
@@ -38,8 +35,8 @@
         </ul>
       </section>
 
-      <section class="grid gap-3" aria-labelledby="menu-import-inventory">
-        <div class="grid gap-1">
+      <section aria-labelledby="menu-import-inventory">
+        <div>
           <h2 id="menu-import-inventory">Menu import capability inventory</h2>
           <p>
             The implementation stages described by
@@ -47,13 +44,12 @@
             >.
           </p>
         </div>
-        <ol class="grid gap-3 pl-5">
+        <ol>
           <li
             v-for="step in kitchenMenuImportFromSourceTool.steps"
             :key="step.capability"
-            class="pl-1"
           >
-            <div class="grid gap-1">
+            <div>
               <code>
                 {{ step.capability }}
               </code>
@@ -69,18 +65,19 @@
         </p>
       </section>
 
-      <section class="grid gap-3" aria-labelledby="menu-ai-context">
-        <div class="grid gap-1">
+      <section aria-labelledby="menu-ai-context">
+        <div>
           <h2 id="menu-ai-context">Menu workflow context</h2>
           <p>
             These describe the AI-assisted Workspace import workflow. They are
             not registered as standalone agent-callable tools.
           </p>
         </div>
-        <UCard as="article" :ui="{ body: 'fx-card-body-stack' }"
+        <UCard
+          as="article"
+          :ui="{ body: 'fx-card-body-stack' }"
           v-for="tool in kitchenMenuTools"
           :key="tool.id"
-          
         >
           <header class="fx-card-body-stack">
             <h3>
@@ -95,7 +92,7 @@
             Required: {{ tool.ai.runtime.required.join(', ') || 'none' }} ·
             optional: {{ tool.ai.runtime.optional.join(', ') || 'none' }}
           </p>
-          <ul class="grid gap-1 pl-5">
+          <ul>
             <li
               v-for="constraint in tool.ai.baked.constraints"
               :key="constraint"
@@ -106,18 +103,19 @@
         </UCard>
       </section>
 
-      <section class="grid gap-3" aria-labelledby="team-ai-context">
-        <div class="grid gap-1">
+      <section aria-labelledby="team-ai-context">
+        <div>
           <h2 id="team-ai-context">Team tool AI context</h2>
           <p>
             These Team definitions have registered server executors. Agent-only
             actions are listed for reference, without a direct action link.
           </p>
         </div>
-        <UCard as="article" :ui="{ body: 'fx-card-body-stack' }"
+        <UCard
+          as="article"
+          :ui="{ body: 'fx-card-body-stack' }"
           v-for="tool in kitchenTeamTools"
           :key="tool.id"
-          
         >
           <header class="fx-card-body-stack">
             <h3>
@@ -137,7 +135,7 @@
             Required: {{ tool.ai.runtime.required.join(', ') || 'none' }} ·
             optional: {{ tool.ai.runtime.optional.join(', ') || 'none' }}
           </p>
-          <ul class="grid gap-1 pl-5">
+          <ul>
             <li
               v-for="constraint in tool.ai.baked.constraints"
               :key="constraint"

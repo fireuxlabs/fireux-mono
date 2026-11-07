@@ -36,14 +36,14 @@
           </div>
           <div>
             <div class="label">Canonical URL</div>
-            <a
+            <ULink
               v-if="blogPost.canonicalUrl"
-              :href="blogPost.canonicalUrl"
+              :to="blogPost.canonicalUrl"
               target="_blank"
               rel="noopener"
             >
               {{ blogPost.canonicalUrl }}
-            </a>
+            </ULink>
             <span v-else class="warning">Missing canonicalUrl</span>
           </div>
           <div>

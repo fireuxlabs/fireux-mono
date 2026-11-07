@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 13:12 CEST — Operation detail surfaces: add catalogue-backed factual pages. -->
 <!-- Concurrent edit — 2026-07-21 13:16 CEST — Project Operation copy: use the authored description instead of generating an awkward title. -->
 <template>
-  <main v-if="operation" class="min-h-screen">
+  <main v-if="operation">
     <UContainer>
       <UPage>
         <UButton :to="`/operations#${operation.workspace.id}`" variant="link">

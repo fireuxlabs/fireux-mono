@@ -16,17 +16,17 @@
     >
       <template #body>
         <div class="pagebody">
-          <p class="m-0 fx-type-caption">
+          <p class="fx-type-caption">
             Build and operate a Kitchen through its Menus, preparation, service
             and supporting records. This Workspace operates the Kitchen; it does
             not operate the Misebox SaaS Project.
           </p>
 
           <section class="pagebody" aria-labelledby="kitchen-ai-capabilities">
-            <h3 id="kitchen-ai-capabilities" class="m-0 fx-type-card-heading">
+            <h3 id="kitchen-ai-capabilities" class="fx-type-card-heading">
               {{ agentName }} capabilities
             </h3>
-            <p class="m-0 fx-type-caption">
+            <p class="fx-type-caption">
               {{ agentName }} works from this page's Kitchen context. Available
               information and actions follow the selected Kitchen and the
               capability being used.

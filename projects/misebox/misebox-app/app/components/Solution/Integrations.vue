@@ -9,15 +9,15 @@
         {{ integrations.body }}
       </p>
 
-      <div class="grid gap-3 md:grid-cols-3">
+      <UPageGrid>
         <UCard v-for="item in integrations.items" :key="item.name">
-          <div class="flex items-center gap-2">
+          <div>
             <UIcon :name="item.icon" />
             <h3 class="fx-type-card-heading">
               {{ item.name }}
             </h3>
           </div>
-          <p class="mt-2 fx-type-caption">
+          <p class="fx-type-caption">
             {{ item.body }}
           </p>
           <UButton
@@ -33,7 +33,7 @@
             {{ item.cta }}
           </UButton>
         </UCard>
-      </div>
+      </UPageGrid>
     </div>
   </UCard>
 </template>

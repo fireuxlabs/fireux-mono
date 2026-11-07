@@ -1,18 +1,17 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
+      <div class="fx-card-body-stack">
         <h2 class="fx-type-card-heading">Solutions</h2>
         <p>Jump to dedicated pages for selected FireUX offers.</p>
       </div>
     </template>
 
-    <div class="space-y-3">
+    <div class="fx-card-body-stack">
       <NuxtLink
         v-for="item in solutionItems"
         :key="item.product.id"
         :to="resolveSolutionRoute(item.product)"
-        class="block"
       >
         <ProductCardsSummary
           :card="item.card"

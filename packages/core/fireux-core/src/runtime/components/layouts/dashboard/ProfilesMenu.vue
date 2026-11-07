@@ -10,7 +10,6 @@
     variant="ghost"
     block
     :square="collapsed"
-    :class="[!collapsed && 'py-2']"
   />
 
   <UDropdownMenu
@@ -27,7 +26,6 @@
       variant="ghost"
       block
       :square="collapsed"
-      :class="[!collapsed && 'py-2']"
       :disabled="!menu.length"
     />
   </UDropdownMenu>

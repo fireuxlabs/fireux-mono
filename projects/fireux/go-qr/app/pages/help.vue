@@ -1,44 +1,44 @@
 <template>
   <UPage>
-        <UButton to="/" variant="link"> Go QR </UButton>
-        <UPageHeader
-          title="Help"
-          description="Upload a public doc and get a QR code."
-        />
-        <UPageBody>
-          <section class="pagebody">
-            <div>
-              <h2 class="fx-type-section-title">How it works</h2>
-              <p class="mt-2 fx-type-body">
-                Upload a doc, choose a short public path, then Go QR creates a
-                public doc page and a printable QR page.
-              </p>
-            </div>
+    <UButton to="/" variant="link"> Go QR </UButton>
+    <UPageHeader
+      title="Help"
+      description="Upload a public doc and get a QR code."
+    />
+    <UPageBody>
+      <section class="pagebody">
+        <div>
+          <h2 class="fx-type-section-title">How it works</h2>
+          <p class="fx-type-body">
+            Upload a doc, choose a short public path, then Go QR creates a
+            public doc page and a printable QR page.
+          </p>
+        </div>
 
-            <div>
-              <h2 class="fx-type-section-title">Public by design</h2>
-              <p class="mt-2 fx-type-body">
-                QR docs are for public information. Anyone with the link or QR
-                code can view your doc.
-              </p>
-            </div>
+        <div>
+          <h2 class="fx-type-section-title">Public by design</h2>
+          <p class="fx-type-body">
+            QR docs are for public information. Anyone with the link or QR code
+            can view your doc.
+          </p>
+        </div>
 
-            <div>
-              <h2 class="fx-type-section-title">What to upload</h2>
-              <p class="mt-2 fx-type-body">
-                Use Go QR for information people need to scan and read. Do not
-                upload private, sensitive, or confidential information.
-              </p>
-            </div>
-          </section>
+        <div>
+          <h2 class="fx-type-section-title">What to upload</h2>
+          <p class="fx-type-body">
+            Use Go QR for information people need to scan and read. Do not
+            upload private, sensitive, or confidential information.
+          </p>
+        </div>
+      </section>
 
-          <div class="flex flex-wrap gap-3">
-            <UButton to="/" icon="i-lucide-upload" size="lg">
-              Create your first QR doc free
-            </UButton>
-          </div>
-        </UPageBody>
-      </UPage>
+      <div>
+        <UButton to="/" icon="i-lucide-upload" size="lg">
+          Create your first QR doc free
+        </UButton>
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

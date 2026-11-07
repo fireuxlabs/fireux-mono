@@ -1,19 +1,20 @@
 <template>
-  <div class="space-y-8">
+  <div>
     <section
       v-for="(section, index) in sections"
       :key="section.key"
       :id="`service-section-${index}`"
-      class="scroll-mt-6"
     >
-      <h2 class="mb-2">{{ section.label }}</h2>
-      <div class="grid gap-x-8 md:grid-cols-2">
-        <button
+      <h2>{{ section.label }}</h2>
+      <div>
+        <UButton
+          color="neutral"
+          variant="outline"
+          block
           v-for="row in section.items"
           :key="row.key"
           type="button"
           :disabled="disabled"
-          class="flex w-full items-start gap-4 border-b border-default py-4 transition-colors hover:bg-elevated/40 focus-visible:outline-2 focus-visible:outline-primary"
           :aria-label="`Choose ${row.item.name}`"
           @click="emit('select', row)"
         >
@@ -21,12 +22,12 @@
             :enabled="row.presentation.showItemImages"
             :image-url="row.item.imageUrl"
           />
-          <div class="min-w-0 flex-1">
+          <div>
             <h3>{{ row.item.name }}</h3>
-            <p v-if="row.item.description" class="mt-1 line-clamp-2">
+            <p v-if="row.item.description">
               {{ row.item.description }}
             </p>
-            <p class="mt-2">
+            <p>
               {{ row.item.priceOptions.length ? 'From ' : ''
               }}{{
                 money(
@@ -38,15 +39,15 @@
                 )
               }}
             </p>
-            <p v-if="row.item.bottleDeposit" class="mt-1">
+            <p v-if="row.item.bottleDeposit">
               Bottle deposit +{{ money(row.item.bottleDeposit) }} or exchange
             </p>
-            <p v-if="row.item.promotionLabel" class="mt-1">
+            <p v-if="row.item.promotionLabel">
               {{ row.item.promotionLabel }}
             </p>
           </div>
-          <UIcon name="i-lucide-plus" class="shrink-0" aria-hidden="true" />
-        </button>
+          <UIcon name="i-lucide-plus" aria-hidden="true" />
+        </UButton>
       </div>
     </section>
   </div>

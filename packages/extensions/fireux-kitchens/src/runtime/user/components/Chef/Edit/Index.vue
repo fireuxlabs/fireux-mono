@@ -7,7 +7,7 @@
       icon="i-lucide-id-card"
       variant="outline"
     >
-      <div class="space-y-4">
+      <div>
         <FireFormsEditableSimpleField
           label="Title"
           :value="title"

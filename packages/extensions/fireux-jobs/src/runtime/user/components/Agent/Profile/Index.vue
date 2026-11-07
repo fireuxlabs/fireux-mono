@@ -27,7 +27,7 @@
           eyebrow="Hiring team"
           title="About"
         >
-          <p class="whitespace-pre-line sm:text-base">
+          <p class="whitespace-pre-line">
             {{ aboutCopy }}
           </p>
         </UserProfileSection>
@@ -38,22 +38,20 @@
           eyebrow="Hiring"
           title="Placement focus"
         >
-          <div class="grid gap-3 sm:grid-cols-2">
+          <UPageGrid>
             <UCard
               v-for="focusArea in focusAreas"
               :key="focusArea"
-              class="flex items-center gap-3" :ui="{ body: 'fx-card-body-stack' }"
+              :ui="{ body: 'fx-card-body-stack' }"
             >
-              <div
-                class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-info/10 text-info"
-              >
+              <div>
                 <UIcon name="i-lucide-user-search" />
               </div>
               <span>
                 {{ focusArea }}
               </span>
             </UCard>
-          </div>
+          </UPageGrid>
         </UserProfileSection>
       </div>
 
@@ -65,7 +63,7 @@
           eyebrow="Reach"
           title="Coverage"
         >
-          <div class="flex flex-wrap gap-2">
+          <div>
             <UBadge
               v-for="area in coverageAreas"
               :key="area"
@@ -83,7 +81,7 @@
           eyebrow="Business"
           title="Contact"
         >
-          <div class="grid gap-2">
+          <div>
             <UButton
               v-for="contact in contactLinks"
               :key="contact.label"

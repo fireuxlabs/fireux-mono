@@ -3,7 +3,6 @@
     :open="open"
     title="Kitchen listing"
     description="Choose your Kitchen URL, status and directory visibility."
-    :ui="{ content: 'sm:max-w-md' }"
     @update:open="emit('update:open', $event)"
   >
     <template #body>
@@ -18,7 +17,7 @@
           <USwitch v-model="visibility" />
         </UFormField>
         <FireCopyError v-if="updateError" :message="updateError" />
-        <div class="flex justify-end gap-2">
+        <div class="fx-card__actions">
           <UButton
             label="Cancel"
             color="neutral"

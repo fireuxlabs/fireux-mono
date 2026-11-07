@@ -1,8 +1,8 @@
 <template>
   <div class="landing-finance-report" aria-label="Kitchen Finance preview">
     <template v-if="selectedSummary">
-      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap gap-2" aria-label="Finance period">
+      <div>
+        <div aria-label="Finance period">
           <UButton
             v-for="period in finance.periods"
             :key="period.id"

@@ -1,9 +1,9 @@
 <template>
-  <section class="space-y-6">
+  <section>
     <UPageHeader :title="current.title" :description="current.description" />
     <UCard>
       <div class="fx-card__chips">
-        <UIcon :name="current.icon" class="shrink-0" />
+        <UIcon :name="current.icon" />
         <div class="fx-card-body-stack">
           <UBadge color="warning" variant="subtle">Coming soon</UBadge>
           <h2>{{ current.empty }}</h2>

@@ -1,5 +1,5 @@
 <template>
-  <form class="grid gap-3" @submit.prevent="submit">
+  <form @submit.prevent="submit">
     <UFormField label="Project name">
       <UInput
         v-model="name"
@@ -22,10 +22,7 @@
       title="Project creation failed"
       :description="formError || error"
     />
-    <FireCopyError
-      v-if="formError || error"
-      :message="formError || error"
-    />
+    <FireCopyError v-if="formError || error" :message="formError || error" />
   </form>
 </template>
 

@@ -76,7 +76,7 @@ async function markNotificationRead(notificationId: string) {
     description="Your updates across all workspaces."
   >
     <template #body>
-      <div class="mb-4 flex items-center justify-between gap-3">
+      <div>
         <UTabs
           v-model="filter"
           :items="[
@@ -88,13 +88,11 @@ async function markNotificationRead(notificationId: string) {
         />
         <WorkspaceIntroInfo :intro="intro" />
       </div>
-      <p v-if="notifications.length === 50" class="mb-4">
+      <p v-if="notifications.length === 50">
         Showing your latest 50 notifications. {{ liveUnreadCount }} unread in
         total.
       </p>
-      <div v-if="pending" class="pagebody">
-        <USkeleton v-for="index in 3" :key="index" class="h-24" />
-      </div>
+      <FireState v-if="pending" outcome="pending" entity="notifications" />
 
       <UAlert
         v-else-if="error"
@@ -104,8 +102,8 @@ async function markNotificationRead(notificationId: string) {
         description="Please try again shortly."
       />
 
-      <div v-else-if="!visibleNotifications.length" class="py-12">
-        <UIcon name="i-lucide-check-check" class="mx-auto mb-4 block size-8" />
+      <div v-else-if="!visibleNotifications.length">
+        <UIcon name="i-lucide-check-check" />
         {{
           filter === 'unread'
             ? liveUnreadCount > 0

@@ -2,18 +2,16 @@
   <UCard class="kitchen-ai-command-result" aria-live="polite">
     <div class="workspace-surface workspace-surface--compact">
       <div class="card__media">
-        <div
-          class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10"
-        >
+        <div>
           <UIcon
             :name="pending ? 'i-lucide-wand-sparkles' : 'i-lucide-circle-check'"
           />
         </div>
-        <div class="min-w-0 flex-1">
+        <div>
           <p>
             {{ pending ? 'Ready for approval' : 'Result' }}
           </p>
-          <p class="mt-1">{{ result.text }}</p>
+          <p>{{ result.text }}</p>
         </div>
       </div>
 

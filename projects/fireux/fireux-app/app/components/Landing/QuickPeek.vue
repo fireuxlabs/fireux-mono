@@ -7,9 +7,9 @@
       </div>
     </template>
 
-    <ul class="space-y-4">
-      <li class="flex gap-3" v-for="item in items" :key="item.title">
-        <div class="grid place-items-center rounded-lg w-10 h-10 bg-primary/15">
+    <ul class="fx-list-stack">
+      <li v-for="item in items" :key="item.title">
+        <div class="pagebody">
           <UIcon :name="item.icon" />
         </div>
         <div>

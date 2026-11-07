@@ -1,6 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolFeedbackLink class="w-full max-w-xl" />
+    <GoQrToolFeedbackLink />
   </GoQrSolutionPage>
 </template>
 

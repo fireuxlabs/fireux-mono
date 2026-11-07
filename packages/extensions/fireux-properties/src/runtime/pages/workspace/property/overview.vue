@@ -8,7 +8,7 @@
   <WorkspaceAI compact aria-label="Property Overview AI"
     ><UAlert title="Overview AI is not connected yet" color="neutral" />
   </WorkspaceAI>
-  <section class="space-y-4">
+  <section>
     <WorkspacePropertyOverview />
   </section>
 </template>

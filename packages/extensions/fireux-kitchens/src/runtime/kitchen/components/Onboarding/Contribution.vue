@@ -17,7 +17,7 @@
     >
       <template #description><FireCopyError :message="error" /></template>
     </UAlert>
-    <div class="flex flex-wrap gap-3">
+    <div>
       <UButton
         :to="`/kitchens/${encodeURIComponent(result.slug || result.kitchen_id)}`"
         >View kitchen</UButton

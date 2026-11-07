@@ -5,5 +5,7 @@
       "path": "."
     }
   ],
-  "settings": {}
+  "settings": {
+    "window.title": "${dirty}${activeEditorShort}${separator}${rootName}${separator}${rootPath}"
+  }
 }

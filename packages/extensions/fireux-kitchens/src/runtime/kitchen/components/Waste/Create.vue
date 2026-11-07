@@ -1,10 +1,10 @@
 <template>
-  <form class="space-y-4" @submit.prevent="submit">
+  <form @submit.prevent="submit">
     <UFormField label="Wasted item" required>
       <UInput v-model="itemName" placeholder="Loaf of bread" />
     </UFormField>
 
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div>
       <UFormField label="Quantity" required>
         <UInput v-model.number="quantity" type="number" min="0.01" step="any" />
       </UFormField>
@@ -13,7 +13,7 @@
       </UFormField>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div>
       <UFormField label="Reason" required>
         <USelect
           v-model="reason"
@@ -42,7 +42,7 @@
       :description="error"
     />
 
-    <div class="flex justify-end gap-2">
+    <div>
       <UButton
         label="Cancel"
         color="neutral"

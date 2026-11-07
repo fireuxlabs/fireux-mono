@@ -4,7 +4,7 @@
     <template #header>
       <FireLayoutsDashboardNavbar :title="navTitle">
         <template #right>
-          <div class="inline-flex items-center gap-1">
+          <div>
             <UButton
               to="/jobs/manage"
               icon="i-lucide-briefcase-business"

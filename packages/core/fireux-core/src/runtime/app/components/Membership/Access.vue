@@ -23,16 +23,16 @@
     icon="i-lucide-user-round-check"
     variant="subtle"
   >
-    <dl class="divide-y divide-default">
-      <div class="py-3 first:pt-0">
+    <dl class="fx-card__detail-grid">
+      <div>
         <dt>Role</dt>
-        <dd class="mt-1">
+        <dd>
           {{ appUser.role }}
         </dd>
       </div>
-      <div class="py-3">
+      <div>
         <dt>Subscription</dt>
-        <dd class="mt-1">
+        <dd>
           <UserAccessBadge :subscription="appUser.subscription" />
         </dd>
       </div>

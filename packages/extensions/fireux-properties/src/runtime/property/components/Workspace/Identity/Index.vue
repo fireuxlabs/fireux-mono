@@ -1,5 +1,5 @@
 <template>
-  <section class="grid min-w-0 gap-6">
+  <section>
     <FireStateCard
       v-if="readState"
       :state="readState"
@@ -14,7 +14,7 @@
     />
     <UCard v-else-if="selectedProperty">
       <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="card__header">
           <h2 class="fx-type-card-heading">Property profile</h2>
           <UButton
             v-if="identity.canWrite.value"
@@ -26,14 +26,14 @@
           />
         </div>
       </template>
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <div>
         <UAvatar
           :src="imageUrl || undefined"
           :alt="name"
           icon="i-lucide-house"
           size="3xl"
         />
-        <div class="min-w-0 space-y-3">
+        <div class="fx-card-body-stack">
           <h3 class="break-words">
             {{ name }}
           </h3>

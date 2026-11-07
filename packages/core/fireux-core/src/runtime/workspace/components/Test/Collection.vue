@@ -25,7 +25,7 @@
     /></template>
   </UAlert>
   <p v-else-if="!records.length">No Tests yet.</p>
-  <div v-else class="grid min-w-0 grid-cols-1 gap-2">
+  <div v-else>
     <WorkspaceSelectionRow
       v-for="record in records"
       :key="record.id"
@@ -33,7 +33,7 @@
       @select="$emit('select', record.id)"
     >
       <UAvatar icon="i-lucide-flask-conical" />
-      <span class="truncate">{{ record.value }}</span>
+      <span>{{ record.value }}</span>
     </WorkspaceSelectionRow>
   </div>
 </template>

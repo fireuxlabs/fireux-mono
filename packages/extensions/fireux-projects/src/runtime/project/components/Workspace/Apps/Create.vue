@@ -1,18 +1,20 @@
 <template>
   <UCard v-if="projectId">
-    <template #header><h2 class="fx-type-card-heading">Create an App</h2></template>
+    <template #header
+      ><h2 class="fx-type-card-heading">Create an App</h2></template
+    >
     <form
       class="workspace-surface workspace-surface--compact"
       @submit.prevent="save"
     >
       <UFormField label="App name" required
-        ><UInput v-model="name" class="w-full"
+        ><UInput v-model="name"
       /></UFormField>
       <UFormField label="App id" required
-        ><UInput v-model="id" class="w-full" placeholder="your-app"
+        ><UInput v-model="id" placeholder="your-app"
       /></UFormField>
       <UFormField label="Description"
-        ><UTextarea v-model="description" class="w-full"
+        ><UTextarea v-model="description"
       /></UFormField>
       <UFormField label="Context"
         ><UTextarea
@@ -20,15 +22,10 @@
           :maxlength="32000"
           :rows="5"
           autoresize
-          class="w-full"
           placeholder="Purpose, audience, background and decisions to confirm"
       /></UFormField>
       <UFormField label="App role" required
-        ><USelect
-          v-model="role"
-          :items="roles"
-          placeholder="Choose a role"
-          class="w-full"
+        ><USelect v-model="role" :items="roles" placeholder="Choose a role"
       /></UFormField>
       <p>
         Ecosystem: {{ config.ecosystemId }}. Saves an inactive App with a
@@ -42,10 +39,8 @@
         >Save App and preview</UButton
       >
     </form>
-    <p v-if="savedId" class="mt-4">
-      Saved {{ savedId }}. Its preview is available below.
-    </p>
-    <AppPreviewHtml v-if="savedApp" :app="savedApp" class="mt-4" />
+    <p v-if="savedId">Saved {{ savedId }}. Its preview is available below.</p>
+    <AppPreviewHtml v-if="savedApp" :app="savedApp" />
   </UCard>
 </template>
 <script setup lang="ts">

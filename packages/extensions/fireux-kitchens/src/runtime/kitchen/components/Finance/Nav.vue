@@ -1,5 +1,5 @@
 <template>
-  <nav class="flex flex-wrap items-center gap-1" aria-label="Finance sections">
+  <nav aria-label="Finance sections">
     <UButton
       v-for="item in items"
       :key="item.to"

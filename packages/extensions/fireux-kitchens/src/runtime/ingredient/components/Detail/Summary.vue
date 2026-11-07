@@ -7,13 +7,13 @@
         size="md"
       />
 
-      <div class="min-w-0 flex-1 space-y-2">
+      <div>
         <div class="card__header">
-          <div class="min-w-0">
-            <div class="truncate">
+          <div>
+            <div class="fx-truncate">
               {{ model.title }}
             </div>
-            <div v-if="model.subtitle" class="truncate">
+            <div v-if="model.subtitle" class="fx-truncate">
               {{ model.subtitle }}
             </div>
           </div>
@@ -23,7 +23,7 @@
           </UBadge>
         </div>
 
-        <div class="grid gap-2 sm:grid-cols-2">
+        <div>
           <div v-for="detail in model.details" :key="detail.label">
             <span>{{ detail.label }}:</span>
             {{ detail.value }}

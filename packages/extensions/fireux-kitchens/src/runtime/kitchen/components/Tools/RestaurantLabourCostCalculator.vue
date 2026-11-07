@@ -3,14 +3,12 @@
     <template #header>
       <div>
         <h2>Restaurant labour cost calculator</h2>
-        <p class="mt-1">
-          Compare total labour cost with sales. Nothing is saved.
-        </p>
+        <p>Compare total labour cost with sales. Nothing is saved.</p>
       </div>
     </template>
 
     <form class="fx-card-body-stack" @submit.prevent="calculate">
-      <div class="grid gap-4 sm:grid-cols-2">
+      <div class="fx-card-body-stack">
         <UFormField label="Sales" required>
           <UInput v-model="sales" type="number" min="0.01" step="0.01">
             <template #leading>CHF</template>
@@ -44,16 +42,16 @@
     </form>
 
     <template v-if="result" #footer>
-      <div class="grid gap-4 sm:grid-cols-2">
+      <div>
         <div>
           <p>Total labour cost</p>
-          <p class="mt-2 tabular-nums">
+          <p>
             {{ formatMoney(result.totalLabourCost) }}
           </p>
         </div>
         <div>
           <p>Labour percentage</p>
-          <p class="mt-2 tabular-nums">
+          <p>
             {{ formatPercentage(result.labourPercentage) }}
           </p>
         </div>

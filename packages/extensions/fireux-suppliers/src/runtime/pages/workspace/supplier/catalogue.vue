@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
   <WorkspaceAICapabilityPlaceholder capability="Supplier Catalogue" />
-  <section class="space-y-4">
+  <section>
     <WorkspaceSupplierCatalogue />
   </section>
 </template>

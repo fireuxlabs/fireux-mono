@@ -5,14 +5,7 @@
     :title="`${catalogue.title} unavailable`"
     :description="String(error)"
   />
-  <div
-    v-else-if="pending"
-    class="dish-grid"
-    aria-label="Loading catalogue"
-    aria-busy="true"
-  >
-    <USkeleton v-for="n in 8" :key="n" class="h-64 rounded-xl" />
-  </div>
+  <FireState v-else-if="pending" outcome="pending" :entity="catalogue.plural" />
   <div v-else-if="!visibleDishes.length" class="catalogue-empty">
     <UIcon :name="catalogue.icon" />
     <h2>{{ dishes.length ? 'No matches' : `No ${catalogue.plural} yet` }}</h2>
@@ -63,7 +56,6 @@
     :total="visibleDishes.length"
     :items-per-page="pageSize"
     :sibling-count="1"
-    class="justify-center"
   />
 </template>
 

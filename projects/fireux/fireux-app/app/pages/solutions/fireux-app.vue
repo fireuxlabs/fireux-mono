@@ -9,7 +9,7 @@
     <UPageBody>
       <template v-if="product">
         <UCard>
-          <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div class="pagebody">
             <div class="fx-card-body-stack">
               <div class="card__badges">
                 <UBadge color="primary" variant="soft">Hosted</UBadge>
@@ -22,7 +22,7 @@
               </p>
               <div
                 v-if="product.content"
-                class="prose prose-sm max-w-none dark:prose-invert"
+                class="prose prose-sm dark:prose-invert"
                 v-html="product.content"
               />
             </div>
@@ -57,15 +57,14 @@
           <template #header>
             <p class="fx-type-body">What you get</p>
           </template>
-          <div class="grid gap-2 sm:grid-cols-2">
-            <div
+          <div class="pagebody">
+            <UCard
               v-for="(feature, index) in activeFeatures"
               :key="`${feature.title}-${index}`"
-              class="flex items-start gap-2 rounded-md border p-3"
             >
               <UIcon name="i-lucide-check-circle-2" />
               <p class="fx-type-caption">{{ feature.title }}</p>
-            </div>
+            </UCard>
           </div>
         </UCard>
 

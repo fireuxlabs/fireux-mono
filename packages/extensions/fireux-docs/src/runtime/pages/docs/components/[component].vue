@@ -75,7 +75,7 @@
         >
           <template #intro>
             <p>Set up your workspace</p>
-            <p class="mt-2">The owner supplies this introduction.</p>
+            <p>The owner supplies this introduction.</p>
           </template>
           <p>The owner supplies the current step.</p>
         </FireOnboardingShell>

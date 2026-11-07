@@ -2,6 +2,7 @@ import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtim
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
+import { resolveWorkspaceCanCreate } from '../../../../core/fireux-core/src/runtime/workspace/utils/policy.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -26,6 +27,7 @@ function load(path, bindings, result) {
     resolveReadOutcome,
     resolveHttpDocumentOutcome,
     isFirestoreDocumentId,
+    resolveWorkspaceCanCreate,
     ...bindings,
   }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -194,7 +196,18 @@ test('Access pending, malformed records, and read failures never appear as a usa
 })
 
 function createHarness(access) {
-  const state = { membership: membership(), access, reads: [], writes: [] }
+  const state = {
+    membership: membership(),
+    access,
+    reads: [],
+    writes: [],
+    config: {
+      appId: 'app',
+      role: 'global',
+      workspaceConfig: {},
+      subscriptionCapacity: { project: { free: 1, pro: null } },
+    },
+  }
   const appTarget = { collectionPath: 'apps' }
   const projectsTarget = { collectionPath: 'projects' }
   const transaction = {
@@ -242,10 +255,7 @@ function createHarness(access) {
       serverProjectAccessTarget,
       readMembershipAccessIds: contract.readMembershipAccessIds,
       ...contract,
-      useFireUXConfig: () => ({
-        appId: 'app',
-        subscriptionCapacity: { project: { free: 1, pro: null } },
-      }),
+      useFireUXConfig: () => state.config,
       requireFirebaseBearerUser: async () => ({
         uid: 'u',
         decoded: { firebase: { sign_in_provider: 'password' } },
@@ -299,6 +309,27 @@ test('Project creation writes Project, Team, and lifetime-bound access together 
     membership_created_at: stamps,
   })
   assert.deepEqual(h.state.membership, membership())
+})
+
+test('Signed-in Project creation enforces App creation policy before writes', async () => {
+  for (const config of [
+    { role: 'global', workspaceConfig: { project: { canCreate: false } } },
+    { role: 'standalone', workspaceConfig: { project: { canCreate: false } } },
+    { role: 'tenant', workspaceConfig: {} },
+  ]) {
+    const h = createHarness(undefined)
+    Object.assign(h.state.config, config)
+    await assert.rejects(h.run(), {
+      statusCode: 403,
+      message: 'Project creation is unavailable in this App.',
+    })
+    assert.deepEqual(h.state.reads, [])
+    assert.deepEqual(h.state.writes, [])
+  }
+  const enabledTenant = createHarness(undefined)
+  enabledTenant.state.config.role = 'tenant'
+  enabledTenant.state.config.workspaceConfig = { project: { canCreate: true } }
+  assert.equal((await enabledTenant.run()).ok, true)
 })
 
 test('Project creation counts all access ids, including missing roots, and rejects malformed authority', async () => {

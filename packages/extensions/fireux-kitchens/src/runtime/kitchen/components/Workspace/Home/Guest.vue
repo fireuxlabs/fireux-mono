@@ -1,5 +1,8 @@
 <template>
-  <section class="space-y-4 py-4" aria-label="Your Kitchen">
+  <section
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Your Kitchen"
+  >
     <p v-if="reading || saving" role="status">Opening your Kitchen…</p>
     <template v-else-if="kitchen">
       <h2>{{ name }}</h2>

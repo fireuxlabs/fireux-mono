@@ -1,33 +1,27 @@
 <!-- packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ListActions.vue -->
 <template>
   <div class="pagebody">
-    <div
-      v-for="item in items"
-      :key="item.id"
-      class="flex items-center justify-between gap-3"
-    >
+    <div v-for="item in items" :key="item.id">
       <component
         :is="item.to ? 'NuxtLink' : 'div'"
         v-bind="item.to ? { to: item.to } : {}"
-        class="list-pill"
       >
         <UAvatar
           :src="item.avatar || undefined"
           :text="initialsFor(item)"
           :alt="item.title"
           size="sm"
-          class="list-pill__avatar"
         />
 
-        <div class="list-pill__text">
-          <span class="list-pill__title">{{ item.title }}</span>
-          <span v-if="item.subtitle" class="list-pill__subtitle">
+        <div>
+          <span>{{ item.title }}</span>
+          <span v-if="item.subtitle">
             {{ item.subtitle }}
           </span>
         </div>
       </component>
 
-      <div class="flex items-center gap-2">
+      <div>
         <template v-if="actionApprove || actionReject">
           <UButton
             v-if="actionApprove"

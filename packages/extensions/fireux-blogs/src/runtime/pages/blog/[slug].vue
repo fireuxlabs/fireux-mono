@@ -1,11 +1,7 @@
 <template>
   <UPage>
     <UPageBody class="pagebody">
-      <div v-if="pending" class="space-y-3">
-        <USkeleton class="h-6 w-40" />
-        <USkeleton class="h-10" />
-        <USkeleton class="h-64" />
-      </div>
+      <FireState v-if="pending" outcome="pending" />
 
       <div v-else-if="post">
         <UButton
@@ -30,7 +26,7 @@
         :default-open="false"
       />
 
-      <div v-else class="space-y-2">
+      <div v-else>
         <h1 class="fx-type-page-title">404 – Blog post not found</h1>
         <p>The requested article could not be loaded.</p>
       </div>

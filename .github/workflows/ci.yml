@@ -35,6 +35,9 @@ jobs:
       - name: Verify IDE configuration
         run: pnpm ide:check
 
+      - name: Verify App assets
+        run: pnpm check:assets
+
       - name: Offline unit tests
         run: pnpm test:unit
 

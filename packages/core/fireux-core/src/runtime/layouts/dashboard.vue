@@ -16,7 +16,6 @@
           <FireLayoutsDashboardProfilesMenu
             v-if="!collapsed"
             :collapsed="false"
-            class="min-w-0 flex-1"
           />
           <UDashboardSidebarCollapse
             :class="
@@ -56,29 +55,15 @@
             :items="bottomNav"
             orientation="vertical"
           />
-
-          <div class="mt-auto lg:hidden">
-            <USeparator
-              v-if="topNav.length || middleNav.length || bottomNav.length"
-            />
-
-            <div class="pt-3">
-              <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
-            </div>
-          </div>
         </div>
       </template>
 
       <template #footer="{ collapsed }">
-        <div class="hidden lg:flex">
-          <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
-        </div>
+        <FireLayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
       </template>
     </UDashboardSidebar>
 
-    <main
-      class="m-4 flex min-w-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
-    >
+    <main class="flex min-w-0 flex-1 overflow-y-auto">
       <slot />
     </main>
   </UDashboardGroup>

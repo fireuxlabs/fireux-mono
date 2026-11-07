@@ -1,16 +1,8 @@
 <template>
-  <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white">
-    <header
-      class="flex min-h-14 items-center justify-between gap-3 border-b border-default bg-default px-3 sm:px-4"
-    >
-      <div class="min-w-0">
-        <NuxtLink to="/"> Go QR </NuxtLink>
-        <h1 class="truncate fx-type-page-title">
-          {{ documentLabel }}
-        </h1>
-      </div>
-
-      <div class="flex shrink-0 items-center gap-1.5">
+  <UPage>
+    <UPageHeader :title="documentLabel">
+      <template #headline><ULink to="/">Go QR</ULink></template>
+      <template #links>
         <UButton
           :to="documentRecord.file_url"
           target="_blank"
@@ -19,14 +11,14 @@
           color="neutral"
           aria-label="Open original"
         />
-        <a
-          :href="documentRecord.file_url"
+        <UButton
+          :to="documentRecord.file_url"
           :download="documentRecord.file_name"
-          class="inline-grid size-8 place-items-center rounded-md hover:bg-elevated"
+          icon="i-lucide-download"
+          variant="ghost"
+          color="neutral"
           aria-label="Download document"
-        >
-          <UIcon name="i-lucide-download" />
-        </a>
+        />
         <UButton
           :to="`/doc/${encodeURIComponent(documentRecord.slug)}/qr`"
           icon="i-lucide-qr-code"
@@ -34,24 +26,24 @@
           color="neutral"
           aria-label="Printable QR"
         />
-      </div>
-    </header>
-
-    <section class="min-h-0 overflow-auto bg-white" aria-label="Document">
-      <img
-        v-if="isImage"
-        :src="documentRecord.file_url"
-        :alt="documentLabel"
-        class="mx-auto block max-w-full"
-      />
-      <iframe
-        v-else
-        :src="documentRecord.file_url"
-        :title="documentLabel"
-        class="h-[calc(100vh-3.5rem)] w-full border-0"
-      />
-    </section>
-  </main>
+      </template>
+    </UPageHeader>
+    <UPageBody>
+      <section class="bg-white" aria-label="Document">
+        <img
+          v-if="isImage"
+          :src="documentRecord.file_url"
+          :alt="documentLabel"
+        />
+        <iframe
+          v-else
+          :src="documentRecord.file_url"
+          :title="documentLabel"
+          class="h-[calc(100vh-3.5rem)] w-full"
+        />
+      </section>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

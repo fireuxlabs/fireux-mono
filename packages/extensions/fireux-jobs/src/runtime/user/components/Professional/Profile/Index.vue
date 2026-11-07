@@ -61,14 +61,14 @@
     >
       <span class="professional-profile__navigator-label">Portfolio</span>
       <div class="professional-profile__navigator-links">
-        <a
+        <ULink
           v-for="link in sectionLinks"
           :key="link.to"
-          :href="link.to"
+          :to="link.to"
           class="professional-profile__navigator-link"
         >
           {{ link.label }}
-        </a>
+        </ULink>
       </div>
     </nav>
 
@@ -81,7 +81,7 @@
           eyebrow="Profile"
           title="About"
         >
-          <p class="whitespace-pre-line sm:text-base">
+          <p class="whitespace-pre-line">
             {{ aboutCopy }}
           </p>
         </UserProfileSection>
@@ -152,7 +152,7 @@
               <h3 class="fx-type-card-title">
                 {{ project.name }}
               </h3>
-              <p class="mt-1">
+              <p>
                 {{ project.role }} ·
                 {{
                   formatRange(
@@ -162,10 +162,7 @@
                   )
                 }}
               </p>
-              <p
-                v-if="project.responsibilities"
-                class="mt-3 whitespace-pre-line"
-              >
+              <p v-if="project.responsibilities" class="whitespace-pre-line">
                 {{ project.responsibilities }}
               </p>
             </article>
@@ -195,20 +192,19 @@
               class="professional-profile__current-role"
             >
               <div class="professional-profile__role-heading">
-                <h3 class="fx-type-card-title">{{ entry.item.role || 'Professional role' }}</h3>
+                <h3 class="fx-type-card-title">
+                  {{ entry.item.role || 'Professional role' }}
+                </h3>
                 <span v-if="formatExperienceDates(entry.item)">
                   {{ formatExperienceDates(entry.item) }}
                 </span>
               </div>
 
-              <div v-if="entry.placeCard" class="mt-3">
+              <div v-if="entry.placeCard">
                 <PlaceCardsPill v-bind="entry.placeCard" :show-badges="false" />
               </div>
 
-              <p
-                v-if="entry.item.responsibilities"
-                class="mt-4 whitespace-pre-line"
-              >
+              <p v-if="entry.item.responsibilities" class="whitespace-pre-line">
                 {{ entry.item.responsibilities }}
               </p>
             </article>
@@ -238,20 +234,19 @@
             >
               <div class="professional-profile__timeline-marker" />
               <div class="professional-profile__role-heading">
-                <h3 class="fx-type-card-title">{{ entry.item.role || 'Professional role' }}</h3>
+                <h3 class="fx-type-card-title">
+                  {{ entry.item.role || 'Professional role' }}
+                </h3>
                 <span v-if="formatExperienceDates(entry.item)">
                   {{ formatExperienceDates(entry.item) }}
                 </span>
               </div>
 
-              <div v-if="entry.placeCard" class="mt-3">
+              <div v-if="entry.placeCard">
                 <PlaceCardsPill v-bind="entry.placeCard" :show-badges="false" />
               </div>
 
-              <p
-                v-if="entry.item.responsibilities"
-                class="mt-3 whitespace-pre-line"
-              >
+              <p v-if="entry.item.responsibilities" class="whitespace-pre-line">
                 {{ entry.item.responsibilities }}
               </p>
             </li>
@@ -272,8 +267,10 @@
               class="professional-profile__expertise-card"
             >
               <div class="professional-profile__role-heading">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="fx-type-card-title">{{ entry.item.role || 'Professional role' }}</h3>
+                <div>
+                  <h3 class="fx-type-card-title">
+                    {{ entry.item.role || 'Professional role' }}
+                  </h3>
                   <UBadge
                     v-if="entry.item.ongoing"
                     label="Active"
@@ -287,14 +284,11 @@
                 </span>
               </div>
 
-              <div v-if="entry.placeCard" class="mt-3">
+              <div v-if="entry.placeCard">
                 <PlaceCardsPill v-bind="entry.placeCard" :show-badges="false" />
               </div>
 
-              <p
-                v-if="entry.item.responsibilities"
-                class="mt-3 whitespace-pre-line"
-              >
+              <p v-if="entry.item.responsibilities" class="whitespace-pre-line">
                 {{ entry.item.responsibilities }}
               </p>
             </article>
@@ -317,7 +311,7 @@
               <div class="professional-profile__role-heading">
                 <div>
                   <h3 class="fx-type-card-title">{{ entry.organization }}</h3>
-                  <p class="mt-1">
+                  <p>
                     {{ entry.role }}
                   </p>
                 </div>
@@ -327,7 +321,7 @@
                   }}
                 </span>
               </div>
-              <p v-if="entry.responsibilities" class="mt-3 whitespace-pre-line">
+              <p v-if="entry.responsibilities" class="whitespace-pre-line">
                 {{ entry.responsibilities }}
               </p>
             </article>

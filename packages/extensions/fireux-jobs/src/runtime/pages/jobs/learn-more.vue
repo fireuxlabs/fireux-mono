@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <section class="space-y-3">
+      <section>
         <h2 class="fx-type-section-title">What you can do today</h2>
         <p>
           Explore open public roles connected to canonical employers and
@@ -17,9 +17,9 @@
         </p>
       </section>
 
-      <section class="space-y-3">
+      <section>
         <h3 class="fx-type-card-title">Current capabilities</h3>
-        <ul class="space-y-2">
+        <ul>
           <li>
             <strong>Published job directory</strong>
             &nbsp;— open public roles are projected with bounded Business and
@@ -43,7 +43,7 @@
         </ul>
       </section>
 
-      <section class="space-y-3">
+      <section>
         <h3 class="fx-type-card-title">Direct employment</h3>
         <p>
           The named employer—not the platform—employs and pays each person
@@ -52,9 +52,9 @@
         </p>
       </section>
 
-      <section class="space-y-3">
+      <section>
         <h3 class="fx-type-card-title">Choose your next step</h3>
-        <div class="flex flex-wrap gap-2">
+        <div>
           <UButton to="/jobs" color="primary">Browse jobs</UButton>
           <UButton to="/dashboard/professional/profile" variant="soft">
             Prepare your profile

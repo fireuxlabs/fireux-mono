@@ -1,8 +1,6 @@
 <template>
   <div class="workspace-surface workspace-surface--compact">
-    <div v-if="pending" class="grid min-h-64 place-items-center">
-      <UIcon name="i-lucide-loader-circle" class="animate-spin" />
-    </div>
+    <FireState v-if="pending" outcome="pending" />
 
     <UAlert
       v-else-if="outcome === 'denied'"
@@ -30,14 +28,12 @@
     />
 
     <template v-else>
-      <section
-        class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]"
-      >
+      <UPageGrid as="section">
         <UCard>
           <template #header>
-            <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="card__header">
               <div>
-                <div class="flex flex-wrap items-center gap-2">
+                <div>
                   <h2 class="fx-type-card-heading">
                     {{ selected.guest.display_name || 'Unnamed guest' }}
                   </h2>
@@ -45,7 +41,7 @@
                     {{ sourceLabel(selected.source) }}
                   </UBadge>
                 </div>
-                <p class="mt-1">
+                <p>
                   {{ formatDate(selected.arrival_date) }} →
                   {{ formatDate(selected.departure_date) }}
                 </p>
@@ -60,7 +56,7 @@
           <dl class="workspace-surface__grid workspace-surface__grid--2">
             <div class="fx-inset-panel">
               <dt>Stay</dt>
-              <dd class="mt-1">
+              <dd>
                 {{ nights(selected) }} nights · {{ selected.adults }} adults
                 <template v-if="selected.children">
                   · {{ selected.children }} children
@@ -69,17 +65,17 @@
             </div>
             <div class="fx-inset-panel">
               <dt>Value</dt>
-              <dd class="mt-1">{{ formattedTotal }}</dd>
+              <dd>{{ formattedTotal }}</dd>
             </div>
             <div class="fx-inset-panel">
               <dt>Channel reference</dt>
-              <dd class="mt-1">
+              <dd>
                 {{ selected.external_reference || 'Direct / none' }}
               </dd>
             </div>
             <div class="fx-inset-panel">
               <dt>Sync</dt>
-              <dd class="mt-1">
+              <dd>
                 <UBadge
                   :color="syncColor(selected.sync.state)"
                   variant="subtle"
@@ -90,9 +86,9 @@
             </div>
           </dl>
 
-          <div class="mt-4">
+          <div>
             <p>Host notes</p>
-            <p class="mt-1 whitespace-pre-wrap">
+            <p class="whitespace-pre-wrap">
               {{ selected.notes || 'No private notes.' }}
             </p>
           </div>
@@ -103,23 +99,21 @@
             <template #header>
               <p>Guest contact</p>
             </template>
-            <div class="space-y-3">
-              <a
+            <div class="fx-card-body-stack">
+              <ULink
                 v-if="selected.guest.email"
-                :href="`mailto:${selected.guest.email}`"
-                class="flex items-center gap-2 hover:text-primary"
+                :to="`mailto:${selected.guest.email}`"
               >
                 <UIcon name="i-lucide-mail" />
                 {{ selected.guest.email }}
-              </a>
-              <a
+              </ULink>
+              <ULink
                 v-if="selected.guest.phone"
-                :href="`tel:${selected.guest.phone}`"
-                class="flex items-center gap-2 hover:text-primary"
+                :to="`tel:${selected.guest.phone}`"
               >
                 <UIcon name="i-lucide-phone" />
                 {{ selected.guest.phone }}
-              </a>
+              </ULink>
               <p v-if="!selected.guest.email && !selected.guest.phone">
                 No contact details recorded.
               </p>
@@ -130,7 +124,7 @@
             <template #header>
               <p>Stay status</p>
             </template>
-            <div class="grid gap-2">
+            <div class="fx-card-body-stack">
               <UButton
                 v-for="status in statusActions"
                 :key="status.value"
@@ -141,7 +135,6 @@
                   !canWrite || saving || selected.status === status.value
                 "
                 :loading="saving && pendingStatus === status.value"
-                class="justify-start"
                 @click="setStatus(status.value)"
               >
                 {{ status.label }}
@@ -149,7 +142,7 @@
             </div>
           </UCard>
         </div>
-      </section>
+      </UPageGrid>
     </template>
   </div>
 </template>

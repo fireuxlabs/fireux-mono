@@ -7,7 +7,7 @@
       </div>
     </template>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <div>
       <div style="grid-column: 1 / -1">
         <PlaceEditLocation
           v-if="place"
@@ -33,8 +33,8 @@
       />
       <slot name="settings" />
     </div>
-    <FireDisclosurePanel title="Map coordinates and search" class="mt-4">
-      <div class="grid gap-4 md:grid-cols-2">
+    <FireDisclosurePanel title="Map coordinates and search">
+      <div>
         <FireFormsEditableSimpleField
           label="Search term"
           :value="place?.search_term"

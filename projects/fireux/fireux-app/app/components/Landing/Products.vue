@@ -1,12 +1,12 @@
 <!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the product catalogue fallback. -->
 <template>
   <div id="products" class="landing-index-section">
-    <div class="mb-6 space-y-2">
-      <div class="flex items-center justify-center gap-2">
+    <div class="pagebody">
+      <div>
         <h2 class="fx-type-section-title">Our Products</h2>
         <div v-if="$slots.action"><slot name="action" /></div>
       </div>
-      <p class="mx-auto max-w-2xl fx-type-body">
+      <p class="fx-type-body">
         Ecosystem apps you can use, launch, and partner around.
       </p>
     </div>
@@ -23,13 +23,8 @@
     <UPageGrid v-else>
       <UCard v-for="app in items" :key="app.title" :to="app.to">
         <template #header>
-          <div class="flex items-center gap-3">
-            <img
-              v-if="app.logo"
-              :src="app.logo"
-              :alt="app.title"
-              class="h-6 opacity-80"
-            />
+          <div>
+            <img v-if="app.logo" :src="app.logo" :alt="app.title" />
             <h3 class="fx-type-card-heading">{{ app.title }}</h3>
           </div>
         </template>
@@ -39,7 +34,7 @@
         </p>
 
         <template #footer>
-          <div class="flex items-center gap-2">
+          <div>
             <UBadge :color="normalizeBadgeColor(app.tagColor)" variant="soft">{{
               app.tag || 'App'
             }}</UBadge>

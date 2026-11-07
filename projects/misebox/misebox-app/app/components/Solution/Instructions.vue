@@ -4,17 +4,17 @@
       <h2 class="fx-type-section-title">Instructions</h2>
     </template>
 
-    <div class="grid gap-3 md:grid-cols-3">
+    <UPageGrid>
       <UCard v-for="item in items" :key="item.title">
         <UIcon :name="item.icon" />
         <h3 class="fx-type-card-heading">
           {{ item.title }}
         </h3>
-        <p class="mt-2 fx-type-caption">
+        <p class="fx-type-caption">
           {{ item.body }}
         </p>
       </UCard>
-    </div>
+    </UPageGrid>
   </UCard>
 </template>
 

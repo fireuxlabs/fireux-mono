@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <div class="pagebody">
           <p class="fx-type-headline">
@@ -13,7 +13,7 @@
           <p class="fx-type-description">
             {{ appMeta.getStarted.hero.description }}
           </p>
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton :to="workspaceEntryHref" color="primary" size="lg">
               {{ appMeta.getStarted.hero.primaryAction.label }}
             </UButton>
@@ -28,15 +28,11 @@
           </div>
         </div>
         <UCard>
-          <p class="fx-type-label mb-4">
+          <p class="fx-type-label">
             {{ appMeta.getStarted.snapshotTitle }}
           </p>
-          <ul class="space-y-3">
-            <li
-              v-for="tick in appMeta.getStarted.snapshotTicks"
-              :key="tick"
-              class="flex items-start gap-3"
-            >
+          <ul class="fx-list-stack">
+            <li v-for="tick in appMeta.getStarted.snapshotTicks" :key="tick">
               <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
@@ -47,7 +43,7 @@
 
     <section>
       <UContainer>
-        <div class="mb-10 space-y-2">
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.getStarted.stepsHeading.eyebrow }}
           </p>
@@ -58,35 +54,35 @@
             {{ appMeta.getStarted.stepsHeading.description }}
           </p>
         </div>
-        <div class="grid gap-6 md:grid-cols-3">
+        <UPageGrid>
           <UCard as="article" v-for="step in steps" :key="step.title">
             <p class="fx-type-label">
               {{ step.badge }}
             </p>
-            <h3 class="fx-type-card-title mt-3">
+            <h3 class="fx-type-card-title">
               {{ step.title }}
             </h3>
-            <p class="fx-type-caption mt-2">
+            <p class="fx-type-caption">
               {{ step.copy }}
             </p>
-            <ul class="mt-4 space-y-2">
-              <li v-for="item in step.items" :key="item" class="flex gap-2">
+            <ul class="fx-list-stack">
+              <li v-for="item in step.items" :key="item">
                 <UIcon name="i-lucide-arrow-right" />
                 <span>{{ item }}</span>
               </li>
             </ul>
           </UCard>
-        </div>
+        </UPageGrid>
       </UContainer>
     </section>
 
-    <section class="bg-muted/80 py-16">
+    <section>
       <UContainer>
         <div>
           <h2 class="fx-type-section-title">
             {{ appMeta.getStarted.afterSetup.title }}
           </h2>
-          <dl class="mt-8 space-y-6">
+          <dl>
             <UCard
               v-for="faq in appMeta.getStarted.afterSetup.faqs"
               :key="faq.title"
@@ -94,7 +90,7 @@
               <dt class="fx-type-label">
                 {{ faq.title }}
               </dt>
-              <dd class="mt-2">
+              <dd>
                 {{ faq.copy }}
               </dd>
             </UCard>
@@ -104,14 +100,13 @@
           <p class="fx-type-label">
             {{ appMeta.getStarted.afterSetup.card.eyebrow }}
           </p>
-          <p class="fx-type-card-heading mt-3">
+          <p class="fx-type-card-heading">
             {{ appMeta.getStarted.afterSetup.card.title }}
           </p>
-          <ul class="mt-5 space-y-2">
+          <ul class="fx-list-stack">
             <li
               v-for="bullet in appMeta.getStarted.afterSetup.card.bullets"
               :key="bullet"
-              class="flex gap-2"
             >
               <UIcon name="i-lucide-zap" />
               <span>{{ bullet }}</span>

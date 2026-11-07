@@ -8,49 +8,34 @@
 
     <UPageBody class="pagebody">
       <div v-if="loading">Loading avatars…</div>
-      <div v-else class="space-y-10">
-        <section
-          v-for="group in avatarGroups"
-          :key="group.prefix"
-          class="space-y-4"
-        >
-          <div class="flex items-baseline justify-between gap-4">
+      <div v-else>
+        <section v-for="group in avatarGroups" :key="group.prefix">
+          <div>
             <h2>Avatars in {{ group.prefix }}/</h2>
             <span>{{ group.items.length }} user(s)</span>
           </div>
 
-          <div class="p-4">
-            <p class="mb-2">
+          <div>
+            <p>
               Copy-ready JSON mapping of id → download URL (null when no avatar
               file is present).
             </p>
-            <pre class="overflow-x-auto whitespace-pre-wrap break-all">{{
-              group.json
-            }}</pre>
+            <pre class="overflow-x-auto">{{ group.json }}</pre>
           </div>
 
-          <div
-            v-if="group.items.length > 0"
-            class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-          >
-            <div
-              v-for="avatar in group.items"
-              :key="avatar.path"
-              class="flex flex-col items-center p-3"
-            >
-              <img
+          <div v-if="group.items.length > 0">
+            <div v-for="avatar in group.items" :key="avatar.path">
+              <UAvatar
                 v-if="avatar.url"
                 :src="avatar.url"
                 :alt="avatar.path"
-                class="h-20 w-20 object-cover"
+                size="3xl"
               />
-              <div v-else class="flex h-20 w-20 items-center justify-center">
+              <div v-else>
                 <span>No Image</span>
               </div>
-              <p class="mt-2 break-all">
-                {{ avatar.id }} : {{ avatar.url ?? '(no download URL)' }}
-              </p>
-              <p class="mt-1 break-all">
+              <p>{{ avatar.id }} : {{ avatar.url ?? '(no download URL)' }}</p>
+              <p>
                 {{ avatar.file }}
               </p>
             </div>

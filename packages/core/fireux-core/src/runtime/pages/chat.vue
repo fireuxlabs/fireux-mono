@@ -10,7 +10,7 @@
     </UPageHeader>
 
     <UPageBody>
-      <div class="mx-auto grid max-w-3xl gap-4">
+      <div>
         <UAlert
           v-if="statusMessage"
           :color="statusColor"
@@ -19,7 +19,7 @@
         />
 
         <UCard v-if="!conversationId">
-          <div class="grid gap-4 sm:grid-cols-2">
+          <div>
             <UFormField label="Name" required>
               <UInput v-model="guest.name" placeholder="Your name" />
             </UFormField>
@@ -35,7 +35,7 @@
         </UCard>
 
         <UCard>
-          <div class="min-h-[20rem]">
+          <div>
             <UChatMessages
               :messages="chatMessages"
               :status="chatStatus"
@@ -56,7 +56,7 @@
             @submit.prevent="sendMessage"
           >
             <template #footer>
-              <div class="flex items-center justify-between gap-3">
+              <div>
                 <p>Your recovery key stays in this browser for 30 days.</p>
                 <UChatPromptSubmit :status="chatStatus" label="Send" />
               </div>

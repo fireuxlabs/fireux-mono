@@ -1,8 +1,8 @@
 <template>
-  <section class="space-y-4">
+  <section>
     <UCard :ui="{ body: 'fx-card-body-stack' }">
       <template #header>
-        <div class="space-y-1">
+        <div class="fx-card-body-stack">
           <div>Select a place</div>
           <div>
             We’ll use the existing business if it exists, or create the record
@@ -14,10 +14,8 @@
       <!-- section consumer -->
       <PlaceSearch @confirmed="onPlaceConfirmed" />
 
-      <div v-if="successId" class="text-success">
-        Business ready: {{ successId }}
-      </div>
-      <div v-if="error" class="text-error">
+      <div v-if="successId">Business ready: {{ successId }}</div>
+      <div v-if="error">
         {{ error }}
       </div>
     </UCard>

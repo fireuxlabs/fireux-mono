@@ -1,6 +1,6 @@
 <template>
-  <section class="space-y-3">
-    <div class="flex items-center justify-between gap-3">
+  <section>
+    <div>
       <h3>Hours</h3>
       <UButton
         :icon="editing ? 'i-lucide-check' : 'i-lucide-pencil'"
@@ -13,7 +13,7 @@
         @click="editing = !editing"
       />
     </div>
-    <div v-if="!editing" class="space-y-1">
+    <div v-if="!editing">
       <p>
         {{ sameAsKitchen ? 'Kitchen hours' : 'Custom hours' }}
       </p>

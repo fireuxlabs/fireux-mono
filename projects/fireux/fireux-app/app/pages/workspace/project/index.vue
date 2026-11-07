@@ -18,7 +18,7 @@
     <WorkspaceProject ref="surface" />
     <WorkspaceProjectHomeExploreProjects />
     <template #fallback>
-      <p role="status" class="py-6 fx-type-body">Loading your Workspace…</p>
+      <p role="status" class="fx-type-body">Loading your Workspace…</p>
     </template>
   </ClientOnly>
 </template>

@@ -4,7 +4,10 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "EditorConfig.EditorConfig",
-    "pkief.material-icon-theme"
+    "pkief.material-icon-theme",
+    "openai.chatgpt"
   ],
-  "unwantedRecommendations": ["octref.vetur"]
+  "unwantedRecommendations": [
+    "octref.vetur"
+  ]
 }

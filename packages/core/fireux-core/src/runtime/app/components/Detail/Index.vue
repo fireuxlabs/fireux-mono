@@ -1,9 +1,5 @@
 <template>
-  <article
-    data-app-projection="detail"
-    :data-app-id="app.id"
-    class="mx-auto max-w-3xl space-y-6"
-  >
+  <article data-app-projection="detail" :data-app-id="app.id">
     <UButton
       to="/apps"
       icon="i-lucide-arrow-left"
@@ -11,29 +7,24 @@
       color="neutral"
       >All apps</UButton
     >
-    <div class="overflow-hidden">
-      <img
-        v-if="card.coverUrl"
-        :src="card.coverUrl"
-        alt=""
-        class="aspect-[21/9] w-full object-cover"
-      />
-      <div class="space-y-6 p-6 sm:p-10">
-        <div class="flex items-center gap-4">
+    <div>
+      <img v-if="card.coverUrl" :src="card.coverUrl" alt="" />
+      <div>
+        <div>
           <UAvatar
             :src="card.logoUrl || card.thumbnailUrl || undefined"
             :text="card.avatarText"
             :alt="card.name"
             size="3xl"
           />
-          <h1 class="min-w-0">
+          <h1>
             {{ card.name }}
           </h1>
         </div>
         <p v-if="card.tagline">
           {{ card.tagline }}
         </p>
-        <p v-if="card.description" class="whitespace-pre-line">
+        <p v-if="card.description">
           {{ card.description }}
         </p>
         <UButton

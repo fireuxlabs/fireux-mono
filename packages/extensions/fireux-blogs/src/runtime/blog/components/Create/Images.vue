@@ -91,8 +91,9 @@ defineExpose({
             featuredFile
           )
         } catch (error) {
-          if (isCurrent()) uploadErrors.value.featured =
-            error instanceof Error ? error.message : 'Upload failed'
+          if (isCurrent())
+            uploadErrors.value.featured =
+              error instanceof Error ? error.message : 'Upload failed'
         }
       }
 
@@ -105,8 +106,9 @@ defineExpose({
             socialFile
           )
         } catch (error) {
-          if (isCurrent()) uploadErrors.value.social =
-            error instanceof Error ? error.message : 'Upload failed'
+          if (isCurrent())
+            uploadErrors.value.social =
+              error instanceof Error ? error.message : 'Upload failed'
         }
       }
 

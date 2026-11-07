@@ -26,13 +26,13 @@
         eyebrow="Service area"
         title="Delivery coverage"
       >
-        <div class="flex items-end gap-3">
+        <div>
           <div>
             {{ coverageValue }}
           </div>
-          <div class="pb-1">{{ coverageUnit }} radius</div>
+          <div>{{ coverageUnit }} radius</div>
         </div>
-        <p class="mt-4">
+        <p>
           Available for delivery work within this public service radius. Kitchen
           assignments and contact details stay private.
         </p>
@@ -43,7 +43,7 @@
         eyebrow="Delivery profile"
         title="Capabilities"
       >
-        <div v-if="profile?.tags.length" class="flex flex-wrap gap-2">
+        <div v-if="profile?.tags.length">
           <UBadge
             v-for="tag in profile.tags"
             :key="tag"

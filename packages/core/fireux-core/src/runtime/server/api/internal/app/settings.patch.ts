@@ -1,4 +1,4 @@
 import { defineEventHandler } from 'h3'
-import { updateAppSettings } from '../../../../app/server/settings/update'
+import { updateAppIdentity } from '../../../../app/server/identity/update'
 
-export default defineEventHandler((event) => updateAppSettings(event))
+export default defineEventHandler((event) => updateAppIdentity(event))

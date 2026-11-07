@@ -14,7 +14,7 @@
         description="The setup guide now lives at /ecosystems/learn-more. /ecosystems is the live ecosystem directory."
       />
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton to="/ecosystems" color="primary" icon="i-lucide-orbit">
           Open ecosystems
         </UButton>
@@ -33,7 +33,7 @@
           <h2 class="fx-type-section-title">Docs hierarchy</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li><strong>/ecosystems</strong>: browse active ecosystems.</li>
           <li>
             <strong>/ecosystems/learn-more</strong>: create a new ecosystem and
@@ -51,7 +51,7 @@
           <h2 class="fx-type-section-title">1. Create Firebase project</h2>
         </template>
 
-        <ol class="list-decimal fx-list-stack">
+        <ol class="fx-list-stack">
           <li>
             Create a new Firebase project and switch billing from Spark to
             Blaze.
@@ -73,7 +73,7 @@
         </p>
 
         <pre
-          class="mt-3 overflow-x-auto rounded-sm border border-default bg-default p-3"
+          class="overflow-x-auto"
         ><code>pnpm create:ecosystem -- --name &lt;name&gt; --firebase-project &lt;firebase-project-id&gt;</code></pre>
       </UCard>
 
@@ -84,7 +84,7 @@
           </h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>Put core Firebase fields in <code>ecosystem.config.ts</code>.</li>
           <li>
             Put <code>NUXT_FIREBASE_APP_ID</code> in the app <code>.env</code>.
@@ -101,8 +101,8 @@
 
         <p class="fx-type-caption">
           Continue to
-          <NuxtLink to="/apps" class="hover:underline">/apps</NuxtLink> for full
-          app scaffolding, env setup, and deploy wiring.
+          <ULink to="/apps">/apps</ULink> for full app scaffolding, env setup,
+          and deploy wiring.
         </p>
       </UCard>
 
@@ -111,9 +111,7 @@
           <h2 class="fx-type-section-title">5. Validate</h2>
         </template>
 
-        <pre
-          class="overflow-x-auto rounded-sm border border-default bg-default p-3"
-        ><code>pnpm guard
+        <pre class="overflow-x-auto"><code>pnpm guard
 pnpm typecheck:packages
 pnpm typecheck:apps</code></pre>
       </UCard>

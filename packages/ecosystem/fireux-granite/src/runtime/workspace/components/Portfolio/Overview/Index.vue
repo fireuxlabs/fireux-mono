@@ -1,10 +1,7 @@
 <template>
   <PortfolioOverview>
     <template #capabilities>
-      <section
-        class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        aria-label="Portfolio records"
-      >
+      <section aria-label="Portfolio records">
         <DocumentsSummary />
         <TasksSummary />
         <ComplianceSummary />

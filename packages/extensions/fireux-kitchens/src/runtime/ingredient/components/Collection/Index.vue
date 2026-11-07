@@ -2,13 +2,12 @@
   <section class="entity-collection ingredient-collection">
     <FireCollectionHeader :title="title" :description="description">
       <template #controls>
-        <div class="flex w-full flex-wrap items-center justify-end gap-2">
+        <div>
           <USelect
             v-model="category"
             size="xs"
             :items="categoryOptions"
             aria-label="Filter Ingredient category"
-            class="shrink-0"
           />
           <UInput
             v-if="showSearchInput"
@@ -16,7 +15,6 @@
             size="xs"
             :placeholder="searchPlaceholder"
             :aria-label="searchPlaceholder"
-            class="shrink-0"
           />
           <UButton
             v-if="showVariantToggle"

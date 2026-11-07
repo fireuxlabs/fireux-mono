@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-5 md:grid-cols-2" aria-label="Capability summaries">
+  <section class="pagebody" aria-label="Capability summaries">
     <Summary
       title="Team"
       icon="i-lucide-users"
@@ -9,7 +9,7 @@
       :pending="team.pending.value"
       :error="team.error.value"
     >
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UTooltip
           v-for="member in team.members.value.slice(0, 8)"
           :key="member.memberId || member.id"

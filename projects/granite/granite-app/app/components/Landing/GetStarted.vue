@@ -13,7 +13,7 @@
       <UPageGrid>
         <UCard>
           <div class="fx-card-body-stack">
-            <div class="flex items-center gap-2">
+            <div>
               <UIcon name="i-lucide-building-2" />
               <p class="fx-type-body">1) Choose a portfolio</p>
             </div>
@@ -25,7 +25,7 @@
 
         <UCard>
           <div class="fx-card-body-stack">
-            <div class="flex items-center gap-2">
+            <div>
               <UIcon name="i-lucide-shield-check" />
               <p class="fx-type-body">2) Review risk</p>
             </div>
@@ -37,7 +37,7 @@
 
         <UCard>
           <div class="fx-card-body-stack">
-            <div class="flex items-center gap-2">
+            <div>
               <UIcon name="i-lucide-terminal" />
               <p class="fx-type-body">3) Run the workspace</p>
             </div>
@@ -48,7 +48,7 @@
         </UCard>
       </UPageGrid>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="fx-card__actions">
         <UButton
           to="/workspace/portfolio"
           color="primary"

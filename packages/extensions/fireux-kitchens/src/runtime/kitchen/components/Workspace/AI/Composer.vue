@@ -1,5 +1,5 @@
 <template>
-  <div class="contents">
+  <div>
     <div
       v-if="starters.length"
       class="kitchen-ai-welcome__starters"
@@ -25,7 +25,7 @@
     <input
       v-if="allowFile"
       ref="fileInput"
-      class="sr-only"
+      hidden
       type="file"
       accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,.xlsx,.xls"
       @change="selectFile"

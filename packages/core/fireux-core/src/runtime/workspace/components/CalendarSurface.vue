@@ -1,8 +1,8 @@
 <template>
-  <section class="min-w-0 space-y-4" aria-label="Calendar">
+  <section aria-label="Calendar">
     <UCard>
       <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
           <h1 aria-live="polite">
             {{ monthLabel }}
           </h1>
@@ -53,7 +53,7 @@
         </button>
       </div>
     </UCard>
-    <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
       <h2>{{ selectedLabel }}</h2>
       <UInput
         :model-value="modelValue"

@@ -12,6 +12,7 @@ import {
   watch,
 } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
+import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 
 function load(path, expression, dependencies, component = false) {
   let source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -221,7 +222,8 @@ test('Project AI captures nested input before credentials and preserves the huma
 
 function editorFixture() {
   const response = deferred(),
-    notices = []
+    notices = [],
+    updates = []
   const identity = {
     canWrite: ref(true),
     publication: ref(null),
@@ -229,13 +231,17 @@ function editorFixture() {
     name: ref('Before'),
     description: ref(''),
     imageUrl: ref(''),
-    update: () => response.promise,
+    projectStatus: ref('inactive'),
+    update: (input) => {
+      updates.push(input)
+      return response.promise
+    },
   }
   const owner = effectScope()
   const api = owner.run(() =>
     load(
-      '../runtime/project/components/Workspace/Identity/Write.vue',
-      '{ show, save, open, saving, error, name }',
+      '../runtime/project/components/Identity/Write.vue',
+      '{ show, save, open, saving, error, name, status }',
       {
         computed,
         ref,
@@ -256,8 +262,100 @@ function editorFixture() {
     description: null,
     imageUrl: null,
   })
-  return { response, notices, identity, owner, api }
+  return { response, notices, updates, identity, owner, api }
 }
+test('Project Identity coordinates stored status and activation without broadening selected-record access', async () => {
+  const calls = []
+  const workspace = {
+    id: ref('project'),
+    data: ref({
+      id: 'project',
+      identity: {
+        name: 'Project',
+        description: '',
+        image_url: '',
+        status: 'inactive',
+      },
+    }),
+    outcome: ref('ready'),
+    access: { ids: ref(['project']) },
+  }
+  const useIdentity = load(
+    '../../../../core/fireux-core/src/runtime/composables/fireux/useIdentity.ts',
+    'useIdentity',
+    { computed }
+  )
+  const useWorkspaceIdentity = load(
+    '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceIdentity.ts',
+    'useWorkspaceIdentity',
+    { computed, useIdentity }
+  )
+  const identity = load(
+    '../runtime/project/composables/workspace/useProjectWorkspaceIdentity.ts',
+    'useProjectWorkspaceIdentity()',
+    {
+      computed,
+      normalizeString,
+      useWorkspaceIdentity,
+      useProjectWorkspace: () => workspace,
+      useProjectUpdate: (sources) => {
+        assert.equal(sources[0], workspace.id)
+        return { updateProject: async (input) => calls.push(input) }
+      },
+    }
+  )
+  assert.equal(identity.projectStatus.value, 'inactive')
+  const input = {
+    projectId: 'project',
+    name: 'Project',
+    description: '',
+    imageUrl: '',
+    status: 'active',
+  }
+  await identity.update(input)
+  assert.deepEqual(calls, [
+    {
+      projectId: 'project',
+      changes: {
+        name: 'Project',
+        description: '',
+        image_url: '',
+        status: 'active',
+      },
+    },
+  ])
+  await assert.rejects(
+    identity.update({ ...input, status: 'archived' }),
+    /active or inactive/
+  )
+  await assert.rejects(
+    identity.update({ ...input, projectId: 'other' }),
+    /selected Project changed/
+  )
+  workspace.access.ids.value = []
+  await assert.rejects(identity.update(input), /management access/)
+  assert.equal(calls.length, 1)
+})
+test('Project Identity editor retains stored status and submits activation with the captured Project', async () => {
+  const fixture = editorFixture()
+  assert.equal(fixture.api.status.value, 'inactive')
+  fixture.api.status.value = 'active'
+  const flight = fixture.api.save()
+  assert.deepEqual(fixture.updates, [
+    {
+      projectId: 'misebox',
+      name: 'After',
+      description: '',
+      imageUrl: '',
+      status: 'active',
+    },
+  ])
+  fixture.response.resolve()
+  await flight
+  assert.equal(fixture.api.open.value, false)
+  assert.equal(fixture.notices.length, 1)
+  fixture.owner.stop()
+})
 for (const changed of ['revoked', 'disposed'])
   for (const completion of ['success', 'error']) {
     test(`Project Identity suppresses ${completion} after ${changed} editor ownership`, async () => {

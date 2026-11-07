@@ -2,7 +2,7 @@
 <template>
   <UCard v-if="outcome !== 'idle'">
     <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="card__header">
         <h2 class="fx-type-card-heading">Project apps</h2>
         <UBadge
           v-if="outcome === 'ready' || outcome === 'empty'"
@@ -25,8 +25,8 @@
       :description="error?.message || 'Please try again.'"
     />
 
-    <div v-else-if="outcome === 'ready'" class="space-y-3">
-      <div v-for="card in cards" :key="card.id" class="space-y-2">
+    <div v-else-if="outcome === 'ready'" class="fx-card-body-stack">
+      <div v-for="card in cards" :key="card.id" class="fx-card-body-stack">
         <AppCardsCell
           :to="card.to"
           :thumbnail-url="card.thumbnailUrl"

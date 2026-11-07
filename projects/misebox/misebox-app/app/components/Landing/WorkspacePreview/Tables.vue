@@ -1,7 +1,7 @@
 <template>
-  <div class="mt-5" aria-label="Tables preview">
+  <div aria-label="Tables preview">
     <template v-if="tables.configuredCount">
-      <div class="mb-3 flex flex-wrap justify-end gap-2">
+      <div>
         <UBadge color="neutral" variant="soft" size="sm">
           {{ tables.configuredCount }} configured tables
         </UBadge>
@@ -10,19 +10,17 @@
         </UBadge>
       </div>
 
-      <div
-        class="grid max-h-[24rem] grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-4"
-      >
-        <article
+      <div class="pagebody">
+        <UCard
+          as="article"
           v-for="tableNumber in tables.configuredCount"
           :key="tableNumber"
           :data-table-number="tableNumber"
-          class="flex aspect-square flex-col items-center justify-center rounded-xl border border-default bg-default p-3 shadow-sm"
         >
           <UIcon name="i-lucide-grid-2x2" />
-          <p class="mt-2 fx-type-caption">Table {{ tableNumber }}</p>
-          <p class="mt-1 fx-type-caption">Available</p>
-        </article>
+          <p class="fx-type-caption">Table {{ tableNumber }}</p>
+          <p class="fx-type-caption">Available</p>
+        </UCard>
       </div>
     </template>
 

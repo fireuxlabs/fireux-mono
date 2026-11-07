@@ -13,7 +13,9 @@
       </p>
 
       <div>
-        <h2 class="fx-type-section-title">With a Professional Profile you can:</h2>
+        <h2 class="fx-type-section-title">
+          With a Professional Profile you can:
+        </h2>
         <ul class="fx-list-stack">
           <li>Appear in listings and searches used by agents.</li>
           <li>Apply for jobs with a consistent, trusted identity.</li>

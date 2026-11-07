@@ -7,11 +7,11 @@
     </template>
 
     <template #body>
-      <div class="grid gap-4 lg:grid-cols-3">
-        <UCard class="lg:col-span-2">
-          <div class="space-y-4">
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
+      <UPageGrid>
+        <UCard>
+          <div class="fx-card-body-stack">
+            <div class="card__header">
+              <div>
                 <p>Hi {{ greetingName }}</p>
                 <p>This is the public identity that posts jobs.</p>
               </div>
@@ -24,8 +24,8 @@
               />
             </div>
 
-            <div v-if="showProfileCompletedness" class="space-y-2">
-              <div class="flex items-center justify-between gap-3">
+            <div v-if="showProfileCompletedness" class="fx-card-body-stack">
+              <div class="card__header">
                 <span>Profile completedness</span>
                 <UBadge color="neutral" variant="soft">
                   {{ profileLabel }}
@@ -39,13 +39,13 @@
 
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2">
+            <div>
               <UIcon name="i-lucide-sparkles" />
               Quick actions
             </div>
           </template>
 
-          <div class="space-y-2">
+          <div class="fx-card-body-stack">
             <UButton
               to="/dashboard/agent/profile"
               label="Update hiring profile"
@@ -68,26 +68,26 @@
             />
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2">
+          <div>
             <UIcon name="i-lucide-flag" />
             Next steps
           </div>
         </template>
 
-        <ul class="space-y-2">
-          <li class="flex items-center gap-2">
+        <ul class="fx-card-body-stack">
+          <li>
             <UIcon name="i-lucide-check-circle" />
             Add placement types and coverage areas to improve matching.
           </li>
-          <li class="flex items-center gap-2">
+          <li>
             <UIcon name="i-lucide-check-circle" />
             Add a profile image to build trust with candidates.
           </li>
-          <li class="flex items-center gap-2">
+          <li>
             <UIcon name="i-lucide-check-circle" />
             Review your job posts to keep them current.
           </li>

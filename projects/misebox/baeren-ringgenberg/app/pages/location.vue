@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 py-12">
+  <div class="pagebody">
     <div class="pagebody">
       <h1 class="fx-type-page-title">{{ pageTitle }}</h1>
       <p class="fx-type-body">{{ pageSubtitle }}</p>
@@ -10,14 +10,11 @@
         v-if="mapRequested"
         title="Map to Hotel Bären Ringgenberg"
         :src="baerenRinggenbergContent.links.googleMapEmbed"
-        class="block aspect-video w-full border-0"
+        class="aspect-video w-full"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
       />
-      <div
-        v-else
-        class="grid aspect-video place-content-center justify-items-center gap-4 p-8"
-      >
+      <div v-else>
         <p class="fx-type-body">
           Google Maps loads only when you ask to view it.
         </p>

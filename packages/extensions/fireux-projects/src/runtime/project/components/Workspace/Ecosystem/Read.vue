@@ -8,7 +8,7 @@
         </div>
       </template>
 
-      <div class="space-y-3">
+      <div class="fx-card-body-stack">
         <p class="workspace-card-header__description">
           Selected project and its related ecosystems.
         </p>
@@ -42,7 +42,6 @@
       />
       <FireCopyError
         message="Project ecosystems could not be loaded. Please try again."
-        class="mt-3"
       />
     </UCard>
 
@@ -53,7 +52,7 @@
         </div>
       </template>
 
-      <div class="space-y-3">
+      <div class="fx-card-body-stack">
         <EcosystemCardsCell
           v-for="card in ecosystemCards"
           :key="card.id"

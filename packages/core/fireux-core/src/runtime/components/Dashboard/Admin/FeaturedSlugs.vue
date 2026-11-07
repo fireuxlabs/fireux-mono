@@ -1,9 +1,7 @@
 <template>
   <UCard>
     <template #header>
-      <div
-        class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
-      >
+      <div>
         <div class="fx-card__stack">
           <h2>{{ title }}</h2>
           <p v-if="description">{{ description }}</p>

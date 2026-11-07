@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-6">
+  <div>
     <UFormField label="Method" description="One step per line."
       ><UTextarea v-model="method" aria-label="Method" :rows="7"
     /></UFormField>

@@ -20,7 +20,8 @@
     >
       <SproochliDefaultLanguageMark
         v-if="triggerUsesDefaultMark"
-        class="size-8 shrink-0"
+        width="32"
+        height="32"
       />
       <span v-else class="sproochli-language-trigger__emoji" aria-hidden="true">
         {{ triggerSymbol }}
@@ -30,8 +31,8 @@
     <template #content>
       <UCard class="sproochli-language-card">
         <template #header>
-          <a
-            :href="sproochliSiteHref"
+          <ULink
+            :to="sproochliSiteHref"
             target="_blank"
             rel="noopener noreferrer"
             class="sproochli-language-brand"
@@ -43,11 +44,11 @@
             <span class="sproochli-language-brand__segue" aria-hidden="true">
               <UIcon name="i-lucide-arrow-up-right" />
             </span>
-          </a>
+          </ULink>
         </template>
 
         <div
-          class="max-h-[min(32rem,calc(100dvh-8rem))] space-y-2 overflow-y-auto pr-1"
+          class="fx-card-body-stack max-h-[min(32rem,calc(100dvh-8rem))] overflow-y-auto"
         >
           <template v-for="group in languageGroups" :key="group.key">
             <USeparator v-if="group.showSeparator" />
@@ -57,7 +58,6 @@
                 showGroupLabels &&
                 (group.key === 'cached' || group.key === 'onDemand')
               "
-              class="px-3"
             >
               {{
                 group.key === 'cached'
@@ -66,7 +66,7 @@
               }}
             </div>
 
-            <div class="space-y-1">
+            <div class="fx-card-body-stack">
               <UButton
                 v-for="option in group.options"
                 :key="`${group.key}:${option.code || 'original'}`"
@@ -79,28 +79,20 @@
                   languageOptionActive(option.code) ? 'primary' : 'neutral'
                 "
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
-                class="sproochli-language-option min-h-11 justify-start"
+                class="sproochli-language-option"
+                size="xl"
+                :label="optionName(option)"
+                :dir="languageDirection(option.code)"
+                :trailing-icon="
+                  languageOptionActive(option.code)
+                    ? 'i-lucide-check'
+                    : undefined
+                "
                 @click="selectLanguage(option.code)"
               >
-                <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
-                  <span
-                    v-if="option.label"
-                    class="inline-flex w-10 shrink-0 justify-center"
-                  >
-                    {{ option.label }}
-                  </span>
-                  <span
-                    class="min-w-0 whitespace-normal"
-                    :dir="languageDirection(option.code)"
-                  >
-                    {{ optionName(option) }}
-                  </span>
-                </span>
-
-                <UIcon
-                  v-if="languageOptionActive(option.code)"
-                  name="i-lucide-check"
-                />
+                <template v-if="option.label" #leading>
+                  <span>{{ option.label }}</span>
+                </template>
               </UButton>
             </div>
           </template>

@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <div>
       <UButton
         to="/kitchens"
         label="All Kitchens"
@@ -8,7 +8,7 @@
         color="neutral"
         variant="ghost"
       />
-      <div class="flex flex-wrap gap-3">
+      <div>
         <KitchenDetailSproochli
           v-if="kitchen.sproochli?.enabled"
           :sproochli="kitchen.sproochli"

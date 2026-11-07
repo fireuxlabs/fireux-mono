@@ -9,17 +9,12 @@
       </div>
     </template>
 
-    <div v-if="rows.length" class="section__item space-y-2">
-      <ul class="space-y-2">
-        <li
-          v-for="admin in rows"
-          :key="admin.id"
-          class="flex items-center justify-between gap-3"
-        >
+    <div v-if="rows.length" class="section__item">
+      <ul>
+        <li v-for="admin in rows" :key="admin.id">
           <UserCardsPill
             v-bind="pillFor(admin)"
             :link="Boolean(pillFor(admin).to)"
-            class="min-w-0"
           />
 
           <UButton

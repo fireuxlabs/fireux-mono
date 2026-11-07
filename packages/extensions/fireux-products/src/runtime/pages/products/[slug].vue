@@ -1,10 +1,7 @@
 <template>
   <UPage>
     <UPageBody class="pagebody">
-      <div v-if="pending && !product" class="space-y-4">
-        <USkeleton class="h-48" />
-        <USkeleton class="h-36" />
-      </div>
+      <FireState v-if="pending && !product" outcome="pending" />
       <div v-else-if="product" class="page">
         <ProductDetail :product="product" :default-price="defaultPrice" />
       </div>

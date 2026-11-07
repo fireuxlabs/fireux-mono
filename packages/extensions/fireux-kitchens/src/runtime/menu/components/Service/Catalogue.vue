@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-8">
-    <nav :aria-label="`${serviceLabel} sections`" class="flex flex-wrap gap-2">
+  <div>
+    <nav :aria-label="`${serviceLabel} sections`">
       <UButton
         v-for="(section, index) in sections"
         :key="section.key"
@@ -15,21 +15,15 @@
       v-for="(section, index) in sections"
       :key="section.key"
       :id="`service-section-${index}`"
-      class="scroll-mt-6"
     >
       <h2>{{ section.label }}</h2>
       <KitchenDetailOfferingTimes
         v-if="section.offerings.length"
         :offerings="section.offerings"
         compact
-        class="mt-2"
       />
-      <div class="grid gap-x-8 md:grid-cols-2">
-        <div
-          v-for="(row, itemIndex) in section.items"
-          :key="row.key"
-          class="min-w-0"
-        >
+      <div>
+        <div v-for="(row, itemIndex) in section.items" :key="row.key">
           <MenuDetailItem
             :item="row.item"
             collapse-extras
@@ -50,14 +44,11 @@
           >
             {{ row.label }}
           </p>
-          <details v-if="row.alternatives.length" class="my-3">
-            <summary class="cursor-pointer">
-              Other serving times and prices
-            </summary>
+          <details v-if="row.alternatives.length">
+            <summary>Other serving times and prices</summary>
             <div
               v-for="(offer, offerIndex) in row.alternatives"
               :key="offerIndex"
-              class="mt-3 space-y-1"
             >
               <p>
                 {{ offer.label }} ·
@@ -87,7 +78,6 @@
             v-if="!section.offerings.length"
             :offerings="row.offerings"
             compact
-            class="mt-2 mb-4"
           />
         </div>
       </div>

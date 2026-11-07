@@ -3,7 +3,7 @@
     <p>Loading place…</p>
   </UPageCard>
 
-  <div v-else-if="placeProfile" class="space-y-4">
+  <div v-else-if="placeProfile">
     <PlaceDetailProfile :model="placeProfile" :show-google-hours="false" />
 
     <UPageCard
@@ -11,14 +11,14 @@
       title="Kitchen service hours"
       variant="subtle"
     >
-      <div class="space-y-3">
+      <div>
         <ClientOnly>
           <UBadge :color="operationHoursChipColor" variant="soft">
             {{ operationHoursChipLabel }}
           </UBadge>
         </ClientOnly>
 
-        <div class="flex flex-wrap gap-2">
+        <div>
           <UBadge
             v-for="line in operationHourLines"
             :key="line"

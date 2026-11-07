@@ -1,5 +1,5 @@
 <template>
-  <section class="grid min-w-0 gap-3 py-4" :aria-label="title">
+  <section :aria-label="title">
     <h2>{{ title }}</h2>
     <p v-if="pending" role="status">Loading context…</p>
     <UTextarea
@@ -14,7 +14,7 @@
       @blur="text.trim() !== value && emit('update', text)"
     />
     <p v-if="saving" role="status">Updating…</p>
-    <div v-if="error" class="grid gap-2">
+    <div v-if="error">
       <FireCopyError :message="error" />
       <div class="fx-card__actions">
         <UButton

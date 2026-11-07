@@ -10,6 +10,14 @@
     </template>
 
     <div class="fx-card-body-stack">
+      <FireFormsEditableSelect
+        :capture-intent="captureIntent"
+        label="Status"
+        :value="app.status"
+        :options="statusOptions"
+        :update="updateStatus"
+      />
+      <p>Active Apps can appear in public App directories.</p>
       <FireFormsEditableSimpleField
         :capture-intent="captureIntent"
         label="Name"
@@ -47,10 +55,19 @@
 import { computed } from 'vue'
 import { useToastify } from '../../../../composables/ui/useToastify'
 import { useAppIdentityUpdate } from '../../../composables/identity/useAppIdentityUpdate'
-import type { App } from '../../../models/app.model.ts'
+import { APP_STATUSES, type App } from '../../../models/app.model.ts'
 
 const props = defineProps<{ app: App }>()
-const { updateAppName, updateTagline, updateDescription, captureIntent } =
-  useAppIdentityUpdate(computed(() => props.app))
+const {
+  updateAppName,
+  updateTagline,
+  updateDescription,
+  updateStatus,
+  captureIntent,
+} = useAppIdentityUpdate(computed(() => props.app))
+const statusOptions = APP_STATUSES.map((status) => ({
+  value: status,
+  label: status === 'active' ? 'Active' : 'Inactive',
+}))
 const toast = useToastify()
 </script>

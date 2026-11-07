@@ -24,8 +24,8 @@
     </p>
     <UPageCard v-else>
       <template #header>
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div class="min-w-0">
+        <div>
+          <div>
             <h2 class="fx-type-section-title">
               {{ ingredientsTitle }}
             </h2>
@@ -45,17 +45,17 @@
         class="workspace-surface__grid workspace-surface__grid--2"
       >
         <UPageCard v-for="card in cards" :key="card.id" variant="subtle">
-          <div class="flex items-start gap-3">
+          <div>
             <UAvatar
               :src="card.imageUrl || undefined"
               icon="i-lucide-carrot"
               size="sm"
             />
-            <div class="min-w-0 flex-1">
-              <p class="truncate">
+            <div>
+              <p>
                 {{ card.title }}
               </p>
-              <p class="truncate">
+              <p>
                 {{ card.subtitle }}
               </p>
             </div>

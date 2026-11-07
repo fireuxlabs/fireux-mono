@@ -20,9 +20,7 @@
         :description="errorMessage"
       />
 
-      <div v-if="pending" class="grid gap-4 xl:grid-cols-2">
-        <USkeleton v-for="index in 2" :key="index" class="h-56" />
-      </div>
+      <FireState v-if="pending" outcome="pending" />
 
       <UAlert
         v-else-if="!items.length && !errorMessage"
@@ -39,24 +37,21 @@
         </template>
       </UAlert>
 
-      <div v-else class="grid gap-4 xl:grid-cols-2">
+      <UPageGrid v-else>
         <UCard v-for="item in items" :key="item.application.id">
           <template #header>
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex min-w-0 items-center gap-3">
+            <div class="card__header">
+              <div>
                 <UAvatar
                   :src="item.candidate?.image || undefined"
                   :alt="candidateName(item)"
                   icon="i-lucide-user-round"
                 />
-                <div class="min-w-0">
-                  <p class="truncate">
+                <div>
+                  <p>
                     {{ candidateName(item) }}
                   </p>
-                  <NuxtLink
-                    :to="`/jobs/${item.job.id}`"
-                    class="hover:text-primary"
-                  >
+                  <NuxtLink :to="`/jobs/${item.job.id}`">
                     {{ item.job.title }}
                   </NuxtLink>
                 </div>
@@ -72,10 +67,7 @@
           </p>
           <p v-else>The candidate applied using their Professional profile.</p>
 
-          <div
-            v-if="item.application.status === 'submitted'"
-            class="mt-4 flex flex-wrap gap-2"
-          >
+          <div v-if="item.application.status === 'submitted'">
             <UButton
               size="sm"
               icon="i-lucide-handshake"
@@ -95,10 +87,7 @@
             </UButton>
           </div>
 
-          <div
-            v-else-if="item.application.status === 'offered'"
-            class="mt-4 flex flex-wrap gap-2"
-          >
+          <div v-else-if="item.application.status === 'offered'">
             <UButton
               size="sm"
               icon="i-lucide-refresh-cw"
@@ -118,16 +107,16 @@
             </UButton>
           </div>
 
-          <div v-if="item.engagement" class="mt-4 border-t border-default pt-4">
-            <div class="flex items-center justify-between gap-3">
+          <div v-if="item.engagement">
+            <div class="card__header">
               <div>
                 <p>Engagement</p>
-                <p class="mt-1">
+                <p>
                   {{ label(item.engagement.status) }}
                   · {{ label(item.engagement.contract_type) }}
                 </p>
               </div>
-              <div class="flex flex-wrap justify-end gap-2">
+              <div>
                 <UButton
                   v-if="item.engagement.status === 'accepted'"
                   size="sm"
@@ -160,7 +149,7 @@
             </div>
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
     </template>
   </UDashboardPanel>
 </template>

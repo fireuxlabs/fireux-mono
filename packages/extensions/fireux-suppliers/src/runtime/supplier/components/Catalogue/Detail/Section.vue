@@ -1,6 +1,6 @@
 <template>
-  <UCard class="space-y-3" as="section" :ui="{ body: 'fx-card-body-stack' }">
-    <div class="flex items-start gap-3">
+  <UCard as="section" :ui="{ body: 'fx-card-body-stack' }">
+    <div>
       <UAvatar
         v-if="section.imageUrl"
         :src="section.imageUrl"
@@ -8,7 +8,7 @@
         size="lg"
       />
 
-      <div class="min-w-0 space-y-1">
+      <div class="fx-card-body-stack">
         <h4 class="fx-type-card-title">
           {{ section.label }}
         </h4>
@@ -18,21 +18,17 @@
       </div>
     </div>
 
-    <ul class="grid gap-3 md:grid-cols-2">
-      <li
-        v-for="option in section.options"
-        :key="option.id"
-        class="rounded-md border border-default bg-default p-3"
-      >
-        <div class="space-y-2">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <h5 class="truncate">
+    <ul>
+      <li v-for="option in section.options" :key="option.id">
+        <div class="fx-card-body-stack">
+          <div class="card__header">
+            <div>
+              <h5>
                 {{ option.packLabel || option.label }}
               </h5>
             </div>
 
-            <div v-if="option.packPriceLabel" class="shrink-0 text-right">
+            <div v-if="option.packPriceLabel">
               <p>
                 {{ option.packPriceLabel }}
               </p>
@@ -42,7 +38,7 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-1">
+          <div class="card__badges">
             <UBadge
               v-if="!option.active"
               label="Inactive"

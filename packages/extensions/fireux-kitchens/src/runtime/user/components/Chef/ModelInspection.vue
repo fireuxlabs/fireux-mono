@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-10">
+  <section>
     <UCard>
       <FireDiagnosticsModel
         :title="'Chefs · Core Model'"

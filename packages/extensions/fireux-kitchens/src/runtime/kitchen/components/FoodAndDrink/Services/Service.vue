@@ -4,11 +4,11 @@
     ref="section"
     :aria-label="option.label"
     tabindex="-1"
-    class="service-section scroll-mt-4 border-b border-default last:border-b-0"
+    class="service-section"
   >
-    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <div class="flex items-center gap-2">
-        <UIcon :name="option.icon" class="shrink-0" aria-hidden="true" />
+    <div>
+      <div>
+        <UIcon :name="option.icon" aria-hidden="true" />
         <h2>{{ option.label }}</h2>
       </div>
       <USwitch
@@ -27,8 +27,8 @@
       }}</span>
       <span v-if="editor.busy" role="status">Updating…</span>
     </div>
-    <FireCopyError v-if="editor.error" :message="editor.error" class="mt-3" />
-    <KitchenFoodAndDrinkServicesSetup v-if="editor.enabled" class="mt-4" />
+    <FireCopyError v-if="editor.error" :message="editor.error" />
+    <KitchenFoodAndDrinkServicesSetup v-if="editor.enabled" />
   </section>
 </template>
 <script setup lang="ts">

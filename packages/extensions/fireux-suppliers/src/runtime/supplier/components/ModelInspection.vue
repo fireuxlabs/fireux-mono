@@ -1,10 +1,10 @@
 <template>
-  <section class="space-y-4">
+  <section>
     <UCard>
       <template #header>
-        <div class="space-y-3">
+        <div class="fx-card-body-stack">
           <div>Supplier model</div>
-          <div class="flex flex-wrap gap-2">
+          <div class="card__badges">
             <UBadge variant="soft">Total: {{ totalCount }}</UBadge>
             <UBadge variant="soft">Active: {{ officialCount }}</UBadge>
             <UBadge variant="soft">Visible: {{ publicCount }}</UBadge>
@@ -24,7 +24,7 @@
 
     <UCard>
       <template #header>
-        <div class="space-y-2">
+        <div class="fx-card-body-stack">
           <div>Suppliers</div>
           <p>
             Developer-selected supplier source. This is a scoped dev list, not
@@ -33,36 +33,29 @@
         </div>
       </template>
 
-      <div
-        v-if="suppliers.length"
-        class="grid gap-2 md:grid-cols-2 xl:grid-cols-3"
-      >
-        <button
+      <div v-if="suppliers.length">
+        <FireActionSurface
           v-for="supplier in suppliers"
           :key="getSupplierId(supplier)"
-          type="button"
-          class="rounded-lg border border-default bg-elevated/30 p-3 text-left transition hover:bg-elevated"
-          :class="{
-            'ring-2 ring-primary':
-              getSupplierId(supplier) === selectedSupplierId,
-          }"
-          @click="selectSupplier(getSupplierId(supplier))"
+          action
+          class="fx-card--cell"
+          :data-selected="getSupplierId(supplier) === selectedSupplierId"
+          :aria-pressed="getSupplierId(supplier) === selectedSupplierId"
+          @activate="selectSupplier(getSupplierId(supplier))"
         >
-          <div>
-            {{ getSupplierLabel(supplier) }}
+          <div class="card__content card__stack">
+            <div class="card__title">{{ getSupplierLabel(supplier) }}</div>
+            <div class="card__subtitle">{{ getSupplierId(supplier) }}</div>
+            <div class="card__badges">
+              <UBadge variant="soft" color="neutral">
+                {{ supplier.identity.status || 'missing status' }}
+              </UBadge>
+              <UBadge variant="soft" color="neutral">
+                {{ supplier.catalogue.mode || 'missing catalogue' }}
+              </UBadge>
+            </div>
           </div>
-          <div class="mt-1">
-            {{ getSupplierId(supplier) }}
-          </div>
-          <div class="mt-2 flex flex-wrap gap-1">
-            <UBadge variant="soft" color="neutral">
-              {{ supplier.identity.status || 'missing status' }}
-            </UBadge>
-            <UBadge variant="soft" color="neutral">
-              {{ supplier.catalogue.mode || 'missing catalogue' }}
-            </UBadge>
-          </div>
-        </button>
+        </FireActionSurface>
       </div>
 
       <p v-else>No suppliers found for this source.</p>
@@ -82,13 +75,13 @@
 
     <UCard>
       <template #header>
-        <div class="space-y-3">
-          <div class="space-y-1">
+        <div class="fx-card-body-stack">
+          <div class="fx-card-body-stack">
             <div>Supplier ingredients</div>
             <p>Search every supplier ingredient link in the selected source.</p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
+          <div>
             <UFieldGroup size="xs">
               <UButton
                 :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
@@ -178,11 +171,10 @@
         </div>
       </template>
 
-      <div
+      <UPageGrid
         v-if="
           supplierIngredientsFetched && filteredSupplierIngredientRows.length
         "
-        class="grid gap-2 md:grid-cols-2 xl:grid-cols-3"
       >
         <UCard
           v-for="row in filteredSupplierIngredientRows"
@@ -192,10 +184,10 @@
           <div>
             {{ row.ingredientId }}
           </div>
-          <div class="mt-1">
+          <div>
             {{ row.supplierLabel }}
           </div>
-          <div class="mt-2 flex flex-wrap gap-1">
+          <div>
             <UBadge variant="soft" color="neutral">
               {{ row.state || 'missing state' }}
             </UBadge>
@@ -204,7 +196,7 @@
             </UBadge>
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <p v-else-if="supplierIngredientsFetched">
         No supplier ingredient links match this search.
@@ -230,7 +222,7 @@
 
     <UCard>
       <template #header>
-        <div class="space-y-1">
+        <div class="fx-card-body-stack">
           <div>Linked ingredients</div>
           <p>
             Supplier-side ingredient links stay visible here without expanding
@@ -239,8 +231,8 @@
         </div>
       </template>
 
-      <div v-if="selectedSupplier" class="space-y-3">
-        <div class="flex flex-wrap gap-2">
+      <div v-if="selectedSupplier" class="fx-card-body-stack">
+        <div class="card__badges">
           <UBadge variant="soft">
             Supplier: {{ selectedSupplierLabel }}
           </UBadge>
@@ -255,10 +247,7 @@
           </UBadge>
         </div>
 
-        <div
-          v-if="selectedLinkedIngredientIds.length"
-          class="flex flex-wrap gap-2"
-        >
+        <div v-if="selectedLinkedIngredientIds.length" class="card__badges">
           <UBadge
             v-for="ingredientId in selectedLinkedIngredientIds"
             :key="ingredientId"

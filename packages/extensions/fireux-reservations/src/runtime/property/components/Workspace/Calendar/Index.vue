@@ -19,22 +19,22 @@
         title="Showing a limited set of reservations"
         description="These totals and dates cover only the loaded records. This view does not prove availability."
       />
-      <section class="grid gap-3 sm:grid-cols-3">
+      <UPageGrid as="section">
         <UCard>
-          <div class="flex items-center justify-between gap-4">
+          <div class="card__header">
             <div>
               <p>Upcoming stays</p>
-              <p class="mt-1">{{ summary.upcoming }}</p>
+              <p>{{ summary.upcoming }}</p>
             </div>
             <UIcon name="i-lucide-calendar-check-2" />
           </div>
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-4">
+          <div class="card__header">
             <div>
               <p>Recorded nights</p>
-              <p class="mt-1">
+              <p>
                 {{ summary.occupiedNights }}
               </p>
             </div>
@@ -43,28 +43,25 @@
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-4">
+          <div class="card__header">
             <div>
               <p>Needs attention</p>
-              <p class="mt-1">{{ attentionCount }}</p>
+              <p>{{ attentionCount }}</p>
             </div>
-            <UIcon
-              name="i-lucide-refresh-cw"
-              :class="attentionCount ? 'text-warning' : 'text-success'"
-            />
+            <UIcon name="i-lucide-refresh-cw" />
           </div>
         </UCard>
-      </section>
+      </UPageGrid>
 
       <UCard>
         <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="card__header">
             <div>
               <p>{{ monthLabel }}</p>
               <p>{{ propertyName }} · Recorded stays</p>
             </div>
 
-            <div class="flex items-center gap-1">
+            <div>
               <UButton
                 icon="i-lucide-chevron-left"
                 color="neutral"
@@ -91,77 +88,55 @@
           </div>
         </template>
 
-        <div v-if="pending" class="grid min-h-96 place-items-center">
-          <UIcon name="i-lucide-loader-circle" class="animate-spin" />
-        </div>
+        <FireState v-if="pending" outcome="pending" entity="reservations" />
 
         <div v-else class="overflow-x-auto">
           <div class="min-w-[760px]">
-            <div class="grid grid-cols-7 border-b border-default">
-              <div
-                v-for="weekday in weekdays"
-                :key="weekday"
-                class="px-2 py-2 text-center"
-              >
+            <div class="grid grid-cols-7">
+              <UCard v-for="weekday in weekdays" :key="weekday">
                 {{ weekday }}
-              </div>
+              </UCard>
             </div>
 
-            <div
-              class="grid grid-cols-7 overflow-hidden rounded-b-lg border-l border-default"
-            >
-              <div
+            <div class="grid grid-cols-7">
+              <UCard
                 v-for="day in calendarDays"
                 :key="day.date"
-                class="min-h-28 border-b border-r border-default p-2"
-                :class="[
-                  day.inMonth ? 'bg-default' : 'bg-muted/30',
-                  day.isToday ? 'ring-1 ring-inset ring-primary' : '',
-                ]"
+                :ui="{ body: 'fx-card-body-stack' }"
               >
-                <div class="mb-2 flex items-center justify-between">
-                  <span
-                    class="grid size-6 place-items-center rounded-full"
-                    :class="
-                      day.isToday
-                        ? 'bg-primary text-inverted'
-                        : day.inMonth
-                          ? ''
-                          : 'text-dimmed'
-                    "
-                  >
-                    {{ day.day }}
-                  </span>
-                </div>
+                <UBadge
+                  :color="day.isToday ? 'primary' : 'neutral'"
+                  :variant="day.inMonth ? 'soft' : 'outline'"
+                >
+                  {{ day.day }}
+                </UBadge>
 
-                <div class="space-y-1">
-                  <NuxtLink
+                <div class="fx-card-body-stack">
+                  <UButton
                     v-for="reservation in day.reservations"
                     :key="reservation.id"
                     :to="`/workspace/property/reservations/${reservation.id}`"
-                    class="block truncate rounded-md px-2 py-1 ring-1 ring-inset transition hover:brightness-95"
-                    :class="sourceClasses(reservation.source)"
+                    block
+                    size="xs"
+                    variant="soft"
+                    :color="sourceColor(reservation.source)"
+                    :label="reservation.guest.display_name || 'Guest'"
                     :title="`${reservation.guest.display_name} · ${sourceLabel(reservation.source)}`"
-                  >
-                    {{ reservation.guest.display_name || 'Guest' }}
-                  </NuxtLink>
+                  />
                 </div>
-              </div>
+              </UCard>
             </div>
           </div>
         </div>
 
         <template #footer>
-          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span
-              v-for="legend in sourceLegend"
-              :key="legend.source"
-              class="inline-flex items-center gap-1.5"
-            >
-              <span class="size-2.5 rounded-full" :class="legend.dot" />
-              {{ legend.label }}
-            </span>
-          </div>
+          <UBadge
+            v-for="legend in sourceLegend"
+            :key="legend.source"
+            :color="legend.color"
+            :label="legend.label"
+            variant="soft"
+          />
         </template>
       </UCard>
     </template>
@@ -249,17 +224,17 @@ const calendarDays = computed(() => {
 })
 
 const sourceLegend = [
-  { source: 'direct', label: 'Direct', dot: 'bg-success' },
-  { source: 'airbnb', label: 'Airbnb', dot: 'bg-error' },
-  { source: 'booking_com', label: 'Booking.com', dot: 'bg-info' },
-  { source: 'other', label: 'Other', dot: 'bg-accented' },
+  { source: 'direct', label: 'Direct', color: 'success' },
+  { source: 'airbnb', label: 'Airbnb', color: 'error' },
+  { source: 'booking_com', label: 'Booking.com', color: 'info' },
+  { source: 'other', label: 'Other', color: 'neutral' },
 ] as const
 
-const sourceClasses = (source: ReservationSource) => {
-  if (source === 'airbnb') return 'bg-error/10 text-error ring-error/25'
-  if (source === 'booking_com') return 'bg-info/10 text-info ring-info/25'
-  if (source === 'direct') return 'bg-success/10 text-success ring-success/25'
-  return 'bg-muted text-highlighted ring-default'
+const sourceColor = (source: ReservationSource) => {
+  if (source === 'airbnb') return 'error'
+  if (source === 'booking_com') return 'info'
+  if (source === 'direct') return 'success'
+  return 'neutral'
 }
 
 const sourceLabel = (source: ReservationSource) =>

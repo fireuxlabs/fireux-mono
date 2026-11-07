@@ -2,33 +2,19 @@
   <nav
     v-if="choices.length"
     aria-label="Choose collection or delivery"
-    :class="active ? 'flex flex-wrap gap-2' : 'grid gap-3 sm:grid-cols-2'"
+    class="fx-card__actions"
   >
-    <NuxtLink
+    <UButton
       v-for="choice in choices"
       :key="choice.service"
       :to="choice.to"
+      :label="choice.label"
+      :icon="choice.icon"
+      :trailing-icon="!active ? 'i-lucide-arrow-right' : undefined"
+      :color="active === choice.service ? 'primary' : 'neutral'"
+      :variant="active === choice.service ? 'solid' : 'soft'"
       :aria-current="active === choice.service ? 'page' : undefined"
-      :class="
-        active
-          ? [
-              'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
-              active === choice.service
-                ? 'border-primary bg-primary text-inverted'
-                : 'border-default hover:bg-elevated',
-            ]
-          : 'group flex items-center gap-4 rounded-2xl border border-default bg-elevated/40 p-5 transition-colors hover:border-primary hover:bg-elevated focus-visible:outline-primary'
-      "
-    >
-      <UIcon :name="choice.icon" class="shrink-0" aria-hidden="true" />
-      <span :class="active ? '' : 'flex-1'">{{ choice.label }}</span>
-      <UIcon
-        v-if="!active"
-        name="i-lucide-arrow-right"
-        class="group-hover:translate-x-1"
-        aria-hidden="true"
-      />
-    </NuxtLink>
+    />
   </nav>
 </template>
 <script setup lang="ts">

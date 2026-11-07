@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-4">
+  <div>
     <UInput
       v-model="query"
       aria-label="Find dish to categorise"
@@ -10,18 +10,13 @@
       Category describes the food. Menus decide where and when it is served.
     </p>
     <FireCopyError v-if="error" :message="error" />
-    <div class="divide-y divide-default">
-      <div
-        v-for="dish in rows"
-        :key="dish.id"
-        class="grid grid-cols-[minmax(0,1fr)_10rem] items-center gap-4 py-3"
-      >
+    <div>
+      <div v-for="dish in rows" :key="dish.id">
         <label :for="`category-${dish.id}`">{{ dish.name }}</label>
         <select
           :id="`category-${dish.id}`"
           :value="dish.category || ''"
           :disabled="busy || readOnly"
-          class="rounded-lg border border-default bg-default p-2"
           @change="save(dish.id, ($event.target as HTMLSelectElement).value)"
         >
           <option value="" disabled>Uncategorised</option>

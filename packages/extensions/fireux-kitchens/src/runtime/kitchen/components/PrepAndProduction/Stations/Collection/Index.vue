@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div>
     <UCard>
       <template #header>
         <div class="collection-manager__header">
@@ -21,11 +21,7 @@
         <FireCopyError message="Stations could not be loaded." />
       </div>
       <div v-else-if="outcome === 'ready'" class="card__media">
-        <div
-          v-for="station in sortedStations"
-          :key="station.id"
-          class="inline-flex items-center gap-2 rounded-full border border-default bg-elevated/30 px-3 py-2"
-        >
+        <div v-for="station in sortedStations" :key="station.id">
           <UIcon name="i-lucide-map-pinned" />
           <span>
             {{ stationDisplayName(station) }}

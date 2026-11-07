@@ -1,6 +1,6 @@
 <template>
-  <section class="space-y-3" aria-labelledby="waste-events-title">
-    <div class="flex items-center justify-between gap-3">
+  <section aria-labelledby="waste-events-title">
+    <div>
       <div>
         <h2 id="waste-events-title">Recorded Waste</h2>
         <p>Observed Waste events for the current Kitchen.</p>
@@ -8,7 +8,7 @@
       <UBadge color="neutral" variant="soft">{{ events.length }}</UBadge>
     </div>
 
-    <div v-if="events.length" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    <UPageGrid as="div" v-if="events.length">
       <UCard v-for="event in orderedEvents" :key="event.id">
         <div class="fx-card-body-stack">
           <div class="card__header">
@@ -27,7 +27,7 @@
           </p>
         </div>
       </UCard>
-    </div>
+    </UPageGrid>
 
     <UAlert
       v-else-if="outcome === 'empty'"

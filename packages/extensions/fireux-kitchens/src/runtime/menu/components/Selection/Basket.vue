@@ -1,34 +1,30 @@
 <template>
-  <div class="space-y-5">
+  <div>
     <p v-if="lines.length && !catalogueReady" role="status">
       Your basket is kept. Availability will be checked when food and drinks
       reload.
     </p>
     <p v-if="!lines.length">Your basket is empty.</p>
-    <article
-      v-for="line in lines"
-      :key="line.key"
-      class="space-y-3 border-b border-default pb-4"
-    >
-      <div class="flex items-start justify-between gap-4">
+    <article v-for="line in lines" :key="line.key">
+      <div>
         <div>
           <h3>{{ line.name }}</h3>
-          <p v-if="line.details.length" class="mt-1">
+          <p v-if="line.details.length">
             {{ line.details.join(' · ') }}
           </p>
-          <p v-if="staleKeys.includes(line.key)" class="mt-1">
+          <p v-if="staleKeys.includes(line.key)">
             This selection has changed or is unavailable. Remove it and choose
             again.
           </p>
         </div>
-        <span class="shrink-0">{{
+        <span>{{
           money(
             ((line.unitMinor - line.depositUnitMinor) * line.choices.quantity) /
               100
           )
         }}</span>
       </div>
-      <div v-if="line.choices.bottle" class="flex justify-between gap-4">
+      <div v-if="line.choices.bottle">
         <span>{{
           line.choices.bottle === 'exchange'
             ? 'Bottle exchange · no deposit'
@@ -40,7 +36,7 @@
           }}</span
         >
       </div>
-      <div class="flex items-center gap-3">
+      <div>
         <UButton
           icon="i-lucide-minus"
           :aria-label="`Decrease ${line.name}`"
@@ -84,7 +80,7 @@
         />
       </div>
     </article>
-    <div v-if="lines.length" class="flex items-center justify-between">
+    <div v-if="lines.length">
       <span>Total</span><span>{{ money(totalMinor / 100) }}</span>
     </div>
     <UButton

@@ -1,45 +1,23 @@
 <template>
-  <div class="pointer-events-none absolute inset-0 z-20">
-    <Transition name="content-fade">
-      <div
-        v-if="!isOpen"
-        class="pointer-events-auto absolute inset-x-0 top-1/4 z-[2] flex -translate-y-1/2 justify-center"
-      >
-        <button
-          class="latap-glass flex min-h-[4.25rem] cursor-pointer items-center justify-start gap-3 rounded-2xl px-4 py-3"
-          type="button"
-          @click="openMenu"
-        >
-          <UIcon name="i-ph-fork-knife" />
-          <span class="grid min-w-32 gap-0.5">
-            <span> View menu </span>
-            <small class="font-serif italic opacity-[0.84]">
-              Comida Casera
-            </small>
-          </span>
-        </button>
-      </div>
-    </Transition>
-
-    <Transition name="menu-pop">
-      <section
-        v-if="isOpen"
-        class="pointer-events-auto fixed inset-0 z-[100] overflow-auto overscroll-contain bg-transparent p-0 text-[var(--brand-ink)]"
-        aria-label="La Tap Berne menu"
-      >
-        <button
-          class="latap-glass fixed right-4 top-4 z-[101] grid size-14 cursor-pointer place-items-center rounded-full border-0 p-0 sm:right-8 sm:top-8 sm:size-[4.5rem]"
-          type="button"
-          aria-label="Close menu"
-          @click="closeMenu"
-        >
-          <UIcon aria-hidden="true" name="i-lucide-x" />
-        </button>
-
-        <MenuDetail menu-id="food" :menu-route-scope="menuRouteScope" />
-      </section>
-    </Transition>
-  </div>
+  <UButton
+    v-if="!isOpen"
+    class="latap-glass"
+    icon="i-ph-fork-knife"
+    label="View menu"
+    size="xl"
+    @click="openMenu"
+  />
+  <UModal
+    :open="isOpen"
+    fullscreen
+    title="La Tap Berne menu"
+    description="Comida Casera"
+    @update:open="(value) => (value ? openMenu() : closeMenu())"
+  >
+    <template #body>
+      <MenuDetail menu-id="food" :menu-route-scope="menuRouteScope" />
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
@@ -65,28 +43,3 @@ onBeforeUnmount(() => {
   setChromeHidden(false)
 })
 </script>
-
-<style scoped>
-.menu-pop-enter-active,
-.menu-pop-leave-active {
-  transition:
-    opacity 260ms ease,
-    transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.menu-pop-enter-from,
-.menu-pop-leave-to {
-  opacity: 0;
-  transform: translateY(1.5rem) scale(0.94);
-}
-
-.content-fade-enter-active,
-.content-fade-leave-active {
-  transition: opacity 180ms ease;
-}
-
-.content-fade-enter-from,
-.content-fade-leave-to {
-  opacity: 0;
-}
-</style>

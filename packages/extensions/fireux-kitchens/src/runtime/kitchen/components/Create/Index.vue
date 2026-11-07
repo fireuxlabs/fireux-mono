@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap items-center gap-2">
+  <div>
     <UButton
       to="/kitchens/create"
       color="neutral"

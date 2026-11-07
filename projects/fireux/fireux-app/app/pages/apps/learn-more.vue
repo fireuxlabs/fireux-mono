@@ -12,7 +12,7 @@
           <h2 class="fx-type-section-title">What an app means in FireUX</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>An app is the operational product teams use day-to-day.</li>
           <li>
             Apps run with shared FireUX identity, runtime, and workspace
@@ -30,7 +30,7 @@
           <h2 class="fx-type-section-title">App operating models</h2>
         </template>
 
-        <div class="grid gap-3 md:grid-cols-3">
+        <div class="pagebody">
           <div class="fx-inset-panel">
             <p class="fx-type-caption">Join an ecosystem</p>
             <p class="fx-type-caption">
@@ -52,7 +52,7 @@
         </div>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton to="/apps" color="primary" icon="i-lucide-app-window">
           Open apps
         </UButton>

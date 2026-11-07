@@ -1,8 +1,8 @@
 <template>
   <UCard>
     <template #header><h2 class="fx-type-card-heading">Profile</h2></template>
-    <div class="space-y-5">
-      <div class="grid gap-5 sm:grid-cols-2">
+    <div class="fx-card-body-stack">
+      <div>
         <FireFormsEditableSimpleField
           label="Name"
           :value="place.name"

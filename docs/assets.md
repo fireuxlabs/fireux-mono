@@ -26,17 +26,20 @@ SVG file.
 
 ## Required runtime deliverables
 
-| File | Requirement | Purpose |
-| --- | --- | --- |
-| `logo.png` | Exactly 512×512 PNG | Primary square App identity |
-| `wordmark.png` | PNG; same geometry and canvas as both surface variants | Generic approved wordmark |
+Every App needs these eight exports under `public/img/app/`. Start from the
+existing approved mark, wordmark and image compositions; keep editable masters,
+palette and font choices outside the public runtime folder.
+
+| File                 | Requirement                           | Purpose                               |
+| -------------------- | ------------------------------------- | ------------------------------------- |
+| `logo.png`           | Exactly 512×512 PNG                   | Primary square App identity           |
 | `wordmark-light.png` | PNG; at least 256×64 and at least 3:1 | Wordmark intended for a light surface |
-| `wordmark-dark.png` | PNG; at least 256×64 and at least 3:1 | Wordmark intended for a dark surface |
-| `cover.png` | 16:9 PNG; at least 1280×720 | Wide App cover artwork |
-| `thumbnail.png` | Exactly 1200×630 PNG | Sharing and directory preview |
-| `favicon.ico` | Square; at least 32×32 | Browser icon |
-| `pwa/icon-192.png` | Exactly 192×192 PNG | PWA icon |
-| `pwa/icon-512.png` | Exactly 512×512 PNG | PWA icon |
+| `wordmark-dark.png`  | PNG; at least 256×64 and at least 3:1 | Wordmark intended for a dark surface  |
+| `cover.png`          | 16:9 PNG; at least 1280×720           | Wide App cover artwork                |
+| `thumbnail.png`      | Exactly 1200×630 PNG                  | Sharing and directory preview         |
+| `favicon.ico`        | ICO with 16/32/48/64px PNG images     | Browser icon                          |
+| `pwa/icon-192.png`   | Exactly 192×192 PNG                   | PWA icon                              |
+| `pwa/icon-512.png`   | Exactly 512×512 PNG                   | PWA icon                              |
 
 `light` and `dark` name the destination surface, not the colour of the
 lettering. A light-surface wordmark normally uses dark lettering; a
@@ -46,6 +49,33 @@ SVG wordmarks are optional. When supplied, they must be genuine outlined
 vectors derived from the same approved master. Source files such as AI, EPS,
 PDF, Figma exports, or layered originals are welcome in addition to—not in
 place of—the runtime PNG family.
+
+The generic `wordmark.png` used by some older Apps is not a required runtime
+role. Current shared components select the light and dark variants directly.
+Favicons contain all four standard sizes in one ICO file. Export each PNG frame
+from the same mark and keep the ICO directory dimensions consistent with its
+embedded images.
+
+## Check the exports
+
+Open the App's `/assets` page to review the exact files on light and dark
+backgrounds. From the repository root, check all Apps or one App:
+
+```sh
+pnpm check:assets
+pnpm check:assets projects/templates/fireux-template
+```
+
+Replace the example directory with the App you changed. CI, production App
+builds and release verification use the same Core inspector to enforce formats,
+decoding, dimensions, matching wordmark canvases and favicon frames. Development
+stays available while artwork is being prepared.
+
+Geometry, source approval and light/dark readability remain visual review
+requirements. Passing the automated check does not approve the artwork or
+verify its published Storage copy. See the
+[public App asset guide](../packages/extensions/fireux-docs/src/runtime/pages/docs/configuration.vue)
+for the developer walkthrough.
 
 ## Cover, thumbnail, and square identity
 
@@ -71,7 +101,6 @@ brand-name-assets/
   APPROVED-MASTER.md
   runtime/
     logo.png
-    wordmark.png
     wordmark-light.png
     wordmark-dark.png
     cover.png

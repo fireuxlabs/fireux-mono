@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div>
     <template v-if="presentation">
       <MenuCollectionScoped :index="menuIndex" browse-only>
         <template #header>
@@ -11,9 +11,8 @@
           <KitchenDetailMenuServices
             v-if="!offeringId"
             :kitchen-slug="kitchenSlug"
-            class="mt-6"
           />
-          <div class="mt-10 flex flex-wrap items-center justify-between gap-3">
+          <div>
             <h2>Explore the menus</h2>
             <UButton
               to="/kitchens/"

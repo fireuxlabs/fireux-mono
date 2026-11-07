@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div>
     <UFormField label="Portfolio name" required>
       <UInput
         v-model="name"
@@ -28,12 +28,12 @@
       />
     </UFormField>
 
-    <div v-if="error" role="alert" class="text-error">
+    <div v-if="error" role="alert">
       {{ error }}
       <FireCopyError :message="error" />
     </div>
 
-    <div class="flex flex-wrap gap-2">
+    <div>
       <UButton
         color="primary"
         icon="i-lucide-plus"

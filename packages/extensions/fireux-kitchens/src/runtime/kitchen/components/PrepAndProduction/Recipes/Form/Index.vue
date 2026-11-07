@@ -1,6 +1,6 @@
 <template>
-  <form class="grid min-w-0 gap-6" @submit.prevent="save">
-    <div class="flex items-center justify-between gap-3">
+  <form @submit.prevent="save">
+    <div>
       <h2>
         {{ recipe ? 'Edit recipe' : 'New recipe' }}
       </h2>
@@ -18,10 +18,7 @@
       title="Recipe not saved"
       :description="message"
     />
-    <fieldset
-      :disabled="saving || creatingPrep || !canWrite"
-      class="grid min-w-0 gap-6"
-    >
+    <fieldset :disabled="saving || creatingPrep || !canWrite">
       <KitchenPrepAndProductionRecipesFormIdentity
         v-model:name="name"
         v-model:description="description"

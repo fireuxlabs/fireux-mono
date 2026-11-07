@@ -1,22 +1,23 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
+  <section>
     <WorkspaceKitchenResearchStageNav
       base-path="/workspace/kitchen/overview/search-demand"
       current="analysis"
     />
-    <header class="grid gap-3 border-b border-default pb-8">
+    <header>
       <p>Stage 2 · Analysis</p>
       <h1>The operator jobs behind Overview</h1>
-      <p class="max-w-3xl">
+      <p>
         Give operators a stable map of the Kitchen while every fact and action
         retains an explicit owner.
       </p>
     </header>
     <ol class="workspace-surface__grid">
-      <UCard as="li" :ui="{ body: 'fx-card-body-stack' }"
+      <UCard
+        as="li"
+        :ui="{ body: 'fx-card-body-stack' }"
         v-for="(cluster, index) in demand.clusters"
         :key="cluster.id"
-        
       >
         <div class="fx-card__chips">
           <UBadge color="neutral" variant="soft">{{ index + 1 }}</UBadge>
@@ -33,9 +34,9 @@
         <p>Owners: {{ cluster.owners.join(' · ') }}</p>
       </UCard>
     </ol>
-    <section class="grid gap-3 border-t border-default pt-8">
+    <section>
       <p>Required record questions</p>
-      <ul class="fx-list-stack list-disc">
+      <ul class="fx-list-stack">
         <li v-for="question in demand.recordQuestions" :key="question">
           {{ question }}
         </li>

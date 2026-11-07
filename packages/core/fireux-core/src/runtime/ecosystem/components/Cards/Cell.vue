@@ -12,12 +12,11 @@
         :text="avatarText || title"
         icon="i-lucide-orbit"
         size="md"
-        class="shrink-0"
       />
 
       <div class="card__content card__stack">
         <div class="card__header">
-          <div class="min-w-0">
+          <div>
             <div class="card__title">{{ title }}</div>
             <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
@@ -46,7 +45,6 @@
 </template>
 
 <script setup lang="ts">
-
 type EcosystemCellProps = {
   to?: string
   imageUrl?: string
@@ -74,5 +72,4 @@ withDefaults(defineProps<EcosystemCellProps>(), {
   link: false,
   action: false,
 })
-
 </script>

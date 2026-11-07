@@ -1,8 +1,5 @@
 <template>
-  <section
-    class="flex flex-wrap items-center gap-2"
-    aria-label="Property selector"
-  >
+  <section aria-label="Property selector">
     <UTabs
       v-if="items.length"
       :model-value="workspace.id.value"
@@ -10,7 +7,6 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-fit max-w-full"
       @update:model-value="workspace.select(String($event))"
     />
     <span v-if="workspace.collectionOutcome.value === 'pending'" role="status"

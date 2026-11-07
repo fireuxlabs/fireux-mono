@@ -1,6 +1,6 @@
 <template>
   <div class="fx-page-stack fx-page-stack--compact">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <UBadge color="primary" variant="soft">Misebox Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More</h1>
@@ -8,7 +8,7 @@
           Misebox is the operating system for kitchens and professionals. This
           page maps the core routes and next actions.
         </p>
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton to="/about" color="primary" icon="i-lucide-info"
             >About</UButton
           >
@@ -39,7 +39,7 @@
 
     <section>
       <UContainer>
-        <div class="max-w-3xl space-y-3">
+        <div class="pagebody">
           <UBadge color="primary" variant="soft">Business case</UBadge>
           <h2 class="fx-type-section-title">
             Turn the menu into a working kitchen system.
@@ -57,7 +57,7 @@
             <template #header>
               <h3 class="fx-type-card-heading">Customer pain</h3>
             </template>
-            <ul class="list-disc fx-list-stack">
+            <ul class="fx-list-stack">
               <li>
                 Menus change faster than PDFs, staff notes, and translations can
                 keep up.
@@ -74,7 +74,7 @@
             <template #header>
               <h3 class="fx-type-card-heading">Misebox opportunity</h3>
             </template>
-            <ul class="list-disc fx-list-stack">
+            <ul class="fx-list-stack">
               <li>
                 Public menus connect to dishes, recipes, ingredients, allergens,
                 and prep.
@@ -102,7 +102,7 @@
         </UPageGrid>
 
         <UCard variant="subtle">
-          <div class="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+          <div class="pagebody">
             <div class="fx-card-body-stack">
               <h3 class="fx-type-card-heading">Scope guardrail</h3>
               <p class="fx-type-caption">
@@ -130,7 +130,7 @@
           <template #header>
             <h2 class="fx-type-card-heading">Core concepts</h2>
           </template>
-          <ul class="list-disc fx-list-stack">
+          <ul class="fx-list-stack">
             <li>
               Kitchen operations: menus, dishes, recipes, prep, and service
               readiness.

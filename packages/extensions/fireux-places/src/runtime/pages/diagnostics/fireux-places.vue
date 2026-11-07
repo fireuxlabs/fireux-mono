@@ -6,15 +6,15 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Places</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('places')">
               {{ openSections.places ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.places" class="mt-4">
+          <div v-show="openSections.places">
             <PlaceModelInspection />
           </div>
         </UCard>

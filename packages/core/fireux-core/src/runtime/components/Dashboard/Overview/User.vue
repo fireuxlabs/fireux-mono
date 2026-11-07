@@ -1,22 +1,15 @@
 <!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: turn the User layer into a real identity hero with exception-only prompts. -->
 <template>
   <UPageCard variant="subtle">
-    <div
-      class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
-    >
-      <div class="flex min-w-0 items-center gap-4 sm:gap-5">
-        <UAvatar
-          :src="card.avatarUrl"
-          :alt="card.displayName"
-          size="3xl"
-          class="shrink-0"
-        />
-        <div class="min-w-0">
+    <div>
+      <div>
+        <UAvatar :src="card.avatarUrl" :alt="card.displayName" size="3xl" />
+        <div>
           <p>Welcome back, {{ firstName }}</p>
-          <h1 class="mt-1 truncate">
+          <h1>
             {{ card.displayName }}
           </h1>
-          <p v-if="card.handle" class="mt-1">
+          <p v-if="card.handle">
             {{ card.handle }}
           </p>
         </div>

@@ -57,12 +57,9 @@
         <div class="card__content">
           <div class="card__title">{{ name }}</div>
 
-          <div
-            v-if="showSubtitle && resolvedAddress"
-            class="flex items-center gap-1 truncate"
-          >
+          <div v-if="showSubtitle && resolvedAddress">
             <UIcon name="i-lucide-map-pin" />
-            <span class="truncate">{{ resolvedAddress }}</span>
+            <span>{{ resolvedAddress }}</span>
           </div>
         </div>
 

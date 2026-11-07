@@ -1,5 +1,5 @@
 <template>
-  <section v-if="editor" class="space-y-3">
+  <section v-if="editor">
     <h3>Assigned roles</h3>
     <div class="fx-card__actions">
       <UCheckbox

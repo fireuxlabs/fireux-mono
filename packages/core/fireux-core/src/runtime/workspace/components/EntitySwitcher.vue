@@ -1,13 +1,15 @@
 <template>
-  <div
+  <UButton
     v-if="pending"
-    class="flex h-8 items-center gap-2 px-2"
+    loading
+    disabled
+    block
+    :square="collapsed"
+    :label="collapsed ? undefined : `Loading ${workspaceLabel}`"
     :aria-label="`Loading ${workspaceLabel}`"
-    role="status"
-  >
-    <USkeleton class="size-5 shrink-0" />
-    <USkeleton v-if="!collapsed" class="h-4 flex-1" />
-  </div>
+    color="neutral"
+    variant="ghost"
+  />
   <UDropdownMenu
     v-else-if="item.choices.length && collapsed"
     :items="[item.choices]"
@@ -33,7 +35,7 @@
     </UButton>
   </UDropdownMenu>
 
-  <div v-else-if="item.choices.length" class="flex w-full items-center">
+  <div v-else-if="item.choices.length">
     <UButton
       :to="to"
       :label="item.label"

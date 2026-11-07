@@ -7,7 +7,9 @@
           <h2 class="fx-type-card-heading">Post a job</h2>
         </div>
         <UBadge :color="published ? 'success' : 'primary'" variant="soft">
-          {{ published ? 'Published' : `Step ${currentStep} of ${steps.length}` }}
+          {{
+            published ? 'Published' : `Step ${currentStep} of ${steps.length}`
+          }}
         </UBadge>
       </div>
     </template>
@@ -48,6 +50,5 @@ const steps = [
     title: 'Review and publish',
     description: 'Save the final details, then make the posting public.',
   },
-] as const
-
+]
 </script>

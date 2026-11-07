@@ -11,8 +11,8 @@
 
     <div v-for="row in infoRows" :key="row.label" class="section__item">
       <dl>
-        <dt class="mb-1">{{ row.label }}</dt>
-        <dd class="min-h-9 px-3 py-2">
+        <dt>{{ row.label }}</dt>
+        <dd>
           {{ row.value }}
         </dd>
       </dl>

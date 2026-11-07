@@ -1,6 +1,6 @@
 <template>
-  <div class="mx-auto w-full max-w-xl space-y-6 workspace-surface">
-    <div class="flex flex-wrap gap-2">
+  <div class="workspace-surface">
+    <div>
       <UButton
         to="/workspace/kitchen/prep/ingredients"
         color="neutral"
@@ -69,7 +69,7 @@
         />
       </template>
       <template #footer>
-        <div class="flex flex-wrap justify-end gap-2">
+        <div>
           <UButton
             label="Cancel"
             color="neutral"

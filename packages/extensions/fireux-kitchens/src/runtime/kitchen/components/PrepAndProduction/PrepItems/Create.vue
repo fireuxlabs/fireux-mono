@@ -1,14 +1,13 @@
 <template>
-  <details class="rounded-xl border border-default p-4">
-    <summary class="cursor-pointer">Create prep item</summary>
+  <details>
+    <summary>Create prep item</summary>
     <FireStateCard
       v-if="message"
       state="error"
       title="Prep item not created"
       :description="message"
-      class="mt-4"
     />
-    <fieldset :disabled="disabled || creatingPrep" class="mt-4 grid gap-3">
+    <fieldset :disabled="disabled || creatingPrep">
       <UInput
         v-model="newPrepName"
         placeholder="Name"
@@ -20,7 +19,7 @@
         placeholder="Source ingredient"
         aria-label="Prep source ingredient"
       />
-      <div class="grid grid-cols-2 gap-3">
+      <div>
         <UInput
           v-model="newPrepQuantity"
           type="number"

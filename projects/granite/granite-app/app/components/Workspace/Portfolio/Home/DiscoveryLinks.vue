@@ -1,6 +1,6 @@
 <template>
   <div class="pagebody">
-    <div class="grid gap-4 lg:grid-cols-2">
+    <UPageGrid>
       <UPageCard
         title="Discover Properties"
         description="Explore Properties in the Granite Directory."
@@ -15,12 +15,9 @@
         to="/pricing"
         variant="subtle"
       />
-    </div>
+    </UPageGrid>
 
-    <nav
-      aria-label="Explore Granite"
-      class="flex flex-wrap gap-x-5 gap-y-2 border-t border-default pt-5"
-    >
+    <nav aria-label="Explore Granite">
       <NuxtLink v-for="link in links" :key="link.to" :to="link.to">
         {{ link.label }}
       </NuxtLink>

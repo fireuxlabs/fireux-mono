@@ -1,11 +1,7 @@
 <template>
-  <fieldset class="space-y-3">
-    <legend class="mb-2">Options</legend>
-    <div
-      v-for="(option, index) in options"
-      :key="index"
-      class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_8rem_auto]"
-    >
+  <fieldset>
+    <legend>Options</legend>
+    <div v-for="(option, index) in options" :key="index">
       <UInput
         v-model="option.label"
         :aria-label="`Option ${index + 1} name`"

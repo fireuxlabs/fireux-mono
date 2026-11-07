@@ -8,7 +8,6 @@
       :color="roleBadge.color"
       variant="soft"
       size="xs"
-      class="fixed right-4 bottom-4 z-50"
       :aria-label="`Open ${roleBadge.label} dashboard`"
     />
     <UBadge
@@ -18,7 +17,6 @@
       :color="roleBadge.color"
       variant="soft"
       size="sm"
-      class="pointer-events-none fixed right-4 bottom-4 z-50"
       aria-live="off"
     />
   </ClientOnly>

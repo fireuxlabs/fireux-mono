@@ -8,7 +8,7 @@
       description="Scheduled Project work will appear here when a capability provides it."
     />
   </WorkspaceCalendarSurface>
-  <USkeleton v-else-if="outcome === 'pending'" class="h-96" />
+  <FireState v-else-if="outcome === 'pending'" outcome="pending" />
   <UAlert
     v-else-if="outcome === 'error'"
     color="error"

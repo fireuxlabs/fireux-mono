@@ -1,7 +1,7 @@
 # Product language
 
 Updated: 2026-11-06
-Ref: f2fbf2242
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -26,8 +26,8 @@ SaaS definition when reading or designing FireUX:
 | **Tenant App**     | A dedicated, usually branded App with `App.role = 'tenant'`. It uses the same package-owned entities, CRUD, Workspace contracts, and `AppUser` relationship as a global App, while it may auto-select a bounded target and vary routes, creation defaults, brand, and presentation. | A separate `Tenant` entity, tenant collection, customer-account hierarchy, or `TenantUser` membership model. |
 | **Standalone App** | An App with `App.role = 'standalone'`; it remains an explicit role rather than a fallback for an unknown configuration.                                                                                                                                                             | A tenant without an Ecosystem.                                                                               |
 | **AppUser**        | The relationship between a Core User and one App, including App access, role, subscription, and App-scoped profile data. Tenant-App users are AppUsers too.                                                                                                                         | A Project developer Team or a Workspace Team member.                                                         |
-| **Team**           | An Entity-owned roster of people and assigned role labels. Workspace access is a separate authority contract.                                                                                                                                                                                             | The App's complete User collection.                                                                          |
-| **Workspace**      | The working surface for an Entity, available from arrival; saved records, selection and authorized actions remain distinct.                                                                                                                                                                           | A Tenant entity or owner of domain records.                                                                  |
+| **Team**           | An Entity-owned roster of people and assigned role labels. Workspace access is a separate authority contract.                                                                                                                                                                       | The App's complete User collection.                                                                          |
+| **Workspace**      | The working surface for an Entity, available from arrival; saved records, selection and authorized actions remain distinct.                                                                                                                                                         | A Tenant entity or owner of domain records.                                                                  |
 
 The behavioral contract and accepted differences between global and tenant
 Apps live in [Tenant and global App family](family-tenant-global.md).
@@ -339,7 +339,7 @@ changing published offers. Product owners may then accept or round each price.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
 - `projects/fireux/fireux-app/shared/platform-context.ts`
 - `packages/core/fireux-core/src/runtime/workspace/components/Capability.vue`
-- `packages/extensions/fireux-projects/src/runtime/project/components/Workspace/Team/Index.vue`
+- `packages/extensions/fireux-projects/src/runtime/project/components/Team/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/menus/index.vue`
 - `packages/core/fireux-core/src/config/app/meta-content.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts`

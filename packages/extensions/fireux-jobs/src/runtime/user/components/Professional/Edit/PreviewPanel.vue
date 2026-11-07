@@ -1,12 +1,12 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/profiles/Professional/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
-    <section class="space-y-4">
+    <section>
       <UCard v-if="isLoading">
         <p class="preview__fallback">Loading professional preview…</p>
       </UCard>
 
-      <UCard v-else-if="hasPreview" class="space-y-6">
+      <UCard v-else-if="hasPreview">
         <header class="preview__header">
           <div class="preview__header-content">
             <p class="preview__eyebrow">Directory preview</p>
@@ -30,13 +30,11 @@
           v-if="showCellCard && previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
-          class="block"
         />
         <ProfessionalCardsPill
           v-else-if="previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
-          class="block"
         />
       </UCard>
 
@@ -51,7 +49,11 @@
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../composables/profiles/Professional/useProfessional.ts'
 
-const { professionalProfile, pending, preview: professionalInterface } = useProfessional()
+const {
+  professionalProfile,
+  pending,
+  preview: professionalInterface,
+} = useProfessional()
 
 const previewCard = computed(() =>
   professionalProfile.value
@@ -69,5 +71,4 @@ const toggleView = () => {
   if (!canToggle.value) return
   showCellView.value = !showCellView.value
 }
-
 </script>

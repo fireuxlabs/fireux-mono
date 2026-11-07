@@ -1,14 +1,14 @@
 <template>
-  <div class="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
+  <div class="pagebody">
     <div class="workspace-surface">
-      <div class="flex flex-wrap items-center gap-2">
+      <div>
         <UBadge color="primary" variant="soft" icon="i-lucide-sparkles">
           App Brand Asset
         </UBadge>
         <UBadge color="warning" variant="soft"> Draft </UBadge>
       </div>
       <h1 class="fx-type-page-title">Friiites serving packaging</h1>
-      <p class="max-w-2xl fx-type-caption">
+      <p class="fx-type-caption">
         Reusable branded objects owned by the Friiites App. These assets can be
         combined with Dish photography without redrawing the packaging.
       </p>
@@ -27,20 +27,12 @@
         </div>
       </template>
 
-      <div
-        class="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,0.7fr)]"
-      >
-        <div
-          class="asset-preview overflow-hidden rounded-xl border border-default"
-        >
-          <img
-            :src="brandObject.image"
-            :alt="brandObject.alt"
-            class="mx-auto block h-auto w-full max-w-3xl object-contain"
-          />
+      <div class="pagebody">
+        <div class="asset-preview">
+          <img :src="brandObject.image" :alt="brandObject.alt" />
         </div>
 
-        <dl class="grid content-start gap-4">
+        <dl>
           <div>
             <dt>Status</dt>
             <dd>Available</dd>
@@ -61,7 +53,7 @@
           </div>
           <div>
             <dt>Storage object</dt>
-            <dd class="break-all font-mono">
+            <dd>
               {{ brandObject.objectPath }}
             </dd>
           </div>

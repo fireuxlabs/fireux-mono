@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection kitchen-collection">
-    <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
       <UInput
         v-model="query"
         :placeholder="searchPlaceholder"

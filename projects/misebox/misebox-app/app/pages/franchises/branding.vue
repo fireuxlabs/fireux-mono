@@ -1,10 +1,10 @@
 <template>
-  <main class="min-h-screen bg-muted/30 py-10">
+  <UPage>
     <UContainer>
-      <header class="grid gap-3">
-        <p class="fx-type-headline m-0">Misebox</p>
-        <h1 class="m-0 fx-type-page-title">Branding products</h1>
-        <p class="m-0 max-w-3xl fx-type-body">
+      <header class="pagebody">
+        <p class="fx-type-headline">Misebox</p>
+        <h1 class="fx-type-page-title">Branding products</h1>
+        <p class="fx-type-body">
           Select a neutral kitchen product, apply an App or Kitchen identity,
           then order its approved treatment.
         </p>
@@ -12,7 +12,7 @@
 
       <BrandingServingCarton />
     </UContainer>
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

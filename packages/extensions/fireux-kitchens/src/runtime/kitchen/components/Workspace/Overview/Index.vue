@@ -1,5 +1,9 @@
 <template>
-  <USkeleton v-if="targetOutcome === 'pending'" class="h-48" />
+  <FireState
+    v-if="targetOutcome === 'pending'"
+    outcome="pending"
+    entity="Kitchen"
+  />
   <FireStateCard
     v-else-if="targetOutcome === 'error'"
     state="error"
@@ -12,15 +16,15 @@
     title="No kitchen selected"
     description="Choose a kitchen to see its overview."
   />
-  <section v-else class="mx-auto grid w-full max-w-6xl gap-6">
-    <header class="flex min-w-0 items-center gap-3">
+  <section v-else>
+    <header>
       <UAvatar
         :src="identityImage || undefined"
         :alt="kitchenTitle"
         icon="i-lucide-chef-hat"
         size="xl"
       />
-      <div class="min-w-0">
+      <div>
         <h2>{{ kitchenTitle }}</h2>
         <p v-if="kitchenSubtitle">
           {{ kitchenSubtitle }}

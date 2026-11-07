@@ -5,11 +5,10 @@
     orientation="horizontal"
   >
     <template #links>
-      <div class="grid gap-3 sm:grid-cols-3">
+      <div>
         <section
           v-for="action in actions"
           :key="`${action.label}-${action.to}`"
-          class="space-y-2"
         >
           <p>{{ action.label }}</p>
           <UButton

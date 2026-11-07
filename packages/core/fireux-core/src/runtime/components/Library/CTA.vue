@@ -1,8 +1,8 @@
 <template>
-  <div class="p-6 space-y-8">
+  <div>
     <div>
       <h1>Call to Action demo</h1>
-      <p class="opacity-70">Using Nuxt UI 4 UPageCTA</p>
+      <p>Using Nuxt UI 4 UPageCTA</p>
     </div>
 
     <UPageCTA

@@ -1,7 +1,7 @@
 <template>
   <UCard v-if="supplier.delivery.areas.length">
     <template #header>Delivery areas</template>
-    <div class="flex flex-wrap gap-2">
+    <div class="card__badges">
       <UBadge
         v-for="area in supplier.delivery.areas"
         :key="area"

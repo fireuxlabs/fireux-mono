@@ -1,15 +1,8 @@
 <template>
-  <div
-    v-if="!session.pending.value && !session.error.value"
-    class="mt-6 space-y-8 pt-8"
-  >
-    <section
-      v-if="plan !== 'business'"
-      aria-label="Discover more"
-      :class="plan === 'free' ? 'space-y-4 py-4' : 'space-y-2'"
-    >
+  <div v-if="!session.pending.value && !session.error.value">
+    <section v-if="plan !== 'business'" aria-label="Discover more">
       <h2>{{ title }}</h2>
-      <p v-if="plan === 'free'" class="max-w-2xl">
+      <p v-if="plan === 'free'">
         {{ description }}
       </p>
       <UButton
@@ -19,11 +12,7 @@
         variant="link"
       />
     </section>
-    <section
-      v-if="plan !== 'business'"
-      aria-label="Plans and pricing"
-      class="space-y-3"
-    >
+    <section v-if="plan !== 'business'" aria-label="Plans and pricing">
       <h2>Room to grow</h2>
       <WorkspaceFreemium
         :family="family"
@@ -32,7 +21,7 @@
         placement="discovery"
       />
     </section>
-    <section aria-label="Guides and resources" class="space-y-3">
+    <section aria-label="Guides and resources">
       <h2>Explore further</h2>
       <UPageCard
         :title="resource.title"

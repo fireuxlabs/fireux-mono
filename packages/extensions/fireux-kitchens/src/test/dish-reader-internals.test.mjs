@@ -416,7 +416,12 @@ function components(app, spec) {
       props: ['title'],
       setup: (props) => () => h('p', props.title),
     })
-  for (const name of ['WorkspaceKitchenCollectionHeader', 'UCard', 'NuxtLink'])
+  for (const name of [
+    'WorkspaceKitchenCollectionHeader',
+    'UCard',
+    'UPageGrid',
+    'NuxtLink',
+  ])
     app.component(name, {
       setup:
         (_, { slots }) =>
@@ -431,7 +436,13 @@ function components(app, spec) {
         () =>
           props.open ? h('div', slots.body?.()) : null,
     })
-  app.component('USkeleton', { render: () => h('p', 'Loading catalogue') })
+  app.component('FireState', {
+    props: ['outcome', 'entity'],
+    setup: (props) => () =>
+      props.outcome === 'pending'
+        ? h('p', { role: 'status' }, `Loading ${props.entity}…`)
+        : null,
+  })
   app.component('WorkspaceKitchenCollectionToolbar', {
     props: ['count'],
     setup: (props) => () => h('p', `Count: ${props.count}`),

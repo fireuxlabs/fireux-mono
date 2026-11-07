@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section>
     <UPageHeader
       title="Access"
       description="Keep workspace access separate from people’s kitchen responsibilities."

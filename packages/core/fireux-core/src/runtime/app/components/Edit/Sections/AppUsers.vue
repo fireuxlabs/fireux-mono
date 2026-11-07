@@ -9,20 +9,15 @@
       </div>
     </template>
 
-    <div v-if="rows.length" class="section__item space-y-2">
-      <ul class="space-y-2">
-        <li
-          v-for="appUser in rows"
-          :key="appUser.id"
-          class="flex flex-wrap items-center justify-between gap-3"
-        >
+    <div v-if="rows.length" class="section__item">
+      <ul>
+        <li v-for="appUser in rows" :key="appUser.id">
           <UserCardsPill
             v-bind="pillFor(appUser)"
             :link="Boolean(pillFor(appUser).to)"
-            class="min-w-0"
           />
 
-          <div class="flex shrink-0 items-center gap-2">
+          <div>
             <UBadge
               size="xs"
               :color="

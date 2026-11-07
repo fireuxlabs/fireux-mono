@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-2">
+  <section>
     <h3 v-if="modeMenus">{{ label }}</h3>
     <KitchenFoodAndDrinkServicesSetupMenus
       v-if="modeMenus"

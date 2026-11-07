@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div>
     <PlaceCardsCell
       v-for="card in cards"
       :key="card.id"

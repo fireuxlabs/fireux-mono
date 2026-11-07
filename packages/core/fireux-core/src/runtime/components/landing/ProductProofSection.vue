@@ -19,25 +19,16 @@
       :data-landing-reveal="reverse ? 'left' : 'right'"
     >
       <p v-if="eyebrow" class="fx-type-headline">{{ eyebrow }}</p>
-      <h2
-        :id="sectionId"
-        class="fx-type-section-display"
-        :class="{ '': copyEmphasis }"
-      >
+      <h2 :id="sectionId" class="fx-type-section-display">
         {{ title }}
       </h2>
-      <p
-        v-if="description"
-        class="fx-type-description"
-        :class="{ '': copyEmphasis }"
-      >
+      <p v-if="description" class="fx-type-description">
         {{ description }}
       </p>
 
       <ul
         v-if="items?.length"
         class="landing-product-proof__items"
-        :class="{ '': copyEmphasis }"
         :aria-label="`${eyebrow || title} includes`"
       >
         <li v-for="item in items" :key="item">

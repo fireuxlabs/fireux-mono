@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-5" aria-label="Current app">
+  <section aria-label="Current app">
     <FireStateCard v-if="appPending" entity="app" kind="document" loading />
     <FireStateCard
       v-else-if="appError"
@@ -23,16 +23,16 @@
         :tagline="appCard.tagline"
         link
       />
-      <dl class="mt-5 divide-y divide-default">
-        <div class="py-3 first:pt-0">
+      <dl class="fx-card__detail-grid">
+        <div>
           <dt>App ID</dt>
-          <dd class="mt-1 break-words">
+          <dd>
             {{ appCard.id }}
           </dd>
         </div>
-        <div class="py-3 last:pb-0">
+        <div>
           <dt>Ecosystem ID</dt>
-          <dd class="mt-1">
+          <dd>
             {{ appCard.ecosystemId }}
           </dd>
         </div>

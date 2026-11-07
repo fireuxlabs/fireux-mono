@@ -6,9 +6,9 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Products</div>
             <UButton
               variant="ghost"
@@ -18,7 +18,7 @@
               {{ openSections.products ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.products" class="mt-4">
+          <div v-show="openSections.products">
             <ProductModelInspection />
           </div>
         </UCard>

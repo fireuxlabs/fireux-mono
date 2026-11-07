@@ -9,7 +9,6 @@
       <FireDiagnosticsDebugPanel
         v-bind="debug"
         title="Identity research debug"
-        class="mt-6"
       />
     </ClientOnly>
   </div>

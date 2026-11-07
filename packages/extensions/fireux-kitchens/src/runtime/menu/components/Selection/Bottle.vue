@@ -8,9 +8,7 @@
       ]"
       @update:model-value="select"
     />
-    <p class="mt-2">
-      Exchange means returning one matching bottle for each drink.
-    </p>
+    <p>Exchange means returning one matching bottle for each drink.</p>
   </UFormField>
 </template>
 <script setup lang="ts">

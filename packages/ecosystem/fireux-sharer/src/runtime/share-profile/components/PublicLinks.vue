@@ -1,14 +1,6 @@
 <template>
-  <div
-    v-show="links.length"
-    class="w-full space-y-6 transition-all duration-700 ease-out motion-reduce:transition-none"
-    :class="
-      contentVisible
-        ? 'translate-y-0 opacity-100'
-        : 'translate-y-3 opacity-0 motion-reduce:translate-y-0'
-    "
-  >
-    <div class="min-h-20">
+  <div v-show="links.length">
+    <div>
       <dl
         v-if="combinedMetrics.length"
         class="share-metrics"
@@ -22,7 +14,7 @@
           <dd>
             {{ metric.value }}
           </dd>
-          <dt class="mt-0.5">
+          <dt>
             {{ metric.label }}
           </dt>
         </div>
@@ -74,10 +66,8 @@ const links = ref<ShareProfileLink[]>([])
 const selectedLink = ref<ShareProfileLink | null>(null)
 const modalOpen = ref(false)
 const metricSources = ref<SocialMetrics[]>([])
-const contentVisible = ref(false)
 const db = useFirestore()
 let stopProfile: (() => void) | null = null
-let revealFrame = 0
 
 type SocialMetrics = {
   platform: string
@@ -183,7 +173,7 @@ onMounted(() => {
       }
       const profile = snapshot.data() as Partial<ShareProfile>
       links.value = Array.isArray(profile.links) ? profile.links : []
-      void enrichYouTube().finally(revealContent)
+      void enrichYouTube()
     },
     () => {
       links.value = []
@@ -194,17 +184,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   stopProfile?.()
-  cancelAnimationFrame(revealFrame)
 })
-
-function revealContent() {
-  if (contentVisible.value || !links.value.length) return
-  revealFrame = requestAnimationFrame(() => {
-    revealFrame = requestAnimationFrame(() => {
-      contentVisible.value = true
-    })
-  })
-}
 
 async function enrichYouTube() {
   const youtube = links.value.find((link) => platformId(link) === 'youtube')

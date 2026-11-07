@@ -2,7 +2,6 @@
   <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
-    class="block w-full"
     @activate="emit('action')"
   >
     <div class="fx-card--cell">
@@ -13,10 +12,7 @@
         size="md"
         class="fx-card__badge"
       />
-      <div
-        v-else
-        class="flex size-10 shrink-0 items-center justify-center rounded-md border border-default bg-elevated/40"
-      >
+      <div v-else>
         <UIcon name="i-lucide-scroll-text" />
       </div>
 

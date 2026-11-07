@@ -51,42 +51,38 @@
             description="The private account record must be restored before account details can be shown."
           />
 
-          <div v-else-if="account" class="max-w-2xl">
+          <div v-else-if="account">
             <UPageCard
               title="Account"
               description="Sign-in and signup-agreement details."
               icon="i-lucide-lock-keyhole"
               variant="subtle"
             >
-              <dl class="divide-y divide-default">
-                <div class="py-3 first:pt-0">
+              <dl class="fx-card__detail-grid">
+                <div>
                   <dt>Email</dt>
-                  <dd class="mt-1 break-words">
+                  <dd>
                     {{ accountEmail || 'Not available' }}
                   </dd>
                 </div>
-                <div class="py-3">
+                <div>
                   <dt>Terms accepted</dt>
-                  <dd class="mt-1">
+                  <dd>
                     {{ termsAcceptedLabel || 'Not recorded' }}
                   </dd>
                 </div>
-                <div class="py-3 last:pb-0">
+                <div>
                   <dt>Terms version</dt>
-                  <dd class="mt-1">
+                  <dd>
                     {{ account.terms.version || 'Not recorded' }}
                   </dd>
                 </div>
               </dl>
 
-              <div
-                class="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4"
-              >
+              <div>
                 <div>
                   <p>Current session</p>
-                  <p class="mt-1">
-                    Signed in as {{ accountEmail || 'your account' }}.
-                  </p>
+                  <p>Signed in as {{ accountEmail || 'your account' }}.</p>
                 </div>
 
                 <UButton

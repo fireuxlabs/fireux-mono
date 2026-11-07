@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-3 sm:grid-cols-3" aria-label="Supplier records">
+  <section aria-label="Supplier records">
     <Summary
       title="Catalogues"
       icon="i-lucide-book-open"

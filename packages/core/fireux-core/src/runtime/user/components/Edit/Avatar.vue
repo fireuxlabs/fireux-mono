@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
+  <div>
     <p>Avatar</p>
     <FireFormsEditableImagePicker
       :src="proxiedAvatarUrl"

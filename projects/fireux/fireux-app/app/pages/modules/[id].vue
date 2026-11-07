@@ -5,7 +5,7 @@
 
     <UPageBody class="pagebody">
       <div v-if="moduleProduct" class="pagebody">
-        <div class="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
+        <div class="pagebody">
           <UCard>
             <div class="fx-card-body-stack">
               <div class="fx-card-body-stack">
@@ -78,7 +78,7 @@
         </div>
 
         <UCard>
-          <div class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
+          <div class="pagebody">
             <div class="fx-card-body-stack">
               <div>Overview</div>
               <div v-if="moduleContent">

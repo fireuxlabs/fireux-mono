@@ -2,11 +2,11 @@
 <!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic form colors. -->
 <!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize object-array rhythm at its sole owner. -->
 <template>
-  <div class="object-array">
+  <div>
     <USeparator />
-    <div class="object-array__header">
+    <div>
       <h3 v-if="label" class="fx-type-card-title">{{ label }}</h3>
-      <div v-if="editingIndex === null" class="object-array__actions">
+      <div v-if="editingIndex === null">
         <slot
           name="create"
           v-bind="{ push, canPush, count: itemCount, max: maxItems }"
@@ -17,8 +17,8 @@
     <div>
       <div v-if="creatingItem">
         <UCard>
-          <div class="relative group">
-            <div v-if="!hasEditSlot" class="mt-3 flex gap-2">
+          <div class="fx-card-body-stack">
+            <div v-if="!hasEditSlot" class="fx-card__actions">
               <UButton
                 size="xs"
                 variant="solid"
@@ -47,43 +47,19 @@
               :save="saveItemEditing"
               :cancel="cancelItemEditing"
             >
-              <div class="mt-2 p-4">
+              <div>
                 Default create/edit rendering for index {{ editingIndex }}
               </div>
             </slot>
-
-            <div
-              v-if="!hasEditSlot"
-              class="absolute top-2 left-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition"
-            >
-              <UButton
-                size="xs"
-                variant="solid"
-                icon="i-lucide-check"
-                aria-label="Save new item"
-                @click="saveItemEditing"
-              >
-                Save
-              </UButton>
-              <UButton
-                size="xs"
-                variant="soft"
-                icon="i-lucide-x"
-                aria-label="Cancel create"
-                @click="cancelItemEditing"
-              >
-                Cancel
-              </UButton>
-            </div>
           </div>
         </UCard>
       </div>
       <div v-if="!items || items.length === 0">{{ emptyText }}</div>
-      <ul v-else class="object-array__list grid gap-3">
+      <ul v-else class="fx-card-body-stack">
         <li v-for="(item, index) in items" :key="index">
           <UCard>
-            <div class="relative group">
-              <div class="object-array__item-body grid gap-3">
+            <div class="fx-card-body-stack">
+              <div class="fx-card-body-stack">
                 <div v-if="editingIndex !== index">
                   <div
                     v-if="
@@ -91,9 +67,8 @@
                       getItemDate(item, index) ||
                       showActions
                     "
-                    class="object-array__item-header"
                   >
-                    <div class="object-array__item-title">
+                    <div>
                       <h3
                         v-if="getItemTitle(item, index)"
                         class="fx-type-card-title"
@@ -101,7 +76,7 @@
                         {{ getItemTitle(item, index) }}
                       </h3>
                     </div>
-                    <div class="object-array__item-actions">
+                    <div>
                       <UBadge
                         v-if="getItemDate(item, index)"
                         size="md"
@@ -155,7 +130,7 @@
                     :save="saveItemEditing"
                     :cancel="cancelItemEditing"
                   >
-                    <div class="p-4">
+                    <div>
                       <div v-if="hasSchema" class="fx-card-body-stack">
                         <div
                           v-for="field in fields"
@@ -188,7 +163,7 @@
                           />
                         </div>
 
-                        <div class="mt-3 flex gap-2">
+                        <div class="fx-card__actions">
                           <UButton
                             size="xs"
                             variant="solid"
@@ -210,7 +185,7 @@
 
                       <div v-else>
                         Default edit rendering for index {{ index }}
-                        <div class="mt-3 flex gap-2">
+                        <div class="fx-card__actions">
                           <UButton
                             size="xs"
                             variant="solid"

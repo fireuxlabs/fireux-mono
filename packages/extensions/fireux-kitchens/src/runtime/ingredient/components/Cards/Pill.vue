@@ -27,10 +27,7 @@
         >
           {{ subtitle }}
         </UBadge>
-        <div
-          v-if="showBadges && badges.length"
-          class="flex flex-wrap items-center gap-1"
-        >
+        <div v-if="showBadges && badges.length">
           <UBadge
             v-for="badge in badges"
             :key="badge"
@@ -92,7 +89,6 @@ const categoryColor = computed(() => {
 
   return categoryColors[category] || 'neutral'
 })
-
 </script>
 
 <style scoped>

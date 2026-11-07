@@ -1,5 +1,5 @@
 <template>
-  <div class="service-config space-y-4">
+  <div class="service-config">
     <div class="service-fields">
       <KitchenFoodAndDrinkServicesSetupKiosk v-if="option.key === 'counter'" />
       <KitchenFoodAndDrinkServicesSetupMenus

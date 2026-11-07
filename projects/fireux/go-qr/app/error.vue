@@ -1,8 +1,8 @@
 <template>
   <UApp>
-    <main class="min-h-screen bg-default">
+    <UPage>
       <UContainer>
-        <div class="mx-auto max-w-2xl space-y-6">
+        <div class="pagebody">
           <div class="pagebody">
             <p class="fx-type-caption">Go QR</p>
             <h1 class="fx-type-page-title">
@@ -18,7 +18,7 @@
           </UButton>
         </div>
       </UContainer>
-    </main>
+    </UPage>
   </UApp>
 </template>
 

@@ -8,7 +8,7 @@
         </div>
 
         <div class="collection-manager__controls">
-          <div class="ml-auto flex items-center gap-2">
+          <div>
             <UInput
               v-if="showSearchInput"
               v-model="query"

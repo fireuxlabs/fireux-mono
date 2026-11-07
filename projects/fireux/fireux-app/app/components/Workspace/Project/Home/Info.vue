@@ -16,16 +16,16 @@
     >
       <template #body>
         <div class="pagebody">
-          <p class="m-0 fx-type-caption">
+          <p class="fx-type-caption">
             Create, compose, launch and operate a SaaS Project. The resulting
             business Workspaces operate their own Entities.
           </p>
 
           <section class="pagebody" aria-labelledby="project-ai-capabilities">
-            <h3 id="project-ai-capabilities" class="m-0 fx-type-card-heading">
+            <h3 id="project-ai-capabilities" class="fx-type-card-heading">
               ProjectAI capabilities
             </h3>
-            <p class="m-0 fx-type-caption">
+            <p class="fx-type-caption">
               ProjectAI coordinates registered Project specialists. No Project
               AI actions are connected yet.
             </p>

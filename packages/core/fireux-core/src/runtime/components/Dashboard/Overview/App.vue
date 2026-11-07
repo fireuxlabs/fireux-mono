@@ -35,13 +35,11 @@
     </div>
 
     <div v-if="membershipOutcome !== 'ready' || canManageApp">
-      <div
+      <FireState
         v-if="membershipOutcome === 'idle' || membershipOutcome === 'pending'"
-        class="fx-card-body-stack"
-      >
-        <USkeleton class="h-10 w-52" />
-        <USkeleton class="h-5 w-40" />
-      </div>
+        outcome="pending"
+        entity="App membership"
+      />
 
       <UAlert
         v-else-if="membershipOutcome === 'error'"
@@ -80,23 +78,16 @@
 
       <div>
         <h3>Profiles in this app</h3>
-        <p class="mt-1">
+        <p>
           Open active profiles or create one of the profiles this app supports.
         </p>
 
-        <div class="mt-4 space-y-2">
-          <div
-            v-for="entry in profileEntries"
-            :key="entry.profileId"
-            class="flex items-center justify-between gap-3 px-3 py-2.5"
-          >
-            <div class="flex min-w-0 items-center gap-3">
-              <UIcon
-                :name="entry.icon || 'i-lucide-user-round'"
-                class="size-5 shrink-0"
-              />
-              <div class="min-w-0">
-                <p class="truncate">
+        <div>
+          <div v-for="entry in profileEntries" :key="entry.profileId">
+            <div>
+              <UIcon :name="entry.icon || 'i-lucide-user-round'" />
+              <div>
+                <p>
                   {{ entry.label }}
                 </p>
                 <p>

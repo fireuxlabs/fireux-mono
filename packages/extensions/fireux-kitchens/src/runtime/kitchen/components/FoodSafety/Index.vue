@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-5">
+  <section>
     <UPageHeader :title="current.title" :description="current.description" />
     <UAlert
       icon="i-lucide-shield-check"

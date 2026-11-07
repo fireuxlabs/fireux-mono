@@ -4,14 +4,12 @@
   <FireOnboardingShell family="place" :stage="shellStage">
     <template #intro>
       <slot name="intro">
-        <span
-          class="flex size-12 items-center justify-center rounded-xl bg-primary/10"
-        >
+        <span>
           <UIcon name="i-lucide-map-pin" />
         </span>
-        <p class="mt-6">Place setup</p>
-        <h1 class="mt-2 sm:text-3xl fx-type-page-title">Add a Place</h1>
-        <p class="mt-3">
+        <p>Place setup</p>
+        <h1 class="fx-type-page-title">Add a Place</h1>
+        <p>
           Find the location, confirm its defaults, and review the Place before
           it is added.
         </p>
@@ -87,10 +85,7 @@
     />
 
     <template v-if="!requiredOnly || activeStepId !== 'find' || draft" #footer>
-      <div
-        class="flex min-w-0 flex-col-reverse gap-3 sm:flex-row sm:items-center"
-        :class="isFirstStep ? 'sm:justify-end' : 'sm:justify-between'"
-      >
+      <div>
         <UButton
           v-if="!isFirstStep"
           type="button"
@@ -98,7 +93,6 @@
           variant="soft"
           icon="i-lucide-arrow-left"
           :disabled="pending"
-          class="justify-center sm:w-auto"
           block
           @click="onBack"
         >
@@ -110,7 +104,6 @@
           :icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
           :loading="pending || resolvingExisting"
           :disabled="continueDisabled"
-          class="justify-center sm:w-auto"
           block
           @click="onContinue"
         >

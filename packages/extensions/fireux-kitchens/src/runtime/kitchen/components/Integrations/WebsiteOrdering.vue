@@ -2,16 +2,14 @@
   <UCard>
     <template #header
       ><h2>Website ordering</h2>
-      <p class="mt-1">
+      <p>
         Add one button to your website. Customers choose from your current
         offerings and menus.
       </p></template
     >
-    <div class="grid items-start gap-6 lg:grid-cols-2">
+    <div>
       <div class="fx-card-body-stack">
-        <div
-          class="flex min-h-48 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-default bg-elevated/30 p-6"
-        >
+        <div>
           <span>Button preview</span>
           <UButton
             label="Order now"
@@ -60,14 +58,14 @@
   <UModal
     v-model:open="previewOpen"
     title="Website ordering preview"
-    :ui="{ content: 'sm:max-w-5xl h-[90dvh]', body: 'p-0 sm:p-0 flex-1' }"
+    fullscreen
   >
     <template #body
       ><iframe
         v-if="previewOpen"
         :src="previewPath"
         title="Kitchen ordering preview"
-        class="h-full min-h-96 w-full border-0"
+        class="h-full w-full"
     /></template>
   </UModal>
 </template>

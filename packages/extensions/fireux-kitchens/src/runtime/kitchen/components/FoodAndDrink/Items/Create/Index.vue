@@ -1,7 +1,7 @@
 <template>
-  <form class="space-y-4" @submit.prevent="addDish">
+  <form @submit.prevent="addDish">
     <UFormField label="Image">
-      <div class="flex flex-col items-start gap-2">
+      <div>
         <FireFormsEditableImagePicker
           :src="imagePreviewUrl"
           :alt="name.trim() || `New ${singular}`"
@@ -17,7 +17,7 @@
       </div>
     </UFormField>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <div>
       <UFormField label="Name">
         <UInput
           v-model="name"
@@ -49,7 +49,7 @@
       />
     </UFormField>
 
-    <div class="flex flex-wrap items-center gap-2">
+    <div>
       <UButton
         type="submit"
         icon="i-lucide-plus"

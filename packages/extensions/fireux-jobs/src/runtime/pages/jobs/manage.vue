@@ -27,10 +27,7 @@
     <UPageBody class="pagebody">
       <JobAuthorFlowProgress v-if="!canPostJob" :current-step="1" />
 
-      <div v-if="isChecking" class="space-y-3">
-        <USkeleton class="h-24" />
-        <USkeleton class="h-48" />
-      </div>
+      <FireState v-if="isChecking" outcome="pending" entity="access" />
 
       <JobAuthorGate
         v-else-if="!canPostJob"
@@ -40,10 +37,10 @@
 
       <template v-else>
         <UCard v-if="agentCard" variant="subtle">
-          <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="card__header">
             <div>
               <p>Employer workspace</p>
-              <p class="mt-1">
+              <p>
                 Every posting is owned by this hiring profile and linked to a
                 Business and Place.
               </p>
@@ -52,7 +49,6 @@
               v-bind="agentCard"
               :show-subtitle="false"
               :link="Boolean(agentCard.to)"
-              class="min-w-64"
             />
           </div>
         </UCard>

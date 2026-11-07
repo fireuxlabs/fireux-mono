@@ -8,7 +8,7 @@
       />
 
       <UPageBody class="pagebody">
-        <div class="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
+        <div class="pagebody">
           <UPageCard
             title="Book the bar"
             description="Use the public booking form to enquire about weddings, corporate events, festivals, and private parties."

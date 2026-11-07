@@ -3,7 +3,7 @@
     ref="toolFrame"
     :src="src"
     :title="title"
-    class="block w-full overflow-hidden"
+    class="w-full"
     :style="{ height: `${toolHeight}px` }"
     @load="onToolFrameLoad"
   />

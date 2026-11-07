@@ -17,7 +17,7 @@
           now, and how to launch.
         </p>
 
-        <div class="mt-4 flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             to="/about"
             color="neutral"

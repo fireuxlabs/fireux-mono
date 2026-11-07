@@ -41,7 +41,8 @@
     }
   },
   "dependencies": {
-    "fireux-core": "workspace:*"
+    "fireux-core": "workspace:*",
+    "fireux-bookings": "workspace:*"
   },
   "peerDependencies": {
     "@nuxt/kit": "^4.4.0",

@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Place dev diagnostics on live model and collection data. -->
 <template>
-  <section class="space-y-10">
+  <section>
     <UCard>
       <FireDiagnosticsModel
         :title="'Places · Model'"
@@ -10,8 +10,8 @@
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
             <p>Places collection</p>
             <p>
               Browse places resolved for this runtime and filter by model drift.

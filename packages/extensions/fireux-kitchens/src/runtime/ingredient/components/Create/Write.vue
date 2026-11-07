@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div>
     <UFormField label="Name" required>
       <UInput
         v-model="form.name"
@@ -8,7 +8,7 @@
       />
     </UFormField>
 
-    <div class="grid gap-3 sm:grid-cols-2">
+    <div>
       <UFormField label="Category" required>
         <USelect v-model="form.category" :items="INGREDIENT_CATEGORY_OPTIONS" />
       </UFormField>

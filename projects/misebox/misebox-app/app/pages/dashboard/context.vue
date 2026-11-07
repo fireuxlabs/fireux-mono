@@ -4,7 +4,7 @@
       ><FireLayoutsDashboardNavbar title="AI context"
     /></template>
     <template #body>
-      <div class="space-y-5 max-w-3xl">
+      <div class="pagebody">
         <p class="fx-type-body">
           App product background used by this AI. Workspace records remain
           separate.
@@ -31,8 +31,8 @@
             </div></template
           >
           <p class="whitespace-pre-line">{{ data.context.summary }}</p>
-          <p class="mt-4 fx-type-caption">Source: {{ data.context.source }}</p>
-          <p class="mt-2 fx-type-caption">{{ data.sourcePath }}</p>
+          <p class="fx-type-caption">Source: {{ data.context.source }}</p>
+          <p class="fx-type-caption">{{ data.sourcePath }}</p>
           <template #footer
             ><UButton
               label="Copy AI context"

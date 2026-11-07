@@ -34,7 +34,7 @@
       variant="subtle"
     >
       <div class="pagebody">
-        <div class="flex flex-wrap items-center gap-2">
+        <div>
           <UBadge color="neutral" variant="soft">
             {{ draftSlugs.length }} selected
           </UBadge>
@@ -53,7 +53,7 @@
           {{ emptyLabel }}
         </p>
 
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton
             label="Save selection"
             color="primary"

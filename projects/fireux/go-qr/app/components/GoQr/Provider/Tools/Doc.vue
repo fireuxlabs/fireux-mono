@@ -39,12 +39,15 @@
           {{ isCreating ? loadingLabel : ctaLabel }}
         </UButton>
 
-        <p v-if="createError" class="text-error fx-type-caption">
-          {{ createError }}
-        </p>
+        <UAlert
+          v-if="createError"
+          color="error"
+          title="Document not created"
+          :description="createError"
+        />
       </form>
 
-      <div v-if="createdPath" class="flex flex-wrap gap-2">
+      <div v-if="createdPath">
         <UButton
           v-if="createdPath"
           :to="createdPath"

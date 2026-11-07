@@ -1,6 +1,6 @@
 <template>
   <div class="fx-page-stack fx-page-stack--compact">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <UBadge color="primary" variant="soft">Slap Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More</h1>
@@ -8,7 +8,7 @@
           Slap wraps drops, stories, gallery thinking, and workspace-backed
           operations in lifestyle-commerce language.
         </p>
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton to="/about" color="primary" icon="i-lucide-info"
             >About</UButton
           >

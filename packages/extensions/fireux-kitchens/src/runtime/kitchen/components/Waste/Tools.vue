@@ -1,12 +1,11 @@
 <template>
-  <section v-if="tool" class="space-y-3" aria-labelledby="waste-tools-title">
-    <div
-      class="flex items-center gap-3 rounded-xl border border-default bg-elevated/50 p-2 shadow-sm"
-    >
-      <div class="min-w-0 px-2">
-        <h2 id="waste-tools-title">Tools</h2>
-        <p class="hidden sm:block">Waste actions</p>
-      </div>
+  <section
+    v-if="tool"
+    class="workspace-surface workspace-surface--compact"
+    aria-labelledby="waste-tools-title"
+  >
+    <UCard description="Waste actions">
+      <template #title><h2 id="waste-tools-title">Tools</h2></template>
       <UButton
         :label="tool.label"
         icon="i-lucide-trash-2"
@@ -14,7 +13,7 @@
         :disabled="!canWrite"
         @click="performAction(tool.id)"
       />
-    </div>
+    </UCard>
 
     <UModal
       :open="activeToolId === tool.id"

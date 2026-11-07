@@ -2,9 +2,9 @@
 <!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: use Nuxt UI card structure and local form rhythm. -->
 <template>
   <ClientOnly>
-    <div v-if="professional" class="space-y-6">
+    <div v-if="professional">
       <UPageCard title="Identity" icon="i-lucide-id-card" variant="outline">
-        <div class="space-y-4">
+        <div>
           <FireFormsEditableSimpleField
             label="Job title"
             :value="headline"
@@ -33,7 +33,7 @@
             :update="handleBio"
           />
 
-          <div class="flex flex-col items-center gap-2">
+          <div>
             <FireFormsEditableImagePicker
               :src="imageUrl"
               :alt="headline || 'Professional'"

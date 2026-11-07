@@ -1,17 +1,17 @@
 <template>
   <section class="ignition-hero" aria-labelledby="ignition-heading">
-    <UContainer class="relative">
-      <div class="mx-auto max-w-3xl">
+    <UContainer>
+      <div>
         <UBadge color="neutral" variant="subtle" size="lg">{{
           fireuxOffer.category
         }}</UBadge>
-        <h1 id="ignition-heading" class="mt-6 fx-type-page-title">
+        <h1 id="ignition-heading" class="fx-type-page-title">
           {{ fireuxOffer.headline }}
         </h1>
-        <p class="mx-auto mt-6 max-w-xl fx-type-description">
+        <p class="fx-type-description">
           {{ fireuxOffer.heroDescription }}
         </p>
-        <FrameworkIgnitionPrompt class="mt-10" />
+        <FrameworkIgnitionPrompt />
       </div>
     </UContainer>
   </section>

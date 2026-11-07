@@ -1,6 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolWifi class="w-full max-w-xl" />
+    <GoQrToolWifi />
   </GoQrSolutionPage>
 </template>
 

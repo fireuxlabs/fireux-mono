@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div>
     <MenuItemImage
       :enabled="offer.presentation.showItemImages"
       :image-url="offer.item.imageUrl"
@@ -47,7 +47,7 @@
         @update:model-value="choices.groups[group.id] = $event"
       />
     </UFormField>
-    <div class="flex items-end justify-between gap-4">
+    <div>
       <UFormField label="Quantity">
         <UInput
           :model-value="choices.quantity"

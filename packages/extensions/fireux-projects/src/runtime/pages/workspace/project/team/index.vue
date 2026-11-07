@@ -17,12 +17,8 @@
       @update:model-value="team.natives.select(String($event))"
     /> </UDashboardToolbar
   ><UPageHeader :title="intro.title" :description="intro.purpose" />
-  <WorkspaceProjectTeamAI :team="team" @action="teamView?.openAction($event)" />
-  <WorkspaceProjectTeam
-    :key="team.state.value.project.id"
-    ref="teamView"
-    :team="team"
-  />
+  <ProjectTeamAI :team="team" @action="teamView?.openAction($event)" />
+  <ProjectTeam :key="team.state.value.project.id" ref="teamView" :team="team" />
   <WorkspaceFreemium
     family="project"
     capability="team"
@@ -33,9 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import WorkspaceProjectTeam from '../../../../project/components/Workspace/Team/Index.vue'
-const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
+import { computed, useTemplateRef } from 'vue'
+const teamView = useTemplateRef('teamView')
 import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 

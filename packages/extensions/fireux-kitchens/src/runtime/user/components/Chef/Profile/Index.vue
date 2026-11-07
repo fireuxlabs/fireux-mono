@@ -26,7 +26,7 @@
           eyebrow="Culinary identity"
           title="About"
         >
-          <p class="whitespace-pre-line">
+          <p>
             {{ aboutCopy }}
           </p>
         </UserProfileSection>
@@ -45,11 +45,10 @@
             />
           </template>
 
-          <div class="grid gap-3 sm:grid-cols-2">
+          <div>
             <figure
               v-for="item in gallery"
               :key="`${item.name}-${item.image_url}`"
-              class="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-elevated"
             >
               <img
                 :src="item.image_url"
@@ -58,12 +57,8 @@
                 decoding="async"
                 width="960"
                 height="720"
-                class="size-full object-cover transition duration-500 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
               />
-              <figcaption
-                v-if="item.name"
-                class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10"
-              >
+              <figcaption v-if="item.name">
                 {{ item.name }}
               </figcaption>
             </figure>
@@ -79,7 +74,7 @@
           eyebrow="Known for"
           title="Signature dishes"
         >
-          <div class="flex flex-wrap gap-2">
+          <div>
             <UBadge
               v-for="dish in signatureDishes"
               :key="dish"

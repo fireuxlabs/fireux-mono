@@ -1,20 +1,20 @@
 <template>
-  <div class="mt-5" aria-label="Stations preview">
+  <div aria-label="Stations preview">
     <template v-if="stations.length">
-      <div class="mb-3 flex justify-end">
+      <div>
         <UBadge color="neutral" variant="soft" size="sm">
           {{ stations.length }} stations
         </UBadge>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-3">
+      <div class="pagebody">
         <UCard
           as="article"
           v-for="station in stations"
           :key="station.id"
           :data-station-id="station.id"
         >
-          <div class="flex items-start justify-between gap-3">
+          <div>
             <UIcon name="i-lucide-map-pinned" />
             <UBadge
               :color="station.active ? 'success' : 'neutral'"
@@ -24,10 +24,10 @@
               {{ station.active ? 'Active' : 'Inactive' }}
             </UBadge>
           </div>
-          <h3 class="mt-3 fx-type-card-heading">
+          <h3 class="fx-type-card-heading">
             {{ station.name }}
           </h3>
-          <p class="mt-1 fx-type-caption">
+          <p class="fx-type-caption">
             {{ station.description || 'Kitchen work area.' }}
           </p>
         </UCard>

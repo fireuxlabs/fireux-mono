@@ -1,12 +1,9 @@
 <template>
-  <section
-    class="mt-12 space-y-6 border-t border-default pt-10"
-    aria-labelledby="explore-projects-title"
-  >
-    <div class="flex flex-wrap items-center justify-between gap-3">
+  <section class="pagebody" aria-labelledby="explore-projects-title">
+    <div>
       <div>
         <p class="fx-type-caption">Discover</p>
-        <h2 id="explore-projects-title" class="mt-1 fx-type-section-title">
+        <h2 id="explore-projects-title" class="fx-type-section-title">
           Explore Projects
         </h2>
       </div>
@@ -35,34 +32,26 @@
         ><UButton label="Try again" variant="soft" @click="refresh()"
       /></template>
     </FireStateCard>
-    <div
-      v-else-if="projects.length"
-      class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-    >
-      <NuxtLink
+    <div v-else-if="projects.length" class="pagebody">
+      <ULink
         v-for="project in projects.slice(0, 6)"
         :key="project.id"
         :to="`/projects/${project.id}`"
-        class="group flex flex-col gap-3 rounded-2xl bg-elevated p-5 ring-1 ring-default transition hover:ring-primary focus-visible:outline-2 focus-visible:outline-primary"
       >
         <img
           v-if="project.identity.image_url"
           :src="project.identity.image_url"
           alt=""
-          class="aspect-video rounded-lg object-cover"
           loading="lazy"
         />
         <h3 class="fx-type-card-heading">
           {{ project.identity.name }}
         </h3>
-        <p
-          v-if="project.identity.description"
-          class="line-clamp-2 fx-type-caption"
-        >
+        <p v-if="project.identity.description" class="fx-type-caption">
           {{ project.identity.description }}
         </p>
-        <span class="mt-auto">Explore Project →</span>
-      </NuxtLink>
+        <span>Explore Project →</span>
+      </ULink>
     </div>
     <p v-else class="fx-type-caption">
       Projects available to explore will appear here.

@@ -1,8 +1,8 @@
 <template>
-  <div class="mt-4 space-y-4" data-menu-meal-deal>
+  <div data-menu-meal-deal>
     <section v-for="group in deal.groups" :key="group.id">
       <h4>{{ group.name }} · Choose {{ group.choose }}</h4>
-      <ul class="mt-2 space-y-1">
+      <ul>
         <li
           v-for="dish in group.dishes"
           :key="dish.dishId"

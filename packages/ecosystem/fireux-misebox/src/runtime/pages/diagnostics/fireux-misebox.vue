@@ -6,18 +6,18 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Ecosystem status</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('status')">
               {{ openSections.status ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.status" class="mt-4">
+          <div v-show="openSections.status">
             <UCard>
               <template #header>
-                <div class="flex flex-col gap-1">
+                <div>
                   <h2 class="fx-type-card-heading">Ecosystem status</h2>
                   <p>
                     Misebox provides ecosystem identity; apps select domain
@@ -26,7 +26,7 @@
                 </div>
               </template>
 
-              <dl class="grid gap-4 sm:grid-cols-2">
+              <dl>
                 <div>
                   <dt>Ecosystem</dt>
                   <dd>{{ cfg.ecosystem }}</dd>
@@ -51,7 +51,7 @@
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Domain ownership</div>
             <UButton
               variant="ghost"
@@ -61,10 +61,10 @@
               {{ openSections.ownership ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.ownership" class="mt-4">
+          <div v-show="openSections.ownership">
             <UCard>
               <template #header>
-                <div class="flex flex-col gap-1">
+                <div>
                   <h2 class="fx-type-card-heading">Domain ownership</h2>
                   <p>Canonical ownership after migration.</p>
                 </div>

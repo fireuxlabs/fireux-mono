@@ -18,7 +18,6 @@
 
     <section
       v-if="showSuggestionCards && suggestions.length"
-      class="grid gap-3 border-t border-default pt-4"
       :aria-labelledby="`${capability}-suggestions-title`"
     >
       <div class="workspace-surface__grid">

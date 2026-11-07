@@ -44,7 +44,7 @@
         label="Editorial review"
         description="Publication is blocked until privacy, facts, and every remaining name have been reviewed."
       >
-        <div class="space-y-3">
+        <div>
           <UCheckbox
             v-model="blogPost.editorial_review.privacy_reviewed"
             label="Private and identifying information has been removed"

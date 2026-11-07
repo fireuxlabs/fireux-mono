@@ -1,8 +1,5 @@
 <template>
-  <section
-    class="flex items-center gap-2"
-    :aria-label="`${catalogue.title} selector`"
-  >
+  <section :aria-label="`${catalogue.title} selector`">
     <UTabs
       v-if="state.dishes.length"
       :model-value="state.selectedDishId"
@@ -26,7 +23,6 @@
       v-model:open="createOpen"
       :title="`Create ${subject}`"
       :description="`Add a ${catalogue.singular} to this Kitchen.`"
-      :ui="{ content: 'sm:max-w-3xl' }"
     >
       <template #body
         ><KitchenFoodAndDrinkItemsCreate v-if="createOpen"

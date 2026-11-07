@@ -48,7 +48,7 @@
         />
       </UFormField>
 
-      <div class="grid gap-3 sm:grid-cols-2">
+      <div class="fx-card-body-stack">
         <UFormField label="Category" required>
           <USelect
             v-model="form.category"

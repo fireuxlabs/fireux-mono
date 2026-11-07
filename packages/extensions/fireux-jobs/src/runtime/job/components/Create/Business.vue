@@ -3,7 +3,7 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
+      <div class="fx-card-body-stack">
         <p>Step 1 · Employer</p>
         <h2 class="fx-type-card-heading">
           {{ chosenPlaceCard ? 'Selected employer' : 'Choose the employer' }}
@@ -15,7 +15,7 @@
       </div>
     </template>
 
-    <div class="space-y-4">
+    <div class="fx-card-body-stack">
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
           <PlaceSearch
@@ -25,7 +25,7 @@
         </ClientOnly>
       </div>
 
-      <div v-else class="space-y-2">
+      <div v-else class="fx-card-body-stack">
         <PlaceCardsCell v-bind="chosenPlaceCard" :show-source="true" />
       </div>
     </div>

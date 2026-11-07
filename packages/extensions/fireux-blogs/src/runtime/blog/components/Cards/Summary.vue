@@ -27,7 +27,7 @@
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
             <span v-if="prop || excerpt">{{ prop || excerpt }}</span>
-            <span v-else class="italic">missing</span>
+            <span v-else>missing</span>
           </div>
         </div>
       </div>

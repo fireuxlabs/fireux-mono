@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-11-06
-Ref: f2fbf2242
+Updated: 2026-11-07
+Ref: 82e9ee53c
 Role: living context
 Scope: repository-wide
 
@@ -200,6 +200,13 @@ owns shared-library registration.
 Use Nuxt's generated component names when package registration provides them.
 Do not add an explicit import or alias without an inspected registration gap or
 name collision. See [component ownership and reuse](../concepts/components.md).
+
+Apps provide the standard artwork family under `public/img/app`. Core's single
+asset inspector is used by the all-App CI audit, production App builds, setup
+diagnostics and release artifact checks. Run `pnpm check:assets` locally after
+asset changes. These gates validate file and image contracts; brand approval,
+faithful geometry and visual contrast still require review through the App's
+asset previews. See [asset ownership and enforcement](../concepts/brand-assets.md).
 
 ### Vue file convention
 

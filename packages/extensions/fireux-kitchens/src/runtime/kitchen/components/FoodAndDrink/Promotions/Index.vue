@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto grid w-full max-w-4xl gap-6">
+  <section>
     <WorkspaceKitchenCollectionHeader title="Promotions">
       <template #actions>
         <UButton

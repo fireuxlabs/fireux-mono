@@ -338,6 +338,7 @@ async function render(path, state) {
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
     'FireDiagnosticsDebugPanel',
+    'FireContextRecord',
     'UButton',
     'UIcon',
     'KitchenPrepAndProductionRecipesCollection',
@@ -363,7 +364,13 @@ async function render(path, state) {
         `Editor: ${props.recipe?.id || 'new'}`
       ),
   })
-  app.component('USkeleton', { render: () => h('p', 'Loading recipes') })
+  app.component('FireState', {
+    props: ['outcome', 'entity'],
+    setup: (props) => () =>
+      props.outcome === 'pending'
+        ? h('p', { role: 'status' }, `Loading ${props.entity}…`)
+        : null,
+  })
   app.component('WorkspaceKitchenCollectionToolbar', {
     props: ['count'],
     setup: (props) => () => h('p', `Count: ${props.count}`),

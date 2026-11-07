@@ -2,7 +2,6 @@
   <FireActionSurface
     :to="link && to ? to : undefined"
     :action="action"
-    class="block w-full"
     @activate="emit('action')"
   >
     <div class="fx-card--cell">

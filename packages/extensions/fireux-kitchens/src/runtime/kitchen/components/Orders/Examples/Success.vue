@@ -1,9 +1,7 @@
 <template>
   <UCard data-testid="success-preview">
     <div class="fx-card-body-stack">
-      <div
-        class="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10"
-      >
+      <div>
         <UIcon :name="view.icon" aria-hidden="true" />
       </div>
       <h3>{{ view.title }}</h3>

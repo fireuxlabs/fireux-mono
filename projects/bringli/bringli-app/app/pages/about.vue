@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full">
+  <div>
     <LandingIndex />
   </div>
 </template>

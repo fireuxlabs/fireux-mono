@@ -1,6 +1,6 @@
 <template>
-  <footer class="flex flex-wrap items-center justify-end gap-3 pt-4">
-    <span class="mr-auto" role="status" aria-live="polite" aria-atomic="true">
+  <footer>
+    <span role="status" aria-live="polite" aria-atomic="true">
       {{ status }}
     </span>
 

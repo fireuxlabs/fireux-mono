@@ -1,6 +1,6 @@
 <template>
   <section class="dish-workspace">
-    <NuxtLink :to="catalogueReturn" class="inline-flex items-center gap-2"
+    <NuxtLink :to="catalogueReturn"
       ><UIcon name="i-lucide-arrow-left" />Food &amp; drinks</NuxtLink
     >
     <NuxtLink v-if="menuReturn" :to="menuReturn"
@@ -32,7 +32,7 @@
           icon="i-lucide-utensils"
           class="dish-image"
         />
-        <div class="min-w-0 flex-1">
+        <div>
           <p>
             {{ selectedKitchen?.name }} ·
             {{
@@ -41,13 +41,13 @@
                 : catalogue.singular
             }}
           </p>
-          <h1 class="mt-2">
+          <h1>
             {{ dish.name }}
           </h1>
-          <p v-if="dish.description" class="mt-2 max-w-2xl">
+          <p v-if="dish.description">
             {{ dish.description }}
           </p>
-          <div v-if="dish.spec" class="flex flex-wrap gap-2 mt-3">
+          <div v-if="dish.spec">
             <UBadge color="neutral" variant="soft"
               >{{ dish.spec.portion }} portion{{
                 dish.spec.portion === 1 ? '' : 's'
@@ -85,11 +85,11 @@
         description="Identity and record settings."
       >
         <template #body
-          ><div class="grid gap-5">
+          ><div>
             <KitchenFoodAndDrinkItemsEdit />
             <details>
-              <summary class="cursor-pointer">Remove dish</summary>
-              <div class="mt-4">
+              <summary>Remove dish</summary>
+              <div>
                 <KitchenFoodAndDrinkItemsDelete :remove="removeDish" />
               </div>
             </details></div

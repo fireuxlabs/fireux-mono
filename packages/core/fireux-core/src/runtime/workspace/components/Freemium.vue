@@ -1,15 +1,10 @@
 <template>
   <section
     v-if="visible"
-    class="shrink-0 space-y-2"
     :class="{ 'freemium-selector-end': besideSelector }"
     :aria-label="`${pageLabel} plan allowance`"
   >
-    <NuxtLink
-      to="/pricing"
-      class="inline-flex"
-      aria-label="Upgrade now — view pricing"
-    >
+    <NuxtLink to="/pricing" aria-label="Upgrade now — view pricing">
       <UBadge color="primary" variant="soft">
         <span v-if="besideSelector" class="freemium-mobile-label">Upgrade</span>
         <span :class="{ 'freemium-desktop-label': besideSelector }"

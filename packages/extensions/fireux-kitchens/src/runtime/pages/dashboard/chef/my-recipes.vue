@@ -14,8 +14,8 @@
         description="Recipe drafts, publication status, and analytics will live here."
       />
 
-      <div class="grid gap-4 lg:grid-cols-3">
-        <UCard class="lg:col-span-2">
+      <UPageGrid as="div">
+        <UCard>
           <template #header>
             <div class="card__media">
               <UIcon name="i-lucide-activity" />
@@ -51,7 +51,7 @@
             />
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
     </template>
   </UDashboardPanel>
 </template>

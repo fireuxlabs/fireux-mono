@@ -12,7 +12,7 @@
           <h2 class="fx-type-section-title">Canonical records</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>
             Canonical records live in the owning Project/Ecosystem database.
           </li>
@@ -32,7 +32,7 @@
           <h2 class="fx-type-section-title">Primary endpoints</h2>
         </template>
 
-        <div class="space-y-2">
+        <div class="pagebody">
           <div class="fx-inset-panel">
             <p class="fx-type-code">GET /api/directory</p>
             <p class="fx-type-body">
@@ -57,14 +57,14 @@
           </div>
         </template>
 
-        <div class="space-y-4">
+        <div class="pagebody">
           <p>
             A future Ignition flow can turn an App name and plain description
             into an operator-approved domain research brief before any
             capabilities are selected.
           </p>
 
-          <ol class="list-decimal fx-list-stack pl-5">
+          <ol class="fx-list-stack">
             <li>
               FireUX AI proposes the domain, operators, boundaries, formats and
               neutral search seeds.
@@ -102,7 +102,7 @@
         </div>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton to="/apps" color="primary" icon="i-lucide-app-window"
           >Open apps</UButton
         >

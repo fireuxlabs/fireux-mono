@@ -5,7 +5,7 @@
       ><p class="community-kicker">{{ programme.duration }} · Demo</p>
       <h1>{{ programme.title }}</h1>
       <p class="community-intro">{{ programme.summary }}</p>
-      <section class="community-card mt-8">
+      <section class="community-card">
         <h2>Participation</h2>
         <p>
           <strong>Recorded completion criterion:</strong>

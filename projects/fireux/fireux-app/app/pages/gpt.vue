@@ -5,12 +5,8 @@
       description="The models and controls used by AI inside FireUX Workspaces."
     >
       <template #headline>
-        <div class="flex items-center gap-2">
-          <img
-            src="/img/core/brand/logo.svg"
-            alt="FireUX"
-            class="size-6 object-contain"
-          />
+        <div>
+          <img src="/img/core/brand/logo.svg" alt="FireUX" />
           FireUX
         </div>
       </template>
@@ -19,7 +15,7 @@
     <UPageBody>
       <section class="pagebody">
         <h2 class="fx-type-section-title">Current models</h2>
-        <p class="max-w-3xl fx-type-body">
+        <p class="fx-type-body">
           Each Workspace shows the model currently available to that App. There
           is one available model today; the control opens this page instead of
           presenting choices that do not exist yet.
@@ -28,7 +24,7 @@
         <UPageGrid>
           <UCard>
             <template #header>
-              <div class="flex items-center gap-3">
+              <div>
                 <UIcon name="i-lucide-code-2" />
                 <h3 class="fx-type-card-heading">Development</h3>
               </div>
@@ -41,7 +37,7 @@
 
           <UCard>
             <template #header>
-              <div class="flex items-center gap-3">
+              <div>
                 <UIcon name="i-lucide-sparkles" />
                 <h3 class="fx-type-card-heading">Connected Apps</h3>
               </div>
@@ -56,44 +52,32 @@
 
       <section class="pagebody">
         <h2 class="fx-type-section-title">How usage works</h2>
-        <div class="overflow-hidden rounded-lg border border-default">
-          <table class="w-full">
-            <thead class="bg-elevated">
-              <tr>
-                <th class="px-4 py-3">Input</th>
-                <th class="px-4 py-3">What affects usage</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-default">
-              <tr>
-                <td class="px-4 py-3">Prompt</td>
-                <td class="px-4 py-3">
-                  Its length and the context supplied by the Workspace.
-                </td>
-              </tr>
-              <tr>
-                <td class="px-4 py-3">Response</td>
-                <td class="px-4 py-3">
-                  The amount of text or structured data returned.
-                </td>
-              </tr>
-              <tr>
-                <td class="px-4 py-3">File</td>
-                <td class="px-4 py-3">
-                  Its size and the processing required by the connected
-                  capability.
-                </td>
-              </tr>
-              <tr>
-                <td class="px-4 py-3">Voice</td>
-                <td class="px-4 py-3">
-                  Audio transcription before the resulting text is used.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="max-w-3xl fx-type-caption">
+        <UTable
+          :data="[
+            {
+              input: 'Prompt',
+              usage: 'Its length and the context supplied by the Workspace.',
+            },
+            {
+              input: 'Response',
+              usage: 'The amount of text or structured data returned.',
+            },
+            {
+              input: 'File',
+              usage:
+                'Its size and the processing required by the connected capability.',
+            },
+            {
+              input: 'Voice',
+              usage: 'Audio transcription before the resulting text is used.',
+            },
+          ]"
+          :columns="[
+            { accessorKey: 'input', header: 'Input' },
+            { accessorKey: 'usage', header: 'What affects usage' },
+          ]"
+        />
+        <p class="fx-type-caption">
           FireUX does not currently expose a separate customer AI-credit
           balance. Availability depends on the App configuration and the Tools
           connected to the current Workspace surface.
@@ -106,21 +90,21 @@
           <UCard>
             <UIcon name="i-lucide-mic" />
             <h3 class="fx-type-card-heading">Microphone</h3>
-            <p class="mt-2 fx-type-caption">
+            <p class="fx-type-caption">
               Records speech where voice transcription is connected.
             </p>
           </UCard>
           <UCard>
             <UIcon name="i-lucide-paperclip" />
             <h3 class="fx-type-card-heading">Attachments</h3>
-            <p class="mt-2 fx-type-caption">
+            <p class="fx-type-caption">
               Supplies a file only to capabilities that accept that file type.
             </p>
           </UCard>
           <UCard>
             <UIcon name="i-lucide-bot" />
             <h3 class="fx-type-card-heading">Model</h3>
-            <p class="mt-2 fx-type-caption">
+            <p class="fx-type-caption">
               Identifies the active model and links back to this explanation.
             </p>
           </UCard>
@@ -129,7 +113,7 @@
 
       <section class="pagebody">
         <h2 class="fx-type-section-title">Bring your own key</h2>
-        <p class="max-w-3xl fx-type-body">
+        <p class="fx-type-body">
           Provider and model selection are planned. They are not customer
           settings yet. When introduced, a key will remain server-side and the
           Workspace will list only models actually available through that

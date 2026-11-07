@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: stop eager logo discovery for every search result. -->
 <template>
-  <div v-if="cells.length" class="space-y-1">
+  <div v-if="cells.length">
     <template v-for="cell in cells" :key="cell.id">
       <PlaceCardsDropdownGoogle
         v-if="cell.source === 'google'"
@@ -20,16 +20,16 @@
       />
     </template>
   </div>
-  <div v-if="cells.length" class="pt-3">
-    <div class="max-w-2xl">
-<FireDiagnosticsDebugPanel
-  object-origin="fetched"
+  <div v-if="cells.length">
+    <div>
+      <FireDiagnosticsDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Places (Dropdown Debug)'"
         context="Places search dropdown · live cells"
         :objects="debugCells"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
       />
     </div>
@@ -37,11 +37,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 import type { PlaceSearchCell } from '../../composables/usePlaceSearch'
-import type { BasePlace, PlaceSearchSource } from '../../composables/firestore/fetch/search/types'
+import type {
+  BasePlace,
+  PlaceSearchSource,
+} from '../../composables/firestore/fetch/search/types'
 import type { PlaceImageShade } from '../../utils/place-spine'
-
 
 const props = withDefaults(
   defineProps<{
@@ -68,11 +70,7 @@ function resolveImageUrl(card: PlaceSearchCell) {
 }
 
 function resolveAddress(card: PlaceSearchCell) {
-  return String(
-      card.shortAddress ||
-      card.formattedAddress ||
-      ''
-  ).trim()
+  return String(card.shortAddress || card.formattedAddress || '').trim()
 }
 
 function toBasePlace(card: PlaceSearchCell): BasePlace {

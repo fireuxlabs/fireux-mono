@@ -1,6 +1,6 @@
 <template>
   <div class="fx-page-stack fx-page-stack--compact">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <UBadge color="primary" variant="soft">Bringli Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More</h1>
@@ -8,7 +8,7 @@
           Bringli coordinates supply flow between producers and buyers with
           clear order and fulfillment operations.
         </p>
-        <div class="flex flex-wrap gap-2">
+        <div class="fx-card__actions">
           <UButton to="/about" color="primary" icon="i-lucide-info"
             >About</UButton
           >
@@ -43,7 +43,7 @@
           <template #header>
             <h2 class="fx-type-card-heading">Core concepts</h2>
           </template>
-          <ul class="list-disc fx-list-stack">
+          <ul class="fx-list-stack">
             <li>
               Supply relationships need clear records for buyers, producers, and
               orders.

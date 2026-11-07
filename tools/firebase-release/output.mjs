@@ -3,6 +3,19 @@ import { execFileSync } from 'node:child_process'
 import { readFile, writeFile, mkdir, access, realpath } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve, relative, isAbsolute } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const { createJiti } = createRequire(
+  new URL('../../packages/core/fireux-core/package.json', import.meta.url)
+)('jiti')
+const appAssetValidator = createJiti(import.meta.url).import(
+  fileURLToPath(
+    new URL(
+      '../../packages/core/fireux-core/src/runtime/app/server/onboarding/brand-assets.ts',
+      import.meta.url
+    )
+  )
+)
 
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'))
 export const digest = (value) =>
@@ -239,6 +252,8 @@ export async function checkOutput(
     throw new Error('Production manifest is not portable.')
   await checkDiscoveryDependencies(output, manifest)
   await access(resolve(root, '.output/public/_nuxt'))
+  const { assertAppBrandAssets } = await appAssetValidator
+  await assertAppBrandAssets(resolve(root, '.output/public'))
 }
 
 async function checkDiscoveryDependencies(output, manifest) {

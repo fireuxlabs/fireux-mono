@@ -18,7 +18,7 @@
     </UPageHeader>
 
     <UPageBody>
-      <div class="grid gap-4 md:grid-cols-3">
+      <UPageGrid>
         <UPageCard
           title="Weddings"
           description="Celebrate, dine and accommodate guests in one place."
@@ -34,7 +34,7 @@
           description="A long-standing venue for concerts and community events."
           icon="i-lucide-music"
         />
-      </div>
+      </UPageGrid>
 
       <UAlert
         color="neutral"

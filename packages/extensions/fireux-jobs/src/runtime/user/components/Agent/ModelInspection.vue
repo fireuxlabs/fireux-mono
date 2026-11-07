@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-10">
+  <section>
     <UCard>
       <FireDiagnosticsModel
         :title="'Agents · Model'"
@@ -9,8 +9,8 @@
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
             <p>Agents collection</p>
             <p>
               Inspect model drift separately from the public agents collection
@@ -29,12 +29,12 @@
         </div>
       </template>
 
-      <div class="space-y-6">
+      <div class="fx-card-body-stack">
         <AgentDirectory />
 
-        <div v-if="agentPreviewCards.length" class="space-y-3">
+        <div v-if="agentPreviewCards.length" class="fx-card-body-stack">
           <p>Preview cards</p>
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <AgentCardsSummary
               v-for="card in agentPreviewCards"
               :key="`agent-preview-${card.id}`"
@@ -43,9 +43,9 @@
           </div>
         </div>
 
-        <div v-if="agentProfileCards.length" class="space-y-3">
+        <div v-if="agentProfileCards.length" class="fx-card-body-stack">
           <p>Profile cards</p>
-          <div class="space-y-4">
+          <div class="fx-card-body-stack">
             <AgentProfile
               v-for="entry in agentProfileCards"
               :key="`agent-profile-${entry.card.id}`"

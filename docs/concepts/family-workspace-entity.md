@@ -1,7 +1,7 @@
 # Workspace entity family
 
 Updated: 2026-11-06
-Ref: f2fbf2242
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -27,7 +27,7 @@ map in `workspace.md`. The family deltas are:
 
 | Member    | Status and reason                                                                                                                                                                                 |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Business  | `accepted`: independent business identity, optional Place links, membership-bound access and Team roster |
+| Business  | `accepted`: independent business identity, optional Place links, membership-bound access and Team roster                                                                                          |
 | Blank     | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no domain capabilities, but is not an ecosystem-installed product Workspace |
 | Kitchen   | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                       |
 | Supplier  | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                        |
@@ -627,8 +627,9 @@ Classified boundaries:
 - `accepted`: shared selection, capacity and dialog lifecycle; domain-defined
   Identity fields, linked records and access choices.
 - `accepted`: `fireux-projects/src/runtime/project` owns the Project entity,
-  Identity editor, readers and Team composition. Its ecosystem module registers
-  Project components/composables and protected commands. App routes adapt those
+  Identity editor, readers and Team composition. Its own module registers
+  Project components/composables and protected commands; the FireUX ecosystem
+  selects the package. App routes adapt those
   commands; cross-project discovery and the remote product-context bridge retain App policy.
   Generic App user-joined publication remains Core-owned and does not import Project.
 - `migration`: `runtime/models/utils/workspace-entity.model.ts` still provides a
@@ -952,14 +953,14 @@ this interaction comparison is still limited to the named surfaces.
 | Test       | Strings / focused string        | Same layout; one form for create dialog and record editor; Info/JSON                      | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model |
 | Team       | People / focused person         | Same layout; Team person forms, focus, capacity and role-label UI; Info/JSON              | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior   |
 
-| Workspace concern   | Kitchen                                                                                    | Project                                                             | Classification                                                 |
-| ------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Landing display     | Kitchen joined with same-id Place; display name/image/tagline                              | Project name, image and description                                 | Accepted domain difference                                     |
-| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway       | Project creation and Project Identity editor                        | Accepted domain difference                                     |
-| Test transport      | Kitchen child reader; Kitchen id in request body                                           | Project collection reader; Project id in endpoint                   | Accepted transport difference; matching simple command surface |
-| Team records        | Shared member profile enriched from linked accounts                                        | Same profile and account enrichment                                 | Shared record/interaction contract                             |
-| Team extras         | Invitation links and richer person details                                                 | Project-owned roles and identity composition                        | Domain additions; not branches in the shared layout            |
-| Inspector           | Bounded collection/selected/derived; workspace id where an enclosing workspace is consumed | Same sections                                                       | Shared composition; no unused section or full-record dump      |
+| Workspace concern   | Kitchen                                                                                    | Project                                           | Classification                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- | -------------------------------------------------------------- |
+| Landing display     | Kitchen joined with same-id Place; display name/image/tagline                              | Project name, image and description               | Accepted domain difference                                     |
+| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway       | Project creation and Project Identity editor      | Accepted domain difference                                     |
+| Test transport      | Kitchen child reader; Kitchen id in request body                                           | Project collection reader; Project id in endpoint | Accepted transport difference; matching simple command surface |
+| Team records        | Shared member profile enriched from linked accounts                                        | Same profile and account enrichment               | Shared record/interaction contract                             |
+| Team extras         | Invitation links and richer person details                                                 | Project-owned roles and identity composition      | Domain additions; not branches in the shared layout            |
+| Inspector           | Bounded collection/selected/derived; workspace id where an enclosing workspace is consumed | Same sections                                     | Shared composition; no unused section or full-record dump      |
 
 Landing's enclosing workspace section is omitted because the selected record
 is itself the workspace. Test and Team include the parent workspace id. The

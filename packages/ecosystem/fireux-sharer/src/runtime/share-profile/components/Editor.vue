@@ -2,13 +2,9 @@
   <UCard>
     <div class="fx-list-stack">
       <div>
-        <div class="divide-y divide-default">
-          <div
-            v-for="platform in commonPlatforms"
-            :key="platform.label"
-            class="grid items-center gap-3 py-3 sm:grid-cols-[9rem_minmax(0,1fr)]"
-          >
-            <div class="flex items-center gap-3">
+        <div>
+          <div v-for="platform in commonPlatforms" :key="platform.label">
+            <div>
               <UIcon :name="platform.icon" />
               <span>{{ platform.label }}</span>
             </div>
@@ -27,11 +23,7 @@
         </div>
       </div>
 
-      <div
-        v-for="item in customLinks"
-        :key="item.link.id"
-        class="grid gap-3 md:grid-cols-[1fr_2fr_auto]"
-      >
+      <div v-for="item in customLinks" :key="item.link.id">
         <UFormField label="Platform">
           <UInput v-model="item.link.label" placeholder="Platform" />
         </UFormField>
@@ -43,7 +35,6 @@
           />
         </UFormField>
         <UButton
-          class="self-end"
           color="error"
           variant="soft"
           icon="i-lucide-trash-2"
@@ -54,7 +45,7 @@
 
       <p v-if="!profile.links.length">No social links yet.</p>
 
-      <div class="flex flex-wrap gap-3">
+      <div>
         <UButton
           variant="soft"
           icon="i-lucide-plus"

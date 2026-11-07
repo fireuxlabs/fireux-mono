@@ -13,38 +13,28 @@
     >
       <div class="workspace-surface__grid workspace-surface__grid--2">
         <UFormField label="Guest name" required>
-          <UInput v-model="form.guestName" class="w-full" />
+          <UInput v-model="form.guestName" />
         </UFormField>
         <UFormField label="Status">
-          <USelect v-model="form.status" :items="statusItems" class="w-full" />
+          <USelect v-model="form.status" :items="statusItems" />
         </UFormField>
         <UFormField label="Arrival" required>
-          <UInput v-model="form.arrivalDate" type="date" class="w-full" />
+          <UInput v-model="form.arrivalDate" type="date" />
         </UFormField>
         <UFormField label="Departure" required>
-          <UInput v-model="form.departureDate" type="date" class="w-full" />
+          <UInput v-model="form.departureDate" type="date" />
         </UFormField>
         <UFormField label="Email">
-          <UInput v-model="form.email" type="email" class="w-full" />
+          <UInput v-model="form.email" type="email" />
         </UFormField>
         <UFormField label="Phone">
-          <UInput v-model="form.phone" type="tel" class="w-full" />
+          <UInput v-model="form.phone" type="tel" />
         </UFormField>
         <UFormField label="Adults">
-          <UInput
-            v-model.number="form.adults"
-            type="number"
-            min="1"
-            class="w-full"
-          />
+          <UInput v-model.number="form.adults" type="number" min="1" />
         </UFormField>
         <UFormField label="Children">
-          <UInput
-            v-model.number="form.children"
-            type="number"
-            min="0"
-            class="w-full"
-          />
+          <UInput v-model.number="form.children" type="number" min="0" />
         </UFormField>
         <UFormField label="Total">
           <UInput
@@ -52,11 +42,10 @@
             type="number"
             min="0"
             step="0.01"
-            class="w-full"
           />
         </UFormField>
         <UFormField label="Currency">
-          <UInput v-model="form.currency" maxlength="3" class="w-full" />
+          <UInput v-model="form.currency" maxlength="3" />
         </UFormField>
       </div>
 
@@ -64,7 +53,6 @@
         <UTextarea
           v-model="form.notes"
           :rows="4"
-          class="w-full"
           placeholder="Arrival context, accessibility needs or follow-up."
         />
       </UFormField>
@@ -79,7 +67,7 @@
         <template #actions><FireCopyError :message="formError" /></template>
       </UAlert>
 
-      <div class="flex justify-end gap-2">
+      <div>
         <UButton
           to="/workspace/property/reservations"
           color="neutral"

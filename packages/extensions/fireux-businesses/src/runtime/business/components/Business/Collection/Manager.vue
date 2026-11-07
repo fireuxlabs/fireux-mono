@@ -63,7 +63,7 @@
       </template>
     </FireStateCard>
 
-    <div v-else-if="cardsFiltered.length" class="grid gap-4">
+    <div v-else-if="cardsFiltered.length">
       <BusinessCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <BusinessCardsPill v-bind="card" :link="linkEnabled" />
@@ -82,7 +82,7 @@
         description="The businesses already shown are still available."
       />
 
-      <div v-if="hasMore" class="flex justify-center">
+      <div v-if="hasMore">
         <UButton
           label="Load more businesses"
           variant="soft"

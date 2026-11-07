@@ -1,36 +1,37 @@
 <template>
-  <UContainer class="sm:py-14">
-    <div class="mx-auto grid max-w-5xl gap-8">
-      <header class="grid gap-3">
-        <NuxtLink to="/tools" class="w-fit hover:underline">Tools</NuxtLink>
-        <h1 class="m-0 fx-type-page-title">AI primitives</h1>
-        <p class="m-0 max-w-3xl">
+  <UContainer>
+    <div>
+      <header>
+        <NuxtLink to="/tools">Tools</NuxtLink>
+        <h1 class="fx-type-page-title">AI primitives</h1>
+        <p>
           FireUX AI turns supplied content into schema-checked information.
           Owning packages provide the domain instructions and decide what may be
           saved.
         </p>
       </header>
-      <div class="grid gap-4">
+      <UPageGrid>
         <UCard
           v-for="primitive in aiToolPrimitives"
           :id="primitive.documentation.slug"
           :key="primitive.id"
-          class="grid gap-4" as="article" :ui="{ body: 'fx-card-body-stack' }"
+          as="article"
+          :ui="{ body: 'fx-card-body-stack' }"
         >
-          <header class="grid gap-1">
-            <h2 class="m-0 fx-type-section-title">
+          <header class="fx-card-body-stack">
+            <h2 class="fx-type-section-title">
               {{ primitive.name }}
             </h2>
-            <p class="m-0">{{ primitive.description }}</p>
+            <p>{{ primitive.description }}</p>
             <code>{{ primitive.id }}</code>
           </header>
-          <div class="grid gap-1">
+          <div class="fx-card-body-stack">
             <strong>Problem</strong>
             <span>{{ primitive.problem }}</span>
           </div>
-          <div class="grid gap-1">
+          <div class="fx-card-body-stack">
             <strong>Search intent</strong>
-            <ul class="m-0 grid gap-1 pl-5">
+            <ul>
               <li
                 v-for="intent in primitive.searchIntents"
                 :key="`${intent.kind}:${intent.phrase}`"
@@ -40,10 +41,10 @@
               </li>
             </ul>
           </div>
-          <p class="m-0">
+          <p>
             {{ primitive.documentation.guide }}
           </p>
-          <div class="grid gap-1">
+          <div class="fx-card-body-stack">
             <strong>AI context</strong>
             <span>{{ primitive.ai.baked.purpose }}</span>
             <span>
@@ -54,10 +55,10 @@
             </span>
           </div>
           <pre
-            class="overflow-x-auto rounded-lg bg-elevated p-4"
+            class="overflow-x-auto"
           ><code>{{ primitive.documentation.example }}</code></pre>
         </UCard>
-      </div>
+      </UPageGrid>
     </div>
   </UContainer>
 </template>

@@ -6,8 +6,18 @@
       title="Menus, recipes and orders for your Kitchen team."
       description="Publish menus, record recipes and dish specifications, and follow incoming orders through preparation and handoff in a Kitchen Workspace."
       :links="[
-        { label: 'Get started', to: '/get-started', trailingIcon: 'i-lucide-arrow-right' },
-        { label: 'See the road map', to: '/road-map', color: 'neutral', variant: 'soft', icon: 'i-lucide-map' },
+        {
+          label: 'Get started',
+          to: '/get-started',
+          trailingIcon: 'i-lucide-arrow-right',
+        },
+        {
+          label: 'See the road map',
+          to: '/road-map',
+          color: 'neutral',
+          variant: 'soft',
+          icon: 'i-lucide-map',
+        },
       ]"
     />
     <UPageBody>
@@ -16,7 +26,12 @@
         description="The menu should not be the end product. It should be the front door to how a kitchen works."
       >
         <UPageGrid>
-          <UPageCard v-for="item in ideaItems" :key="item.label" :title="item.label" :icon="item.icon" />
+          <UPageCard
+            v-for="item in ideaItems"
+            :key="item.label"
+            :title="item.label"
+            :icon="item.icon"
+          />
         </UPageGrid>
       </UPageSection>
       <UPageSection
@@ -25,7 +40,13 @@
         description="A service depends on hundreds of details, but those details are commonly split between paper, PDFs, spreadsheets, chat threads, supplier messages, and the memories of experienced people."
       >
         <UPageGrid>
-          <UPageCard v-for="problem in problems" :key="problem.title" :title="problem.title" :description="problem.copy" :icon="problem.icon" />
+          <UPageCard
+            v-for="problem in problems"
+            :key="problem.title"
+            :title="problem.title"
+            :description="problem.copy"
+            :icon="problem.icon"
+          />
         </UPageGrid>
       </UPageSection>
       <UPageSection
@@ -35,7 +56,11 @@
       >
         <ol class="fx-list-stack">
           <li v-for="step in operatingLoop" :key="step.title">
-            <UPageCard :title="step.title" :description="step.copy" :icon="step.icon" />
+            <UPageCard
+              :title="step.title"
+              :description="step.copy"
+              :icon="step.icon"
+            />
           </li>
         </ol>
       </UPageSection>
@@ -44,8 +69,20 @@
         title="One system, different views of the same truth."
       >
         <UPageGrid>
-          <UPageCard v-for="audience in audiences" :key="audience.title" :title="audience.title" :description="audience.copy" :icon="audience.icon">
-            <UButton :to="audience.to" color="neutral" variant="link" trailing-icon="i-lucide-arrow-right">{{ audience.action }}</UButton>
+          <UPageCard
+            v-for="audience in audiences"
+            :key="audience.title"
+            :title="audience.title"
+            :description="audience.copy"
+            :icon="audience.icon"
+          >
+            <UButton
+              :to="audience.to"
+              color="neutral"
+              variant="link"
+              trailing-icon="i-lucide-arrow-right"
+              >{{ audience.action }}</UButton
+            >
           </UPageCard>
         </UPageGrid>
       </UPageSection>
@@ -55,7 +92,13 @@
         description="Misebox starts with practical tools such as public menus and kitchen workspaces, then grows into deeper operational coordination without forcing teams into an all-or-nothing rollout."
       >
         <UPageGrid>
-          <UPageCard v-for="principle in principles" :key="principle.title" :title="principle.title" :description="principle.copy" icon="i-lucide-check" />
+          <UPageCard
+            v-for="principle in principles"
+            :key="principle.title"
+            :title="principle.title"
+            :description="principle.copy"
+            icon="i-lucide-check"
+          />
         </UPageGrid>
       </UPageSection>
       <UPageSection
@@ -63,8 +106,17 @@
         title="Better kitchen systems create calmer services, stronger teams, and more resilient hospitality businesses."
         description="That is what Misebox is about: making the knowledge behind hospitality easier to use, share, and improve."
         :links="[
-          { label: 'Explore kitchens', to: '/kitchens', icon: 'i-lucide-chef-hat' },
-          { label: 'Explore solutions', to: '/solutions', color: 'neutral', variant: 'soft' },
+          {
+            label: 'Explore kitchens',
+            to: '/kitchens',
+            icon: 'i-lucide-chef-hat',
+          },
+          {
+            label: 'Explore solutions',
+            to: '/solutions',
+            color: 'neutral',
+            variant: 'soft',
+          },
         ]"
       />
     </UPageBody>

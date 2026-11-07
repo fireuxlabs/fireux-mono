@@ -1,24 +1,25 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
+  <section>
     <WorkspaceKitchenResearchStageNav
       :base-path="basePath"
       current="analysis"
     />
 
-    <header class="grid gap-3 border-b border-default pb-8">
+    <header>
       <p>Stage 2 · Analysis</p>
       <h1>The operator jobs behind {{ capability }} searches</h1>
-      <p class="max-w-3xl">
+      <p>
         Interpret observed language, identify required evidence, and preserve
         record authority before proposing Tools.
       </p>
     </header>
 
     <ol class="workspace-surface__grid">
-      <UCard as="li" :ui="{ body: 'fx-card-body-stack' }"
+      <UCard
+        as="li"
+        :ui="{ body: 'fx-card-body-stack' }"
         v-for="(cluster, index) in demand.clusters"
         :key="cluster.id"
-        
       >
         <div class="fx-card__chips">
           <UBadge color="neutral" variant="soft">{{ index + 1 }}</UBadge>
@@ -41,12 +42,10 @@
       </UCard>
     </ol>
 
-    <section class="grid gap-4 border-t border-default pt-8">
+    <section>
       <div>
         <p>Record map</p>
-        <h2 class="mt-1">
-          Evidence the capability owns, references, or derives
-        </h2>
+        <h2>Evidence the capability owns, references, or derives</h2>
       </div>
       <div class="workspace-surface__grid workspace-surface__grid--2">
         <UCard
@@ -78,7 +77,7 @@
               {{ record.owner }}
             </p>
             <p>{{ record.authority }}</p>
-            <ul class="fx-list-stack list-disc">
+            <ul class="fx-list-stack">
               <li v-for="fact in record.facts" :key="fact">{{ fact }}</li>
             </ul>
           </div>
@@ -86,10 +85,10 @@
       </div>
     </section>
 
-    <section class="grid gap-3 border-t border-default pt-8">
+    <section>
       <p>Required record questions</p>
       <h2>What must {{ capability }} make knowable?</h2>
-      <ul class="fx-list-stack list-disc">
+      <ul class="fx-list-stack">
         <li v-for="question in demand.recordQuestions" :key="question">
           {{ question }}
         </li>

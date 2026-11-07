@@ -1,8 +1,8 @@
 <template>
-  <div class="p-6 space-y-6">
+  <div>
     <div class="pagebody">
       <h1>Nuxt UI 4 demo</h1>
-      <p class="opacity-70">Quick sanity check for @nuxt/ui v4 components.</p>
+      <p>Quick sanity check for @nuxt/ui v4 components.</p>
     </div>
 
     <div class="fx-card__actions">
@@ -27,9 +27,7 @@
           :items="flavors"
           placeholder="Pick a flavor"
         />
-        <div class="opacity-70">
-          Hello, {{ name || '—' }}. Flavor: {{ flavor || '—' }}
-        </div>
+        <div>Hello, {{ name || '—' }}. Flavor: {{ flavor || '—' }}</div>
       </div>
     </UCard>
   </div>

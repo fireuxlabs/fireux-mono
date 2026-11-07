@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div v-if="chef" class="space-y-6">
+    <div v-if="chef">
       <UCard>
         <div class="fx-card-body-stack">
           <h3>App-level Chef Settings</h3>

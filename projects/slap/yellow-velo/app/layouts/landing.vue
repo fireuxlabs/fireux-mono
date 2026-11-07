@@ -2,7 +2,7 @@
   <div class="yv-site">
     <header class="yv-header">
       <NuxtLink to="/" class="yv-brand" aria-label="Yellow Velo home">
-        <img src="/img/app/wordmark-dark.svg" alt="Yellow Velo">
+        <img src="/img/app/wordmark-light.png" alt="Yellow Velo" />
       </NuxtLink>
 
       <nav aria-label="Primary navigation">
@@ -28,24 +28,28 @@
     <footer class="yv-footer">
       <div class="yv-footer__lead">
         <p>Ride by. Stay awhile.</p>
-        <h2>Yellow Velo<br>Interlaken</h2>
+        <h2>Yellow Velo<br />Interlaken</h2>
       </div>
 
       <div class="yv-footer__details">
         <div>
           <span>Find us</span>
-          <p>3800 Interlaken<br>Bernese Oberland, Switzerland</p>
+          <p>3800 Interlaken<br />Bernese Oberland, Switzerland</p>
         </div>
         <div>
           <span>Explore</span>
           <NuxtLink to="/products">The shop</NuxtLink>
           <NuxtLink to="/blog">The journal</NuxtLink>
-          <a href="https://www.instagram.com/yellow.velo.interlaken/" target="_blank" rel="noreferrer">
+          <a
+            href="https://www.instagram.com/yellow.velo.interlaken/"
+            target="_blank"
+            rel="noreferrer"
+          >
             Instagram
           </a>
         </div>
         <p class="yv-footer__signoff">
-          Bikes, parts and good things<br>for life on two wheels.
+          Bikes, parts and good things<br />for life on two wheels.
         </p>
       </div>
     </footer>
@@ -71,8 +75,9 @@ defineOptions({ name: 'yellow-velo-landing' })
   grid-template-columns: minmax(10rem, 1fr) auto minmax(10rem, 1fr);
   align-items: center;
   min-height: 5.75rem;
-  padding: calc(var(--spacing) * 4) clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 18));
-  border-bottom: 1px solid rgb(17 17 15 / .18);
+  padding: calc(var(--spacing) * 4)
+    clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 18));
+  border-bottom: 1px solid rgb(17 17 15 / 0.18);
   background: #f2f0e8;
 }
 
@@ -95,9 +100,9 @@ defineOptions({ name: 'yellow-velo-landing' })
 .yv-header nav a,
 .yv-instagram {
   color: #11110f;
-  font-size: .72rem;
+  font-size: 0.72rem;
   font-weight: var(--font-weight-black);
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -106,7 +111,7 @@ defineOptions({ name: 'yellow-velo-landing' })
 .yv-header nav a.router-link-active {
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-underline-offset: .4rem;
+  text-underline-offset: 0.4rem;
 }
 
 .yv-instagram {
@@ -120,7 +125,8 @@ defineOptions({ name: 'yellow-velo-landing' })
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: clamp(calc(var(--spacing) * 12), 8vw, calc(var(--spacing) * 36));
-  padding: clamp(calc(var(--spacing) * 16), 9vw, calc(var(--spacing) * 32)) clamp(calc(var(--spacing) * 5), 5vw, calc(var(--spacing) * 20));
+  padding: clamp(calc(var(--spacing) * 16), 9vw, calc(var(--spacing) * 32))
+    clamp(calc(var(--spacing) * 5), 5vw, calc(var(--spacing) * 20));
   background: #11110f;
   color: #f2f0e8;
 }
@@ -129,9 +135,9 @@ defineOptions({ name: 'yellow-velo-landing' })
 .yv-footer__details span {
   margin: 0 0 calc(var(--spacing) * 5);
   color: #e7d90b;
-  font-size: .7rem;
+  font-size: 0.7rem;
   font-weight: var(--font-weight-black);
-  letter-spacing: .16em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
@@ -139,8 +145,8 @@ defineOptions({ name: 'yellow-velo-landing' })
   margin: 0;
   font-size: clamp(var(--text-5xl), 7vw, 7.5rem);
   font-weight: var(--font-weight-black);
-  letter-spacing: -.07em;
-  line-height: .84;
+  letter-spacing: -0.07em;
+  line-height: 0.84;
   text-transform: uppercase;
 }
 
@@ -156,7 +162,7 @@ defineOptions({ name: 'yellow-velo-landing' })
   display: block;
   margin: 0 0 calc(var(--spacing) * 2.2);
   color: inherit;
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: 650;
   line-height: 1.65;
   text-decoration: none;
@@ -169,7 +175,7 @@ defineOptions({ name: 'yellow-velo-landing' })
 .yv-footer__signoff {
   grid-column: 1 / -1;
   padding-top: calc(var(--spacing) * 8);
-  border-top: 1px solid rgb(242 240 232 / .25);
+  border-top: 1px solid rgb(242 240 232 / 0.25);
 }
 
 @media (max-width: 760px) {
@@ -188,7 +194,7 @@ defineOptions({ name: 'yellow-velo-landing' })
   }
 
   .yv-header nav a {
-    font-size: .62rem;
+    font-size: 0.62rem;
   }
 
   .yv-instagram {

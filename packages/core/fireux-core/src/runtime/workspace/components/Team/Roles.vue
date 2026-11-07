@@ -1,6 +1,6 @@
 <template>
-  <section class="space-y-3" aria-label="Team role assignments">
-    <div class="flex flex-wrap items-center justify-between gap-2">
+  <section aria-label="Team role assignments">
+    <div>
       <h2>Team roles</h2>
       <UButton
         v-if="!compact"
@@ -15,10 +15,13 @@
     <h3 v-if="workspaceName">
       {{ workspaceName }}
     </h3>
-    <USkeleton v-if="pending && !roles.length" class="h-9 w-full" />
+    <FireState
+      v-if="pending && !roles.length"
+      outcome="pending"
+      entity="Team roles"
+    />
     <form
       v-else-if="roles.length && !compact"
-      class="space-y-3"
       @submit.prevent="mutate({ action: 'assign', roleIds: selected })"
     >
       <p>
@@ -43,7 +46,7 @@
           @click="toggleRole(role.id)"
         />
       </div>
-      <div v-if="assignmentChanged" class="flex items-center gap-2">
+      <div v-if="assignmentChanged">
         <UButton
           type="submit"
           label="Save roles"
@@ -163,11 +166,7 @@
           </form>
           <div v-if="roles.length" class="pagebody">
             <h3>Workspace roles · {{ roles.length }}</h3>
-            <div
-              v-for="role in roles"
-              :key="role.id"
-              class="flex items-center gap-2"
-            >
+            <div v-for="role in roles" :key="role.id">
               <template v-if="editingId === role.id">
                 <UInput
                   v-model="names[role.id]"
@@ -201,7 +200,7 @@
                 />
               </template>
               <template v-else>
-                <span class="min-w-0 flex-1 break-words">{{ role.name }}</span>
+                <span>{{ role.name }}</span>
                 <UButton
                   v-if="!['dev', 'operator'].includes(role.id)"
                   icon="i-lucide-pencil"

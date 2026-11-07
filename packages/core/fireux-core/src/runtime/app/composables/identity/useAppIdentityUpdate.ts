@@ -6,7 +6,7 @@ import type { App } from '../../models/app.model'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 import { useFireUXConfig } from '../config/FireUXConfig'
 
-/** Edit the configured App through its trusted settings command. */
+/** Edit the configured App through its trusted identity command. */
 export function useAppIdentityUpdate(app: Ref<App | null | undefined>) {
   const config = useFireUXConfig()
   const { currentUser } = useAuth()
@@ -15,7 +15,7 @@ export function useAppIdentityUpdate(app: Ref<App | null | undefined>) {
     () => config.appId,
     () => app.value?.id,
   ])
-  async function updateSettings(changes: Record<string, unknown>) {
+  async function updateIdentity(changes: Record<string, unknown>) {
     if (!app.value || app.value.id !== config.appId) {
       throw new Error('Settings must target the current runtime App.')
     }
@@ -56,12 +56,13 @@ export function useAppIdentityUpdate(app: Ref<App | null | undefined>) {
   return {
     captureIntent: capture,
     updateWebsite: (website: string) =>
-      updateSettings({ 'social_links.website': website }),
-    updateDescription: (description: string) => updateSettings({ description }),
-    updateTagline: (tagline: string) => updateSettings({ tagline }),
-    updateAppName: (name: string) => updateSettings({ name }),
-    updateAppShortName: (short_name: string) => updateSettings({ short_name }),
+      updateIdentity({ 'social_links.website': website }),
+    updateDescription: (description: string) => updateIdentity({ description }),
+    updateTagline: (tagline: string) => updateIdentity({ tagline }),
+    updateAppName: (name: string) => updateIdentity({ name }),
+    updateAppShortName: (short_name: string) => updateIdentity({ short_name }),
+    updateStatus: (status: string) => updateIdentity({ status }),
     updateSocialLinks: (social_links: App['social_links']) =>
-      updateSettings({ social_links }),
+      updateIdentity({ social_links }),
   }
 }

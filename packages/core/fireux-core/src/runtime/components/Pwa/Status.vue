@@ -1,7 +1,7 @@
 <template>
   <section
     v-if="!online || updateAvailable"
-    class="py-3 print:hidden"
+    class="print:hidden"
     role="status"
     aria-live="polite"
     aria-label="Connection and app updates"
@@ -10,10 +10,7 @@
       <p v-if="!online">
         You are offline. Live data and actions need a connection.
       </p>
-      <div
-        v-if="updateAvailable"
-        class="flex flex-wrap items-center justify-between gap-3"
-      >
+      <div v-if="updateAvailable">
         <p>An update is ready.</p>
         <div class="fx-card__actions">
           <UButton
@@ -32,8 +29,8 @@
           />
         </div>
       </div>
-      <div v-if="error" class="flex flex-wrap items-center gap-2" role="alert">
-        <p class="break-words">{{ error }}</p>
+      <div v-if="error" role="alert">
+        <p>{{ error }}</p>
         <FireCopyError :message="error" />
       </div>
     </UContainer>

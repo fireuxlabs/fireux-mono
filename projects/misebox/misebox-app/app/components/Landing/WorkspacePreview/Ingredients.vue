@@ -1,7 +1,7 @@
 <template>
-  <div class="mt-5" aria-label="Ingredients preview">
+  <div aria-label="Ingredients preview">
     <div v-if="ingredients.length">
-      <div class="mb-3 flex flex-wrap justify-end gap-2">
+      <div>
         <UBadge color="neutral" variant="outline" size="sm">
           {{ ingredients.length }} ingredients
         </UBadge>
@@ -14,8 +14,8 @@
         :unmount-on-hide="false"
       >
         <template #default="{ item }">
-          <div class="flex min-w-0 flex-1 items-center justify-between gap-2">
-            <span class="truncate">{{ item.label }}</span>
+          <div>
+            <span>{{ item.label }}</span>
             <UBadge color="neutral" variant="soft" size="xs">
               {{ item.ingredients.length }}
             </UBadge>
@@ -23,30 +23,26 @@
         </template>
 
         <template #body="{ item }">
-          <div
-            :data-food-group="item.value"
-            class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
-          >
-            <article
+          <div :data-food-group="item.value" class="pagebody">
+            <UCard
+              as="article"
               v-for="ingredient in item.ingredients"
               :key="ingredient.id"
               :data-ingredient-id="ingredient.id"
-              class="min-w-0 overflow-hidden rounded-xl border border-default bg-default shadow-sm"
             >
               <img
                 :src="ingredient.imageUrl"
                 :alt="ingredient.name"
-                class="aspect-square w-full object-cover"
                 loading="lazy"
                 width="160"
                 height="160"
               />
-              <div class="border-t border-default px-2.5 py-2">
-                <p class="truncate fx-type-caption">
+              <div>
+                <p class="fx-type-caption">
                   {{ ingredient.name }}
                 </p>
               </div>
-            </article>
+            </UCard>
           </div>
         </template>
       </UAccordion>

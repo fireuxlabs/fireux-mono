@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pageState" class="grid gap-4">
+  <div v-if="pageState">
     <section
       v-for="section in sections"
       :key="section"
@@ -11,24 +11,16 @@
       }}</pre>
     </section>
   </div>
-  <section
-    v-if="capability"
-    class="grid gap-3"
-    aria-labelledby="capability-context-title"
-  >
+  <section v-if="capability" aria-labelledby="capability-context-title">
     <div>
       <h3 id="capability-context-title">{{ capability.subject }} capability</h3>
       <p>{{ capability.id }}</p>
     </div>
 
-    <div class="grid gap-2">
+    <div>
       <p>Primitives</p>
-      <ul class="grid gap-2 p-0" aria-label="Page primitives">
-        <li
-          v-for="primitive in primitives"
-          :key="primitive.id"
-          class="flex items-center justify-between gap-3"
-        >
+      <ul aria-label="Page primitives">
+        <li v-for="primitive in primitives" :key="primitive.id">
           <span>{{ primitive.id }}</span>
           <UBadge
             :color="primitive.available ? 'success' : 'neutral'"
@@ -40,7 +32,7 @@
       </ul>
     </div>
 
-    <div v-if="capability.natives.length" class="grid gap-2">
+    <div v-if="capability.natives.length">
       <p>Capability natives</p>
       <ul class="fx-list-stack">
         <li v-for="native in capability.natives" :key="native.id">

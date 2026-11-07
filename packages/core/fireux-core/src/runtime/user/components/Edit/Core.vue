@@ -5,12 +5,12 @@
   <section aria-label="Edit profile">
     <ClientOnly>
       <UPageCard v-if="user" :key="user.id" variant="subtle">
-        <div class="space-y-6 sm:space-y-8">
+        <div>
           <AvatarEditor :user="user" />
 
           <USeparator />
 
-          <div class="grid gap-6 sm:grid-cols-2">
+          <div>
             <FireFormsEditableSimpleField
               :capture-intent="captureCompletion"
               label="Display name"
@@ -32,7 +32,7 @@
                 :validation-function="Handle.validate"
                 :formatting-function="Handle.format"
               />
-              <p class="mt-2">
+              <p>
                 {{ profileAddress }}
               </p>
             </div>
@@ -55,9 +55,7 @@
 
           <USeparator />
 
-          <div
-            class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
-          >
+          <div>
             <p>User ID</p>
             <UInput :model-value="user.id" disabled />
           </div>

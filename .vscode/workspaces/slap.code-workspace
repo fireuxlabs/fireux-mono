@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "slap — ${activeEditorShort}",
+    "window.title": "slap — ${activeEditorShort} — ${rootPath}",
     "files.exclude": {
       "projects/bringli": true,
       "projects/buenohost": true,

@@ -12,7 +12,7 @@
           <h2>What kitchens are</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>
             Kitchens are the runtime records used to manage service operations.
           </li>
@@ -32,7 +32,7 @@
           <h2>How to use kitchens</h2>
         </template>
 
-        <ol class="list-decimal fx-list-stack">
+        <ol class="fx-list-stack">
           <li>Create or claim a kitchen record inside the active runtime.</li>
           <li>
             Use the kitchen workspace to move from overview into menus,
@@ -45,7 +45,7 @@
         </ol>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat"
           >Open kitchens</UButton
         >

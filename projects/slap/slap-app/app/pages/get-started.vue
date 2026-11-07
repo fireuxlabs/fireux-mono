@@ -1,6 +1,6 @@
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <div class="pagebody">
           <p class="fx-type-headline">
@@ -12,7 +12,7 @@
           <p class="fx-type-description">
             {{ appMeta.getStarted.hero.description }}
           </p>
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton
               :to="appMeta.getStarted.hero.primaryAction.to"
               color="primary"
@@ -40,10 +40,10 @@
             <p class="fx-type-label">
               {{ step.badge }}
             </p>
-            <h2 class="fx-type-card-heading mt-2">
+            <h2 class="fx-type-card-heading">
               {{ step.title }}
             </h2>
-            <p class="fx-type-caption mt-2">
+            <p class="fx-type-caption">
               {{ step.copy }}
             </p>
           </UCard>

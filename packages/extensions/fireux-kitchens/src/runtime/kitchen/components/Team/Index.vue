@@ -30,7 +30,6 @@
     <WorkspaceTeamRoles
       id="responsibilities"
       ref="rolesEditor"
-      class="rounded-xl border border-default p-4"
       compact
       :workspace-name="state.kitchen.name"
       @labels="roleLabels = $event"

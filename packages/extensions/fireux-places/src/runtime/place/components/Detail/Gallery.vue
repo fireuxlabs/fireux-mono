@@ -1,7 +1,9 @@
 <template>
   <section class="place-gallery" aria-labelledby="place-gallery-title">
     <div class="place-gallery__heading">
-      <h2 class="fx-type-section-title" id="place-gallery-title">In pictures</h2>
+      <h2 class="fx-type-section-title" id="place-gallery-title">
+        In pictures
+      </h2>
       <span
         >{{ images.length }}
         {{ images.length === 1 ? 'photo' : 'photos' }}</span

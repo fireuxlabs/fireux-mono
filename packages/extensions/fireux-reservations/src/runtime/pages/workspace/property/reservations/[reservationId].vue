@@ -8,7 +8,7 @@
   >
     Reservations
   </UButton>
-  <section class="space-y-5">
+  <section>
     <WorkspacePropertyReservationsDetail :reservation-id="reservationId" />
   </section>
 </template>

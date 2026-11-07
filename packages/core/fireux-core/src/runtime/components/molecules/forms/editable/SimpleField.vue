@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/forms/editable/SimpleField.vue -->
 <!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize the single display-field type recipe. -->
 <template>
-  <div class="flex w-full flex-col">
+  <div>
     <FireFormsTop
       :label="label"
       :input-id="inputId"
@@ -16,9 +16,9 @@
       @delete="clear"
     />
 
-    <div v-if="!isEditing" class="flex">
-      <div class="w-full fx-field-surface px-3" :class="disabled ? '' : ''">
-        <span class="break-words">{{ displayValue }}</span>
+    <div v-if="!isEditing">
+      <div class="fx-field-surface">
+        <span>{{ displayValue }}</span>
       </div>
     </div>
 

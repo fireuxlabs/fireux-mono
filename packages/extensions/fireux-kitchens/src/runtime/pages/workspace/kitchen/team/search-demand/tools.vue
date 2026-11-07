@@ -1,13 +1,13 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
+  <section>
     <WorkspaceKitchenResearchStageNav
       base-path="/workspace/kitchen/team/search-demand"
       current="tools"
     />
-    <header class="grid gap-3 border-b border-default pb-8">
+    <header>
       <p>Stage 3 · Tools</p>
       <h1>Working and proposed Team Tools</h1>
-      <p class="max-w-3xl">
+      <p>
         Registered Tools are callable now. Research hypotheses remain visibly
         requested.
       </p>
@@ -17,12 +17,8 @@
         <p>Registered</p>
         <h2>Working Team Tools</h2>
       </div>
-      <article
-        v-for="tool in demand.liveTools"
-        :key="tool.id"
-        class="grid gap-3 rounded-xl border border-success/30 p-5"
-      >
-        <header class="flex flex-wrap items-start justify-between gap-3">
+      <article v-for="tool in demand.liveTools" :key="tool.id">
+        <header>
           <div>
             <p>{{ tool.id }}</p>
             <h3>
@@ -33,7 +29,7 @@
               }}
             </h3>
           </div>
-          <div class="flex gap-2">
+          <div>
             <UBadge color="success" variant="soft">connected</UBadge
             ><UBadge color="neutral" variant="outline">{{ tool.mode }}</UBadge>
           </div>
@@ -42,15 +38,16 @@
         <p>Confirmation: {{ tool.confirmation }}</p>
       </article>
     </section>
-    <section class="grid gap-4 border-t border-default pt-8">
+    <section>
       <div>
         <p>Research response</p>
         <h2>Proposed Team Tools</h2>
       </div>
-      <UCard as="article" :ui="{ body: 'fx-card-body-stack' }"
+      <UCard
+        as="article"
+        :ui="{ body: 'fx-card-body-stack' }"
         v-for="tool in demand.proposedTools"
         :key="tool.id"
-        
       >
         <header class="card__header">
           <div>
@@ -75,20 +72,18 @@
         </p>
       </UCard>
     </section>
-    <section
-      class="grid gap-3 rounded-xl border border-warning/40 bg-warning/5 p-5"
-    >
+    <section>
       <p>Current scope drift</p>
-      <ul class="fx-list-stack list-disc">
+      <ul class="fx-list-stack">
         <li v-for="item in demand.currentDrift" :key="item">
           {{ item }}
         </li>
       </ul>
     </section>
-    <section class="grid gap-5 border-t border-default pt-8 lg:grid-cols-2">
+    <section>
       <div>
         <p>TeamAI</p>
-        <ul class="fx-list-stack list-disc">
+        <ul class="fx-list-stack">
           <li v-for="item in demand.aiContract.teamAI" :key="item">
             {{ item }}
           </li>
@@ -96,7 +91,7 @@
       </div>
       <div>
         <p>KitchenAI</p>
-        <ul class="fx-list-stack list-disc">
+        <ul class="fx-list-stack">
           <li v-for="item in demand.aiContract.kitchenAI" :key="item">
             {{ item }}
           </li>

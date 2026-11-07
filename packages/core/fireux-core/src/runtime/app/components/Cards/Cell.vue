@@ -11,12 +11,11 @@
         :text="avatarText || undefined"
         :alt="name"
         size="md"
-        class="shrink-0"
       />
 
       <div class="card__content card__stack">
         <div class="card__header">
-          <div class="min-w-0">
+          <div>
             <div class="card__title">{{ name }}</div>
           </div>
 
@@ -47,7 +46,10 @@ import type { AppCard } from '../../composables/useAppView'
 defineOptions({ inheritAttrs: false })
 
 type Props = Partial<
-  Pick<AppCard, 'to' | 'thumbnailUrl' | 'avatarText' | 'name' | 'badges' | 'tagline'>
+  Pick<
+    AppCard,
+    'to' | 'thumbnailUrl' | 'avatarText' | 'name' | 'badges' | 'tagline'
+  >
 > & {
   showBadges?: boolean
   showTagline?: boolean
@@ -71,5 +73,4 @@ withDefaults(defineProps<Props>(), {
   link: false,
   action: false,
 })
-
 </script>

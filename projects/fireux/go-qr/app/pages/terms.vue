@@ -1,36 +1,36 @@
 <template>
   <UPage>
-        <UButton to="/" variant="link"> Go QR </UButton>
-        <UPageHeader
-          title="Terms"
-          description="Go QR hosts public docs and QR pages."
-        />
-        <UPageBody>
-          <section class="space-y-4">
-            <p>
-              Go QR lets you upload a doc, publish it at a public link, and
-              create a QR code for that link.
-            </p>
-            <p>
-              You are responsible for the doc you upload. Only upload content
-              you have the right to publish.
-            </p>
-            <p>
-              QR docs are public. Anyone with the link or QR code can view the
-              doc. Do not upload private, sensitive, confidential, illegal, or
-              harmful content.
-            </p>
-            <p>
-              We may remove docs that are reported, unsafe, unlawful, abusive,
-              or outside the purpose of the product.
-            </p>
-            <p>
-              Go QR is provided as a simple public doc hosting and QR tool.
-              Availability may change while the product is in MVP.
-            </p>
-          </section>
-        </UPageBody>
-      </UPage>
+    <UButton to="/" variant="link"> Go QR </UButton>
+    <UPageHeader
+      title="Terms"
+      description="Go QR hosts public docs and QR pages."
+    />
+    <UPageBody>
+      <section class="pagebody">
+        <p>
+          Go QR lets you upload a doc, publish it at a public link, and create a
+          QR code for that link.
+        </p>
+        <p>
+          You are responsible for the doc you upload. Only upload content you
+          have the right to publish.
+        </p>
+        <p>
+          QR docs are public. Anyone with the link or QR code can view the doc.
+          Do not upload private, sensitive, confidential, illegal, or harmful
+          content.
+        </p>
+        <p>
+          We may remove docs that are reported, unsafe, unlawful, abusive, or
+          outside the purpose of the product.
+        </p>
+        <p>
+          Go QR is provided as a simple public doc hosting and QR tool.
+          Availability may change while the product is in MVP.
+        </p>
+      </section>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

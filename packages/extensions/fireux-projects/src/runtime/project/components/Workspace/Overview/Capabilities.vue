@@ -12,7 +12,7 @@
       :pending="team.pending.value"
       :error="team.error.value"
     >
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UTooltip
           v-for="member in team.members.value.slice(0, 8)"
           :key="member.id || member.memberId"
@@ -37,11 +37,10 @@
       :pending="tests.pending.value"
       :error="tests.error.value"
     >
-      <ul class="space-y-1">
+      <ul>
         <li
           v-for="test in (tests.records.value || []).slice(0, 3)"
           :key="test.id"
-          class="truncate"
         >
           {{ test.value }}
         </li>
@@ -121,7 +120,7 @@ import { computed, type Ref } from 'vue'
 import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectEcosystems } from '../../../composables/useProjectEcosystems'
 import Summary from 'fireux-core/runtime/workspace/components/Overview/Summary.vue'
-import { useProjectWorkspaceHome } from '../../../composables/workspace/useProjectWorkspaceHome'
+import { useProjectTeamSummary } from '../../../composables/useProjectTeamSummary'
 import { useProjectTestRecords } from '../../../composables/useProjectTestRecords'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
@@ -144,7 +143,7 @@ const relationshipValue = (source: RelationshipSource) =>
   ['ready', 'empty'].includes(relationshipOutcome(source))
     ? source.count.value
     : '—'
-const team = useProjectWorkspaceHome().team
+const team = useProjectTeamSummary()
 const tests = useProjectTestRecords(workspace.id)
 const notifications = useUserNotifications()
 const identityReady = computed(() => workspace.outcome.value === 'ready')

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 15:50 CEST — User Profile polish: associate editable fields and name every field action for assistive tech. -->
 <template>
   <div class="base-form-field-top">
-    <div class="top-row">
+    <div class="base-form-field-top__row">
       <div class="left">
         <label :for="inputId || undefined" class="field-label">{{
           label
@@ -12,7 +12,6 @@
           color="neutral"
           variant="soft"
           label="Locked"
-          class="ml-2 shrink-0"
         />
         <span v-if="isEditing" class="editing-indicator">
           <span class="dot"></span>
@@ -99,9 +98,7 @@
         variant="soft"
         :icon="'i-lucide-alert-triangle'"
       >
-        <template #actions
-          ><FireCopyError :message="errorMessage"
-        /></template>
+        <template #actions><FireCopyError :message="errorMessage" /></template>
       </UAlert>
     </div>
   </div>
@@ -130,7 +127,7 @@ const fieldName = computed(() => props.label.trim() || 'field')
   padding-top: var(--spacing);
   padding-bottom: var(--spacing);
 }
-.top-row {
+.base-form-field-top__row {
   display: flex;
   align-items: center;
   justify-content: space-between;

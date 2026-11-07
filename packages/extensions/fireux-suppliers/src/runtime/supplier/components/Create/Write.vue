@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-6">
-    <div v-if="!create" class="space-y-3">
+  <div>
+    <div v-if="!create">
       <BusinessCreateSystem v-if="!businessId" @created="onBusinessReady" />
       <UAlert
         v-else
@@ -30,7 +30,6 @@
     >
       <UInput
         v-model="organizationName"
-        class="w-full"
         autocomplete="organization"
         minlength="2"
         maxlength="120"
@@ -38,27 +37,26 @@
       />
     </UFormField>
 
-    <ul class="grid gap-3">
-      <li class="flex items-center gap-3">
+    <ul>
+      <li>
         <UIcon name="i-lucide-badge-check" />
         <span>Create one canonical Supplier identity</span>
       </li>
-      <li class="flex items-center gap-3">
+      <li>
         <UIcon name="i-lucide-briefcase" />
         <span>Manage your business profile and brand</span>
       </li>
-      <li class="flex items-center gap-3">
+      <li>
         <UIcon name="i-lucide-sparkles" />
         <span>Open Supplier Items, Ingredients, Catalogue, and Team</span>
       </li>
     </ul>
 
-    <div class="space-y-2">
-      <div class="flex flex-wrap gap-2">
+    <div>
+      <div>
         <UButton
           color="primary"
           size="lg"
-          class="min-w-60"
           :loading="isCreating"
           :disabled="isCreating || (!create && !businessId)"
           @click="handleCreate"

@@ -24,7 +24,7 @@
         >
       </article>
     </section>
-    <section class="community-card mt-8">
+    <section class="community-card">
       <h2>Start a Demo topic</h2>
       <p v-if="!isAuthenticated">
         Sign in to post. Topics stay in this browser session.

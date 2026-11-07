@@ -2,8 +2,8 @@
   <UDashboardToolbar v-if="!fireux.isTenant || ready">
     <WorkspaceKitchenSelector />
   </UDashboardToolbar>
-  <div class="flex items-center gap-3">
-    <div v-if="fireux.isTenant" class="shrink-0 rounded-lg bg-white p-2">
+  <div>
+    <div v-if="fireux.isTenant">
       <AppBrandLogo size="small" />
     </div>
     <UPageHeader :title="workspaceTitle" />
@@ -12,11 +12,7 @@
     v-if="!fireux.isTenant || ready"
     :perform-action="performLandingAction"
   />
-  <nav
-    v-if="fireux.isTenant && ready"
-    class="flex flex-wrap gap-2"
-    aria-label="Kitchen actions"
-  >
+  <nav v-if="fireux.isTenant && ready" aria-label="Kitchen actions">
     <UButton
       to="/workspace/kitchen/food-and-drink/menus"
       label="Menus"

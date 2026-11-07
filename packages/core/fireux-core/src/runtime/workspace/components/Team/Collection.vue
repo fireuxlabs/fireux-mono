@@ -25,7 +25,7 @@
       placeholder="Search team members…"
       aria-label="Search team members by name or role"
     />
-    <div class="grid min-w-0 gap-2">
+    <div>
       <WorkspaceSelectionRow
         v-for="member in visibleItems"
         :key="member.id"
@@ -37,7 +37,7 @@
           :alt="member.name"
           icon="i-lucide-user"
         />
-        <span class="truncate">{{ member.name }}</span>
+        <span>{{ member.name }}</span>
       </WorkspaceSelectionRow>
     </div>
     <p v-if="query && !visibleItems.length" role="status">

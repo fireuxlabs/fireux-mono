@@ -3,10 +3,10 @@
 <template>
   <UPageCard variant="subtle">
     <template #header>
-      <div class="flex items-start justify-between gap-4">
+      <div>
         <div>
           <h2>Profile preview</h2>
-          <p class="mt-1">The identity people see across your apps.</p>
+          <p>The identity people see across your apps.</p>
         </div>
 
         <UBadge
@@ -19,24 +19,21 @@
       </div>
     </template>
 
-    <div class="flex flex-col items-center px-2 py-6 sm:py-8">
+    <div>
       <UAvatar
         :src="card.avatarUrl || undefined"
         :alt="card.displayName"
         size="3xl"
       />
 
-      <h3 class="mt-5">
+      <h3>
         {{ card.displayName }}
       </h3>
-      <p v-if="card.handle" class="mt-1">
+      <p v-if="card.handle">
         {{ card.handle }}
       </p>
 
-      <div
-        v-if="profileLabels.length"
-        class="mt-4 flex flex-wrap justify-center gap-2"
-      >
+      <div v-if="profileLabels.length">
         <UBadge
           v-for="profile in profileLabels"
           :key="profile"
@@ -47,7 +44,7 @@
         />
       </div>
 
-      <p class="mt-5 max-w-sm whitespace-pre-line">
+      <p>
         {{
           card.bio ||
           'Add a short bio to tell people what you build, do or care about.'
@@ -56,11 +53,9 @@
     </div>
 
     <template #footer>
-      <div
-        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-fingerprint" class="size-4" />
+      <div>
+        <div>
+          <UIcon name="i-lucide-fingerprint" />
           <span>One identity across your apps</span>
         </div>
 

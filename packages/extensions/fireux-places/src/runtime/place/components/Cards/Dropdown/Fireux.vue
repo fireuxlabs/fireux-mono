@@ -1,9 +1,14 @@
 <template>
-  <button type="button" class="pill justify-start text-left" @click="emit('select')">
+  <button type="button" class="pill" @click="emit('select')">
     <UUser
       :name="primaryLabel"
       :description="address || undefined"
-      :avatar="{ src: imageUrl || undefined, alt: '', text: '', class: avatarClass }"
+      :avatar="{
+        src: imageUrl || undefined,
+        alt: '',
+        text: '',
+        class: avatarClass,
+      }"
       size="sm"
     >
       <template #default>
@@ -48,5 +53,4 @@ const avatarClass = computed(() => {
 })
 
 const primaryLabel = computed(() => props.shortName || props.name)
-
 </script>

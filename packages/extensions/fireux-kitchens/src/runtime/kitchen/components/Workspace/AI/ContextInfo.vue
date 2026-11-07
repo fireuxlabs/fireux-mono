@@ -13,12 +13,11 @@
       v-model:open="open"
       :title="`About ${agent.name}`"
       description="The information and actions available to this page's AI."
-      :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
         <div class="workspace-surface__grid">
           <section class="workspace-surface__grid">
-            <div class="flex flex-wrap gap-2">
+            <div>
               <UBadge color="neutral" variant="soft">
                 {{ maturityLabel }}
               </UBadge>
@@ -37,10 +36,10 @@
           >
             <h3 :id="`${agent.id}-context`">Information it can use</h3>
             <ul class="workspace-surface__grid">
-              <UCard as="li"
+              <UCard
+                as="li"
                 v-for="provider in agent.contextProviders"
                 :key="provider.id"
-                
               >
                 <span>
                   {{ contextLabel(provider.id) }}
@@ -58,7 +57,7 @@
             :aria-labelledby="`${agent.id}-abilities`"
           >
             <h3 :id="`${agent.id}-abilities`">What it may do</h3>
-            <div class="flex flex-wrap gap-2">
+            <div>
               <UBadge
                 v-for="capability in agent.capabilities"
                 :key="capability"
@@ -79,10 +78,11 @@
               No tools are registered for this capability yet.
             </p>
             <ul v-else class="workspace-surface__grid">
-              <UCard as="li" :ui="{ body: 'fx-card-body-stack' }"
+              <UCard
+                as="li"
+                :ui="{ body: 'fx-card-body-stack' }"
                 v-for="tool in tools"
                 :key="tool.id"
-                
               >
                 <div class="card__header">
                   <span>{{ tool.label }}</span>

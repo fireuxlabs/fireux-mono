@@ -1,6 +1,6 @@
 <template>
-  <section class="space-y-2">
-    <div v-if="isDev && !bare" class="flex justify-end">
+  <section>
+    <div v-if="isDev && !bare">
       <UBadge color="neutral" variant="soft" size="sm">
         Go QR: {{ providerModeLabel }}
       </UBadge>

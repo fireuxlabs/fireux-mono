@@ -1,35 +1,35 @@
 <template>
   <UPage>
-        <UButton to="/" variant="link"> Go QR </UButton>
-        <UPageHeader
-          title="Privacy"
-          description="Go QR is for public docs, not private storage."
-        />
-        <UPageBody>
-          <section class="space-y-4">
-            <p>
-              When you create a QR doc, we store the uploaded file, the public
-              path, and basic metadata needed to display the doc and QR page.
-            </p>
-            <p>
-              Public docs can be opened by anyone with the link or QR code. Do
-              not upload private, sensitive, or confidential information.
-            </p>
-            <p>
-              If you sign in, Go QR may use your account identity to manage
-              admin-only actions such as removing a doc.
-            </p>
-            <p>
-              Go QR runs inside the FireUX ecosystem and uses Firebase services
-              for authentication, storage, and database records.
-            </p>
-            <p>
-              We keep the MVP small: doc hosting, public links, and QR pages.
-              More privacy controls may come later as paid owner tools.
-            </p>
-          </section>
-        </UPageBody>
-      </UPage>
+    <UButton to="/" variant="link"> Go QR </UButton>
+    <UPageHeader
+      title="Privacy"
+      description="Go QR is for public docs, not private storage."
+    />
+    <UPageBody>
+      <section class="pagebody">
+        <p>
+          When you create a QR doc, we store the uploaded file, the public path,
+          and basic metadata needed to display the doc and QR page.
+        </p>
+        <p>
+          Public docs can be opened by anyone with the link or QR code. Do not
+          upload private, sensitive, or confidential information.
+        </p>
+        <p>
+          If you sign in, Go QR may use your account identity to manage
+          admin-only actions such as removing a doc.
+        </p>
+        <p>
+          Go QR runs inside the FireUX ecosystem and uses Firebase services for
+          authentication, storage, and database records.
+        </p>
+        <p>
+          We keep the MVP small: doc hosting, public links, and QR pages. More
+          privacy controls may come later as paid owner tools.
+        </p>
+      </section>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

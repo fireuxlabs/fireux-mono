@@ -1,7 +1,7 @@
 <template>
   <UCard>
     <template #header><h2 class="fx-type-card-heading">Brand</h2></template>
-    <div class="space-y-6">
+    <div class="fx-card-body-stack">
       <section v-for="asset in assets" :key="asset.key" class="brand-asset">
         <div
           class="brand-asset__preview"
@@ -19,14 +19,14 @@
           />
           <UIcon v-else :name="asset.icon" />
         </div>
-        <div class="min-w-0 space-y-2">
+        <div class="fx-card-body-stack">
           <div>
             <h3 class="fx-type-card-heading">
               {{ asset.label }}
             </h3>
-            <p class="mt-1">{{ asset.description }}</p>
+            <p>{{ asset.description }}</p>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div>
             <UButton
               :label="place[asset.key] ? 'Change' : 'Add image'"
               icon="i-lucide-image-up"
@@ -55,7 +55,7 @@
             "
             type="file"
             accept="image/*"
-            class="sr-only"
+            hidden
             :aria-label="`Upload ${asset.label.toLowerCase()}`"
             :disabled="Boolean(busy)"
             @change="upload(asset, $event)"
@@ -67,7 +67,7 @@
         :mutation-authority="mutationAuthority"
         :can-write="!busy"
       />
-      <div v-if="error" role="alert" class="text-error">
+      <div v-if="error" role="alert">
         {{ error }}
         <FireCopyError :message="error" />
       </div>

@@ -7,7 +7,6 @@
       icon="i-lucide-arrow-left"
       color="neutral"
       variant="soft"
-      class="w-fit"
     />
     <template v-if="project">
       <UAvatar
@@ -20,12 +19,12 @@
         <h1 class="fx-type-page-title">
           {{ project.identity.name }}
         </h1>
-        <p v-if="project.identity.description" class="mt-1">
+        <p v-if="project.identity.description">
           {{ project.identity.description }}
         </p>
       </div>
     </template>
-    <USkeleton v-else-if="loading" class="h-32 w-full" />
+    <FireState v-else-if="loading" outcome="pending" />
     <FireStateCard
       v-else-if="source.outcome.value === 'error'"
       state="error"

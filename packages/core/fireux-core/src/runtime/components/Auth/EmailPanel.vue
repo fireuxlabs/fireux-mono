@@ -1,11 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/EmailPanel.vue -->
 <template>
-  <div class="w-full space-y-5">
-    <div
-      role="group"
-      aria-label="Email account options"
-      class="grid grid-cols-2 gap-1 p-1"
-    >
+  <div class="fx-card-body-stack">
+    <UFieldGroup aria-label="Email account options">
       <UButton
         label="Sign in"
         color="neutral"
@@ -22,7 +18,7 @@
         :disabled="formLoading || disabled"
         @click="setMode(true)"
       />
-    </div>
+    </UFieldGroup>
 
     <UAuthForm
       :fields="fields"

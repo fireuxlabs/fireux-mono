@@ -1,9 +1,9 @@
 <template>
-  <div class="space-y-3 p-3">
-    <div class="flex items-start justify-between gap-3">
-      <div class="min-w-0">
+  <div>
+    <div>
+      <div>
         <div>Dedicated App</div>
-        <p class="truncate">{{ description }}</p>
+        <p>{{ description }}</p>
       </div>
 
       <UBadge :color="hasDedicatedApp ? 'success' : 'neutral'" variant="soft">

@@ -29,7 +29,7 @@
           </div>
           <div v-if="showBody" class="fx-card__body">
             <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
+            <span v-else>missing</span>
           </div>
         </div>
       </div>
@@ -48,11 +48,7 @@
       </div>
 
       <div v-if="details?.length" class="fx-card__stack fx-card__stack--tight">
-        <div
-          v-for="item in details"
-          :key="item.label"
-          class="fx-card__stack"
-        >
+        <div v-for="item in details" :key="item.label" class="fx-card__stack">
           <div class="fx-card__label">
             {{ item.label }}
           </div>

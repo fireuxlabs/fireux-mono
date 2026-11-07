@@ -1,11 +1,7 @@
 <template>
-  <fieldset class="space-y-3">
-    <legend class="mb-2">Extras</legend>
-    <div
-      v-for="(extra, index) in extras"
-      :key="index"
-      class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_8rem_auto]"
-    >
+  <fieldset>
+    <legend>Extras</legend>
+    <div v-for="(extra, index) in extras" :key="index">
       <UInput
         v-model="extra.label"
         :aria-label="`Extra ${index + 1} name`"

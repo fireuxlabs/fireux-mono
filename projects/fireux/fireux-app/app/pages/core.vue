@@ -12,7 +12,7 @@
           public directory components, and runtime conventions.
         </p>
 
-        <div class="space-y-2">
+        <div class="pagebody">
           <p>
             This page is a public pointer, not the source of Core documentation.
           </p>

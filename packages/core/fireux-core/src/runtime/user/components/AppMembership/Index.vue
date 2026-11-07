@@ -1,10 +1,7 @@
 <template>
-  <section
-    class="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
-    aria-label="App membership"
-  >
-    <div class="flex items-center gap-3">
-      <UIcon name="i-lucide-building-2" class="size-5" />
+  <section aria-label="App membership">
+    <div>
+      <UIcon name="i-lucide-building-2" />
       <div>
         <h2>{{ appName }}</h2>
         <p>
@@ -12,7 +9,7 @@
         </p>
       </div>
     </div>
-    <div class="flex items-center gap-3">
+    <div>
       <UserAccessBadge
         v-if="membership"
         :subscription="membership.subscription"

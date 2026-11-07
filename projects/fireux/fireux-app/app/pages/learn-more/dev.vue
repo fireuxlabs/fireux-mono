@@ -36,7 +36,7 @@
           <h2 class="fx-type-section-title">Core API endpoints</h2>
         </template>
 
-        <div class="space-y-2">
+        <div class="pagebody">
           <div class="fx-inset-panel">
             <p class="fx-type-code">GET /api/directory</p>
             <p class="fx-type-body">

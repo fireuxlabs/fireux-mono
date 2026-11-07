@@ -1,6 +1,6 @@
 <template>
-  <section class="grid gap-4">
-    <div class="flex items-center justify-between gap-3">
+  <section>
+    <div>
       <h3>Ingredients</h3>
       <UButton
         label="Add ingredient"
@@ -26,7 +26,7 @@
       >
     </p>
     <div v-for="(row, index) in rows" :key="index" class="recipe-input-row">
-      <div class="recipe-input-name min-w-0">
+      <div class="recipe-input-name">
         <USelect
           v-model="row.ingredient_id"
           :items="options"

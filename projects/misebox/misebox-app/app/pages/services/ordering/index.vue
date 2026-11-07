@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto max-w-3xl space-y-6 py-8">
+  <section class="pagebody">
     <NuxtLink to="/services">Services</NuxtLink>
     <h1 class="fx-type-page-title">Ordering</h1>
     <p class="fx-type-description">

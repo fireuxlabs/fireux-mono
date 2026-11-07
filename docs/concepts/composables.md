@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-04
-Ref: 6c81e972a
+Updated: 2026-11-06
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -255,15 +255,15 @@ not duplicate settings or membership responsibilities.
 
 Consumed responsibilities use meaningful groups:
 
-| Group            | Responsibility                                                                                                                                      |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `identity`       | `useAppIdentityUpdate` edits the configured App's name, copy and social links through the authenticated settings command                            |
-| `featured`       | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                                        |
-| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists and current-App filtering |
-| `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow                                                            |
-| `brand`          | Reactive browser checks for required local App artwork                                                                                              |
-| `config`         | Request-aware runtime configuration normalization through `useFireUXConfig`                                                                         |
-| `pricing`        | Reactive presentation of the App's declared pricing profiles and tiers                                                                              |
+| Group            | Responsibility                                                                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `identity`       | `useAppIdentityUpdate` edits the configured App's status, name, copy and social links through its authenticated identity command |
+| `featured`       | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                     |
+| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists and current-App filtering             |
+| `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow                                         |
+| `brand`          | Reactive browser checks for required local App artwork                                                                           |
+| `config`         | Request-aware runtime configuration normalization through `useFireUXConfig`                                                      |
+| `pricing`        | Reactive presentation of the App's declared pricing profiles and tiers                                                           |
 
 Membership functions retain their distinct inputs and lifecycles. Subscriptions
 are part of the AppUser relationship, but their command and presentation
@@ -304,9 +304,11 @@ every Entity.
 
 ### App validation and shared mechanics
 
-`app/server/settings/normalize.ts` owns the settings payload allowlist and
-normalization; `settings/update.ts` owns authenticated transaction execution.
-Inherited JavaScript property names are not editable settings. Role validation
+`app/server/identity/normalize.ts` owns the root identity payload allowlist and
+normalization; `identity/update.ts` owns authenticated transaction execution.
+`app/server/settings/update.ts` owns featured-content changes in the
+`settings/public` child. Inherited JavaScript property names are not editable
+App fields. Role validation
 uses `isAppUserRole` from `app/models/app-user.model.ts`; this narrow primitive
 does not replace the distinct full-membership and subscription authority checks.
 
@@ -318,7 +320,7 @@ App-owned. These shared mechanics do not merge diagnosis with execution.
 `useAppUserMembership` captures subject, actor, membership authority and display
 name before changing a subscription. Obsolete success/error feedback is hidden;
 the dispatched command retains its original subject and committed result.
-See `src/test/app-settings.test.mjs`, `app-media-sync.test.mjs` and
+See `src/test/app-identity.test.mjs`, `app-media-sync.test.mjs` and
 `app-users.test.mjs` under the Core package.
 
 ## Kitchen composables organization
@@ -463,14 +465,14 @@ handle lookup, public detail and reactive presentation remain directly under
 `user/composables`. Public detail follows the server's App visibility policy;
 a canonical identity reader is not a substitute for that projection.
 
-| Group           | Consumed responsibility                                                                                                                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `account`       | Owner-only private account reading; anonymous accounts are excluded                                                                                                                                           |
+| Group           | Consumed responsibility                                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `account`       | Owner-only private account reading; anonymous accounts are excluded                                                                                                                              |
 | `directory`     | `useUserDirectory` applies eligibility and current-User presentation; all Apps use `useUserCollection` over the existing public Users API; the server owns global versus tenant membership scope |
-| `identity`      | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands                                                                                                                |
-| `session`       | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access                                                                          |
-| `notifications` | Private live notification feed and the named mark-read command                                                                                                                                                |
-| `profile`       | Existing bounded User/domain-profile pair detail and directory readers                                                                                                                                        |
+| `identity`      | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands                                                                                                   |
+| `session`       | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access                                                             |
+| `notifications` | Private live notification feed and the named mark-read command                                                                                                                                   |
+| `profile`       | Existing bounded User/domain-profile pair detail and directory readers                                                                                                                           |
 
 `useUserBootstrap` captures one account/App intent before credentials and retains
 it through identity provisioning, default App membership and event publication.
@@ -538,8 +540,8 @@ Kitchen presentation is independent of its Firestore adapters. The single
 `useKitchenComputed.ts` serve domain consumers directly. Presentation types live
 in `kitchen/models/kitchen-interface.model.ts`; pure projection helpers live in
 `kitchen/utils/kitchen-interface-projection.ts`. There is no forwarding entrypoint
-or nested Firestore view directory. Project's direct `useProjectInterface.ts`
-is the placement comparison; its fields remain Project-owned. Other domains'
+or nested Firestore view directory. Project's public Collection owns its small
+card projection directly; its unused interface mapper is retired. Other domains'
 older view directories require their own consumer audit before movement.
 
 ## Consumed Entity entrypoints

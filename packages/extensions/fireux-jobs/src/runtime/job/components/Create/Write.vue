@@ -6,7 +6,7 @@
 -->
 
 <template>
-  <div class="space-y-6">
+  <div>
     <JobCreateBusiness v-model:form="form" />
 
     <JobCreateLocation v-model:form="form" />

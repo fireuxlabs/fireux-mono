@@ -1,5 +1,5 @@
 <template>
-  <article class="space-y-8">
+  <article>
     <SupplierDetailHeader :supplier="supplier" :place="place" />
     <SupplierDetailCatalogue :supplier="supplier" />
     <SupplierDetailDeliveryAreas :supplier="supplier" />

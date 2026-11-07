@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-5">
+  <section>
     <p v-if="outcome === 'pending'" role="status">Loading sales…</p>
     <UAlert
       v-else-if="outcome === 'error'"
@@ -13,19 +13,17 @@
       Select an available Kitchen to view sales.
     </p>
     <template v-else>
-      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <UCard class="sm:col-span-2">
+      <UPageGrid as="div">
+        <UCard>
           <div class="card__header">
             <div>
               <p>Gross sales</p>
-              <p class="mt-3 tabular-nums">
+              <p>
                 {{ formatMoney(grossSalesMinor) }}
               </p>
-              <p class="mt-3">{{ periodLabel }}</p>
+              <p>{{ periodLabel }}</p>
             </div>
-            <span
-              class="flex size-11 items-center justify-center rounded-xl bg-success/10"
-            >
+            <span>
               <UIcon name="i-lucide-trending-up" />
             </span>
           </div>
@@ -36,12 +34,12 @@
             <p>{{ metric.label }}</p>
             <UIcon :name="metric.icon" />
           </div>
-          <p class="mt-4 tabular-nums">
+          <p>
             {{ metric.value }}
           </p>
-          <p class="mt-2">{{ metric.description }}</p>
+          <p>{{ metric.description }}</p>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <UAlert
         color="primary"
@@ -51,16 +49,14 @@
         :description="insight"
       />
 
-      <div
-        class="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(18rem,0.8fr)]"
-      >
+      <UPageGrid as="div">
         <UCard>
           <FinanceReportTrend
             v-if="salesTrend.points.length > 1"
             :trend="salesTrend"
             size="lg"
           />
-          <div v-else class="flex min-h-64 items-center justify-center">
+          <div v-else>
             More than one reporting point is needed to show a trend.
           </div>
         </UCard>
@@ -69,15 +65,11 @@
           <template #header>
             <div>
               <h2>Management picture</h2>
-              <p class="mt-1">What the connected sources can prove.</p>
+              <p>What the connected sources can prove.</p>
             </div>
           </template>
-          <dl class="divide-y divide-default">
-            <div
-              v-for="item in managementPicture"
-              :key="item.label"
-              class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
-            >
+          <dl>
+            <div v-for="item in managementPicture" :key="item.label">
               <dt>{{ item.label }}</dt>
               <dd>
                 {{ item.value }}
@@ -85,24 +77,20 @@
             </div>
           </dl>
         </UCard>
-      </div>
+      </UPageGrid>
 
-      <div class="grid gap-4 lg:grid-cols-2">
+      <UPageGrid as="div">
         <UCard>
           <template #header><h2>Sales by service</h2></template>
-          <ul class="divide-y divide-default">
-            <li
-              v-for="service in serviceBreakdown"
-              :key="service.type"
-              class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
-            >
+          <ul>
+            <li v-for="service in serviceBreakdown" :key="service.type">
               <div>
                 <p>
                   {{ formatTransactionType(service.type) }}
                 </p>
-                <p class="mt-1">{{ formatCount(service.checks) }} completed</p>
+                <p>{{ formatCount(service.checks) }} completed</p>
               </div>
-              <p class="tabular-nums">
+              <p>
                 {{ formatMoney(service.amountMinor) }}
               </p>
             </li>
@@ -111,25 +99,24 @@
 
         <UCard>
           <template #header><h2>Best sellers</h2></template>
-          <ul class="divide-y divide-default">
+          <ul>
             <li
               v-for="item in bestSellers"
               :key="`${item.source_item_id}:${item.variant_id ?? ''}`"
-              class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
             >
-              <div class="min-w-0">
-                <p class="truncate">
+              <div>
+                <p class="fx-truncate">
                   {{ item.label }}
                 </p>
-                <p class="mt-1">{{ formatCount(item.quantity) }} sold</p>
+                <p>{{ formatCount(item.quantity) }} sold</p>
               </div>
-              <p class="tabular-nums">
+              <p>
                 {{ formatMoney(item.line_gross.amount_minor) }}
               </p>
             </li>
           </ul>
         </UCard>
-      </div>
+      </UPageGrid>
     </template>
   </section>
 </template>

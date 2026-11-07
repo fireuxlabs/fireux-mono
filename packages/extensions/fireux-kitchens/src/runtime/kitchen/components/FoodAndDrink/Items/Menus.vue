@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-4">
+  <div>
     <h2>Menu placements</h2>
     <FireStateCard
       v-if="error"
@@ -21,7 +21,6 @@
       label="Open menus"
       variant="outline"
       color="neutral"
-      class="justify-self-start"
     />
   </div>
 </template>

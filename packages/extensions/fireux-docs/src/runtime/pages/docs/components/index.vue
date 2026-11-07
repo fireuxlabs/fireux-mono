@@ -17,6 +17,28 @@
         the basic controls. This inventory shows what is in FireUX today; being
         listed does not mean it should stay in Core.
       </p>
+      <section class="extension-library">
+        <h2 class="fx-type-section-title">Extension component previews</h2>
+        <UCard variant="subtle">
+          <div class="extension-library__card">
+            <div>
+              <h3 class="fx-type-card-heading">Reusable booking form</h3>
+              <p>
+                A provider-independent customer form with sample reservation
+                fields. Apps supply their own services, availability and booking
+                rules.
+              </p>
+            </div>
+            <UButton
+              to="/docs/components/bookings"
+              label="Preview"
+              color="neutral"
+              variant="ghost"
+              trailing-icon="i-lucide-arrow-right"
+            />
+          </div>
+        </UCard>
+      </section>
       <div class="core-library-filters">
         <UInput
           v-model="search"
@@ -117,7 +139,8 @@ useSeoMeta({
 
 <style scoped>
 .core-library-filters,
-.core-library-card-footer {
+.core-library-card-footer,
+.extension-library__card {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -125,6 +148,19 @@ useSeoMeta({
 }
 .core-library-filters {
   margin-block: calc(var(--spacing) * 6);
+}
+.extension-library {
+  margin-block: calc(var(--spacing) * 8);
+}
+.extension-library__card {
+  justify-content: space-between;
+}
+.extension-library__card h3 {
+  font-weight: 600;
+}
+.extension-library__card p {
+  margin-top: calc(var(--spacing) * 2);
+  color: var(--ui-text-muted);
 }
 .core-library-card-footer {
   justify-content: space-between;

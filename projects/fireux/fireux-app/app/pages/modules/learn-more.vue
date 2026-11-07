@@ -13,7 +13,7 @@
           <h2 class="fx-type-section-title">What modules are</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>
             Modules are source-controlled capability packages added to apps.
           </li>
@@ -30,7 +30,7 @@
           <h2 class="fx-type-section-title">How to use modules</h2>
         </template>
 
-        <ol class="list-decimal fx-list-stack">
+        <ol class="fx-list-stack">
           <li>Choose the capability the app needs.</li>
           <li>Add the owning module to the app.</li>
           <li>
@@ -40,7 +40,7 @@
         </ol>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton to="/modules" color="primary" icon="i-lucide-puzzle">
           Open modules
         </UButton>

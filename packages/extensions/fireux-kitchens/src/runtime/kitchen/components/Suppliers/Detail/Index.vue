@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6 workspace-surface">
+  <div class="workspace-surface">
     <UButton
       to="/workspace/kitchen/stock/suppliers"
       color="neutral"
@@ -19,13 +19,12 @@
             :name="
               isEcosystemSupplier ? 'i-lucide-store' : 'i-lucide-clipboard-list'
             "
-            class="shrink-0"
           />
-          <div class="min-w-0 flex-1">
+          <div>
             <h3>
               {{ statusTitle }}
             </h3>
-            <p class="mt-1">
+            <p>
               {{ statusDescription }}
             </p>
           </div>

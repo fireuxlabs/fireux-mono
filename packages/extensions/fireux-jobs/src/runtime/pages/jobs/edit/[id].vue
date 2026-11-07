@@ -27,10 +27,7 @@
     <UPageBody class="pagebody">
       <JobAuthorFlowProgress :current-step="3" :published="isPublicAndOpen" />
 
-      <div v-if="pending" class="space-y-3">
-        <USkeleton class="h-14" />
-        <USkeleton class="h-40" />
-      </div>
+      <FireState v-if="pending" outcome="pending" />
 
       <UAlert
         v-else-if="!job"
@@ -40,11 +37,9 @@
         description="We could not find this job. Return to the jobs list and try again."
       />
 
-      <form v-else class="space-y-6" @submit.prevent="onSave">
-        <div
-          class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.72fr)]"
-        >
-          <div class="space-y-6">
+      <form v-else @submit.prevent="onSave">
+        <div>
+          <div>
             <UAlert
               color="neutral"
               variant="soft"
@@ -64,7 +59,7 @@
               <template #header>
                 <div>
                   <h2 class="fx-type-card-heading">Availability</h2>
-                  <p class="mt-1">
+                  <p>
                     Closed jobs stay in your workspace but disappear from public
                     discovery.
                   </p>
@@ -75,9 +70,7 @@
               </UFormField>
             </UCard>
 
-            <UCard
-              class="flex flex-wrap items-center justify-between gap-3" :ui="{ body: 'fx-card-body-stack' }"
-            >
+            <UCard :ui="{ body: 'fx-card-body-stack' }">
               <span>
                 {{
                   isDirty
@@ -85,7 +78,7 @@
                     : 'All draft changes are saved.'
                 }}
               </span>
-              <div class="flex items-center gap-2">
+              <div>
                 <UButton
                   type="button"
                   color="neutral"
@@ -108,7 +101,7 @@
             </UCard>
           </div>
 
-          <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
+          <aside class="workspace-surface__context fx-card-body-stack">
             <JobCreatePreview :form="form" />
             <JobAuthorPublish
               :job="job"

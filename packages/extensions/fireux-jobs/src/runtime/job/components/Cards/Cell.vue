@@ -24,7 +24,7 @@
             </div>
           </div>
 
-          <div class="shrink-0 flex items-center gap-1">
+          <div>
             <UBadge
               v-if="showStatus && statusLabel"
               size="xs"

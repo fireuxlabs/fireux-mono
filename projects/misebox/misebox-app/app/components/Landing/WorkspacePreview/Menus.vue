@@ -1,30 +1,23 @@
 <template>
-  <div class="mt-5" aria-label="Menus preview">
+  <div aria-label="Menus preview">
     <div v-if="menus.length" class="workspace-preview-menus">
       <article
         v-for="menu in menus"
         :key="menu.id"
-        class="workspace-preview-menu-card flex min-w-0 flex-col overflow-hidden rounded-xl border border-default bg-default shadow-sm"
+        class="workspace-preview-menu-card"
       >
         <img
           v-if="menu.imageUrl"
           :src="menu.imageUrl"
           :alt="menu.imageAlt"
-          class="aspect-square w-full object-cover"
           loading="lazy"
         />
-        <div
-          v-else
-          class="flex aspect-square w-full items-center justify-center bg-elevated"
-          aria-hidden="true"
-        >
+        <div v-else aria-hidden="true">
           <UIcon name="i-lucide-image" />
         </div>
 
-        <div
-          class="flex min-w-0 items-center gap-2 border-t border-default px-3 py-2.5"
-        >
-          <p class="truncate fx-type-caption">
+        <div>
+          <p class="fx-type-caption">
             {{ menu.name }}
           </p>
           <UIcon name="i-lucide-arrow-right" />
@@ -32,18 +25,14 @@
       </article>
 
       <article
-        class="workspace-preview-menu-card workspace-preview-create-card flex min-w-0 flex-col overflow-hidden rounded-xl border border-primary/20 bg-primary/5 shadow-sm"
+        class="workspace-preview-menu-card workspace-preview-create-card"
       >
-        <div class="flex min-h-0 flex-1 items-center justify-center">
-          <span
-            class="flex size-10 items-center justify-center rounded-full bg-primary text-inverted shadow-sm"
-          >
+        <div>
+          <span>
             <UIcon name="i-lucide-plus" />
           </span>
         </div>
-        <div
-          class="flex items-center gap-2 border-t border-primary/15 bg-default/70 px-3 py-2.5"
-        >
+        <div>
           <p class="fx-type-caption">Create menu</p>
           <UIcon name="i-lucide-arrow-right" />
         </div>

@@ -1,7 +1,7 @@
 # Core Models
 
 Updated: 2026-11-06
-Ref: f2fbf2242
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -75,7 +75,7 @@ server parity files are retired rather than kept as an alternate write lane.
 | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `useAppRead` / `useAppDetail` / `useAppCollection`                                  | Configured native App read versus authorized public detail/directory transport |
 | `useUserRead` / `useUserCollection` / `useUserDirectory` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail                |
-| `useEcosystemDetail` / `usePublishedPlatformEcosystemDirectory`                    | Public detail and FireUX platform directory                                   |
+| `useEcosystemDetail` / `usePublishedPlatformEcosystemDirectory`                     | Public detail and FireUX platform directory                                    |
 | `useAppUserRead` / `useAppUserMembership`                                           | App-owned membership, separate from User identity                              |
 | `useUserSession` / `useAppSession`                                                  | Explicit live read composition, not mutation facades                           |
 
@@ -157,23 +157,24 @@ readers, middleware and Workspace policy consume those same definitions.
 
 ### App fields and their visible use
 
-| Responsibility                | Stored fields                     | Acquisition and presentation                                                                                                                          |
-| ----------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Recognition                   | `name`, optional `short_name`     | Trusted creation/settings commands; directory cards and detail use the name; compact branding can use short name                                      |
-| Meaning                       | optional `tagline`, `description` | App identity editor → settings command; cards prefer tagline and detail shows authored copy                                                           |
-| Artwork                       | optional `media` URLs             | App-owned local assets → trusted media sync; directory/detail consume stored images                                                                   |
-| Opening the product           | optional `social_links.website`   | App address editor updates only this nested field; another App's detail uses it as the opening URL; the current runtime uses its configured home path |
-| Classification and visibility | `ecosystem_id`, `role: AppRole`, `status: AppStatus` (`active` or `inactive`) | Creation/lifecycle authority and public read filtering; only active Apps appear in public listings                                           |
-| Provenance                    | `created`, `updated`              | Trusted writes; operational metadata, not compulsory discovery content                                                                                |
+| Responsibility                | Stored fields                                                                 | Acquisition and presentation                                                                                                                          |
+| ----------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Recognition                   | `name`, optional `short_name`                                                 | Trusted creation/settings commands; directory cards and detail use the name; compact branding can use short name                                      |
+| Meaning                       | optional `tagline`, `description`                                             | App identity editor → settings command; cards prefer tagline and detail shows authored copy                                                           |
+| Artwork                       | optional `media` URLs                                                         | App-owned local assets → trusted media sync; directory/detail consume stored images                                                                   |
+| Opening the product           | optional `social_links.website`                                               | App address editor updates only this nested field; another App's detail uses it as the opening URL; the current runtime uses its configured home path |
+| Classification and visibility | `ecosystem_id`, `role: AppRole`, `status: AppStatus` (`active` or `inactive`) | Creation/lifecycle authority and public read filtering; only active Apps appear in public listings                                                    |
+| Provenance                    | `created`, `updated`                                                          | Trusted writes; operational metadata, not compulsory discovery content                                                                                |
 
-Core `app/components/Edit/Sections/About.vue` exposes name, tagline and
+Core `app/components/Edit/Sections/About.vue` exposes status, name, tagline and
 description; `Edit/Sections/Social.vue` exposes the public address. Both compose
 existing editable fields and each calls
 `app/composables/identity/useAppIdentityUpdate.ts` directly. The parent
 App editor composes sections and membership administration without relaying
-field callbacks. `app/server/settings/normalize.ts`
-validates the input; `app/server/settings/update.ts` executes the authenticated
-transaction. Adding a URL or saving an App definition
+field callbacks. `app/server/identity/normalize.ts`
+validates the input; `app/server/identity/update.ts` executes the authenticated
+transaction. The `app/server/settings/update.ts` command separately updates
+featured content in the `settings/public` child. Adding a URL or saving an App definition
 does not provision hosting. Other social/contact fields remain optional stored
 fields, without a completed editor in this slice.
 
@@ -314,14 +315,15 @@ empty Project shell therefore has no ProjectMeta yet. Project document ID is
 route identity, so neither Project shape stores a duplicate slug.
 
 The entity-facing Project stack lives under `runtime/project`.
-`useProjects` reads canonical `Project[]` from the public Server collection,
-and `/projects/:id` reads the same strict entity shape from its exact Server
+`useProjects` reads `ProjectPublicSummary[]` from the public Server collection,
+and `/projects/:id` reads the same strict public shape from its exact Server
 endpoint. `useProjectCollection` separately reads the caller's target-bounded
 control-plane scope for the private Workspace. There is no
-`ProjectDirectoryEntry` or browser mutation entrypoint;
-presentation mapping remains in `useProjectInterface`; `/` owns the FireUX App
-Project Workspace landing and private operations remain under
-`/workspace/project/*`.
+`ProjectDirectoryEntry` or browser mutation entrypoint. Public readers expose
+only `id` and nested `identity`; the consumed Collection owns its card mapping.
+The FireUX App owns its framework landing at `/` and the Project Workspace
+entrance at `/workspace/project`; private operations remain beneath that route. Selected Project state uses `useProjectWorkspace`;
+Overview's Team summary uses the narrow `useProjectTeamSummary` reader.
 
 Project client preparation captures original account, App membership, Project,
 route and request input before credentials. The AI dialog separately owns its
@@ -348,17 +350,17 @@ stamps are shared model utilities, not core records.
 
 ## Library ownership
 
-| Library                           | Owns                                                                                                                                                              | Does not own                                            |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                                          | User identity, generic app-shell state, configuration   |
-| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                                            | App or project identity                                 |
-| `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                                           | App membership or generic profile fragments             |
-| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                                               | Module packages or App module configuration             |
-| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, directories, and shared style vocabulary                          | Entity-owned records, access decisions, or Vue state    |
-| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                                      | Persisted entity authority                              |
-| `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                                          | Canonical stored shape                                  |
-| `config/app`                      | Authored App composition and literature contracts                                                                                                                 | Firestore records                                       |
-| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                                             | Generic Core vocabulary without another domain consumer |
+| Library                           | Owns                                                                                                                                         | Does not own                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                     | User identity, generic app-shell state, configuration   |
+| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                       | App or project identity                                 |
+| `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                      | App membership or generic profile fragments             |
+| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                          | Module packages or App module configuration             |
+| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
+| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                 | Persisted entity authority                              |
+| `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                     | Canonical stored shape                                  |
+| `config/app`                      | Authored App composition and literature contracts                                                                                            | Firestore records                                       |
+| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                        | Generic Core vocabulary without another domain consumer |
 
 ## Entity model file shape
 
@@ -498,7 +500,7 @@ immediately. App identity edits and media synchronization refresh the exact
 snapshot through native `refreshNuxtData`; other-browser changes require refresh.
 User setup provisions User identity and ensures a basic AppUser membership;
 App admins control elevated roles and subscriptions.
-Proof lives in `app-native-auth-scope.test.mjs` and `app-settings.test.mjs`.
+Proof lives in `app-native-auth-scope.test.mjs` and `app-identity.test.mjs`.
 
 `useAppDetail` owns the live public HTTP detail result,
 including source changes, missing records and errors. Both Core and FireUX App

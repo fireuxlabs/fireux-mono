@@ -1,17 +1,12 @@
 <template>
-  <UContainer class="flex min-h-[70dvh] items-center">
+  <UContainer>
     <UCard>
       <div class="fx-card-body-stack">
-        <div
-          class="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10"
-        >
+        <div>
           <UIcon name="i-lucide-user-round-check" />
         </div>
 
-        <template v-if="pending">
-          <USkeleton class="mx-auto h-7 w-48" />
-          <USkeleton class="mx-auto h-5 w-72 max-w-full" />
-        </template>
+        <FireState v-if="pending" outcome="pending" entity="invitation" />
 
         <UAlert
           v-else-if="failure"
@@ -35,7 +30,7 @@
         <template v-else-if="invitation">
           <div>
             <p>Kitchen invitation</p>
-            <h1 class="mt-1">Join as {{ invitation.memberName }}</h1>
+            <h1>Join as {{ invitation.memberName }}</h1>
           </div>
           <p>
             This will link your signed-in User to the existing Kitchen member.

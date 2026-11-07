@@ -9,10 +9,7 @@
             {{ card.title }}
           </div>
 
-          <div
-            v-if="showBadges && card.badges.length"
-            class="preview__badges"
-          >
+          <div v-if="showBadges && card.badges.length" class="preview__badges">
             <UBadge
               v-for="badge in card.badges"
               :key="badge"
@@ -36,10 +33,7 @@
           <div v-if="contentSnippet" class="preview__line">
             {{ contentSnippet }}
           </div>
-          <div
-            v-if="features.length"
-            class="preview__meta"
-          >
+          <div v-if="features.length" class="preview__meta">
             <UBadge
               v-for="feature in features"
               :key="feature"
@@ -52,7 +46,7 @@
           </div>
           <div class="preview__line fx-type-label">
             <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
+            <span v-else>missing</span>
           </div>
         </div>
       </div>

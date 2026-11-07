@@ -1,7 +1,7 @@
 <template>
-  <main ref="toolRoot" class="bg-transparent">
-    <ProviderToolsOrdering class="w-full" />
-  </main>
+  <UPage ref="toolRoot">
+    <ProviderToolsOrdering />
+  </UPage>
 </template>
 
 <script setup lang="ts">

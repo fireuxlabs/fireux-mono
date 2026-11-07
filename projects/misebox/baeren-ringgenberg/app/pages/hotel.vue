@@ -18,7 +18,7 @@
     </UPageHeader>
 
     <UPageBody>
-      <div class="grid gap-4 md:grid-cols-3">
+      <UPageGrid>
         <UPageCard
           title="37 guest rooms"
           description="Rooms for solo travellers, couples, families and groups."
@@ -34,10 +34,10 @@
           description="Around 10 minutes from Lake Brienz and 3 km from Interlaken."
           icon="i-lucide-map-pin"
         />
-      </div>
+      </UPageGrid>
 
       <UCard>
-        <div class="max-w-3xl space-y-3">
+        <div class="pagebody">
           <h2 class="fx-type-section-title">A base for the Bernese Oberland</h2>
           <p>
             The chalet-style Hotel Bären stands in the centre of Ringgenberg,

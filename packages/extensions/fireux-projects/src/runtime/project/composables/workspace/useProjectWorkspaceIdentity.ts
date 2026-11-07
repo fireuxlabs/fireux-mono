@@ -2,13 +2,14 @@ import { useProjectUpdate } from '../useProjectUpdate'
 import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/normalize-string'
-import { useProjectAccess } from '../useProjectAccess'
+import type { ProjectStatus } from '../../models/project.model'
 import { useProjectWorkspace } from './useProjectWorkspace'
 
 export function useProjectWorkspaceIdentity() {
   const workspace = useProjectWorkspace()
   const { updateProject } = useProjectUpdate([workspace.id])
-  const access = useProjectAccess()
+  const access = workspace.access
+  const projectStatus = computed(() => workspace.data.value?.identity.status)
   const name = computed(() =>
     normalizeString(workspace.data.value?.identity.name)
   )
@@ -29,6 +30,7 @@ export function useProjectWorkspaceIdentity() {
     name: name.value,
     description: description.value,
     imageUrl: imageUrl.value,
+    status: projectStatus.value,
   }))
   const { canWrite, availableActions, scopeKey, readState } =
     useWorkspaceIdentity({
@@ -42,6 +44,7 @@ export function useProjectWorkspaceIdentity() {
     name: string
     description: string
     imageUrl: string
+    status: ProjectStatus
   }) {
     if (!canWrite.value)
       throw new Error('Project management access is required to edit Identity.')
@@ -52,6 +55,9 @@ export function useProjectWorkspaceIdentity() {
     const name = input.name.trim().replace(/\s+/g, ' ')
     const description = input.description.trim()
     const image_url = input.imageUrl.trim()
+    const status = input.status
+    if (status !== 'active' && status !== 'inactive')
+      throw new Error('Choose active or inactive.')
     if (!name || name.length > 120)
       throw new Error('Enter a name of 1–120 characters.')
     if (description.length > 2000)
@@ -68,14 +74,15 @@ export function useProjectWorkspaceIdentity() {
     }
     await updateProject({
       projectId: input.projectId,
-      changes: { name, description, image_url },
+      changes: { name, description, image_url, status },
     })
   }
   const intro = computed(() => ({
     title: 'Project Identity',
     purpose: 'Read and edit the identity of the selected workspace.',
-    data: 'The selected Project’s name, description and image URL.',
-    boundaries: 'Saving updates these three fields on the selected Project.',
+    data: 'The selected Project’s name, description, image URL and status.',
+    boundaries:
+      'Saving updates Identity on the selected Project. Active Projects appear in the public directory.',
     ai: 'Use the human editor to review and save changes. AI form preparation is not connected yet.',
     status: workspace.outcome.value,
     recordCount: workspace.data.value ? 1 : 0,
@@ -89,7 +96,8 @@ export function useProjectWorkspaceIdentity() {
       {
         id: 'update',
         label: 'Edit Identity',
-        description: 'Review the name, description and HTTPS image URL, then save. Clear the image URL to remove it.',
+        description:
+          'Review Identity and choose active or inactive, then save. Clear the image URL to remove it.',
         available: canWrite.value,
       },
     ],
@@ -107,6 +115,7 @@ export function useProjectWorkspaceIdentity() {
     name,
     description,
     imageUrl,
+    projectStatus,
   }
 }
 

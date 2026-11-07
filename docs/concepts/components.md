@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-06
-Ref: 8744b0f78
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose and navigation
@@ -74,6 +74,12 @@ keep their existing names. Nuxt UI keeps `U`.
 - Entity UI belongs beneath the owning package's
   `src/runtime/<entity>/components`. Cross-Entity package UI belongs at the
   package root only when it genuinely spans domain owners.
+- Reusable capability UI that spans consuming Apps belongs in its owning
+  Extension's `src/runtime/components` when real consumers prove the shared
+  responsibility. Its module supplies the package prefix; each App keeps its
+  own service choices, policies, reads and commands. It does not join Core's
+  component library. See the
+  [Bookings customer form](../../packages/extensions/fireux-bookings/src/runtime/components/Customer/Form.vue).
 - App-only UI belongs in app/components. Use responsibility-first names such as
   Landing and Workspace; do not repeat the App name beneath its own boundary.
 - A leaf can be Detail.vue. A composition with real children can be
@@ -218,7 +224,11 @@ fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
 The public [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
-documents supported FireUX controls. The FireUX App
+keeps its generated inventory Core-only. Extension previews live separately
+and may render a package-owned component with generic placeholder data; this
+does not make that component part of Core. The
+[Bookings preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue)
+shows the shared customer form separately from the Core inventory. The FireUX App
 [playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
 links to that reference. Nuxt UI documents its own controls.
 

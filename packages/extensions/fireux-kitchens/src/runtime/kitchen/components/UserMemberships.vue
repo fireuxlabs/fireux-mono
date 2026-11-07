@@ -1,9 +1,5 @@
 <template>
-  <section
-    v-if="response"
-    class="space-y-6"
-    aria-labelledby="user-kitchens-title"
-  >
+  <section v-if="response" aria-labelledby="user-kitchens-title">
     <UPageHeader
       id="user-kitchens-title"
       headline="Misebox business"
@@ -11,7 +7,7 @@
       :description="summary"
     >
       <template #links>
-        <div class="flex flex-wrap items-center gap-2">
+        <div>
           <UBadge color="primary" variant="soft">
             {{ subscriptionLabel }}
           </UBadge>
@@ -36,7 +32,7 @@
       :description="teamIssueDescription"
     />
 
-    <UPageGrid v-if="cells.length" as="ul" class="list-none">
+    <UPageGrid v-if="cells.length" as="ul">
       <li v-for="cell in cells" :key="cell.to">
         <FireCollectionCell :cell="cell" />
       </li>

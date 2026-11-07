@@ -5,10 +5,27 @@ Open `fireux-mono.code-workspace` at the repository root. The files under
 they hide other ecosystems' App folders in the Explorer. Search still covers the
 repository so cross-package consumers remain discoverable.
 
-Use Vue Official, ESLint, Prettier and EditorConfig. AI extensions are a personal
-choice. Explicit Save formats the file and applies configured ESLint/import
+Use Vue Official, ESLint, Prettier, EditorConfig and the official Codex
+extension recommended by this workspace. Explicit Save formats the file and applies configured ESLint/import
 actions; repository autosave is off so edits and fixes share one predictable
 trigger. Generated Nuxt directories remain excluded from watchers and search.
+
+## Align the editor and checkout
+
+- `pnpm ide:doctor`: check the current checkout, Node/nvm and pnpm pins, local
+  TypeScript/Vue/formatting/lint dependencies, and the VS Code CLI. This is a
+  local setup check, not a build or proof of extension activation.
+- `pnpm ide:open`: open this checkout's workspace in the existing VS Code window.
+- `pnpm ide:open tools/ide/README.md:1:1`: open a file at a specific line. Paths
+  are resolved inside this checkout; paths and symlinks into another checkout
+  are rejected. Add `--dry-run` to inspect the command without opening VS Code.
+
+Window titles include the absolute checkout path so the main checkout and a
+worktree are distinguishable. Native Codex chat and editor context sharing still
+need the intended project on both surfaces. Enable IDE context in the composer;
+use Add to Codex Chat for a selection or Add File to Codex Chat for a whole file.
+A chat kept under the old IDE Management project must be moved by the human in
+the desktop sidebar if the app requests source-folder consent.
 
 ## Everyday checks
 
@@ -23,6 +40,11 @@ trigger. Generated Nuxt directories remain excluded from watchers and search.
 - Add `--dry-run` to a focused command to inspect exactly what it will execute.
 - `pnpm test:unit`: bounded offline suite covering IDE tooling and selected Core
   credential, editable-field and literature behavior. CI runs this suite.
+- `pnpm check:assets [App-directory]`: read-only inspection of the eight required
+  exports, image decoding, dimensions, wordmark canvases and favicon frames.
+  Without a directory it audits every Nuxt App, including the starter. CI runs
+  this separately; production App builds and release artifacts use the same
+  Core validation. Visual identity and contrast still need preview review.
 
 Tasks named `FireUX: …` expose these commands. Current-owner tasks need an open,
 saved file inside the owner. Checks do not format, stage, commit, push or deploy.

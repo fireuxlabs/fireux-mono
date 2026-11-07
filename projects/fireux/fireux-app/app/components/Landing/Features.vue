@@ -1,8 +1,8 @@
 <template>
   <div class="landing-index-section">
-    <div class="mb-6 space-y-2">
+    <div class="pagebody">
       <h2 class="fx-type-section-title">What FireUX Gives You</h2>
-      <p class="mx-auto max-w-2xl fx-type-body">
+      <p class="fx-type-body">
         Build, launch, and run applications on one platform.
       </p>
     </div>
@@ -10,7 +10,7 @@
     <UPageGrid>
       <UCard v-for="f in shown" :key="f.key">
         <template #header>
-          <div class="flex items-center gap-3">
+          <div>
             <UIcon :name="f.icon" />
             <h3 class="fx-type-card-heading">{{ f.title }}</h3>
           </div>

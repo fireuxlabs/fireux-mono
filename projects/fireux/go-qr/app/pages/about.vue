@@ -1,31 +1,31 @@
 <template>
   <UPage>
-        <UButton to="/" variant="link"> Go QR </UButton>
-        <UPageHeader
-          title="About"
-          description="Go QR turns public docs into QR pages."
-        />
-        <UPageBody>
-          <section class="pagebody">
-            <p class="fx-type-body">
-              Upload a doc, choose a public path, and get a page people can open
-              from a QR code.
-            </p>
+    <UButton to="/" variant="link"> Go QR </UButton>
+    <UPageHeader
+      title="About"
+      description="Go QR turns public docs into QR pages."
+    />
+    <UPageBody>
+      <section class="pagebody">
+        <p class="fx-type-body">
+          Upload a doc, choose a public path, and get a page people can open
+          from a QR code.
+        </p>
 
-            <p class="fx-type-body">
-              Go QR is part of the FireUX ecosystem and is designed for simple
-              public information: text, links, notices, forms, and finished docs
-              people need to scan and read.
-            </p>
-          </section>
+        <p class="fx-type-body">
+          Go QR is part of the FireUX ecosystem and is designed for simple
+          public information: text, links, notices, forms, and finished docs
+          people need to scan and read.
+        </p>
+      </section>
 
-          <div class="flex flex-wrap gap-3">
-            <UButton to="/" icon="i-lucide-upload" size="lg">
-              Create a QR doc
-            </UButton>
-          </div>
-        </UPageBody>
-      </UPage>
+      <div>
+        <UButton to="/" icon="i-lucide-upload" size="lg">
+          Create a QR doc
+        </UButton>
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

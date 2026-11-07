@@ -1,10 +1,7 @@
 <template>
-  <main
-    class="min-h-screen bg-default"
-    data-entity-cta-family="utility-managed"
-  >
+  <UPage data-entity-cta-family="utility-managed">
     <UContainer>
-      <header class="mx-auto mb-6 max-w-xl space-y-3">
+      <header class="pagebody">
         <h1 class="fx-type-page-title">Go QR</h1>
         <p class="fx-type-body">
           Create scannable public links for text, docs, forms, contact actions,
@@ -12,12 +9,8 @@
         </p>
       </header>
 
-      <section class="mb-8">
-        <GoQrProviderTools
-          tool="doc"
-          :payload="docTool"
-          class="mx-auto w-full max-w-xl"
-        />
+      <section>
+        <GoQrProviderTools tool="doc" :payload="docTool" />
       </section>
 
       <FireLandingSolutions
@@ -28,7 +21,7 @@
         always-show-more-button
       />
     </UContainer>
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

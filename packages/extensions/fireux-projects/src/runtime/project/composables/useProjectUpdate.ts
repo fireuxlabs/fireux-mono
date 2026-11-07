@@ -8,7 +8,7 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import type { Project } from '../models/project.model'
 
 export type ProjectIdentityChanges = Partial<
-  Pick<Project['identity'], 'name' | 'description' | 'image_url'>
+  Pick<Project['identity'], 'status' | 'name' | 'description' | 'image_url'>
 >
 
 export function useProjectUpdate(sources: WatchSource[] = []) {

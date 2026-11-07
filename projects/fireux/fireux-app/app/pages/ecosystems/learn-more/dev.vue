@@ -27,7 +27,7 @@
           <h2 class="fx-type-section-title">Primary endpoints</h2>
         </template>
 
-        <div class="space-y-2">
+        <div class="pagebody">
           <div class="fx-inset-panel">
             <p class="fx-type-code">GET /api/directory</p>
             <p class="fx-type-body">
@@ -45,7 +45,7 @@
         </div>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="fx-card__actions">
         <UButton to="/ecosystems" color="primary" icon="i-lucide-orbit"
           >Open ecosystems</UButton
         >

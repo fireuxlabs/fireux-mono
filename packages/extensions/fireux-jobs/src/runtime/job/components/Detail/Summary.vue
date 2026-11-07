@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-4 md:grid-cols-2">
+  <UPageGrid>
     <UCard>
       <template #header>Category</template>
       {{ job.category_id }}
@@ -16,7 +16,7 @@
       <template #header>Status</template>
       {{ job.status }}
     </UCard>
-  </div>
+  </UPageGrid>
 </template>
 
 <script setup lang="ts">

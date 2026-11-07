@@ -67,6 +67,14 @@ async function render(api) {
     setup: (props, ctx) => () =>
       h('a', { href: props.to, ...ctx.attrs }, ctx.slots.default?.()),
   })
+  app.component('UButton', {
+    props: ['to', 'label'],
+    setup: (props, ctx) => () =>
+      h(props.to ? 'a' : 'button', { href: props.to, ...ctx.attrs }, [
+        props.label,
+        ctx.slots.default?.(),
+      ]),
+  })
   app.component('UIcon', { render: () => null })
   return renderToString(app)
 }

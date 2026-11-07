@@ -1,17 +1,11 @@
 <template>
-  <article
-    :class="
-      showHeader
-        ? 'rounded-lg border border-default bg-default p-4'
-        : 'contents'
-    "
-  >
-    <div v-if="showHeader" class="flex flex-wrap items-start gap-2">
-      <div class="min-w-0 flex-1">
+  <article class="fx-card-body-stack">
+    <div v-if="showHeader">
+      <div>
         <h3 class="fx-type-card-title">
           {{ title }}
         </h3>
-        <p v-if="subtitle" class="mt-1">
+        <p v-if="subtitle">
           {{ subtitle }}
         </p>
       </div>
@@ -27,7 +21,7 @@
       </UBadge>
     </div>
 
-    <div :class="showHeader ? 'mt-4 space-y-4' : 'space-y-4'">
+    <div class="fx-card-body-stack">
       <SupplierCatalogueDetailSection
         v-for="section in sections"
         :key="section.id"

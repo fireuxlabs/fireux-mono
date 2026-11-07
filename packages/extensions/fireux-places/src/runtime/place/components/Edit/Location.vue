@@ -1,12 +1,11 @@
 <template>
-  <form class="grid gap-4" @submit.prevent="save">
+  <form @submit.prevent="save">
     <UFormField label="Full address">
       <UInput
         v-model="address"
         maxlength="500"
         placeholder="Street, postcode, city, country"
         :disabled="saving"
-        class="w-full"
       />
     </UFormField>
     <UFormField
@@ -18,7 +17,6 @@
         maxlength="240"
         placeholder="Ringgenberg, Switzerland"
         :disabled="saving"
-        class="w-full"
       />
     </UFormField>
     <UAlert
@@ -27,10 +25,10 @@
       description="Discard your draft to use the latest saved details."
       color="warning"
     />
-    <div v-if="error" role="alert" class="text-error">
+    <div v-if="error" role="alert">
       {{ error }}<FireCopyError :message="error" />
     </div>
-    <div v-if="dirty" class="flex flex-wrap justify-end gap-2">
+    <div v-if="dirty">
       <UButton
         label="Discard"
         color="neutral"

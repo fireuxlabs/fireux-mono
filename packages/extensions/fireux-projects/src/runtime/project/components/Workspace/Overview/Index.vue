@@ -1,5 +1,5 @@
 <template>
-  <USkeleton v-if="outcome === 'pending'" class="h-48" />
+  <FireState v-if="outcome === 'pending'" outcome="pending" />
   <FireStateCard
     v-else-if="outcome === 'error'"
     state="error"
@@ -41,8 +41,8 @@
 import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
 import WorkspaceOverview from 'fireux-core/runtime/workspace/components/Overview/Index.vue'
-import { useProjectWorkspaceHome } from '../../../composables/workspace/useProjectWorkspaceHome'
-const { selectedProject: data, outcome } = useProjectWorkspaceHome()
+import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
+const { data, outcome } = useProjectWorkspace()
 const incompleteFields = computed(() =>
   [
     !data.value?.identity.name && 'a name',

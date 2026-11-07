@@ -6,7 +6,7 @@
       description="How portfolio records group operational property work inside the Granite stack."
     />
 
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
           <h2 class="fx-type-card-heading">What portfolios are</h2>
@@ -46,7 +46,7 @@
         </ol>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton to="/portfolios" color="primary" icon="i-lucide-building"
           >Open portfolios</UButton
         >

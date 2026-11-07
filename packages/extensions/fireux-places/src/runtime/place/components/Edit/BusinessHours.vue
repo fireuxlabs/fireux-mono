@@ -1,15 +1,15 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="card__header">
         <div>
           <h2 class="fx-type-card-heading">{{ title }}</h2>
-          <p class="mt-1">The hours guests see on your public page.</p>
+          <p>The hours guests see on your public page.</p>
         </div>
         <UIcon name="i-lucide-calendar-clock" />
       </div>
     </template>
-    <div v-if="showTimezone" class="mb-6 max-w-sm">
+    <div v-if="showTimezone">
       <FireFormsEditableSimpleField
         label="Timezone"
         :value="timezone"

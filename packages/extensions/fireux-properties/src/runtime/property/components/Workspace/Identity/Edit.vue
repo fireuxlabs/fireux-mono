@@ -4,18 +4,10 @@
     @submit.prevent="save"
   >
     <UFormField label="Name" required
-      ><UInput
-        v-model="draft.name"
-        :maxlength="120"
-        :disabled="busy"
-        class="w-full"
+      ><UInput v-model="draft.name" :maxlength="120" :disabled="busy"
     /></UFormField>
     <UFormField label="Property type"
-      ><USelect
-        v-model="draft.property_type"
-        :items="types"
-        :disabled="busy"
-        class="w-full"
+      ><USelect v-model="draft.property_type" :items="types" :disabled="busy"
     /></UFormField>
     <UFormField label="Units"
       ><UInput
@@ -24,10 +16,9 @@
         :min="0"
         :step="1"
         :disabled="busy"
-        class="w-full"
     /></UFormField>
     <UFormField label="Profile image">
-      <div class="flex flex-wrap items-center gap-3">
+      <div>
         <UAvatar
           :src="draft.image_url || undefined"
           icon="i-lucide-house"
@@ -53,7 +44,7 @@
           ref="imageInput"
           type="file"
           accept="image/*"
-          class="sr-only"
+          hidden
           aria-label="Upload property image"
           :disabled="busy"
           @change="upload"
@@ -68,7 +59,7 @@
     >
       <template #actions><FireCopyError :message="error" /></template>
     </UAlert>
-    <div class="flex justify-end gap-2">
+    <div>
       <UButton
         label="Cancel"
         color="neutral"

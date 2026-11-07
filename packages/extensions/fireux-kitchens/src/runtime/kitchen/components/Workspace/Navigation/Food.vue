@@ -1,5 +1,5 @@
 <template>
-  <nav class="flex flex-wrap gap-2" aria-label="Food workspace">
+  <nav aria-label="Food workspace">
     <UButton
       to="/workspace/kitchen/food-and-drink/menus"
       icon="i-lucide-book-open"

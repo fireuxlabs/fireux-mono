@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-6">
+  <div>
     <FireStateCard
       v-if="readState"
       :state="readState"
@@ -15,7 +15,7 @@
     <template v-else>
       <UCard>
         <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="card__header">
             <h2 class="fx-type-card-heading">Business profile</h2>
             <UButton
               v-if="identity.canWrite.value"
@@ -27,7 +27,7 @@
             />
           </div>
         </template>
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <div>
           <img
             v-if="imageUrl"
             :src="imageUrl"
@@ -36,15 +36,15 @@
                 ? `${name} logo`
                 : `${name} profile image`
             "
-            class="size-24 shrink-0 rounded-xl"
-            :class="{ 'p-2': media.imageFit === 'contain' }"
+            width="96"
+            height="96"
             :style="{
               objectFit: media.imageFit,
               backgroundColor: media.imageBackground,
             }"
           />
           <UIcon v-else name="i-lucide-building-2" />
-          <div class="min-w-0 space-y-3">
+          <div class="fx-card-body-stack">
             <h3 class="break-words">
               {{ name || 'Untitled supplier' }}
             </h3>
@@ -55,7 +55,7 @@
           </div>
         </div>
         <template #footer>
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="card__header">
             <p>Shared wherever this business profile is used.</p>
             <UButton
               :to="`/places/${encodeURIComponent(businessId)}`"
@@ -67,10 +67,10 @@
           </div>
         </template>
       </UCard>
-      <div class="grid items-start gap-4 md:grid-cols-2">
+      <UPageGrid>
         <UCard v-for="item in sections" :key="item.value">
           <template #header>
-            <div class="flex items-center justify-between gap-3">
+            <div class="card__header">
               <h3 class="fx-type-card-heading">{{ item.label }}</h3>
               <UButton
                 v-if="identity.canWrite.value"
@@ -84,11 +84,11 @@
               />
             </div>
           </template>
-          <dl class="grid gap-3">
+          <dl class="fx-card-body-stack">
             <div
               v-for="field in item.fields"
               :key="field.label"
-              class="grid gap-1"
+              class="fx-card-body-stack"
             >
               <dt>{{ field.label }}</dt>
               <dd class="break-words">
@@ -97,7 +97,7 @@
             </div>
           </dl>
         </UCard>
-      </div>
+      </UPageGrid>
     </template>
   </div>
 </template>

@@ -1,8 +1,10 @@
 <!-- COMMENT: app/components/Landing/Integrations.vue -->
 <template>
-  <section class="px-4">
+  <section>
     <div class="integrations-container">
-      <h2 class="fx-type-section-title section-title">Professional Kitchen Integrations</h2>
+      <h2 class="fx-type-section-title section-title">
+        Professional Kitchen Integrations
+      </h2>
       <p class="fx-type-description section-subtitle">
         Connect with the systems your culinary operation depends on
       </p>

@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection menu-collection">
-    <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
       <UInput
         v-model="query"
         placeholder="Search food or venues"
@@ -14,7 +14,7 @@
         {{ groups.length }} {{ groups.length === 1 ? 'result' : 'results' }}
       </span>
     </div>
-    <nav class="flex flex-wrap gap-2" aria-label="Choose how to eat">
+    <nav aria-label="Choose how to eat">
       <UButton
         v-for="choice in choices"
         :key="choice.label"

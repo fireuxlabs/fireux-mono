@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: make profile and app-home destinations explicit. -->
 <template>
-  <div class="flex h-full w-full flex-col gap-2">
+  <div>
     <UNavigationMenu
       :collapsed="collapsed"
       :items="actionItems"
@@ -42,7 +42,6 @@
       variant="ghost"
       size="sm"
       :square="collapsed"
-      :class="collapsed ? 'mx-auto mt-auto' : 'mt-auto w-full justify-start'"
       aria-label="Sign in"
     />
   </div>

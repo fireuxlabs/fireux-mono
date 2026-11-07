@@ -18,7 +18,7 @@
 
       <div class="card__content card__stack">
         <div class="card__header">
-          <div class="min-w-0">
+          <div>
             <div class="card__title">{{ displayName }}</div>
             <div v-if="title" class="card__subtitle">
               {{ title }}

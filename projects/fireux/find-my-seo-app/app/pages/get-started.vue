@@ -1,28 +1,26 @@
 <template>
   <UPage>
-        <UButton to="/" variant="link"> Find My SEO </UButton>
-        <UPageHeader
-          title="Get Started"
-          description="Create or browse SEO professional profiles."
-        />
-        <UPageBody>
-          <section class="pagebody">
-            <ol class="list-decimal fx-list-stack">
-              <li>Browse public SEO professional profiles.</li>
-              <li>Compare services, sectors, and proof.</li>
-              <li>
-                Create a provider profile when you are ready to be listed.
-              </li>
-            </ol>
-          </section>
+    <UButton to="/" variant="link"> Find My SEO </UButton>
+    <UPageHeader
+      title="Get Started"
+      description="Create or browse SEO professional profiles."
+    />
+    <UPageBody>
+      <section class="pagebody">
+        <ol class="fx-list-stack">
+          <li>Browse public SEO professional profiles.</li>
+          <li>Compare services, sectors, and proof.</li>
+          <li>Create a provider profile when you are ready to be listed.</li>
+        </ol>
+      </section>
 
-          <div class="flex flex-wrap gap-3">
-            <UButton to="/get-started" icon="i-lucide-search" size="lg">
-              Browse professionals
-            </UButton>
-          </div>
-        </UPageBody>
-      </UPage>
+      <div class="fx-card__actions">
+        <UButton to="/get-started" icon="i-lucide-search" size="lg">
+          Browse professionals
+        </UButton>
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

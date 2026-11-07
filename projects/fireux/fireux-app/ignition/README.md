@@ -18,6 +18,11 @@ identical outputs and never overwrites operator development. Failed writes remov
 only newly created outputs. Both paths remain inside the repository workspace.
 No provider credentials are copied from FireUX.
 
+Artwork starts as a copy of the starter's exports. Replace it with the App's
+approved [eight-file asset family](../../../../docs/assets.md), review `/assets`,
+then run `pnpm check:assets projects/<id>/<id>-app` from the repository root.
+Passing the file check does not approve the brand or its visual contrast.
+
 ## Provider setup boundary
 
 Create or select the selling business Firebase project and web App using native

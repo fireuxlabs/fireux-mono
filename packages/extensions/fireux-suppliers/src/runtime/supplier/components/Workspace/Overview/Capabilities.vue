@@ -12,7 +12,7 @@
       :pending="team.pending.value"
       :error="team.error.value"
     >
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UTooltip
           v-for="member in team.members.value.slice(0, 8)"
           :key="member.memberId || member.id"

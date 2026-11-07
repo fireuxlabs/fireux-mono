@@ -15,7 +15,9 @@
       <UPageGrid>
         <UCard v-for="phase in phases" :key="phase.key">
           <template #header>
-            <UBadge :color="phase.color" :icon="phase.icon" variant="soft">{{ phase.label }}</UBadge>
+            <UBadge :color="phase.color" :icon="phase.icon" variant="soft">{{
+              phase.label
+            }}</UBadge>
             <h2 class="fx-type-card-heading">{{ phase.title }}</h2>
           </template>
           <div class="fx-card-body-stack">
@@ -35,7 +37,13 @@
         description="Misebox is intentionally focused on the Kitchen operating loop and strict in implementation. A feature should strengthen that loop, remove duplicate work, or create a useful connection between existing operational records."
       >
         <UPageGrid>
-          <UPageCard v-for="rule in compass" :key="rule.title" :title="rule.title" :description="rule.copy" :icon="rule.icon" />
+          <UPageCard
+            v-for="rule in compass"
+            :key="rule.title"
+            :title="rule.title"
+            :description="rule.copy"
+            :icon="rule.icon"
+          />
         </UPageGrid>
       </UPageSection>
       <UPageSection
@@ -44,7 +52,12 @@
         description="Start with the Misebox surfaces that are useful today, then help us identify the next operational gap worth solving."
         :links="[
           { label: 'Get started', to: '/get-started' },
-          { label: 'About Misebox', to: '/about', color: 'neutral', variant: 'soft' },
+          {
+            label: 'About Misebox',
+            to: '/about',
+            color: 'neutral',
+            variant: 'soft',
+          },
         ]"
       />
     </UPageBody>

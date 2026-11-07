@@ -1,6 +1,6 @@
 <template>
   <WorkspaceAI aria-label="KitchenAI" compact>
-    <p v-if="message" role="status" class="whitespace-pre-line">
+    <p v-if="message" role="status">
       {{ message }}
     </p>
     <FireCopyError v-if="error" :message="error" />

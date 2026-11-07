@@ -6,15 +6,15 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Model</div>
             <UButton variant="ghost" size="xs" @click="toggleSection('model')">
               {{ openSections.model ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.model" class="mt-4">
+          <div v-show="openSections.model">
             <FireDiagnosticsModel
               :title="'Blogs · Model'"
               :model="blogPostModelRuntime"
@@ -23,7 +23,7 @@
         </UCard>
 
         <UCard>
-          <div class="flex items-center justify-between gap-3">
+          <div class="card__header">
             <div>Collection</div>
             <UButton
               variant="ghost"
@@ -33,10 +33,10 @@
               {{ openSections.collection ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.collection" class="mt-4">
+          <div v-show="openSections.collection">
             <UCard>
               <template #header>
-                <div class="space-y-3">
+                <div class="fx-card-body-stack">
                   <p>Blogs collection</p>
                   <p>
                     Inspect model drift separately from the Blog directory

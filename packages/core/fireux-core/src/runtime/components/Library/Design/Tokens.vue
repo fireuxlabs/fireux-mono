@@ -14,7 +14,7 @@
               <span class="token-name">{{ token.name }}</span>
               <span class="stacked-value">{{ token.value }}</span>
             </div>
-            <div class="shadow-block" :style="{ boxShadow: token.value }" />
+            <div :style="{ boxShadow: token.value }" />
           </div>
         </div>
       </template>
@@ -32,7 +32,7 @@
               <span class="token-name">{{ token.name }}</span>
               <span>{{ token.value }}</span>
             </div>
-            <div class="opacity-block" :style="{ opacity: token.value }" />
+            <div :style="{ opacity: token.value }" />
           </div>
         </div>
       </template>

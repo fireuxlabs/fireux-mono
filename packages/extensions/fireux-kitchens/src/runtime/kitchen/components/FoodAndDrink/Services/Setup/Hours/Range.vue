@@ -1,9 +1,6 @@
 <template>
-  <fieldset
-    :aria-label="'Time range ' + number"
-    class="space-y-3 py-3 first:pt-0"
-  >
-    <div class="flex items-center justify-between gap-3">
+  <fieldset :aria-label="'Time range ' + number">
+    <div>
       <span>Days</span>
       <UButton
         icon="i-lucide-trash-2"
@@ -22,7 +19,7 @@
       :disabled="disabled"
       @update:model-value="setDays"
     />
-    <div class="grid grid-cols-2 gap-3">
+    <div>
       <UFormField label="From">
         <UInput
           type="time"

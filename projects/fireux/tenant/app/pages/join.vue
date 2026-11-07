@@ -5,7 +5,7 @@
 
     <header>
       <h1 class="fx-type-page-title">Join This Tenant</h1>
-      <p class="mt-2 fx-type-body">
+      <p class="fx-type-body">
         Complete onboarding, then use the admin tools to grant yourself access
         or request membership from an existing admin.
       </p>

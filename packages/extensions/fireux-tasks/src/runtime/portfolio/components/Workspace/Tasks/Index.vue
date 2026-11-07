@@ -24,7 +24,7 @@
     </p>
     <template v-else>
       <UCard>
-        <div class="grid gap-3 sm:grid-cols-3">
+        <div>
           <div class="fx-inset-panel">
             <div>Open</div>
             <div>{{ summary.open }}</div>
@@ -62,11 +62,10 @@
             v-model="newTaskDescription"
             :disabled="!canWrite"
             placeholder="Description"
-            class="sm:col-span-2"
           />
         </div>
 
-        <div class="mt-3">
+        <div>
           <UButton
             size="sm"
             icon="i-lucide-plus"
@@ -84,20 +83,20 @@
           <div>Task list</div>
         </template>
 
-        <div v-if="cards.length" class="space-y-3">
+        <div v-if="cards.length" class="fx-card-body-stack">
           <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
-            <div class="flex items-start justify-between gap-3">
-              <div class="space-y-1">
+            <div class="card__header">
+              <div class="fx-card-body-stack">
                 <div>{{ item.title }}</div>
                 <div>{{ item.subtitle }}</div>
               </div>
 
-              <div class="flex items-center gap-2">
+              <div>
                 <UBadge :color="statusColor(item.status)" variant="soft">
                   {{ item.status }}
                 </UBadge>
 
-                <div v-if="canWrite" class="flex gap-1">
+                <div v-if="canWrite">
                   <UButton
                     size="xs"
                     variant="ghost"

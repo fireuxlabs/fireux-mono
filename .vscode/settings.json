@@ -49,13 +49,22 @@
     "**/dist/**": true,
     "**/.firebase/**": true,
     "**/.git/**": true,
-    "**/.turbo/**": true
+    "**/.turbo/**": true,
+    "**/.data/**": true,
+    "**/.cache/**": true,
+    "**/.nitro/**": true,
+    "**/coverage/**": true,
+    "**/*.tsbuildinfo": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/.nuxt": true,
     "**/.output": true,
-    "**/dist": true
+    "**/dist": true,
+    "**/.data": true,
+    "**/.cache": true,
+    "**/.nitro": true,
+    "**/coverage": true
   },
   "files.exclude": {
     "**/node_modules": true,

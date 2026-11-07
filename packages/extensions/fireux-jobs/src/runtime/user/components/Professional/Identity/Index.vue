@@ -5,7 +5,6 @@
         v-if="professionalCard"
         v-bind="professionalCard"
         :link="Boolean(professionalCard.to)"
-        class="block"
       />
     </div>
 
@@ -26,7 +25,7 @@
         @click="createProfile"
       />
 
-      <p v-if="createError" class="mt-3">
+      <p v-if="createError">
         {{ createError }}
       </p>
     </UPageCard>

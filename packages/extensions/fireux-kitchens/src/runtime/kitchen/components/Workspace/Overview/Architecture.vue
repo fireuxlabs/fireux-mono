@@ -5,11 +5,7 @@
         For development: what each page does, where its data comes from, and
         what is missing. These notes do not verify access or release readiness.
       </p>
-      <section
-        v-for="entry in entries"
-        :key="entry.key"
-        class="space-y-2 border-t border-default pt-4"
-      >
+      <section v-for="entry in entries" :key="entry.key">
         <h3>{{ entry.label }}</h3>
         <dl class="workspace-surface workspace-surface--compact">
           <template
@@ -18,16 +14,16 @@
           >
             <div>
               <dt>{{ label }}</dt>
-              <dd class="mt-1 break-words">{{ value }}</dd>
+              <dd>{{ value }}</dd>
             </div>
           </template>
         </dl>
         <details>
-          <summary class="cursor-pointer py-2">Source references</summary>
-          <dl class="space-y-2 rounded-lg bg-elevated p-3">
+          <summary>Source references</summary>
+          <dl>
             <div>
               <dt>Routes</dt>
-              <dd class="mt-1 break-all">
+              <dd>
                 {{ entry.to }}
                 <template v-if="entry.key === 'workspace-kitchen-dishes'">
                   · {{ drinksRoute }}
@@ -39,7 +35,7 @@
               :key="label"
             >
               <dt>{{ label }}</dt>
-              <dd class="mt-1 break-words">{{ value }}</dd>
+              <dd>{{ value }}</dd>
             </div>
           </dl>
         </details>

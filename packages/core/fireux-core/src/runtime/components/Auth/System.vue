@@ -1,29 +1,20 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/System.vue -->
 <template>
-  <div class="w-full">
+  <div>
     <UCard>
       <div class="fx-card-body-stack">
-        <div class="flex w-full justify-center" aria-label="Brand wordmark">
-          <AppBrandWordmark
-            v-if="!isTenantApp"
-            size="large"
-            class="h-16 w-auto max-w-full object-contain"
-          />
+        <div aria-label="Brand wordmark">
+          <AppBrandWordmark v-if="!isTenantApp" size="large" />
           <AppBrandWordmark
             v-else
             size="medium"
             :light-src="ecosystemWordmarkLight"
             :dark-src="ecosystemWordmarkDark"
             :alt="ecosystemBrandAlt"
-            class="h-10 w-auto max-w-40 object-contain"
           />
         </div>
 
-        <div
-          v-if="isAuthenticated"
-          class="flex min-h-48 flex-col items-center justify-center gap-4"
-          role="status"
-        >
+        <div v-if="isAuthenticated" class="fx-card-body-stack" role="status">
           <template v-if="coreError || navigationError">
             <UAlert
               color="error"
@@ -46,8 +37,7 @@
             />
           </template>
           <template v-else>
-            <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" />
-            <span>Opening your account…</span>
+            <FireState outcome="pending" entity="account" />
           </template>
         </div>
 

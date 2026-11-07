@@ -1,6 +1,6 @@
 <template>
   <div class="pagebody">
-    <div class="grid gap-4 lg:grid-cols-2">
+    <UPageGrid>
       <UPageCard
         id="kitchen-collection"
         title="Discover Kitchens"
@@ -17,12 +17,9 @@
         to="/pricing"
         variant="subtle"
       />
-    </div>
+    </UPageGrid>
 
-    <nav
-      aria-label="Explore Misebox"
-      class="flex flex-wrap gap-x-5 gap-y-2 border-t border-default pt-5"
-    >
+    <nav aria-label="Explore Misebox">
       <NuxtLink v-for="link in links" :key="link.to" :to="link.to">
         {{ link.label }}
       </NuxtLink>

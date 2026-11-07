@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div>
     <PortfolioDetailSummary v-if="profileCard" :card="profileCard" />
     <PortfolioDetailOperatorPanel :portfolio="portfolio" />
     <FireDiagnosticsDebugPanel

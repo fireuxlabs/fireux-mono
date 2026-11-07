@@ -19,11 +19,10 @@
     <li><strong>Content:</strong> {{ display(product?.content) }}</li>
     <li>
       <strong>Default Price:</strong>
-      <span
-        :class="{
-          'text-error': defaultPrice?.unit_amount == null,
-        }"
-        >{{ defaultPrice?.unit_amount ?? '!' }}</span
+      <UBadge
+        :color="defaultPrice?.unit_amount == null ? 'error' : 'neutral'"
+        variant="soft"
+        >{{ defaultPrice?.unit_amount ?? '!' }}</UBadge
       >
     </li>
   </ul>

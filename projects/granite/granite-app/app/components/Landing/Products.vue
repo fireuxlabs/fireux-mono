@@ -12,7 +12,7 @@
       <UPageGrid>
         <UCard v-for="item in items" :key="item.title">
           <div class="fx-card-body-stack">
-            <div class="flex items-center gap-2">
+            <div>
               <UIcon :name="item.icon" />
               <p class="fx-type-body">{{ item.title }}</p>
             </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5">
+  <div>
     <UFormField :label="`Set price (${currency})`">
       <!-- @vue-generic {string | number, {}} -->
       <UInput
@@ -14,16 +14,10 @@
       The set price includes the choices below. Add a supplement only when a
       choice costs more.
     </p>
-    <fieldset
-      v-for="(group, index) in groups"
-      :key="group.id"
-      class="min-w-0 space-y-4 rounded-xl border border-default p-4"
-    >
-      <legend class="px-1">Choice group {{ index + 1 }}</legend>
-      <div
-        class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 sm:grid-cols-[minmax(0,1fr)_7rem_auto]"
-      >
-        <UFormField label="Group name" class="col-span-2 sm:col-span-1"
+    <fieldset v-for="(group, index) in groups" :key="group.id">
+      <legend>Choice group {{ index + 1 }}</legend>
+      <div>
+        <UFormField label="Group name"
           ><UInput
             v-model="group.name"
             placeholder="For example: Pizza"

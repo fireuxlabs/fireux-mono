@@ -35,6 +35,8 @@ export const APP_LOCAL_ONLY_PUBLIC_PATHS = {
   pwaIcon512: '/img/app/pwa/icon-512.png',
 } as const satisfies Record<AppLocalOnlyAssetKind, string>
 
+export const APP_FAVICON_SIZES = [16, 32, 48, 64] as const
+
 export const APP_IMAGE_FIRESTORE_FIELDS = {
   thumbnail: 'media.thumbnail_url',
   logo: 'media.logo_url',
@@ -141,15 +143,17 @@ export const APP_LOCAL_ONLY_ASSET_REQUIREMENTS = [
     label: 'Favicon',
     localPublicPath: APP_LOCAL_ONLY_PUBLIC_PATHS.favicon,
     localRelativePath: relativePath(APP_LOCAL_ONLY_PUBLIC_PATHS.favicon),
-    requirementsText: 'Required. ICO or PNG, square, at least 32x32.',
+    requirementsText:
+      'Required. ICO with 16x16, 32x32, 48x48 and 64x64 images.',
     requirementsHtml:
-      'Required. ICO or PNG, square, at least <code>32&times;32</code>.',
+      'Required. ICO with <code>16&times;16</code>, <code>32&times;32</code>, <code>48&times;48</code> and <code>64&times;64</code> images.',
+    requiredIconSizes: APP_FAVICON_SIZES,
     dimensions: {
       minWidth: 32,
       minHeight: 32,
       aspectRatio: 1,
       aspectTolerance: 0.01,
-      acceptedTypes: ['ico', 'png'],
+      acceptedTypes: ['ico'],
     },
   },
   {

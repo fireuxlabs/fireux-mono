@@ -1,6 +1,6 @@
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <div class="pagebody">
           <p class="fx-type-headline">
@@ -15,7 +15,7 @@
           <p class="fx-type-caption">
             {{ appMeta.about.supportingCopy }}
           </p>
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton to="/get-started" color="primary" size="lg">
               Get started
             </UButton>
@@ -26,13 +26,9 @@
         </div>
 
         <UCard>
-          <p class="fx-type-label mb-4">Boundary</p>
-          <ul class="space-y-3">
-            <li
-              v-for="tick in appMeta.about.ticks"
-              :key="tick"
-              class="flex items-start gap-3"
-            >
+          <p class="fx-type-label">Boundary</p>
+          <ul class="fx-list-stack">
+            <li v-for="tick in appMeta.about.ticks" :key="tick">
               <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
@@ -49,10 +45,10 @@
           :key="item.title"
         >
           <UIcon :name="item.icon" />
-          <h2 class="fx-type-card-heading mt-4">
+          <h2 class="fx-type-card-heading">
             {{ item.title }}
           </h2>
-          <p class="fx-type-caption mt-2">
+          <p class="fx-type-caption">
             {{ item.description }}
           </p>
         </UCard>

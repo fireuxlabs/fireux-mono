@@ -30,9 +30,11 @@
 
         <UPageSection title="Make it your own">
           <p>
-            The starter comes with FireUX Core and the Blogs and Products
-            layers. Open <code>nuxt.config.ts</code> to see how they fit
-            together, then set your App’s identity and backend configuration.
+            The starter includes the App bundle: Core, Blogs, Products and AI.
+            Open <code>nuxt.config.ts</code> to see how they fit together, then
+            set your App’s identity and backend configuration. Replace the
+            starter artwork using the
+            <ULink to="/docs/configuration#app-assets">App asset guide</ULink>.
           </p>
           <UPageGrid>
             <UPageCard

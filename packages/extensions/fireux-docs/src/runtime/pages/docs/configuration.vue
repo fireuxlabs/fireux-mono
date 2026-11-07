@@ -41,6 +41,46 @@
         </ul>
       </UPageSection>
 
+      <UPageSection id="app-assets" title="Add your artwork">
+        <p>
+          Each App owns eight files in <code>public/img/app/</code>. Replace the
+          starter artwork with exports from your approved brand.
+        </p>
+        <ul class="fx-list-stack">
+          <li><code>logo.png</code>: exactly 512×512.</li>
+          <li>
+            <code>wordmark-light.png</code> and <code>wordmark-dark.png</code>:
+            matching canvases, at least 256×64 and at least 3:1.
+          </li>
+          <li><code>cover.png</code>: 16:9, at least 1280×720.</li>
+          <li><code>thumbnail.png</code>: exactly 1200×630.</li>
+          <li>
+            <code>favicon.ico</code>: one ICO containing PNG images at 16, 32,
+            48 and 64 pixels square.
+          </li>
+          <li>
+            <code>pwa/icon-192.png</code> and <code>pwa/icon-512.png</code>:
+            exactly 192×192 and 512×512.
+          </li>
+        </ul>
+        <p>
+          All files except the ICO are PNGs. Light and dark name the wordmark’s
+          intended surface. Keep the same artwork and spacing in both.
+        </p>
+        <p>
+          Open your App’s <ULink to="/assets">assets page</ULink> to review the
+          files on light and dark backgrounds. From the repository root, run:
+        </p>
+        <UCard variant="subtle">
+          <pre><code>pnpm check:assets</code></pre>
+        </UCard>
+        <p>
+          Add an App directory to check just that App. CI, production App builds
+          and release checks reject missing, corrupt or incorrectly sized files.
+          Brand approval and visual contrast still need human review.
+        </p>
+      </UPageSection>
+
       <UPageSection title="Framework basics">
         <p>
           <ULink to="https://nuxt.com/docs/4.x/guide/going-further/layers">

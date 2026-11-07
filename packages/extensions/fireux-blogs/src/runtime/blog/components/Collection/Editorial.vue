@@ -31,37 +31,7 @@
       </div>
     </header>
 
-    <div
-      v-if="outcome === 'pending'"
-      class="blog-editorial__loading"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-    >
-      <span class="sr-only">Loading stories</span>
-      <div class="blog-editorial__lead-skeleton">
-        <USkeleton class="blog-editorial__lead-image-skeleton" />
-        <div class="blog-editorial__lead-copy-skeleton">
-          <USkeleton class="h-5 w-24" />
-          <USkeleton class="h-10 w-full" />
-          <USkeleton class="h-5 w-4/5" />
-          <USkeleton class="h-5 w-3/5" />
-        </div>
-      </div>
-
-      <div class="blog-editorial__grid">
-        <div
-          v-for="index in 3"
-          :key="index"
-          class="blog-editorial__card-skeleton"
-        >
-          <USkeleton class="aspect-video w-full" />
-          <USkeleton class="h-7 w-4/5" />
-          <USkeleton class="h-4 w-full" />
-          <USkeleton class="h-4 w-2/3" />
-        </div>
-      </div>
-    </div>
+    <FireState v-if="outcome === 'pending'" outcome="pending" />
 
     <div v-else-if="outcome === 'error'" class="blog-editorial__state">
       <FireStateCard

@@ -5,7 +5,12 @@
 // Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
 import { defaultMaxListeners, setMaxListeners } from 'node:events'
-import { addServerHandler, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import {
+  addServerHandler,
+  addTemplate,
+  createResolver,
+  defineNuxtModule,
+} from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
   configureSeoDefaults,
@@ -17,6 +22,8 @@ import { registerComposablesDirs } from './config/module/module-helpers'
 import { configureComponents } from './config/module/components-config'
 import { configurePageTransitions } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
+import { createJiti } from 'jiti'
+import { join } from 'node:path'
 
 const DEV_RESPONSE_MAX_LISTENERS = 32
 
@@ -39,11 +46,23 @@ export default defineNuxtModule({
 
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    nuxt.hook('build:before', async () => {
+      // Independent Core consumers do not declare an App asset family.
+      if (nuxt.options.dev || !nuxt.options.runtimeConfig.public.fireux?.id)
+        return
+      const { assertAppBrandAssets } = await createJiti(
+        import.meta.url
+      ).import<{
+        assertAppBrandAssets(publicDir: string): Promise<unknown>
+      }>(resolver.resolve('./runtime/app/server/onboarding/brand-assets'))
+      await assertAppBrandAssets(join(nuxt.options.rootDir, 'public'))
+    })
     let packageComponentCatalogue: Record<string, string[]> = {}
     addTemplate({
       filename: 'fireux-package-components.ts',
       write: true,
-      getContents: () => `export default ${JSON.stringify(packageComponentCatalogue)} as Record<string, string[]>`,
+      getContents: () =>
+        `export default ${JSON.stringify(packageComponentCatalogue)} as Record<string, string[]>`,
     })
 
     // Opt-in App catalogue: publish registered names only, never filesystem paths.
@@ -51,10 +70,13 @@ export default defineNuxtModule({
       if (!nuxt.options.runtimeConfig.public.packageComponents) return
       const packages: Record<string, string[]> = {}
       for (const component of components) {
-        const owner = component.filePath.replaceAll('\\', '/').match(/\/(fireux-[^/]+)\/src\/runtime\//)?.[1]
+        const owner = component.filePath
+          .replaceAll('\\', '/')
+          .match(/\/(fireux-[^/]+)\/src\/runtime\//)?.[1]
         if (!owner) continue
         const names = (packages[owner] ||= [])
-        if (!names.includes(component.pascalName)) names.push(component.pascalName)
+        if (!names.includes(component.pascalName))
+          names.push(component.pascalName)
       }
       for (const names of Object.values(packages)) names.sort()
       packageComponentCatalogue = packages
@@ -89,7 +111,10 @@ export default defineNuxtModule({
       const options = nuxt.options as NuxtOptionsWithRouteRules
       const routeRules = (options.routeRules ||= {})
       routeRules['/diagnostics'] = { ...routeRules['/diagnostics'], ssr: false }
-      routeRules['/diagnostics/**'] = { ...routeRules['/diagnostics/**'], ssr: false }
+      routeRules['/diagnostics/**'] = {
+        ...routeRules['/diagnostics/**'],
+        ssr: false,
+      }
     }
 
     // Register SEO endpoints explicitly (works locally + deployed)

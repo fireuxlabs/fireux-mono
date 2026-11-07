@@ -1,18 +1,18 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
+  <section>
     <WorkspaceKitchenResearchStageNav
       base-path="/workspace/kitchen/overview/search-demand"
       current="tools"
     />
-    <header class="grid gap-3 border-b border-default pb-8">
+    <header>
       <p>Stage 3 · Composition</p>
       <h1>No Overview Tools</h1>
-      <p class="max-w-3xl">
+      <p>
         Overview composes the capability map and source-labelled summaries.
         Operators continue into the owning capability to work.
       </p>
     </header>
-    <section class="grid gap-4 md:grid-cols-2">
+    <UPageGrid as="section">
       <UCard v-for="group in demand.groups" :key="group.title"
         ><template #header
           ><h2>
@@ -29,10 +29,8 @@
           >
         </div></UCard
       >
-    </section>
-    <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
-      
-    >
+    </UPageGrid>
+    <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }">
       <div>
         <p>Owns</p>
         <p>{{ demand.boundary.owns }}</p>

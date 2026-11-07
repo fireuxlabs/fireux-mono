@@ -1,7 +1,7 @@
 <template>
   <section class="workspace-profile">
-    <WorkspaceProjectIdentityRead :identity="identity" @edit="editor?.show()" />
-    <WorkspaceProjectIdentityWrite ref="editor" :identity="identity" />
+    <ProjectIdentityRead :identity="identity" @edit="editor?.show()" />
+    <ProjectIdentityWrite ref="editor" :identity="identity" />
     <FireContextRecord
       v-if="identity.canWrite.value"
       :key="identity.projectId.value"
@@ -13,8 +13,8 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import WorkspaceProjectIdentityWrite from './Write.vue'
-import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+import ProjectIdentityWrite from './Write.vue'
+import type { ProjectWorkspaceIdentityState } from '../../composables/workspace/useProjectWorkspaceIdentity'
 defineProps<{ identity: ProjectWorkspaceIdentityState }>()
-const editor = ref<InstanceType<typeof WorkspaceProjectIdentityWrite>>()
+const editor = ref<InstanceType<typeof ProjectIdentityWrite>>()
 </script>

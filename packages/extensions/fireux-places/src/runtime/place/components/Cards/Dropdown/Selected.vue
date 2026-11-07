@@ -1,12 +1,7 @@
 <template>
-  <div class="pill justify-start text-left">
-    <div class="flex w-full min-w-0 items-center gap-2">
-      <div
-        v-if="loading && !imageUrl"
-        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-dashed"
-      >
-        <UIcon name="i-lucide-loader-2" class="animate-spin" />
-      </div>
+  <div class="pill">
+    <div>
+      <FireState v-if="loading && !imageUrl" outcome="pending" />
       <UAvatar
         v-else
         :src="imageUrl || undefined"
@@ -14,11 +9,11 @@
         size="xs"
         :class="avatarClass"
       />
-      <div class="min-w-0 flex-1">
-        <p class="truncate">
+      <div>
+        <p>
           {{ name }}
         </p>
-        <p v-if="address" class="truncate">
+        <p v-if="address">
           {{ address }}
         </p>
       </div>

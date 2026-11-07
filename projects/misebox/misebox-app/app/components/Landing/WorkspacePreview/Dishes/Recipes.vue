@@ -1,19 +1,12 @@
 <template>
-  <article
-    class="min-h-[24rem] rounded-xl border border-default bg-default p-4 shadow-sm sm:p-5"
-    aria-label="Dish Recipes preview"
-  >
+  <UCard as="article" aria-label="Dish Recipes preview">
     <p class="fx-type-caption">Recipes</p>
-    <h3 class="mt-1 fx-type-card-heading">{{ dish.name }}</h3>
+    <h3 class="fx-type-card-heading">{{ dish.name }}</h3>
 
-    <div v-if="dish.recipes.length" class="mt-5 grid gap-2">
-      <div
-        v-for="recipe in dish.recipes"
-        :key="recipe.id"
-        class="flex items-start justify-between gap-3 rounded-lg bg-elevated/40 p-3"
-      >
+    <div v-if="dish.recipes.length" class="pagebody">
+      <div v-for="recipe in dish.recipes" :key="recipe.id">
         <span>
-          <strong class="block">{{ recipe.name }}</strong>
+          <strong>{{ recipe.name }}</strong>
           <span>{{ recipe.ingredientCount }} ingredients</span>
         </span>
         <UBadge color="neutral" variant="soft" size="sm">{{
@@ -21,8 +14,8 @@
         }}</UBadge>
       </div>
     </div>
-    <p v-else class="mt-5 fx-type-caption">No recipes.</p>
-  </article>
+    <p v-else class="fx-type-caption">No recipes.</p>
+  </UCard>
 </template>
 
 <script setup lang="ts">

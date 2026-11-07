@@ -43,7 +43,7 @@
           description="We could not find this place. Return to the places list and try again."
         />
 
-        <div v-else class="space-y-6">
+        <div v-else>
           <template v-if="canEdit">
             <PlaceEdit :key="placeId" :place="place" />
             <PlaceEditDelete :place="place" />
@@ -70,7 +70,7 @@
         />
 
         <template #fallback>
-          <div class="py-10 opacity-70">Loading place…</div>
+          <div>Loading place…</div>
         </template>
       </ClientOnly>
     </UPageBody>

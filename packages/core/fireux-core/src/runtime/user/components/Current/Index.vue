@@ -1,5 +1,5 @@
 <template>
-  <section data-entity-current-family="user" class="space-y-2">
+  <section data-entity-current-family="user">
     <UserCurrentSummary :current-user="currentUser" />
   </section>
 </template>

@@ -1,12 +1,12 @@
 <template>
-  <div v-if="identityOnly && selected" class="flex min-w-0 items-center gap-2">
+  <div v-if="identityOnly && selected" class="workspace-navbar__identity">
     <UAvatar
       v-bind="item.avatar"
       :alt="item.label"
       :icon="item.icon"
       size="2xs"
     />
-    <span class="truncate">{{ item.label }}</span>
+    <span class="fx-truncate">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
     v-else-if="!identityOnly && !backdropOnly"

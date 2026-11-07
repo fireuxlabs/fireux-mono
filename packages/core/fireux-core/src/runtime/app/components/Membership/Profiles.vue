@@ -5,16 +5,14 @@
     icon="i-lucide-badge-plus"
     variant="subtle"
   >
-    <div class="grid gap-3 sm:grid-cols-2">
-      <div
+    <UPageGrid>
+      <UPageCard
         v-for="entry in profileEntries"
         :key="entry.profileId"
-        class="flex items-center justify-between gap-3 px-4 py-3"
+        :title="entry.label"
+        description="Available to add"
+        variant="naked"
       >
-        <div class="min-w-0">
-          <p class="truncate">{{ entry.label }}</p>
-          <p>Available to add</p>
-        </div>
         <UButton
           :to="entry.to"
           label="Add"
@@ -22,8 +20,8 @@
           variant="soft"
           size="xs"
         />
-      </div>
-    </div>
+      </UPageCard>
+    </UPageGrid>
   </UPageCard>
 </template>
 <script setup lang="ts">

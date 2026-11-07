@@ -1,15 +1,13 @@
 <template>
   <UCard>
-    <div class="flex items-start gap-3">
-      <span class="flex size-9 shrink-0 items-center justify-center">
+    <div>
+      <span>
         <UIcon
           :name="notification.read ? 'i-lucide-mail-open' : 'i-lucide-bell'"
-          class="size-4"
-          :class="notification.read ? '' : ''"
         />
       </span>
-      <div class="min-w-0 flex-1 space-y-3">
-        <div class="flex items-start justify-between gap-3">
+      <div>
+        <div>
           <p>{{ notification.message }}</p>
           <UBadge
             v-if="!notification.read"
@@ -19,7 +17,7 @@
             >New</UBadge
           >
         </div>
-        <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
           <time>{{ timestamp }}</time>
           <UButton
             v-if="!notification.read"

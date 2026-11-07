@@ -7,7 +7,9 @@
     empty-title="No suppliers yet"
     empty-description="Your available suppliers will appear here."
   >
-    <template #header><h2 class="fx-type-section-title">My Suppliers</h2></template>
+    <template #header
+      ><h2 class="fx-type-section-title">My Suppliers</h2></template
+    >
     <template #actions
       ><UButton
         label="Create Supplier"

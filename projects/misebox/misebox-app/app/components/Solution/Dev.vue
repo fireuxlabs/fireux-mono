@@ -4,19 +4,19 @@
       <h2 class="fx-type-section-title">Dev</h2>
     </template>
 
-    <div class="grid gap-3 sm:grid-cols-2">
+    <UPageGrid>
       <UCard v-for="endpoint in dev.endpoints" :key="endpoint.path">
-        <div class="flex items-center gap-2">
+        <div>
           <UBadge :label="endpoint.method" color="neutral" variant="soft" />
-          <code class="break-all">
+          <code>
             {{ endpoint.path }}
           </code>
         </div>
-        <p class="mt-2 fx-type-caption">
+        <p class="fx-type-caption">
           {{ endpoint.description }}
         </p>
       </UCard>
-    </div>
+    </UPageGrid>
   </UCard>
 </template>
 

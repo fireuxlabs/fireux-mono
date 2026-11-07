@@ -19,7 +19,6 @@
     <WorkspaceTeamRoles
       ref="rolesEditor"
       compact
-      class="rounded-xl border border-default p-4"
       @labels="updateLabels"
       v-if="derived.status === 'ready'"
       :workspace-id="state.property.id"

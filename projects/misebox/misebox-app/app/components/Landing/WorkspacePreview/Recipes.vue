@@ -1,10 +1,10 @@
 <template>
-  <div class="mt-5" aria-label="Recipes preview">
+  <div aria-label="Recipes preview">
     <template v-if="recipes.length">
-      <div class="grid max-h-[24rem] gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+      <div class="pagebody">
         <UCard as="article" v-for="recipe in recipes" :key="recipe.id">
           <p class="fx-type-caption">{{ recipe.name }}</p>
-          <div class="mt-2 flex flex-wrap gap-1.5">
+          <div>
             <UBadge color="neutral" variant="soft" size="sm">{{
               recipe.yield
             }}</UBadge>
@@ -12,7 +12,7 @@
               {{ recipe.ingredientCount }} ingredients
             </UBadge>
           </div>
-          <p class="mt-2 fx-type-caption">{{ recipe.method.join(' ') }}</p>
+          <p class="fx-type-caption">{{ recipe.method.join(' ') }}</p>
         </UCard>
       </div>
     </template>

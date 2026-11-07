@@ -17,11 +17,10 @@ export function kitchenWorkspaceAvatar(
     icon: 'i-lucide-chef-hat',
     ...(media.imageFit === 'contain'
       ? {
-          class: 'rounded-md overflow-hidden',
           style: media.imageBackground
             ? { backgroundColor: media.imageBackground }
             : undefined,
-          ui: { image: 'object-contain p-0.5' },
+          ui: { image: 'object-contain' },
         }
       : {}),
   }

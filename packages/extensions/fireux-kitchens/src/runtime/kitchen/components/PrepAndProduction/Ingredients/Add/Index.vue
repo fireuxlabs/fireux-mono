@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-5">
-    <div class="space-y-3">
+  <div>
+    <div>
       <UInput
         v-model="query"
         placeholder="Search the ingredient catalogue…"
@@ -26,13 +26,12 @@
         description="The ingredient catalogue could not be loaded. Please try again."
       />
 
-      <div v-else-if="candidates.length" class="grid gap-2">
+      <div v-else-if="candidates.length">
         <UButton
           v-for="ingredient in candidates"
           :key="ingredient.id"
           color="neutral"
           variant="soft"
-          class="justify-start"
           :loading="submitting && selectedId === ingredient.id"
           :disabled="submitting || !canAddIngredient"
           @click="handleSelect(ingredient.id)"
@@ -42,13 +41,13 @@
             icon="i-lucide-carrot"
             size="xs"
           />
-          <span class="min-w-0">
-            <span class="block truncate">{{ ingredient.name }}</span>
-            <span class="block truncate">
+          <span>
+            <span class="fx-truncate">{{ ingredient.name }}</span>
+            <span class="fx-truncate">
               {{ ingredientCategoryLabel(ingredient.category) }}
             </span>
           </span>
-          <UIcon name="i-lucide-plus" class="shrink-0" />
+          <UIcon name="i-lucide-plus" />
         </UButton>
       </div>
 

@@ -21,7 +21,7 @@
   >
     <template #intro>
       <h1>Find your kitchen</h1>
-      <p class="mt-2">Choose your venue or add one that is not listed.</p>
+      <p>Choose your venue or add one that is not listed.</p>
     </template>
     <template #find-secondary>
       <UButton

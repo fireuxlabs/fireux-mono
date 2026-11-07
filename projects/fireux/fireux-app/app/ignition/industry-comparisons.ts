@@ -153,7 +153,7 @@ const fireux: IgnitionIndustryCase = {
       'source-reviewed',
       [
         'projects/fireux/fireux-app/nuxt.config.ts',
-        project + 'components/Workspace/Identity/Read.vue',
+        project + 'components/Identity/Read.vue',
         project + 'server/authority.ts',
       ],
       'Project Workspace and explicit domain authority exist. App intake and structural reconciliation do not prove app generation.'
@@ -382,7 +382,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
         reuse: 'existing-source',
         references: [
           project + 'server/authority.ts',
-          project + 'components/Workspace/Identity/Read.vue',
+          project + 'components/Identity/Read.vue',
         ],
         acceptance:
           'Project actions retain explicit domain authority and do not grant cross-ecosystem editing through a directory read.',

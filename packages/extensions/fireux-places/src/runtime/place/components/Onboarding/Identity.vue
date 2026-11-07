@@ -12,7 +12,6 @@
       <UInput
         :model-value="shortName"
         maxlength="80"
-        class="w-full"
         @update:model-value="emit('update:shortName', String($event || ''))"
       />
     </UFormField>
@@ -22,7 +21,6 @@
         :model-value="tagline"
         maxlength="180"
         :rows="3"
-        class="w-full"
         @update:model-value="emit('update:tagline', String($event || ''))"
       />
     </UFormField>

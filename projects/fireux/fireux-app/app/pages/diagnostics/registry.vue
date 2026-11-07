@@ -41,46 +41,38 @@
           Uses <code>/api/directory</code>. The legacy Firestore registry API is
           retired because it mixed package metadata with entity copies. For the
           authority notes, visit
-          <NuxtLink class="hover:underline" to="/developer/registry">
-            Developer · Directory Docs
-          </NuxtLink>
+          <ULink to="/developer/registry"> Developer · Directory Docs </ULink>
           for the narrative workflow.
         </p>
 
-        <UCard v-if="error">
-          <p class="text-error fx-type-body">Unable to load directory data.</p>
-          <p v-text="errorMessage"></p>
-        </UCard>
-        <div
-          v-else-if="pending"
-          class="mt-4 flex items-center gap-3 rounded-lg border border-dashed border-default p-4"
-        >
+        <UAlert
+          v-if="error"
+          color="error"
+          title="Unable to load directory data."
+          :description="errorMessage"
+        />
+        <UCard v-else-if="pending">
           <Icon name="eos-icons:bubble-loading" aria-hidden="true" />
           <span>Loading directory snapshot…</span>
-        </div>
+        </UCard>
         <DiagnosticsDebugPanelPanel
           launcher
           include-route
           v-else-if="snapshot"
-          class="mt-4"
           title="Directory JSON"
           context="public directory projection"
           :data="snapshot"
           :default-open="true"
         />
-        <p v-else class="mt-4 fx-type-caption">
+        <p v-else class="fx-type-caption">
           No public directory entries are available.
         </p>
 
         <template #footer>
           <div>
             <span>Last generated:</span>
-            <span
-              v-if="generatedAtText"
-              class="ml-1"
-              v-text="generatedAtText"
-            ></span>
-            <span v-else class="ml-1">unknown</span>
+            <span v-if="generatedAtText" v-text="generatedAtText"></span>
+            <span v-else>unknown</span>
           </div>
         </template>
       </UCard>

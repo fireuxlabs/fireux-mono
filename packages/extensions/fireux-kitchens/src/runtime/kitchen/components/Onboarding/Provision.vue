@@ -7,7 +7,7 @@
     icon="i-lucide-chef-hat"
     variant="subtle"
   >
-    <div class="space-y-5">
+    <div>
       <UAlert
         color="neutral"
         variant="soft"

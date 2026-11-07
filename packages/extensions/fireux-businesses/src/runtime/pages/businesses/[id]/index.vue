@@ -32,8 +32,11 @@
         title="Business not found"
         description="This business does not exist or is no longer available."
       />
-      <div v-else class="space-y-4">
-        <BusinessDetailProfile v-if="businessProfile" :model="businessProfile" />
+      <div v-else>
+        <BusinessDetailProfile
+          v-if="businessProfile"
+          :model="businessProfile"
+        />
 
         <FireDiagnosticsDebugPanel
           object-origin="fetched"

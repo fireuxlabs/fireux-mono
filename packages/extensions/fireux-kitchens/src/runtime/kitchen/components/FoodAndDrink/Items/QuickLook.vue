@@ -3,32 +3,24 @@
     v-model:open="open"
     :title="dish?.name || 'Dish quick look'"
     :description="catalogue.title"
-    :ui="{ content: 'sm:max-w-xl' }"
     @after:leave="emit('after-leave')"
   >
     <template #body>
-      <div v-if="dish" class="space-y-5">
-        <div class="space-y-5">
-          <div
-            class="dish-preview-image overflow-hidden rounded-xl bg-elevated"
-          >
+      <div v-if="dish">
+        <div>
+          <div class="dish-preview-image">
             <img
               v-if="dish.image"
               :src="dish.image"
               :alt="dish.name || catalogue.singular"
-              class="size-full object-cover"
             />
-            <div
-              v-else
-              class="flex size-full items-center justify-center"
-              aria-hidden="true"
-            >
+            <div v-else aria-hidden="true">
               <UIcon name="i-lucide-utensils" />
             </div>
           </div>
 
-          <div class="min-w-0 space-y-4">
-            <div class="flex flex-wrap gap-2">
+          <div>
+            <div>
               <UBadge color="neutral" variant="soft">
                 {{ kindLabel }}
               </UBadge>
@@ -48,28 +40,27 @@
           aria-labelledby="dish-quick-look-menus"
         >
           <h3 id="dish-quick-look-menus">On menus</h3>
-          <ul class="mt-2 grid gap-2 sm:grid-cols-2">
-            <UCard as="li" variant="subtle"
+          <UPageGrid as="ul">
+            <UCard
+              as="li"
+              variant="subtle"
               v-for="placement in menuPlacements"
               :key="placement.key"
-              
             >
-              <p class="truncate">
+              <p class="fx-truncate">
                 {{ placement.menuName }}
               </p>
-              <p class="mt-0.5 truncate">
+              <p class="fx-truncate">
                 {{ placement.sectionLabel }}
               </p>
             </UCard>
-          </ul>
+          </UPageGrid>
         </section>
       </div>
     </template>
 
     <template #footer>
-      <div
-        class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end"
-      >
+      <div>
         <UButton color="neutral" variant="ghost" @click="open = false">
           Close
         </UButton>

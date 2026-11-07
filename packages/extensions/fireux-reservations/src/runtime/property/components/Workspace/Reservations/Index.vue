@@ -19,24 +19,24 @@
         title="Showing a limited set of reservations"
         description="These totals and dates cover only the loaded records. This view does not prove availability."
       />
-      <section class="grid gap-3 sm:grid-cols-3">
+      <UPageGrid as="section">
         <UCard>
           <p>Reservations</p>
-          <p class="mt-1">{{ summary.total }}</p>
+          <p>{{ summary.total }}</p>
         </UCard>
         <UCard>
           <p>Confirmed</p>
-          <p class="mt-1">
+          <p>
             {{ summary.statuses.confirmed }}
           </p>
         </UCard>
         <UCard>
           <p>Enquiries & holds</p>
-          <p class="mt-1">
+          <p>
             {{ summary.statuses.inquiry + summary.statuses.hold }}
           </p>
         </UCard>
-      </section>
+      </UPageGrid>
 
       <UCard>
         <template #header>
@@ -46,20 +46,17 @@
           </div>
         </template>
 
-        <div v-if="pending" class="grid min-h-48 place-items-center">
-          <UIcon name="i-lucide-loader-circle" class="animate-spin" />
-        </div>
+        <FireState v-if="pending" outcome="pending" />
 
-        <div v-else-if="collection.length" class="divide-y divide-default">
+        <div v-else-if="collection.length">
           <NuxtLink
             v-for="reservation in collection"
             :key="reservation.id"
             :to="`/workspace/property/reservations/${reservation.id}`"
-            class="grid gap-4 py-4 transition first:pt-0 last:pb-0 hover:opacity-80 sm:grid-cols-[minmax(0,1fr)_auto_auto]"
           >
-            <div class="min-w-0">
-              <div class="flex flex-wrap items-center gap-2">
-                <p class="truncate">
+            <div>
+              <div>
+                <p>
                   {{ reservation.guest.display_name || 'Unnamed guest' }}
                 </p>
                 <UBadge
@@ -70,7 +67,7 @@
                   {{ sourceLabel(reservation.source) }}
                 </UBadge>
               </div>
-              <p class="mt-1">
+              <p>
                 {{ formatDate(reservation.arrival_date) }} →
                 {{ formatDate(reservation.departure_date) }} ·
                 {{ nights(reservation) }} nights ·
@@ -78,7 +75,7 @@
               </p>
             </div>
 
-            <div class="flex items-center">
+            <div class="card__badges">
               <UBadge
                 :color="syncColor(reservation.sync.state)"
                 variant="subtle"
@@ -88,7 +85,7 @@
               </UBadge>
             </div>
 
-            <div class="flex items-center justify-between gap-3 sm:justify-end">
+            <div>
               <UBadge
                 :color="statusColor(reservation.status)"
                 variant="soft"

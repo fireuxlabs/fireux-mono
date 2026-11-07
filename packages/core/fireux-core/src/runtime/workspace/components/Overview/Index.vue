@@ -1,25 +1,21 @@
 <template>
   <div class="pagebody">
     <UCard>
-      <div
-        class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <div class="flex min-w-0 items-center gap-4">
+      <div>
+        <div>
           <UAvatar
             :src="image || undefined"
             :alt="title"
             :ui="
-              imageFit === 'contain'
-                ? { image: 'object-contain p-1.5' }
-                : undefined
+              imageFit === 'contain' ? { image: 'object-contain' } : undefined
             "
             :icon="icon"
             size="3xl"
           />
-          <div class="min-w-0">
+          <div>
             <p v-if="label">{{ label }}</p>
             <h1>{{ title }}</h1>
-            <p v-if="description" class="mt-2 max-w-2xl">
+            <p v-if="description">
               {{ description }}
             </p>
           </div>
@@ -27,7 +23,7 @@
         <slot name="badge" />
       </div>
       <template #footer>
-        <nav class="flex flex-wrap gap-2" aria-label="Workspace capabilities">
+        <nav aria-label="Workspace capabilities">
           <UButton
             v-for="link in links"
             :key="link.to"
@@ -38,14 +34,8 @@
         </nav>
       </template>
     </UCard>
-    <div
-      class="grid items-start gap-6"
-      :class="$slots.attention ? 'lg:grid-cols-3' : ''"
-    >
-      <div
-        class="min-w-0 space-y-6"
-        :class="$slots.attention ? 'lg:col-span-2' : ''"
-      >
+    <div>
+      <div>
         <slot />
       </div>
       <UCard v-if="$slots.attention">

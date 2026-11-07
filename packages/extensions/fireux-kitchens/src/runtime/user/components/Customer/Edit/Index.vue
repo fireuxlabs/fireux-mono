@@ -8,7 +8,7 @@
       icon="i-lucide-user-round"
       variant="outline"
     >
-      <div class="space-y-4">
+      <div>
         <FireFormsEditableSimpleField
           label="Name"
           :value="customerName"

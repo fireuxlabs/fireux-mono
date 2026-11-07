@@ -6,7 +6,7 @@
       description="Model and collection tools for ingredients and chefs."
     />
     <UPageBody class="pagebody">
-      <div class="space-y-4">
+      <div>
         <UCard>
           <div class="card__header">
             <div>Ingredients</div>
@@ -18,7 +18,7 @@
               {{ openSections.ingredients ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.ingredients" class="mt-4">
+          <div v-show="openSections.ingredients">
             <IngredientModelInspection />
           </div>
         </UCard>
@@ -30,7 +30,7 @@
               {{ openSections.chefs ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.chefs" class="mt-4">
+          <div v-show="openSections.chefs">
             <ChefModelInspection />
           </div>
         </UCard>

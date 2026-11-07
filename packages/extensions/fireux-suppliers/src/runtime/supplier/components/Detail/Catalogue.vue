@@ -1,7 +1,7 @@
 <template>
   <UCard>
     <template #header>Catalogue</template>
-    <dl class="grid gap-3 sm:grid-cols-2">
+    <dl>
       <div>
         <dt>State</dt>
         <dd>{{ supplier.catalogue.mode }}</dd>

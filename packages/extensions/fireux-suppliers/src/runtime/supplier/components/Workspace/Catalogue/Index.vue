@@ -1,9 +1,9 @@
 <template>
-  <section class="workspace-surface space-y-6">
+  <section class="workspace-surface">
     <UPageCard>
       <template #header>
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div class="min-w-0">
+        <div>
+          <div>
             <h2 class="fx-type-section-title">
               {{ catalogueTitle }}
             </h2>
@@ -47,7 +47,7 @@
           v-bind="card"
         />
       </div>
-      <div v-else class="space-y-1">
+      <div v-else>
         <p>
           {{ emptyTitle }}
         </p>

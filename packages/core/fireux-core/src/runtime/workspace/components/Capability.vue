@@ -6,10 +6,7 @@
       'workspace-capability--single': singleOpen,
     }"
   >
-    <div
-      v-if="$slots['workspace-tools']"
-      class="flex flex-wrap items-center gap-2"
-    >
+    <div v-if="$slots['workspace-tools']">
       <slot name="workspace-tools" />
     </div>
     <div class="workspace-capability__panels">

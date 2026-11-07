@@ -13,18 +13,13 @@
       />
     </template>
   </UModal>
-  <UModal
-    v-model:open="organise"
-    title="Organise categories"
-    :ui="{ content: 'sm:max-w-3xl' }"
-  >
+  <UModal v-model:open="organise" title="Organise categories">
     <template #body><KitchenFoodAndDrinkItemsCategories /></template>
   </UModal>
   <USlideover
     v-model:open="aiOpen"
     title="Kitchen AI"
     :description="catalogue.title"
-    :ui="{ content: 'sm:max-w-xl' }"
   >
     <template #body
       ><WorkspaceKitchenAICapability

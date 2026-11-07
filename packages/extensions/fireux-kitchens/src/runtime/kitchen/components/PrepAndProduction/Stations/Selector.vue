@@ -1,12 +1,11 @@
 <template>
-  <section class="flex items-center gap-2" aria-label="Station controls">
+  <section aria-label="Station controls">
     <USelect
       v-if="items.length"
       v-model="selectedStationId"
       :items="items"
       value-key="value"
       aria-label="Select Station"
-      class="flex-1"
     />
 
     <UButton

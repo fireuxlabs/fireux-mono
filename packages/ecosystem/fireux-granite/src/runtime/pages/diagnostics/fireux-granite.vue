@@ -5,7 +5,7 @@
       description="Granite ecosystem shell diagnostics."
     />
 
-    <UPageBody class="pagebody space-y-4">
+    <UPageBody class="pagebody">
       <UCard>
         <div>Runtime anchor: <span>portfolio</span></div>
         <div>

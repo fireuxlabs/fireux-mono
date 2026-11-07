@@ -1,6 +1,6 @@
 <template>
   <section class="entity-collection user-collection" aria-label="Users">
-    <div class="flex flex-wrap items-center gap-3">
+    <div>
       <UInput
         v-if="showSearchInput"
         v-model="query"
@@ -16,11 +16,11 @@
     </div>
 
     <UserCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
-    <div v-else class="px-6 py-10" role="status">
+    <div v-else role="status">
       <p>
         {{ hasMore ? 'No matches in loaded users' : 'No matching people' }}
       </p>
-      <p class="mt-1">
+      <p>
         {{
           hasMore
             ? 'Load more users below or try another name.'

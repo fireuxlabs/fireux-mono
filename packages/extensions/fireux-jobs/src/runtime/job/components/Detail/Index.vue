@@ -1,8 +1,8 @@
 <template>
-  <article class="space-y-8">
+  <article>
     <JobDetailHeader :job="job" />
     <JobDetailSummary :job="job" />
-    <div class="grid gap-4 md:grid-cols-2">
+    <div>
       <JobDetailBusiness :job="job" />
       <JobDetailPlace :job="job" />
     </div>

@@ -21,37 +21,40 @@
 
     <!-- Edit Mode: list each item with an input and a remove icon; plus an extra input to add a new item -->
     <div v-else class="editing">
-      <div
-        v-for="(_item, index) in localValue"
-        :key="index"
-        class="mb-1 flex items-center gap-1"
-      >
+      <UFieldGroup v-for="(_item, index) in localValue" :key="index">
         <UInput
           v-model="localValue[index]"
           :disabled="saving"
           :maxlength="maxLength"
           :placeholder="itemPlaceholder"
         />
-        <UIcon
-          name="i-lucide-x-circle"
-          class="cursor-pointer"
+        <UButton
+          type="button"
+          icon="i-lucide-x-circle"
+          color="neutral"
+          variant="ghost"
+          :aria-label="`Remove item ${Number(index) + 1}`"
+          :disabled="saving"
           @click="removeItem(index)"
         />
-      </div>
-      <div class="mt-1 mb-1 flex items-center gap-1">
+      </UFieldGroup>
+      <UFieldGroup>
         <UInput
           v-model="newItem"
           :disabled="saving || !canAdd"
           :maxlength="maxLength"
           :placeholder="newItemPlaceholder"
         />
-        <UIcon
-          name="i-lucide-plus-circle"
-          :class="canAdd ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'"
-          :aria-disabled="!canAdd"
+        <UButton
+          type="button"
+          icon="i-lucide-plus-circle"
+          color="neutral"
+          variant="ghost"
+          aria-label="Add item"
+          :disabled="saving || !canAdd"
           @click="addItem"
         />
-      </div>
+      </UFieldGroup>
     </div>
   </div>
 </template>

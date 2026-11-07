@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
 Updated: 2026-11-06
-Ref: f2fbf2242
+Ref: 614700fd9
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -171,11 +171,13 @@ The proof is private recovery material, never part of the public Menu URL or QR.
 Source-owned checks are `menu-document-self-service.test.mjs` and its scope suite.
 This is local command behavior, not a Rules or App deployment.
 
-Project Landing separately supports anonymous create/resume through the FireUX
-ecosystem's `project/server/index/create.ts`, exposed by its App's thin route. The verified UID fixes the canonical Project id;
+Project Landing supports anonymous create/resume through
+`fireux-projects/runtime/project/server/index/create.ts`, exposed by its App's
+thin route. Both anonymous and signed-in creation enforce the App's Project
+`canCreate` policy before entering their respective authority flows. The verified UID fixes the canonical Project id;
 the transaction creates only the root, or resumes an existing canonical nested
 root whose `guest_owner_uid`, creator and owning App match. It never overwrites on retry or
-creates User, AppUser, Team or membership access. FireUX ecosystem Project `components/Workspace/Home/Guest.vue`
+creates User, AppUser, Team or membership access. Project's `components/Workspace/Home/Guest.vue`
 reads that exact root live without extending account-owned access. Recovery requires
 the same Firebase anonymous identity; account adoption and recovery secrets are not
 implemented for Project. Signed-in creation retains its ordinary transaction below.
@@ -297,8 +299,18 @@ records. Public meal-deal projection remains read-only.
   Kitchens' `src/test/menu-publication.test.mjs` and `menu-canonical-discovery.test.mjs`.
 - Current-App trusted writers:
   `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
-  `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and
+  `packages/core/fireux-core/src/runtime/app/server/identity/update.ts`, and
   `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
+- App administrators change the configured App's `active`/`inactive` status
+  through the Dashboard identity editor and trusted identity command.
+  The server validates the exact model values and rechecks current App authority
+  in the transaction. Public App readers require active status. Project-created
+  App definitions begin inactive and can be activated through their running
+  App's Dashboard; initialization preserves a saved status.
+- The existing `/api/internal/app/settings` route delegates root changes to
+  `app/server/identity`. The separate `/api/internal/app/public-settings`
+  route delegates featured-content changes to `app/server/settings/update.ts`,
+  which writes only the `settings/public` child.
 - App initialization decides when a configured global main App can provision
   its Ecosystem. The Ecosystem owns root validation and its guarded identity
   transaction in
@@ -503,18 +515,21 @@ verification. Never use verification to mutate remote Firestore, deploy Rules,
 or provision databases.
 
 Project Identity's active browser editor uses `useProjectUpdate` to call the
-FireUX ecosystem's named `project/server/identity/update.ts` command through a thin App route. The trusted
+Projects extension's named `project/server/identity/update.ts` command through a thin App route. The trusted
 transaction reads the current App membership, its timestamp-bound Project access,
 and the canonical Project before sparse allowlisted `identity.*` updates.
-Creation stores name, description, image URL and status under Identity; optional
+Identity owns name, description, image URL and the exact active/inactive status.
+Creation starts inactive; operators use the same Identity command to activate a
+Project for the public directory. Inactive Projects remain available privately.
+Creation stores these fields under Identity; optional
 anonymous authority and stamps remain at the root. The client captures account,
 membership, App, route and caller form before credentials, validates the exact
 response id/action and suppresses obsolete UI completion. Displayed create
 failures are sanitized and copyable. The offline `project-identity.py` planner
 targets only `projects/fireux-2005/databases/fireux`, preserves preimages and
 revisions, and neither connects to Firestore nor applies/deletes records.
-Project owns its name, description and image. Canonical reads and protected
-commands live in the FireUX ecosystem. FireUX App owns directory discovery
+Project owns its Identity. Canonical reads and protected commands live in
+`fireux-projects`. FireUX App owns directory discovery
 and HTTP routes. FireUX App's `project-identity-command.test.mjs` covers the
 command with mocked transactions.
 Project Team create/update/delete and role-label commands reuse

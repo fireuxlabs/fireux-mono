@@ -1,11 +1,11 @@
 <template>
   <section class="workspace-surface">
-    <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
       <p v-if="order">
         {{ dirty ? 'Unsaved changes' : revision ? 'Saved order' : 'New order' }}
         · not submitted
       </p>
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton
           v-if="!initialOrder"
           label="New order"
@@ -57,11 +57,7 @@
     >
       <template #actions><FireCopyError :message="saveError" /></template>
     </UAlert>
-    <fieldset
-      v-if="order"
-      :disabled="saving"
-      class="grid min-w-0 items-start gap-4 md:grid-cols-2"
-    >
+    <fieldset v-if="order" :disabled="saving">
       <UCard>
         <template #header><h2>Add line</h2></template>
         <form @submit.prevent="submitLine">
@@ -98,7 +94,7 @@
           </fieldset>
         </form>
       </UCard>
-      <div class="space-y-3">
+      <div>
         <UAlert
           v-if="editError"
           color="error"

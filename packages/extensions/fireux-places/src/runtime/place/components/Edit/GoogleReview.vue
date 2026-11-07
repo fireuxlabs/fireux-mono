@@ -12,9 +12,7 @@
     description="Read-only comparison. Your saved details stay unchanged."
   >
     <template #body>
-      <div v-if="loading" class="space-y-4" aria-label="Loading Google details">
-        <USkeleton v-for="row in 4" :key="row" class="h-20" />
-      </div>
+      <FireState v-if="loading" outcome="pending" />
       <UAlert
         v-else-if="error"
         title="Could not check Google details"
@@ -23,7 +21,7 @@
       >
         <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
-      <div v-else-if="review" class="space-y-5">
+      <div v-else-if="review">
         <p>{{ place.name }}</p>
         <div class="google-review">
           <div class="google-review__head">
@@ -31,10 +29,7 @@
             ><span class="google-attribution" translate="no">Google Maps</span>
           </div>
           <div v-for="row in rows" :key="row.label" class="google-review__row">
-            <div>
-              {{ row.label
-              }}<span v-if="row.same" class="mt-1 block">Matches</span>
-            </div>
+            <div>{{ row.label }}<span v-if="row.same">Matches</span></div>
             <p class="google-review__value">{{ row.saved || 'Not set' }}</p>
             <p class="google-review__value">
               {{ row.incoming || 'Not supplied' }}
@@ -52,18 +47,17 @@
         </p>
         <div v-if="attributions.length">
           <template v-for="(attribution, index) in attributions" :key="index">
-            <a
+            <ULink
               v-if="attribution.url"
-              :href="attribution.url"
+              :to="attribution.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="mr-2 underline"
-              >{{ attribution.text }}</a
+              >{{ attribution.text }}</ULink
             >
-            <span v-else class="mr-2">{{ attribution.text }}</span>
+            <span v-else>{{ attribution.text }}</span>
           </template>
         </div>
-        <div class="flex justify-between gap-3">
+        <div>
           <UButton
             :to="mapsUrl"
             target="_blank"

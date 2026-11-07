@@ -9,7 +9,7 @@
     <UPageBody class="pagebody">
       <UCard>
         <template #header>
-          <div class="flex flex-col gap-1">
+          <div class="pagebody">
             <h2 class="fx-type-section-title">Directory + diagnostics</h2>
             <p class="fx-type-caption">
               These tools skip narration and expose allowlisted projections for
@@ -18,35 +18,29 @@
           </div>
         </template>
 
-        <div class="space-y-2">
+        <div class="pagebody">
           <p>
             Use this stack when you need projected JSON without opening a
             workspace. Entity authority stays behind the projection boundary.
           </p>
           <p>
             Need onboarding context instead of payloads? Hop to
-            <NuxtLink class="hover:underline" to="/developer/registry">
-              Developer · Directory Docs
-            </NuxtLink>
+            <ULink to="/developer/registry"> Developer · Directory Docs </ULink>
             for human-readable workflows.
           </p>
         </div>
       </UCard>
 
-      <section class="grid gap-4 md:grid-cols-2">
-        <NuxtLink
+      <section class="pagebody">
+        <ULink
           v-for="tool in tools"
           :key="tool.slug"
           :to="`/diagnostics/${tool.slug}`"
-          class="group block"
         >
-          <UCard class="transition">
-            <div class="flex flex-col gap-3">
-              <div class="flex items-center gap-3">
-                <span
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10"
-                  aria-hidden="true"
-                >
+          <UCard>
+            <div class="pagebody">
+              <div>
+                <span aria-hidden="true">
                   <Icon :name="tool.icon" />
                 </span>
                 <div>
@@ -58,17 +52,13 @@
                   </p>
                 </div>
               </div>
-              <div class="flex items-center gap-2">
+              <div>
                 <span>Open tool</span>
-                <Icon
-                  name="i-lucide-arrow-up-right"
-                  class="transition duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
+                <Icon name="i-lucide-arrow-up-right" aria-hidden="true" />
               </div>
             </div>
           </UCard>
-        </NuxtLink>
+        </ULink>
       </section>
     </UPageBody>
   </UPage>

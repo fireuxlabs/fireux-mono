@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "werkbox — ${activeEditorShort}",
+    "window.title": "werkbox — ${activeEditorShort} — ${rootPath}",
     "files.exclude": {
       "projects/bringli": true,
       "projects/buenohost": true,

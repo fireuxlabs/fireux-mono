@@ -1,6 +1,6 @@
 <template>
   <article class="food-venue">
-    <header class="flex items-center gap-3">
+    <header>
       <UAvatar
         v-if="venue.logo"
         :src="venue.logo"
@@ -10,38 +10,33 @@
       <p>{{ venue.name }}</p>
     </header>
 
-    <div class="space-y-3">
+    <div>
       <h2>
         {{ venue.title }}
       </h2>
       <p v-for="description in venue.descriptions" :key="description">
         {{ description }}
       </p>
-      <ul
-        v-if="venue.matchingDishes.length"
-        class="space-y-1"
-        aria-label="Matching food"
-      >
+      <ul v-if="venue.matchingDishes.length" aria-label="Matching food">
         <li v-for="dish in venue.matchingDishes" :key="dish.id">
           {{ dish.name }}
         </li>
       </ul>
     </div>
 
-    <div class="divide-y divide-default">
+    <div>
       <NuxtLink
         v-for="action in venue.actions"
         :key="action.to"
         :to="action.to"
-        class="food-venue__service group focus-visible:outline-primary"
+        class="food-venue__service"
       >
         <span class="food-venue__service-icon" aria-hidden="true">
           <UIcon :name="action.icon" />
         </span>
-        <div class="min-w-0 flex-1 space-y-1">
+        <div>
           <p>
-            {{ action.label
-            }}<span class="sr-only"> from {{ venue.name }}</span>
+            {{ action.label }}<span> from {{ venue.name }}</span>
           </p>
           <KitchenDetailOfferingTimes
             :offerings="action.offerings"
@@ -49,24 +44,18 @@
             compact
           />
         </div>
-        <UIcon
-          name="i-lucide-arrow-right"
-          class="shrink-0 group-hover:translate-x-1"
-          aria-hidden="true"
-        />
+        <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
       </NuxtLink>
     </div>
 
     <nav
       v-if="venue.otherOfferings.length"
-      class="flex flex-wrap gap-x-5 gap-y-2"
       :aria-label="`Other offerings at ${venue.name}`"
     >
       <NuxtLink
         v-for="offering in venue.otherOfferings"
         :key="offering.id"
         :to="offering.to"
-        class="transition-colors"
       >
         {{ offering.name }} <span aria-hidden="true">→</span>
       </NuxtLink>

@@ -4,152 +4,75 @@
       >All private tours</UButton
     >
 
-    <template v-if="confirmation">
-      <section class="booking-confirmation" aria-live="polite">
-        <UPageHeader headline="Booking confirmed" title="Your ride is on." />
-        <p>
-          {{ confirmation.tourName }} is booked for {{ confirmation.date }} at
-          {{ confirmationTime }} in Interlaken.
-        </p>
-        <dl class="booking-confirmation-details">
-          <div>
-            <dt>Group</dt>
-            <dd>{{ confirmation.groupSize }} people</dd>
-          </div>
-          <div>
-            <dt>Total</dt>
-            <dd>CHF {{ confirmation.totalPriceChf }}</dd>
-          </div>
-          <div>
-            <dt>Reference</dt>
-            <dd>{{ confirmation.id }}</dd>
-          </div>
-        </dl>
+    <BookingsCustomerForm
+      eyebrow="Private guided rides · Interlaken"
+      :heading-level="1"
+      title="Choose your ride."
+      description="Pick a tour and date. You’ll see the fixed price before you confirm."
+      :customer="customer"
+      :availability="availabilityView"
+      :confirmation="confirmationView"
+      :error="bookingError"
+      :pending="bookingPending"
+      confirm-label="Confirm private tour"
+      @update:customer="customer = $event"
+      @submit="submitBooking"
+    >
+      <template #reservation>
+        <UFormField label="Private tour" name="tour">
+          <USelect
+            class="booking-input"
+            v-model="selectedTourSlug"
+            :items="
+              tours.map((tour) => ({
+                label: `${tour.name} · CHF ${tour.price} per person`,
+                value: tour.slug,
+              }))
+            "
+            required
+          />
+        </UFormField>
+        <UFormField label="Tour date" name="date">
+          <UInput
+            class="booking-input"
+            v-model="date"
+            type="date"
+            :min="minimumDate"
+            required
+            size="lg"
+          />
+        </UFormField>
+      </template>
+
+      <template #summary>
+        <div class="booking-price" aria-live="polite">
+          <span>CHF {{ selectedTour.price }} per person</span>
+          <strong>CHF {{ totalPrice }} total</strong>
+        </div>
+      </template>
+
+      <template #footnote>
         <p class="booking-note">
-          A copy of this confirmation is shown here. Ben’s calendar has been
-          updated with the booking details.
+          No payment is collected here. Your tour is confirmed as soon as the
+          booking is saved and added to the calendar.
         </p>
+      </template>
+
+      <template #confirmation-actions>
         <UButton to="/" size="lg" trailing-icon="i-lucide-arrow-up-right">
           Back to the tours
         </UButton>
-      </section>
-    </template>
-
-    <template v-else>
-      <UPageHeader
-        title="Choose your ride."
-        description="Pick a tour and date. You’ll see the fixed price before you confirm."
-        headline="Private guided rides · Interlaken"
-      />
-      <UPageBody
-        ><UCard>
-          <form class="booking-form" @submit.prevent="submitBooking">
-            <UFormField label="Private tour" name="tour">
-              <USelect
-                v-model="selectedTourSlug"
-                :items="
-                  tours.map((tour) => ({
-                    label: `${tour.name} · CHF ${tour.price} per person`,
-                    value: tour.slug,
-                  }))
-                "
-                required
-              />
-            </UFormField>
-
-            <div class="booking-form-row">
-              <UFormField label="Tour date" name="date">
-                <UInput
-                  v-model="date"
-                  type="date"
-                  :min="minimumDate"
-                  required
-                  size="lg"
-                />
-              </UFormField>
-              <UFormField label="People" name="groupSize">
-                <UInput
-                  v-model="groupSize"
-                  type="number"
-                  min="1"
-                  max="50"
-                  required
-                  size="lg"
-                />
-              </UFormField>
-            </div>
-
-            <div class="booking-availability" aria-live="polite">
-              <p v-if="!date">Choose a date to check availability.</p>
-              <p v-else-if="availabilityPending">Checking availability…</p>
-              <p v-else-if="availabilityError" role="alert">
-                {{ availabilityError }}
-              </p>
-              <p v-else-if="availability?.available" class="booking-available">
-                Available · {{ availability.departureTime }} ·
-                {{ selectedTour.duration }}
-              </p>
-              <p v-else-if="availability?.reason === 'past'">
-                This departure has already passed. Choose another date.
-              </p>
-              <p v-else-if="availability?.reason === 'closed'">
-                This date is closed. Choose another date.
-              </p>
-              <p v-else-if="availability">
-                This date is already booked. Choose another date.
-              </p>
-            </div>
-
-            <UFormField label="Your name" name="guestName">
-              <UInput
-                v-model="guestName"
-                autocomplete="name"
-                maxlength="100"
-                required
-                size="lg"
-              />
-            </UFormField>
-            <UFormField label="Email address" name="guestEmail">
-              <UInput
-                v-model="guestEmail"
-                type="email"
-                autocomplete="email"
-                maxlength="254"
-                required
-                size="lg"
-              />
-            </UFormField>
-
-            <div class="booking-price" aria-live="polite">
-              <span>CHF {{ selectedTour.price }} per person</span>
-              <strong>CHF {{ totalPrice }} total</strong>
-            </div>
-
-            <p v-if="bookingError" class="booking-error" role="alert">
-              {{ bookingError }}
-            </p>
-            <UButton
-              type="submit"
-              size="xl"
-              block
-              :disabled="!availability?.available || bookingPending"
-              :loading="bookingPending"
-              trailing-icon="i-lucide-arrow-up-right"
-            >
-              Confirm private tour
-            </UButton>
-            <p class="booking-note">
-              No payment is collected here. Your tour is confirmed as soon as
-              the booking is saved and added to Ben’s calendar.
-            </p>
-          </form>
-        </UCard></UPageBody
-      >
-    </template>
+      </template>
+    </BookingsCustomerForm>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import type {
+  BookingAvailabilityView,
+  BookingConfirmationView,
+  BookingCustomerDetails,
+} from 'fireux-bookings/runtime/types/customer-booking-form'
 import { tours } from '~/content/tours'
 
 type TourAvailability = {
@@ -188,9 +111,11 @@ const selectedTour = computed(
   () => tours.find((tour) => tour.slug === selectedTourSlug.value) ?? tours[0]
 )
 const date = ref('')
-const guestName = ref('')
-const guestEmail = ref('')
-const groupSize = ref(2)
+const customer = ref<BookingCustomerDetails>({
+  guestName: '',
+  guestEmail: '',
+  groupSize: 2,
+})
 const availability = ref<TourAvailability | null>(null)
 const availabilityPending = ref(false)
 const availabilityError = ref('')
@@ -213,15 +138,56 @@ const today = new Intl.DateTimeFormat('en-CA', {
   }, {})
 const minimumDate = `${today.year}-${today.month}-${today.day}`
 const totalPrice = computed(
-  () => selectedTour.value.price * Number(groupSize.value || 0)
+  () => selectedTour.value.price * Number(customer.value.groupSize || 0)
 )
-const confirmationTime = computed(() => {
-  if (!confirmation.value) return ''
-  return new Intl.DateTimeFormat('en-GB', {
+const availabilityView = computed<BookingAvailabilityView>(() => {
+  if (availabilityPending.value) {
+    return {
+      status: 'pending',
+      message: 'Checking availability for this tour date.',
+    }
+  }
+  if (availabilityError.value) {
+    return { status: 'error', message: availabilityError.value }
+  }
+  if (!date.value) {
+    return { status: 'idle', message: 'Choose a date to check availability.' }
+  }
+  if (!availability.value) {
+    return { status: 'idle', message: 'Availability has not been checked yet.' }
+  }
+  if (availability.value.available) {
+    return {
+      status: 'available',
+      message: `${availability.value.departureTime} · ${selectedTour.value.duration}`,
+    }
+  }
+
+  const message = {
+    past: 'This departure has already passed. Choose another date.',
+    closed: 'This date is closed. Choose another date.',
+    booked: 'This date is already booked. Choose another date.',
+    'calendar-busy': 'The calendar is busy at this time. Choose another date.',
+  }[availability.value.reason ?? 'booked']
+  return { status: 'unavailable', message }
+})
+const confirmationView = computed<BookingConfirmationView | null>(() => {
+  if (!confirmation.value) return null
+  const time = new Intl.DateTimeFormat('en-GB', {
     timeZone: confirmation.value.timeZone,
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(confirmation.value.startAt))
+  return {
+    eyebrow: 'Booking confirmed',
+    title: 'Your ride is on.',
+    message: `${confirmation.value.tourName} is booked for ${confirmation.value.date} at ${time} in Interlaken.`,
+    details: [
+      { label: 'Group', value: `${confirmation.value.groupSize} people` },
+      { label: 'Total', value: `CHF ${confirmation.value.totalPriceChf}` },
+      { label: 'Reference', value: confirmation.value.id },
+    ],
+  }
 })
 
 watch(
@@ -256,7 +222,7 @@ watch(
   { immediate: true }
 )
 
-async function submitBooking() {
+async function submitBooking(details: BookingCustomerDetails) {
   bookingError.value = ''
   if (!availability.value?.available) {
     bookingError.value = 'Choose an available date before booking.'
@@ -272,9 +238,7 @@ async function submitBooking() {
         body: {
           tourSlug: selectedTourSlug.value,
           date: date.value,
-          guestName: guestName.value,
-          guestEmail: guestEmail.value,
-          groupSize: groupSize.value,
+          ...details,
           availabilityRevision: availability.value.availabilityRevision,
         },
       }
@@ -294,31 +258,16 @@ async function submitBooking() {
 </script>
 
 <style scoped>
-.booking-form,
-.booking-form-row,
-.booking-confirmation {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
+.booking-input {
+  width: 100%;
 }
-.booking-confirmation-details {
-  display: grid;
-  gap: calc(var(--spacing) * 3);
-}
-.booking-confirmation-details dt,
 .booking-note {
   color: var(--ui-text-muted);
-}
-.booking-confirmation-details dd {
-  margin: 0;
-  overflow-wrap: anywhere;
 }
 .booking-price {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: calc(var(--spacing) * 3);
-}
-.booking-error {
-  color: var(--ui-error);
 }
 </style>

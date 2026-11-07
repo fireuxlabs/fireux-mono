@@ -1,5 +1,5 @@
 <template>
-  <section class="workspace-surface space-y-6">
+  <section class="workspace-surface">
     <UCard>
       <template #header>
         <div class="collection-manager__header">

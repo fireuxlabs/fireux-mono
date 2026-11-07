@@ -12,8 +12,11 @@
         /></div
     ></template>
     <form v-if="editing" @submit.prevent="save">
-      <fieldset class="fx-card-body-stack" :disabled="saving || creating || !canWrite">
-        <div class="grid grid-cols-2 gap-4">
+      <fieldset
+        class="fx-card-body-stack"
+        :disabled="saving || creating || !canWrite"
+      >
+        <div class="fx-card-body-stack">
           <UFormField label="Portions"
             ><UInput
               v-model.number="draft.portion"
@@ -26,11 +29,7 @@
         </div>
         <section class="fx-card-body-stack">
           <h3>Ingredients</h3>
-          <div
-            v-for="(row, i) in draft.ingredients"
-            :key="i"
-            class="grid grid-cols-4 gap-2"
-          >
+          <div v-for="(row, i) in draft.ingredients" :key="i">
             <USelect
               v-model="row.ingredient_id"
               :items="ingredientOptions"
@@ -53,7 +52,6 @@
             />
             <UInput
               v-model="row.note"
-              class="col-span-4"
               :aria-label="`Ingredient note ${i + 1}`"
               placeholder="Service note"
             />
@@ -74,11 +72,7 @@
         </section>
         <section class="fx-card-body-stack">
           <h3>Mise en place</h3>
-          <div
-            v-for="(row, i) in draft.prep_items"
-            :key="i"
-            class="grid grid-cols-4 gap-2"
-          >
+          <div v-for="(row, i) in draft.prep_items" :key="i">
             <USelect
               v-model="row.prep_item_id"
               :items="prepOptions"
@@ -98,7 +92,6 @@
             />
             <UInput
               v-model="row.note"
-              class="col-span-4"
               :aria-label="`Prep note ${i + 1}`"
               placeholder="Station or service note"
             />
@@ -117,7 +110,7 @@
             "
           />
         </section>
-        <details class="border border-default rounded-lg p-3">
+        <details>
           <summary>Create mise en place</summary>
           <div class="fx-card-body-stack">
             <UInput
@@ -190,25 +183,19 @@
       </fieldset>
     </form>
     <div v-else-if="dish && dish.spec" class="dish-spec-layout">
-      <div class="grid content-start gap-7">
+      <div>
         <section v-if="dish.spec.ingredients.length">
-          <h3 class="mb-3">Ingredients</h3>
-          <ul class="divide-y divide-default">
-            <li
-              v-for="row in dish.spec.ingredients"
-              :key="row.ingredient_id"
-              class="py-3"
-            >
+          <h3>Ingredients</h3>
+          <ul>
+            <li v-for="row in dish.spec.ingredients" :key="row.ingredient_id">
               <div class="card__header">
                 <span>{{
                   ingredientOptions.find((x) => x.value === row.ingredient_id)
                     ?.label || row.ingredient_id
                 }}</span
-                ><strong class="whitespace-nowrap"
-                  >{{ row.quantity }} {{ row.unit }}</strong
-                >
+                ><strong>{{ row.quantity }} {{ row.unit }}</strong>
               </div>
-              <p v-if="row.note" class="mt-1">
+              <p v-if="row.note">
                 {{ row.note }}
               </p>
             </li>
@@ -221,51 +208,35 @@
               >Batch methods →</NuxtLink
             >
           </div>
-          <ul class="divide-y divide-default">
-            <li
-              v-for="row in dish.spec.prep_items"
-              :key="row.prep_item_id"
-              class="py-3"
-            >
+          <ul>
+            <li v-for="row in dish.spec.prep_items" :key="row.prep_item_id">
               <div class="card__header">
                 <span>{{
                   prepOptions.find((x) => x.value === row.prep_item_id)
                     ?.label || row.prep_item_id
                 }}</span
-                ><strong class="whitespace-nowrap"
-                  >{{ row.quantity }} {{ row.unit }}</strong
-                >
+                ><strong>{{ row.quantity }} {{ row.unit }}</strong>
               </div>
-              <p v-if="row.note" class="mt-1">
+              <p v-if="row.note">
                 {{ row.note }}
               </p>
             </li>
           </ul>
         </section>
       </div>
-      <div class="grid content-start gap-7">
+      <div>
         <section>
-          <h3 class="mb-4">Assembly & service</h3>
+          <h3>Assembly & service</h3>
           <ol class="fx-card-body-stack">
-            <li
-              v-for="(step, index) in dish.spec.assembly"
-              :key="index"
-              class="flex gap-4"
-            >
-              <span
-                class="shrink-0 rounded-full bg-elevated size-7 flex items-center justify-center"
-                >{{ index + 1 }}</span
-              >
+            <li v-for="(step, index) in dish.spec.assembly" :key="index">
+              <span>{{ index + 1 }}</span>
               <p>{{ step }}</p>
             </li>
           </ol>
           <p v-if="!dish.spec.assembly.length">No assembly recorded.</p>
         </section>
-        <section
-          v-if="dish.spec.recipe_ids.length"
-          class="border-t border-default pt-5"
-        >
-          <h3 class="mb-3">Recipes</h3>
+        <section v-if="dish.spec.recipe_ids.length">
+          <h3>Recipes</h3>
           <div class="fx-card__actions">
             <UButton
               v-for="id in dish.spec.recipe_ids"
@@ -278,12 +249,9 @@
             />
           </div>
         </section>
-        <details
-          v-if="dish.spec.source_note"
-          class="border-t border-default pt-5"
-        >
-          <summary class="cursor-pointer">Kitchen notes & assumptions</summary>
-          <p class="mt-3 whitespace-pre-line">
+        <details v-if="dish.spec.source_note">
+          <summary>Kitchen notes & assumptions</summary>
+          <p>
             {{ dish.spec.source_note }}
           </p>
         </details>

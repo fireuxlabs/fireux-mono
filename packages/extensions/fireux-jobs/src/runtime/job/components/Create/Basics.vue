@@ -5,7 +5,7 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
+      <div class="fx-card-body-stack">
         <p>{{ props.stepLabel }} · {{ props.title }}</p>
         <h2 class="fx-type-card-heading">{{ props.title }}</h2>
         <p v-if="props.subtitle">
@@ -14,7 +14,7 @@
       </div>
     </template>
 
-    <div class="space-y-5">
+    <div class="fx-card-body-stack">
       <UFormField
         v-if="jobsConfig.categoryScope === 'all'"
         label="Category"
@@ -56,7 +56,7 @@
         />
       </UFormField>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div>
         <UFormField label="Contract" required>
           <USelect v-model="contractType" :options="contractTypeOptions" />
         </UFormField>
@@ -66,7 +66,7 @@
         </UFormField>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div>
         <UFormField
           label="Starts"
           :required="form.contract_type === 'fixed_term'"
@@ -90,10 +90,7 @@
         />
       </UFormField>
 
-      <div
-        v-if="form.compensation"
-        class="grid gap-4 md:grid-cols-[minmax(0,1fr)_8rem_minmax(0,1fr)]"
-      >
+      <div v-if="form.compensation">
         <UFormField label="Amount" required>
           <UInputNumber
             v-model="compensationAmount"

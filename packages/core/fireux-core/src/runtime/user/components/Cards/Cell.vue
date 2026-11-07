@@ -14,7 +14,7 @@
 
       <div class="card__content card__stack">
         <div class="card__header">
-          <div class="min-w-0">
+          <div>
             <div class="card__title">{{ displayName }}</div>
             <div v-if="showSubtitle && handle" class="card__subtitle">
               {{ handle }}
@@ -45,25 +45,26 @@
 </template>
 
 <script setup lang="ts">
-
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import {
   USER_AVATAR_FALLBACK_SRC,
   type UserCard,
 } from '../../composables/useUserView'
 
-type Props = Partial<Pick<
-  UserCard,
-  | 'to'
-  | 'avatarUrl'
-  | 'displayName'
-  | 'handle'
-  | 'badges'
-  | 'title'
-  | 'summary'
-  | 'profiles'
-  | 'appsLabel'
->> & {
+type Props = Partial<
+  Pick<
+    UserCard,
+    | 'to'
+    | 'avatarUrl'
+    | 'displayName'
+    | 'handle'
+    | 'badges'
+    | 'title'
+    | 'summary'
+    | 'profiles'
+    | 'appsLabel'
+  >
+> & {
   /** Optional override for the tagline line. */
   taglineOverride?: string
   showSubtitle?: boolean
@@ -77,30 +78,26 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(
-  defineProps<Props>(),
-  {
-    to: '',
-    avatarUrl: '',
-    displayName: '',
-    handle: '',
-    badges: () => [],
-    title: '',
-    summary: '',
-    profiles: () => [],
-    appsLabel: '',
+const props = withDefaults(defineProps<Props>(), {
+  to: '',
+  avatarUrl: '',
+  displayName: '',
+  handle: '',
+  badges: () => [],
+  title: '',
+  summary: '',
+  profiles: () => [],
+  appsLabel: '',
 
-    showSubtitle: true,
-    showBadges: true,
-    showTagline: true,
-    link: false,
-    action: false,
-  }
-)
-
+  showSubtitle: true,
+  showBadges: true,
+  showTagline: true,
+  link: false,
+  action: false,
+})
 
 const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() =>
-  props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+const proxiedAvatarUrl = useProxiedAvatar(
+  () => props.avatarUrl || USER_AVATAR_FALLBACK_SRC
 )
 </script>

@@ -8,7 +8,7 @@
       variant="soft"
       color="neutral"
     />
-    <div class="flex flex-wrap items-start justify-between gap-3">
+    <div class="collection-manager__header">
       <div>
         <h2 class="fx-type-section-title">Ignition requests</h2>
         <p class="fx-type-caption">
@@ -50,7 +50,7 @@
 
     <UCard v-else-if="!items.length && !error">
       <p class="fx-type-body">No Ignition requests yet.</p>
-      <p class="mt-1 fx-type-caption">
+      <p class="fx-type-caption">
         New requests from /get-started will appear here.
       </p>
     </UCard>
@@ -59,22 +59,18 @@
       <template #header>
         <div class="card__header">
           <div>
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="card__stack">
               <h3 class="fx-type-card-heading">
                 {{ request.business.name || 'Unnamed business' }}
               </h3>
               <UBadge :color="statusColor(request.status)" variant="soft">
                 {{ statusLabel(request.status) }}
               </UBadge>
-              <NuxtLink
-                v-if="request.origin"
-                :to="originTo(request.origin)"
-                class="hover:underline"
-              >
+              <ULink v-if="request.origin" :to="originTo(request.origin)">
                 {{ originLabel(request.origin) }}
-              </NuxtLink>
+              </ULink>
             </div>
-            <p class="mt-1 fx-type-caption">
+            <p class="fx-type-caption">
               {{ request.contact.name }} · {{ formatDate(request.created_at) }}
             </p>
           </div>
@@ -88,40 +84,36 @@
         </div>
       </template>
 
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.7fr)]">
+      <div class="workspace-surface__split">
         <div class="fx-card-body-stack">
-          <div class="grid gap-3 sm:grid-cols-2">
+          <div class="workspace-surface__grid workspace-surface__grid--2">
             <div>
               <p class="fx-type-caption">Contact</p>
-              <a
-                :href="`mailto:${request.contact.email}`"
-                class="mt-1 block hover:underline"
-              >
+              <ULink :to="`mailto:${request.contact.email}`">
                 {{ request.contact.email }}
-              </a>
+              </ULink>
             </div>
             <div>
               <p class="fx-type-caption">Website</p>
-              <a
+              <ULink
                 v-if="request.business.website"
-                :href="request.business.website"
-                class="mt-1 block break-all hover:underline"
+                :to="request.business.website"
                 target="_blank"
                 rel="noreferrer"
               >
                 {{ request.business.website }}
-              </a>
-              <p v-else class="mt-1 fx-type-body">None</p>
+              </ULink>
+              <p v-else class="fx-type-body">None</p>
             </div>
             <div>
               <p class="fx-type-caption">Branding</p>
-              <p class="mt-1 fx-type-body">
+              <p class="fx-type-body">
                 {{ brandingLabel(request.business.branding) }}
               </p>
             </div>
             <div>
               <p class="fx-type-caption">Pages</p>
-              <p class="mt-1 fx-type-body">
+              <p class="fx-type-body">
                 {{ request.pages.join(', ') || 'None' }}
               </p>
             </div>
@@ -129,20 +121,20 @@
 
           <div>
             <p class="fx-type-caption">One job</p>
-            <p class="mt-1 whitespace-pre-wrap fx-type-body">
+            <p class="whitespace-pre-wrap fx-type-body">
               {{ request.app_job }}
             </p>
           </div>
 
           <div>
             <p class="fx-type-caption">Access</p>
-            <p class="mt-1 whitespace-pre-wrap fx-type-body">
+            <p class="whitespace-pre-wrap fx-type-body">
               {{ request.access }}
             </p>
           </div>
         </div>
 
-        <div class="space-y-3 rounded-lg border border-default p-4">
+        <div class="fx-card-body-stack">
           <div class="card__header">
             <h4 class="fx-type-card-heading">Delivery</h4>
             <UBadge color="neutral" variant="soft">

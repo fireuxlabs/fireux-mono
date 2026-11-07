@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
-    <section class="border-b border-default bg-default/70 py-16">
+    <section>
       <UContainer>
         <div class="pagebody">
           <p class="fx-type-headline">
@@ -17,7 +17,7 @@
           <p class="fx-type-caption">
             {{ appMeta.aboutSupportingCopy }}
           </p>
-          <div class="flex flex-wrap gap-3">
+          <div class="fx-card__actions">
             <UButton
               :to="appMeta.aboutPrimaryAction.to"
               color="primary"
@@ -37,15 +37,11 @@
         </div>
 
         <UCard>
-          <p class="fx-type-label mb-4">
+          <p class="fx-type-label">
             {{ appMeta.aboutPanelTitle }}
           </p>
-          <ul class="space-y-3">
-            <li
-              v-for="tick in appMeta.aboutPanelTicks"
-              :key="tick"
-              class="flex items-start gap-3"
-            >
+          <ul class="fx-list-stack">
+            <li v-for="tick in appMeta.aboutPanelTicks" :key="tick">
               <UIcon name="i-lucide-check" />
               <span>{{ tick }}</span>
             </li>
@@ -61,7 +57,7 @@
             <h2 class="fx-type-section-title">
               {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
-            <ol class="space-y-3">
+            <ol class="fx-list-stack">
               <li
                 v-for="(concept, index) in appMeta.keyConcepts"
                 :key="concept.title"
@@ -78,7 +74,7 @@
 
     <section>
       <UContainer>
-        <div class="mb-10 space-y-2">
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.aboutSections.modulesEyebrow }}
           </p>
@@ -99,7 +95,7 @@
               :title="module.name"
             >
               <template #body>
-                <div class="space-y-3">
+                <div class="pagebody">
                   <p class="fx-type-body">{{ module.summary }}</p>
                   <div class="card__badges">
                     <UBadge
@@ -121,7 +117,7 @@
 
     <section>
       <UContainer>
-        <div class="mb-10 space-y-2">
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.aboutSections.entitiesEyebrow }}
           </p>
@@ -130,7 +126,7 @@
           </h2>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-2">
+        <UPageGrid>
           <UCard
             as="article"
             v-for="entity in appSpec.entities"
@@ -139,25 +135,25 @@
             <h3 class="fx-type-card-heading">
               {{ entity.name }}
             </h3>
-            <p class="fx-type-caption mt-2">
+            <p class="fx-type-caption">
               {{ entity.purpose }}
             </p>
-            <p class="fx-type-caption mt-3">
+            <p class="fx-type-caption">
               <span>Key fields:</span>
               {{ entity.keyFields.join(', ') }}
             </p>
-            <p class="fx-type-caption mt-2">
+            <p class="fx-type-caption">
               <span>Links to:</span>
               {{ entity.linksTo.join(', ') }}
             </p>
           </UCard>
-        </div>
+        </UPageGrid>
       </UContainer>
     </section>
 
-    <section class="bg-muted/80 py-16">
+    <section>
       <UContainer>
-        <div class="space-y-2">
+        <div class="pagebody">
           <p class="fx-type-headline">
             {{ appMeta.aboutSections.structureEyebrow }}
           </p>
@@ -167,9 +163,7 @@
         </div>
 
         <UCard>
-          <pre class="overflow-x-auto rounded-sm bg-default p-4">{{
-            relationshipMap
-          }}</pre>
+          <pre class="overflow-x-auto">{{ relationshipMap }}</pre>
         </UCard>
 
         <UCard>

@@ -7,7 +7,7 @@
       </div>
     </template>
 
-    <div class="grid gap-4">
+    <div class="fx-card-body-stack">
       <FireFormsEditableSimpleField
         label="Phone"
         :value="place?.phone"

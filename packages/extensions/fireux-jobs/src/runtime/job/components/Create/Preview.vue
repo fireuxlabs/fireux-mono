@@ -10,14 +10,14 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="space-y-1">
+      <div class="card__header">
+        <div class="fx-card-body-stack">
           <p>Preview</p>
           <h3 class="fx-type-card-heading">
             {{ title }}
           </h3>
 
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="card__badges">
             <UBadge size="xs" variant="soft" color="primary">{{
               statusLabel
             }}</UBadge>
@@ -39,28 +39,27 @@
           </div>
         </div>
 
-        <div v-if="agentCard" class="min-w-[220px]">
+        <div v-if="agentCard">
           <p>Posted by</p>
           <AgentCardsPill
             v-bind="agentCard"
             :badges="agentCard?.badges ?? []"
             :show-subtitle="false"
             :link="Boolean(agentCard.to)"
-            class="block"
           />
         </div>
       </div>
     </template>
 
-    <div class="space-y-4">
+    <div class="fx-card-body-stack">
       <UCard :ui="{ body: 'fx-card-body-stack' }">
-        <div class="grid gap-4 md:grid-cols-2">
-          <div class="space-y-2">
+        <div>
+          <div class="fx-card-body-stack">
             <p>Location</p>
             <PlacePill v-if="placeId" :id="placeId" />
             <p v-else>Not selected</p>
           </div>
-          <div class="space-y-2">
+          <div class="fx-card-body-stack">
             <p>Business</p>
             <BusinessPill v-if="businessId" :id="businessId" />
             <p v-else>Not set</p>
@@ -68,17 +67,17 @@
         </div>
       </UCard>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <UPageGrid>
         <UCard :ui="{ body: 'fx-card-body-stack' }">
           <p>Schedule</p>
-          <p class="mt-1">{{ scheduleLabel }}</p>
+          <p>{{ scheduleLabel }}</p>
         </UCard>
 
         <UCard :ui="{ body: 'fx-card-body-stack' }">
           <p>Compensation</p>
-          <p class="mt-1">{{ compensationLabel }}</p>
+          <p>{{ compensationLabel }}</p>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <UCard :ui="{ body: 'fx-card-body-stack' }">
         <p>Description</p>

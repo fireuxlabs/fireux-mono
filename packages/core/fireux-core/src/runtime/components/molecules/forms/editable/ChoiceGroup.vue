@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2">
+  <div>
     <FireFormsTop
       :label="label"
       :is-editing="isEditing"
@@ -13,7 +13,7 @@
       @delete="clear"
     />
 
-    <div v-if="!isEditing" class="flex flex-wrap gap-2 p-3">
+    <div v-if="!isEditing">
       <UBadge
         v-for="option in selectedOptions"
         :key="option.value"

@@ -13,7 +13,6 @@
         :model-value="about"
         maxlength="900"
         :rows="5"
-        class="w-full"
         @update:model-value="emit('update:about', String($event || ''))"
       />
     </UFormField>
@@ -22,7 +21,6 @@
       <UInput
         :model-value="tags.join(', ')"
         placeholder="restaurant, terrace, family-friendly"
-        class="w-full"
         @update:model-value="updateTags"
       />
     </UFormField>
@@ -40,10 +38,7 @@
       :update="stageCover"
     />
 
-    <div
-      v-else-if="coverImage"
-      class="aspect-video overflow-hidden rounded-xl bg-elevated"
-    >
+    <div v-else-if="coverImage" class="aspect-video overflow-hidden">
       <img
         :src="coverImage"
         :alt="`${placeName} cover`"

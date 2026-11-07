@@ -12,7 +12,7 @@
     :description="intro.purpose"
   >
     <template #body
-      ><div class="grid gap-5">
+      ><div>
         <WorkspaceCapabilityInfo v-if="showStructuredDetails" />
         <section>
           <h3>Data and scope</h3>
@@ -28,7 +28,7 @@
         <section v-if="intro.allowance">
           <h3>Your allowance</h3>
           <p>{{ intro.allowance.description }}</p>
-          <p class="mt-2">{{ intro.allowance.retained }}</p>
+          <p>{{ intro.allowance.retained }}</p>
         </section>
         <section>
           <h3>Boundaries</h3>
@@ -36,7 +36,7 @@
         </section>
         <section v-if="intro.tools?.length">
           <h3>Tools</h3>
-          <dl class="grid gap-3">
+          <dl class="fx-card__detail-grid">
             <div v-for="tool in intro.tools" :key="tool.id">
               <dt>
                 {{ tool.label }}
@@ -49,7 +49,7 @@
                 >
               </dt>
               <dd>{{ tool.description }}</dd>
-              <dd v-if="tool.reason" class="mt-1">
+              <dd v-if="tool.reason">
                 {{ tool.reason }}
               </dd>
             </div>

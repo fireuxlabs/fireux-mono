@@ -34,11 +34,7 @@
               <FireCopyError message="Kitchen information is unavailable" />
             </template>
           </UAlert>
-          <USkeleton
-            v-else-if="kitchens.pending.value"
-            class="h-36"
-            aria-label="Loading Kitchen information"
-          />
+          <FireState v-else-if="kitchens.pending.value" outcome="pending" />
           <!-- Supplier public content is intentionally disconnected for this pass. -->
         </template>
       </PlaceDetail>

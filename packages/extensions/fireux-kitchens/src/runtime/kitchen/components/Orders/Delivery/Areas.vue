@@ -146,7 +146,7 @@
             {{ zones.length >= maxZones ? '4 zones max' : 'Add zone' }}
           </UButton>
 
-          <div class="flex items-center gap-2">
+          <div>
             <span v-if="saveState">
               {{ saveState }}
             </span>

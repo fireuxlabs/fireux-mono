@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div>
     <UButton
       :to="supplierBasePath"
       color="neutral"

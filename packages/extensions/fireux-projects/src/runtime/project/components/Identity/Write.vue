@@ -2,7 +2,7 @@
   <UModal
     v-model:open="open"
     title="Edit Project Identity"
-    description="Update this workspace’s name, description and image."
+    description="Update this workspace’s identity and public directory status."
     :dismissible="!saving"
     :close="!saving"
   >
@@ -32,6 +32,17 @@
             class="workspace-profile__input"
             :disabled="saving"
         /></UFormField>
+        <UFormField
+          label="Status"
+          hint="Active Projects appear in the public directory. Inactive Projects remain available in Workspace."
+        >
+          <USelect
+            v-model="status"
+            :items="statusItems"
+            class="workspace-profile__input"
+            :disabled="saving"
+          />
+        </UFormField>
         <UAlert
           v-if="error"
           color="error"
@@ -57,6 +68,7 @@
             :loading="saving"
             :disabled="
               !name.trim() ||
+              !status ||
               !sameProject ||
               !identity.canWrite.value ||
               !changed
@@ -71,8 +83,9 @@
 import { useToast } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, onScopeDispose, ref, watch } from 'vue'
-import type { ProjectIdentityIntent } from '../../../models/identity-intent'
-import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/useProjectWorkspaceIdentity'
+import type { ProjectIdentityIntent } from '../../models/identity-intent'
+import type { ProjectWorkspaceIdentityState } from '../../composables/workspace/useProjectWorkspaceIdentity'
+import type { ProjectStatus } from '../../models/project.model'
 const props = defineProps<{
   identity: ProjectWorkspaceIdentityState
   requestedOpen?: boolean
@@ -83,6 +96,11 @@ const saving = ref(false)
 const name = ref('')
 const description = ref('')
 const imageUrl = ref('')
+const status = ref<ProjectStatus>()
+const statusItems = [
+  { label: 'Active', value: 'active' },
+  { label: 'Inactive', value: 'inactive' },
+] satisfies { label: string; value: ProjectStatus }[]
 const projectId = ref('')
 const error = ref('')
 const original = ref('')
@@ -97,6 +115,7 @@ function resetEditor() {
   name.value = ''
   description.value = ''
   imageUrl.value = ''
+  status.value = undefined
   projectId.value = ''
 }
 watch(
@@ -117,6 +136,7 @@ const signature = () =>
     name.value.trim(),
     description.value.trim(),
     imageUrl.value.trim(),
+    status.value,
   ])
 const changed = computed(() => signature() !== original.value)
 watch(
@@ -137,6 +157,7 @@ function show(intent?: ProjectIdentityIntent) {
   name.value = props.identity.name.value
   description.value = props.identity.description.value
   imageUrl.value = props.identity.imageUrl.value
+  status.value = props.identity.projectStatus.value
   original.value = signature()
   if (intent?.action === 'update') {
     if (intent.name !== null) name.value = intent.name
@@ -149,6 +170,7 @@ function show(intent?: ProjectIdentityIntent) {
 async function save() {
   if (
     saving.value ||
+    !status.value ||
     !sameProject.value ||
     !props.identity.canWrite.value ||
     !changed.value
@@ -163,6 +185,7 @@ async function save() {
       name: name.value,
       description: description.value,
       imageUrl: imageUrl.value,
+      status: status.value,
     })
     if (epoch !== scopeEpoch) return
     open.value = false

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
 <!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Product dev diagnostics on live model and collection data. -->
 <template>
-  <section class="space-y-10">
+  <section>
     <UCard>
       <FireDiagnosticsModel
         :title="'Products · Model'"
@@ -11,8 +11,8 @@
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
             <p>Products collection</p>
             <p>
               Inspect model drift separately from the public products collection

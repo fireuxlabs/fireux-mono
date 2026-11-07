@@ -8,7 +8,7 @@
   >
     Close
   </UButton>
-  <section class="panels-narrow space-y-5">
+  <section class="panels-narrow">
     <WorkspacePropertyReservationsCreate />
   </section>
 </template>

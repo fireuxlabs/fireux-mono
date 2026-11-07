@@ -5,14 +5,14 @@
       <UAvatar
         :src="user.avatar || undefined"
         :alt="user.display_name"
-        class="size-24 sm:size-32"
+        size="3xl"
       />
-      <div class="min-w-0 flex-1">
-        <p class="mb-2">@{{ user.handle }}</p>
-        <h1 class="break-words">
+      <div>
+        <p>@{{ user.handle }}</p>
+        <h1>
           {{ user.display_name }}
         </h1>
-        <p v-if="user.bio" class="mt-4 max-w-xl whitespace-pre-line">
+        <p v-if="user.bio">
           {{ user.bio }}
         </p>
         <UButton

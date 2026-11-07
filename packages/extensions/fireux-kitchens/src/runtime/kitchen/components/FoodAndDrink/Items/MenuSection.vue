@@ -1,18 +1,12 @@
 <template>
   <FireCopyError v-if="error" :message="`${section.label}: ${String(error)}`" />
   <p v-else-if="pending">Loading {{ section.label }}…</p>
-  <NuxtLink
-    v-for="item in matches"
-    v-else
-    :key="item.id"
-    :to="destination"
-    class="flex items-center justify-between gap-4 border-b border-default py-3 last:border-0"
-  >
+  <NuxtLink v-for="item in matches" v-else :key="item.id" :to="destination">
     <div>
       <p>{{ section.label }}</p>
       <p v-if="section.date">{{ section.date }}</p>
     </div>
-    <div class="flex items-center gap-3">
+    <div>
       <UIcon name="i-lucide-arrow-up-right" />
     </div>
   </NuxtLink>

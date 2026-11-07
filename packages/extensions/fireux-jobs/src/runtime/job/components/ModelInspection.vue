@@ -1,15 +1,15 @@
 <!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: cull the ad-hoc Job card fixture. -->
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: inspect the canonical unhydrated Job shape. -->
 <template>
-  <section class="space-y-10">
+  <section>
     <UCard>
       <FireDiagnosticsModel :title="'Jobs · Model'" :model="jobModelRuntime" />
     </UCard>
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
             <p>Jobs collection</p>
             <p>
               Inspect model drift separately from the public jobs collection

@@ -14,56 +14,50 @@
     @submit.prevent="emit('submit')"
   >
     <template #footer>
-      <div class="flex w-full flex-wrap items-center justify-between gap-3">
-        <div class="flex min-w-0 max-w-full items-center gap-1">
-          <slot name="leading">
-            <UButton
-              type="button"
-              icon="i-lucide-mic"
-              color="neutral"
-              variant="ghost"
-              :disabled="!canRecord"
-              aria-label="Speak to Workspace AI"
-              @click="emit('record')"
-            />
-            <UButton
-              type="button"
-              icon="i-lucide-paperclip"
-              color="neutral"
-              variant="ghost"
-              :disabled="!canAttach"
-              aria-label="Attach a file"
-              @click="emit('attach')"
-            />
-          </slot>
-        </div>
-        <div class="flex min-w-0 max-w-full items-center gap-1">
+      <div class="fx-card__actions">
+        <slot name="leading">
           <UButton
-            to="https://fireux.app/gpt"
-            target="_blank"
-            :label="modelLabel || activeModel.label"
+            type="button"
+            icon="i-lucide-mic"
             color="neutral"
             variant="ghost"
-            size="xs"
-            :title="modelLabel || activeModel.label"
-            aria-label="About this FireUX AI model"
-          >
-            <template #leading>
-              <img
-                src="/img/core/brand/logo.svg"
-                alt=""
-                class="size-4 object-contain"
-              />
-            </template>
-          </UButton>
-          <slot name="submit">
-            <UChatPromptSubmit
-              :status="submitting ? 'submitted' : 'ready'"
-              :disabled="!canSubmit"
-              aria-label="Submit prompt"
-            />
-          </slot>
-        </div>
+            :disabled="!canRecord"
+            aria-label="Speak to Workspace AI"
+            @click="emit('record')"
+          />
+          <UButton
+            type="button"
+            icon="i-lucide-paperclip"
+            color="neutral"
+            variant="ghost"
+            :disabled="!canAttach"
+            aria-label="Attach a file"
+            @click="emit('attach')"
+          />
+        </slot>
+      </div>
+      <div class="fx-card__actions">
+        <UButton
+          to="https://fireux.app/gpt"
+          target="_blank"
+          :label="modelLabel || activeModel.label"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          :title="modelLabel || activeModel.label"
+          aria-label="About this FireUX AI model"
+        >
+          <template #leading>
+            <img src="/img/core/brand/logo.svg" alt="" width="16" height="16" />
+          </template>
+        </UButton>
+        <slot name="submit">
+          <UChatPromptSubmit
+            :status="submitting ? 'submitted' : 'ready'"
+            :disabled="!canSubmit"
+            aria-label="Submit prompt"
+          />
+        </slot>
       </div>
     </template>
   </UChatPrompt>
@@ -71,7 +65,6 @@
   <div
     v-if="suggestions.length"
     class="fx-card__actions"
-    :class="spacious ? 'justify-center' : undefined"
     :aria-label="suggestionsAriaLabel"
   >
     <UButton

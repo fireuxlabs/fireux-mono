@@ -1,54 +1,53 @@
 <template>
-  <UCard as="section" :aria-label="label" class="overflow-hidden">
+  <UCard as="section" :aria-label="label">
     <div class="landing-workspace-preview__layout">
-      <aside class="p-2">
-        <div class="flex min-w-0 justify-center overflow-hidden py-2">
+      <aside>
+        <div>
           <slot name="target" />
         </div>
 
-        <nav class="mt-2 grid gap-1" :aria-label="navigationLabel">
-          <button
+        <nav :aria-label="navigationLabel">
+          <UButton
             v-for="item in items"
             :key="item.id"
             type="button"
-            class="flex min-h-9 w-full items-center justify-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            :class="item.id === modelValue ? '' : ''"
+            :icon="item.icon"
+            color="neutral"
+            :variant="item.id === modelValue ? 'soft' : 'ghost'"
             :aria-label="item.title"
             :aria-current="item.id === modelValue ? 'page' : undefined"
             :title="item.title"
             @click="emit('update:modelValue', item.id)"
           >
-            <UIcon :name="item.icon" class="size-4 shrink-0" />
-          </button>
+          </UButton>
         </nav>
 
         <nav
           v-if="secondaryItems.length"
-          class="mt-3 pt-3"
           :aria-label="secondaryNavigationLabel"
         >
-          <p class="mb-1 hidden px-2 sm:block">
+          <p>
             {{ secondaryLabel }}
           </p>
-          <button
+          <UButton
             v-for="item in secondaryItems"
             :key="item.id"
             type="button"
-            class="flex min-h-9 w-full items-center justify-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            :class="item.id === modelValue ? '' : ''"
+            :icon="item.icon"
+            color="neutral"
+            :variant="item.id === modelValue ? 'soft' : 'ghost'"
             :aria-label="item.title"
             :aria-current="item.id === modelValue ? 'page' : undefined"
             :title="item.title"
             @click="emit('update:modelValue', item.id)"
           >
-            <UIcon :name="item.icon" class="size-4 shrink-0" />
-          </button>
+          </UButton>
         </nav>
       </aside>
 
-      <div v-if="selectedItem" class="min-w-0 p-4 sm:p-5">
-        <header class="flex min-h-9 items-center gap-2 pb-4">
-          <p class="min-w-0 flex-1 truncate">
+      <div v-if="selectedItem">
+        <header>
+          <p>
             {{ selectedItem.title }}
           </p>
           <UButton
@@ -60,8 +59,7 @@
             :aria-label="openWorkspaceAriaLabel"
             @click="emit('openWorkspace', $event)"
           >
-            <span class="hidden sm:inline">{{ openWorkspaceLabel }}</span>
-            <span class="sm:hidden">{{ openWorkspaceMobileLabel }}</span>
+            {{ openWorkspaceLabel }}
           </UButton>
         </header>
 

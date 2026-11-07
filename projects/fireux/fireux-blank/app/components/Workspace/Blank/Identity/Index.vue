@@ -17,7 +17,7 @@
         ><h2 class="fx-type-section-title">Profile</h2></template
       >
       <div class="fx-card-body-stack">
-        <h3 class="break-words fx-type-card-heading">
+        <h3 class="fx-type-card-heading">
           {{ selectedBlank.name || selectedBlank.slug || 'Untitled blank' }}
         </h3>
         <WorkspaceDedicatedApp :entity="selectedBlank" />

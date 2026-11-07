@@ -1,37 +1,28 @@
 <template>
-  <div class="mt-4" aria-label="Dishes preview">
-    <nav
-      class="mb-3 flex min-w-0 items-center gap-1"
-      aria-label="Dish preview breadcrumb"
-    >
-      <button
-        v-if="dish"
-        type="button"
-        class="transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        @click="$emit('show-collection')"
-      >
+  <div aria-label="Dishes preview">
+    <nav aria-label="Dish preview breadcrumb">
+      <UButton v-if="dish" type="button" @click="$emit('show-collection')">
         Dishes
-      </button>
+      </UButton>
       <span v-else>Dishes</span>
 
       <template v-if="dish">
         <UIcon name="i-lucide-chevron-right" />
-        <button
+        <UButton
           v-if="page !== 'detail'"
           type="button"
-          class="min-w-0 truncate transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           @click="$emit('show-detail')"
         >
           {{ dish.name }}
-        </button>
-        <span v-else class="min-w-0 truncate">
+        </UButton>
+        <span v-else>
           {{ dish.name }}
         </span>
       </template>
 
       <template v-if="dish && page !== 'detail'">
         <UIcon name="i-lucide-chevron-right" />
-        <span class="truncate">{{ pageLabel }}</span>
+        <span>{{ pageLabel }}</span>
       </template>
     </nav>
 

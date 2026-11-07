@@ -85,14 +85,22 @@ export function buildIdeFiles(root, apps) {
       ['$eslint-stylish', '$tsc']
     ),
     task('FireUX: Unit tests', ['test:unit']),
-    task('FireUX: Verify IDE configuration', ['ide:check'])
+    task('FireUX: Verify IDE configuration', ['ide:check']),
+    task('FireUX: Check local development setup', ['ide:doctor']),
+    task('FireUX: Open checkout in VS Code', ['ide:open'])
   )
   const files = new Map([
     ['.vscode/tasks.json', json({ version: '2.0.0', tasks })],
     ['.vscode/launch.json', json({ version: '0.2.0', configurations })],
     [
       'fireux-mono.code-workspace',
-      json({ folders: [{ name: 'FireUX Mono', path: '.' }], settings: {} }),
+      json({
+        folders: [{ name: 'FireUX Mono', path: '.' }],
+        settings: {
+          'window.title':
+            '${dirty}${activeEditorShort}${separator}${rootName}${separator}${rootPath}',
+        },
+      }),
     ],
   ])
   const ecosystems = readdirSync(path.join(root, 'projects'), {
@@ -109,7 +117,7 @@ export function buildIdeFiles(root, apps) {
       json({
         folders: [{ name: `${ecosystem} — FireUX Mono`, path: '../..' }],
         settings: {
-          'window.title': `${ecosystem} — \${activeEditorShort}`,
+          'window.title': `${ecosystem} — \${activeEditorShort} — \${rootPath}`,
           'files.exclude': Object.fromEntries(
             ecosystems
               .filter((key) => key !== ecosystem)

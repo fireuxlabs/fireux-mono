@@ -17,9 +17,18 @@ export default defineNuxtModule<{ businessWorkspace: boolean }>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
     addServerImportsDir(resolver.resolve('./runtime/server'))
+    addComponentsDir({
+      path: resolver.resolve('./runtime/components'),
+      prefix: 'Bookings',
+      pathPrefix: true,
+    })
     if (options.businessWorkspace) {
       requireNativeRuntimeLayer(resolver, nuxt)
-      addComponentsDir({ path: resolver.resolve('./runtime/business/components'), prefix: 'Bookings', pathPrefix: true })
+      addComponentsDir({
+        path: resolver.resolve('./runtime/business/components'),
+        prefix: 'Bookings',
+        pathPrefix: true,
+      })
     }
   },
 })

@@ -72,7 +72,7 @@
         />
       </div>
     </template>
-    <USkeleton v-else-if="pending" class="h-64" />
+    <FireState v-else-if="pending" outcome="pending" entity="recipe" />
     <UAlert v-else title="Recipe not found" color="neutral" variant="soft" />
     <FireDiagnosticsDebugPanel
       launcher

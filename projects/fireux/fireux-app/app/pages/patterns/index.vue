@@ -11,8 +11,8 @@ useAppLandingSeo({
 
 <template>
   <UContainer>
-    <NuxtLink to="/product" class="hover:underline">← FireUX product</NuxtLink>
-    <header class="space-y-4">
+    <ULink to="/product">← FireUX product</ULink>
+    <header class="pagebody">
       <p class="fx-type-headline">How we build</p>
       <h1 class="fx-type-page-title">FireUX Patterns</h1>
       <p class="fx-type-description">
@@ -28,10 +28,8 @@ useAppLandingSeo({
     <UCard>
       <div class="fx-card-body-stack">
         <h2 class="fx-type-section-title">
-          <NuxtLink
-            to="/patterns/one-action-many-interfaces"
-            class="hover:underline"
-            >One action, many interfaces</NuxtLink
+          <ULink to="/patterns/one-action-many-interfaces"
+            >One action, many interfaces</ULink
           >
         </h2>
         <p class="fx-type-body">

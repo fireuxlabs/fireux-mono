@@ -68,7 +68,7 @@ export const EntityAssetRequirements = {
   },
   favicon: {
     role: 'favicon', label: 'Favicon', filename: 'favicon.ico',
-    requirement: 'ICO or PNG · square · minimum 32×32',
+    requirement: 'ICO · PNG-encoded 16×16, 32×32, 48×48 and 64×64 images',
     dimensions: { minWidth: 32, minHeight: 32, aspect: 1, aspectTolerance: 0.01 },
   },
   pwaIcon192: {

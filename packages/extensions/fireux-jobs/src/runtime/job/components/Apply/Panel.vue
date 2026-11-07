@@ -1,13 +1,13 @@
 <template>
   <UCard>
     <template #header>
-      <div class="space-y-1">
+      <div class="fx-card-body-stack">
         <h3 class="fx-type-card-heading">Apply for this job</h3>
         <p>Your Professional profile is shared privately with the employer.</p>
       </div>
     </template>
 
-    <div v-if="applicationDoorway" class="space-y-4">
+    <div v-if="applicationDoorway" class="fx-card-body-stack">
       <UAlert
         color="primary"
         variant="soft"
@@ -32,7 +32,7 @@
       description="You can follow its progress from Applications & work."
     />
 
-    <form v-else class="space-y-4" @submit.prevent="submit">
+    <form v-else class="fx-card-body-stack" @submit.prevent="submit">
       <UFormField label="Message" hint="Optional">
         <UTextarea
           v-model="message"
@@ -52,7 +52,7 @@
         :description="errorMessage"
       />
 
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton type="submit" icon="i-lucide-send" :loading="submitting">
           Apply
         </UButton>

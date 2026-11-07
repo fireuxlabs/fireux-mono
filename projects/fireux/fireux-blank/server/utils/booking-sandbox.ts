@@ -34,7 +34,7 @@ type BookingSandboxProvider = {
 }
 
 function requireRange(startAt: unknown, endAt: unknown) {
-  const isTimestamp = (value: unknown) =>
+  const isTimestamp = (value: unknown): value is string =>
     typeof value === 'string' &&
     /^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) &&
     Number.isFinite(Date.parse(value))
@@ -83,7 +83,9 @@ export function createBookingSandbox(
     })
 
     return {
-      available: !busy.some((interval) => overlaps(interval, { startAt, endAt })),
+      available: !busy.some((interval) =>
+        overlaps(interval, { startAt, endAt })
+      ),
       busy,
     }
   }
@@ -222,7 +224,8 @@ export function createBookingSandbox(
   return {
     checkAvailability,
     createBooking,
-    listBookings: () => [...bookings.values()].sort((a, b) => b.startAt.localeCompare(a.startAt)),
+    listBookings: () =>
+      [...bookings.values()].sort((a, b) => b.startAt.localeCompare(a.startAt)),
     reset: () => {
       reservations.clear()
       bookings.clear()
@@ -233,7 +236,10 @@ export function createBookingSandbox(
 
 export function bookingSandboxHttpError(error: unknown) {
   if (error instanceof BookingError) {
-    return createError({ statusCode: error.statusCode, statusMessage: error.message })
+    return createError({
+      statusCode: error.statusCode,
+      statusMessage: error.message,
+    })
   }
   return createError({
     statusCode: 503,

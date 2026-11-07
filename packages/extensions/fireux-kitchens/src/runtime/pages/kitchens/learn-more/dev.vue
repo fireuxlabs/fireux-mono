@@ -12,7 +12,7 @@
           <h2>Canonical records</h2>
         </template>
 
-        <ul class="list-disc fx-list-stack">
+        <ul class="fx-list-stack">
           <li>
             Live runtime path: <code>misebox/kitchens/&lt;kitchenId&gt;</code>.
           </li>
@@ -51,7 +51,7 @@
         </div>
       </UCard>
 
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat"
           >Open kitchens</UButton
         >

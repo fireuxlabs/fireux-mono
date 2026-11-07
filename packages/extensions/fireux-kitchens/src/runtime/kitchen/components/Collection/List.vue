@@ -1,21 +1,10 @@
 <template>
-  <UPageGrid
-    as="ul"
-    class="list-none kitchen-collection-list"
-    aria-label="Kitchens"
-  >
+  <UPageGrid as="ul" class="kitchen-collection-list" aria-label="Kitchens">
     <li v-for="cell in cells" :key="cell.to">
       <UPageCard
         class="kitchen-discovery-card"
         :title="cell.title"
         :to="cell.to"
-        :ui="{
-          root: 'ring-0 shadow-none bg-transparent',
-          container: 'p-0 sm:p-0 gap-0',
-          header: 'mb-0 w-full',
-          body: 'p-0 w-full',
-          footer: 'p-0 w-full',
-        }"
       >
         <template #header>
           <div class="kitchen-discovery-card__media">
@@ -52,7 +41,7 @@
             <div class="kitchen-discovery-card__heading">
               <h2>{{ cell.title }}</h2>
               <p v-if="cell.meta" class="kitchen-discovery-card__location">
-                <UIcon name="i-lucide-map-pin" class="shrink-0" />
+                <UIcon name="i-lucide-map-pin" />
                 {{ cell.meta }}
               </p>
             </div>
@@ -68,10 +57,7 @@
           >
             {{ cell.description }}
           </p>
-          <div
-            class="mt-4 flex flex-wrap gap-2"
-            :aria-label="`Services at ${cell.title}`"
-          >
+          <div :aria-label="`Services at ${cell.title}`">
             <UBadge
               v-if="cell.hasPublishedMenu"
               color="neutral"

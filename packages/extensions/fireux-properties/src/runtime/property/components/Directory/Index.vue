@@ -29,7 +29,7 @@
       "
       surface="collection"
     />
-    <div v-if="hasMore" class="mt-6 flex justify-center">
+    <div v-if="hasMore">
       <UButton
         label="Show more properties"
         :loading="loadingMore"

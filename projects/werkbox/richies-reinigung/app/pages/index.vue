@@ -32,7 +32,7 @@
           Hire Richie
         </NuxtLink>
         <NuxtLink class="btn outline" to="tel:+41789520500">
-          <Icon name="i-lucide-phone" class="h-5 w-5" />
+          <Icon name="i-lucide-phone" />
           +41 78 952 05 00
         </NuxtLink>
       </div>

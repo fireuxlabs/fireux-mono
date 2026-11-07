@@ -7,14 +7,14 @@
     </template>
 
     <template #body>
-      <div class="grid gap-4 lg:grid-cols-3">
-        <UCard class="lg:col-span-2">
-          <div class="space-y-2">
+      <UPageGrid>
+        <UCard>
+          <div class="fx-card-body-stack">
             <p>Welcome back</p>
             <p>Keep your professional profile fresh to boost discovery.</p>
           </div>
 
-          <div class="mt-4 flex flex-wrap gap-2">
+          <div>
             <UButton
               to="/dashboard/professional/profile"
               label="Edit profile"
@@ -33,12 +33,12 @@
 
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2">
+            <div>
               <UIcon name="i-lucide-sparkles" />
               Quick actions
             </div>
           </template>
-          <div class="space-y-2">
+          <div class="fx-card-body-stack">
             <UButton
               to="/dashboard/professional/profile"
               label="Update headline"
@@ -54,25 +54,25 @@
             />
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <UCard>
         <template #header>
-          <div class="flex items-center gap-2">
+          <div>
             <UIcon name="i-lucide-flag" />
             Profile checklist
           </div>
         </template>
-        <ul class="space-y-2">
-          <li class="flex items-center gap-2">
+        <ul class="fx-card-body-stack">
+          <li>
             <UIcon name="i-lucide-check-circle" />
             Add a summary that explains your focus.
           </li>
-          <li class="flex items-center gap-2">
+          <li>
             <UIcon name="i-lucide-check-circle" />
             List positions you’re open to.
           </li>
-          <li class="flex items-center gap-2">
+          <li>
             <UIcon name="i-lucide-check-circle" />
             Upload a profile image for credibility.
           </li>

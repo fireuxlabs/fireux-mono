@@ -1,8 +1,5 @@
 <template>
-  <section
-    class="flex flex-wrap items-center gap-2"
-    aria-label="Blank selector"
-  >
+  <section aria-label="Blank selector">
     <UTabs
       v-if="items.length"
       :model-value="workspace.id.value"

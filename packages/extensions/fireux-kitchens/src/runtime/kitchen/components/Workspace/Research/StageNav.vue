@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="Capability research stages" class="flex flex-wrap gap-2">
+  <nav aria-label="Capability research stages">
     <UButton
       v-for="stage in stages"
       :key="stage.id"
@@ -23,7 +23,11 @@ const props = defineProps<{
 
 const stages = computed(() => [
   { id: 'evidence' as const, label: '1 · Evidence', to: props.basePath },
-  { id: 'analysis' as const, label: '2 · Analysis', to: `${props.basePath}/analysis` },
+  {
+    id: 'analysis' as const,
+    label: '2 · Analysis',
+    to: `${props.basePath}/analysis`,
+  },
   { id: 'tools' as const, label: '3 · Tools', to: `${props.basePath}/tools` },
 ])
 </script>

@@ -13,7 +13,7 @@
       :title="item.description"
       :disabled="disabled || item.disabled"
       size="lg"
-      class="multi-select-option cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      class="multi-select-option"
       @click="toggle(item.value)"
     />
   </div>

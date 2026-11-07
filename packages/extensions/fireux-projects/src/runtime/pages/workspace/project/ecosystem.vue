@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: adopt route-level workspace metadata. -->
 <template>
-  <section class="space-y-6">
+  <section>
     <WorkspaceProjectEcosystem />
   </section>
 </template>

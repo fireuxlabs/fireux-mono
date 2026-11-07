@@ -4,7 +4,7 @@
       <KitchenDetailHeader :kitchen="presentation" :place="place" />
     </template>
     <template #services>
-      <div class="space-y-3">
+      <div>
         <KitchenDetailMenuServices :kitchen-slug="presentation.slug" />
         <UButton
           :to="menusPath"

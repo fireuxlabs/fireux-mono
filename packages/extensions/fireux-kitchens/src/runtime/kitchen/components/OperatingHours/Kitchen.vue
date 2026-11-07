@@ -4,7 +4,7 @@
       <div class="card__header">
         <div>
           <h2>Kitchen service hours</h2>
-          <p class="mt-1">
+          <p>
             The window for all customer services, within venue opening hours.
           </p>
         </div>
@@ -18,10 +18,7 @@
         title="Kitchen hours need adjusting"
         description="Saved Kitchen hours extend outside venue opening hours. Effective service hours are limited to the venue window."
       />
-      <div
-        v-if="usesVenueHours && !customRequested"
-        class="card__header"
-      >
+      <div v-if="usesVenueHours && !customRequested" class="card__header">
         <div class="fx-card-body-stack">
           <p>Same as venue</p>
           <p>
@@ -90,9 +87,7 @@
       >
         <template #actions><FireCopyError :message="error" /></template>
       </UAlert>
-      <footer
-        class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4"
-      >
+      <footer>
         <UButton
           to="/workspace/kitchen/food-and-drink/services"
           label="Services"

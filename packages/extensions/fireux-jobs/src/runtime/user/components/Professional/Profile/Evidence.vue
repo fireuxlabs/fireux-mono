@@ -10,11 +10,10 @@
       eyebrow="Communication"
       title="Languages"
     >
-      <div class="space-y-3">
+      <div>
         <div
           v-for="language in model.languages"
           :key="`${language.language}-${language.proficiency}`"
-          class="flex items-center justify-between gap-3"
         >
           <span>{{ language.language }}</span>
           <UBadge
@@ -44,15 +43,12 @@
           <h3 class="fx-type-card-title">
             {{ cert.name }}
           </h3>
-          <p
-            v-if="[cert.place_name, cert.year].filter(Boolean).length"
-            class="mt-1"
-          >
+          <p v-if="[cert.place_name, cert.year].filter(Boolean).length">
             {{ [cert.place_name, cert.year].filter(Boolean).join(' · ') }}
           </p>
-          <a
+          <ULink
             v-if="cert.document_url"
-            :href="cert.document_url"
+            :to="cert.document_url"
             :aria-label="`View ${cert.name || 'certification'} credential`"
             target="_blank"
             rel="noreferrer"
@@ -60,7 +56,7 @@
           >
             View credential
             <UIcon name="i-lucide-external-link" />
-          </a>
+          </ULink>
         </article>
       </div>
     </UserProfileSection>
@@ -81,13 +77,13 @@
           <h3 class="fx-type-card-title">
             {{ entry.degree || 'Professional training' }}
           </h3>
-          <p class="mt-1">
+          <p>
             {{ entry.institution }} ·
             {{ formatRange(entry.start_year, entry.end_year, entry.ongoing) }}
           </p>
-          <a
+          <ULink
             v-if="entry.document_url"
-            :href="entry.document_url"
+            :to="entry.document_url"
             :aria-label="`View ${entry.degree || 'education'} document`"
             target="_blank"
             rel="noreferrer"
@@ -95,7 +91,7 @@
           >
             View document
             <UIcon name="i-lucide-external-link" />
-          </a>
+          </ULink>
         </article>
       </div>
     </UserProfileSection>

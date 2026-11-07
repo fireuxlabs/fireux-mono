@@ -4,16 +4,14 @@
       <div class="section__header">
         <div class="section__copy">
           <h3>Surfaces</h3>
-          <p>
-            Card surfaces derived from the app model.
-          </p>
+          <p>Card surfaces derived from the app model.</p>
         </div>
       </div>
     </template>
 
-    <div v-if="appCard" class="section__item space-y-4">
+    <div v-if="appCard" class="section__item">
       <div>
-        <div class="mb-2">
+        <div>
           <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
         </div>
         <AppCardsCell
@@ -23,12 +21,11 @@
           :badges="appCard.badges"
           :tagline="appCard.tagline"
           :link="Boolean(appCard.to)"
-          class="block"
         />
       </div>
 
       <div>
-        <div class="mb-2">
+        <div>
           <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
         </div>
         <AppCardsSummary
@@ -48,10 +45,9 @@
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../composables/useAppView';
+import type { AppCard } from '../../../composables/useAppView'
 
 defineProps<{
   appCard: AppCard | null
 }>()
-
 </script>

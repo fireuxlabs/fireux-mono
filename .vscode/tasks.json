@@ -1039,6 +1039,38 @@
         "reveal": "always",
         "panel": "dedicated"
       }
+    },
+    {
+      "label": "FireUX: Check local development setup",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "ide:doctor"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "FireUX: Open checkout in VS Code",
+      "type": "process",
+      "command": "pnpm",
+      "args": [
+        "ide:open"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     }
   ]
 }

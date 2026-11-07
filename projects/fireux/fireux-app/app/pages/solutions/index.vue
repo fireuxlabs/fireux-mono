@@ -1,13 +1,13 @@
 <!-- Concurrent edit — 2026-07-21 12:28 CEST — FireUX solutions hub: curate FireUX offers before exposing ecosystem catalogues. -->
 <!-- Concurrent edit — 2026-07-21 12:57 CEST — FireUX project positioning: surface the current Project Workspace as a restrained solution. -->
 <template>
-  <main class="min-h-screen bg-default">
+  <UPage>
     <UContainer>
-      <div class="mx-auto grid max-w-5xl gap-10">
-        <header class="grid max-w-3xl gap-3">
-          <NuxtLink to="/" class="w-fit hover:underline"> FireUX </NuxtLink>
-          <h1 class="m-0 fx-type-page-title">FireUX solutions</h1>
-          <p class="m-0 fx-type-body">
+      <div class="pagebody">
+        <header class="pagebody">
+          <ULink to="/"> FireUX </ULink>
+          <h1 class="fx-type-page-title">FireUX solutions</h1>
+          <p class="fx-type-body">
             Search-led pages for specific jobs a FireUX App or Ecosystem can
             support.
           </p>
@@ -15,8 +15,8 @@
 
         <section class="pagebody">
           <div class="pagebody">
-            <h2 class="m-0 fx-type-section-title">Start here</h2>
-            <p class="m-0 fx-type-caption">
+            <h2 class="fx-type-section-title">Start here</h2>
+            <p class="fx-type-caption">
               Choose the job closest to the App you need.
             </p>
           </div>
@@ -35,56 +35,51 @@
         </section>
 
         <section class="pagebody">
-          <h2 class="m-0 fx-type-section-title">More solutions</h2>
+          <h2 class="fx-type-section-title">More solutions</h2>
           <UCard variant="subtle">
-            <div class="divide-y divide-default">
-              <NuxtLink
+            <div>
+              <ULink
                 v-for="solution in moreSolutions"
                 :key="solution.slug"
                 :to="solution.to || `/solutions/${solution.slug}`"
                 :target="solution.external ? '_blank' : undefined"
-                class="flex min-w-0 items-center gap-4 py-4 first:pt-0 last:pb-0"
               >
                 <UIcon :name="solution.icon || 'i-lucide-lightbulb'" />
-                <span class="min-w-0 flex-1">
-                  <span class="block">
+                <span>
+                  <span>
                     {{ solution.title }}
                   </span>
-                  <span class="block">
+                  <span>
                     {{ solution.description }}
                   </span>
                 </span>
                 <UIcon name="i-lucide-arrow-right" />
-              </NuxtLink>
+              </ULink>
             </div>
           </UCard>
         </section>
 
-        <section
-          v-if="platformSolutions.length"
-          class="grid gap-4 border-t border-default pt-8"
-        >
+        <section v-if="platformSolutions.length" class="pagebody">
           <div class="pagebody">
-            <h2 class="m-0 fx-type-section-title">FireUX App options</h2>
-            <p class="m-0 fx-type-caption">
+            <h2 class="fx-type-section-title">FireUX App options</h2>
+            <p class="fx-type-caption">
               Use Ignition to request a FireUX App, or explore published
               Ecosystems and their Apps.
             </p>
           </div>
-          <div class="flex flex-wrap gap-x-5 gap-y-3">
-            <NuxtLink
+          <div>
+            <ULink
               v-for="solution in platformSolutions"
               :key="solution.slug"
               :to="`/solutions/${solution.slug}`"
-              class="hover:underline"
             >
               {{ solution.title }}
-            </NuxtLink>
+            </ULink>
           </div>
         </section>
       </div>
     </UContainer>
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

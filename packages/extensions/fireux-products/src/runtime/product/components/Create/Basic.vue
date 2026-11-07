@@ -29,7 +29,6 @@
       :rows="6"
       autoresize
       placeholder="Content"
-      class="w-full"
     />
   </div>
 </template>

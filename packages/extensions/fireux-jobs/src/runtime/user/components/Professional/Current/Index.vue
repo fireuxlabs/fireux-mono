@@ -1,13 +1,13 @@
 <template>
-  <section data-entity-cta-family="profile-managed" class="space-y-4">
-    <div v-if="hasProfile && profileCard" class="space-y-4">
+  <section data-entity-cta-family="profile-managed">
+    <div v-if="hasProfile && profileCard">
       <ProfessionalCardsSummary
         v-if="profileCard"
         v-bind="profileCard"
         :link="false"
       />
 
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton v-if="profileTo" color="primary" :to="profileTo">
           View profile
         </UButton>

@@ -6,7 +6,7 @@
         <div class="card__header">
           <div>
             <h2>Gross sales</h2>
-            <p class="mt-1">Completed Kitchen sales by period.</p>
+            <p>Completed Kitchen sales by period.</p>
           </div>
           <UBadge color="success" variant="subtle">Available</UBadge>
         </div>

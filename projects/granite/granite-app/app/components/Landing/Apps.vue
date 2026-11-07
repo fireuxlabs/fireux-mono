@@ -10,9 +10,7 @@
       </div>
 
       <UCard>
-        <div
-          class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-        >
+        <div class="pagebody">
           <div class="fx-card-body-stack">
             <p class="fx-type-caption">Ready to run Granite?</p>
             <p class="fx-type-caption">

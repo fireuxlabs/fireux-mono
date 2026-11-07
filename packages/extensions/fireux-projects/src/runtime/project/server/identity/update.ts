@@ -22,13 +22,21 @@ function identityPatch(value: unknown) {
   const keys = Object.keys(source)
   if (
     !keys.length ||
-    keys.some((key) => !['name', 'description', 'image_url'].includes(key))
+    keys.some(
+      (key) => !['status', 'name', 'description', 'image_url'].includes(key)
+    )
   )
     fail(400, 'Only Project Identity fields may be updated.')
   const patch: Record<string, string> = {}
   for (const key of keys) {
     if (typeof source[key] !== 'string')
       fail(400, 'Project Identity fields must be text.')
+    if (
+      key === 'status' &&
+      source[key] !== 'active' &&
+      source[key] !== 'inactive'
+    )
+      fail(400, 'Project status must be active or inactive.')
     const raw = (source[key] as string).trim()
     const value = key === 'name' ? raw.replace(/\s+/g, ' ') : raw
     if (key === 'name' && (!value || value.length > 120))
@@ -95,7 +103,8 @@ export async function updateProjectIdentity(
       )
         fail(403, 'Project membership is required.')
       if (!project.exists) fail(404, 'Project was not found.')
-      if (!readProjectDocument(project.data, projectId)) fail(409, 'Project source is invalid.')
+      if (!readProjectDocument(project.data, projectId))
+        fail(409, 'Project source is invalid.')
       transaction.update(fireuxProjectsTarget, projectId, {
         ...patch,
         updated: serverAuditStamp({ by: uid }),

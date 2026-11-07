@@ -1,6 +1,6 @@
 <template>
   <WorkspaceKitchenAICapabilityInfo capability="dishes" />
-  <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+  <div>
     <KitchenFoodAndDrinkItems />
   </div>
 </template>

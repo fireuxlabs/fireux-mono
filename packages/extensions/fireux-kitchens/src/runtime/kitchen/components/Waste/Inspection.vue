@@ -1,5 +1,5 @@
 <template>
-  <section class="grid gap-4">
+  <UPageGrid as="section">
     <UCard variant="subtle">
       <template #header>
         <div class="card__header">
@@ -46,7 +46,7 @@
         <section class="fx-card-body-stack">
           <h3>Guiding literature</h3>
           <p>{{ devContext.literatureIntroduction }}</p>
-          <ul class="list-disc space-y-1 pl-5">
+          <ul>
             <li v-for="keyword in devContext.keywords" :key="keyword">
               {{ keyword }}
             </li>
@@ -56,13 +56,13 @@
 
         <section class="fx-card-body-stack">
           <h3>What people need</h3>
-          <ul class="list-disc space-y-1 pl-5">
+          <ul>
             <li v-for="need in devContext.needs" :key="need">{{ need }}</li>
           </ul>
         </section>
       </div>
     </UCard>
-  </section>
+  </UPageGrid>
 </template>
 
 <script setup lang="ts">

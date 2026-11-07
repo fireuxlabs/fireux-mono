@@ -1,10 +1,10 @@
 <template>
   <div class="landing-index-section">
-    <div class="mb-6">
+    <div>
       <h2 class="fx-type-section-title">Apps Powered by FireUX</h2>
     </div>
 
-    <div v-if="appsPending" class="flex flex-wrap gap-2">
+    <div v-if="appsPending">
       <USkeleton />
       <USkeleton />
       <USkeleton />
@@ -13,13 +13,12 @@
       <USkeleton />
     </div>
 
-    <div v-else class="flex flex-wrap justify-center gap-2">
+    <div v-else>
       <UTooltip v-for="app in displayedApps" :key="app.id" :text="app.name">
-        <a
+        <ULink
           v-if="`/apps/${encodeURIComponent(app.id)}`"
-          :href="`/apps/${encodeURIComponent(app.id)}`"
+          :to="`/apps/${encodeURIComponent(app.id)}`"
           :aria-label="`Open ${app.name}`"
-          class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UAvatar
             :src="app.media?.logo_url || app.media?.thumbnail_url"
@@ -28,11 +27,8 @@
             size="xs"
           />
           <span>{{ app.name }}</span>
-        </a>
-        <span
-          v-else
-          class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 shadow-sm"
-        >
+        </ULink>
+        <span v-else>
           <UAvatar
             :src="app.media?.logo_url || app.media?.thumbnail_url"
             :alt="app.name"

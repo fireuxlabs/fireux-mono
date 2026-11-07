@@ -1,21 +1,22 @@
 <template>
-  <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
+  <section>
     <WorkspaceKitchenResearchStageNav :base-path="basePath" current="tools" />
 
-    <header class="grid gap-3 border-b border-default pb-8">
+    <header>
       <p>Stage 3 · Tools</p>
       <h1>Proposed {{ capability }} Tools</h1>
-      <p class="max-w-3xl">
+      <p>
         Language specifications derived from the capability analysis. Status
         reflects the current Tool source.
       </p>
     </header>
 
     <section class="workspace-surface__grid">
-      <UCard as="article" :ui="{ body: 'fx-card-body-stack' }"
+      <UCard
+        as="article"
+        :ui="{ body: 'fx-card-body-stack' }"
         v-for="tool in tools"
         :key="tool.id"
-        
       >
         <header class="card__header">
           <div class="workspace-surface__grid">
@@ -32,10 +33,7 @@
 
         <p>{{ tool.purpose }}</p>
 
-        <div
-          v-if="recordsFor(tool.id).length"
-          class="fx-card__chips"
-        >
+        <div v-if="recordsFor(tool.id).length" class="fx-card__chips">
           <span>Records:</span>
           <UBadge
             v-for="record in recordsFor(tool.id)"
@@ -47,7 +45,7 @@
           </UBadge>
         </div>
 
-        <div class="grid gap-4 md:grid-cols-3">
+        <div>
           <section
             v-for="part in toolParts"
             :key="part.key"
@@ -56,7 +54,7 @@
             <h3>
               {{ part.label }}
             </h3>
-            <ul class="fx-list-stack list-disc">
+            <ul class="fx-list-stack">
               <li v-for="item in tool[part.key] || []" :key="item">
                 {{ item }}
               </li>
@@ -64,7 +62,7 @@
           </section>
         </div>
 
-        <div class="grid gap-2 border-t border-default pt-4">
+        <div>
           <p>
             <strong>Authority:</strong>
             {{ tool.authority }}
@@ -77,41 +75,31 @@
       </UCard>
     </section>
 
-    <section
-      v-if="demand.currentDrift?.length"
-      class="grid gap-3 rounded-xl border border-warning/40 bg-warning/5 p-5"
-    >
+    <section v-if="demand.currentDrift?.length">
       <p>Current scope drift</p>
-      <ul class="fx-list-stack list-disc">
+      <ul class="fx-list-stack">
         <li v-for="item in demand.currentDrift" :key="item">{{ item }}</li>
       </ul>
     </section>
 
     <section
       v-if="specialistResponsibilities.length || kitchenResponsibilities.length"
-      class="grid gap-5 border-t border-default pt-8 lg:grid-cols-2"
     >
-      <div
-        v-if="specialistResponsibilities.length"
-        class="grid content-start gap-3"
-      >
+      <div v-if="specialistResponsibilities.length">
         <p>
           {{ specialistLabel }}
         </p>
         <h2>Specialist responsibility</h2>
-        <ul class="fx-list-stack list-disc">
+        <ul class="fx-list-stack">
           <li v-for="item in specialistResponsibilities" :key="item">
             {{ item }}
           </li>
         </ul>
       </div>
-      <div
-        v-if="kitchenResponsibilities.length"
-        class="grid content-start gap-3"
-      >
+      <div v-if="kitchenResponsibilities.length">
         <p>KitchenAI</p>
         <h2>Coordinator responsibility</h2>
-        <ul class="fx-list-stack list-disc">
+        <ul class="fx-list-stack">
           <li v-for="item in kitchenResponsibilities" :key="item">
             {{ item }}
           </li>
@@ -119,12 +107,14 @@
       </div>
     </section>
 
-    <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
+    <UCard
+      as="section"
+      variant="subtle"
+      :ui="{ body: 'fx-card-body-stack' }"
       v-if="activation.length"
-      
     >
       <p>Activation gate</p>
-      <ul class="fx-list-stack list-disc">
+      <ul class="fx-list-stack">
         <li v-for="item in activation" :key="item">{{ item }}</li>
       </ul>
       <p>

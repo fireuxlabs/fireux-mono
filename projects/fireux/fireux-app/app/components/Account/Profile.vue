@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto flex w-full max-w-xl flex-col gap-6">
+  <div class="pagebody">
     <FireStateCard
       v-if="coreOutcome === 'idle' || coreOutcome === 'pending'"
       entity="account"
@@ -32,7 +32,7 @@
       <USeparator />
       <div>
         <p class="fx-type-caption">Sign-in email</p>
-        <p class="mt-1 break-words fx-type-caption">
+        <p class="fx-type-caption">
           {{ currentUser?.email || 'Not available' }}
         </p>
       </div>

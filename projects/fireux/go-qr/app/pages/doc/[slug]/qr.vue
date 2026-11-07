@@ -1,18 +1,16 @@
 <template>
-  <main class="min-h-screen bg-white text-slate-950">
-    <div
-      class="mx-auto flex min-h-screen flex-col items-center justify-center gap-2 p-2"
-    >
+  <main class="bg-white text-slate-950">
+    <div class="p-2">
       <div class="pagebody">
-        <p class="text-slate-500 fx-type-body">Go QR</p>
-        <h1 class="max-w-[92vw] truncate fx-type-page-title">
+        <p>Go QR</p>
+        <h1 class="fx-truncate">
           {{ documentLabel }}
         </h1>
       </div>
 
       <div
         v-if="qrDataUrl"
-        class="relative max-w-[96vw]"
+        class="relative"
         style="
           width: min(96vw, calc(100vh - 4.75rem), 44rem);
           height: min(96vw, calc(100vh - 4.75rem), 44rem);
@@ -23,16 +21,15 @@
           :alt="`QR code for ${documentLabel}`"
           class="size-full"
         />
-        <div
-          class="absolute left-1/2 top-1/2 grid size-[18%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[22%] border-[0.45rem] border-white bg-[#4f2df4] px-1 text-[clamp(0.45rem,3.25vw,1.45rem)] text-white shadow-sm"
+        <UBadge
+          class="absolute left-1/2 top-1/2 size-[18%] -translate-x-1/2 -translate-y-1/2 border-[0.45rem] border-white"
           aria-hidden="true"
         >
           {{ qrCentreLabel }}
-        </div>
+        </UBadge>
       </div>
       <div
         v-else
-        class="grid max-w-[96vw] place-items-center border border-slate-200 text-slate-500"
         style="
           width: min(96vw, calc(100vh - 4.75rem), 44rem);
           height: min(96vw, calc(100vh - 4.75rem), 44rem);
@@ -41,18 +38,15 @@
         Creating QR
       </div>
 
-      <p class="max-w-[92vw] break-all text-slate-600 fx-type-body">
+      <p class="break-all">
         {{ publicUrl }}
       </p>
 
-      <a
-        href="https://go-qr.web.app"
-        class="flex items-center justify-center gap-1.5 text-[10px] text-slate-500 hover:text-slate-900"
-      >
+      <ULink to="https://go-qr.web.app">
         <span>Powered by</span>
-        <img src="/img/app/logo.svg" alt="Go QR" class="size-4" />
+        <UAvatar src="/img/app/logo.svg" alt="Go QR" size="xs" />
         <span>Go QR</span>
-      </a>
+      </ULink>
     </div>
   </main>
 </template>

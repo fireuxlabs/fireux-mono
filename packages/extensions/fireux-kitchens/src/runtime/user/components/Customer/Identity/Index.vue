@@ -2,11 +2,7 @@
 <template>
   <section class="workspace-profile__section">
     <div class="workspace-profile__pills">
-      <CustomerCardsPill
-        v-if="customerCard"
-        v-bind="customerCard"
-        class="block"
-      />
+      <CustomerCardsPill v-if="customerCard" v-bind="customerCard" />
     </div>
 
     <UPageCard v-if="isProfileLoading" variant="subtle">
@@ -26,7 +22,7 @@
         @click="createProfile"
       />
 
-      <p v-if="createError" class="mt-3">
+      <p v-if="createError">
         {{ createError }}
       </p>
     </UPageCard>

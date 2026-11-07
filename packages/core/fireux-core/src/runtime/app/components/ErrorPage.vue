@@ -93,9 +93,7 @@
               <h2 class="fx-type-card-heading">Technical details</h2>
               <p>Raw error output for debugging and support.</p>
             </template>
-            <pre class="max-h-[28rem] overflow-auto">{{
-              resolvedError.message
-            }}</pre>
+            <pre class="overflow-auto">{{ resolvedError.message }}</pre>
           </UCard>
         </UPageBody>
       </UPage>

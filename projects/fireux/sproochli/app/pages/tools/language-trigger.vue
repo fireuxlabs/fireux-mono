@@ -1,7 +1,6 @@
 <template>
-  <main ref="toolRoot" class="inline-flex bg-transparent p-2">
+  <UPage ref="toolRoot">
     <SproochliProviderToolsLanguageTrigger
-      class="w-full"
       :selected-language="config.selectedLanguage"
       :default-language="config.defaultLanguage"
       :attached-languages="config.attachedLanguages"
@@ -10,7 +9,7 @@
       :on-demand-languages="config.onDemandLanguages"
       :show-group-labels="config.showGroupLabels"
     />
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

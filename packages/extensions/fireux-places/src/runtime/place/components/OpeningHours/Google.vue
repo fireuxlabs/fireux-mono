@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-start gap-2">
+  <div>
     <UButton
       v-if="showButton"
       size="xs"

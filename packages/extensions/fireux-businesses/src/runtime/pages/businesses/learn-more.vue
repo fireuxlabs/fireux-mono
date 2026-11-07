@@ -6,7 +6,7 @@
     />
 
     <UPageBody class="pagebody">
-      <section class="space-y-3">
+      <section>
         <h2 class="fx-type-section-title">Why Businesses exists</h2>
         <p>
           Businesses are records bound to canonical Places. This keeps location
@@ -15,9 +15,9 @@
         </p>
       </section>
 
-      <section class="space-y-3">
+      <section>
         <h3 class="fx-type-card-title">Core capabilities today</h3>
-        <ul class="space-y-2">
+        <ul>
           <li>
             <strong>Place-bound records</strong>
             &nbsp;— create a business from a confirmed place.
@@ -33,9 +33,9 @@
         </ul>
       </section>
 
-      <section class="space-y-3">
+      <section>
         <h3 class="fx-type-card-title">Get started</h3>
-        <div class="flex flex-wrap gap-2">
+        <div>
           <UButton to="/businesses/create" color="primary"
             >Create a business</UButton
           >

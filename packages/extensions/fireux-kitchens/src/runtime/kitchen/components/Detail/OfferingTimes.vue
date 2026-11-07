@@ -1,24 +1,18 @@
 <template>
   <section
     v-if="offerings.length || emptyMessage"
-    class="space-y-3"
-    :class="{
-      'rounded-2xl border border-default bg-elevated/30 p-5': !compact,
-    }"
+    class="fx-card-body-stack"
+    :class="{ 'fx-inset-panel': !compact }"
     aria-label="Serving times"
   >
-    <div v-if="!compact" class="flex items-center gap-2">
+    <div v-if="!compact">
       <UIcon name="i-lucide-utensils" aria-hidden="true" />
       Serving times
     </div>
     <p v-if="!offerings.length">
       {{ emptyMessage }}
     </p>
-    <div
-      v-for="row in rows"
-      :key="row.id"
-      class="flex flex-wrap items-baseline gap-x-2 gap-y-1"
-    >
+    <div v-for="row in rows" :key="row.id">
       <span v-if="showNames">{{ row.name }}</span>
       <span>{{ row.label }}</span>
       <span v-if="row.closes">· Until {{ row.closes }}</span>
@@ -31,7 +25,7 @@
       :hours="offering.hours || { windows: [] }"
       compact
     />
-    <p v-if="next && !compact" class="border-t border-default pt-3">
+    <p v-if="next && !compact">
       Next offering:
       <span>{{ next.name }}</span> ·
       {{ next.next }}

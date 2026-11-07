@@ -1,22 +1,43 @@
 <template>
-  <section id="menu" class="template-one-menu" :style="style" data-landing-scene="menu">
+  <section
+    id="menu"
+    class="template-one-menu"
+    :style="style"
+    data-landing-scene="menu"
+  >
     <div class="template-one-menu__intro" data-landing-reveal="up">
       <div>
         <h2 class="fx-type-section-title">Menu</h2>
         <span aria-hidden="true" />
         <p v-if="content.menu.description">{{ content.menu.description }}</p>
-        <NuxtLink v-if="content.menuHref && content.menuActionLabel" :to="content.menuHref">
+        <NuxtLink
+          v-if="content.menuHref && content.menuActionLabel"
+          :to="content.menuHref"
+        >
           {{ content.menuActionLabel }}
         </NuxtLink>
       </div>
-      <img v-if="introItem?.imageUrl" :src="introItem.imageUrl" alt="" loading="lazy">
+      <img
+        v-if="introItem?.imageUrl"
+        :src="introItem.imageUrl"
+        alt=""
+        loading="lazy"
+      />
     </div>
 
-    <div class="template-one-menu__grid" data-landing-reveal="up" style="--landing-reveal-delay: 80ms">
+    <div
+      class="template-one-menu__grid"
+      data-landing-reveal="up"
+      style="--landing-reveal-delay: 80ms"
+    >
       <TemplateOneDishCard v-for="item in dishes" :key="item.id" :item="item" />
     </div>
 
-    <article v-if="makeItYours" class="template-one-menu__make-it-yours" data-landing-reveal="scale">
+    <article
+      v-if="makeItYours"
+      class="template-one-menu__make-it-yours"
+      data-landing-reveal="scale"
+    >
       <div>
         <p>+</p>
         <h3 class="fx-type-card-title">{{ makeItYours.name }}</h3>
@@ -28,7 +49,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppPalette, AppTypography, TemplateOneMenuContent } from '../../models/template-one'
+import type {
+  AppPalette,
+  AppTypography,
+  TemplateOneMenuContent,
+} from '../../models/template-one'
 import TemplateOneDishCard from './DishCard.vue'
 
 const props = defineProps<{
@@ -37,12 +62,21 @@ const props = defineProps<{
   typography: AppTypography
 }>()
 
-const items = computed(() => props.content.menu.sections.flatMap(section => section.items))
-const makeItYours = computed(() => props.content.makeItYours ?? items.value.find(item => item.addOns.length > 0) ?? null)
-const dishes = computed(() => items.value.filter(item => item.id !== makeItYours.value?.id))
+const items = computed(() =>
+  props.content.menu.sections.flatMap((section) => section.items)
+)
+const makeItYours = computed(
+  () =>
+    props.content.makeItYours ??
+    items.value.find((item) => item.addOns.length > 0) ??
+    null
+)
+const dishes = computed(() =>
+  items.value.filter((item) => item.id !== makeItYours.value?.id)
+)
 const introItem = computed(() => dishes.value[0])
 const addOnLabels = computed(() => {
-  const labels = makeItYours.value?.addOns.map(addOn => addOn.label) ?? []
+  const labels = makeItYours.value?.addOns.map((addOn) => addOn.label) ?? []
   return labels.length ? `${labels.join('. ')}.` : ''
 })
 const style = computed(() => ({

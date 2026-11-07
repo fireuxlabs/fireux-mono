@@ -2,7 +2,7 @@
   <UCard>
     <div class="workspace-surface workspace-surface--compact">
       <div class="card__media">
-        <UIcon name="i-lucide-key-round" class="shrink-0" />
+        <UIcon name="i-lucide-key-round" />
         <div class="workspace-surface workspace-surface--compact">
           <h2>Kitchen access needed</h2>
           <p>

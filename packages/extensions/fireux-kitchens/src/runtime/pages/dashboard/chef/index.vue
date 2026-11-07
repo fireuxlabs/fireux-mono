@@ -7,8 +7,8 @@
     </template>
 
     <template #body>
-      <div class="grid gap-4 lg:grid-cols-3">
-        <UCard class="lg:col-span-2">
+      <UPageGrid as="div">
+        <UCard>
           <div class="fx-card-body-stack">
             <p>Welcome back</p>
             <p>Keep your chef profile updated for faster discovery.</p>
@@ -54,7 +54,7 @@
             />
           </div>
         </UCard>
-      </div>
+      </UPageGrid>
 
       <UCard>
         <template #header>

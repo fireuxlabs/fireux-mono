@@ -4,52 +4,32 @@
     :action="preview"
     @activate="emit('open')"
     :data-ingredient-id="id"
-    class="ingredient-card group min-w-0 overflow-hidden rounded-xl border border-default bg-default transition hover:border-primary/40 hover:shadow-sm"
-    :class="[
-      variant === 'list' ? 'ingredient-card--list' : '',
-      fluid || variant === 'list' ? 'w-full' : 'w-36',
-    ]"
+    class="card card--cell ingredient-card"
+    :class="{ 'ingredient-card--list': variant === 'list' }"
   >
-    <div
-      class="ingredient-card__media relative shrink-0 overflow-hidden bg-elevated/60"
-    >
+    <div class="ingredient-card__media">
       <img
         v-if="imageUrl && !imageFailed"
         :src="imageUrl"
         :alt="title"
-        class="size-full object-cover transition duration-300 motion-safe:group-hover:scale-[1.03]"
+        class="size-full object-cover"
         loading="lazy"
         @error="onImageError"
       />
-      <div
-        v-else
-        class="flex size-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/5 to-transparent"
-      >
-        <UIcon
-          :name="icon"
-          :class="
-            variant === 'list' ? 'size-6 opacity-50' : 'size-9 opacity-40'
-          "
-          aria-hidden="true"
-        />
+      <div v-else>
+        <UIcon :name="icon" aria-hidden="true" />
       </div>
     </div>
-    <div
-      class="ingredient-card__caption flex min-w-0 flex-1 items-center gap-3"
-    >
-      <div class="min-w-0 flex-1">
-        <h3 :class="variant === 'list' ? 'truncate' : 'line-clamp-2'">
+    <div class="ingredient-card__caption">
+      <div>
+        <h3>
           {{ title || 'Unnamed ingredient' }}
         </h3>
-        <p v-if="variant === 'list' && categoryLabel" class="mt-0.5">
+        <p v-if="variant === 'list' && categoryLabel">
           {{ categoryLabel }}
         </p>
       </div>
-      <UIcon
-        name="i-lucide-arrow-right"
-        class="shrink-0 transition"
-        aria-hidden="true"
-      />
+      <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
     </div>
   </FireActionSurface>
 </template>
@@ -65,7 +45,6 @@ const props = withDefaults(
     icon?: string
     categoryLabel?: string
     variant?: 'grid' | 'list'
-    fluid?: boolean
     preview?: boolean
   }>(),
   {
@@ -73,7 +52,6 @@ const props = withDefaults(
     icon: 'i-lucide-carrot',
     categoryLabel: '',
     variant: 'grid',
-    fluid: false,
     preview: false,
   }
 )

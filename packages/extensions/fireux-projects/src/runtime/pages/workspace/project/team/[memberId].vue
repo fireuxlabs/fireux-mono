@@ -5,7 +5,6 @@
     icon="i-lucide-arrow-left"
     color="neutral"
     variant="ghost"
-    class="w-fit"
   />
   <p v-if="team.derived.value.status === 'loading'" role="status">
     Loading person…
@@ -18,7 +17,7 @@
     <template #description
       ><FireCopyError message="Team could not be loaded" />
     </template> </UAlert
-  ><WorkspaceProjectTeam
+  ><ProjectTeam
     v-else-if="member"
     :key="memberId"
     :team="team"

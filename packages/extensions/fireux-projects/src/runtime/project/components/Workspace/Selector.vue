@@ -1,9 +1,5 @@
 <template>
-  <section
-    id="workspace-entity-controls"
-    class="flex flex-wrap items-center gap-2"
-    aria-label="Project selector"
-  >
+  <section id="workspace-entity-controls" aria-label="Project selector">
     <WorkspaceProjectSelectorChoices
       v-if="workspace.collection.value.length"
       :collection="workspace.collection.value"

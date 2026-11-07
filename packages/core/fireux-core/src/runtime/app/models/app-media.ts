@@ -59,6 +59,7 @@ export type AppPublicAssetRequirement = {
   requirementsText: string
   requirementsHtml: string
   dimensions: AppAssetDimensionConstraints
+  requiredIconSizes?: readonly number[]
   syncKind?: AppImageKind
   storageObjectName?: string
   firestoreField?: AppImageFirestoreField

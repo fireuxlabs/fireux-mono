@@ -11,12 +11,9 @@
     :max-items="maxItems"
   >
     <template #edit="{ item, save, cancel }">
-      <div class="space-y-2">
+      <div>
         <UInput v-model="item.language" placeholder="Language" />
-        <select
-          v-model="item.proficiency"
-          class="w-full rounded-md border border-default bg-transparent px-3 py-2"
-        >
+        <select v-model="item.proficiency">
           <option value="">Proficiency</option>
           <option
             v-for="option in proficiencyOptions"
@@ -26,7 +23,7 @@
             {{ option }}
           </option>
         </select>
-        <div class="flex gap-2">
+        <div>
           <UButton
             size="xs"
             variant="solid"

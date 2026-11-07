@@ -1,6 +1,6 @@
 <template>
-  <div class="cta__body space-y-2">
-    <div class="cta__toolbar flex justify-end">
+  <div class="cta__body">
+    <div class="cta__toolbar">
       <UButton
         size="xs"
         variant="ghost"

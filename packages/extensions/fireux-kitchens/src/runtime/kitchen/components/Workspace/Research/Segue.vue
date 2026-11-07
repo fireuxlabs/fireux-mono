@@ -1,7 +1,5 @@
 <template>
-  <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }"
-    
-  >
+  <UCard as="section" variant="subtle" :ui="{ body: 'fx-card-body-stack' }">
     <div class="workspace-surface__grid">
       <p>Capability research</p>
       <h2>See why {{ capability }} is shaped this way</h2>

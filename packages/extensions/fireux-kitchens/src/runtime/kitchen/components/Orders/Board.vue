@@ -1,7 +1,7 @@
 <template>
-  <section ref="board" class="order-board min-h-full space-y-5">
-    <header class="flex flex-wrap items-center justify-between gap-4">
-      <div class="flex flex-wrap gap-2" aria-label="Order states">
+  <section ref="board" class="order-board">
+    <header>
+      <div aria-label="Order states">
         <UButton
           v-for="state in states"
           :key="state"
@@ -12,7 +12,7 @@
           @click="toggleState(state)"
         />
       </div>
-      <div class="flex items-center gap-2">
+      <div>
         <UButton
           :label="fullscreen ? 'Exit full screen' : 'Full screen'"
           :icon="fullscreen ? 'i-lucide-minimize' : 'i-lucide-maximize'"
@@ -23,10 +23,7 @@
         />
       </div>
     </header>
-    <UModal
-      v-model:open="editorOpen"
-      title="Order"
-      :ui="{ content: 'sm:max-w-5xl' }"
+    <UModal v-model:open="editorOpen" title="Order"
       ><template #body
         ><KitchenOrdersEditor
           v-if="editorOpen"
@@ -37,38 +34,35 @@
       color="error"
       description="Some open orders could not be loaded."
     />
-    <p v-if="!kitchenId" class="py-16">Select a Kitchen first.</p>
+    <p v-if="!kitchenId">Select a Kitchen first.</p>
     <UAlert
       v-if="error || refreshTransport.error.value || fullscreenError"
       color="error"
       :description="error || refreshTransport.error.value || fullscreenError"
     />
-    <p v-if="loaded && !allOrders.length && !error" class="py-20">
-      No orders yet
-    </p>
-    <p v-else-if="loaded && !visibleOrders.length && !error" class="py-20">
+    <p v-if="loaded && !allOrders.length && !error">No orders yet</p>
+    <p v-else-if="loaded && !visibleOrders.length && !error">
       No orders in the selected states.
     </p>
     <div class="ticket-grid">
       <article
         v-for="entry in visibleOrders"
         :key="entry.order.id"
-        class="board-ticket overflow-hidden rounded-xl border border-default bg-default"
+        class="board-ticket"
         :style="{
           borderTopColor: colours[entry.state as keyof typeof colours],
         }"
         :aria-label="`Order ${entry.order.number}`"
       >
-        <div class="flex items-center justify-between px-4 py-2">
+        <div>
           <span>{{ labels[entry.state as keyof typeof labels] }}</span>
         </div>
         <KitchenOrdersTicket
           :order="entry.order"
           :editable="false"
           :show-contact-details="false"
-          class="rounded-none ring-0"
         />
-        <div class="space-y-3 border-t border-default p-3">
+        <div>
           <UButton
             v-if="entry.state === 'open'"
             label="Open order"
@@ -123,14 +117,11 @@
             variant="ghost"
             size="sm"
           >
-            <div class="space-y-3 pt-3">
+            <div>
               <p v-if="entry.order.customer?.phone">
                 {{ entry.order.customer.phone }}
               </p>
-              <p
-                v-if="entry.order.delivery_address"
-                class="whitespace-pre-line"
-              >
+              <p v-if="entry.order.delivery_address">
                 {{ entry.order.delivery_address }}
               </p>
               <template v-if="entry.state === 'received'">

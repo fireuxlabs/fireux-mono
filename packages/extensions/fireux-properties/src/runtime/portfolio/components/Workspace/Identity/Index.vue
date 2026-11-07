@@ -1,5 +1,5 @@
 <template>
-  <section class="grid min-w-0 gap-6">
+  <section>
     <WorkspacePortfolioIdentityRead :identity="identity">
       <template #actions>
         <UButton

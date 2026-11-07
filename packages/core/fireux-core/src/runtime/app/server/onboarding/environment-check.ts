@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { getStorage } from 'firebase-admin/storage'
 import { requireDevDeveloper } from '../../../server/utils/auth/developer'
 import { getAdminApp } from '../../../server/utils/getAdmin'
-import { checkCurrentAppBrandAssets } from './brand-assets'
+import { inspectAppBrandAssets } from './brand-assets'
 import { findRepoRoot } from '../../../server/utils/files/repository-root'
 
 function firstString(...values: unknown[]): string {
@@ -241,7 +241,7 @@ export async function readAppEnvironmentCheck(
     .map((entry) => entry.key)
   const presentOptionalClient = optionalClient.filter((entry) => entry.present)
 
-  const brandAssets = checkCurrentAppBrandAssets()
+  const brandAssets = await inspectAppBrandAssets(join(process.cwd(), 'public'))
 
   const passedBrandCount = brandAssets.filter((b) => b.ok).length
 

@@ -1,17 +1,14 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-center justify-between gap-2">
+      <div class="card__header">
         <h2 class="fx-type-card-heading">Network jobs</h2>
         <UBadge v-if="isSettled" variant="soft">{{ total }}</UBadge>
       </div>
-      <p class="opacity-70">Open roles published across this runtime.</p>
+      <p>Open roles published across this runtime.</p>
     </template>
 
-    <div v-if="outcome === 'pending'" class="space-y-3">
-      <USkeleton class="h-20" />
-      <USkeleton class="h-20" />
-    </div>
+    <FireState v-if="outcome === 'pending'" outcome="pending" />
 
     <UAlert
       v-else-if="outcome === 'error'"
@@ -22,17 +19,17 @@
     />
 
     <template v-else>
-      <ul v-if="jobs.length" class="grid gap-4 md:grid-cols-2">
+      <UPageGrid v-if="jobs.length" as="ul">
         <li v-for="job in jobs" :key="job.id">
           <UCard>
-            <div class="flex items-start justify-between gap-3">
-              <div class="space-y-1">
+            <div class="card__header">
+              <div class="fx-card-body-stack">
                 <h3 class="fx-type-card-heading">{{ job.title }}</h3>
                 <p>
                   {{ job.category_id }}
                 </p>
               </div>
-              <div class="flex flex-col items-end gap-2">
+              <div>
                 <UBadge
                   size="xs"
                   :color="badgeColor(job.status)"
@@ -49,9 +46,9 @@
             </div>
           </UCard>
         </li>
-      </ul>
+      </UPageGrid>
 
-      <p v-else class="opacity-70">No jobs published yet. Check back soon.</p>
+      <p v-else>No jobs published yet. Check back soon.</p>
     </template>
   </UCard>
 </template>

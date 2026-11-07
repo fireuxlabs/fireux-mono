@@ -1,7 +1,7 @@
 # Documentation system
 
 Updated: 2026-11-06
-Ref: 8744b0f78
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -27,15 +27,15 @@ update the map in the same change when the corrected rule is durable.
 
 ## Document roles
 
-| Document                 | Job                                               | Must not become                                 |
-| ------------------------ | ------------------------------------------------- | ----------------------------------------------- |
-| `AGENTS.md`              | Short operating router                            | The whole repository rulebook                   |
-| `docs/ai/gpt-context.md` | Durable repo-wide agent context                   | A copy of every concept map                     |
-| Owning package/App `docs/ai/*-context.md`, or central cross-owner context | Durable scope-specific agent context              | Task status, chat history, or speculative plans |
-| `docs/concepts/*.md`     | Navigable concept and family maps                 | An implementation substitute                    |
-| `docs/roadmaps/fireux-priorities.md` | One current priority queue with promotion criteria | A competing architecture or release authority |
-| `docs/archive/`          | Parked plans, dated audits and recovered drafts    | An automatically active task queue              |
-| README files             | Package landing map or concise placeholder | Architectural authority                         |
+| Document                                                                  | Job                                                | Must not become                                 |
+| ------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------- |
+| `AGENTS.md`                                                               | Short operating router                             | The whole repository rulebook                   |
+| `docs/ai/gpt-context.md`                                                  | Durable repo-wide agent context                    | A copy of every concept map                     |
+| Owning package/App `docs/ai/*-context.md`, or central cross-owner context | Durable scope-specific agent context               | Task status, chat history, or speculative plans |
+| `docs/concepts/*.md`                                                      | Navigable concept and family maps                  | An implementation substitute                    |
+| `docs/roadmaps/fireux-priorities.md`                                      | One current priority queue with promotion criteria | A competing architecture or release authority   |
+| `docs/archive/`                                                           | Parked plans, dated audits and recovered drafts    | An automatically active task queue              |
+| README files                                                              | Package landing map or concise placeholder         | Architectural authority                         |
 
 ## Metadata
 
@@ -108,11 +108,11 @@ speculative alternatives do not belong in living documentation.
 
 ## Contributor and public docs
 
-| Reader | Start here | What belongs there |
-| --- | --- | --- |
-| People and agents working on FireUX | [AGENTS.md](../../AGENTS.md) | Working rules, scoped context and architecture maps. |
-| People building with FireUX | `/getting-started` and [the public reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/index.vue) at `/docs` | Setup, supported APIs and examples. |
-| People and tools reading published context | `/context` and `/context/research` | Reviewed summaries of FireUX and its research. |
+| Reader                                     | Start here                                                                                                                       | What belongs there                                   |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| People and agents working on FireUX        | [AGENTS.md](../../AGENTS.md)                                                                                                     | Working rules, scoped context and architecture maps. |
+| People building with FireUX                | `/getting-started` and [the public reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/index.vue) at `/docs` | Setup, supported APIs and examples.                  |
+| People and tools reading published context | `/context` and `/context/research`                                                                                               | Reviewed summaries of FireUX and its research.       |
 
 Keep contributor guidance in the repository. FireUX App hosts the public
 guides and the `fireux-docs` reference. Give each API one reference, based on
@@ -123,8 +123,10 @@ Ecosystem Main Apps own shared public guides for their products and libraries.
 Tenant Apps, such as La Tap Berne, and standalone Apps add documentation only
 for an explicit product need. They may link to their Ecosystem's guides.
 The App selects its documentation layer. The `fireux-docs` extension hosts
-FireUX's developer reference and depends on Core; Core does not depend on Docs. The App
-and Ecosystem bundles do not add that FireUX-specific content to other Apps.
+FireUX's developer reference. It depends on Core for native surfaces and on
+`fireux-bookings` for its separate Extension component preview. Core depends on
+neither Docs nor Bookings. The App and Ecosystem bundles do not add that
+FireUX-specific content to other Apps.
 
 The public reference follows the parts of a Nuxt App that developers work
 with: configuration, pages, layouts, components, composables, and server
@@ -138,6 +140,13 @@ that inventory from Core source and Nuxt registration through
 previews and local-only callbacks. Components without an isolated preview remain
 visible as source-only entries; do not auto-mount connected screens or claim that
 an inventory entry is a supported standalone control.
+
+The Core inventory stays Core-only. Reusable Extension components with a
+separate public preview are presented on their own Docs pages, rendered from
+the owning package with generic placeholder data. Keep those previews outside
+`core-inventory.mjs`; they do not change Core ownership. The
+[Bookings customer form preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue)
+is the current example.
 
 The smaller `fireux-docs/src/runtime/models/catalogue.ts` supplies the curated
 usage guides and sidebar links. Patterns and templates remain separate

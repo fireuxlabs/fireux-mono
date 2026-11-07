@@ -67,12 +67,15 @@
     "ide:sync": "node tools/ide/sync.mjs",
     "ide:check": "node tools/ide/sync.mjs --check",
     "check:changed": "node tools/ide/check.mjs check",
+    "check:assets": "node tools/ide/assets.mjs",
     "lint:changed": "node tools/ide/check.mjs lint",
     "format:changed": "node tools/ide/check.mjs format",
     "check:scope": "node tools/ide/check.mjs check",
     "test:scope": "node tools/ide/check.mjs test",
     "typecheck:scope": "node tools/ide/check.mjs typecheck",
-    "test:unit": "node tools/ide/unit.mjs"
+    "test:unit": "node tools/ide/unit.mjs",
+    "ide:doctor": "node tools/ide/workspace.mjs doctor",
+    "ide:open": "node tools/ide/workspace.mjs open"
   },
   "engines": {
     "node": ">=22.23 <23",

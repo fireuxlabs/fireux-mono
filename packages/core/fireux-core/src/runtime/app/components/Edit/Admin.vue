@@ -11,11 +11,11 @@
       :scope="{ appId: app.id }"
     />
 
-    <section class="space-y-4">
-      <div class="flex flex-wrap items-end justify-between gap-3">
+    <section>
+      <div>
         <div>
           <h3>App users and access</h3>
-          <p class="mt-1">Manage the members and access for this App.</p>
+          <p>Manage the members and access for this App.</p>
         </div>
 
         <div
@@ -44,7 +44,7 @@
         state="error"
       />
 
-      <div v-else class="grid gap-4 lg:grid-cols-2">
+      <div v-else>
         <AppEditSectionsAdmins
           :rows="adminRows"
           :has-more="adminsHasMore"
@@ -63,7 +63,6 @@
           :pill-for="adminPillFor"
           :on-make-admin="makeMemberAdmin"
           :on-set-subscription="setMemberSubscription"
-          class="lg:col-span-2"
         />
       </div>
     </section>

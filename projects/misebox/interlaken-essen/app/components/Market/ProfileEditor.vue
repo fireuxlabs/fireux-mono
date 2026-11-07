@@ -7,7 +7,6 @@
       :ui="{
         overlay: 'market-profile-editor__overlay',
         content: 'market-profile-editor__content',
-        header: 'sr-only',
         body: 'market-profile-editor__body',
       }"
     >
@@ -46,7 +45,6 @@
             <p class="market-profile__eyebrow">
               {{ copy('profile_region') }}
             </p>
-            <h2>{{ copy('profile_modal_title') }}</h2>
             <p class="market-profile__copy">
               {{ copy('profile_intro') }}
             </p>

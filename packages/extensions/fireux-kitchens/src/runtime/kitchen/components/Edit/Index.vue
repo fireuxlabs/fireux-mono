@@ -37,7 +37,7 @@
           description="We could not find this kitchen. Return to the kitchens list and try again."
         />
 
-        <div v-else class="space-y-6">
+        <div v-else>
           <template v-if="canEdit">
             <PlaceEdit
               v-if="place"
@@ -62,7 +62,7 @@
         </div>
 
         <template #fallback>
-          <div class="py-10 opacity-70">Loading kitchen…</div>
+          <div>Loading kitchen…</div>
         </template>
       </ClientOnly>
     </UPageBody>

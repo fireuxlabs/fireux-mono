@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
 Updated: 2026-11-06
-Ref: f2fbf2242
+Ref: 614700fd9
 Role: map, not canon
 
 ## Purpose
@@ -249,8 +249,9 @@ it composes the Portfolio overview with Documents, Tasks and Compliance and
 registers the existing `WorkspacePortfolioOverview` name explicitly. Core does
 not import those domains, and Properties does not import its upper Ecosystem.
 No package-level directory is required for a package containing only one Entity's
-Workspace implementation. Project-specific Intent, Team AI and App context UI
-live beneath `fireux-projects/runtime/project/components/Workspace`.
+Workspace implementation. Project Intent and App context UI remain under
+`fireux-projects/runtime/project/components/Workspace`; Project Identity and
+Team, including Team AI, live under their named capability folders beside it.
 
 Entity-specific Workspace implementation lives with the entity:
 
@@ -260,8 +261,11 @@ src/runtime/kitchen/composables/workspace/
 src/runtime/kitchen/server/
 ```
 
-Workspace capability components and composables sit directly beneath their
-entity-owned Workspace role, producing names such as `KitchenOrders`.
+Domain capability components sit directly beneath the Entity's components
+root, producing names such as `KitchenOrders` and `ProjectTeam`. Workspace
+composition and selected-Entity coordination remain in `components/Workspace`
+and `composables/workspace`; existing unmigrated capability folders are debt,
+not another ownership convention.
 Sidebar groups may group capability doorways in navigation, but `Operations`,
 `Capabilities`, `Supporting` and `Sundries` are not component-folder owners.
 Entry controls live in `Home`; cross-page helpers have specific names.
@@ -348,8 +352,8 @@ target tree.
 
 | Difference                                                                                                                        | State        | Direction                                                                                           |
 | --------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------- |
-| Declared entity implementation lives under `runtime/<entity>/<role>`                                                              | `accepted`   | Preserve the scoped owner; inspect imports and consumers for completed legacy paths     |
-| Scoped component and composable roles require explicit Nuxt registration                                                          | `accepted`   | Use the shared Nuxt Kit helpers; compare populated roles with generated Nuxt declarations  |
+| Declared entity implementation lives under `runtime/<entity>/<role>`                                                              | `accepted`   | Preserve the scoped owner; inspect imports and consumers for completed legacy paths                 |
+| Scoped component and composable roles require explicit Nuxt registration                                                          | `accepted`   | Use the shared Nuxt Kit helpers; compare populated roles with generated Nuxt declarations           |
 | Confirmed parent-owned Records and Operations live beneath the parent Entity                                                      | `accepted`   | Keep their technical roles under the parent scope without promoting them to new root Entities       |
 | To-confirm concepts remain on their owning package spine                                                                          | `to-confirm` | Make the model decision before creating an Entity root; do not infer Entity status from a UI folder |
 | Nuxt pages, layouts, middleware, plugins, server API handlers, and static public projection remain in their framework directories | `accepted`   | Keep Nuxt discovery explicit and delegate substantial entity work inward                            |

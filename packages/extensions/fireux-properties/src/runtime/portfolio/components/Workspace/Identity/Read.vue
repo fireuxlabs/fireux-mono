@@ -16,12 +16,12 @@
     <template v-else>
       <UCard>
         <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="card__header">
             <h2 class="fx-type-card-heading">Profile</h2>
             <slot name="actions" />
           </div>
         </template>
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div>
           <UAvatar
             :src="imageUrl || undefined"
             :alt="name || 'Portfolio'"
@@ -29,7 +29,7 @@
             size="3xl"
           />
 
-          <div class="min-w-0 space-y-1">
+          <div class="fx-card-body-stack">
             <h3 class="break-words">
               {{ name || 'Untitled portfolio' }}
             </h3>
@@ -38,18 +38,18 @@
             </p>
           </div>
         </div>
-        <p v-if="regionLabel" class="mt-4">
+        <p v-if="regionLabel">
           {{ regionLabel }}
         </p>
       </UCard>
 
       <UCard>
         <template #header
-          ><div class="flex flex-wrap items-center justify-between gap-3">
+          ><div class="card__header">
             <h2 class="fx-type-card-heading">Internal context</h2>
             <slot name="context-actions" /></div
         ></template>
-        <p class="mb-4">
+        <p>
           Owner, strategy and notes are for your team. They are not shown in the
           public directory.
         </p>

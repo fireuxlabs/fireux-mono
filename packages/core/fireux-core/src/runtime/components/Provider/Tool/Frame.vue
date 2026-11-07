@@ -1,22 +1,13 @@
 <template>
   <UCard variant="subtle">
     <div class="fx-card-body-stack">
-      <a
-        :href="providerUrl"
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center gap-2"
-      >
-        <AppBrandLogo
-          size="small"
-          :alt="logoAlt || providerName"
-          class="size-4"
-        />
+      <a :href="providerUrl" target="_blank" rel="noopener">
+        <AppBrandLogo size="small" :alt="logoAlt || providerName" />
         <span>Powered by {{ providerName }}</span>
       </a>
 
-      <header v-if="title || description" class="space-y-2">
-        <div class="flex flex-wrap items-center gap-2">
+      <header v-if="title || description">
+        <div>
           <h2 v-if="title">
             {{ title }}
           </h2>

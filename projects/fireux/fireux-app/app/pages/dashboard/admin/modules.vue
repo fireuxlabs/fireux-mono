@@ -24,7 +24,7 @@
                 icon="i-lucide-puzzle"
                 variant="subtle"
               >
-                <div class="grid gap-3 sm:grid-cols-2">
+                <div class="pagebody">
                   <FireActionSurface
                     v-for="module in modules"
                     :key="module.id"
@@ -34,25 +34,22 @@
                     :data-selected="isSelected(module.id, selectedValues)"
                     @activate="toggleSlug(module.id)"
                   >
-                    <div class="flex items-start gap-3 p-2 pr-20">
-                      <div
-                        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-elevated"
-                      >
+                    <div>
+                      <div>
                         <UIcon :name="module.icon" />
                       </div>
-                      <div class="min-w-0">
+                      <div>
                         <p class="fx-type-body">
                           {{ module.name }}
                         </p>
                         <code>{{ module.id }}</code>
-                        <p class="mt-2 fx-type-caption">
+                        <p class="fx-type-caption">
                           {{ module.description }}
                         </p>
                       </div>
                     </div>
 
                     <UBadge
-                      class="absolute"
                       :color="
                         isSelected(module.id, selectedValues)
                           ? 'primary'

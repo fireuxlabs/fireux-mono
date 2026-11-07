@@ -1,27 +1,22 @@
 <template>
-  <article
-    class="min-h-[24rem] rounded-xl border border-default bg-default p-4 shadow-sm sm:p-5"
-    aria-label="Dish Finance preview"
-  >
+  <UCard as="article" aria-label="Dish Finance preview">
     <p class="fx-type-caption">Finance</p>
-    <h3 class="mt-1 fx-type-card-heading">{{ dish.name }}</h3>
+    <h3 class="fx-type-card-heading">{{ dish.name }}</h3>
 
-    <dl v-if="dish.finance" class="mt-5 grid grid-cols-2 gap-3">
-      <div
-        class="col-span-2 flex items-center justify-between gap-3 rounded-lg bg-elevated/40 p-3"
-      >
+    <dl v-if="dish.finance">
+      <div>
         <dt>Selling price</dt>
         <dd>{{ formatMoney(dish.finance.sellingPriceMinor) }}</dd>
       </div>
       <UCard>
         <dt>Quantity sold</dt>
-        <dd class="mt-1">
+        <dd>
           {{ dish.finance.quantitySold ?? 'No completed sales' }}
         </dd>
       </UCard>
       <UCard>
         <dt>Total sales</dt>
-        <dd class="mt-1">
+        <dd>
           {{
             dish.finance.totalSalesMinor === null
               ? '—'
@@ -29,31 +24,29 @@
           }}
         </dd>
       </UCard>
-      <div class="rounded-lg bg-elevated/40 p-3">
+      <div>
         <dt>Cost of sales</dt>
-        <dd class="mt-1">{{ formatMoney(dish.finance.costOfSalesMinor) }}</dd>
+        <dd>{{ formatMoney(dish.finance.costOfSalesMinor) }}</dd>
       </div>
-      <div class="rounded-lg bg-elevated/40 p-3">
+      <div>
         <dt>Gross profit</dt>
-        <dd class="mt-1">{{ formatMoney(dish.finance.grossProfitMinor) }}</dd>
+        <dd>{{ formatMoney(dish.finance.grossProfitMinor) }}</dd>
       </div>
       <UCard>
         <dt>Food cost</dt>
-        <dd class="mt-1">
+        <dd>
           {{ formatPercentage(dish.finance.foodCostPercentage) }}
         </dd>
       </UCard>
       <UCard>
         <dt>Gross margin</dt>
-        <dd class="mt-1">
+        <dd>
           {{ formatPercentage(dish.finance.grossMarginPercentage) }}
         </dd>
       </UCard>
     </dl>
-    <p v-else class="mt-5 rounded-lg bg-elevated/40 p-3 fx-type-caption">
-      Finance estimate unavailable.
-    </p>
-  </article>
+    <p v-else class="fx-type-caption">Finance estimate unavailable.</p>
+  </UCard>
 </template>
 
 <script setup lang="ts">

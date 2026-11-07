@@ -1,7 +1,6 @@
 <template>
-  <main ref="toolRoot" class="bg-transparent">
+  <UPage ref="toolRoot">
     <SproochliProviderToolsMenu
-      class="w-full"
       :title="config.title"
       :description="config.description"
       :source-url="config.sourceUrl"
@@ -17,7 +16,7 @@
       :target-languages-label="config.targetLanguagesLabel"
       :cta-label="config.ctaLabel"
     />
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

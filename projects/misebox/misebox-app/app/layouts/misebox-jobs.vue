@@ -3,19 +3,16 @@
   <div class="fx-layout-shell" data-misebox-jobs-layout>
     <FireLayoutsDefaultHeader />
 
-    <div class="border-b border-default bg-default/80 backdrop-blur">
+    <div>
       <UContainer>
-        <NuxtLink to="/jobs" class="inline-flex items-center gap-2">
-          <span class="grid size-8 place-items-center rounded-lg bg-primary/10">
+        <ULink to="/jobs">
+          <span>
             <UIcon name="i-lucide-briefcase-business" aria-hidden="true" />
           </span>
           Misebox Jobs
-        </NuxtLink>
+        </ULink>
 
-        <nav
-          class="flex items-center gap-1 overflow-x-auto"
-          aria-label="Misebox Jobs"
-        >
+        <nav aria-label="Misebox Jobs">
           <UButton to="/jobs" color="neutral" variant="ghost" size="sm">
             Browse jobs
           </UButton>

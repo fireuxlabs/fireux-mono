@@ -34,9 +34,9 @@
                   row.prep_item_id.replace(/-/g, ' ')
                 }}</strong
                 ><small v-if="row.note">{{ row.note }}</small>
-                <details v-if="prepById[row.prep_item_id]" class="mt-3">
-                  <summary class="cursor-pointer">View preparation</summary>
-                  <div class="mt-3 space-y-2">
+                <details v-if="prepById[row.prep_item_id]">
+                  <summary>View preparation</summary>
+                  <div>
                     <p
                       v-for="input in prepById[row.prep_item_id]?.inputs"
                       :key="input.ingredient_id"
@@ -77,7 +77,7 @@
     </div>
     <details v-if="preparation.source_note" class="recipe-source">
       <summary>Kitchen notes</summary>
-      <p class="mt-3">{{ preparation.source_note }}</p>
+      <p>{{ preparation.source_note }}</p>
     </details>
   </div>
 </template>

@@ -23,7 +23,7 @@
             </div>
           </div>
 
-          <div class="shrink-0 text-right">
+          <div>
             <div>
               {{ record.packPriceLabel }}
             </div>

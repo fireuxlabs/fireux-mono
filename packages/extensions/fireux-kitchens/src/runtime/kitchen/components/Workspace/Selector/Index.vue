@@ -1,9 +1,5 @@
 <template>
-  <section
-    id="workspace-entity-controls"
-    class="flex flex-wrap items-center gap-2"
-    aria-label="Kitchen selector"
-  >
+  <section id="workspace-entity-controls" aria-label="Kitchen selector">
     <WorkspaceKitchenSelectorChoices
       v-if="
         workspace.multipleKitchenView.value && workspace.collection.value.length

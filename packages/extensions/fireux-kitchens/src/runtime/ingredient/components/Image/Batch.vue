@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isAdmin" class="space-y-3">
-    <div class="flex flex-wrap items-center gap-3">
+  <div v-if="isAdmin">
+    <div>
       <UButton
         v-if="missing.length && !running"
         :label="`Generate missing images (${missing.length})`"

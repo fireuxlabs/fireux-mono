@@ -13,16 +13,12 @@
     hide-description
     placement="top"
   />
-  <WorkspaceProjectIdentity
-    :key="identity.projectId.value"
-    :identity="identity"
-  />
+  <ProjectIdentity :key="identity.projectId.value" :identity="identity" />
 </template>
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
-import WorkspaceProjectIdentity from '../../../project/components/Workspace/Identity/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 import { useProjectWorkspaceIdentity } from '../../../project/composables/workspace/useProjectWorkspaceIdentity'
 const identity = useProjectWorkspaceIdentity()

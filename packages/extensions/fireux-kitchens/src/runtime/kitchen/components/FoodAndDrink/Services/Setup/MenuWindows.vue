@@ -1,14 +1,13 @@
 <template>
-  <section v-if="menus.length" class="space-y-3 border-t border-default pt-4">
+  <section v-if="menus.length">
     <h4>Menu availability</h4>
     <p>
       Each Menu can have its own times within this service. Open a Menu to
       change them in Settings.
     </p>
-    <div v-for="menu in menus" :key="menu.id" class="space-y-1">
+    <div v-for="menu in menus" :key="menu.id">
       <NuxtLink
         :to="`/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menu.slug)}`"
-        class="underline underline-offset-4"
         >{{ menu.internal_name || menu.name }}</NuxtLink
       >
       <p v-if="!menu.serving_hours">Throughout this service</p>

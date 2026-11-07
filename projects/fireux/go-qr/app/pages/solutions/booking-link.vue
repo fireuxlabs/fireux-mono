@@ -1,6 +1,6 @@
 <template>
   <GoQrSolutionPage :solution="solution">
-    <GoQrToolBookingLink class="w-full max-w-xl" />
+    <GoQrToolBookingLink />
   </GoQrSolutionPage>
 </template>
 

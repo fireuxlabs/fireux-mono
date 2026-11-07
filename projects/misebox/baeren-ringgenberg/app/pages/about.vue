@@ -4,7 +4,7 @@
 
     <UPageBody>
       <UCard>
-        <div class="max-w-3xl space-y-3">
+        <div class="pagebody">
           <h2 class="fx-type-section-title">Hotel Bären Ringgenberg</h2>
           <p>
             The Bären brings hotel rooms, regional hospitality, a restaurant, a
@@ -17,10 +17,10 @@
         </div>
       </UCard>
 
-      <section id="contact" class="scroll-mt-24 space-y-4">
+      <section id="contact">
         <div>
           <h2 class="fx-type-section-title">Contact</h2>
-          <p class="mt-1 fx-type-body">
+          <p class="fx-type-body">
             {{ baerenRinggenbergContent.brand.address }}
           </p>
         </div>
@@ -29,7 +29,7 @@
           <UCard v-for="contact in contacts" :key="contact.email">
             <div class="fx-card-body-stack">
               <h3 class="fx-type-card-heading">{{ contact.label }}</h3>
-              <div class="flex flex-col items-start gap-2">
+              <div class="pagebody">
                 <UButton
                   :to="`mailto:${contact.email}`"
                   :label="contact.email"
@@ -49,7 +49,7 @@
           </UCard>
         </UPageGrid>
 
-        <div class="flex flex-wrap gap-3">
+        <div class="fx-card__actions">
           <UButton
             to="/location"
             label="Map and directions"

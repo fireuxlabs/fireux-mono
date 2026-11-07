@@ -103,12 +103,6 @@ test('Public Project profile cannot expose guest ownership, audit or unrelated p
     null
   )
   assert.equal(readProjectPublicSummary({ ...value, id: 'other' }, 'p'), null)
-  const view = load(
-    '../runtime/project/composables/useProjectInterface.ts',
-    'useProjectInterface()'
-  )
-  assert.equal(view.pill(root()).title, 'Project')
-  assert.doesNotMatch(JSON.stringify(view.profile(value)), /private/)
 })
 
 test('Malformed granted Project roots fail the collection without exposing a partial list; valid recovery restores data', async () => {

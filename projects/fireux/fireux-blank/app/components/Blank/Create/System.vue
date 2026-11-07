@@ -20,7 +20,7 @@
         :description="error"
       />
 
-      <div class="flex items-center gap-2">
+      <div class="fx-card__actions">
         <UButton
           type="submit"
           icon="i-lucide-plus"

@@ -1,7 +1,11 @@
 <template>
   <fieldset :disabled="pending" class="collection-stack">
     <slot />
-    <section v-for="section in sections" :key="section.id" class="collection-stack">
+    <section
+      v-for="section in sections"
+      :key="section.id"
+      class="collection-stack"
+    >
       <h2>{{ section.label }}</h2>
       <UCard
         v-for="item in section.items"
@@ -9,7 +13,9 @@
         as="article"
         :description="item.description || undefined"
       >
-        <template #title><h3>{{ item.name }}</h3></template>
+        <template #title
+          ><h3>{{ item.name }}</h3></template
+        >
         <div class="fx-card-body-stack">
           <template v-if="item.mealDeal">
             <p>{{ money(item.price) }}</p>

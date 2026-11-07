@@ -1,7 +1,7 @@
 <template>
   <UCard class="preview">
     <div class="fx-card-body-stack">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <div>
         <UAvatar
           :src="resolvedImageUrl || undefined"
           :alt="name"
@@ -10,27 +10,24 @@
           :class="avatarShadeClass"
         />
 
-        <div class="min-w-0 flex-1 space-y-3">
+        <div>
           <div class="card__header">
             <div class="fx-card-body-stack">
               <p class="fx-type-label">
                 {{ eyebrow }}
               </p>
 
-              <h2 class="truncate">
+              <h2 class="fx-truncate">
                 {{ name }}
               </h2>
 
               <div v-if="primaryAddress" class="card__media">
-                <UIcon name="i-lucide-map-pin" class="shrink-0" />
+                <UIcon name="i-lucide-map-pin" />
                 <span>{{ primaryAddress }}</span>
               </div>
             </div>
 
-            <div
-              v-if="visibleBadges.length"
-              class="flex shrink-0 flex-wrap justify-end gap-1"
-            >
+            <div v-if="visibleBadges.length">
               <UBadge
                 v-for="badge in visibleBadges"
                 :key="badge"
@@ -43,29 +40,22 @@
             </div>
           </div>
 
-          <p v-if="showBody && prop" class="max-w-2xl">
+          <p v-if="showBody && prop">
             {{ prop }}
           </p>
 
-          <div v-if="visibleDetails.length" class="grid gap-3 sm:grid-cols-2">
-            <div
-              v-for="item in visibleDetails"
-              :key="item.label"
-              class="rounded-xl bg-default/70 p-3 ring ring-default"
-            >
+          <div v-if="visibleDetails.length">
+            <div v-for="item in visibleDetails" :key="item.label">
               <div class="fx-type-label">
                 {{ item.label }}
               </div>
-              <div class="mt-1 truncate">
+              <div class="fx-truncate">
                 {{ formatValue(item.value) }}
               </div>
             </div>
           </div>
 
-          <div
-            v-if="to || mapUrl || website || $slots.actions"
-            class="flex flex-wrap gap-2 pt-1"
-          >
+          <div v-if="to || mapUrl || website || $slots.actions">
             <UButton
               v-if="to"
               size="sm"

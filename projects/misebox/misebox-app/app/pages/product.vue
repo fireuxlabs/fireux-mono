@@ -1,5 +1,5 @@
 <template>
-  <div class="landing-ambient min-h-full">
+  <div class="landing-ambient">
     <div class="landing-ambient__effect" aria-hidden="true">
       <ClientOnly>
         <LandingSteam />

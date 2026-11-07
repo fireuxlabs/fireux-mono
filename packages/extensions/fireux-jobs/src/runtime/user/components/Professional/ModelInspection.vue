@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-10">
+  <section>
     <UCard>
       <FireDiagnosticsModel
         :title="'Professionals · Model'"
@@ -9,8 +9,8 @@
 
     <UCard>
       <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-3">
+        <div class="card__header">
+          <div class="fx-card-body-stack">
             <p>Professionals collection</p>
             <p>
               Inspect model drift separately from the public professionals
@@ -29,12 +29,12 @@
         </div>
       </template>
 
-      <div class="space-y-6">
+      <div class="fx-card-body-stack">
         <ProfessionalDirectory />
 
-        <div v-if="professionalPreviewCards.length" class="space-y-3">
+        <div v-if="professionalPreviewCards.length" class="fx-card-body-stack">
           <p>Preview cards</p>
-          <div class="space-y-3">
+          <div class="fx-card-body-stack">
             <ProfessionalCardsSummary
               v-for="card in professionalPreviewCards"
               :key="`professional-preview-${card.id}`"
@@ -43,9 +43,12 @@
           </div>
         </div>
 
-        <div v-if="professionalProfileEntries.length" class="space-y-3">
+        <div
+          v-if="professionalProfileEntries.length"
+          class="fx-card-body-stack"
+        >
           <p>Profile cards</p>
-          <div class="space-y-4">
+          <div class="fx-card-body-stack">
             <ProfessionalProfile
               v-for="entry in professionalProfileEntries"
               :key="`professional-profile-${entry.card.id}`"

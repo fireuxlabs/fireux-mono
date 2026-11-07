@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: lead with the real User and current workspace while preserving authority boundaries. -->
 <template>
-  <div class="contents">
+  <div>
     <FireStateCard
       v-if="coreIsLoading"
       entity="user overview"
@@ -21,7 +21,7 @@
           This is usually a permissions or setup issue in the active identity
           doc.
         </p>
-        <div class="mt-3 flex justify-center gap-2">
+        <div>
           <UButton
             to="/users/create"
             label="Review user setup"
@@ -37,11 +37,9 @@
             variant="soft"
           />
         </div>
-        <details v-if="isDev" open class="mt-4">
-          <summary class="cursor-pointer">Debug details (dev only)</summary>
-          <pre class="mt-2 max-h-48 overflow-auto p-3">{{
-            coreErrorDebug
-          }}</pre>
+        <details v-if="isDev" open>
+          <summary>Debug details (dev only)</summary>
+          <pre class="overflow-auto">{{ coreErrorDebug }}</pre>
         </details>
       </template>
     </FireStateCard>

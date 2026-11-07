@@ -1,9 +1,7 @@
 <template>
   <section class="landing-index-section">
     <UCard>
-      <div
-        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-      >
+      <div class="pagebody">
         <div class="fx-card-body-stack">
           <p class="fx-type-caption">
             Run Bringli operations from one workspace

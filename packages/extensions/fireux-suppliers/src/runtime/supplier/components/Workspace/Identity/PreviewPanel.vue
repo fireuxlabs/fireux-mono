@@ -32,13 +32,11 @@
           v-if="showCellCard && previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
-          class="block"
         />
         <SupplierCardsPill
           v-else-if="previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
-          class="block"
         />
       </UCard>
 

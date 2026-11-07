@@ -22,7 +22,6 @@
     <WorkspaceTeamRoles
       ref="rolesEditor"
       compact
-      class="rounded-xl border border-default p-4"
       :workspace-name="state.project.name"
       @labels="roleLabels = $event"
       v-if="derived.status === 'ready'"
@@ -46,7 +45,7 @@
 import { computed, ref } from 'vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { useProjectWorkspaceTeam } from '../../../composables/workspace/useProjectWorkspaceTeam'
+import type { useProjectWorkspaceTeam } from '../../composables/workspace/useProjectWorkspaceTeam'
 import WorkspaceTeamRoles from 'fireux-core/runtime/workspace/components/Team/Roles.vue'
 import WorkspaceTeamAssignment from 'fireux-core/runtime/workspace/components/Team/Assignment.vue'
 

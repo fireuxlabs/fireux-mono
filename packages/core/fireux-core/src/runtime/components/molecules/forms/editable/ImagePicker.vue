@@ -6,13 +6,16 @@
       ref="inputRef"
       type="file"
       accept="image/*"
-      class="sr-only"
+      hidden
       :disabled="disabled || loading"
       @change="onFileChange"
     />
 
-    <button
+    <UButton
       type="button"
+      variant="ghost"
+      color="neutral"
+      :loading="loading"
       :aria-label="buttonLabel"
       :title="buttonLabel"
       :disabled="disabled || loading"
@@ -28,15 +31,10 @@
           :class="[!size && 'avatar', avatarClass]"
         />
         <template #content>
-          <UIcon
-            :name="
-              loading ? 'i-lucide-loader-circle' : icon || 'i-lucide-camera'
-            "
-            :class="['size-3', loading && 'animate-spin']"
-          />
+          <UIcon :name="icon || 'i-lucide-camera'" />
         </template>
       </UChip>
-    </button>
+    </UButton>
   </div>
 </template>
 

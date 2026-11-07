@@ -1,33 +1,27 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="card__header">
         <div>
           <p>Publication</p>
-          <h2 class="mt-1 fx-type-card-heading">
+          <h2 class="fx-type-card-heading">
             {{ title }}
           </h2>
-          <p class="mt-1">{{ description }}</p>
+          <p>{{ description }}</p>
         </div>
         <UBadge :color="badgeColor" variant="soft">{{ badgeLabel }}</UBadge>
       </div>
     </template>
 
-    <div class="space-y-5">
-      <ul v-if="!isPublic" class="space-y-3">
-        <li
-          v-for="item in checklist"
-          :key="item.label"
-          class="flex items-start gap-3"
-        >
+    <div class="fx-card-body-stack">
+      <ul v-if="!isPublic" class="fx-card-body-stack">
+        <li v-for="item in checklist" :key="item.label">
           <UIcon
             :name="
               item.ready ? 'i-lucide-circle-check' : 'i-lucide-circle-dashed'
             "
           />
-          <span>{{
-            item.label
-          }}</span>
+          <span>{{ item.label }}</span>
         </li>
       </ul>
 
@@ -38,7 +32,7 @@
         :description="publishHint"
       />
 
-      <div class="flex flex-wrap gap-2">
+      <div>
         <UButton
           v-if="!isPublic"
           type="button"
@@ -80,7 +74,7 @@
     description="Publishing makes this job visible in the Jobs directory."
   >
     <template #body>
-      <div class="space-y-4">
+      <div>
         <UAlert
           color="neutral"
           variant="soft"
@@ -88,7 +82,7 @@
           title="Canonical employer and location"
           description="The published job will use the linked Business and Place as the source of employer and location truth."
         />
-        <div class="flex justify-end gap-2">
+        <div>
           <UButton
             type="button"
             color="neutral"

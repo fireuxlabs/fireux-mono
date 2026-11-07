@@ -24,7 +24,7 @@
       @select="select(kitchen.id || '')"
     >
       <UAvatar v-bind="kitchenWorkspaceAvatar(kitchen)" />
-      <span class="truncate">{{ kitchen.display_name || kitchen.id }}</span>
+      <span class="fx-truncate">{{ kitchen.display_name || kitchen.id }}</span>
     </WorkspaceSelectionRow>
   </WorkspaceEntityCollection>
 </template>

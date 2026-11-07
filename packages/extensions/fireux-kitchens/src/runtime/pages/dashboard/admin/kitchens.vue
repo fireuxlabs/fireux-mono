@@ -10,7 +10,7 @@
         <template #header>
           <div>
             <h2>Create for a member</h2>
-            <p class="mt-1">
+            <p>
               You remain the authenticated administrator. The selected member
               becomes the Kitchen owner.
             </p>

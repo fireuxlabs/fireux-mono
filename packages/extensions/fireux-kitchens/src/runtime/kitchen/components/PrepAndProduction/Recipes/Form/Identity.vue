@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-6">
+  <div>
     <UFormField label="Name" required
       ><UInput v-model="name" aria-label="Recipe name"
     /></UFormField>
@@ -9,7 +9,7 @@
         aria-label="Recipe description"
         :rows="2"
     /></UFormField>
-    <div class="grid grid-cols-2 gap-3">
+    <div>
       <UFormField label="Yield" required
         ><UInput
           v-model="yieldValue.quantity"

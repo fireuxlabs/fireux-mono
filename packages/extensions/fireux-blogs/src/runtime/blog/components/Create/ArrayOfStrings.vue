@@ -20,32 +20,29 @@
 
     <!-- Edit Mode -->
     <div v-else class="editing">
-      <div
-        v-for="(_, index) in localValue"
-        :key="index"
-        class="mb-1 flex items-center gap-1"
-      >
-        <UInput
-          v-model="localValue[index]"
-          :placeholder="itemPlaceholder"
-          class="w-full"
-        />
-        <UIcon
-          name="i-lucide-x-circle"
-          class="cursor-pointer"
+      <div v-for="(_, index) in localValue" :key="index">
+        <UInput v-model="localValue[index]" :placeholder="itemPlaceholder" />
+        <UButton
+          type="button"
+          icon="i-lucide-x-circle"
+          color="neutral"
+          variant="ghost"
+          :aria-label="`Remove item ${index + 1}`"
           @click="removeItem(index)"
         />
       </div>
-      <div class="mt-1 mb-1 flex items-center gap-1">
+      <div>
         <UInput
           v-model="newItem"
           :placeholder="newItemPlaceholder"
-          class="w-full"
           @keyup.enter="addItem"
         />
-        <UIcon
-          name="i-lucide-plus-circle"
-          class="cursor-pointer"
+        <UButton
+          type="button"
+          icon="i-lucide-plus-circle"
+          color="neutral"
+          variant="ghost"
+          aria-label="Add item"
           @click="addItem"
         />
       </div>

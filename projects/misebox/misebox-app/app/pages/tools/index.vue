@@ -1,41 +1,38 @@
 <template>
-  <main class="min-h-screen bg-default">
+  <UPage>
     <UContainer>
-      <div class="mx-auto grid max-w-4xl gap-10">
-        <header class="grid max-w-3xl gap-3">
-          <NuxtLink to="/" class="w-fit hover:underline"> Misebox </NuxtLink>
-          <h1 class="m-0 fx-type-page-title">Restaurant tools</h1>
-          <p class="m-0 fx-type-body">
+      <div class="pagebody">
+        <header class="pagebody">
+          <ULink to="/"> Misebox </ULink>
+          <h1 class="fx-type-page-title">Restaurant tools</h1>
+          <p class="fx-type-body">
             Open free restaurant tools without signing in. Start one Kitchen
             when a tool needs Kitchen context, or use a standalone calculator
             directly.
           </p>
         </header>
 
-        <ul class="m-0 grid gap-4 p-0">
-          <li v-for="tool in tools" :key="tool.to" class="list-none">
-            <NuxtLink
-              :to="tool.to"
-              class="group flex items-center justify-between gap-4 rounded-lg px-3 py-3 hover:bg-elevated"
-            >
+        <ul class="fx-list-stack">
+          <li v-for="tool in tools" :key="tool.to">
+            <ULink :to="tool.to">
               <span>
-                <span class="block">
+                <span>
                   {{ tool.name }}
                 </span>
-                <span class="mt-1 block">
+                <span>
                   {{ tool.description }}
                 </span>
               </span>
-              <span class="flex shrink-0 items-center gap-1">
+              <span>
                 Open
                 <UIcon name="i-lucide-arrow-right" />
               </span>
-            </NuxtLink>
+            </ULink>
           </li>
         </ul>
       </div>
     </UContainer>
-  </main>
+  </UPage>
 </template>
 
 <script setup lang="ts">

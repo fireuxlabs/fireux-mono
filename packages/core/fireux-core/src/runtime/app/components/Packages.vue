@@ -26,7 +26,7 @@
           icon="i-lucide-blocks"
         />
       </UPageGrid>
-      <section class="space-y-3">
+      <section>
         <h2>Components · {{ componentNames.length }}</h2>
         <UInput
           v-if="componentNames.length"
@@ -34,15 +34,8 @@
           placeholder="Find a component"
           aria-label="Find a component"
         />
-        <ul
-          v-if="filteredComponents.length"
-          class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          <li
-            v-for="name in filteredComponents"
-            :key="name"
-            class="p-3 break-words"
-          >
+        <ul v-if="filteredComponents.length">
+          <li v-for="name in filteredComponents" :key="name">
             <NuxtLink v-if="componentLinks[name]" :to="componentLinks[name]">{{
               name
             }}</NuxtLink>

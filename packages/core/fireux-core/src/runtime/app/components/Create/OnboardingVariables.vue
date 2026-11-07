@@ -132,7 +132,7 @@
             </UBadge>
           </div>
         </template>
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div>
           <div
             v-for="asset in brandAssets"
             :key="asset.name"

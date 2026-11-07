@@ -6,7 +6,6 @@
       :content="false"
       variant="link"
       size="sm"
-      :ui="{ list: 'flex-wrap justify-start', trigger: 'shrink-0' }"
       @update:model-value="emit('select', String($event))"
     />
   </section>

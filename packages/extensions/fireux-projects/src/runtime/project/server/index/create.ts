@@ -52,11 +52,11 @@ export async function createProject(event: H3Event, input: unknown) {
   const { name } = request(input)
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'FireUX App id')
+  if (
+    !resolveWorkspaceCanCreate(fireux.role, fireux.workspaceConfig, 'project')
+  )
+    fail(403, 'Project creation is unavailable in this App.')
   if (decoded.firebase?.sign_in_provider === 'anonymous') {
-    if (
-      !resolveWorkspaceCanCreate(fireux.role, fireux.workspaceConfig, 'project')
-    )
-      fail(403, 'Project creation is unavailable in this App.')
     const projectId = requireFirestoreDocumentId(uid, 'Guest identity')
     return runGuardedServerTransaction(
       { kind: 'named', databaseId: 'fireux' },
@@ -76,7 +76,12 @@ export async function createProject(event: H3Event, input: unknown) {
           }
         }
         transaction.create(fireuxProjectsTarget, projectId, {
-          identity: { status: 'inactive', name, description: '', image_url: '' },
+          identity: {
+            status: 'inactive',
+            name,
+            description: '',
+            image_url: '',
+          },
           guest_owner_uid: uid,
           created: serverAuditStamp({ by: uid, appId }),
           updated: serverAuditStamp({ by: uid }),
@@ -106,7 +111,9 @@ export async function createProject(event: H3Event, input: unknown) {
         transaction.read(memberships, uid),
         transaction.read(accessTarget, uid),
       ])
-      const subscription = readAppUserSubscription(membership.data?.subscription)
+      const subscription = readAppUserSubscription(
+        membership.data?.subscription
+      )
       if (!app.exists) {
         fail(403, 'FireUX App membership is required to create a Project.')
       }

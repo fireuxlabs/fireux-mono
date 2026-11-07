@@ -13,7 +13,7 @@
   <p v-else-if="adoption.pending.value" role="status">
     Connecting your Kitchen…
   </p>
-  <p v-else-if="landingState === 'pending'" role="status" class="py-6">
+  <p v-else-if="landingState === 'pending'" role="status">
     Loading your Kitchens…
   </p>
   <UAlert

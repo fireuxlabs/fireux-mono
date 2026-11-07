@@ -1,6 +1,6 @@
 <template>
-  <section class="min-w-0">
-    <div v-if="storageKitchenId" class="space-y-4">
+  <section>
+    <div v-if="storageKitchenId">
       <KitchenFoodAndDrinkItemsCollection />
     </div>
 

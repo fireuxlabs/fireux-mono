@@ -3,13 +3,10 @@
     class="public-profile-section-heading"
     :data-compact="compact || undefined"
   >
-    <div
-      class="public-profile-section-heading__icon"
-      aria-hidden="true"
-    >
+    <div class="public-profile-section-heading__icon" aria-hidden="true">
       <UIcon :name="icon" />
     </div>
-    <div class="min-w-0">
+    <div>
       <p class="fx-type-label">{{ eyebrow }}</p>
       <h2 :class="compact ? 'fx-type-card-title' : 'fx-type-card-heading'">
         {{ title }}

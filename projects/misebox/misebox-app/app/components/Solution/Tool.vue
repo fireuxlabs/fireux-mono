@@ -1,7 +1,7 @@
 <template>
   <section>
     <ClientOnly>
-      <div class="flex justify-center">
+      <div>
         <slot />
       </div>
 

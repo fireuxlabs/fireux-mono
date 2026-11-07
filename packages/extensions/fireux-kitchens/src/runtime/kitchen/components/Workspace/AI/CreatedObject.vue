@@ -6,16 +6,16 @@
       :text="initials"
       size="sm"
     />
-    <span class="min-w-0 flex-1">
-      <span class="block truncate">
+    <span>
+      <span class="fx-truncate">
         {{ name }}
       </span>
-      <span class="block truncate">{{ kind }}</span>
+      <span class="fx-truncate">{{ kind }}</span>
     </span>
-    <span class="shrink-0">
+    <span>
       {{ actionLabel || `View ${name}` }}
     </span>
-    <UIcon name="i-lucide-arrow-right" class="shrink-0" />
+    <UIcon name="i-lucide-arrow-right" />
   </NuxtLink>
 </template>
 

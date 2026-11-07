@@ -60,6 +60,12 @@ environment, lockfile and install policy. Local discovery requires the installed
 Functions SDK and Framework and their binaries inside the prepared output.
 Prepared output is generated and must not be committed.
 
+`checkOutput` also validates the eight App exports in `.output/public` through
+Core's asset inspector. Missing, corrupt or incorrectly sized files reject the
+artifact, including malformed or incomplete favicon frames. This checks the
+packaged files themselves, separately from source validation during the Nuxt
+production build. It does not approve artwork or verify remote Storage media.
+
 ## Local verification
 
 From the repository root:

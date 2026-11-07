@@ -24,23 +24,12 @@
       </div>
     </div>
 
-    <div
+    <FireState
       v-show="outcome === 'pending'"
       key="apps-loading"
-      class="landing-app-collection__rail"
-      aria-label="Loading apps"
-    >
-      <UPageCard
-        v-for="index in 3"
-        :key="index"
-        variant="subtle"
-        class="landing-app-collection__card"
-      >
-        <USkeleton class="aspect-[16/9] w-full" />
-        <USkeleton class="h-5 w-2/3" />
-        <USkeleton class="h-12 w-full" />
-      </UPageCard>
-    </div>
+      outcome="pending"
+      entity="Apps"
+    />
 
     <UAlert
       v-if="outcome === 'error'"

@@ -1,11 +1,11 @@
 <!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: make the ecosystem layer branded, factual, and empty-state free. -->
 <template>
   <UPageCard variant="subtle">
-    <div class="flex items-start gap-3">
-      <div class="flex size-10 shrink-0 items-center justify-center">
-        <UIcon name="i-lucide-orbit" class="size-5" />
+    <div>
+      <div>
+        <UIcon name="i-lucide-orbit" />
       </div>
-      <div class="min-w-0">
+      <div>
         <h2>{{ name }} ecosystem</h2>
       </div>
     </div>
@@ -15,19 +15,12 @@
 
       <div>
         <h3>Your profiles</h3>
-        <div class="mt-3 space-y-2">
-          <div
-            v-for="entry in profileEntries"
-            :key="entry.profileId"
-            class="flex items-center justify-between gap-3 px-3 py-2.5"
-          >
-            <div class="flex min-w-0 items-center gap-3">
-              <UIcon
-                :name="entry.icon || 'i-lucide-user-round'"
-                class="size-5 shrink-0"
-              />
-              <div class="min-w-0">
-                <p class="truncate">
+        <div>
+          <div v-for="entry in profileEntries" :key="entry.profileId">
+            <div>
+              <UIcon :name="entry.icon || 'i-lucide-user-round'" />
+              <div>
+                <p>
                   {{ entry.label }}
                 </p>
                 <p>Active profile</p>

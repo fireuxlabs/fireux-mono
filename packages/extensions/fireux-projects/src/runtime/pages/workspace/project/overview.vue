@@ -7,7 +7,7 @@
     page-label="Overview"
     placement="top"
   />
-  <section class="space-y-4">
+  <section>
     <WorkspaceProjectOverview />
   </section>
   <WorkspaceFreemium

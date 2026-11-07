@@ -4,26 +4,26 @@
 <!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: isolate root User outcomes and reuse one active-user binding. -->
 <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
 <template>
-  <div class="min-h-full">
+  <div>
     <UDashboardPanel id="user-profile">
       <template #header>
         <FireLayoutsDashboardNavbar title="Profile" />
       </template>
 
       <template #body>
-        <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 lg:gap-10">
-          <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+        <div>
+          <div>
             <UAvatar
               :src="userCard?.avatarUrl || undefined"
               :alt="userCard?.displayName || 'Your profile'"
               size="2xl"
             />
 
-            <div class="min-w-0 flex-1">
-              <h1 class="truncate">
+            <div>
+              <h1>
                 {{ userCard?.displayName || 'Your profile' }}
               </h1>
-              <div class="mt-2 flex flex-wrap items-center gap-2">
+              <div>
                 <span>{{ userCard?.handle || 'No handle' }}</span>
                 <UserAccessBadge :subscription="subscription" />
               </div>
@@ -39,7 +39,7 @@
             />
           </div>
 
-          <section class="space-y-5" aria-label="User editor">
+          <section aria-label="User editor">
             <FireStateCard
               v-if="isLoading"
               entity="profile"
@@ -71,17 +71,15 @@
           <AppMembership />
 
           <UPageCard v-if="appUser" variant="subtle">
-            <div
-              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-            >
+            <div>
               <div>
-                <div class="flex items-center gap-2">
+                <div>
                   <p>Your plan</p>
                   <UBadge color="neutral" variant="soft">
                     {{ appUser.subscription }}
                   </UBadge>
                 </div>
-                <p class="mt-1">Compare Free, Pro and Business.</p>
+                <p>Compare Free, Pro and Business.</p>
               </div>
               <UButton
                 label="View plans"
@@ -91,7 +89,7 @@
             </div>
           </UPageCard>
 
-          <section class="space-y-5" aria-label="Account details">
+          <section aria-label="Account details">
             <FireStateCard
               v-if="accountOutcome === 'idle' || accountOutcome === 'pending'"
               entity="private account"
@@ -123,29 +121,29 @@
               icon="i-lucide-shield-check"
               variant="subtle"
             >
-              <dl class="divide-y divide-default">
-                <div class="py-3 first:pt-0">
+              <dl class="fx-card__detail-grid">
+                <div>
                   <dt>Email</dt>
-                  <dd class="mt-1 break-words">
+                  <dd>
                     {{ account.email || 'Not available' }}
                   </dd>
                 </div>
-                <div class="py-3">
+                <div>
                   <dt>Terms accepted</dt>
-                  <dd class="mt-1">
+                  <dd>
                     {{ termsAcceptedLabel || 'Not recorded' }}
                   </dd>
                 </div>
-                <div class="py-3 last:pb-0">
+                <div>
                   <dt>Terms version</dt>
-                  <dd class="mt-1">
+                  <dd>
                     {{ account.terms.version || 'Not recorded' }}
                   </dd>
                 </div>
               </dl>
 
               <template #footer>
-                <div class="flex justify-end">
+                <div>
                   <UButton
                     to="/dashboard/settings"
                     label="Settings"

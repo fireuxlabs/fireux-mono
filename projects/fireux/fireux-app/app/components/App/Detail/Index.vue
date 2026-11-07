@@ -1,7 +1,7 @@
 <template>
   <article class="pagebody">
     <AppDetailHeader :app="app" />
-    <div class="grid gap-4 md:grid-cols-2">
+    <div class="pagebody">
       <AppDetailProject :app="app" />
       <AppDetailEcosystem :app="app" />
     </div>
