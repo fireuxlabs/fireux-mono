@@ -9,7 +9,6 @@ declare module '@nuxt/schema' {
     theme?: AppTheme
   }
   interface PublicRuntimeConfig {
-    packageComponents?: Record<string, string[]>
     fireux: Partial<RuntimeApp>
     firebaseEcosystem: Partial<RuntimeFirebaseEcosystem>
     firebaseApp: Partial<RuntimeFirebaseApp>

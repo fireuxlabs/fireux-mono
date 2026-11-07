@@ -26,7 +26,8 @@
       "types": "./src/runtime/*.ts",
       "default": "./src/runtime/*.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./kitchen-layer": "./src/config/app/kitchen-layer.ts"
   },
   "typesVersions": {
     "*": {

@@ -1,7 +1,5 @@
 import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
 
-const workspaces = ['supplier']
-
 export default defineFireuxEcosystem({
   ecosystem: 'bringli',
   projectId: 'bringli',
@@ -14,12 +12,10 @@ export default defineFireuxEcosystem({
   role: 'global',
   homePath: '/home',
   seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
-  workspaces,
+  workspaces: ['supplier'],
   extends: [
     'fireux-core/layer',
-    ...(workspaces.includes('supplier') ? ['fireux-suppliers/layer'] : []),
-    'fireux-bringli/layer',
-
+    'fireux-bringli/supplier-layer',
     'fireux-places/layer',
     'fireux-businesses/layer',
   ],

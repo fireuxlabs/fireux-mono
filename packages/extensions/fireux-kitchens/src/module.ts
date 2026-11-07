@@ -1,6 +1,10 @@
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: align Kitchen sitemap publication with canonical visibility.
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureRuntime } from './config/module/runtime-config'
+import {
+  configureRuntime,
+  configureOrdering,
+} from './config/module/runtime-config'
+import type { OrderingConfiguration } from './runtime/kitchen/models/order.model'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import {
   registerComposablesDirs,
@@ -18,6 +22,7 @@ import { configureAssets } from './config/module/assets-config'
 export interface ModuleOptions {
   prefix?: string
   defaultKitchenId?: string
+  ordering?: OrderingConfiguration
 }
 
 declare module '@nuxt/schema' {
@@ -42,6 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    configureOrdering(nuxt, options.ordering)
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
         path: resolver.resolve('./runtime/menu/models/pdf-worker.d.ts'),

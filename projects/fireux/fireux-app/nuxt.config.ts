@@ -49,6 +49,7 @@ const appConfig = defineFireuxEcosystem({
     noindexPaths: ['/apps/fireux-blank'],
   },
   modules: [
+    ['fireux-core', { componentCatalogue: true }],
     [
       'fireux-products',
       {
@@ -64,11 +65,7 @@ const appConfig = defineFireuxEcosystem({
       },
     ],
   ],
-  extends: [
-    'fireux-docs/layer',
-    'fireux-projects/layer',
-    'fireux-fireux/layer',
-  ],
+  extends: ['fireux-docs/layer', 'fireux-fireux/project-layer'],
 })
 
 const firebaseOptions = appConfig.nitro?.firebase
@@ -86,9 +83,5 @@ export default {
         maxInstances: 20,
       },
     },
-  },
-  runtimeConfig: {
-    ...appConfig.runtimeConfig,
-    public: { ...appConfig.runtimeConfig?.public, packageComponents: {} },
   },
 }

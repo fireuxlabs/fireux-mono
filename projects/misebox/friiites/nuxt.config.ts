@@ -1,6 +1,6 @@
-import { defineFireuxApp, type FireuxAppConfig } from 'fireux-app/config'
+import { defineFireuxApp } from 'fireux-app/config'
 
-const app: FireuxAppConfig = {
+export default defineFireuxApp({
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
@@ -21,14 +21,8 @@ const app: FireuxAppConfig = {
     },
   },
   modules: ['fireux-places', 'fireux-go-qr', 'fireux-sproochli'],
-}
-
-export default defineFireuxApp({
-  ...app,
   extends: [
-    ...(app.workspaces?.includes('kitchen')
-      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
-      : []),
+    'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',
   ],

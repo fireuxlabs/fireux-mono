@@ -152,8 +152,11 @@ function configureAppModules(
     `fireux-${app.ecosystem}`,
     ...(appDatabaseRuntimeModule ? [appDatabaseRuntimeModule] : []),
     [FirebaseModule, { authEnabled: app.authEnabled !== false }],
-    'fireux-core',
+    (app.modules || []).find((entry) => moduleName(entry) === 'fireux-core') ||
+      'fireux-core',
     '@vite-pwa/nuxt',
-    ...(app.modules || []),
+    ...(app.modules || []).filter(
+      (entry) => moduleName(entry) !== 'fireux-core'
+    ),
   ] as NonNullable<NuxtConfig['modules']>
 }

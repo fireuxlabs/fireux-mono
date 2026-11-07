@@ -70,6 +70,9 @@ export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture publi
         import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
         const input = { id: 'fixture', name: 'Fixture', shortName: 'Fixture', context: 'Local config fixture', ecosystem: 'fireux', ecosystemId: 'fireux', projectId: 'fireux', role: 'tenant' }
         const app = defineFireuxApp(input)
+        const configuredCore = defineFireuxApp({ ...input, modules: [['fireux-core', { componentCatalogue: true }]] })
+        const coreDeclarations = configuredCore.modules.filter(entry => entry === 'fireux-core' || (Array.isArray(entry) && entry[0] === 'fireux-core'))
+        assert.deepEqual(coreDeclarations, [['fireux-core', { componentCatalogue: true }]])
         assert.equal(app.runtimeConfig.fireux.meta.seo.description, 'Fixture public literature')
         for (const name of ['fireux-blogs', 'fireux-products', 'fireux-ai']) {
           assert.equal(app.modules.filter(entry => entry === name).length, 1)

@@ -66,21 +66,18 @@ for (const [lane, name, workspace] of [
         },
         'module'
       )
-      await module.setup(
-        {},
-        {
-          options: {
-            runtimeConfig: {
-              public: {
-                fireux: {
-                  workspaces: selected ? [workspace] : [],
-                  modules: [],
-                },
-              },
+      const nuxt = {
+        options: {
+          runtimeConfig: {
+            public: {
+              fireux: { workspaces: selected ? [workspace] : [], modules: [] },
             },
           },
-        }
-      )
+        },
+      }
+      if (module.moduleDependencies)
+        calls.installed.push(...Object.keys(module.moduleDependencies(nuxt)))
+      await module.setup({}, nuxt)
       assert.equal(
         calls.components,
         name === 'fireux-fireux' ? false : selected
@@ -309,3 +306,41 @@ test('each ecosystem owns both Firebase region fields and missing region is reje
     /ssr.region must be a non-empty region/
   )
 })
+
+for (const [name, family, dependencies] of [
+  ['fireux', 'project', ['fireux-projects']],
+  ['misebox', 'kitchen', ['fireux-kitchens']],
+  ['buenohost', 'property', ['fireux-properties', 'fireux-reservations']],
+  ['bringli', 'supplier', ['fireux-suppliers']],
+  [
+    'granite',
+    'portfolio',
+    [
+      'fireux-properties',
+      'fireux-compliance',
+      'fireux-documents',
+      'fireux-tasks',
+    ],
+  ],
+]) {
+  test(`${name} declares only the selected Workspace's native module dependencies`, () => {
+    const definition = load(
+      resolve(root, 'packages/ecosystem', `fireux-${name}`, 'src/module.ts'),
+      { defineNuxtModule: (value) => value },
+      'module'
+    )
+    for (const selected of [false, true]) {
+      const nuxt = {
+        options: {
+          runtimeConfig: {
+            public: { fireux: { workspaces: selected ? [family] : [] } },
+          },
+        },
+      }
+      assert.deepEqual(
+        Object.keys(definition.moduleDependencies(nuxt)),
+        selected ? dependencies : []
+      )
+    }
+  })
+}

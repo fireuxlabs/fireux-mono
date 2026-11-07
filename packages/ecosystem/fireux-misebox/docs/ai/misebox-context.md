@@ -50,6 +50,13 @@ Kitchens owns the standard Kitchen Workspace home and `KitchenPlaceDetail`
 presentation. Misebox keeps the Place/Kitchen route composition, shared tenant
 chrome and hospitality templates; it does not override the generic Workspace home.
 
+Workspace Apps select `fireux-misebox/kitchen-layer`, which composes the existing
+Kitchen and Misebox native layers in their established order. Apps retain extra
+package layers and explicit priority where needed; non-Workspace Apps omit this
+composition. Misebox declares Kitchens through native `moduleDependencies`, not
+an early imperative install, so native App module-tuple options are preserved.
+Ordering channels remain an explicit Kitchens option owned by each App.
+
 ## Development and Rules authority
 
 Misebox has not been approved to ship. The user-selected development policy for

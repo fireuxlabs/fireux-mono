@@ -2,7 +2,6 @@ import { defineFireuxApp } from 'fireux-app/config'
 
 export default defineFireuxApp({
   ecosystem: 'fireux',
-  extends: ['fireux-core/layer'],
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'lifeguard-community',

@@ -38,13 +38,17 @@ function toStringArray(value: unknown): string[] {
   return value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
 }
 
-export default defineNuxtModule({
+export type ModuleOptions = { componentCatalogue?: boolean }
+
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'fireux-core',
     version: '0.1.0',
   },
 
-  setup(_options, nuxt) {
+  defaults: { componentCatalogue: false },
+
+  setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
     nuxt.hook('build:before', async () => {
       // Independent Core consumers do not declare an App asset family.
@@ -67,7 +71,7 @@ export default defineNuxtModule({
 
     // Opt-in App catalogue: publish registered names only, never filesystem paths.
     nuxt.hook('components:extend', (components) => {
-      if (!nuxt.options.runtimeConfig.public.packageComponents) return
+      if (options.componentCatalogue !== true) return
       const packages: Record<string, string[]> = {}
       for (const component of components) {
         const owner = component.filePath

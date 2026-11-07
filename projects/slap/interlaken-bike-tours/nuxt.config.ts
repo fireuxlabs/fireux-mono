@@ -14,6 +14,7 @@ const fireux = defineFireuxApp({
     'fireux-businesses/layer',
     'fireux-bookings/layer',
   ],
+  workspaces: ['business'],
   workspaceConfig: { business: { canCreate: true } },
   subscriptionCapacity: {
     business: { free: 1, pro: 1, business: null },

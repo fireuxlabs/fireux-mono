@@ -27,6 +27,19 @@
         </p>
       </UPageSection>
 
+      <UPageSection title="Select capabilities">
+        <p>
+          Declare Workspaces and select their ecosystem-owned native layer.
+          Misebox uses <code>fireux-misebox/kitchen-layer</code>; ordinary Apps
+          omit it. Extra packages remain explicit.
+        </p>
+        <p>
+          Configure a package through its <code>modules</code> tuple. Kitchens
+          owns optional ordering channels; Core owns the optional component
+          catalogue. Keep these options out of manual runtime-config patches.
+        </p>
+      </UPageSection>
+
       <UPageSection title="Set your App’s identity">
         <ul class="fx-list-stack">
           <li>

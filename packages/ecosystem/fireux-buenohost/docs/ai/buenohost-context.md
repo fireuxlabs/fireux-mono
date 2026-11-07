@@ -17,6 +17,11 @@ global ecosystem app. Tenant apps such as
 `projects/buenohost/ausfinn-apartments` belong to the same ecosystem and
 select their own bounded property targets.
 
+Apps with Property Workspace select `fireux-buenohost/property-layer`, which
+composes Properties, Reservations and BuenoHost in their existing precedence.
+The ecosystem declares selected domain modules through native module dependencies;
+App identity, policy and optional capabilities remain App-owned.
+
 ## Ownership boundaries
 
 - The ecosystem package owns Firebase identity/config and shared brand assets.

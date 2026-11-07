@@ -8,6 +8,18 @@ Tools and trusted server behaviour. Apps install and compose the package.
 Read root `AGENTS.md`, `docs/ai/gpt-context.md` and the routed family/context maps
 before changing it. Current source and source-owned tests establish behaviour.
 
+## App ordering configuration
+
+Apps opt into supported ordering channels through the native module tuple:
+
+```ts
+;['fireux-kitchens', { ordering: { channels: ['pos', 'kiosk', 'website'] } }]
+```
+
+`src/config/module/runtime-config.ts` validates and projects this to the existing
+`public.ordering` contract. Omission enables no channels. Kitchen command authority,
+service readiness and publication policy remain separate checks.
+
 ## Entity spine
 
 Kitchen implementation lives in `src/runtime/kitchen/` beneath technical roles:

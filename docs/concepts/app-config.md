@@ -55,6 +55,42 @@ Research proposals do not enable runtime capabilities.
 These are FireUX integration files, not Nuxt-reserved filenames. Nuxt's native
 `nuxt.config.ts` and `app.config.ts` remain the App entrypoints.
 
+## Ecosystem Workspace layers
+
+Apps select the owning ecosystem's native composed layer:
+
+- `fireux-fireux/project-layer`
+- `fireux-misebox/kitchen-layer`
+- `fireux-buenohost/property-layer`
+- `fireux-bringli/supplier-layer`
+- `fireux-granite/portfolio-layer`
+
+These group existing domain and ecosystem layers without changing their runtime
+precedence. The App still declares its Workspaces and extra capabilities. Named
+ecosystems declare conditional domain dependencies through native
+`moduleDependencies`, allowing App-supplied module options to apply normally.
+They do not import the App bundle. Plain Apps omit Workspace compositions.
+An explicit Core layer remains where its position establishes priority; Core-only
+Apps use the identical default layer list supplied by `fireux-app`.
+
+## Module options
+
+Use App `modules` tuples for package-owned configuration. For example:
+
+```ts
+modules: [
+  ['fireux-core', { componentCatalogue: true }],
+  ['fireux-kitchens', { ordering: { channels: ['pos', 'kiosk', 'website'] } }],
+]
+```
+
+The App bundle places one configured Core module in its existing registration
+position. Core's catalogue option publishes registered names through its generated
+template; it needs no public runtime marker. Kitchens validates its opt-in channels
+and projects them into the existing `public.ordering` contract used by readers and
+trusted commands. Omitted ordering options enable no channels. App declarations
+do not patch these runtime fields manually.
+
 ## App pattern
 
 - Tenant and standalone Apps import `defineFireuxApp` from `fireux-app/config`.

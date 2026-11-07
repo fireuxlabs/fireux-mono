@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: register ecosystem-owned cross-extension composition.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: keep the Kitchen adapter scoped to Professional Experience, outside Job creation.
-import { createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
@@ -9,13 +9,22 @@ import { configureModulePages } from './config/module/pages-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureRuntimeConfig } from './config/module/runtime-config'
 
+const WORKSPACE_MODULES = ['fireux-kitchens'] as const
+
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
     name: 'fireux-misebox',
     version: '0.1.0',
     configKey: 'fireuxMisebox',
   },
-  async setup(_options: Record<string, never>, nuxt: Nuxt) {
+  moduleDependencies(nuxt) {
+    const workspaces =
+      nuxt.options.runtimeConfig.public.fireux?.workspaces || []
+    return workspaces.includes('kitchen')
+      ? Object.fromEntries(WORKSPACE_MODULES.map((name) => [name, {}]))
+      : {}
+  },
+  setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
     const fireux = (nuxt.options.runtimeConfig.public as any)?.fireux
     const workspaces = Array.isArray(fireux?.workspaces)
@@ -24,10 +33,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     const hasKitchenWorkspace = workspaces.includes('kitchen')
 
     if (hasKitchenWorkspace) {
-      await installModule('fireux-kitchens')
-      if (!fireux.modules.includes('fireux-kitchens')) {
-        fireux.modules = [...fireux.modules, 'fireux-kitchens']
-      }
+      fireux.modules = [...new Set([...fireux.modules, ...WORKSPACE_MODULES])]
     }
 
     configureFireuxEcosystemModule(resolver, nuxt, {

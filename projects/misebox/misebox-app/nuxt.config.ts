@@ -1,9 +1,6 @@
-import {
-  defineFireuxEcosystem,
-  type FireuxAppConfig,
-} from 'fireux-ecosystem/config'
+import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
 
-const app: FireuxAppConfig = {
+export default defineFireuxEcosystem({
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
@@ -30,6 +27,11 @@ const app: FireuxAppConfig = {
     ],
   },
   modules: [
+    ['fireux-core', { componentCatalogue: true }],
+    [
+      'fireux-kitchens',
+      { ordering: { channels: ['pos', 'kiosk', 'website'] } },
+    ],
     'fireux-places',
     'fireux-businesses',
     'fireux-go-qr',
@@ -37,29 +39,11 @@ const app: FireuxAppConfig = {
     ['fireux-suppliers', { mode: 'consumer' }],
     ['fireux-jobs', { categories: ['hospitality'] }],
   ],
-}
-
-const appConfig = defineFireuxEcosystem({
-  ...app,
   extends: [
-    ...(app.workspaces?.includes('kitchen')
-      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
-      : []),
+    'fireux-misebox/kitchen-layer',
     'fireux-core/layer',
     'fireux-places/layer',
     'fireux-businesses/layer',
     'fireux-jobs/layer',
   ],
 })
-
-export default {
-  ...appConfig,
-  runtimeConfig: {
-    ...appConfig.runtimeConfig,
-    public: {
-      ...appConfig.runtimeConfig?.public,
-      packageComponents: {},
-      ordering: { channels: ['pos', 'kiosk', 'website'] },
-    },
-  },
-}

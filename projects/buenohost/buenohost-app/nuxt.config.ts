@@ -1,7 +1,5 @@
 import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
 
-const workspaces = ['property']
-
 export default defineFireuxEcosystem({
   ecosystem: 'buenohost',
   projectId: 'fireux',
@@ -18,14 +16,8 @@ export default defineFireuxEcosystem({
     noindexPaths: ['/'],
     siteUrl: 'https://buenohost-app.web.app',
   },
-  workspaces,
-  extends: [
-    'fireux-core/layer',
-    ...(workspaces.includes('property')
-      ? ['fireux-properties/layer', 'fireux-reservations/layer']
-      : []),
-    'fireux-buenohost/layer',
-  ],
+  workspaces: ['property'],
+  extends: ['fireux-core/layer', 'fireux-buenohost/property-layer'],
   subscriptionCapacity: {
     property: { free: 1, pro: 1, business: null },
     'property.team': { free: 3, pro: 7, business: null },

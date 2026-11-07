@@ -52,8 +52,16 @@ by the consuming feature and its provider configuration.
 Each ecosystem owns Firebase SSR region and execution identity in its `ssr`
 configuration. Core applies those values without a named-ecosystem region map.
 
+FireUX, Misebox, BuenoHost, Bringli and Granite own their native Workspace-composition
+layers. Apps select these layers explicitly; named ecosystems use native module
+dependencies for selected Workspaces so configured module options are preserved.
+Core layer positions remain explicit only where needed for precedence.
+
 The App bundle owns default module and native-layer registration. Concrete Apps
 declare their selected bundle and the packages they import or configure directly.
+Package-specific options use native module tuples. Core's `componentCatalogue`
+option replaces the former public-runtime catalogue marker; Kitchens owns opt-in
+`ordering.channels` and its projection to the existing runtime contract.
 Named Ecosystem packages still own their bindings and domain composition; they
 do not import the Main App bundle merely because tenants share that Ecosystem.
 
