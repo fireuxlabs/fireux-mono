@@ -1,4 +1,3 @@
-import { useDashboardProfiles } from '../runtime/composables/navigation/useDashboardProfiles.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -38,13 +37,14 @@ async function render(file, values) {
         }),
         useUserAccount: () => ({ outcome: ref(values.accountOutcome) }),
         useUserView: () => ({ profile: (value) => value }),
-        useAppRead: () => ({ outcome: ref(values.appOutcome) }),
+        useAppRead: () => assert.fail('App initialization belongs to the root'),
         useAppUserRead: () => ({
-          appUser: ref({ role: values.canManageApp ? 'admin' : 'user' }),
+          appUser: ref({
+            role: values.canManageApp ? 'admin' : 'user',
+            subscription: 'free',
+          }),
           outcome: ref(values.membershipOutcome),
         }),
-        useNav: () => ({ desktop: ref(values.profileEntries ?? []) }),
-        useDashboardProfiles,
         useWorkspaceEntryCta: () => ({
           hasWorkspaceEntry: ref(values.canOpenWorkspace),
           workspaceEntryHref: ref(values.workspacePath),
@@ -52,8 +52,8 @@ async function render(file, values) {
         }),
       }
       const result = file.endsWith('User.vue')
-        ? '{card,accountOutcome,firstName,completionPrompt,coreIsLoading,coreIsError,coreError}'
-        : '{fireux,appOutcome,membershipOutcome,appProfileEntries,canOpenWorkspace,workspaceEntryHref,workspaceEntryIcon,canManageApp}'
+        ? '{card,accountOutcome,isLoading,hasError,error}'
+        : '{config,appUser,outcome,hasWorkspaceEntry,workspaceEntryHref,canManageApp,roleLabels,planLabels,reload}'
       return compileFunction(
         stripTypeScriptTypes(script) + '; return ' + result,
         Object.keys(dependencies)
@@ -72,6 +72,8 @@ async function render(file, values) {
         h('section', {}, [
           attrs.title,
           attrs.description,
+          attrs.name,
+          attrs.entity,
           slots.default?.(),
           slots.actions?.(),
         ])
@@ -93,6 +95,7 @@ async function render(file, values) {
     'USeparator',
     'UIcon',
     'UAvatar',
+    'UUser',
     'FireState',
     'FireDashboardOverviewRecovery',
   ])
@@ -111,16 +114,14 @@ async function render(file, values) {
 
 const app = {
   appName: 'Example App',
-  appOutcome: 'ready',
   membershipOutcome: 'ready',
-  profileEntries: [],
   canOpenWorkspace: false,
   workspacePath: '/workspace/kitchen',
   workspaceIcon: 'i-lucide-panels-top-left',
   canManageApp: false,
 }
 
-test('the App card describes App availability and only links to Workspace when available', async () => {
+test('the App card shows membership and only offers configured Workspace and management actions', async () => {
   const plain = await render('Overview/App.vue', app)
   assert.match(plain, /Example App/)
   assert.doesNotMatch(
@@ -133,13 +134,13 @@ test('the App card describes App availability and only links to Workspace when a
     canManageApp: true,
   })
   assert.match(available, /href="\/workspace\/kitchen"/)
-  assert.match(available, /Manage Example App/)
-  const failed = await render('Overview/App.vue', {
-    ...app,
-    appOutcome: 'error',
-  })
-  assert.match(failed, /App details unavailable/)
-  assert.doesNotMatch(failed, /Workspace details/)
+  assert.match(available, /Manage App/)
+  assert.match(plain, /Member · Free/)
+  assert.match(available, /Administrator · Free/)
+  assert.doesNotMatch(
+    plain,
+    /Profiles in this app|Available to create|Loading App details/
+  )
 })
 
 test('missing App membership has an explicit join action back to Dashboard', async () => {
@@ -147,7 +148,6 @@ test('missing App membership has an explicit join action back to Dashboard', asy
     ...app,
     membershipOutcome: 'empty',
   })
-  assert.match(html, /Join this App/)
   assert.match(html, /href="\/users\/create\?redirect=%2Fdashboard"/)
   assert.doesNotMatch(html, /has not granted/)
 })
@@ -156,14 +156,17 @@ test('User presentation and private-account recovery remain separate', async () 
   const html = await render('Overview/User.vue', {
     card: {
       displayName: 'Example Person',
-      handle: 'example',
+      handle: '@example',
       avatarUrl: '',
       to: '/users/example',
     },
     accountOutcome: 'error',
   })
   assert.match(html, /Example Person/)
-  assert.match(html, /Account settings unavailable/)
+  assert.match(html, /@example/)
+  assert.doesNotMatch(html, /@@example/)
+  assert.match(html, /your private account/)
+  assert.doesNotMatch(html, /Welcome back|Choose a public handle|Edit profile/)
   assert.match(html, /href="\/dashboard\/settings"/)
 })
 

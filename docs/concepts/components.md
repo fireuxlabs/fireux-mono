@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-11-08
-Ref: d0f981eac
+Ref: a801fb79f
 Role: map, not canon
 
 ## Purpose and navigation
@@ -76,14 +76,13 @@ for interaction and return-navigation checks.
 
 `Dashboard/Home.vue` supplies the native Dashboard panel and composes Overview.
 Overview only arranges its User and App children and has no readers or props.
-User owns the canonical identity and private-account readers, profile projection
-and Recovery presentation. App owns App state, membership, profile navigation
-and Workspace-entry decisions through the existing readers and helpers.
-`useDashboardProfiles` projects route metadata without constructing a User
-session; both the App section and Dashboard navigation reuse it.
-Recovery owns no reads or writes. Dashboard's Workspace action is navigation,
-not an operational panel. Each section handles its own outcomes, so a profile
-failure does not hide App information and an App failure does not hide the User.
+User owns identity, private-account state and Recovery. It shows a small identity
+summary with Profile and Settings links, plus account recovery only when needed.
+App owns current membership and its role/plan summary, Join, Workspace and
+management actions. It reads no App-status document; initialization stays with
+the root App gate. Overview has no profile catalogue, welcome banner or completion
+prompt system. Recovery owns no reads or writes. Workspace remains a link to
+its separate operational surface. Each section handles its own outcomes.
 See `foundation-read-contract.test.mjs` and
 `dashboard-composition.test.mjs` under Core's `src/test`.
 

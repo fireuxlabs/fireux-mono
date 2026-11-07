@@ -1,4 +1,3 @@
-import { useDashboardProfiles } from '../runtime/composables/navigation/useDashboardProfiles.ts'
 import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -98,50 +97,43 @@ for (const [name, owner, database, collection] of [
   })
 }
 
-test('Dashboard keeps App, membership and account outcomes independent', () => {
+test('Dashboard sections keep their reads and outcomes separate without another App-status read', () => {
   const uid = ref('person')
   const identity = {
     user: ref({ id: 'person' }),
+    outcome: ref('ready'),
     error: ref(null),
+  }
+  const account = { outcome: ref('ready') }
+  const membership = {
+    appUser: ref({ role: 'admin', subscription: 'free' }),
     outcome: ref('ready'),
   }
-  const app = { app: ref({ id: 'app' }), outcome: ref('ready') }
-  const membership = { appUser: ref({ role: 'admin' }), outcome: ref('ready') }
-  const account = { outcome: ref('ready') }
   const calls = []
-  const forbidden = () => {
-    throw new Error('Dashboard constructed an aggregate session')
-  }
+  const forbidden = () => assert.fail('Overview acquired an unrelated reader')
   const dependencies = {
     computed,
-    useFireUXConfig: () => ({ appId: 'app' }),
     useAuth: () => ({ uid }),
+    useFireUXConfig: () => ({ appId: 'app' }),
     useUserRead: (target) => {
       calls.push(['user', target])
       return identity
-    },
-    useAppRead: (target) => {
-      calls.push(['app', target])
-      return app
-    },
-    useAppUserRead: (target, user) => {
-      calls.push(['membership', target, user])
-      return membership
     },
     useUserAccount: () => {
       calls.push(['account'])
       return account
     },
-    useAppSession: forbidden,
-    useUserSession: forbidden,
-    useAppView: () => ({ toCard: (value) => value }),
     useUserView: () => ({ profile: (value) => value }),
-    useNav: () => ({ desktop: ref([]) }),
-    useDashboardProfiles,
+    useAppUserRead: (appId, target) => {
+      calls.push(['membership', appId, target])
+      return membership
+    },
+    useAppRead: forbidden,
+    useUserSession: forbidden,
+    useDashboardNav: forbidden,
     useWorkspaceEntryCta: () => ({
-      workspaceActions: ref([]),
       hasWorkspaceEntry: ref(true),
-      workspaceEntryHref: ref('/'),
+      workspaceEntryHref: ref('/workspace'),
     }),
   }
   function section(file, names) {
@@ -159,40 +151,29 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
       Object.keys(dependencies)
     )(...Object.values(dependencies))
   }
-  const userState = section('User.vue', '{ accountOutcome, card, coreIsError }')
+  const user = section('User.vue', '{card,hasError,accountOutcome}')
   assert.deepEqual(
     calls.map(([owner]) => owner),
     ['user', 'account']
   )
-  const state = section(
-    'App.vue',
-    '{ appOutcome, membershipOutcome, canManageApp, canOpenWorkspace }'
-  )
+  const app = section('App.vue', '{outcome,canManageApp,hasWorkspaceEntry}')
   assert.deepEqual(
     calls.map(([owner]) => owner),
-    ['user', 'account', 'app', 'membership']
+    ['user', 'account', 'membership']
   )
   assert.equal(calls[0][1], uid)
-  assert.equal(calls[3][2], uid)
-  assert.equal(state.appOutcome, app.outcome)
-  assert.equal(state.membershipOutcome, membership.outcome)
-  assert.equal(userState.accountOutcome, account.outcome)
-  assert.equal(state.canManageApp.value, true)
+  assert.equal(calls[2][1], 'app')
+  assert.equal(calls[2][2], uid)
+  assert.equal(app.canManageApp.value, true)
   membership.outcome.value = 'error'
-  assert.equal(state.appOutcome.value, 'ready')
-  assert.equal(state.canManageApp.value, false)
-  assert.equal(state.canOpenWorkspace.value, true)
+  assert.equal(app.canManageApp.value, false)
+  assert.equal(user.card.value.id, 'person')
+  assert.equal(app.hasWorkspaceEntry.value, true)
   membership.outcome.value = 'ready'
-  app.outcome.value = 'error'
-  assert.equal(state.membershipOutcome.value, 'ready')
-  assert.equal(state.canManageApp.value, false)
-  assert.equal(userState.card.value.id, 'person')
   identity.outcome.value = 'error'
-  assert.equal(state.membershipOutcome.value, 'ready')
-  assert.equal(userState.coreIsError.value, true)
-  app.outcome.value = 'ready'
+  assert.equal(user.hasError.value, true)
+  assert.equal(app.canManageApp.value, true)
   account.outcome.value = 'error'
-  assert.equal(state.appOutcome.value, 'ready')
-  assert.equal(state.membershipOutcome.value, 'ready')
-  assert.equal(state.canManageApp.value, true)
+  assert.equal(user.accountOutcome.value, 'error')
+  assert.equal(app.outcome.value, 'ready')
 })
