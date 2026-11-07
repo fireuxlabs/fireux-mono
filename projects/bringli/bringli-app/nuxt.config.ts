@@ -12,6 +12,8 @@ export default defineFireuxEcosystem({
   name: 'Bringli',
   shortName: 'Bringli',
   role: 'global',
+  homePath: '/home',
+  seo: { staticPaths: ['/home'], noindexPaths: ['/'] },
   workspaces,
   extends: [
     'fireux-core/layer',

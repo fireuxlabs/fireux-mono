@@ -75,7 +75,7 @@ Paths below are relative to this App:
 - `/ignite-preview` prepares an Ecosystem package and its global main App through
   `shared/ignition-preview.ts`. The operator CLI `ignition/prepare.mjs` uses the
   same artifact and materializes both owners without overwriting existing edits.
-  Core owns AppShell, ecosystem wiring, App initialization and plan presentation;
+  Core owns FireuxApp, ecosystem wiring, App initialization and plan presentation;
   Products owns catalogue and Checkout integration. Generated provider environment
   values are blank and never inherit FireUX credentials. Input completion retains
   Core `useCommandScope` disposal and stale-response checks.

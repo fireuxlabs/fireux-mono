@@ -67,7 +67,8 @@ internal roots: `molecules/State.vue` exposes `FireState`. Public names omit
 the Atomic Design category. Other responsibility folders remain meaningful; for example
 Collection/Pagination.vue exposes FireCollectionPagination. `Fire` is not a
 physical responsibility folder. No old-name compatibility registrations remain.
-App-local overrides use the same Fire name; Entity and Workspace registrations
+`FireuxApp` is the explicit application-root registration; it is not part of
+the App-prefixed Entity scan. App-local overrides use the same Fire name; Entity and Workspace registrations
 keep their existing names. Nuxt UI keeps `U`.
 
 - Core owns proved domain-neutral components and connected Core platform UI.
@@ -109,12 +110,12 @@ semantic styles; controlled open state remains with the caller. The FireUX App e
 
 ## Workspace composition
 
-[AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
+[FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
 selects the named [Workspace composition](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
 through route metadata. It combines the shared sidebar and one
 [WorkspacePage](../../packages/core/fireux-core/src/runtime/workspace/components/Page.vue)
 frame. WorkspacePage owns the dashboard panel, Navbar, Breadcrumbs, error
-boundary and Workspace route outlet. App roots delegate to AppShell; they do
+boundary and Workspace route outlet. App roots delegate to FireuxApp; they do
 not repeat its provider, route selection or initialization lifecycle.
 The old GroupPage and Workspace layout shell are retired.
 

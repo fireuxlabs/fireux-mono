@@ -2,13 +2,13 @@
   <UPage>
     <UPageHeader
       title="Layouts"
-      description="Share navigation across App pages with AppShell and Workspace."
+      description="Share navigation across App pages with FireuxApp and Workspace."
     />
 
     <UPageBody>
-      <UPageSection title="What AppShell provides">
+      <UPageSection title="What FireuxApp provides">
         <p>
-          Core’s <code>AppShell</code> sets up Nuxt UI’s <code>UApp</code> and
+          Core’s <code>FireuxApp</code> sets up Nuxt UI’s <code>UApp</code> and
           renders ordinary routes in a Nuxt layout. Workspace routes share a
           sidebar, page header and breadcrumbs. Each Workspace page supplies its
           own content.
@@ -50,7 +50,7 @@
 definePageMeta({ layout: 'docs', title: 'Layouts' })
 useSeoMeta({
   title: 'Layouts · FireUX Docs',
-  description: 'How AppShell, Nuxt layouts and FireUX Core fit together.',
+  description: 'How FireuxApp, Nuxt layouts and FireUX Core fit together.',
 })
 
 const example = `definePageMeta({ layout: 'landing' })`

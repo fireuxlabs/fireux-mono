@@ -10,6 +10,7 @@ const appConfig = defineFireuxEcosystem({
   name: 'FireUX',
   shortName: 'FireUX',
   role: 'global',
+  homePath: '/',
   workspaces: ['project'],
   subscriptionCapacity: {
     project: { free: 1, pro: 1, business: null },

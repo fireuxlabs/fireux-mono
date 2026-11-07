@@ -33,7 +33,7 @@ extends that App through its existing owners. A repair repeatedly needed after
 creation belongs back with the shared creation step or foundation that owns it.
 The FireUX App owns a bounded Ecosystem/main-App source recipe, consumed by its
 website and operator CLI through the same preparation function. It prepares a
-global main App with Core AppShell, a Free/Pro/Business plan presentation, and
+global main App with Core FireuxApp, a Free/Pro/Business plan presentation, and
 blank provider environment values. Core initialization creates the canonical
 Ecosystem record for this main-App shape through its guarded identity mutation;
 it does not provision Firebase or Stripe resources or reconcile paid
@@ -68,7 +68,7 @@ Select capabilities using evidence breadth, operational frequency and consequenc
 
 Sandbox comparisons may evaluate page grouping, meaningful index configuration, substantial child pages and plan affordances against a hypothetical industry. Keep these expectations separate from source readiness, stored schemas and shipped Tools. Applying the method does not require creating the hypothetical App or authorizing its deployment. Shared responsibility does not require identical group counts or domain fields.
 
-A FireUX App assembled through Ignition uses the actual framework: `defineFireuxApp` or `defineFireuxEcosystem` for a Main App, its owning native runtime layers, and Core `AppShell`. Prototype scope limits delivered domain journeys; it does not replace FireUX with standalone Nuxt. A brief, assembly type or unused package dependency alone is not runtime integration. Verify registered owners and the running shell before describing the result as built on FireUX. The baseline includes visible shared platform attribution and legal/account entrances, Core SEO metadata with coherent canonical/robots/sitemap policy, and the Core manifest populated from App identity and assets. A branded layout composes these owners; it does not silently omit them. A noindex preview can still prove the complete technical SEO contract. See Core `layouts/shared/PlatformFooter.vue`, `composables/fireux/seo/useSeo.ts`, and `server/manifest.webmanifest.get.ts` beneath `src/runtime`.
+A FireUX App assembled through Ignition uses the actual framework: `defineFireuxApp` or `defineFireuxEcosystem` for a Main App, its owning native runtime layers, and Core `FireuxApp`. Prototype scope limits delivered domain journeys; it does not replace FireUX with standalone Nuxt. A brief, assembly type or unused package dependency alone is not runtime integration. Verify registered owners and the running shell before describing the result as built on FireUX. The baseline includes visible shared platform attribution and legal/account entrances, Core SEO metadata with coherent canonical/robots/sitemap policy, and the Core manifest populated from App identity and assets. A branded layout composes these owners; it does not silently omit them. A noindex preview can still prove the complete technical SEO contract. See Core `layouts/shared/PlatformFooter.vue`, `composables/fireux/seo/useSeo.ts`, and `server/manifest.webmanifest.get.ts` beneath `src/runtime`.
 
 The runtime composition references are the native Apps index routes using
 `useAppCollectionPage`, Core `workspace/components/Index.vue` and `Page.vue`,

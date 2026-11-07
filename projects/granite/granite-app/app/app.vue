@@ -1,3 +1,3 @@
 <template>
-  <AppShell />
+  <FireuxApp />
 </template>

@@ -109,28 +109,22 @@ visible Workspace availability does not grant mutation authority.
 
 ## Public and Workspace entry points
 
-Misebox, BuenoHost and Granite have public Directory roots and separate Workspace
-entrances. Misebox's Workspace host renders Home at `/`; BuenoHost and Granite
-retain explicit family Home routes. FireUX's public `/` is its framework-library
-homepage; Project Workspace remains at `/workspace/project`. Detailed product
-tours remain on their existing literature routes. Core navigation supplies the explicit Workspace entrance; Workspace sidebars
-omit a separate Directory row and retain existing brand/account navigation. This does
-not change membership or turn browsing into management authority.
+Misebox, Bringli, BuenoHost and Granite open their existing registered Workspace
+entrances from native `/` index routes. Public Home remains at `/home`, with
+`homePath` supplying its navigation link. FireUX's public `/` remains its
+framework homepage; Project Workspace stays at `/workspace/project`. Tenant and
+standalone App entrances remain product-owned.
 
-App-owned hostname middleware sends `workspace.fireux.app/` to
-`/workspace/project`. Misebox renders its single root page as Kitchen Workspace
-on its declared Workspace origin and as discovery on its public origin, without
-a root redirect. Its route hook excludes inherited `/workspace` and
-`/workspace/kitchen` Home entrances while retaining capability descendants.
-Workspace-host responses and explicit `/workspace` paths on any host send
-`X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`.
-Core only redirects a generic `/workspace` entrance while that route is registered.
-It resolves internal Home from the registered `workspace-<family>` nav key;
-`workspaceConfig.<family>.origin` adds a separate external entrance URL. Internal
-return destinations remain local. Each App tests its routing and indexing
-middleware in `app/tests/workspace-surface.test.mjs`; domains and the
-selected Workspace family remain App-owned. The host does not change Workspace membership,
-selection, enabled families or permissions. Authentication remains origin-scoped.
+Misebox keeps public pages, authentication and Kitchen Workspace on one host.
+Its old host-switching middleware and configured Workspace origin are removed.
+The App's Workspace Home lives at `/workspace/kitchen`; capability descendants
+keep their existing paths. Its `/` redirect and Workspace responses send
+noindex/no-store headers. Native redirects preserve entrance query and fragment.
+Core's entrance reader resolves Home from the registered `workspace-<family>`
+nav key; optional external origins remain available only for a separately
+justified App. A hostname never changes membership, selection or permission.
+The native route and configuration remain the owners; no parallel entry model
+or role-specific root component is introduced.
 
 ## Landing creation allowance
 

@@ -1,241 +1,130 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { getRequestURL } from 'h3'
-import { readFileSync } from 'node:fs'
-import { stripTypeScriptTypes } from 'node:module'
+import { readFileSync, existsSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
+import { stripTypeScriptTypes } from 'node:module'
 
-const app = 'misebox'
-const family = 'kitchen'
-const localHost = 'workspace.localhost'
-const routeSource = readFileSync(
-  new URL(
-    `../middleware/00-${app}-workspace-surface.global.ts`,
-    import.meta.url
-  ),
-  'utf8'
-)
-const serverSource = readFileSync(
-  new URL('../../server/middleware/workspace-indexing.ts', import.meta.url),
-  'utf8'
-)
-function body(source) {
-  return stripTypeScriptTypes(
-    source.replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
-  ).replace('export default ', 'return ')
-}
-
-function route(hostname, path, query = {}, hash = '', meta = {}) {
-  const handler = compileFunction(body(routeSource), [
-    'defineNuxtRouteMiddleware',
-    'navigateTo',
-    'useRequestURL',
-    'useRuntimeConfig',
-    'createError',
-  ])(
-    (fn) => fn,
-    (to, options) => ({ to, options }),
-    () => new URL(`http://${hostname}:3001/`),
-    () => ({
-      public: {
-        fireux: {
-          workspaceConfig: {
-            kitchen: {
-              origin: `http://${hostname === localHost ? localHost : 'workspace.misebox.app'}:3001`,
-            },
-          },
-        },
-      },
-    }),
-    (details) => Object.assign(new Error(details.statusMessage), details)
-  )
-  const search = new URLSearchParams(query).toString()
-  return handler({
-    path,
-    meta,
-    query,
-    hash,
-    fullPath: path + (search ? `?${search}` : '') + hash,
-  })
-}
-function headers(hostname, path) {
-  const result = {}
-  const handler = compileFunction(body(serverSource), [
-    'defineEventHandler',
-    'getRequestURL',
-    'setHeader',
-  ])(
-    (fn) => fn,
-    () => new URL(`http://${hostname}${path}`),
-    (_event, key, value) => {
-      result[key] = value
-    }
-  )
-  handler({})
-  return result
-}
-
-for (const host of [`workspace.${app}.app`, localHost]) {
-  test(`${host} renders the root in the Workspace shell without redirecting`, () => {
-    const meta = {}
-    assert.equal(
-      route(host, '/', { source: 'invite' }, '#start', meta),
-      undefined
-    )
-    assert.deepEqual(meta, {
-      layout: false,
-      workspacePage: true,
-      workspace: 'kitchen',
-      workspaceSurface: 'browse',
-    })
-    for (const path of [
-      '/workspace',
-      '/workspace/',
-      '/workspace/kitchen',
-      '/workspace/kitchen/',
-    ]) {
-      assert.throws(
-        () => route(host, path),
-        (error) => error.statusCode === 404
-      )
-    }
-  })
-  test(`${host} keeps capability routes on the same host`, () => {
-    assert.equal(route(host, `/workspace/${family}/team`), undefined)
-  })
-  test(`${host} responses are excluded from indexing`, () => {
-    assert.deepEqual(headers(host, '/'), {
-      'X-Robots-Tag': 'noindex, nofollow',
-      'Cache-Control': 'no-store',
-    })
-  })
-}
-for (const host of [
-  `${app}.app`,
-  `www.${app}.app`,
-  'misebox-78f9c.web.app',
-  'misebox-78f9c.firebaseapp.com',
+const root = new URL('../../../../../', import.meta.url)
+for (const [family, workspace] of [
+  ['bringli', 'supplier'],
+  ['buenohost', 'property'],
+  ['granite', 'portfolio'],
+  ['misebox', 'kitchen'],
 ]) {
-  test(`${host} sends only Workspace routes to the Workspace origin`, () => {
-    for (const path of [`/workspace/${family}/menus/menu-name`]) {
-      assert.deepEqual(route(host, path, { source: 'invite' }, '#member'), {
-        to: `https://workspace.misebox.app${path}?source=invite#member`,
-        options: { external: true, redirectCode: 302, replace: true },
-      })
-    }
-    for (const path of [
-      '/',
-      '/ingredients',
-      '/pricing',
-      '/workspace-guide',
-      '/auth',
-    ]) {
-      assert.equal(
-        route(host, path, { redirect: '/workspace/kitchen' }),
-        undefined
+  test(`${family} opens its registered Workspace and preserves entrance intent`, async () => {
+    const page = readFileSync(
+      new URL(`projects/${family}/${family}-app/app/pages/index.vue`, root),
+      'utf8'
+    )
+    const script = page
+      .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+      .replace(/^import .*\n/gm, '')
+    const query = { source: 'invite', selected: 'record / +' }
+    const calls = []
+    await compileFunction(
+      `return (async () => { ${stripTypeScriptTypes(script)} })()`,
+      ['definePageMeta', 'useRoute', 'useWorkspaceEntryCta', 'navigateTo']
+    )(
+      () => {},
+      () => ({ query, hash: '#start' }),
+      () => ({ workspaceEntryPath: { value: `/workspace/${workspace}` } }),
+      (...args) => calls.push(args)
+    )
+    assert.deepEqual(calls, [
+      [
+        { path: `/workspace/${workspace}`, query, hash: '#start' },
+        { redirectCode: 302, replace: true },
+      ],
+    ])
+    const config = readFileSync(
+      new URL(`projects/${family}/${family}-app/nuxt.config.ts`, root),
+      'utf8'
+    )
+    assert.match(config, /homePath: '\/home'/)
+    assert.ok(
+      existsSync(
+        new URL(`projects/${family}/${family}-app/app/pages/home.vue`, root)
       )
-    }
-  })
-}
-for (const host of ['localhost', '127.0.0.1', '[::1]']) {
-  test(`${host} preserves the local port, destination, query and fragment`, () => {
-    for (const path of [`/workspace/${family}/team`]) {
-      assert.deepEqual(route(host, path, { source: 'invite' }, '#member'), {
-        to: `http://workspace.localhost:3001${path}?source=invite#member`,
-        options: { external: true, redirectCode: 302, replace: true },
-      })
-      assert.deepEqual(headers(host, path), {
-        'X-Robots-Tag': 'noindex, nofollow',
-        'Cache-Control': 'no-store',
-      })
-    }
-    assert.equal(route(host, '/'), undefined)
-    assert.equal(route(host, '/workspace-guide'), undefined)
-    assert.equal(
-      route(host, '/auth', { redirect: '/workspace/kitchen' }),
-      undefined
     )
   })
 }
-test('unconfigured tenant and service origins remain unchanged', () => {
-  for (const host of [
-    'baeren-ringgenberg.ch',
-    'jobs.localhost',
-    'suppliers.localhost',
-  ]) {
-    assert.equal(route(host, '/workspace/kitchen/team'), undefined)
-  }
-})
-test('lookalike hosts cannot trigger a redirect or Workspace-host indexing policy', () => {
-  const host = `workspace.${app}.app.example.org`
-  assert.equal(route(host, '/'), undefined)
-  assert.equal(route(host, '/workspace/kitchen/team'), undefined)
-  assert.deepEqual(headers(host, '/'), {})
-})
 
-test('public root uses discovery metadata and never carries Kitchen Workspace scope', () => {
-  const meta = {
-    workspace: 'kitchen',
-    workspaceSurface: 'browse',
-    layout: false,
-    workspacePage: true,
-  }
-  assert.equal(route('localhost', '/', {}, '', meta), undefined)
-  assert.deepEqual(meta, {
-    workspace: undefined,
-    workspaceSurface: undefined,
-    layout: 'landing',
-    workspacePage: false,
-  })
-})
-
-test('Misebox route registration removes both retired homes while retaining capabilities', () => {
-  const source = readFileSync(
-    new URL('../../nuxt.config.ts', import.meta.url),
+test('Misebox uses native same-origin routes and guest Workspace metadata', () => {
+  assert.equal(
+    existsSync(
+      new URL(
+        'projects/misebox/misebox-app/app/middleware/00-misebox-workspace-surface.global.ts',
+        root
+      )
+    ),
+    false
+  )
+  const config = readFileSync(
+    new URL('projects/misebox/misebox-app/nuxt.config.ts', root),
     'utf8'
   )
-  const hook = source.match(
-    /'pages:extend'\(pages: NuxtPage\[\]\) \{([\s\S]*?)\n    \}/
-  )?.[1]
-  assert.ok(hook)
-  const pages = [
-    '/',
-    '/workspace',
-    '/workspace/kitchen',
-    '/workspace/kitchen/food-and-drink/menus',
-    '/workspace/kitchen/team',
-  ].map((path) => ({ path }))
-  compileFunction(hook, ['pages'])(pages)
-  assert.deepEqual(
-    pages.map((page) => page.path),
-    ['/', '/workspace/kitchen/food-and-drink/menus', '/workspace/kitchen/team']
+  assert.doesNotMatch(
+    config,
+    /workspace\.misebox|workspace\.localhost|pages:extend/
   )
+  const page = readFileSync(
+    new URL(
+      'projects/misebox/misebox-app/app/pages/workspace/kitchen/index.vue',
+      root
+    ),
+    'utf8'
+  )
+  assert.match(page, /workspacePage: true/)
+  assert.match(page, /requiresAuth: false/)
 })
 
-
-test('Firebase forwarded origin drives the Workspace root and indexing policy', () => {
-  const event = {
-    node: { req: { headers: {
-      host: 'miseboxapp-example.a.run.app',
-      'x-forwarded-host': 'workspace.misebox.app',
-      'x-forwarded-proto': 'https',
-    } } },
-    path: '/',
+test('Misebox Workspace responses are private from indexing on every host; Home stays public', () => {
+  const source = readFileSync(
+    new URL(
+      'projects/misebox/misebox-app/server/middleware/workspace-indexing.ts',
+      root
+    ),
+    'utf8'
+  )
+  const code = stripTypeScriptTypes(
+    source.replace(/^import .*\n/gm, '')
+  ).replace('export default ', 'return ')
+  for (const host of ['localhost:3001', 'misebox.app']) {
+    for (const path of [
+      '/',
+      '/workspace/kitchen',
+      '/workspace/kitchen/team',
+      '/home',
+      '/kitchens',
+    ]) {
+      const headers = {}
+      const handler = compileFunction(code, [
+        'defineEventHandler',
+        'getRequestURL',
+        'setHeader',
+      ])(
+        (fn) => fn,
+        () => new URL(`http://${host}${path}`),
+        (_event, key, value) => {
+          headers[key] = value
+        }
+      )
+      handler({})
+      assert.deepEqual(
+        headers,
+        path === '/' || path.startsWith('/workspace/')
+          ? { 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' }
+          : {}
+      )
+    }
   }
-  const config = { public: { fireux: { workspaceConfig: { kitchen: { origin: 'https://workspace.misebox.app' } } } } }
-  const meta = {}
-  const handler = compileFunction(body(routeSource), [
-    'defineNuxtRouteMiddleware', 'navigateTo', 'useRequestURL', 'useRuntimeConfig', 'createError',
-  ])(fn => fn, () => { throw Error('Unexpected redirect') }, options => getRequestURL(event, options), () => config, details => Object.assign(new Error(details.statusMessage), details))
-  handler({ path: '/', fullPath: '/', meta })
-  assert.equal(meta.workspacePage, true)
-  const page = readFileSync(new URL('../pages/index.vue', import.meta.url), 'utf8')
-  const expression = page.match(/const isWorkspaceHost\s*=([\s\S]*?)definePageMeta/)[1]
-  const workspacePage = compileFunction(`return (${expression.trim()})`, ['useRequestURL', 'useFireUXConfig'])(options => getRequestURL(event, options), () => config.public.fireux)
-  assert.equal(workspacePage, true)
-  const headers = {}
-  const indexing = compileFunction(body(serverSource), ['defineEventHandler', 'getRequestURL', 'setHeader'])(fn => fn, getRequestURL, (_event, key, value) => { headers[key] = value })
-  indexing(event)
-  assert.equal(headers['Cache-Control'], 'no-store')
-  assert.equal(headers['X-Robots-Tag'], 'noindex, nofollow')
+})
+
+test('FireUX keeps its public entrance', () => {
+  const page = readFileSync(
+    new URL('projects/fireux/fireux-app/app/pages/index.vue', root),
+    'utf8'
+  )
+  assert.match(page, /<FrameworkHome/)
+  assert.doesNotMatch(page, /navigateTo/)
 })

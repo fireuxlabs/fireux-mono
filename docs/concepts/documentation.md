@@ -129,7 +129,7 @@ neither Docs nor Bookings. The App and Ecosystem bundles do not add that
 FireUX-specific content to other Apps.
 
 The public reference follows the parts of a Nuxt App that developers work
-with: configuration, pages, layouts, components, composables, and server
+with: configuration, app.vue, pages, layouts, components, composables, and server
 routes. Each guide leads with what FireUX adds, shows an example, and links
 to the relevant Nuxt or Nuxt UI reference for the basics.
 The public library at `/docs/components` inventories all Core Vue sources,

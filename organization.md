@@ -24,7 +24,7 @@ This document hands off the architectural discussion from the “Organize Apps T
 ## Application spine
 
 - Every application has an **application project root**, e.g. `projects/misebox/misebox-app/`, containing `nuxt.config.ts`, `package.json`, `app/`, and optionally `server/`, `public/`, `shared/`, tests, TypeScript and deployment configuration.
-- `app/app.vue` is inside `app/`, **not** beside `nuxt.config.ts`. Recent work aligned stock roots around `<AppShell />`; verify all consumers and documented exceptions, including Go QR embedded tools and app-owned theme/language deltas.
+- `app/app.vue` is inside `app/`, **not** beside `nuxt.config.ts`. Recent work aligned stock roots around `<FireuxApp />`; verify all consumers and documented exceptions, including Go QR embedded tools and app-owned theme/language deltas.
 - The term **runtime** primarily describes reusable package code, typically `packages/.../src/runtime/`. Do not conflate package runtime with an application project root or the canonical FireUX Project Entity.
 - Audit `app/app.config.ts` in every application: native Nuxt presentation config plus deliberate FireUX additions, without duplicating runtime or Entity authority.
 - Audit **all** application project roots for app-specific versus reusable code. App-specific presentation/adapters belong in the app; reusable domain logic belongs with its owning package.
@@ -68,7 +68,7 @@ Vue SFC convention: `<template>` first, then `<script setup>`, then `<style>` if
 
 We **already have `fireux-docs`**. Extend and audit it; do not invent a parallel documentation system. Documentation follows the canonical owner (Core, extension, ecosystem) and is presented centrally by FireUX Docs. Document once; link from consumers. Keep code and production bundles lightweight — do **not** import docs through runtime composables merely to make them discoverable.
 
-Provide one clear concept guide for each convention: `nuxt.config.ts`, `app.vue` / AppShell, `app.config.ts`, components, composables, pages, layouts, HTML/template composition, styling, Entities, package runtime/layers, and Ignite. First inspect and reconcile existing `docs/concepts/*`, package docs and the FireUX Docs inventory. Avoid duplicating conflicting documents. Guides should state the current rule, rationale, native Nuxt/Nuxt UI relationship, owning code, examples and checks.
+Provide one clear concept guide for each convention: `nuxt.config.ts`, `app.vue` / FireuxApp, `app.config.ts`, components, composables, pages, layouts, HTML/template composition, styling, Entities, package runtime/layers, and Ignite. First inspect and reconcile existing `docs/concepts/*`, package docs and the FireUX Docs inventory. Avoid duplicating conflicting documents. Guides should state the current rule, rationale, native Nuxt/Nuxt UI relationship, owning code, examples and checks.
 
 Longer term, make each extension's components discoverable via its own catalogue (e.g. Kitchens components under a Kitchens documentation surface), with props, previews and usage examples. FireUX Docs is the presentation layer; the Kitchen package remains owner. Generate or verify inventory against real exports/registration, not manually maintained stale lists. Avoid mounting connected production screens as isolated demos.
 

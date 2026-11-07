@@ -29,7 +29,7 @@ payment fixtures were seeded into Firestore.
 
 - The `/ignite-preview` form prepared source through its thin Nitro adapter.
   Codex prepared the identical input through the App-owned CLI. The shared
-  recipe supplies native Nuxt configuration/layers, Core AppShell, App metadata,
+  recipe supplies native Nuxt configuration/layers, Core FireuxApp, App metadata,
   noindex preview SEO, and the existing Kitchen catalogue/demo manifest.
 - The materializer wrote the source and copied neutral starter artwork. Native
   Nuxt uses the existing approved FireUX development environment via `--dotenv`;

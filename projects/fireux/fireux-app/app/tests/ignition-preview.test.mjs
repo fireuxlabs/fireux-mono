@@ -25,7 +25,7 @@ test('one deterministic source result retains reviewed purpose, framework owners
   const artifact = prepareIgnitionPreview(input)
   assert.deepEqual(artifact, prepareIgnitionPreview(input))
   assert.equal(artifact.brief.outcome, input.outcome)
-  assert.match(artifact.files['app/app.vue'], /AppShell/)
+  assert.match(artifact.files['app/app.vue'], /FireuxApp/)
   assert.match(artifact.files['nuxt.config.ts'], /defineFireuxEcosystem/)
   assert.match(artifact.files['nuxt.config.ts'], /noindexPaths/)
   assert.match(artifact.files['nuxt.config.ts'], /global/)

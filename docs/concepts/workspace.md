@@ -51,7 +51,7 @@ Current Core entrypoints under `packages/core/fireux-core/src/runtime/`:
 - `workspace/composables/useWorkspace.ts`: active Entity selection.
 - `workspace/composables/useWorkspaceEntryCta.ts`: App-aware entry links.
 - `workspace/components/EntitySwitcher.vue`: selected-Entity switching control.
-- `app/components/Shell.vue`: selects Workspace from route metadata.
+- `app/components/FireuxApp.vue`: selects Workspace from route metadata.
 - `workspace/components/Index.vue`: sidebar, Workspace page and shared controls.
 - `workspace/components/Page.vue`: dashboard panel and one Workspace page outlet.
 - `workspace/components/Navbar.vue` and `Breadcrumbs.vue`: shared page framing.
@@ -77,7 +77,7 @@ the persistent selected-Kitchen control rather than another normal sidebar row.
 Other families retain their own declared navigation; this is not a claim that
 all have adopted Kitchen's grouping or need the same number of groups.
 
-AppShell selects Core's named Workspace composition for routes marked by
+FireuxApp selects Core's named Workspace composition for routes marked by
 `workspacePage` metadata. Workspace composes the persistent sidebar, one page
 frame and shared Navbar/Breadcrumbs; the frame owns the route outlet and error
 boundary. Group indexes use `WorkspacePageLinks` as ordinary content. Route

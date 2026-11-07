@@ -40,7 +40,7 @@ test('Nuxt registration supplies names and source remains inspectable when overr
   assert.equal(state.preview, true)
   assert.match(state.code, /defineProps/)
   assert.equal(
-    inventory.find((entry) => entry.source === 'app/components/Shell.vue')
+    inventory.find((entry) => entry.source === 'app/components/FireuxApp.vue')
       .registered,
     false
   )

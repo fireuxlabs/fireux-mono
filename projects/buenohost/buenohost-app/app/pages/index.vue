@@ -1,14 +1,11 @@
-<template><LandingPublic /></template>
+<template><div /></template>
 <script setup lang="ts">
-import LandingPublic from '../components/Landing/Public.vue'
-import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-definePageMeta({ layout: 'landing', requiresAuth: false })
-useAppLandingSeo({
-  title: 'Find your next stay',
-  description:
-    'Explore places to stay and discover the properties behind BuenoHost.',
-  path: '/',
-  logo: '/img/app/logo.png',
-  language: 'en',
-})
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })
+const route = useRoute()
+const { workspaceEntryPath } = useWorkspaceEntryCta()
+await navigateTo(
+  { path: workspaceEntryPath.value, query: route.query, hash: route.hash },
+  { redirectCode: 302, replace: true }
+)
 </script>

@@ -160,14 +160,15 @@ The detailed UI and Entity conventions live in [components](../concepts/componen
 
 ## UI and design system
 
-Stock App roots delegate to Core AppShell, which owns the single `UApp`
+Stock App roots delegate to Core `FireuxApp`, which owns the single `UApp`
 provider, route selection and App initialization lifecycle. App-owned theme and
 language setup may remain around that delegation. Go QR's documented embedded
 tool branch retains its separate provider/outlet; another bypass needs a real
 product and lifecycle justification. See [the rendering map](../concepts/layouts.md).
 
-AppShell supplies the normal page's single `UMain` inside the selected layout;
-WorkspacePage owns the Workspace landmark. Layouts and page descendants do not
+FireuxApp supplies the normal page's single `UMain` inside the selected layout;
+WorkspacePage owns the Workspace landmark. The frame loads lazily only when
+the App declares Workspaces and the route requests it. Layouts and page descendants do not
 add another `main`. The developer dock stays inside native `DevOnly` so its
 component setup and dock-only code are excluded from production execution.
 
@@ -201,6 +202,8 @@ public names: `FireState`, `FireCollectionPagination`. Domain and
 Workspace registrations retain their named prefixes. App-local overrides of a
 shared component retain its canonical Fire name. The native Core runtime layer
 owns shared-library registration.
+`FireuxApp` is the explicitly registered Core application root. The other App,
+Workspace, Ecosystem and User registrations retain their existing prefixes.
 
 Use Nuxt's generated component names when package registration provides them.
 Do not add an explicit import or alias without an inspected registration gap or
@@ -348,6 +351,16 @@ cleanup for progress. Separate release-only gates from functional dependencies.
 - Never stage, commit, push, deploy or modify live data without user
   authorization for that action. `pnpm gitsave` requires `main`, stages shared
   work, commits and pushes `origin/main`. Run it only after an explicit save request.
+- For an explicit routine save, reuse already loaded guidance when it remains
+  current. Use one compact preflight for checkout, branch and shared change
+  summary, run the existing `pnpm gitsave`, then use one final check for commit,
+  working-tree and sync status. Report the short commit and clean/sync result.
+  Do not add broad tests, a fresh architecture audit, delegation or another Git
+  workflow to an ordinary shared checkpoint. If the preflight reveals a concrete
+  blocker such as conflicts or the wrong branch, report it without silently
+  changing branches or discarding work. Explicit save authority covers the
+  shared checkpoint, including unrelated changes; it does not authorize editing
+  those changes.
 - IDE tasks, launch entries and workspaces are generated through `pnpm ide:sync`
   from App-owned manifests and the existing launcher discovery. Use
   [the IDE workflow](../../tools/ide/README.md) for focused checks; keep generated

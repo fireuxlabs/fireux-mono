@@ -3,7 +3,9 @@
     <ClientOnly>
       <FirePwaStatus />
     </ClientOnly>
-    <Workspace v-if="route.meta.workspacePage" />
+    <LazyWorkspace
+      v-if="route.meta.workspacePage && fireuxConfig.workspaces.length"
+    />
     <NuxtLayout v-else>
       <UMain>
         <NuxtPage />

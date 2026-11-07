@@ -41,6 +41,7 @@ const navigation = [
     { label: 'Ignight', to: '/getting-started' },
     { label: 'Fuel', type: 'label' as const },
     { label: 'App configuration', to: '/docs/configuration' },
+    { label: 'app.vue', to: '/docs/app' },
     { label: 'Pages', to: '/docs/pages' },
     { label: 'Layouts', to: '/docs/layouts' },
     { label: 'Components', to: '/docs/components', exact: true },

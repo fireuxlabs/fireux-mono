@@ -4,7 +4,7 @@
       <NuxtPage />
     </UMain>
   </UApp>
-  <AppShell v-else />
+  <FireuxApp v-else />
 </template>
 
 <script setup lang="ts">

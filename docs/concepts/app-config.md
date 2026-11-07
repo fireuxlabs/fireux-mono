@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-11-06
-Ref: 97ab6b477
+Updated: 2026-11-07
+Ref: a38377207
 Role: map, not canon
 
 ## Purpose
@@ -161,6 +161,27 @@ or subscription.
   through `team/{uid}`; AppUser owns only App membership, capability, and
   lifecycle.
 - Standalone is a FireUX-owned mode.
+
+## App entrance and optional Workspace
+
+Keep one `FireuxApp` root for global, tenant and standalone Apps. `role` owns
+the App relationship, `workspaces` declares capabilities, and `homePath` owns
+the public Home navigation destination. An empty Workspace list loads no
+Workspace frame. Route metadata still selects the frame for each page.
+
+Ecosystem Main Apps with Workspaces use a thin native index route to open the
+registered Workspace entrance through `useWorkspaceEntryCta`, preserving query
+and fragment. Their traditional public landing is `/home`, also declared as
+`homePath`. The shared sidebar exposes this Home link when it differs from the
+Workspace entrance. The first declared Workspace supplies the default entrance.
+FireUX retains its authored public `/` and `homePath: '/'`.
+Tenant and standalone entrances remain App-owned. No separate root component or
+parallel entrance configuration is required.
+
+Misebox uses the same host for Home, Workspace, sign-in and public tools. Its
+former host-switching middleware and declared Kitchen Workspace origin are
+removed. Optional cross-origin entry support remains a generic Core capability
+for a separately justified App; it is not the default.
 
 ## Working rule
 

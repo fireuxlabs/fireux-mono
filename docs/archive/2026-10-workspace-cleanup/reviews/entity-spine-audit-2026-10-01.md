@@ -1166,7 +1166,7 @@ proof is claimed. Both source stages stop here, before any capability work.
 | --- | --- | --- |
 | Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue](../../../../packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue) | TS6133 / 1 |
 | Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue](../../../../packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue) | TS6133 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/app/components/Shell.vue](../../../../packages/core/fireux-core/src/runtime/app/components/Shell.vue) | TS2339 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue](../../../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue) | TS2339 / 1 |
 | Core | [packages/core/fireux-core/src/runtime/app/components/UserProfile.vue](../../../../packages/core/fireux-core/src/runtime/app/components/UserProfile.vue) | TS2304 / 1 |
 | Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue](../../../../packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue) | TS2305 / 1 |
 | Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue](../../../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue) | TS2304, TS2305 / 2 |

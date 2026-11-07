@@ -1,49 +1,11 @@
-<template>
-  <UPageHeader
-    title="Build your Supplier Workspace"
-    description="Manage catalogues, ingredients and supply operations."
-  />
-  <WorkspaceSupplierSelector />
-  <WorkspaceAI compact aria-label="Supplier Landing AI">
-    <UAlert
-      title="Landing AI is not connected yet"
-      color="neutral"
-    /> </WorkspaceAI
-  ><WorkspaceSupplier />
-  <WorkspaceSupplierHomeTools />
-</template>
-
+<template><div /></template>
 <script setup lang="ts">
-import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { appMeta } from '../meta'
-
-definePageMeta({
-  layout: false,
-  workspacePage: true,
-  pageTransition: false,
-  workspace: 'supplier',
-  workspaceSurface: 'browse',
-  nav: {
-    key: 'workspace-supplier',
-    label: 'Supplier',
-    description: 'Supplier Workspace',
-    icon: 'i-lucide-truck',
-    position: 'bottom',
-    order: 900,
-    prominent: true,
-    desktop: true,
-    mobile: true,
-    layouts: ['workspace'],
-  },
-  requiresAuth: false,
-  requiresSelection: false,
-})
-
-useAppLandingSeo({
-  title: appMeta.seoHome.title,
-  description: appMeta.seoHome.description,
-  path: '/',
-  logo: '/img/app/logo.png',
-  language: 'en',
-})
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })
+const route = useRoute()
+const { workspaceEntryPath } = useWorkspaceEntryCta()
+await navigateTo(
+  { path: workspaceEntryPath.value, query: route.query, hash: route.hash },
+  { redirectCode: 302, replace: true }
+)
 </script>

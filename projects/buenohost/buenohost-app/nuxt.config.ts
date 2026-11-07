@@ -12,7 +12,10 @@ export default defineFireuxEcosystem({
   name: 'BuenoHost',
   shortName: 'BuenoHost',
   role: 'global',
+  homePath: '/home',
   seo: {
+    staticPaths: ['/home'],
+    noindexPaths: ['/'],
     siteUrl: 'https://buenohost-app.web.app',
   },
   workspaces,

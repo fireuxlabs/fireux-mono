@@ -5,7 +5,7 @@ The FireUX App `/ignite-preview` and Codex `ignition:prepare` use the same
 `name` and reviewed `outcome`. Output includes:
 
 - `packages/ecosystem/fireux-<id>` using Core ecosystem wiring and Firebase binding.
-- `projects/<id>/<id>-app` with global role, Core AppShell and shared plan presentation.
+- `projects/<id>/<id>-app` with global role, Core FireuxApp and shared plan presentation.
 - An empty `.env.example` for the business Firebase and Stripe configuration.
 
 ```sh

@@ -52,6 +52,21 @@ They cover direct owners; a shared change can require checks of dependent Apps
 and live verification. No applicable tests/typecheck is not proof of coverage.
 `pnpm format` remains the explicit repository-wide formatting command.
 
+## Routine Git Save
+
+The toolbar's **Git Save** action and the generated **Git Save** task both use
+`pnpm gitsave`. It requires `main`, stages the shared working tree, commits and
+pushes `origin/main`. Use it only after an explicit save request; a shared
+checkpoint includes other ongoing work.
+
+For an ordinary agent-assisted save, reuse unchanged context already loaded,
+make one compact preflight of checkout/branch and shared changes, run the
+existing command, then make one final commit/status check. Return the short
+commit plus working-tree and sync status. Broad tests, repeated context reads,
+new branches and a second save workflow are not part of this routine path.
+Resolve an actual conflict, branch mismatch or push failure before claiming the
+save succeeded. See [working guidance](../../docs/ai/gpt-context.md#working-and-verification-rules).
+
 ## Apps and debugging
 
 App manifests own dev commands and ports. The existing launcher discovery in

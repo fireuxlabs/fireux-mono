@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-07
-Ref: dbcd2f326
+Ref: a38377207
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -74,10 +74,10 @@ Exact Product bundles, Workspace coverage and commercial tier boundaries require
 product decisions; do not infer unlimited coverage. Managed is parked and, if
 revisited, extends Workspace rather than each individual Product.
 
-Main App host selection and Workspace noindex/cache headers use native Nuxt/H3
-forwarded host and protocol options behind Firebase Hosting. The internal Cloud
-Run origin must not determine whether `/` renders public discovery or Kitchen
-Workspace. This is App presentation policy, not data authority.
+The Main App uses one host. Its native index opens Kitchen Workspace at
+`/workspace/kitchen`, preserving query and fragment. Traditional public Home is
+`/home`, selected through `homePath`. Workspace responses retain noindex/no-store
+headers. A hostname does not determine data authority or grant access.
 
 The Main App's `/products` composes Pro and Business from App-owned
 `useMiseboxPricing`, which selects Core's shared tiers, alongside the existing
@@ -275,34 +275,23 @@ and Footer components directly. Those shared components remain active.
   composes a Kitchen-owned local empty Ticket specimen.
   This catalogue is independent of the operational Orders Workspace and does
   not enable additional channels or perform database writes.
-- `misebox-app` is the Main App. `/` presents the Kitchen directory using the same
-  `useKitchens` reader and `KitchenCollection`
-  component as `/kitchens`. The dedicated directories remain at `/kitchens` and `/menus`, without featured Kitchens.
-  `/product` retains Kitchen-team product literature. The saved operational
-  composition renders directly at `/` on the declared Workspace origin:
-  `workspace.misebox.app` in production configuration and `workspace.localhost:3001`
-  locally. `app/pages/index.vue` chooses the host's surface; App middleware supplies
-  its layout and Workspace metadata without a root redirect. The App route hook
-  excludes inherited `/workspace` and `/workspace/kitchen` Home routes, with no
-  redirect or alias. Capability descendants retain `/workspace/kitchen/**`.
-  Workspace host responses are noindex. Main public origins send capability
-  routes to `workspace.misebox.app`; local loopback origins send them to
-  `workspace.localhost`, preserving the local port, path, query and fragment.
-  Public entrance actions use Core's `workspaceEntryHref`/`openWorkspace` and the
-  App's `workspaceConfig.kitchen.origin`; internal returns use `workspaceEntryPath`.
-  Kitchen query selection recognizes Workspace metadata at root, with the same
-  settled authority checks as capability routes. Workspace installation starts at
-  `/` on its declared origin and never at a selected Kitchen record.
-  Public pages, pricing and authentication stay on their current origin;
-  tenant and service hosts are not redirected by this Main App policy.
-  Authentication remains origin-scoped. `app/tests/workspace-surface.test.mjs`
-  protects the exact host split, destination preservation and lookalike-host denial.
+- `misebox-app` is the Main App. Its native `/` route opens the registered
+  Kitchen Workspace at `/workspace/kitchen` through Core's entrance reader,
+  preserving query and fragment. The public Kitchen directory remains at
+  `/home`, `/kitchens` and `/menus`; `/product` retains product literature.
+  `homePath: '/home'` supplies the public Home link. Workspace and public pages,
+  pricing and authentication share the same origin. The former host-switching
+  middleware, configured Workspace origin and route-removal hook are removed.
+  App-owned `pages/workspace/kitchen/index.vue` composes KitchenHome; capability
+  descendants retain their existing routes and authority. Workspace pages remain
+  noindex/no-store. `app/tests/workspace-surface.test.mjs` covers entrance intent,
+  native metadata and headers.
 - A guest arriving at the Main App's Workspace root (or a tenant's
   `/workspace/kitchen`) is already in Kitchen Workspace, even before
   saving Kitchen information. Getting started describes its content state;
   it does not mean the Workspace is absent. The Kitchen/Place creation and
   onboarding commands retain their distinct persistence and authority roles.
-- The Main App owns its host-specific `/`, navbar/SEO framing and short Kitchen
+- The Main App owns its Workspace entrance, navbar/SEO framing and short Kitchen
   entry copy in `app/components/Workspace/KitchenHome.vue`. The Kitchen-owned Workspace Index composes the shared
   collection/focus layout, publishes its bounded inspector context, and owns
   the real creation and identity controls. The former draft/workflow landing
@@ -1388,7 +1377,7 @@ Missing or cleared titles display “Food & drinks”. Public food portal cards 
 this title rather than concatenating Menu names; service configurations remain
 separate Kitchen-owned records.
 
-Kitchen pages declare `workspacePage: true` and `layout: false`. Core AppShell
+Kitchen pages declare `workspacePage: true` and `layout: false`. Core FireuxApp
 selects `workspace/components/Index.vue`, composing Sidebar and Page. Page owns
 Navbar, Breadcrumbs and the root NuxtPage outlet. Domain routes supply named
 content components; group indexes use PageLinks when they need navigation cards.

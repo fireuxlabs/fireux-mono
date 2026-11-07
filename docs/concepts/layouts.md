@@ -1,7 +1,7 @@
 # Layouts spine map
 
 Updated: 2026-11-07
-Ref: 97a7c205e
+Ref: a38377207
 Role: map, not canon
 
 ## Purpose and authority
@@ -23,7 +23,7 @@ layout pattern universal.
 
 | Surface                                  | Route outlet owner                                        | Surrounding UI and content                                                              |
 | ---------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Public pages and Entity indexes/details  | AppShell or the App root supplies NuxtPage to NuxtLayout  | Layout owns site chrome; Entity routes compose their named content, readers and actions |
+| Public pages and Entity indexes/details  | FireuxApp or the App root supplies NuxtPage to NuxtLayout | Layout owns site chrome; Entity routes compose their named content, readers and actions |
 | Auth                                     | The same App-root outlet, inside the Auth layout slot     | Auth keeps its client-only account surface                                              |
 | Dashboard and Diagnostics                | The same App-root outlet, inside the selected layout slot | Each layout keeps its navigation; page content stays route-owned                        |
 | Workspace, including Entity capabilities | Core WorkspacePage                                        | One shared panel, Navbar, breadcrumbs and error boundary; domain pages supply content   |
@@ -38,7 +38,9 @@ responsibility.
 
 ## App-root provider ownership
 
-Core [AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
+The public [app.vue guide](../../packages/extensions/fireux-docs/src/runtime/pages/docs/app.vue) compares Nuxt, Nuxt UI and FireUX and explains the supported root constraints.
+
+Core [FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
 owns the stock UApp provider, PWA status, route branches, manifest/SEO policy and
 current-App initialization blocker. Every maintained App root delegates to it,
 including the [starter](../../projects/templates/fireux-template/app/app.vue).
@@ -48,25 +50,25 @@ and is not a stock alternative.
 
 [Go QR](../../projects/fireux/go-qr/app/app.vue) retains one explicit exception:
 `/tools/` uses a UApp-wrapped NuxtPage without ordinary site chrome or App
-initialization. Other Go QR routes still use AppShell.
+initialization. Other Go QR routes still use FireuxApp.
 
-Bangin Coffee and La Tap retain App-owned theme injection around AppShell;
+Bangin Coffee and La Tap retain App-owned theme injection around FireuxApp;
 Interlaken Essen retains its language metadata. These are product deltas, not
 alternative route outlets or initialization owners. They remain with those Apps.
 
-For ordinary routes, AppShell supplies one `UMain` around `NuxtPage` inside the
+For ordinary routes, FireuxApp supplies one `UMain` around `NuxtPage` inside the
 selected Nuxt layout's slot. Layout headers, footers and navigation remain
 outside that landmark. Layouts, route pages and their child components do not
 add another `main`. This also covers routes with `layout: false`.
 WorkspacePage owns the Workspace `main`; that branch does not receive another
-AppShell wrapper. Go QR's embedded branch and the standalone ErrorPage each own
+FireuxApp wrapper. Go QR's embedded branch and the standalone ErrorPage each own
 their own `UMain` because they bypass the ordinary shell.
 
 [AppDevControls](../../packages/core/fireux-core/src/runtime/app/components/DevControls.vue)
 owns the developer dock and its local feedback/cleanup. It consumes existing
 Diagnostics state and the existing media-sync command; moving the controls does
-not move command authority into AppShell or create another App reader.
-AppShell places it inside native `DevOnly`, whose production transform removes
+not move command authority into FireuxApp or create another App reader.
+FireuxApp places it inside native `DevOnly`, whose production transform removes
 the component reference before bundling. The controls component must be absent
 from production executable code; a hidden template alone does not satisfy this
 boundary.
@@ -76,17 +78,19 @@ SFC block order for App roots and the reviewed shared shell/chrome/disclosure
 owners. Other existing Core styles remain migration debt; that scoped check
 is not a repository-wide styling certificate.
 
-The future default entrance for ecosystem Main Apps, including possible
-Workspace domains, is [parked in the roadmap](../roadmaps/fireux-priorities.md#ecosystem-main-apps-default-workspace-entrance).
-It is separate from the frame-selection mechanism below.
+Ecosystem Main Apps with Workspaces open their registered Workspace entrance
+through a native index route; public Home stays at `/home`. FireUX keeps its
+public root. See [App configuration](app-config.md#app-entrance-and-optional-workspace).
+Separate Workspace domains remain a future product decision.
 
 ## Workspace composition
 
-[AppShell](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue)
-selects the named `Workspace` composition when the current route has
+[FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
+lazily selects the named `Workspace` composition when the App declares
+Workspaces and the current route has
 `workspacePage` metadata. Workspace routes disable the separate Nuxt layout.
 Other routes continue through `<NuxtLayout><NuxtPage /></NuxtLayout>`.
-App roots delegate that choice to AppShell instead of repeating the route branches.
+App roots delegate that choice to FireuxApp instead of repeating the route branches.
 
 Core [Workspace](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
 composes the dashboard group, sidebar and one
@@ -111,7 +115,7 @@ relationship.
 
 ## Other route composition lanes
 
-- AppShell's non-Workspace branch composes the selected Nuxt layout and page.
+- FireuxApp's non-Workspace branch composes the selected Nuxt layout and page.
 - The Kitchen [Menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue)
   uses Nuxt's layout slot for route-family chrome.
 - Core [default](../../packages/core/fireux-core/src/runtime/layouts/default.vue),
@@ -119,7 +123,7 @@ relationship.
   [auth](../../packages/core/fireux-core/src/runtime/layouts/auth.vue),
   [diagnostics](../../packages/core/fireux-core/src/runtime/layouts/diagnostics.vue)
   and [dashboard](../../packages/core/fireux-core/src/runtime/layouts/dashboard.vue)
-  consume NuxtLayout's native slot. AppShell or the App root supplies NuxtPage.
+  consume NuxtLayout's native slot. FireuxApp or the App root supplies NuxtPage.
   Auth and Diagnostics retain their client-only boundary; the other layouts
   retain their existing chrome. This follows [Nuxt's layout composition](https://learn.nuxt.com/en/concepts/layout).
 - Core's [page policy](../../packages/core/fireux-core/src/config/module/pages-config.ts)
@@ -166,7 +170,7 @@ title. Domain pages can still provide their more specific head metadata.
 
 ## Verification and refresh
 
-Inspect AppShell, route metadata and generated routes, the nearest non-Workspace
+Inspect FireuxApp, route metadata and generated routes, the nearest non-Workspace
 layout, and actual parent/child routes. Confirm each page renders once at its
 intended boundary; retain sidebar, session, transition, error and nested-route
 behavior. Refresh this map when the shell owner or route metadata contract

@@ -172,11 +172,11 @@ async function syncRuntimeMedia() {
     const result = await syncAppMediaToStorage()
     mediaSyncState.value = result.failed.length ? 'error' : 'success'
     if (result.failed.length) {
-      console.error('[AppShell] App media sync failed', result.failed)
+      console.error('[FireuxApp] App media sync failed', result.failed)
     }
   } catch (error) {
     mediaSyncState.value = 'error'
-    console.error('[AppShell] App media sync failed', error)
+    console.error('[FireuxApp] App media sync failed', error)
   } finally {
     mediaSyncPending.value = false
   }

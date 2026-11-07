@@ -20,7 +20,7 @@ test('maintained App roots delegate stock lifecycle; only Go QR embeds its own o
       const file = join(repo, 'projects', group.name, app.name, 'app/app.vue')
       if (!existsSync(file)) continue
       const source = readFileSync(file, 'utf8')
-      assert.match(source, /<AppShell\b/, file)
+      assert.match(source, /<FireuxApp\b/, file)
       if (group.name === 'fireux' && app.name === 'go-qr') {
         assert.match(source, /route\.path\.startsWith\('\/tools\/'\)/)
       } else assert.doesNotMatch(source, /<(UApp|NuxtPage|Workspace)\b/, file)
@@ -28,15 +28,21 @@ test('maintained App roots delegate stock lifecycle; only Go QR embeds its own o
   }
 })
 
-test('AppShell keeps route and initialization ownership apart from developer controls', () => {
-  const shell = readFileSync(join(runtime, 'app/components/Shell.vue'), 'utf8')
+test('FireuxApp keeps route and initialization ownership apart from developer controls', () => {
+  const shell = readFileSync(
+    join(runtime, 'app/components/FireuxApp.vue'),
+    'utf8'
+  )
   const controls = readFileSync(
     join(runtime, 'app/components/DevControls.vue'),
     'utf8'
   )
   assert.equal((shell.match(/<UApp>/g) || []).length, 1)
   assert.equal((shell.match(/<NuxtPage\b/g) || []).length, 1)
-  assert.match(shell, /<Workspace v-if="route\.meta\.workspacePage"/)
+  assert.match(
+    shell,
+    /<LazyWorkspace[\s\S]*?route\.meta\.workspacePage && fireuxConfig\.workspaces\.length/
+  )
   assert.match(shell, /useAppRead\(fireuxConfig\.appId\)/)
   assert.match(shell, /appExists\.value === false/)
   assert.match(shell, /resolveSeoRobots/)
@@ -52,11 +58,23 @@ function surface(file, state = {}) {
   return { setup: () => state, render: compile(descriptor.template.content) }
 }
 
-for (const layout of ['default', 'docs', 'bare', 'workspace', 'embedded']) {
+for (const layout of [
+  'default',
+  'docs',
+  'bare',
+  'workspace',
+  'without-workspace',
+  'embedded',
+]) {
   test(`${layout} composition renders one main around page content`, async () => {
-    const shell = surface(join(runtime, 'app/components/Shell.vue'), {
-      route: { meta: { workspacePage: layout === 'workspace' } },
+    const shell = surface(join(runtime, 'app/components/FireuxApp.vue'), {
+      route: {
+        meta: {
+          workspacePage: ['workspace', 'without-workspace'].includes(layout),
+        },
+      },
       showOnboardingModal: false,
+      fireuxConfig: { workspaces: layout === 'workspace' ? ['example'] : [] },
     })
     const app = createSSRApp(
       layout === 'embedded'
@@ -94,7 +112,7 @@ for (const layout of ['default', 'docs', 'bare', 'workspace', 'embedded']) {
     app.component('FireLayoutsDefaultHeader', wrapper('header'))
     app.component('FireLayoutsDefaultFooter', wrapper('footer'))
     app.component(
-      'Workspace',
+      'LazyWorkspace',
       surface(join(runtime, 'workspace/components/Index.vue'), {
         notificationsOpen: false,
       })
@@ -145,7 +163,7 @@ for (const layout of ['default', 'docs', 'bare', 'workspace', 'embedded']) {
 
 test('reviewed shared foundation templates compile with their named slots', () => {
   for (const file of [
-    'app/components/Shell.vue',
+    'app/components/FireuxApp.vue',
     'app/components/DevControls.vue',
     'components/layouts/default/Header.vue',
     'components/layouts/default/Footer.vue',

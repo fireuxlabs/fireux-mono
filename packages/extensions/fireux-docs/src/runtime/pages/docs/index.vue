@@ -62,6 +62,13 @@ const groups = [
     title: 'Fuel',
     guides: [
       {
+        label: 'app.vue',
+        description:
+          'Use the shared FireUX App root and keep its lifecycle in one place.',
+        icon: 'i-lucide-app-window',
+        to: '/docs/app',
+      },
+      {
         label: 'Pages',
         description: 'Compose a page around one reader and shared read states.',
         icon: 'i-lucide-file-text',
@@ -69,7 +76,7 @@ const groups = [
       },
       {
         label: 'Layouts',
-        description: 'See how AppShell frames site pages and Workspaces.',
+        description: 'See how FireuxApp frames site pages and Workspaces.',
         icon: 'i-lucide-panels-top-left',
         to: '/docs/layouts',
       },

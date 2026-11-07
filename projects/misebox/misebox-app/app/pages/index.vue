@@ -1,55 +1,11 @@
-<template>
-  <KitchenHome v-if="isWorkspaceHost" />
-  <div v-else><LandingPublic /></div>
-</template>
-
+<template><div /></template>
 <script setup lang="ts">
-import { useRequestURL, useSeoMeta } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import KitchenHome from '../components/Workspace/KitchenHome.vue'
-import LandingPublic from '../components/Landing/Public.vue'
-
-const isWorkspaceHost =
-  useRequestURL({ xForwardedHost: true, xForwardedProto: true }).origin ===
-  useFireUXConfig().workspaceConfig.kitchen?.origin
-
-definePageMeta({
-  layout: false,
-  workspacePage: true,
-  pageTransition: false,
-  workspace: 'kitchen',
-  workspaceSurface: 'browse',
-  nav: {
-    key: 'workspace-kitchen',
-    label: 'Home',
-    group: '',
-    description: 'Kitchen Workspace',
-    icon: 'i-lucide-house',
-    position: 'bottom',
-    order: 900,
-    prominent: true,
-    desktop: true,
-    mobile: true,
-    layouts: ['workspace'],
-  },
-  requiresAuth: false,
-  requiresSelection: false,
-})
-
-if (isWorkspaceHost) {
-  useSeoMeta({
-    title: 'Kitchen Workspace | Misebox',
-    robots: 'noindex, nofollow',
-  })
-} else {
-  useAppLandingSeo({
-    title: 'Kitchens and Menus | Misebox',
-    description: 'Find a Kitchen and view its Menus.',
-    path: '/',
-    image: '/img/app/cover.png',
-    logo: '/img/app/logo.png',
-    language: 'en',
-  })
-}
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
+definePageMeta({ layout: false, pageTransition: false, requiresAuth: false })
+const route = useRoute()
+const { workspaceEntryPath } = useWorkspaceEntryCta()
+await navigateTo(
+  { path: workspaceEntryPath.value, query: route.query, hash: route.hash },
+  { redirectCode: 302, replace: true }
+)
 </script>

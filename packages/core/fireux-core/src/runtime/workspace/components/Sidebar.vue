@@ -84,7 +84,7 @@
 
           <FireLayoutsSharedSideBarFooter
             :collapsed="collapsed ?? false"
-            :show-home="false"
+            :show-home="publicHomePath !== workspaceEntryPath"
           />
         </div>
       </div>
@@ -108,6 +108,7 @@ import {
 import { useWorkspaceNav } from '../composables/useWorkspaceNav'
 import { workspaceActiveDestination } from '../utils/active-destination'
 import { useWorkspaceEntryCta } from '../composables/useWorkspaceEntryCta'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 
 const open = ref(false)
 const sidebarMode = ref<WorkspaceSidebarMode>('expanded')
@@ -123,6 +124,7 @@ const groupVisit = ref(0)
 const workspaceNav = useWorkspaceNav()
 const route = useRoute()
 const { workspaceEntryPath } = useWorkspaceEntryCta()
+const { homePath: publicHomePath } = useFireUXConfig()
 const nuxtApp = useNuxtApp()
 const workspace = computed(() =>
   workspaceFamilyFromRouteContext(

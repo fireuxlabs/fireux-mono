@@ -66,16 +66,16 @@ family, then name the missing Tool and one complete journey to prove. A Product
 packages those Tools; Workspace exposes the same owners directly. Do not create
 empty packages, Product records or universal workflow configuration for parked ideas.
 
-| Family | Candidate products | Shared owners and next proof |
-| --- | --- | --- |
-| Menus and dishes | Menu Express; Kitchen Setup | Existing Menus preparation, review and publication. Keep the accepted Product/Workspace slice closed unless a regression appears. |
-| Ordering and service | Collection Ordering; Kiosk Ordering; Table Ordering; Delivery Ordering; Catering Orders | Reuse Menu selection, canonical pricing, Order submission and the Kitchen board. Prove channels independently; advanced catering and delivery rules are separate gaps. |
-| Recipes and preparation | Recipe and Prep Planning | Reuse Recipes, Dishes and Prep. Prove one saved recipe-to-production journey before packaging. |
-| Stock, purchasing and suppliers | Stock and Purchasing; Supplier Catalogue | Preserve Stock, Purchasing, Receiving and Supplier catalogue ownership. Prove a purchase-to-receipt journey. |
-| Costs and performance | Menu Costing; Kitchen Performance | Derive results from authoritative Recipe/Dish costs and saved operational records; identify missing inputs before promising reports. |
-| People and venue operations | Team and Training; Food Safety | Keep Team, procedures and safety responsibilities distinct. Prove one operator workflow per offer before packaging. |
-| Business surfaces | Branded Kitchen App | Reuse the separate Ignition task and existing Kitchen capabilities; do not duplicate creation. |
-| Shared App plans | Pro; Business | Core tier mechanics and App-owned capacity. Billing activation remains separate from catalogue presentation. |
+| Family                          | Candidate products                                                                      | Shared owners and next proof                                                                                                                                           |
+| ------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Menus and dishes                | Menu Express; Kitchen Setup                                                             | Existing Menus preparation, review and publication. Keep the accepted Product/Workspace slice closed unless a regression appears.                                      |
+| Ordering and service            | Collection Ordering; Kiosk Ordering; Table Ordering; Delivery Ordering; Catering Orders | Reuse Menu selection, canonical pricing, Order submission and the Kitchen board. Prove channels independently; advanced catering and delivery rules are separate gaps. |
+| Recipes and preparation         | Recipe and Prep Planning                                                                | Reuse Recipes, Dishes and Prep. Prove one saved recipe-to-production journey before packaging.                                                                         |
+| Stock, purchasing and suppliers | Stock and Purchasing; Supplier Catalogue                                                | Preserve Stock, Purchasing, Receiving and Supplier catalogue ownership. Prove a purchase-to-receipt journey.                                                           |
+| Costs and performance           | Menu Costing; Kitchen Performance                                                       | Derive results from authoritative Recipe/Dish costs and saved operational records; identify missing inputs before promising reports.                                   |
+| People and venue operations     | Team and Training; Food Safety                                                          | Keep Team, procedures and safety responsibilities distinct. Prove one operator workflow per offer before packaging.                                                    |
+| Business surfaces               | Branded Kitchen App                                                                     | Reuse the separate Ignition task and existing Kitchen capabilities; do not duplicate creation.                                                                         |
+| Shared App plans                | Pro; Business                                                                           | Core tier mechanics and App-owned capacity. Billing activation remains separate from catalogue presentation.                                                           |
 
 **Current implementation slice: Kiosk Ordering.** The existing Kiosk Service
 configuration supplies Eat in and Takeaway Menu sets and hours. One public
@@ -314,7 +314,6 @@ are preserved proposals/current-direction references, not newly verified prices.
 | Service-layer article and other learning posts                                | Source claims are refreshed and the draft receives editorial review; see [recovered draft](../archive/2026-10-workspace-cleanup/drafts/service-layer/article.md).                                                                                                                                                       |
 | Old audit findings, naming questions and uninitialised roots                  | Current source reproduces a relevant gap. Historical inventories are leads, not newly assigned jobs.                                                                                                                                                                                                                    |
 
-
 ### Ecosystem Main Apps: default Workspace entrance
 
 Experience direction agreed on 6 November 2026; implementation remains parked.
@@ -335,20 +334,15 @@ The intended shape is:
 - Keep a traditional Home page, reached through a clear Home/About link back
   out of Workspace. It is an optional introduction, not a required funnel step.
 
-When implementation is deliberately reopened, decide:
+The current local shape uses one host. Native ecosystem index routes open the
+registered Workspace entrance; public Home remains at `/home`. FireUX retains
+its authored public root. Tenant and standalone entrances remain App-owned.
+Misebox's former host split is retired. Existing config, Core's entrance reader
+and native Nuxt routes own this behavior; there is no second entrance registry.
+See [App configuration](../concepts/app-config.md#app-entrance-and-optional-workspace).
 
-- The exact URLs and whether one host is enough. A Workspace subdomain or
-  separate domains/deployments remain options, not requirements.
-- How guests, signed-in users, empty Workspaces and multiple Workspaces behave
-  within this shape, including when sign-in is needed and how work is retained.
-- How sign-in return URLs, invitations, target selection, public discovery, SEO
-  and local testing work. A hostname must not grant data access.
-
-Keep the existing AppShell lifecycle and domain-owned Workspace composition.
-`workspacePage` selects the frame; it does not decide the App's default entrance.
-Inspect the current [Misebox host middleware](../../projects/misebox/misebox-app/app/middleware/00-misebox-workspace-surface.global.ts)
-as one existing experiment, not a universal solution. Prove the experience in
-one real ecosystem App before introducing shared configuration.
+Separate Workspace domains, broader guest retention and further Workspace-home
+presentation remain future product work. A hostname never grants data access.
 
 ## Maintenance
 

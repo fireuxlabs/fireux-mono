@@ -1,4 +1,3 @@
-import type { NuxtPage } from '@nuxt/schema'
 import {
   defineFireuxEcosystem,
   type FireuxAppConfig,
@@ -13,22 +12,16 @@ const app: FireuxAppConfig = {
     'Misebox connects public Kitchen and Menu discovery with a Kitchen Workspace for operators. Venue information, menu content and operational configuration have separate owners.',
   name: 'Misebox',
   shortName: 'Misebox',
-  homePath: '/',
+  homePath: '/home',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
   workspaces: ['kitchen'],
-  workspaceConfig: {
-    kitchen: {
-      origin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://workspace.misebox.app'
-          : 'http://workspace.localhost:3001',
-    },
-  },
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   seo: {
+    noindexPaths: ['/'],
     staticPaths: [
+      '/home',
       '/product',
       '/get-started',
       '/programme',
@@ -61,18 +54,6 @@ const appConfig = defineFireuxEcosystem({
 
 export default {
   ...appConfig,
-  hooks: {
-    ...appConfig.hooks,
-    'pages:extend'(pages: NuxtPage[]) {
-      // This Main App has one host-specific root. Keep domain capability children.
-      for (let index = pages.length - 1; index >= 0; index -= 1) {
-        if (['/workspace', '/workspace/kitchen'].includes(pages[index].path)) {
-          pages.splice(index, 1)
-        }
-      }
-    },
-  },
-
   runtimeConfig: {
     ...appConfig.runtimeConfig,
     public: {

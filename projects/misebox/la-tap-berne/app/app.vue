@@ -1,5 +1,5 @@
 <template>
-  <AppShell />
+  <FireuxApp />
 </template>
 
 <script setup lang="ts">
