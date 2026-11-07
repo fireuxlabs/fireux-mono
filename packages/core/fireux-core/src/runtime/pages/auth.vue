@@ -1,5 +1,5 @@
 <template>
-  <main class="auth-page-shell">
+  <div class="auth-page-shell">
     <UContainer class="auth-page">
       <section v-if="isTenant" class="tenant-brand">
         <div class="tenant-brand__stack" :aria-label="`${appName} brand`">
@@ -13,7 +13,7 @@
       </section>
       <FireAuthSystem />
     </UContainer>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

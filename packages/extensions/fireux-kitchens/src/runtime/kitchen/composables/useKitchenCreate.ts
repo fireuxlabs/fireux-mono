@@ -1,11 +1,11 @@
 import { refreshNuxtData } from 'nuxt/app'
 import { computed } from 'vue'
 import { useWorkspaceCreation } from 'fireux-core/runtime/workspace/composables/useWorkspaceCreation'
-import { useKitchenAccess } from '../useKitchenAccess'
+import { useKitchenAccess } from './useKitchenAccess'
 import {
   kitchenCapacity,
   resolveKitchenAllowance,
-} from '../../utils/kitchen-capacity'
+} from '../utils/kitchen-capacity'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -17,14 +17,14 @@ import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestor
 import type {
   KitchenCreateInput,
   KitchenShellCreateInput,
-} from '../../models/kitchen-input.model.ts'
+} from '../models/kitchen-input.model.ts'
 import type {
   KitchenDirectoryContributionResult,
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
   KitchenShellCreateResult,
-} from '../../models/kitchen-onboarding.model.ts'
+} from '../models/kitchen-onboarding.model.ts'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 type KitchenCreateDraft = KitchenCreateInput

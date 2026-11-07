@@ -11,7 +11,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { useKitchenAccess } from '../../useKitchenAccess'
-import { useKitchenRead } from '../../firestore/useKitchenRead'
+import { useKitchenRead } from '../../useKitchenRead'
 import { useKitchenInterface } from '../../useKitchenInterface'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenMenuRead } from '../../../../menu/composables/useKitchenMenuRead'

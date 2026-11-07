@@ -25,7 +25,12 @@
             type="button"
             @click="emit('update:open', false)"
           />
-          <UButton label="Save changes" type="submit" :loading="saving" />
+          <UButton
+            label="Save changes"
+            type="submit"
+            :loading="saving"
+            :disabled="!status"
+          />
         </div>
       </form>
     </template>
@@ -36,8 +41,9 @@
 import { ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdate'
-import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useKitchenUpdate } from '../../composables/useKitchenUpdate'
+import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+import type { KitchenStatus } from '../../models/kitchen.model'
 
 const props = defineProps<{ open: boolean }>()
 const workspace = useKitchenWorkspace()
@@ -46,11 +52,11 @@ const emit = defineEmits<{ 'update:open': [open: boolean] }>()
 
 const editingKitchenId = ref('')
 const slug = ref('')
-const status = ref<'active' | 'inactive' | 'archived'>('inactive')
+const status = ref<KitchenStatus>()
 const visibility = ref(false)
 const updateError = ref('')
 const saving = ref(false)
-const statusItems = ['active', 'inactive', 'archived']
+const statusItems: KitchenStatus[] = ['active', 'inactive', 'archived']
 const { currentUser } = useAuth()
 const captureCompletion = useCommandScope([
   () => currentUser.value?.uid,
@@ -66,17 +72,22 @@ watch(
   () => props.open,
   (open: boolean) => {
     if (!open) return
+    const kitchen = workspace.data.value
+    if (workspace.outcome.value !== 'ready' || !kitchen) {
+      emit('update:open', false)
+      return
+    }
     saving.value = false
-    editingKitchenId.value = workspace.id.value || ''
-    slug.value = String(workspace.data.value?.slug || '')
-    status.value = workspace.data.value?.status || 'inactive'
-    visibility.value = Boolean(workspace.data.value?.visibility)
+    editingKitchenId.value = workspace.id.value
+    slug.value = kitchen.identity.slug
+    status.value = kitchen.identity.status
+    visibility.value = kitchen.identity.visibility
     updateError.value = ''
   }
 )
 
 async function save() {
-  if (saving.value) return
+  if (saving.value || !status.value) return
   if (
     !editingKitchenId.value ||
     editingKitchenId.value !== workspace.id.value ||

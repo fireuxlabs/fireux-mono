@@ -58,11 +58,6 @@ export namespace KitchenCard {
     // Ownership
     claimedBy?: string
   }
-
-  export type Profile = Card & {
-    card: Card
-    foodGallery: string[]
-  }
 }
 
 export type KitchenSurface = {
@@ -77,7 +72,6 @@ export type KitchenSurface = {
   management_app_id?: string
   slug?: string
   visibility?: boolean
-  visible?: boolean
   route_scope?: 'live' | 'demo' | 'test'
   identity?: Kitchen['identity']
   presentation?: KitchenIdentityPresentation

@@ -1,6 +1,6 @@
 <template>
   <KitchenHome v-if="isWorkspaceHost" />
-  <main v-else><LandingPublic /></main>
+  <div v-else><LandingPublic /></div>
 </template>
 
 <script setup lang="ts">
@@ -11,7 +11,8 @@ import KitchenHome from '../components/Workspace/KitchenHome.vue'
 import LandingPublic from '../components/Landing/Public.vue'
 
 const isWorkspaceHost =
-  useRequestURL({ xForwardedHost: true, xForwardedProto: true }).origin === useFireUXConfig().workspaceConfig.kitchen?.origin
+  useRequestURL({ xForwardedHost: true, xForwardedProto: true }).origin ===
+  useFireUXConfig().workspaceConfig.kitchen?.origin
 
 definePageMeta({
   layout: false,

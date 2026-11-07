@@ -10,7 +10,7 @@
           <slot name="intro" />
         </aside>
 
-        <main>
+        <div>
           <header v-if="stage.count > 1">
             <p>Step {{ stage.number }} of {{ stage.count }}</p>
             <h2>
@@ -35,7 +35,7 @@
           <footer v-if="$slots.footer">
             <slot name="footer" />
           </footer>
-        </main>
+        </div>
       </div>
     </UCard>
   </section>

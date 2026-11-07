@@ -190,7 +190,7 @@ for (const family of [
         [family === 'project'
           ? 'useProjectCollection'
           : family === 'kitchen'
-            ? 'useKitchenTargets'
+            ? 'useKitchenCollection'
             : 'useBlankCollection']: () => source,
       }
     )
@@ -288,7 +288,7 @@ test('Kitchen root handoff waits for ready access and preserves unrelated query 
         assert.equal(family, 'kitchen')
         return { workspaceEntryPath: ref('/') }
       },
-      useKitchenTargets: () => source,
+      useKitchenCollection: () => source,
       useAppSession: () => ({
         uid: ref('actor'),
         pending: ref(false),

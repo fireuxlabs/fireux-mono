@@ -162,8 +162,8 @@ for (const [name, path, key] of [
     'items',
   ],
   [
-    'KitchenCollection',
-    '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenCollection.ts',
+    'Kitchens',
+    '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchens.ts',
     null,
   ],
 ]) {

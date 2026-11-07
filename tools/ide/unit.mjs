@@ -14,6 +14,7 @@ process.exitCode = runCommands([
         'editable-string-field',
         'meta-content',
         'app-brand-assets',
+        'app-shell-composition',
       ].map((name) => path.join(repoRoot, core, `${name}.test.mjs`)),
     ],
     cwd: repoRoot,

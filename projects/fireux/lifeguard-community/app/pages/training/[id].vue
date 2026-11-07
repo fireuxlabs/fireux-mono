@@ -1,5 +1,5 @@
 <template>
-  <main class="community-page">
+  <div class="community-page">
     <NuxtLink to="/training">← All programmes</NuxtLink>
     <template v-if="programme"
       ><p class="community-kicker">{{ programme.duration }} · Demo</p>
@@ -35,7 +35,7 @@
       </section></template
     >
     <template v-else><h1>Programme not found.</h1></template>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

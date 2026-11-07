@@ -48,7 +48,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { usePlaceDetail } from 'fireux-places/runtime/place/composables/usePlaceDetail'
 import PlaceDetailAdmin from 'fireux-places/runtime/place/components/Detail/Admin.vue'
 import KitchenDetailOperatorPanel from 'fireux-kitchens/runtime/kitchen/components/Detail/OperatorPanel.vue'
-import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
+import { useKitchens } from 'fireux-kitchens/runtime/kitchen/composables/useKitchens'
 import { useKitchenAccess } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenAccess'
 
 definePageMeta({
@@ -59,7 +59,7 @@ definePageMeta({
 const routeLocator = useRouteParam('id')
 const { place, ready } = usePlaceDetail(routeLocator)
 await ready
-const kitchens = useKitchenCollection({
+const kitchens = useKitchens({
   placeId: computed(() => place.value?.id),
 })
 const kitchen = computed(

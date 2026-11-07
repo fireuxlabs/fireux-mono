@@ -5,6 +5,7 @@ import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.
 export type KitchenConfiguration = {
   theme?: WorkspaceTheme
   orders?: KitchenOrdersConfig
+  services?: { title?: string; item_images?: boolean }
   tables?: KitchenTablesConfig
 }
 

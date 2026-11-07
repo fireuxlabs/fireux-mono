@@ -1,0 +1,77 @@
+import { useAsyncData } from 'nuxt/app'
+import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
+
+import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { KitchenPublicSummary } from '../models/kitchen.model.ts'
+
+export type KitchenPublicRecord = KitchenPublicSummary & {
+  place: Place
+  service_labels?: string[]
+  has_published_menu?: boolean
+}
+
+export type UseKitchensReturn = {
+  collection: ComputedRef<KitchenPublicRecord[]>
+  count: ComputedRef<number>
+  ready: Promise<void>
+  outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
+  pending: ComputedRef<boolean>
+  error: ComputedRef<unknown>
+  refresh: () => Promise<void>
+}
+
+/** Server-rendered Kitchen collection. The client only enhances authorized views. */
+export function useKitchens(
+  options: { placeId?: MaybeRefOrGetter<string | undefined> } = {}
+): UseKitchensReturn {
+  const placeId = computed(() => String(toValue(options.placeId) || '').trim())
+  const active = computed(
+    () => options.placeId === undefined || Boolean(placeId.value)
+  )
+  const endpoint = computed(() =>
+    placeId.value
+      ? `/api/kitchens?placeId=${encodeURIComponent(placeId.value)}`
+      : '/api/kitchens'
+  )
+  const state = useAsyncData<KitchenPublicRecord[]>(
+    () =>
+      options.placeId === undefined
+        ? 'kitchens'
+        : `kitchens:place:${placeId.value || 'inactive'}`,
+    async (_nuxtApp, { signal }) => {
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
+      return active.value
+        ? fetchRead<KitchenPublicRecord[]>(endpoint.value)
+        : Promise.resolve([])
+    },
+    { watch: [endpoint, active] }
+  )
+  const collection = computed<KitchenPublicRecord[]>(() => {
+    if (!active.value || state.pending.value || state.error.value) return []
+    if (options.placeId === undefined) return state.data.value || []
+    return (state.data.value || []).filter(
+      (kitchen) => kitchen.id === placeId.value
+    )
+  })
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      enabled: active.value,
+      pending: state.pending.value,
+      failed: Boolean(state.error.value),
+      present: collection.value.length > 0,
+    })
+  )
+
+  return {
+    collection,
+    count: computed(() => collection.value.length),
+    pending: computed(() => state.pending.value),
+    error: computed<unknown>(() => state.error.value),
+    refresh: async () => {
+      await state.refresh()
+    },
+    ready: state.then(() => undefined),
+    outcome,
+  }
+}

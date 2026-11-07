@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-white text-slate-950">
+  <div class="bg-white text-slate-950">
     <div class="p-2">
       <div class="pagebody">
         <p>Go QR</p>
@@ -48,7 +48,7 @@
         <span>Go QR</span>
       </ULink>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

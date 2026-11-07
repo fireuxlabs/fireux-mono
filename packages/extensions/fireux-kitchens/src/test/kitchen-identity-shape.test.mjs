@@ -34,7 +34,12 @@ test('canonical Identity is nested, keeps unknown origin unknown, and excludes P
     { identity, slug: 'obsolete', currency: 'CHF', name: 'shadow' },
     place
   )
-  assert.deepEqual(value, { id: 'p', identity, services: { title: 'Food & drinks' }, place })
+  assert.deepEqual(value, {
+    id: 'p',
+    identity,
+    services: { title: 'Food & drinks' },
+    place,
+  })
   assert.equal(readKitchenVisibility({ identity, visibility: false }), true)
   assert.equal(
     normalizeKitchen(
@@ -58,8 +63,13 @@ test('Kitchen editor accepts only supported dot paths and preserves sibling Iden
       }),
     }
   )
-  assert.deepEqual(parseKitchenUpdate({ 'services.title': ' Pizza & drinks ' }), { 'services.title': 'Pizza & drinks' })
-  assert.deepEqual(parseKitchenUpdate({ 'services.title': '' }), { 'services.title': 'Food & drinks' })
+  assert.deepEqual(
+    parseKitchenUpdate({ 'services.title': ' Pizza & drinks ' }),
+    { 'services.title': 'Pizza & drinks' }
+  )
+  assert.deepEqual(parseKitchenUpdate({ 'services.title': '' }), {
+    'services.title': 'Food & drinks',
+  })
   assert.throws(() => parseKitchenUpdate({ 'services.title': 42 }))
   assert.throws(() => parseKitchenUpdate({ 'services.title': 'a'.repeat(121) }))
   assert.deepEqual(parseKitchenUpdate({ 'identity.visibility': false }), {
@@ -112,9 +122,16 @@ test('joined presentation retains canonical Identity and reads currency only fro
     visibility: false,
   }
   const view = useKitchenInterface().surface({
-    kitchen: { id: 'p', identity, currency: 'CHF', services: {
-      title: 'Food & drinks', item_images: true, private_legacy_field: 'excluded',
-    } },
+    kitchen: {
+      id: 'p',
+      identity,
+      currency: 'CHF',
+      services: {
+        title: 'Food & drinks',
+        item_images: true,
+        private_legacy_field: 'excluded',
+      },
+    },
     place: {
       name: 'Shared venue',
       slug: 'place-url',
@@ -125,6 +142,8 @@ test('joined presentation retains canonical Identity and reads currency only fro
   assert.equal(view.presentation.display_name, 'Shared venue')
   assert.equal(view.slug, 'kitchen-url')
   assert.equal(view.visibility, false)
+  assert.deepEqual(useKitchenInterface().interface(view).badges, ['Hidden'])
+  assert.deepEqual(useKitchenInterface().pill(view).badges, ['Hidden'])
   assert.equal(view.currency_code, 'GBP')
   assert.equal('currency' in view, false)
   assert.deepEqual(view.services, { title: 'Food & drinks', item_images: true })
@@ -166,7 +185,7 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
       serverKitchenMenusTarget: () => 'menus',
       runGuardedServerTransaction: async (_, run) => run(tx),
       KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+      PLACE_MUTATION_TARGETS: { places: 'places' },
       serverAuditStamp: () => ({ by: 'guest', app_id: 'app' }),
       buildKitchenTeamMemberRecord: (v) => v,
       createKitchenSystemMenus() {},
@@ -223,7 +242,8 @@ test('Kitchen presentation reads shared Place currency, with no Kitchen fallback
     'GBP'
   )
   assert.equal(
-    readKitchenPresentation({ currency: 'CHF' }, { name: 'Venue' }).currencyCode,
+    readKitchenPresentation({ currency: 'CHF' }, { name: 'Venue' })
+      .currencyCode,
     ''
   )
 })

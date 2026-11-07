@@ -36,11 +36,10 @@
       />
     </div>
   </UCard>
-  <KitchenListingEdit v-model:open="kitchenEditorOpen" />
+  <KitchenIdentityListingEdit v-model:open="kitchenEditorOpen" />
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import KitchenListingEdit from '../Workspace/Home/Edit.vue'
 import type { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 const props = defineProps<{
   identity: ReturnType<typeof useKitchenWorkspaceIdentity>

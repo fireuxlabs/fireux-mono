@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: keep Kitchen materialization as a Professional Experience adapter only.
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
-import { useKitchenCreate } from 'fireux-kitchens/runtime/kitchen/composables/firestore/useKitchenCreate'
+import { useKitchenCreate } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCreate'
 import type { JobWorkplaceMaterializationContext } from 'fireux-jobs/runtime/user/composables/profiles/Professional/workplace/materializeWorkplace'
 import type { NuxtApp } from 'nuxt/app'
 

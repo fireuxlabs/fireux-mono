@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-07
+Ref: dbcd2f326
 Role: map, not canon
 
 ## Purpose
@@ -70,7 +70,8 @@ alias table; Apps and route metadata provide canonical family names.
 
 ## Selected identity in navigation
 
-Kitchen and Project `Workspace/Navigation.vue` components supply the selected
+Kitchen `Workspace/Navigation/Index.vue` and Project `Workspace/Navigation.vue`
+components supply the selected
 logo and name both to the sidebar switcher and, through `identityOnly`, to the
 shared Workspace navbar. When an identity component is available, identity stays
 on the left and the page title appears immediately before the subscription
@@ -388,7 +389,7 @@ migration verification, and protected Workspace consumer are complete.
   actually consumed by that surface. There is no compulsory CRUD bag. Index pages use `useXWorkspace` for
   the collection and selection; they do
   not establish another Entity reader or selection authority.
-  Outcomes are `idle`, `pending`, `error`, `empty`, `missing`, or `ready`; read failure
+  Outcomes are `idle`, `pending`, `error`, `empty` or `ready`; read failure
   never becomes an empty authority result.
 - Project and Kitchen selectors present their membership-bounded collection.
   Selecting uses the Core App-scoped selection cookie. A settled collection
@@ -397,7 +398,8 @@ migration verification, and protected Workspace consumer are complete.
   selection. Collection snapshots and component mounts never reapply an account
   primary preference. Selection grants no access. Unused persisted primary
   fields and primary-change commands are retired.
-- Kitchen and Project own `Workspace/Navigation.vue` components, registered once
+- Kitchen owns `Workspace/Navigation/Index.vue` and Project owns
+  `Workspace/Navigation.vue`, registered once
   as global `WorkspaceKitchenNavigation` and `WorkspaceProjectNavigation` through
   their packages. The Core layout resolves the current family's component by
   that naming convention; it never imports an extension to read its Entity.
@@ -1591,7 +1593,7 @@ folders with `useXWorkspaceY` owners. Home includes its
 lightweight Team summary; separate Team-summary controllers are retired.
 Kitchen creation availability lives in `useKitchenCreate` and reuses Core
 creation policy with Kitchen's capacity table. Available Kitchen targets are
-read by domain-owned `useKitchenTargets`; they are not children of a Kitchen.
+read by domain-owned `useKitchenCollection`; they are not children of a Kitchen.
 
 Kitchen Dish, Recipe, Ingredient and Supplier detail readers receive explicit
 Kitchen and record IDs. Dish, Recipe and Ingredient detail do not load their

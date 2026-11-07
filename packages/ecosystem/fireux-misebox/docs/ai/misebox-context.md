@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-06
-Ref: 8744b0f78
+Updated: 2026-11-07
+Ref: dbcd2f326
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -168,7 +168,7 @@ guest creation, publish, reload, replacement, QR identity, recovery, revocation 
 failure. The separate structured request entrance is `/products/menu-express/prepare`;
 the request and payment contracts below apply there, not to free document hosting.
 
-Operator preparation consumes Kitchen-owned `useKitchenTargets` for a named,
+Operator preparation consumes Kitchen-owned `useKitchenCollection` for a named,
 authorised Kitchen choice. It does not accept a manually entered Kitchen ID or
 create another Kitchen. Unsettled/removed choices cannot supply a target; the
 trusted preparation command still checks current Kitchen writer authority and
@@ -276,7 +276,7 @@ and Footer components directly. Those shared components remain active.
   This catalogue is independent of the operational Orders Workspace and does
   not enable additional channels or perform database writes.
 - `misebox-app` is the Main App. `/` presents the Kitchen directory using the same
-  `useKitchenCollection` reader and `KitchenCollection`
+  `useKitchens` reader and `KitchenCollection`
   component as `/kitchens`. The dedicated directories remain at `/kitchens` and `/menus`, without featured Kitchens.
   `/product` retains Kitchen-team product literature. The saved operational
   composition renders directly at `/` on the declared Workspace origin:
@@ -328,7 +328,7 @@ and Footer components directly. Those shared components remain active.
   only; its Selector parent owns the collection reader. The Index reconciles
   only a completed collection result: keep a valid choice, select the first
   available Kitchen otherwise, and clear only a confirmed empty result.
-  The Kitchen-owned `Workspace/Navigation.vue` supplies the persistent selected
+  The Kitchen-owned `Workspace/Navigation/Index.vue` supplies the persistent selected
   identity and switcher to the Core sidebar through package registration. Kitchen
   Workspace identity avatars prefer the linked Place logo and its saved backdrop,
   falling back to the profile image without tinting it; the shared presentation
@@ -774,6 +774,12 @@ workspace host. This does not grant access or share authentication across origin
   root concerns. Readers and protected edits use nested Identity exclusively.
   The joined display profile is named `presentation`, so it cannot replace the
   canonical Identity map. See `kitchen-identity-shape.test.mjs`.
+  `read-kitchen-document.ts` validates the stored root, stamps and capability
+  configuration for exact and membership-collection reads. Invalid settled
+  records produce errors and clear displayed data. Public summaries remain
+  separate, stamp-free projections. `archived` remains a supported Kitchen status.
+  The root Identity command checks slug uniqueness inside its write transaction
+  and records the verified actor/App in its update stamp.
 - A name-only Kitchen shell may use a generated id while being manifested, but
   its name is persisted on the same-id Place rather than copied onto Kitchen.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,
@@ -835,7 +841,7 @@ from Kitchen and currency from the linked same-id Place.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
 Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
 owns the public detail response. Associated Workspace choices use the live
-`useKitchenTargets` collection; individual routes use `useKitchenRead`
+`useKitchenCollection` collection; individual routes use `useKitchenRead`
 with an exact associated id. The retired targets/current/primary/choices HTTP
 readers and workspace response model are removed. Operational configuration
 continues through its capability-owned readers. No response is the type of a
@@ -848,8 +854,9 @@ reader, and the separate Test capability does not reinstate simulation storage.
 
 `kitchen-interface.model.ts` owns resolved presentation inputs and card outputs.
 Its identity presentation describes resolved display fields, while public
-response fields remain explicitly bounded. `useKitchenComputed` consumes that
-presentation contract. The live associated-Kitchen collection reads `Kitchen`
+response fields remain explicitly bounded. The consumed surface, card, pill and
+cell projections read canonical `identity.visibility` consistently; no alternate
+`visible` field supplies Kitchen publication state. The live associated-Kitchen collection reads `Kitchen`
 records and joins their same-id Place for presentation; Workspace selection
 adds no stored model or second data owner. The association ceiling belongs to
 `kitchen/utils/kitchen-capacity.ts`, independently of response types.
@@ -1560,7 +1567,7 @@ registry. Ongoing management remains in Workspace. `/mvp` redirects to setup.
 Main Misebox `/services/ordering/setup` reuses the public `landing` layout and its account controls.
 It is an App-owned find/create entrance without the Workspace
 shell. Signed-in users first see their live membership-bound Kitchens through
-`useKitchenTargets`; local choice does not change Workspace selection.
+`useKitchenCollection`; local choice does not change Workspace selection.
 The setup URL retains that choice as `?kitchen=<id>` for reload/resume; it is
 only a requested identity, never access evidence. Pending collection reads do
 not discard it. Current membership-bound access still gates the setup reader,
@@ -2774,8 +2781,10 @@ The Workspace migration checks listed as removed in
 `docs/ai/gpt-context.md` are no longer available. References to those filenames
 in this document describe historical verification, not current coverage.
 
-Kitchen Home owns its chooser and lightweight summaries in
-`useKitchenWorkspaceHome`. Creation availability belongs to `useKitchenCreate`,
+Kitchen Overview consumes selected Workspace state and
+`useKitchenIdentityProjection` directly, without a Team acquisition or a second
+Home controller. Identity page-context publication belongs to its route rather
+than the reusable Identity controller. Creation availability belongs to `useKitchenCreate`,
 using shared creation policy and Kitchen's domain capacity table. Domain
 Offerings and Fulfilment require explicit Kitchen IDs. Dish, Recipe, Ingredient
 and Supplier detail readers take explicit Kitchen and record IDs; Workspace

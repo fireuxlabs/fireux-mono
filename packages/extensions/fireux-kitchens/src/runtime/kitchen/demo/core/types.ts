@@ -7,7 +7,7 @@ import type { Dish } from '../../utils/dish.ts'
 import type { KitchenIngredient } from '../../utils/kitchen-ingredient.ts'
 import type { KitchenStation } from '../../utils/station.ts'
 import type { KitchenSupplierIngredient } from '../../utils/kitchen-supplier-ingredient.ts'
-import type { Kitchen } from '../../models/kitchen.model.ts'
+import type { KitchenPublicSummary } from '../../models/kitchen.model.ts'
 import type { KitchenConfiguration } from '../../models/kitchen-configuration.model.ts'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
@@ -65,7 +65,7 @@ export type KitchenDemoMenu = {
 export type KitchenDemoScenario = {
   appId: string
   access: KitchenDemoAccess
-  kitchen: Kitchen
+  kitchen: KitchenPublicSummary
   configuration: KitchenConfiguration
   offerings: KitchenOffering[]
   fulfilment: KitchenFulfilment

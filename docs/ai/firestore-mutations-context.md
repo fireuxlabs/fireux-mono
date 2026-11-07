@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-07
+Ref: dbcd2f326
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -202,6 +202,14 @@ command. Workspace selection is App/family-local state in `useWorkspace`.
 Kitchen has no separate Primary preference command or account field. The last
 selected Kitchen is remembered through the existing Workspace selection cookie;
 selection does not mutate access grants.
+
+Kitchen root Identity updates retain their existing command and authority. Slug
+uniqueness is queried through the same guarded transaction that verifies current
+membership-bound access and writes the patch; a preflight lookup alone is not
+uniqueness authority. Each update records a server audit stamp with the verified
+actor and owning App. `kitchen-identity-command.test.mjs` exercises competing slug
+updates, stamps and revoked authority without live database writes. The atomic
+query/write boundary relies on [Firestore transaction isolation](https://firebase.google.com/docs/firestore/transaction-data-contention).
 
 The former AppUser Entity arrays and primary fields are migration sources only,
 never a runtime fallback. Data migration is separate from the code cutover:

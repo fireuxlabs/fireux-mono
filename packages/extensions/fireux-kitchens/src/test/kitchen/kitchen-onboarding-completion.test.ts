@@ -59,7 +59,7 @@ function harness() {
       'ref',
       'watch',
       'useAppSession',
-      'useKitchenTargets',
+      'useKitchenCollection',
       'useWorkspace',
       'useRoute',
       'useRouter',

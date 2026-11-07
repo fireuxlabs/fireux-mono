@@ -7,14 +7,14 @@ import {
 import { computed, ref, watch, onScopeDispose } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useKitchenTargets } from './useKitchenTargets'
+import { useKitchenCollection } from './useKitchenCollection'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPlace,
   KitchenOnboardingPreview,
 } from '../models/kitchen-onboarding.model.ts'
-import { useKitchenCreate } from './firestore/useKitchenCreate'
+import { useKitchenCreate } from './useKitchenCreate'
 
 export type KitchenOnboardingStepId = 'review'
 
@@ -203,7 +203,7 @@ export function useKitchenOnboarding(options: {
     onboarding.reset()
   }
 
-  const kitchens = useKitchenTargets()
+  const kitchens = useKitchenCollection()
   // Onboarding needs the live collection, not the Workspace index's automatic
   // reconciliation. Selection happens only in the explicit completion branch.
   const workspace = useWorkspace('kitchen')

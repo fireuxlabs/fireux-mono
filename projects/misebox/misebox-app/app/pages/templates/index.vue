@@ -1,5 +1,5 @@
 <template>
-  <main class="catalogue">
+  <div class="catalogue">
     <UContainer>
       <header>
         <p>Templates and theming</p>
@@ -84,7 +84,7 @@
         </div>
       </section>
     </UContainer>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

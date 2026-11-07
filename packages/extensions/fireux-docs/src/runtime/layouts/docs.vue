@@ -1,7 +1,7 @@
 <template>
   <div class="fx-layout-shell">
     <FireLayoutsDefaultHeader />
-    <main class="fx-layout-main">
+    <div class="fx-layout-main">
       <UContainer>
         <details class="docs-mobile-navigation">
           <summary>Browse docs and library</summary>
@@ -24,7 +24,7 @@
           <slot />
         </UPage>
       </UContainer>
-    </main>
+    </div>
     <FireLayoutsDefaultFooter />
   </div>
 </template>

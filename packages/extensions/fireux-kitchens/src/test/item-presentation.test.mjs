@@ -56,6 +56,12 @@ test('zero is a visible amount while missing and invalid terms remain absent', (
 const Item = component('menu/components/Detail/Item.vue', {
   '../../../utils/currency-display': currency,
 })
+const ItemImage = component('menu/components/ItemImage.vue')
+const Surface = {
+  render() {
+    return Vue.h('span', this.$slots.default?.())
+  },
+}
 const item = (changes = {}) => ({
   id: 'free',
   dishId: 'dish',
@@ -83,6 +89,7 @@ async function renderItem(changes = {}) {
         ...changes,
       }),
   })
+  app.component('MenuItemImage', ItemImage)
   app.component('MenuDetailMealDeal', { render: () => null })
   return renderToString(app)
 }
@@ -127,6 +134,7 @@ test('both customer styles keep complete text and prices with or without an imag
 })
 
 function mount(Component, props) {
+  let avatar
   const host = Vue.createRenderer({
     createElement: (tag) => ({ tag, props: {}, children: [] }),
     createText: (text) => ({ text }),
@@ -160,31 +168,28 @@ function mount(Component, props) {
     },
   })
   app.component('UIcon', { render: () => Vue.h('span') })
+  app.component('MenuItemImage', ItemImage)
+  app.component('UAvatar', {
+    props: ['src', 'alt', 'icon'],
+    setup(props) {
+      avatar = props
+      return () => Vue.h('span')
+    },
+  })
+  app.component('FireActionSurface', Surface)
   app.component('MenuDetailMealDeal', { render: () => null })
   app.mount(root)
   const find = (tag, node = root) =>
     node.tag === tag
       ? node
       : (node.children || []).map((child) => find(tag, child)).find(Boolean)
-  return { app, find }
+  return { app, find, avatar: () => avatar }
 }
-test('failed customer and operator images collapse safely and a changed URL can recover', async () => {
-  const SelectionImage = component('menu/components/Selection/Image.vue')
-  const Cell = component('kitchen/components/FoodAndDrink/Items/Cards/Cell.vue')
+test('failed customer images collapse safely and a changed URL can recover', async () => {
   for (const [Component, props, change] of [
     [
-      SelectionImage,
+      ItemImage,
       Vue.reactive({ enabled: true, imageUrl: '/bad.jpg' }),
-      (p) => (p.imageUrl = '/new.jpg'),
-    ],
-    [
-      Cell,
-      Vue.reactive({
-        id: 'dish',
-        title: 'Free item',
-        priceLabel: '0 CHF',
-        imageUrl: '/bad.jpg',
-      }),
       (p) => (p.imageUrl = '/new.jpg'),
     ],
     [
@@ -212,6 +217,33 @@ test('failed customer and operator images collapse safely and a changed URL can 
     assert.equal(mounted.find('img').props.src, '/new.jpg')
     mounted.app.unmount()
   }
+})
+
+test('operator Item cells delegate imagery and fallback to native Avatar', async () => {
+  const Cell = component('kitchen/components/FoodAndDrink/Items/Cards/Cell.vue')
+  const props = Vue.reactive({
+    id: 'dish',
+    title: 'Free item',
+    priceLabel: '0 CHF',
+    imageUrl: '/item.jpg',
+  })
+  const mounted = mount(Cell, props)
+  assert.equal(mounted.avatar().src, '/item.jpg')
+  assert.equal(mounted.avatar().alt, 'Free item')
+  assert.equal(mounted.avatar().icon, 'i-lucide-utensils')
+  props.imageUrl = '/new.jpg'
+  await Vue.nextTick()
+  assert.equal(mounted.avatar().src, '/new.jpg')
+  props.imageUrl = ''
+  await Vue.nextTick()
+  assert.equal(mounted.avatar().src, undefined)
+  assert.equal(mounted.avatar().icon, 'i-lucide-utensils')
+  assert.equal(mounted.find('h3').text, 'Free item')
+  assert.equal(mounted.find('strong').text, '0 CHF')
+  props.title = ''
+  await Vue.nextTick()
+  assert.equal(mounted.avatar().alt, 'Untitled dish')
+  mounted.app.unmount()
 })
 
 test('image preference validation is strict and does not admit pricing or Item writes', () => {
@@ -284,7 +316,7 @@ test('closing an editor during credentials cannot dispatch its prepared Kitchen 
       getIdToken: () => (stage === 'token' ? waiting : 'token'),
     }
     const { useKitchenUpdate } = load(
-      'kitchen/composables/firestore/useKitchenUpdate.ts',
+      'kitchen/composables/useKitchenUpdate.ts',
       'useKitchenUpdate',
       {
         useAuth: () => ({ currentUser: Vue.ref(user) }),
@@ -314,13 +346,14 @@ test('closing an editor during credentials cannot dispatch its prepared Kitchen 
   }
 })
 
-test('the Appearance control saves only its boolean preference and retains the field guard', async () => {
+test('the Appearance control saves only its boolean preference and forwards captured intent', async () => {
   const calls = []
   let field
+  const guard = () => true
   const Editor = component('kitchen/components/Appearance/ItemImages.vue', {
-    '../../composables/firestore/useKitchenUpdate': {
+    '../../composables/useKitchenUpdate': {
       useKitchenUpdate: () => ({
-        captureIntent: () => () => true,
+        captureIntent: () => guard,
         updateKitchen: (...args) => {
           calls.push(args)
         },
@@ -341,21 +374,23 @@ test('the Appearance control saves only its boolean preference and retains the f
         return Vue.h('div', this.$slots.default?.())
       },
     })
-    app.component('FireFormsEditableCheckbox', {
-      props: ['value', 'update'],
-      setup(props) {
-        field = props
+    app.component('USwitch', {
+      props: ['modelValue', 'disabled', 'loading'],
+      setup(props, { attrs }) {
+        field = { props, update: attrs['onUpdate:modelValue'] }
         return () => null
       },
     })
     await renderToString(app)
-    assert.equal(field.value, false)
-    const guard = () => true
+    assert.equal(field.props.modelValue, false)
+    assert.equal(field.props.disabled, disabled)
     if (disabled) {
-      await assert.rejects(field.update(true, guard), /read-only/)
+      const before = calls.length
+      await field.update(true)
+      assert.equal(calls.length, before)
     } else {
       for (const value of [true, false]) {
-        await field.update(value, guard)
+        await field.update(value)
         assert.deepEqual(calls.at(-1)[0], {
           kitchenId: 'k',
           changes: { 'services.item_images': value },

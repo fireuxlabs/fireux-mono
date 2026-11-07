@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-07
-Ref: 82e9ee53c
+Ref: 97a7c205e
 Role: living context
 Scope: repository-wide
 
@@ -165,6 +165,11 @@ provider, route selection and App initialization lifecycle. App-owned theme and
 language setup may remain around that delegation. Go QR's documented embedded
 tool branch retains its separate provider/outlet; another bypass needs a real
 product and lifecycle justification. See [the rendering map](../concepts/layouts.md).
+
+AppShell supplies the normal page's single `UMain` inside the selected layout;
+WorkspacePage owns the Workspace landmark. Layouts and page descendants do not
+add another `main`. The developer dock stays inside native `DevOnly` so its
+component setup and dock-only code are excluded from production execution.
 
 Nuxt UI owns its component API, accessibility behavior and theming API.
 FireUX Core adds only proved shared visual or interaction responsibilities;

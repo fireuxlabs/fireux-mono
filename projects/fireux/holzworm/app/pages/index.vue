@@ -1,5 +1,5 @@
 <template>
-  <main class="holzworm">
+  <div class="holzworm">
     <section class="holzworm-masthead" aria-labelledby="holzworm-title">
       <img
         class="holzworm-masthead__image"
@@ -171,7 +171,7 @@
         </div>
       </UContainer>
     </section>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

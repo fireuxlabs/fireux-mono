@@ -1,5 +1,5 @@
 <template>
-  <main class="community-page">
+  <div class="community-page">
     <p class="community-kicker">Member forum · Demo</p>
     <h1>Discuss daily practice.</h1>
     <p class="community-intro">
@@ -40,7 +40,7 @@
       </form>
       <NuxtLink v-if="!isAuthenticated" to="/auth">Sign in to post</NuxtLink>
     </section>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

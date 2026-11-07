@@ -15,9 +15,9 @@
       </nav>
     </header>
 
-    <main>
+    <div>
       <slot />
-    </main>
+    </div>
 
     <AusfinnNav />
 

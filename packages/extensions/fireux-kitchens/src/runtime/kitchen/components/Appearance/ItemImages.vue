@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useKitchenUpdate } from '../../composables/firestore/useKitchenUpdate'
+import { useKitchenUpdate } from '../../composables/useKitchenUpdate'
 
 const props = defineProps<{
   kitchenId: string
@@ -78,7 +78,8 @@ async function update(value: boolean) {
   } catch (cause) {
     if (isCurrent()) {
       optimisticValue.value = null
-      error.value = cause instanceof Error ? cause.message : 'Could not save item images.'
+      error.value =
+        cause instanceof Error ? cause.message : 'Could not save item images.'
     }
   } finally {
     if (submission === pending) {

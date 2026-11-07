@@ -1,5 +1,5 @@
 <template>
-  <main class="baeren-home">
+  <div class="baeren-home">
     <section class="baeren-home__hero" aria-labelledby="baeren-home-title">
       <BaerenHomeBackdrop />
 
@@ -62,7 +62,7 @@
     </section>
 
     <BaerenHomeSurfaces />
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

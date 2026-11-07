@@ -61,7 +61,7 @@ import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
 } from '../../models/landing-intent'
-import { useKitchenCreate } from '../../composables/firestore/useKitchenCreate'
+import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitchenAnonymousAdoption'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 

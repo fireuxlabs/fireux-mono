@@ -42,7 +42,7 @@ import { computed } from 'vue'
 import { useKitchenAccess } from '../../../kitchen/composables/useKitchenAccess'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenInterface } from '../../../kitchen/composables/useKitchenInterface'
-import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
+import { useKitchenRead } from '../../../kitchen/composables/useKitchenRead'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 

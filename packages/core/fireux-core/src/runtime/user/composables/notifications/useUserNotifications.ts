@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { computed, watch } from 'vue'
 import { useState } from '#imports'
 
@@ -85,6 +85,6 @@ export function useUserNotifications() {
             ? 'error'
             : 'ready'
     ),
-    refresh: state.refresh,
+    refresh: state.refresh as AsyncData<unknown, unknown>['refresh'],
   }
 }

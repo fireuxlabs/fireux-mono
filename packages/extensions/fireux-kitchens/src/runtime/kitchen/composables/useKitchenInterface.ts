@@ -3,7 +3,6 @@ import {
   readMediaBackdropColor,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { toShortAddress } from 'fireux-places/runtime/place/composables/firestore/utils/view/formatPlaceAddress'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import { readKitchenVisibility } from '../utils/kitchen-readers'
@@ -31,25 +30,6 @@ export function useKitchenInterface() {
   > & {
     prop?: string
     mediaBackdropColor?: string
-  }
-
-  type KitchenPreview = {
-    imageUrl: string
-    imageShade?: PlaceImageShade
-    name: string
-    formattedAddress: string
-    shortAddress?: string
-    prop?: string
-    website?: string
-    phone?: string
-    currencyCode?: string
-    badges?: string[]
-    details?: {
-      label: string
-      value?: string | number | null
-    }[]
-    mapUrl?: string
-    to?: string
   }
 
   function surface<TKitchen extends object = Partial<Kitchen>>(
@@ -103,7 +83,9 @@ export function useKitchenInterface() {
     const services = (kitchen as Partial<Kitchen>).services
     if (services && !Array.isArray(services)) {
       ;(merged as Record<string, unknown>).services = {
-        ...(typeof services.title === 'string' ? { title: services.title } : {}),
+        ...(typeof services.title === 'string'
+          ? { title: services.title }
+          : {}),
         ...(typeof services.item_images === 'boolean'
           ? { item_images: services.item_images }
           : {}),
@@ -144,7 +126,7 @@ export function useKitchenInterface() {
       safeString(kitchen.cover_image) ||
       imageUrl
 
-    const visible = kitchen.visible !== false
+    const visible = readKitchenVisibility(kitchen)
     const badges = visible ? [] : ['Hidden']
 
     return {
@@ -198,66 +180,6 @@ export function useKitchenInterface() {
     return mapped.id ? mapped : null
   }
 
-  function identity(
-    target?: KitchenSurface | null | undefined
-  ): KitchenCard.Card | null {
-    return buildInterface(target)
-  }
-
-  function profile(
-    target?: KitchenSurface | null | undefined
-  ): KitchenCard.Profile | null {
-    if (!target) return null
-
-    const id = safeString(target.id).trim()
-    const slug = safeString(target.slug).trim()
-    const identity = target.presentation
-    const displayName = safeString(identity?.display_name).trim()
-    const tagline = safeString(identity?.tagline).trim()
-    const imageUrl = safeString(identity?.image_url).trim()
-    const foodGallery = Array.isArray(target.food_gallery)
-      ? target.food_gallery
-      : []
-    const hasKitchenDisplayData = Boolean(
-      displayName || tagline || imageUrl || foodGallery.length
-    )
-
-    if (!id || !hasKitchenDisplayData) return null
-
-    const badges = [target.visibility === false ? 'Hidden' : ''].filter(
-      (badge): badge is string => Boolean(badge)
-    )
-    const title = displayName || 'Kitchen'
-    const card: KitchenCard.Card = {
-      id,
-      to: resolveKitchenPath({ id, slug, route_scope: target.route_scope }),
-      title,
-      subtitle: tagline,
-      badges,
-      name: title,
-      tagline,
-      about: safeString(target.about),
-      priceLevel: safeString(target.price_level),
-      fulfilmentModes: target.fulfilment?.modes ?? [],
-      shortName: '',
-      formattedAddress: '',
-      shortAddress: '',
-      imageUrl,
-      logoImageUrl: safeString(target.logo_image || target.logo_image_url),
-      mediaBackdropColor: safeString(target.media_backdrop_color),
-      categoryLabels: [],
-      imageShade: target.image_shade,
-      claimedBy: '',
-    }
-
-    return {
-      ...card,
-      card,
-      tagline,
-      foodGallery,
-    }
-  }
-
   function pill(
     target?: KitchenSurface | null | undefined
   ): KitchenCard.Card | null {
@@ -288,78 +210,10 @@ export function useKitchenInterface() {
     }
   }
 
-  function workspaceTarget(
-    target?: KitchenSurface | null | undefined
-  ): KitchenCell | null {
-    const base = buildInterface(target)
-    if (!base || !target) return null
-    const kitchenIdentity = target.presentation
-
-    return {
-      id: base.id,
-      to: base.to,
-      name: base.name,
-      shortAddress: base.shortAddress,
-      imageUrl: safeString(kitchenIdentity?.image_url).trim(),
-      imageShade: target.image_shade,
-      imageKind: 'brand',
-      mediaBackdropColor: kitchenIdentity?.media_backdrop_color,
-      prop: safeString(kitchenIdentity?.tagline),
-    }
-  }
-
-  function preview(
-    target?: KitchenSurface | null | undefined
-  ): KitchenPreview | null {
-    const base = buildInterface(target)
-    if (!base || !target) return null
-    const slug = safeString(target.slug)
-    const publicPath = base.to
-    return {
-      imageUrl: base.imageUrl,
-      imageShade: base.imageShade,
-      name: base.name,
-      formattedAddress: base.formattedAddress,
-      shortAddress: base.shortAddress,
-      prop: target.tagline,
-      website: safeString(target.website),
-      phone: safeString(target.phone),
-      currencyCode: safeString(target.currency_code),
-      badges: [
-        publicPath || (slug ? `/kitchens/${slug}` : ''),
-        safeString(target.id) ? 'Place linked' : '',
-        safeString(target.claimed_by) ? 'Claimed' : '',
-        target.visibility === false ? 'Hidden' : '',
-      ].filter(Boolean),
-      to: publicPath,
-      mapUrl:
-        typeof target.lat === 'number' && typeof target.lng === 'number'
-          ? `https://www.google.com/maps/search/?api=1&query=${target.lat},${target.lng}`
-          : '',
-      details: [
-        {
-          label: 'Phone',
-          value: safeString(target.phone),
-        },
-        {
-          label: 'Website',
-          value: safeString(target.website),
-        },
-        {
-          label: 'Currency',
-          value: safeString(target.currency_code),
-        },
-      ].filter((item) => Boolean(safeString(item.value))),
-    }
-  }
   return {
     surface,
     interface: buildInterface,
-    identity,
     pill,
     cell,
-    workspaceTarget,
-    preview,
-    profile,
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <main class="product-demo-index" data-misebox-product-demo="index">
+  <div class="product-demo-index" data-misebox-product-demo="index">
     <section class="product-demo-index__hero">
       <UBadge color="primary" variant="soft" size="lg">
         Misebox Product Demo
@@ -108,7 +108,7 @@
         </p>
       </div>
     </aside>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,7 @@
 # Layouts spine map
 
-Updated: 2026-11-06
-Ref: 8744b0f78
+Updated: 2026-11-07
+Ref: 97a7c205e
 Role: map, not canon
 
 ## Purpose and authority
@@ -54,10 +54,22 @@ Bangin Coffee and La Tap retain App-owned theme injection around AppShell;
 Interlaken Essen retains its language metadata. These are product deltas, not
 alternative route outlets or initialization owners. They remain with those Apps.
 
+For ordinary routes, AppShell supplies one `UMain` around `NuxtPage` inside the
+selected Nuxt layout's slot. Layout headers, footers and navigation remain
+outside that landmark. Layouts, route pages and their child components do not
+add another `main`. This also covers routes with `layout: false`.
+WorkspacePage owns the Workspace `main`; that branch does not receive another
+AppShell wrapper. Go QR's embedded branch and the standalone ErrorPage each own
+their own `UMain` because they bypass the ordinary shell.
+
 [AppDevControls](../../packages/core/fireux-core/src/runtime/app/components/DevControls.vue)
 owns the developer dock and its local feedback/cleanup. It consumes existing
 Diagnostics state and the existing media-sync command; moving the controls does
 not move command authority into AppShell or create another App reader.
+AppShell places it inside native `DevOnly`, whose production transform removes
+the component reference before bundling. The controls component must be absent
+from production executable code; a hidden template alone does not satisfy this
+boundary.
 
 The focused foundation rules in `eslint.config.js` check semantic styling and
 SFC block order for App roots and the reviewed shared shell/chrome/disclosure
@@ -160,3 +172,10 @@ intended boundary; retain sidebar, session, transition, error and nested-route
 behavior. Refresh this map when the shell owner or route metadata contract
 changes. See [components](components.md) for shared component responsibilities
 and [Workspace composition](workspace.md) for domain boundaries.
+
+`app-shell-composition.test.mjs` renders the ordinary, Docs, bare, Workspace and
+embedded compositions and checks their single content landmark. A fresh
+production build and route review verify native component behavior and the
+absence of executable developer-control code in the client and server artifacts;
+template tests
+alone do not prove production isolation.

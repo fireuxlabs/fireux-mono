@@ -2,7 +2,7 @@ import type { RouteLocationNormalizedLoadedGeneric } from 'vue-router'
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useKitchenRead } from '../firestore/useKitchenRead'
+import { useKitchenRead } from '../useKitchenRead'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import type { Menu } from '../../../menu/models/menu-storage.model.ts'
 import {

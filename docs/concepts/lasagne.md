@@ -135,7 +135,7 @@ is accepted when it keeps meaning and authority local.
 
 The controlled sibling lifecycle in `spine.md` also permits a bounded proving
 sibling to begin structurally aligned with a complete baseline. Preserve
-separately named entrypoints such as `useKitchenCollection` and
+separately named entrypoints such as `useKitchens` and
 `useCompanyCollection`, reuse established lower mechanics and outcome
 vocabulary immediately, and let each domain's authority, query, projection,
 and lifecycle differentiate honestly. The initial copy establishes an

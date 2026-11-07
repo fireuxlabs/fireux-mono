@@ -3,11 +3,11 @@
   <div class="fx-layout-shell">
     <FireLayoutsDefaultHeader />
 
-    <main class="fx-layout-main">
+    <div class="fx-layout-main">
       <UContainer>
         <slot />
       </UContainer>
-    </main>
+    </div>
 
     <FireLayoutsDefaultFooter />
   </div>

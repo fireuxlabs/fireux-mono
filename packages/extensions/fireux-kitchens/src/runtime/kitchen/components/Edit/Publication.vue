@@ -13,7 +13,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { useKitchenUpdate } from '../../composables/firestore/useKitchenUpdate'
+import { useKitchenUpdate } from '../../composables/useKitchenUpdate'
 import { readKitchenVisibility } from '../../utils/kitchen-readers'
 
 const props = defineProps<{

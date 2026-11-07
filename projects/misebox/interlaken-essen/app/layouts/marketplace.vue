@@ -108,9 +108,9 @@
       </div>
     </header>
 
-    <main>
+    <div>
       <slot />
-    </main>
+    </div>
 
     <footer class="market-footer">
       <img

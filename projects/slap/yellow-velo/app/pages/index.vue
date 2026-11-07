@@ -1,5 +1,5 @@
 <template>
-  <main class="yv-home">
+  <div class="yv-home">
     <section class="yv-home-hero">
       <div class="yv-home-hero__media">
         <img
@@ -153,7 +153,7 @@
         </a>
       </div>
     </section>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

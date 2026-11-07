@@ -1,13 +1,12 @@
 import { useWorkspaceIdentity } from 'fireux-core/runtime/workspace/composables/useWorkspaceIdentity'
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import {
   readPlaceIdentity,
   placeIdentityFields,
 } from 'fireux-places/runtime/place/models/identity-edit'
 import { useKitchenIdentityProjection } from '../useKitchenIdentity'
-import { useKitchenUpdate } from '../firestore/useKitchenUpdate'
+import { useKitchenUpdate } from '../useKitchenUpdate'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspace } from './useKitchenWorkspace'
 import {
@@ -83,16 +82,6 @@ export function useKitchenWorkspaceIdentity() {
       },
     ],
   }))
-  const page = useWorkspacePageState('kitchen')
-  watchEffect(() =>
-    page.publish({
-      identity: { placeId: state.placeId.value, ...fields.value },
-      derived: {
-        status: status.value,
-        availableActions: availableActions.value,
-      },
-    })
-  )
   return {
     ...state,
     fields,

@@ -113,5 +113,5 @@ test('Menu discovery retains each menu, filters services and preserves destinati
     ),
     false
   )
-  assert.doesNotMatch(source, /useKitchenCollection|MenuCollectionList/)
+  assert.doesNotMatch(source, /useKitchens|MenuCollectionList/)
 })

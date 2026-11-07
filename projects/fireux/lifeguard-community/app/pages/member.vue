@@ -1,5 +1,34 @@
 <template>
-  <main class="community-page"><p class="community-kicker">Member area · Demo</p><h1>Your community participation.</h1><p class="community-intro">Sign-in is required. Demo activity stays in this browser session.</p><section class="community-grid"><article class="community-card"><h2>Programmes</h2><p>{{ enrolledCount }} Demo programme{{ enrolledCount === 1 ? '' : 's' }} enrolled.</p><NuxtLink to="/training">Manage participation</NuxtLink></article><article class="community-card"><h2>Recognition</h2><p>{{ eligibleForCap ? 'Community cap eligibility is active in this Demo session.' : 'Complete a recorded community programme to become eligible.' }}</p><NuxtLink to="/merchandise">View merchandise</NuxtLink></article></section></main>
+  <div class="community-page">
+    <p class="community-kicker">Member area · Demo</p>
+    <h1>Your community participation.</h1>
+    <p class="community-intro">
+      Sign-in is required. Demo activity stays in this browser session.
+    </p>
+    <section class="community-grid">
+      <article class="community-card">
+        <h2>Programmes</h2>
+        <p>
+          {{ enrolledCount }} Demo programme{{
+            enrolledCount === 1 ? '' : 's'
+          }}
+          enrolled.
+        </p>
+        <NuxtLink to="/training">Manage participation</NuxtLink>
+      </article>
+      <article class="community-card">
+        <h2>Recognition</h2>
+        <p>
+          {{
+            eligibleForCap
+              ? 'Community cap eligibility is active in this Demo session.'
+              : 'Complete a recorded community programme to become eligible.'
+          }}
+        </p>
+        <NuxtLink to="/merchandise">View merchandise</NuxtLink>
+      </article>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">

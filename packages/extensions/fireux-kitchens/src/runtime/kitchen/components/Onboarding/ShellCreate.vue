@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenCreate } from '../../composables/firestore/useKitchenCreate'
+import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import type {
   KitchenDirectoryContributionResult,
   KitchenShellCreateResult,

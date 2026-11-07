@@ -93,7 +93,7 @@ function creation() {
           created_team_member: false,
         }
   const create = load(
-    '../runtime/kitchen/composables/firestore/useKitchenCreate.ts',
+    '../runtime/kitchen/composables/useKitchenCreate.ts',
     'useKitchenCreate',
     {
       computed,
@@ -238,8 +238,8 @@ test('Kitchen directory hides retained rows during failure/loading and recovers 
     then: (callback) => Promise.resolve().then(callback),
   }
   const collection = load(
-    '../runtime/kitchen/composables/useKitchenCollection.ts',
-    'useKitchenCollection',
+    '../runtime/kitchen/composables/useKitchens.ts',
+    'useKitchens',
     {
       computed,
       toValue,
@@ -324,7 +324,7 @@ function selection() {
         },
         reconcile: () => {},
       }),
-      useKitchenTargets: () => source,
+      useKitchenCollection: () => source,
       useAppSession: () => session,
       resolveAppUserAccess: () => ({}),
       kitchenWorkspaceSwitchPath: () =>

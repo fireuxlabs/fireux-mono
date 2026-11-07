@@ -39,7 +39,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
     then: () => Promise.resolve(),
   }
   const useCollection = load(
-    '../runtime/kitchen/composables/useKitchenCollection.ts',
+    '../runtime/kitchen/composables/useKitchens.ts',
     {
       computed,
       toValue,
@@ -59,7 +59,7 @@ test('Place Kitchen lookup stays scoped, uses public reads and hides stale or fa
                 : 'empty',
       resolveHttpDocumentOutcome,
     },
-    'useKitchenCollection'
+    'useKitchens'
   )
   const placeId = ref('CaseSensitivePlace')
   const collection = useCollection({ placeId })
@@ -138,7 +138,7 @@ test('workspace handoff waits for access and only selects an available Kitchen',
         reconcile: () => {},
       }),
       defineWorkspace: (setup) => setup,
-      useKitchenTargets: () => source,
+      useKitchenCollection: () => source,
       useKitchenAccess: () => ({
         outcome: ref('ready'),
         ids: ref(['allowed']),
@@ -284,7 +284,7 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
   let key
   let fetcher
   const useCollection = load(
-    '../runtime/kitchen/composables/useKitchenCollection.ts',
+    '../runtime/kitchen/composables/useKitchens.ts',
     {
       computed,
       toValue,
@@ -296,7 +296,7 @@ test('ordinary Kitchen directories retain their reader key and hide records duri
       resolveReadOutcome,
       resolveHttpDocumentOutcome,
     },
-    'useKitchenCollection'
+    'useKitchens'
   )
   const collection = useCollection()
   assert.equal(key(), 'kitchens')

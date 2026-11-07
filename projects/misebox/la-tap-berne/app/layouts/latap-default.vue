@@ -1,5 +1,5 @@
 <template>
-  <main class="latap-default-layout">
+  <div class="latap-default-layout">
     <LayoutsMiseboxTenantHeader v-if="!chromeHidden" />
 
     <section class="latap-default-layout__body" aria-label="La Tap Berne">
@@ -9,7 +9,7 @@
     <LaTapBerneNav v-if="!chromeHidden" />
     <LayoutsMiseboxTenantFooter v-if="!chromeHidden" />
     <FireLayoutsSharedRoleBadge />
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

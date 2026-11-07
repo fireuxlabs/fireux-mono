@@ -28,6 +28,7 @@ function messageFromError(error: unknown, fallback: string) {
       return data.statusMessage
     }
   }
+  if (error instanceof Error) return error.message
   return fallback
 }
 
@@ -222,7 +223,6 @@ export function useBookingSandbox() {
     historyError,
     checking,
     bookingPending,
-    clearAvailability,
     checkAvailability,
     updateCustomer,
     submitBooking,

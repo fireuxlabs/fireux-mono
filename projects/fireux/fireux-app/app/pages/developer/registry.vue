@@ -1,5 +1,5 @@
 <template>
-  <main class="registry-doc">
+  <div class="registry-doc">
     <header>
       <p class="eyebrow fx-type-headline">Developer Docs</p>
       <h1 class="fx-type-page-title">Directory Projection Access</h1>
@@ -13,10 +13,11 @@
       <h2 class="fx-type-card-title">Where to grab the data</h2>
       <p>
         Use the dedicated Dev Tool at
-        <NuxtLink to="/diagnostics/registry">/diagnostics/registry</NuxtLink> to copy the
-        combined <code>apps</code> and <code>ecosystems</code> projection. It calls
-        <code>/api/directory</code> and exposes the response as a
-        formatted JSON block with a copy helper.
+        <NuxtLink to="/diagnostics/registry">/diagnostics/registry</NuxtLink> to
+        copy the combined <code>apps</code> and
+        <code>ecosystems</code> projection. It calls
+        <code>/api/directory</code> and exposes the response as a formatted JSON
+        block with a copy helper.
       </p>
 
       <h2 class="fx-type-card-title">Why split docs vs. tools?</h2>
@@ -32,14 +33,14 @@
       <h2 class="fx-type-card-title">Workflow reminder</h2>
       <ol>
         <li>
-          Read package identity and metadata from <code>package.json</code>.
-          App and Ecosystem records own their directory identity.
+          Read package identity and metadata from <code>package.json</code>. App
+          and Ecosystem records own their directory identity.
         </li>
         <li>Visit <code>/diagnostics/registry</code> and copy the payload.</li>
         <li>Use that JSON for public projection and parity checks only.</li>
       </ol>
     </section>
-  </main>
+  </div>
 </template>
 
 <!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
@@ -66,7 +67,8 @@ definePageMeta({
 .registry-doc {
   max-width: 820px;
   margin: 0 auto;
-  padding: calc(var(--spacing) * 12) calc(var(--spacing) * 6) calc(var(--spacing) * 16);
+  padding: calc(var(--spacing) * 12) calc(var(--spacing) * 6)
+    calc(var(--spacing) * 16);
   display: grid;
   gap: calc(var(--spacing) * 8);
 }

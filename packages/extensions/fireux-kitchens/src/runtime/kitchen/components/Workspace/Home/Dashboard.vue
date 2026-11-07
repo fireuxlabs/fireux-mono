@@ -33,7 +33,7 @@
 import { ref } from 'vue'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { useKitchenAnonymousAdoption } from '../../../composables/workspace/useKitchenAnonymousAdoption'
-import { useKitchenCreate } from '../../../composables/firestore/useKitchenCreate'
+import { useKitchenCreate } from '../../../composables/useKitchenCreate'
 const workspace = useKitchenWorkspace()
 const createOpen = ref(false)
 const creation = useKitchenCreate()

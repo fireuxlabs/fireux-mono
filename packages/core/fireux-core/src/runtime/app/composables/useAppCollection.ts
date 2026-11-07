@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { resolveReadOutcome } from '../../utils/read-outcome'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 
@@ -118,7 +118,7 @@ export function useAppCollection(
     pending,
     error,
     outcome,
-    refresh: state.refresh,
+    refresh: state.refresh as AsyncData<unknown, unknown>['refresh'],
     hasMore,
     loadingMore,
     loadMoreError,

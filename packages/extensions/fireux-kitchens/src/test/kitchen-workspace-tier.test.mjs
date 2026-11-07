@@ -37,7 +37,7 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
     'useFireUXConfig',
     'useWorkspace',
     'useWorkspaceEntryCta',
-    'useKitchenTargets',
+    'useKitchenCollection',
     'defineWorkspace',
     'useKitchenAccess',
     'useKitchenRead',

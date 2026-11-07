@@ -1,77 +1,120 @@
-import { useAsyncData } from 'nuxt/app'
-import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
-
-import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
+import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
+import { useKitchenAccess } from './useKitchenAccess'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model.ts'
-
-export type KitchenCollectionRecord = Kitchen & {
-  place: Place
-  service_labels?: string[]
-  has_published_menu?: boolean
-}
+import type { KitchenSurface } from '../models/kitchen-interface.model'
+import { useKitchenInterface } from './useKitchenInterface'
+import { readKitchenDocument } from '../utils/read-kitchen-document'
 
 export type UseKitchenCollectionReturn = {
-  collection: ComputedRef<KitchenCollectionRecord[]>
+  access: ReturnType<typeof useKitchenAccess>
+  kitchens: ComputedRef<KitchenSurface[]>
   count: ComputedRef<number>
-  ready: Promise<void>
-  outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
   pending: ComputedRef<boolean>
-  error: ComputedRef<unknown>
-  refresh: () => Promise<void>
+  error: ComputedRef<unknown | undefined>
+  outcome: ComputedRef<WorkspaceTargetOutcome>
 }
 
-/** Server-rendered Kitchen collection. The client only enhances authorized views. */
+/** Live, membership-bounded Kitchen targets and their Place presentation. */
 export function useKitchenCollection(
-  options: { placeId?: MaybeRefOrGetter<string | undefined> } = {}
+  options: { enabled?: MaybeRefOrGetter<boolean> } = {}
 ): UseKitchenCollectionReturn {
-  const placeId = computed(() => String(toValue(options.placeId) || '').trim())
-  const active = computed(
-    () => options.placeId === undefined || Boolean(placeId.value)
+  const access = useKitchenAccess()
+  const { firestoreLoadDocsByIds } = useFirestoreRead()
+  const { surface } = useKitchenInterface()
+  const enabled = computed(
+    () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
-  const endpoint = computed(() =>
-    placeId.value
-      ? `/api/kitchens?placeId=${encodeURIComponent(placeId.value)}`
-      : '/api/kitchens'
+  const kitchenIds = computed(() =>
+    enabled.value && access.outcome.value === 'ready'
+      ? access.ids.value.map((id) => String(id || '').trim()).filter(Boolean)
+      : []
   )
-  const state = useAsyncData<KitchenCollectionRecord[]>(
-    () =>
-      options.placeId === undefined
-        ? 'kitchens'
-        : `kitchens:place:${placeId.value || 'inactive'}`,
-    async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-      return active.value
-        ? fetchRead<KitchenCollectionRecord[]>(endpoint.value)
-        : Promise.resolve([])
-    },
-    { watch: [endpoint, active] }
-  )
-  const collection = computed<KitchenCollectionRecord[]>(() => {
-    if (!active.value || state.pending.value || state.error.value) return []
-    if (options.placeId === undefined) return state.data.value || []
-    return (state.data.value || []).filter(
-      (kitchen) => kitchen.id === placeId.value
-    )
+  const kitchenSource = firestoreLoadDocsByIds<
+    Record<string, unknown> & { id: string }
+  >({
+    collectionPath: 'kitchens',
+    ids: kitchenIds,
   })
-  const outcome = computed(() =>
-    resolveReadOutcome({
-      enabled: active.value,
-      pending: state.pending.value,
-      failed: Boolean(state.error.value),
-      present: collection.value.length > 0,
+  const parsed = computed(() => {
+    const items: Kitchen[] = []
+    if (
+      access.outcome.value !== 'ready' ||
+      kitchenSource.outcome.value !== 'ready'
+    )
+      return { items, invalid: false }
+    const allowed = new Set(kitchenIds.value)
+    for (const record of kitchenSource.docs.value ?? []) {
+      if (!allowed.has(record.id)) continue
+      const kitchen = readKitchenDocument(record, record.id)
+      if (!kitchen) return { items: [], invalid: true }
+      items.push(kitchen)
+    }
+    return { items, invalid: false }
+  })
+  const placeIds = computed(() =>
+    parsed.value.items.map((kitchen) => kitchen.id)
+  )
+  const placeSource = firestoreLoadDocsByIds<Place>({
+    collectionPath: 'places',
+    ids: placeIds,
+  })
+  const places = computed(
+    () =>
+      new Map((placeSource.docs.value ?? []).map((place) => [place.id, place]))
+  )
+  const kitchens = computed<KitchenSurface[]>(() =>
+    (access.outcome.value !== 'ready' || pending.value || error.value
+      ? []
+      : parsed.value.items
+    ).flatMap((kitchen) => {
+      const value = surface({
+        kitchen: { ...kitchen, can_write: true },
+        place: places.value.get(kitchen.id) ?? null,
+        routeScope: 'live',
+      })
+      return value ? [value] : []
     })
   )
+  const pending = computed(
+    () =>
+      enabled.value &&
+      (access.pending.value ||
+        access.outcome.value === 'pending' ||
+        (kitchenIds.value.length > 0 &&
+          ['idle', 'pending'].includes(kitchenSource.outcome.value)) ||
+        (placeIds.value.length > 0 &&
+          ['idle', 'pending'].includes(placeSource.outcome.value)))
+  )
+  const error = computed(() => {
+    if (!enabled.value) return undefined
+    if (access.error.value) return access.error.value
+    if (access.outcome.value !== 'ready' || !kitchenIds.value.length)
+      return undefined
+    return (
+      kitchenSource.error.value ??
+      (parsed.value.invalid
+        ? new Error('Kitchen source is invalid.')
+        : undefined) ??
+      (placeIds.value.length ? placeSource.error.value : undefined)
+    )
+  })
 
   return {
-    collection,
-    count: computed(() => collection.value.length),
-    pending: computed(() => state.pending.value),
-    error: computed<unknown>(() => state.error.value),
-    refresh: async () => {
-      await state.refresh()
-    },
-    ready: state.then(() => undefined),
-    outcome,
+    access,
+    kitchens,
+    count: computed(() => kitchens.value.length),
+    pending,
+    error,
+    outcome: computed(() => {
+      if (!enabled.value) return 'idle'
+      if (error.value) return 'error'
+      if (pending.value) return 'pending'
+      if (access.outcome.value !== 'ready' && access.outcome.value !== 'empty')
+        return access.outcome.value
+      return kitchens.value.length ? 'ready' : 'empty'
+    }),
   }
 }

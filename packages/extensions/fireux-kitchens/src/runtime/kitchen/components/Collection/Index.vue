@@ -47,14 +47,14 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed, ref } from 'vue'
-import type { KitchenCollectionRecord } from '../../composables/useKitchenCollection'
+import type { KitchenPublicRecord } from '../../composables/useKitchens'
 import { useKitchenInterface } from '../../composables/useKitchenInterface'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 
 type KitchenCollectionItem = KitchenSurface
 
 const props = defineProps<{
-  kitchens: KitchenCollectionRecord[]
+  kitchens: KitchenPublicRecord[]
 }>()
 
 const { interface: makeCard, surface } = useKitchenInterface()

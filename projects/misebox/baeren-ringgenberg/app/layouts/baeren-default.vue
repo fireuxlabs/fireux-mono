@@ -1,14 +1,17 @@
 <template>
-  <main class="baeren-default-layout">
+  <div class="baeren-default-layout">
     <LayoutsMiseboxTenantHeader v-if="!chromeHidden" />
 
-    <section class="baeren-default-layout__body" aria-label="Hotel Bären Ringgenberg">
+    <section
+      class="baeren-default-layout__body"
+      aria-label="Hotel Bären Ringgenberg"
+    >
       <slot />
     </section>
 
     <BaerenNav v-if="!chromeHidden" />
     <LayoutsMiseboxTenantFooter v-if="!chromeHidden" />
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -49,14 +49,14 @@
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { useKitchenTargets } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenTargets'
+import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
 import { useWorkspace } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import type { MenuExpressRequestView } from '../../composables/useMenuExpressRequest'
 defineProps<{
   state: Pick<MenuExpressRequestView, 'request' | 'busy' | 'act'>
 }>()
 const { selectedId } = useWorkspace('kitchen')
-const targets = reactive(useKitchenTargets())
+const targets = reactive(useKitchenCollection())
 const chosenId = ref('')
 const kitchenOptions = computed(() =>
   targets.kitchens.map((kitchen) => ({

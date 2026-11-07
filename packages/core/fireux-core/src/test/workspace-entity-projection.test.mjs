@@ -132,7 +132,6 @@ for (const [family, path] of Object.entries(paths))
         outcome: ref('ready'),
         access: access(),
       }),
-      useKitchenTargets: () => ({ kitchens: ref([]), outcome: ref('ready') }),
     })
     const workspace = load(
       path + 'composables/workspace/use' + family + 'Workspace.ts',

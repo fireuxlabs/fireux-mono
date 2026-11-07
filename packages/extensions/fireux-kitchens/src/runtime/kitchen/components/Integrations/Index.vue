@@ -30,6 +30,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
-const { selectedKitchen, kitchenId, outcome } = useKitchenWorkspaceIdentity()
+import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+const { data: selectedKitchen, id: kitchenId, outcome } = useKitchenWorkspace()
 </script>

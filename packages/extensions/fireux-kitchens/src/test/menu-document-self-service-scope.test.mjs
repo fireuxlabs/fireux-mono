@@ -90,7 +90,7 @@ function fixture({ guest = false, claimLock } = {}) {
     useAuth: () => auth,
     useUserSession: () => ({ appUser }),
     useFireUXConfig: () => config,
-    useKitchenTargets: () => ({ kitchens: ref([]), pending: ref(false) }),
+    useKitchenCollection: () => ({ kitchens: ref([]), pending: ref(false) }),
     useKitchenCreate: () => ({
       createKitchenShell: async () => ({ kitchen_id: 'guest' }),
     }),

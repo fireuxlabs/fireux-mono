@@ -2,8 +2,8 @@ import { computed, onMounted, onScopeDispose, ref, watch } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useKitchenTargets } from '../../kitchen/composables/useKitchenTargets'
-import { useKitchenCreate } from '../../kitchen/composables/firestore/useKitchenCreate'
+import { useKitchenCollection } from '../../kitchen/composables/useKitchenCollection'
+import { useKitchenCreate } from '../../kitchen/composables/useKitchenCreate'
 import {
   readGuestKitchenClaim,
   rememberGuestKitchenClaim,
@@ -18,7 +18,7 @@ export function useMenuDocument() {
   const auth = useAuth()
   const config = useFireUXConfig()
   const route = useRoute()
-  const kitchens = useKitchenTargets({
+  const kitchens = useKitchenCollection({
     enabled: () => auth.isAuthenticated.value,
   })
   const creation = useKitchenCreate()

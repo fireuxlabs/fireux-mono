@@ -1,5 +1,5 @@
 <template>
-  <main class="product-demo-page" data-misebox-product-demo="menu">
+  <div class="product-demo-page" data-misebox-product-demo="menu">
     <ShowcaseHeader
       eyebrow="Guest view"
       title="Misebox Restaurant Menu"
@@ -33,7 +33,7 @@
         All demos
       </UButton>
     </nav>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

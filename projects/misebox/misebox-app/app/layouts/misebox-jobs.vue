@@ -31,11 +31,11 @@
       </UContainer>
     </div>
 
-    <main class="fx-layout-main">
+    <div class="fx-layout-main">
       <UContainer>
         <slot />
       </UContainer>
-    </main>
+    </div>
 
     <FireLayoutsDefaultFooter />
   </div>

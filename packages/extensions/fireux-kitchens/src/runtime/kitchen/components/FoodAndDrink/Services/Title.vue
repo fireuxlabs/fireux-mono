@@ -10,7 +10,7 @@
   />
 </template>
 <script setup lang="ts">
-import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdate'
+import { useKitchenUpdate } from '../../../composables/useKitchenUpdate'
 const props = defineProps<{
   kitchenId: string
   title: string

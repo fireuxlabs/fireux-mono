@@ -1,5 +1,5 @@
 <template>
-  <main v-if="solution">
+  <div v-if="solution">
     <UContainer>
       <UPage>
         <UButton to="/solutions" variant="link"> Solutions </UButton>
@@ -145,7 +145,7 @@
         </UPageBody>
       </UPage>
     </UContainer>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

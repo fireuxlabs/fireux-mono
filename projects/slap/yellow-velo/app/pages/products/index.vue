@@ -1,5 +1,5 @@
 <template>
-  <main class="yv-shop">
+  <div class="yv-shop">
     <section class="yv-shop-hero">
       <UContainer class="yv-shop-hero__inner">
         <div class="yv-shop-hero__copy">
@@ -120,7 +120,7 @@
         description="Try another search or category."
       />
     </UContainer>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

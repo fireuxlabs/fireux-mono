@@ -1,10 +1,9 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { KITCHEN_MUTATION_TARGETS } from '../mutation-targets'
-import { readKitchenByRouteSlug } from './route-identity.ts'
 import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
@@ -44,27 +43,32 @@ export async function updateKitchen(event: H3Event, input: unknown) {
     typeof requested.patch['identity.slug'] === 'string'
       ? requested.patch['identity.slug']
       : ''
-  if (slug) {
-    const conflict = await readKitchenByRouteSlug(getRuntimeFirestore(), slug)
-    if (conflict && conflict.id !== requested.kitchenId) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: `Kitchen slug "${slug}" is already taken.`,
-      })
-    }
-  }
-
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenRecordMutationAuthority(
+    const current = await requireKitchenRecordMutationAuthority(
       mutations,
       actor,
       requested.kitchenId
     )
+    if (slug) {
+      const matches = await mutations.query(KITCHEN_MUTATION_TARGETS.kitchens, {
+        field: 'identity.slug',
+        op: '==',
+        value: slug,
+        limit: 2,
+      })
+      if (matches.some((match) => match.id !== requested.kitchenId)) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: `Kitchen slug "${slug}" is already taken.`,
+        })
+      }
+    }
     mutations.update<DocumentData>(
       KITCHEN_MUTATION_TARGETS.kitchens,
       requested.kitchenId,
       {
         ...requested.patch,
+        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
       }
     )
   })

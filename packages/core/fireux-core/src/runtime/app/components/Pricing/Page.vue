@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <div>
     <UPageHero :title="props.title" :description="props.description" />
 
     <UContainer v-if="planGroups.length">
@@ -29,7 +29,7 @@
         </div>
       </div>
     </UPageSection>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

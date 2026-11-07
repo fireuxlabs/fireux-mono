@@ -66,7 +66,7 @@ accessibility, and safe transport primitives.
 A template catalogue may require each template to expose identity,
 compatibility, readiness, and a renderer boundary while every template keeps
 its own anatomy. Collection members may share lower read mechanics and outcome
-vocabulary while retaining `useKitchenCollection` and
+vocabulary while retaining `useKitchens` and
 `useCompanyCollection`. The family job is evidence for those fundamentals;
 identical copied implementation is not. Keep an unresolved proposed
 fundamental `to-confirm` instead of building ceremony around it.
@@ -79,7 +79,7 @@ interaction, lifecycle, authority, inputs, or outcomes. Names, brand tokens,
 copy, and fixture values alone do not materially differentiate a member.
 
 Align already-proved family vocabulary and outcomes early, while preserving
-named member seams such as `useKitchenCollection`, `useCompanyCollection`,
+named member seams such as `useKitchens`, `useCompanyCollection`,
 `TemplateOnePage`, and `TemplateTwoPage`. Do not insert member-name branches,
 large optional contracts, pass-through wrappers, or a generic engine merely
 to hide the proving duplication.
@@ -152,17 +152,17 @@ Family maps remain navigation, not executable certification. The former
 `scripts/` guard suite was removed. A historical guard name must not be cited
 as current enforcement or as evidence that a family is aligned.
 
-| Responsibility | Current map | Source to inspect |
-| --- | --- | --- |
-| Runtime discovery and ownership | `runtime-package.md`, `runtime-filesystem.md` | Package manifests, modules, native layers, App configs and generated Nuxt output |
-| Entity classification and data | `entities.md`, `firestore-entity.md`, `core-models.md` | Models, named readers/writers and authority checks |
-| Workspace and capabilities | `family-workspace-entity.md`, `family-workspace-capability-tool.md` | Domain Workspace compositions, selection readers and commands |
-| Routes and presentation | `pages.md`, `components.md`, `composables.md`, `family-entity-detail.md` | Actual route consumers, component registration and live detail readers |
-| Kitchen and Menu | `family-menu.md`, `menu-ordering.md`, `order-processing-kitchen-fulfilment.md` | Kitchen/Menu models, trusted commands and `fireux-kitchens/src/test` |
-| Other domains | `suppliers.md`, `marketplace.md`, `finance.md` | Owning package implementation and source-owned tests |
-| Product and publishing | `product-language.md`, `blog.md`, `landing-templates.md` | Current presentation and supported authoring commands |
-| Infrastructure | `server-api.md`, `app-config.md`, `brand-assets.md`, `search-visibility.md` | Current registration, configuration, assets and tests |
-| Ecosystems | `apps-that-slap.md`, `sharer.md`, scoped `docs/ai` contexts | Ecosystem/App composition and direct dependencies |
+| Responsibility                  | Current map                                                                    | Source to inspect                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Runtime discovery and ownership | `runtime-package.md`, `runtime-filesystem.md`                                  | Package manifests, modules, native layers, App configs and generated Nuxt output |
+| Entity classification and data  | `entities.md`, `firestore-entity.md`, `core-models.md`                         | Models, named readers/writers and authority checks                               |
+| Workspace and capabilities      | `family-workspace-entity.md`, `family-workspace-capability-tool.md`            | Domain Workspace compositions, selection readers and commands                    |
+| Routes and presentation         | `pages.md`, `components.md`, `composables.md`, `family-entity-detail.md`       | Actual route consumers, component registration and live detail readers           |
+| Kitchen and Menu                | `family-menu.md`, `menu-ordering.md`, `order-processing-kitchen-fulfilment.md` | Kitchen/Menu models, trusted commands and `fireux-kitchens/src/test`             |
+| Other domains                   | `suppliers.md`, `marketplace.md`, `finance.md`                                 | Owning package implementation and source-owned tests                             |
+| Product and publishing          | `product-language.md`, `blog.md`, `landing-templates.md`                       | Current presentation and supported authoring commands                            |
+| Infrastructure                  | `server-api.md`, `app-config.md`, `brand-assets.md`, `search-visibility.md`    | Current registration, configuration, assets and tests                            |
+| Ecosystems                      | `apps-that-slap.md`, `sharer.md`, scoped `docs/ai` contexts                    | Ecosystem/App composition and direct dependencies                                |
 
 Nuxt entrypoint discovery and FireUX Entity ownership are different contracts.
 Entity folders require explicit registration or imports. Different Entities need

@@ -8,13 +8,12 @@ import {
   useWorkspace,
   defineWorkspace,
 } from 'fireux-core/runtime/workspace/composables/useWorkspace'
-import { useKitchenTargets } from '../useKitchenTargets'
+import { useKitchenCollection } from '../useKitchenCollection'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { kitchenWorkspaceSwitchPath } from '../../utils/workspace-switch-route'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { useKitchenInterface } from '../useKitchenInterface'
-import { useKitchenRead } from '../firestore/useKitchenRead'
-import { useKitchenAccess } from '../useKitchenAccess'
+import { useKitchenRead } from '../useKitchenRead'
 
 export const useKitchenWorkspace = defineWorkspace(() => {
   const { appId } = useFireUXConfig()
@@ -30,7 +29,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
   const route = useRoute()
   const router = useRouter()
   const selection = useWorkspace('kitchen')
-  const targets = useKitchenTargets()
+  const targets = useKitchenCollection()
   const session = useAppSession()
   const captureIntent = useCommandScope([
     session.uid,
@@ -90,7 +89,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
   // Opening a Workspace is local selection, not an account-primary mutation.
 
   const id = selection.selectedId
-  const access = useKitchenAccess()
+  const access = targets.access
   const readId = computed(() =>
     access.outcome.value === 'ready' && access.ids.value.includes(id.value)
       ? id.value

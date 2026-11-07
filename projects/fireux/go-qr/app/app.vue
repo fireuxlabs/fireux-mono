@@ -1,6 +1,8 @@
 <template>
   <UApp v-if="isToolRoute">
-    <NuxtPage />
+    <UMain>
+      <NuxtPage />
+    </UMain>
   </UApp>
   <AppShell v-else />
 </template>

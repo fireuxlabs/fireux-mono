@@ -1,6 +1,6 @@
 # FireUX Kitchens
 
-Updated: 2026-10-03
+Updated: 2026-11-07
 Role: package landing map, not canon
 
 `fireux-kitchens` owns reusable Kitchen domain contracts, Workspace surfaces,
@@ -15,12 +15,25 @@ Kitchen implementation lives in `src/runtime/kitchen/` beneath technical roles:
 and `tools` roles. Conventional Nuxt entrypoints remain at the runtime root.
 There is no aggregate `useKitchen` CRUD facade or supported root Delete action.
 
-- `composables/firestore/useKitchenRead.ts`: live root and same-ID Place read.
-- `composables/firestore/useKitchenCreate.ts`: named directory/onboarding client entrances.
-- `composables/firestore/useKitchenUpdate.ts`: typed update/publication adapter
+- `models/kitchen.model.ts`: the stored Kitchen root, composing capability
+  configuration once, with creation and optional update stamps.
+- `utils/read-kitchen-document.ts`: strict stored-root validation, independently
+  of stamp-free public summaries and Place-derived presentation.
+- `composables/useKitchens.ts`: public HTTP directory.
+- `composables/useKitchenCollection.ts`: live membership-bound roots and Place
+  presentation; invalid roots fail the collection without a partial list.
+- `composables/useKitchenRead.ts`: validated live root and same-ID Place read.
+- `composables/useKitchenCreate.ts`: named directory/onboarding client entrances.
+- `composables/useKitchenUpdate.ts`: typed update/publication adapter
   to `/api/workspace/kitchen/update`, with captured input and account/App scope.
 - `composables/workspace/useKitchenWorkspace.ts`: selection, access-bounded
-  current root, allowance and consumed bound updater. It owns no alternate CRUD lane.
+  current root and its collection-owned access. Creation and named updates retain
+  their separate adapters; Workspace owns no alternate CRUD lane.
+- `components/Identity/ListingEdit.vue`: one listing editor shared by Identity
+  and Home. Identity route context belongs to its route; Overview consumes the
+  supplied identity projection without a Team acquisition.
+- `server/identity/update.ts`: sparse trusted root edits, atomic slug uniqueness
+  and server audit stamps. `archived` remains supported.
 - `server/index/onboarding/`: directory, account, guest and adoption workflows.
 - `tools/`: consumed Tool definitions; protected executors live under `server/`.
 
@@ -50,9 +63,9 @@ poll or refresh to simulate this. Public readers retain their own visibility rul
 Inspect the owning reader/command, endpoint, actual consumers and nearest working
 sibling. Run relevant source-owned tests under `src/test`, owning types and an
 affected App prepare/build when discovery changes. Runtime TypeScript imports are
-extensionless; Node-only tests may use an extension resolver. Finish with
-`git diff --check`. The old `scripts/` guards and `pnpm guard` are retired.
+extensionless; Node-only tests may use an extension resolver. `pnpm --dir packages/extensions/fireux-kitchens test:spine`
+runs the focused Entity/Workspace checks with Core's existing TypeScript resolver.
+Finish with `git diff --check`. The old `scripts/` guards and `pnpm guard` are retired.
 
-See `docs/concepts/family-workspace-entity.md` and
-`docs/archive/2026-10-workspace-cleanup/reviews/entity-spine-audit-2026-10-01.md` for the audited foundation boundary.
+See `docs/concepts/family-workspace-entity.md` for the current foundation boundary.
 Capability internals are a separate stage, not certified by this landing map.

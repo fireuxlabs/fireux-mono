@@ -1,5 +1,5 @@
 <template>
-  <main class="nats-layout">
+  <div class="nats-layout">
     <header class="nats-header">
       <NuxtLink to="/" class="nats-header__brand">
         <span class="nats-header__mark">N</span>
@@ -18,7 +18,7 @@
       <p>Hosted personally by Nats.</p>
       <NuxtLink to="/contact">Questions? Say hello.</NuxtLink>
     </footer>
-  </main>
+  </div>
 </template>
 
 <style scoped>

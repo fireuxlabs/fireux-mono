@@ -7,7 +7,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
-import type { KitchenUpdateInput } from '../../models/kitchen-input.model.ts'
+import type { KitchenUpdateInput } from '../models/kitchen-input.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

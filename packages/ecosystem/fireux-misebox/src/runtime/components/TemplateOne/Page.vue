@@ -1,6 +1,6 @@
 <template>
   <UPage class="template-one-page" :style="themeStyle">
-    <main id="top" ref="landingRoot">
+    <div id="top" ref="landingRoot">
       <TemplateOneSceneOne
         :name="projection.name"
         :wordmark-src="projection.wordmarkSrc"
@@ -28,7 +28,7 @@
         :provider="projection.provider"
         :content="projection.footer"
       />
-    </main>
+    </div>
   </UPage>
 </template>
 

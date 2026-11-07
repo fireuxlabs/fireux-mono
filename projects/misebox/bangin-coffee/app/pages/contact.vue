@@ -1,6 +1,6 @@
 <template>
   <UPage class="bangin-page">
-    <main class="bangin-shell">
+    <div class="bangin-shell">
       <UPageHeader
         class="pageheader"
         title="Contact Bangin Coffee"
@@ -59,7 +59,7 @@
           </UPageCard>
         </div>
       </UPageBody>
-    </main>
+    </div>
   </UPage>
 </template>
 

@@ -5,12 +5,15 @@ import {
   normalizePlace,
   PlaceDefaults,
 } from 'fireux-places/runtime/place/utils/normalize-place'
-import type { Kitchen } from '../../models/kitchen.model.ts'
+import type { KitchenPublicSummary } from '../../models/kitchen.model.ts'
 import type {
   KitchenConfiguration,
   KitchenOrdersConfig,
 } from '../../models/kitchen-configuration.model.ts'
-import type { KitchenFulfilment, KitchenFulfilmentPaymentPolicy } from '../../models/fulfilment.model.ts'
+import type {
+  KitchenFulfilment,
+  KitchenFulfilmentPaymentPolicy,
+} from '../../models/fulfilment.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
 import type { KitchenDemoAccess, KitchenDemoIdentity } from './types'
 
@@ -18,7 +21,7 @@ export type KitchenDemoTarget = {
   appId: string
   access: KitchenDemoAccess
   identity: KitchenDemoIdentity
-  kitchen: Kitchen
+  kitchen: KitchenPublicSummary
   configuration: KitchenConfiguration
   fulfilment: KitchenFulfilment
   place: Place
@@ -61,7 +64,7 @@ export const kitchen = (input: DemoKitchenInput) => ({
       status: 'active',
       visibility: true,
     },
-  } satisfies Kitchen,
+  } satisfies KitchenPublicSummary,
   configuration: {
     theme: { palette: input.themePalette },
     orders: {

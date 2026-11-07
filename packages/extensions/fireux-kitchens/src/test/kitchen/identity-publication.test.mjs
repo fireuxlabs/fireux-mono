@@ -147,7 +147,9 @@ test('Kitchen-only updates use record authority inside their transaction and rej
     requireKitchenRecordMutationAuthority: async (actual, a, id) => {
       checks.push([actual, a, id])
       if (denied) throw new Error('revoked')
+      return { ownerAppId: 'app' }
     },
+    serverAuditStamp: (value) => value,
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
   })
   assert.deepEqual(
@@ -159,7 +161,16 @@ test('Kitchen-only updates use record authority inside their transaction and rej
   )
   assert.equal(checks[0][0], tx)
   assert.equal(checks[0][1], actor)
-  assert.deepEqual(writes, [['kitchens', 'a', { 'identity.visibility': true }]])
+  assert.deepEqual(writes, [
+    [
+      'kitchens',
+      'a',
+      {
+        'identity.visibility': true,
+        updated: { by: 'alice', appId: 'app' },
+      },
+    ],
+  ])
   denied = true
   await assert.rejects(
     update({}, { kitchen_id: 'a', patch: { 'identity.visibility': false } }),
@@ -235,6 +246,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   async function render(status, kitchenReady) {
     const identity = {
       status: ref(status),
+      readState: ref(status === 'pending' ? 'loading' : status),
       outcome: ref(kitchenReady ? 'ready' : 'idle'),
       selectedKitchen: ref(
         kitchenReady
@@ -277,7 +289,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       'USlideover',
       'PlaceEditGoogleReview',
       'PlaceDetail',
-      'KitchenListingEdit',
+      'KitchenIdentityListingEdit',
       'UAvatar',
       'UBadge',
       'UIcon',
@@ -307,7 +319,16 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
         listingSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
       ),
     })
-    app.component('USkeleton', { render: () => h('p', 'Loading identity') })
+    const profileSource = readFileSync(
+      new URL('kitchen/components/Identity/Profile.vue', runtime),
+      'utf8'
+    )
+    app.component('KitchenIdentityProfile', {
+      props: ['identity'],
+      render: compile(
+        profileSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
+      ),
+    })
     app.component('FireStateCard', {
       props: ['state'],
       setup: (p) => () => h('p', p.state),
@@ -333,14 +354,12 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   for (const status of ['empty', 'error', 'pending']) {
     const html = await render(status, true)
     assert.match(html, /Show in directory/)
-    assert.doesNotMatch(
-      html,
-      /Currency|Loading identity|Venue details unavailable/
-    )
+    assert.match(html, new RegExp(status === 'pending' ? 'loading' : status))
+    assert.doesNotMatch(html, /Currency|Venue details unavailable/)
   }
   const empty = await render('empty', false)
   assert.doesNotMatch(empty, /Show in directory|Currency/)
-  assert.match(empty, /Loading identity/)
+  assert.match(empty, /empty/)
 })
 
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {

@@ -63,9 +63,9 @@
       </template>
     </UDashboardSidebar>
 
-    <main class="flex min-w-0 flex-1 overflow-y-auto">
+    <div class="flex min-w-0 flex-1 overflow-y-auto">
       <slot />
-    </main>
+    </div>
   </UDashboardGroup>
 
   <FireLayoutsSharedRoleBadge />

@@ -1,5 +1,5 @@
 <template>
-  <main v-if="tier">
+  <div v-if="tier">
     <UContainer>
       <UPage>
         <UButton to="/pricing" variant="link"> Pricing </UButton>
@@ -73,7 +73,7 @@
         </UPageBody>
       </UPage>
     </UContainer>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

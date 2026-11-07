@@ -31,7 +31,7 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
   }
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/composables/firestore/useKitchenCreate.ts',
+      '../../runtime/kitchen/composables/useKitchenCreate.ts',
       import.meta.url
     ),
     'utf8'

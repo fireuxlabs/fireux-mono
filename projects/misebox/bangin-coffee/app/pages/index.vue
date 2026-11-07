@@ -1,6 +1,6 @@
 <template>
   <UPage class="bangin-page">
-    <main class="bangin-shell">
+    <div class="bangin-shell">
       <section class="bangin-hero">
         <div>
           <p class="bangin-kicker">{{ content.hero.eyebrow }}</p>
@@ -56,7 +56,7 @@
           :icon="card.icon"
         />
       </section>
-    </main>
+    </div>
   </UPage>
 </template>
 

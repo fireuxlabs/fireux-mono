@@ -2,11 +2,11 @@
   <div class="fx-layout-shell">
     <FireLayoutsDefaultHeader />
 
-    <main class="fx-layout-main fx-layout-main--landing">
+    <div class="fx-layout-main fx-layout-main--landing">
       <UContainer>
         <slot />
       </UContainer>
-    </main>
+    </div>
 
     <FireLayoutsDefaultFooter />
     <FireLayoutsSharedFloatingChatButton />

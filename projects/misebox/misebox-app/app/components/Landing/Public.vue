@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import DirectoryHome from 'fireux-core/runtime/components/landing/DirectoryHome.vue'
-import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
+import { useKitchens } from 'fireux-kitchens/runtime/kitchen/composables/useKitchens'
 const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
-const { collection: kitchens, pending, error, refresh } = useKitchenCollection()
+const { collection: kitchens, pending, error, refresh } = useKitchens()
 </script>

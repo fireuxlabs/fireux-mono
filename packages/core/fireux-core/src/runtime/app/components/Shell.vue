@@ -3,14 +3,16 @@
     <ClientOnly>
       <FirePwaStatus />
     </ClientOnly>
-    <UMain>
-      <Workspace v-if="route.meta.workspacePage" />
-      <NuxtLayout v-else>
+    <Workspace v-if="route.meta.workspacePage" />
+    <NuxtLayout v-else>
+      <UMain>
         <NuxtPage />
-      </NuxtLayout>
-    </UMain>
+      </UMain>
+    </NuxtLayout>
 
-    <AppDevControls />
+    <DevOnly>
+      <AppDevControls />
+    </DevOnly>
 
     <ClientOnly>
       <UModal

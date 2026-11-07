@@ -151,7 +151,7 @@ import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/en
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKitchenOnboarding } from '../../composables/useKitchenOnboarding'
-import { useKitchenCreate } from '../../composables/firestore/useKitchenCreate'
+import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import type {
   KitchenDirectoryContributionResult,
   KitchenOnboardingCompleteResult,

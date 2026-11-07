@@ -99,7 +99,7 @@ const specs = [
   ],
   [
     'Kitchen root',
-    'extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/useKitchenUpdate.ts',
+    'extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenUpdate.ts',
     'useKitchenUpdate',
     'kitchen',
   ],
@@ -415,9 +415,7 @@ for (const changed of [
         outcome = ref('ready')
       const data = ref({
         id: 'k1',
-        slug: 'before',
-        status: 'active',
-        visibility: false,
+        identity: { slug: 'before', status: 'active', visibility: false },
       })
       const workspace = {
         id,
@@ -445,7 +443,7 @@ for (const changed of [
       }
       const state = scope.run(() =>
         load(
-          'extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Home/Edit.vue',
+          'extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/ListingEdit.vue',
           '({save, slug, saving, updateError})',
           deps
         )

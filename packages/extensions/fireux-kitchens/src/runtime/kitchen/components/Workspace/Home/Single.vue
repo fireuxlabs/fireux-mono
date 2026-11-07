@@ -13,7 +13,7 @@
     }}</span>
   </WorkspaceSingleCard>
   <p v-else class="fx-type-caption">Choose a Kitchen.</p>
-  <WorkspaceKitchenHomeEdit v-model:open="editOpen" />
+  <KitchenIdentityListingEdit v-model:open="editOpen" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'

@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-07
+Ref: dbcd2f326
 Role: map, not canon
 
 ## Purpose
@@ -535,14 +535,24 @@ explicit empty collection path disables the read. Display consumers compose
 these records through the existing `useKitchenInterface().surface` function.
 No additional presentation-reader wrapper is required.
 
-Kitchen presentation is independent of its Firestore adapters. The single
-`kitchen/composables/useKitchenInterface.ts` implementation and adjacent
-`useKitchenComputed.ts` serve domain consumers directly. Presentation types live
+Kitchen presentation is independent of its storage adapters. The single
+`kitchen/composables/useKitchenInterface.ts` implementation exposes only its
+consumed surface, interface, pill and cell projections. Presentation types live
 in `kitchen/models/kitchen-interface.model.ts`; pure projection helpers live in
-`kitchen/utils/kitchen-interface-projection.ts`. There is no forwarding entrypoint
+`kitchen/utils/kitchen-interface-projection.ts`. `useKitchenIdentityProjection`
+derives venue fields from supplied records without acquiring a reader, command
+or page-context publisher. Identity route context belongs to the Identity route;
+Overview consumes this same pure projection without acquiring Team data.
+There is no forwarding entrypoint
 or nested Firestore view directory. Project's public Collection owns its small
 card projection directly; its unused interface mapper is retired. Other domains'
 older view directories require their own consumer audit before movement.
+
+Kitchen public discovery uses `useKitchens`; membership-bound live roots use
+`useKitchenCollection`. Exact reads, creation and root updates live directly in
+Kitchen's composables folder. Their HTTP endpoints and data authority are unchanged.
+`read-kitchen-document.ts` validates stored roots before private display; public
+summaries remain separate allowlisted projections.
 
 ## Consumed Entity entrypoints
 

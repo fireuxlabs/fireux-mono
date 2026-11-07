@@ -360,7 +360,7 @@ test('preparation resolves late Kitchen choices and never keeps a removed or uns
       'ref',
       'defineProps',
       'useWorkspace',
-      'useKitchenTargets',
+      'useKitchenCollection',
     ]
   )(
     computed,

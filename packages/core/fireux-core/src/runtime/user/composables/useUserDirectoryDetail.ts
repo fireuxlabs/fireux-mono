@@ -1,4 +1,4 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { resolveHttpDocumentOutcome } from '../../utils/http-document-outcome'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
@@ -56,7 +56,7 @@ export function useUserDirectoryDetail(handle: MaybeRefOrGetter<string>) {
     outcome,
     pending: computed(() => outcome.value === 'pending'),
     error: state.error,
-    refresh: state.refresh,
+    refresh: state.refresh as AsyncData<unknown, unknown>['refresh'],
     ready: state.then(() => undefined),
   }
 }

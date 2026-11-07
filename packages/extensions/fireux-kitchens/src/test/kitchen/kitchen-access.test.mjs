@@ -1,4 +1,5 @@
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
 import { useCommandScope } from '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import assert from 'node:assert/strict'
 import { createHash, timingSafeEqual, webcrypto } from 'node:crypto'
@@ -440,10 +441,27 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
         if (!bindings.has(path))
           bindings.set(
             path,
-            Object.assign(ref({ name: path }), {
-              pending: ref(false),
-              error: ref(),
-            })
+            Object.assign(
+              ref(
+                path.startsWith('kitchens/')
+                  ? {
+                      identity: {
+                        slug: path.split('/')[1],
+                        status: 'active',
+                        visibility: true,
+                      },
+                      created: {
+                        at: { seconds: 123, nanoseconds: 0 },
+                        by: 'user',
+                      },
+                    }
+                  : { name: path }
+              ),
+              {
+                pending: ref(false),
+                error: ref(),
+              }
+            )
           )
         return bindings.get(path)
       },
@@ -452,12 +470,13 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
     }
   )
   const collection = compile(
-    new URL('kitchen/composables/useKitchenTargets.ts', runtime),
-    'useKitchenTargets',
+    new URL('kitchen/composables/useKitchenCollection.ts', runtime),
+    'useKitchenCollection',
     {
       computed,
       toValue,
       useKitchenAccess: () => access,
+      readKitchenDocument,
       useFirestoreRead: () => ({
         firestoreLoadDocsByIds: (input) => {
           options.push(input)
@@ -812,7 +831,7 @@ test('adopted Kitchen becomes selected only after the live collection contains i
         key.startsWith('kitchen-adopted-selection:') ? adopted : ref(init()),
       useFireUXConfig: () => ({ appId: 'app' }),
       defineWorkspace: (factory) => factory,
-      useKitchenTargets: () => ({ kitchens, outcome }),
+      useKitchenCollection: () => ({ kitchens, outcome }),
       useKitchenAccess: () => ({
         ids: computed(() => kitchens.value.map((row) => row.id)),
         outcome,

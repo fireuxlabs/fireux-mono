@@ -1,6 +1,6 @@
 # FireUX Bookings context
 
-Updated: 2026-11-06
+Updated: 2026-11-07
 Ref: 614700fd9
 Role: living context
 Scope: reusable booking lifecycle and calendar integrations
@@ -30,7 +30,7 @@ verify how external conflicts and failed event writes affect their own workflow.
 - Package identity, exports, and commands: `package.json`.
 - Nuxt registration of `BookingsCustomerForm`, server imports, and optional `businessWorkspace` module option: `src/module.ts`; explicit native layer `src/runtime/nuxt.config.ts`.
 - Shared customer form and display contracts: `src/runtime/components/Customer/Form.vue` and `src/runtime/types/customer-booking-form.ts`. The form presents customer fields and supplied view state; consumer pages own domain inputs, availability queries and booking submissions.
-- Generic library preview: `packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue`; its sample data must remain business-neutral. Blank's configurable simulator is `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue`.
+- Generic library preview: `packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue`; its sample data must remain business-neutral. Blank composes the customer surface in `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue`. Its simulator state and requests live in `projects/fireux/fireux-blank/app/composables/useBookingSandbox.ts`, with inputs in `projects/fireux/fireux-blank/app/components/Booking/Sandbox/Configuration.vue` and history in `projects/fireux/fireux-blank/app/components/Booking/Sandbox/RecentBookings.vue`.
 - Business management: `src/runtime/server/business/management.ts`, `store.ts` and `targets.ts`. Settings, records and locks live beneath `businesses/{id}` and protected management reuses Business membership-bound authority.
 - Schedule validation: `src/runtime/utils/availability.ts`. Revision checks reject stale operator saves and schedule changes during reservation. Existing reservations are preserved when closing days.
 - Business Workspace route and focused UI: `src/runtime/pages/workspace/business/bookings.vue` and `business/components/Workspace`. Private list reads use bounded cursor pages with explicit refresh.

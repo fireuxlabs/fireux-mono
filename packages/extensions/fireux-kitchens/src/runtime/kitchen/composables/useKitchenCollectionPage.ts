@@ -1,14 +1,14 @@
 import { reactive, toRefs } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenCollection } from './useKitchenCollection'
+import { useKitchens } from './useKitchens'
 import { useCollectionPage } from 'fireux-core/runtime/composables/shared/useCollectionPage'
 
 /** One Entity acquisition and SEO owner over shared collection-page presentation. */
 export function useKitchenCollectionPage() {
   const pageTitle = 'Kitchens'
   const { appName } = useFireUXConfig()
-  const { collection: kitchens, outcome, error } = useKitchenCollection()
+  const { collection: kitchens, outcome, error } = useKitchens()
   useSeo({
     title: `${appName} | ${pageTitle}`,
     description:
