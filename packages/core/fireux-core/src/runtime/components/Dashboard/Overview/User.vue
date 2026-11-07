@@ -1,6 +1,11 @@
-<!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: turn the User layer into a real identity hero with exception-only prompts. -->
 <template>
-  <UPageCard variant="subtle">
+  <FireState v-if="coreIsLoading" outcome="pending" entity="your profile" />
+  <FireDashboardOverviewRecovery
+    v-else-if="coreIsError || !card"
+    :outcome="coreIsError ? 'error' : 'empty'"
+    :error="coreError"
+  />
+  <UPageCard v-else-if="card" variant="subtle">
     <div>
       <div>
         <UAvatar :src="card.avatarUrl" :alt="card.displayName" size="3xl" />
@@ -64,21 +69,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserCard } from '../../../user/composables/useUserView'
-import type { DashboardOverviewOutcome } from './types'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useUserRead } from '../../../user/composables/useUserRead'
+import { useUserAccount } from '../../../user/composables/account/useUserAccount'
+import { useUserView } from '../../../user/composables/useUserView'
 
-const props = defineProps<{
-  card: UserCard
-  hasCustomAvatar: boolean
-  accountOutcome: DashboardOverviewOutcome
-}>()
-
+const { uid } = useAuth()
+const {
+  user: coreUser,
+  outcome: coreOutcome,
+  error: coreError,
+} = useUserRead(uid)
+const { outcome: accountOutcome } = useUserAccount()
+const { profile } = useUserView()
+const card = computed(() => profile(coreUser.value ?? null))
+const coreIsLoading = computed(
+  () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'
+)
+const coreIsError = computed(
+  () => coreOutcome.value === 'error' || Boolean(coreError.value)
+)
 const firstName = computed(
-  () => props.card.displayName.trim().split(/\s+/u)[0] || 'there'
+  () => card.value?.displayName.trim().split(/\s+/u)[0] || 'there'
 )
 
 const completionPrompt = computed(() => {
-  if (!props.card.handle) {
+  if (!card.value) return null
+  if (!card.value.handle) {
     return {
       color: 'warning' as const,
       title: 'Choose a public handle',
@@ -90,7 +107,7 @@ const completionPrompt = computed(() => {
       actionIcon: 'i-lucide-arrow-right',
     }
   }
-  if (props.accountOutcome === 'error') {
+  if (accountOutcome.value === 'error') {
     return {
       color: 'error' as const,
       title: 'Account settings unavailable',
@@ -102,15 +119,15 @@ const completionPrompt = computed(() => {
       actionIcon: 'i-lucide-settings',
     }
   }
-  if (props.accountOutcome === 'empty') {
+  if (accountOutcome.value === 'empty') {
     return {
       color: 'warning' as const,
-      title: 'Repair account setup',
+      title: 'Finish account setup',
       description:
-        'Your public profile exists, but your account settings need attention.',
+        'Your public profile exists. Finish setting up your private account.',
       icon: 'i-lucide-user-round-cog',
       to: '/users/create',
-      actionLabel: 'Repair account',
+      actionLabel: 'Continue',
       actionIcon: 'i-lucide-wrench',
     }
   }

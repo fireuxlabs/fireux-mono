@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-05
-Ref: 71d4618ec
+Updated: 2026-11-07
+Ref: d0f981eac
 Role: map, not canon
 
 ## Purpose
@@ -88,16 +88,16 @@ establishes each record's actual shape and behavior:
 
 Examples of parent-owned Records:
 
-| Record            | Parent           | Why it is not an Entity                                                    |
-| ----------------- | ---------------- | -------------------------------------------------------------------------- |
-| MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                               |
-| MenuSection       | Menu             | It groups MenuItem records inside one Menu                                 |
-| MenuItem          | MenuSection      | It is one parent-owned catalogue row                                       |
-| KitchenSale       | KitchenOrder     | It is the immutable one-to-one result of Order completion                  |
-| CustomerProfile   | User             | It stores User-owned ordering preferences, not another person identity     |
-| CustomerOrderLink | User             | It points to an Order without copying mutable Order lifecycle state        |
-| MarketplaceOffer  | MarketplaceStore | It has no lifecycle outside its Store                                      |
-| MarketplaceOrder  | MarketplaceStore | It is operational fulfilment truth for one Store                           |
+| Record            | Parent           | Why it is not an Entity                                                |
+| ----------------- | ---------------- | ---------------------------------------------------------------------- |
+| MenuSourceUpload  | Kitchen          | It is source material for a Kitchen workflow                           |
+| MenuSection       | Menu             | It groups MenuItem records inside one Menu                             |
+| MenuItem          | MenuSection      | It is one parent-owned catalogue row                                   |
+| KitchenSale       | KitchenOrder     | It is the immutable one-to-one result of Order completion              |
+| CustomerProfile   | User             | It stores User-owned ordering preferences, not another person identity |
+| CustomerOrderLink | User             | It points to an Order without copying mutable Order lifecycle state    |
+| MarketplaceOffer  | MarketplaceStore | It has no lifecycle outside its Store                                  |
+| MarketplaceOrder  | MarketplaceStore | It is operational fulfilment truth for one Store                       |
 
 This map does not enforce ownership or storage behavior. Inspect the owning
 model, reader and command for those facts. Do not recreate a runtime registry.
@@ -156,7 +156,22 @@ database to verify the complete relationship without writing data.
 
 User is canonical identity. UserAccount is private support owned by the Core
 User domain, not a third Entity or capability. AppUser is separately App-owned
-membership, role, subscription, and App-specific profile support.
+membership, role and subscription.
+
+User setup is owned by Core `user/composables/account/useUserSetup.ts`.
+It derives identity, private-account consent and current-App membership needs
+from their separate readers. `/auth` uses that decision to choose the return
+route; only the explicit setup action invokes the trusted account, identity and
+App membership commands. An existing User can join another App without
+recreating identity or repeating current consent. Guest Workspace access stays
+available without membership.
+
+`User` is the public identity projection; `UserDocument` describes stored
+identity with audit stamps and no stored id. `UserAccount` describes private
+email, terms evidence and audit stamps. It has no unused preferences or fake
+blank-record defaults. Appearance remains owned by native colour mode.
+See Core's `user-setup`, `user-setup-completion` and
+`user-membership-lifecycle` tests for the setup boundary.
 
 Role and subscription are independent AppUser facts. Presentation may show
 them, but it never stores a combined access tier on User or AppUser and never
@@ -177,9 +192,9 @@ App membership creation; AppUser carries no Entity indexes or selection.
 User readers preserve the same split. Global runtimes may enumerate
 the canonical User catalogue. Tenant runtimes first enumerate exact valid
 AppUser memberships for their configured App, then resolve only those canonical
-User identities. Root `User.app_ids` is denormalized identity metadata, not
-tenant-directory selection authority, and tenant detail routes apply the same
-membership decision as their list.
+User identities. User-owned App locators support discovery; canonical AppUser membership
+remains tenant-directory selection authority. Tenant detail routes apply the
+same membership decision as their list.
 
 ### Subscription naming migration
 
@@ -204,7 +219,6 @@ The Business upgrade must collect additional business details. Its field schema,
 record owner and relationship to the acting App membership require an accepted
 contract before an intake can write or grant entitlement. The retired Company
 records are same-id Place roles, not an existing Business intake destination.
-
 
 ### Kitchen-owned Menu identity
 
@@ -355,14 +369,14 @@ Directory and Entity Detail family maps.
 
 | Difference                                                     | State      | Required direction                                                                                                                                                                                   |
 | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                       |
-| Independent Business with optional Place links | `accepted` | Business owns organisation identity and Workspace; Place owns each linked location |
+| Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                        |
+| Independent Business with optional Place links                 | `accepted` | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                   |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
 | Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration |
 | Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                                  |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
 | Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
-| Supplier location chain                                        | `accepted` | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                                  |
+| Supplier location chain                                        | `accepted` | Use Supplier → Business → explicitly linked Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                       |
 | Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                |
 
 ## Alignment roadmap

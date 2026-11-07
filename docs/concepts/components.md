@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-08
+Ref: d0f981eac
 Role: map, not canon
 
 ## Purpose and navigation
@@ -58,6 +58,34 @@ The parent should make responsibility, state ownership and data flow readable.
 Check the route through composition and commands before moving a component.
 Keep accepted product differences explicit. Follow [Lasagne](lasagne.md) and
 the applicable family map before introducing a new shared seam.
+
+## Authentication composition
+
+Core `Auth/System.vue` composes Brand, SignIn and Continue, using the existing
+`useAuthPhase` owner to choose pending, guest or signed-in presentation.
+Brand selects configured App/Ecosystem artwork through `AppBrandWordmark` and
+contains no named-Ecosystem policy. SignIn owns Google interaction and coordinates
+busy state with the existing EmailPanel, which retains native `UAuthForm`.
+Continue owns setup-aware return navigation, recovery and account switching.
+It consumes `useUserSetup` and `useAuth`; it does not recreate their commands.
+The native `/auth` page retains route metadata and tenant framing.
+See Core's `auth-composition.test.mjs` and Kitchens' `kitchen-access.test.mjs`
+for interaction and return-navigation checks.
+
+## Dashboard composition
+
+`Dashboard/Home.vue` supplies the native Dashboard panel and composes Overview.
+Overview only arranges its User and App children and has no readers or props.
+User owns the canonical identity and private-account readers, profile projection
+and Recovery presentation. App owns App state, membership, profile navigation
+and Workspace-entry decisions through the existing readers and helpers.
+`useDashboardProfiles` projects route metadata without constructing a User
+session; both the App section and Dashboard navigation reuse it.
+Recovery owns no reads or writes. Dashboard's Workspace action is navigation,
+not an operational panel. Each section handles its own outcomes, so a profile
+failure does not hide App information and an App failure does not hide the User.
+See `foundation-read-contract.test.mjs` and
+`dashboard-composition.test.mjs` under Core's `src/test`.
 
 ## Component placement and names
 

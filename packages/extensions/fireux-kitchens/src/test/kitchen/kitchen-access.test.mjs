@@ -874,7 +874,7 @@ test('auth waits for the User read and navigates directly to the required destin
     const scope = effectScope()
     scope.run(() =>
       compile(
-        new URL('components/Auth/System.vue', core),
+        new URL('components/Auth/Continue.vue', core),
         'resolvedPostAuthPath',
         {
           computed,
@@ -888,12 +888,21 @@ test('auth waits for the User read and navigates directly to the required destin
             },
           }),
           useAuth: () => ({
-            authState,
+            isAuthenticated: computed(
+              () => authState.value === 'AUTHENTICATED'
+            ),
             hasAuthState: ref(true),
             lastBindError: ref(null),
             signInWithGoogle: async () => {},
           }),
-          useUserSession: () => ({ coreOutcome, coreError: ref(null) }),
+          useUserSetup: () => ({
+            status: computed(() => ({
+              pending: coreOutcome.value === 'pending',
+              failed: false,
+              needsSetup: coreOutcome.value === 'empty',
+            })),
+            error: ref(null),
+          }),
           useFireUXConfig: () => ({ ecosystem: 'misebox', isTenant: false }),
           resolvePostAuthDestination,
           userOnboardingPath,

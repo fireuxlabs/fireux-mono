@@ -40,12 +40,6 @@ test('auth binding keeps the Firebase service opaque to deep state watchers', as
     useFirebaseAuth: () => sdk,
     useCurrentUser: () => ref(null),
     onAuthStateChanged: () => () => {},
-    useUserBootstrap: () => null,
-    createAuthAccountProvisioner: () => ({
-      retry: () => {},
-      reset: () => {},
-      creating: ref(false),
-    }),
   }
   const useAuth = compileFunction(
     `${stripTypeScriptTypes(source)}; return useAuth`,

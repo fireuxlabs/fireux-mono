@@ -22,16 +22,20 @@
               Continue to sign in
             </UButton>
           </template>
-          <template v-else-if="requiresUser">
+          <template v-else-if="setupStatus.needsSetup">
             <UUser
               :name="displayName"
               :description="authEmail"
               :avatar="{ src: authAvatar || undefined, alt: displayName }"
               size="lg"
             />
+            <p v-if="setupStatus.requiresMembership">
+              Continue to join {{ appLabel }}.
+            </p>
             <UCheckbox
+              v-if="setupStatus.requiresConsent"
               v-model="onboardingConsentAcknowledged"
-              :disabled="isCreatingUser"
+              :disabled="isCompletingSetup"
               :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy`"
             >
               <template #label>
@@ -52,7 +56,7 @@
               color="error"
               variant="subtle"
               icon="i-lucide-circle-alert"
-              title="We couldn’t create your profile"
+              title="We couldn’t finish setup"
               :description="error"
             />
             <FireCopyError v-if="error" :message="error" />
@@ -61,11 +65,14 @@
               block
               icon="i-lucide-arrow-right"
               trailing
-              :loading="isCreatingUser"
-              :disabled="isCreatingUser || !onboardingConsentAcknowledged"
-              @click="handleCreateUser"
+              :loading="isCompletingSetup"
+              :disabled="
+                isCompletingSetup ||
+                (setupStatus.requiresConsent && !onboardingConsentAcknowledged)
+              "
+              @click="handleCompleteSetup"
             >
-              {{ isCreatingUser ? 'Creating profile…' : 'Continue' }}
+              {{ isCompletingSetup ? 'Finishing setup…' : 'Continue' }}
             </UButton>
           </template>
           <template v-else>
@@ -96,29 +103,18 @@ import { useCommandScope } from '../../../composables/fireux/commands/useCommand
 import { resolveUserAvatarSource } from '../../utils/user-avatar'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUserSession } from '../../composables/session/useUserSession'
-import { useUserAccount } from '../../composables/account/useUserAccount'
+import { useUserSetup } from '../../composables/account/useUserSetup'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
 import { resolveUserOnboardingDestination } from '../../utils/auth-redirect'
 const route = useRoute()
 const router = useRouter()
 const config = useFireUXConfig()
 const { appName } = config
-const { coreError, coreOutcome, coreUser } = useUserSession()
-const {
-  account,
-  error: accountError,
-  outcome: accountOutcome,
-} = useUserAccount()
-const {
-  currentUser: authUser,
-  hasAuthState,
-  isAuthenticated,
-  retryAccountProvisioning,
-} = useAuth()
+const { status: setupStatus, error: setupReadError, complete } = useUserSetup()
+const { currentUser: authUser, hasAuthState, isAuthenticated } = useAuth()
 
 const error = ref<string | null>(null)
-const isCreatingUser = ref(false)
+const isCompletingSetup = ref(false)
 const onboardingConsentAcknowledged = ref(false)
 const intentSources = [
   () => authUser.value?.uid,
@@ -130,37 +126,20 @@ watch(
   intentSources,
   () => {
     error.value = null
-    isCreatingUser.value = false
+    isCompletingSetup.value = false
     onboardingConsentAcknowledged.value = false
   },
   { flush: 'sync' }
 )
-const isLoading = computed(() => {
-  if (!hasAuthState.value) return true
-  if (!isAuthenticated.value) return false
-  if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending')
-    return true
-  if (accountOutcome.value === 'idle' || accountOutcome.value === 'pending')
-    return true
-  return false
-})
+const isLoading = computed(() => setupStatus.value.pending)
 const readError = computed(() => {
-  const cause = coreError.value || accountError.value
+  const cause = setupReadError.value
   if (!cause) return ''
   return cause instanceof Error && cause.message.trim()
     ? cause.message.trim()
-    : 'Your User records could not be loaded. Please try again.'
+    : 'Your account could not be loaded. Please try again.'
 })
 const isSignIn = computed(() => hasAuthState.value && !isAuthenticated.value)
-const hasCurrentAccount = computed(
-  () =>
-    accountOutcome.value === 'ready' &&
-    account.value?.terms.version === FIREUX_ACCOUNT_TERMS_VERSION &&
-    account.value.terms.accepted_at != null
-)
-const requiresUser = computed(
-  () => isAuthenticated.value && (!coreUser.value || !hasCurrentAccount.value)
-)
 const appLabel = computed(() => appName || 'this App')
 const authEmail = computed(() => authUser.value?.email || 'Signed-in account')
 const authAvatar = computed(() =>
@@ -184,23 +163,34 @@ function reloadPage() {
   window.location.reload()
 }
 
-async function handleCreateUser() {
-  if (isCreatingUser.value) return
+async function handleCompleteSetup() {
+  if (
+    isCompletingSetup.value ||
+    setupStatus.value.pending ||
+    setupStatus.value.failed ||
+    !isAuthenticated.value
+  )
+    return
   const isCurrent = captureIntent()
   const destination = returnTarget.value
   error.value = null
-  isCreatingUser.value = true
+  isCompletingSetup.value = true
   try {
-    if (requiresUser.value) {
-      if (!onboardingConsentAcknowledged.value)
+    if (setupStatus.value.needsSetup) {
+      if (
+        setupStatus.value.requiresConsent &&
+        !onboardingConsentAcknowledged.value
+      )
         throw new Error(
           'Accept the Terms of Service and acknowledge the Privacy Policy to continue.'
         )
-      const provisioned = await retryAccountProvisioning(
-        FIREUX_ACCOUNT_TERMS_VERSION
+      const provisioned = await complete(
+        setupStatus.value.requiresConsent
+          ? FIREUX_ACCOUNT_TERMS_VERSION
+          : undefined
       )
       if (!provisioned)
-        throw new Error('Your User could not be created. Please try again.')
+        throw new Error('Setup could not be completed. Please try again.')
     }
     if (isCurrent()) await router.replace(destination)
   } catch (cause) {
@@ -210,7 +200,7 @@ async function handleCreateUser() {
         ? cause.message
         : 'Unable to complete setup. Please try again.'
   } finally {
-    if (isCurrent()) isCreatingUser.value = false
+    if (isCurrent()) isCompletingSetup.value = false
   }
 }
 </script>

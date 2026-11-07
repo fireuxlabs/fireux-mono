@@ -3,14 +3,7 @@ import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
 
 /** Owner-only account support stored below the canonical User. */
 export interface UserAccount extends FireuxStamped {
-  id: string
   email: string
-  preferences: {
-    language: string
-    theme: 'system' | 'light' | 'dark'
-    email_security_alerts: boolean
-    share_usage_analytics: boolean
-  }
   terms: {
     version: string
     accepted_at: FirebaseTimestamp | null
@@ -25,35 +18,6 @@ export const UserAccountStorage = {
   parent: 'user',
   idParam: 'userId',
 } as const
-
-export const UserAccountModel: UserAccount = {
-  id: '',
-  email: '',
-  preferences: {
-    language: 'en',
-    theme: 'system',
-    email_security_alerts: true,
-    share_usage_analytics: false,
-  },
-  terms: {
-    version: '',
-    accepted_at: null,
-  },
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
-}
-
-export type UserAccountCreateInput = Omit<
-  UserAccount,
-  'id' | 'created' | 'updated'
->
-export type UserAccountUpdateInput = Partial<UserAccountCreateInput>
 
 export type CurrentUserAccountResponse = {
   ok: true

@@ -67,11 +67,14 @@ export function useUserBootstrap(
     return { created: false, ready: false }
   }
 
-  async function createUser(intendedUser?: User): Promise<void> {
+  async function createUser(
+    intendedUser?: User,
+    isOwnerCurrent: () => boolean = () => true
+  ): Promise<void> {
     const scope = captureLifecycle
       ? { isCurrent: captureLifecycle(), stop() {} }
       : captureCommandScope(sources)
-    const isCurrent = scope.isCurrent
+    const isCurrent = () => scope.isCurrent() && isOwnerCurrent()
     try {
       const auth = intendedUser ?? (await requireUid()).auth
       const uid = auth.uid

@@ -1,7 +1,7 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
-import type { User } from '../models/user.model'
+import type { User, UserDocument } from '../models/user.model'
 import { normalizeUser } from '../utils/normalize-user'
 
 /** Live read of one User through the shared Firestore reader. */
@@ -10,7 +10,7 @@ export function useUserRead(id: MaybeRef<string | null | undefined>) {
   const { firestoreFetchDoc } = useFirestoreRead({
     databaseId: readRuntimeIdentityFirestoreDatabaseId(),
   })
-  const source = firestoreFetchDoc<User>('users', targetId)
+  const source = firestoreFetchDoc<UserDocument>('users', targetId)
   const user = computed<User | null | undefined>(() => {
     if (!targetId.value || source.pending.value) return undefined
     if (source.error.value) return undefined

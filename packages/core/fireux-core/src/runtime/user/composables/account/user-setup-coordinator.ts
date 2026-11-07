@@ -1,40 +1,37 @@
-import { computed, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import type { User } from 'firebase/auth'
-import {
-  clearPendingAccountConsent,
-  readPendingAccountConsent,
-} from './account-consent'
-import { provisionSignedInUserAccount } from '../../../user/utils/provision-user-account'
+import { provisionSignedInUserAccount } from '../../utils/provision-user-account'
 
-export type AccountProvisionState = {
+export type UserSetupState = {
   uid: string | null
   status: 'idle' | 'pending' | 'success' | 'failed'
   generation: number
 }
 
-type AccountProvisionFlight = {
+type UserSetupFlight = {
   generation: number
   promise: Promise<void>
 }
 
-type AccountProvisionerOptions = {
+type UserSetupCoordinatorOptions = {
   currentUser: Ref<User | null>
   isReady: Ref<boolean>
-  state: Ref<AccountProvisionState>
+  state: Ref<UserSetupState>
   lastError: Ref<unknown>
-  userCreate: { bootstrapUser: (user?: User) => Promise<unknown> } | null
+  userCreate: {
+    bootstrapUser: (user?: User, isCurrent?: () => boolean) => Promise<unknown>
+  } | null
 }
 
-const flights = new Map<string, AccountProvisionFlight>()
-
-export function createAuthAccountProvisioner(
-  options: AccountProvisionerOptions
+export function createUserSetupCoordinator(
+  options: UserSetupCoordinatorOptions
 ) {
+  const flights = new Map<string, UserSetupFlight>()
   const { currentUser, isReady, state, lastError, userCreate } = options
 
   const createOnce = async (
     nextUid: string | null,
-    createOptions: { retry?: boolean } = {}
+    createOptions: { retry?: boolean; termsVersion?: string } = {}
   ) => {
     if (
       !import.meta.client ||
@@ -72,11 +69,12 @@ export function createAuthAccountProvisioner(
       try {
         const signedInUser = currentUser.value
         if (!signedInUser || signedInUser.uid !== nextUid) return
-        const termsVersion = readPendingAccountConsent() ?? undefined
-        await provisionSignedInUserAccount(signedInUser, termsVersion)
+        await provisionSignedInUserAccount(
+          signedInUser,
+          createOptions.termsVersion
+        )
         if (!isCurrent()) return
-        if (termsVersion) clearPendingAccountConsent()
-        await userCreate.bootstrapUser(signedInUser)
+        await userCreate.bootstrapUser(signedInUser, isCurrent)
         if (isCurrent()) {
           state.value = { uid: nextUid, status: 'success', generation }
         }
@@ -96,25 +94,20 @@ export function createAuthAccountProvisioner(
     }
   }
 
-  const retry = async () => {
+  const retry = async (termsVersion?: string) => {
     const nextUid = currentUser.value?.uid ?? null
     if (!nextUid) return false
-    await createOnce(nextUid, { retry: true })
+    await createOnce(nextUid, { retry: true, termsVersion })
     return state.value.uid === nextUid && state.value.status === 'success'
   }
-  const reset = (uid: string | null) => {
+  const reset = () => {
     state.value = {
       uid: null,
       status: 'idle',
       generation: state.value.generation + 1,
     }
-    if (uid) flights.delete(uid)
+    flights.clear()
     lastError.value = null
   }
-  const creating = computed(
-    () =>
-      state.value.uid === currentUser.value?.uid &&
-      state.value.status === 'pending'
-  )
-  return { createOnce, retry, reset, creating }
+  return { createOnce, retry, reset }
 }

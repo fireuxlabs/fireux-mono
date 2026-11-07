@@ -40,7 +40,7 @@ function deferred() {
   })
   return { promise, resolve, reject }
 }
-function setupHarness() {
+function setupHarness({ requiresConsent = true } = {}) {
   const owner = effectScope(),
     gate = deferred(),
     calls = [],
@@ -54,7 +54,7 @@ function setupHarness() {
   const control = owner.run(() =>
     load(
       'user/components/Create/System.vue',
-      '{handleCreateUser,error,isCreatingUser,onboardingConsentAcknowledged,signInTarget,returnTarget}',
+      '{handleCompleteSetup,error,isCompletingSetup,onboardingConsentAcknowledged,signInTarget,returnTarget}',
       {
         computed,
         ref,
@@ -66,24 +66,23 @@ function setupHarness() {
         resolveUserAvatarSource: (x) => x,
         resolveUserOnboardingDestination,
         FIREUX_ACCOUNT_TERMS_VERSION: 'current',
-        useUserSession: () => ({
-          coreError: ref(null),
-          coreOutcome: ref('empty'),
-          coreUser: ref(null),
-        }),
-        useUserAccount: () => ({
-          account: ref(null),
+        useUserSetup: () => ({
+          status: ref({
+            pending: false,
+            failed: false,
+            needsSetup: true,
+            requiresConsent,
+          }),
           error: ref(null),
-          outcome: ref('empty'),
+          complete: (termsVersion) => {
+            calls.push(termsVersion)
+            return gate.promise
+          },
         }),
         useAuth: () => ({
           currentUser: authUser,
           hasAuthState: ref(true),
           isAuthenticated: ref(true),
-          retryAccountProvisioning: () => {
-            calls.push('user')
-            return gate.promise
-          },
         }),
       }
     )
@@ -95,7 +94,7 @@ for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
   for (const failure of [false, true])
     test(`User setup ${failure ? 'failure' : 'success'} completion respects ${change} context`, async () => {
       const h = setupHarness(),
-        pending = h.control.handleCreateUser()
+        pending = h.control.handleCompleteSetup()
       assert.equal(h.calls.length, 1)
       if (change === 'account') {
         h.authUser.value = { uid: 'other' }
@@ -129,10 +128,21 @@ for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
 test('Setup cannot start without explicit terms consent', async () => {
   const h = setupHarness()
   h.control.onboardingConsentAcknowledged.value = false
-  await h.control.handleCreateUser()
+  await h.control.handleCompleteSetup()
   assert.equal(h.calls.length, 0)
   assert.equal(h.navigations.length, 0)
   assert.match(h.control.error.value, /Terms/)
+  h.owner.stop()
+})
+test('an existing User can join another App without accepting current terms again', async () => {
+  const h = setupHarness({ requiresConsent: false })
+  h.control.onboardingConsentAcknowledged.value = false
+  const pending = h.control.handleCompleteSetup()
+  assert.deepEqual(h.calls, [undefined])
+  h.gate.resolve(true)
+  await pending
+  assert.deepEqual(h.navigations, ['/workspace?menu=A#details'])
+  assert.equal(h.control.error.value, null)
   h.owner.stop()
 })
 test('Sign-in fallback keeps the internal destination and rejects another origin', () => {

@@ -1,3 +1,4 @@
+import { useDashboardProfiles } from '../runtime/composables/navigation/useDashboardProfiles.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -23,8 +24,50 @@ const load = compileFunction(
     'useUserSession',
     'useDeveloperAccess',
     'useWorkspaceEntryCta',
+    'useDashboardProfiles',
   ]
 )
+
+test('profile navigation stays reactive and prefers one canonical entry per profile without session readers', () => {
+  const items = ref([
+    {
+      group: 'profiles',
+      profileId: 'cook',
+      label: 'Cook',
+      to: '/cook',
+      order: 1,
+    },
+    {
+      group: 'profiles',
+      profileId: 'cook',
+      label: 'Cook profile',
+      to: '/cook/profile',
+      order: 5,
+    },
+    {
+      group: 'profiles',
+      profileId: 'host',
+      label: 'Host',
+      to: '/host/profile',
+      order: 2,
+    },
+    {
+      group: 'other',
+      profileId: 'ignored',
+      label: 'Other',
+      to: '/other',
+      order: 0,
+    },
+  ])
+  const profiles = useDashboardProfiles(items)
+  assert.deepEqual(
+    profiles.availableProfileEntries.value.map((item) => item.to),
+    ['/host/profile', '/cook/profile']
+  )
+  assert.deepEqual(profiles.activeProfileEntries.value, [])
+  items.value = []
+  assert.deepEqual(profiles.availableProfileEntries.value, [])
+})
 
 test('cached permissions do not change the pre-hydration Dashboard tree; mounted navigation follows current authority', () => {
   const mounted = ref(false),
@@ -37,7 +80,8 @@ test('cached permissions do not change the pre-hydration Dashboard tree; mounted
     () => ({ desktop: ref([]) }),
     () => ({ isAdmin: admin }),
     () => ({ isDeveloper: developer }),
-    () => ({ hasWorkspaceEntry: workspace })
+    () => ({ hasWorkspaceEntry: workspace }),
+    useDashboardProfiles
   )()
   const home = { key: 'dashboard-home' },
     privateItems = [

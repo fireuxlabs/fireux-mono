@@ -1,7 +1,7 @@
 # Pages
 
-Updated: 2026-11-07
-Ref: ce2861c77
+Updated: 2026-11-08
+Ref: d0f981eac
 Role: map, not canon
 
 ## Purpose
@@ -98,8 +98,12 @@ See `arrival-route.test.mjs` and `workspace-entry.test.mjs` under Core's
 - Core owns the shared `/dashboard` route shell and the named Dashboard Overview
   component family. Projects compose that route rather than forking an app-local
   overview.
-- The User layer is universal. The Ecosystem layer appears only for an explicit
-  `ecosystemId` relationship, and the current App layer is universal.
+- Dashboard presents User identity, private-account state and current-App access.
+  Workspace is a separate operational surface; Dashboard may link to its entrance.
+  There is no injected Workspace panel or empty Ecosystem section.
+- Overview only arranges User and App. Each child owns its reads and outcomes;
+  User contains identity Recovery, while App owns membership and navigation.
+  Recovery uses shared state and development diagnostics without reads or writes.
 - User, private-account, canonical-App, and App-membership outcomes stay
   independent so a scoped read failure cannot hide a valid public User.
 - Start at `packages/core/fireux-core/src/runtime/components/Dashboard/Overview.vue`

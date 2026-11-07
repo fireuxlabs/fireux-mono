@@ -30,15 +30,6 @@
       "deletion": "Disable offline support unregisters the owned worker and deletes its App-specific cache; an open page may retain worker control until reloaded or closed"
     },
     {
-      "key": "fireux_pending_account_consent",
-      "technology": "sessionStorage",
-      "owner": "FireUX Core",
-      "purpose": "Complete the requested sign-up across an authentication redirect",
-      "trigger": "Terms acceptance followed by sign-up",
-      "lifetime": "At most one hour and the current tab session",
-      "deletion": "Removed after completion, on invalid/expired state, or when the tab session ends"
-    },
-    {
       "key": "fireux-kitchen-claim:{appId}",
       "technology": "localStorage",
       "owner": "Kitchen extension",

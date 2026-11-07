@@ -6,6 +6,8 @@ Use the [Workspace and Entity map](concepts/family-workspace-entity.md) for
 current onboarding and the [Main App identity context](ai/identity-literature-context.md#ownership-boundaries)
 for FireUX's public home and Project Workspace entry. The notes below retain
 earlier route, storage and command assumptions as historical evidence.
+For current User setup, use [identity and App membership](concepts/entities.md#identity-plus-membership);
+the old User-creation and preferences descriptions below are not the current contract.
 
 ## Project onboarding boundary
 

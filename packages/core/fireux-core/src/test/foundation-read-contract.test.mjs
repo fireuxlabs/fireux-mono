@@ -1,3 +1,5 @@
+import { useDashboardProfiles } from '../runtime/composables/navigation/useDashboardProfiles.ts'
+import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,11 +7,11 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, unref } from 'vue'
 
+// App uses the server projection covered by app-native-auth-scope.test.mjs.
+// Ecosystem no longer has a separate Core reader.
 for (const [name, owner, database, collection] of [
-  ['App', 'app', undefined, 'apps'],
   ['AppUser', 'app', undefined, 'apps/app-a/users'],
   ['User', 'user', 'identity', 'users'],
-  ['Ecosystem', 'ecosystem', 'identity', 'ecosystems'],
 ]) {
   test(`${name}: reactive identity, database authority and read states`, () => {
     let calls = 0
@@ -23,12 +25,13 @@ for (const [name, owner, database, collection] of [
     const dependencies = {
       computed,
       unref,
+      readAppUserSubscription,
+      readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
       useAuth: () => ({
         uid: ref('viewer'),
         isAuthenticated: ref(true),
         hasAuthState: ref(true),
       }),
-      readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
       normalizeUser: (id, data) => ({ ...data, id }),
       readAppDocument: (data, id) => {
         assert.equal('id' in data, false)
@@ -64,7 +67,6 @@ for (const [name, owner, database, collection] of [
     const result = name === 'AppUser' ? factory(app, id) : factory(id)
     const data = result[name[0].toLowerCase() + name.slice(1)]
     assert.equal(data.value, undefined)
-    if (name === 'App') assert.equal(result.exists.value, undefined)
     id.value = ' first '
     assert.equal(target.value, 'first')
     assert.equal(unref(path), collection)
@@ -75,39 +77,14 @@ for (const [name, owner, database, collection] of [
     source.pending.value = false
     source.outcome.value = 'empty'
     assert.equal(data.value, null)
-    if (name === 'App') assert.equal(result.exists.value, false)
-    source.value = { id: 'first', name: 'Example' }
+    source.value = { id: 'first', name: 'Example', subscription: 'free' }
     source.outcome.value = 'ready'
     assert.equal(data.value.id, 'first')
-    if (name === 'App') {
-      assert.equal(result.exists.value, true)
-      source.value = { id: 'first' }
-      assert.equal(data.value, null)
-      assert.equal(result.outcome.value, 'empty')
-      assert.equal(
-        result.exists.value,
-        true,
-        'an invalid existing App must not trigger initialization'
-      )
-      source.value = { id: 'first', name: 'Example' }
-    }
     const failure = new Error('denied')
     source.error.value = failure
     source.outcome.value = 'error'
     assert.equal(result.error.value, failure)
     assert.equal(result.outcome.value, 'error')
-    if (name === 'App') {
-      assert.equal(
-        data.value,
-        undefined,
-        'failed reads must hide retained App data'
-      )
-      assert.equal(
-        result.exists.value,
-        undefined,
-        'failed reads must not trigger initialization'
-      )
-    }
     id.value = 'second'
     assert.equal(target.value, 'second')
     if (name === 'AppUser') {
@@ -138,7 +115,7 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
   const dependencies = {
     computed,
     useFireUXConfig: () => ({ appId: 'app' }),
-    useAuth: () => ({ uid, lastAccountProvisionError: ref(null) }),
+    useAuth: () => ({ uid }),
     useUserRead: (target) => {
       calls.push(['user', target])
       return identity
@@ -159,31 +136,38 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
     useUserSession: forbidden,
     useAppView: () => ({ toCard: (value) => value }),
     useUserView: () => ({ profile: (value) => value }),
-    useRuntimeConfig: () => ({ public: {} }),
-    useDashboardNav: () => ({
-      activeProfileEntries: ref([]),
-      availableProfileEntries: ref([]),
-    }),
+    useNav: () => ({ desktop: ref([]) }),
+    useDashboardProfiles,
     useWorkspaceEntryCta: () => ({
       workspaceActions: ref([]),
       hasWorkspaceEntry: ref(true),
       workspaceEntryHref: ref('/'),
     }),
-    USER_ECOSYSTEM_AVATAR_SRC: '/avatar.png',
-    readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
   }
-  const file = readFileSync(
-    new URL('../runtime/components/Dashboard/Overview.vue', import.meta.url),
-    'utf8'
+  function section(file, names) {
+    const source = readFileSync(
+      new URL(
+        '../runtime/components/Dashboard/Overview/' + file,
+        import.meta.url
+      ),
+      'utf8'
+    )
+      .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+      .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    return compileFunction(
+      stripTypeScriptTypes(source) + '; return ' + names,
+      Object.keys(dependencies)
+    )(...Object.values(dependencies))
+  }
+  const userState = section('User.vue', '{ accountOutcome, card, coreIsError }')
+  assert.deepEqual(
+    calls.map(([owner]) => owner),
+    ['user', 'account']
   )
-  const source = file
-    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
-    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-    .replaceAll('import.meta.dev', 'false')
-  const state = compileFunction(
-    `${stripTypeScriptTypes(source)}; return { appOutcome, membershipOutcome, accountOutcome, canManageApp, canOpenWorkspace }`,
-    Object.keys(dependencies)
-  )(...Object.values(dependencies))
+  const state = section(
+    'App.vue',
+    '{ appOutcome, membershipOutcome, canManageApp, canOpenWorkspace }'
+  )
   assert.deepEqual(
     calls.map(([owner]) => owner),
     ['user', 'account', 'app', 'membership']
@@ -192,7 +176,7 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
   assert.equal(calls[3][2], uid)
   assert.equal(state.appOutcome, app.outcome)
   assert.equal(state.membershipOutcome, membership.outcome)
-  assert.equal(state.accountOutcome, account.outcome)
+  assert.equal(userState.accountOutcome, account.outcome)
   assert.equal(state.canManageApp.value, true)
   membership.outcome.value = 'error'
   assert.equal(state.appOutcome.value, 'ready')
@@ -202,6 +186,10 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
   app.outcome.value = 'error'
   assert.equal(state.membershipOutcome.value, 'ready')
   assert.equal(state.canManageApp.value, false)
+  assert.equal(userState.card.value.id, 'person')
+  identity.outcome.value = 'error'
+  assert.equal(state.membershipOutcome.value, 'ready')
+  assert.equal(userState.coreIsError.value, true)
   app.outcome.value = 'ready'
   account.outcome.value = 'error'
   assert.equal(state.appOutcome.value, 'ready')

@@ -228,26 +228,9 @@
         :copy-payload="{ sample: true }"
       />
     </div>
-    <div v-else-if="name === 'FireDashboardOverviewEcosystem'">
-      <FireDashboardOverviewEcosystem
-        name="Example"
-        :profile-entries="[]"
-        :show-directory-action="false"
-      />
-    </div>
     <div v-else-if="name === 'FireDashboardOverviewApp'">
-      <FireDashboardOverviewApp
-        app-name="Example App"
-        app-outcome="ready"
-        :membership="null"
-        membership-outcome="empty"
-        :profile-entries="[]"
-        :can-open-workspace="false"
-        workspace-path="#preview"
-        workspace-label="Workspace"
-        workspace-icon="i-lucide-layout-dashboard"
-        :can-manage-app="false"
-      />
+      <p>Shows App details and access for your signed-in account.</p>
+      <UButton to="/dashboard" label="Open Dashboard" />
     </div>
     <div v-else-if="name === 'FireLegalBrowserStorage'">
       <FireLegalBrowserStorage />

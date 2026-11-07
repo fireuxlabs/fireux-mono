@@ -1,6 +1,9 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import {
-  UserAccountStorage, type CurrentUserAccountResponse, type UserAccount, } from '../../../../user/models/user-account.model.ts'
+  UserAccountStorage,
+  type CurrentUserAccountResponse,
+  type UserAccount,
+} from '../../../../user/models/user-account.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 
@@ -20,9 +23,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const response: CurrentUserAccountResponse = {
     ok: true,
-    account: snapshot.exists
-      ? ({ id: uid, ...(snapshot.data() || {}) } as UserAccount)
-      : null,
+    account: snapshot.exists ? (snapshot.data() as UserAccount) : null,
   }
   return response
 })

@@ -4,11 +4,11 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
-import { USER_MUTATION_TARGETS, serverUserAccountTarget } from '../mutation-targets'
 import {
-  UserAccountModel,
-  UserAccountStorage,
-} from '../../models/user-account.model.ts'
+  USER_MUTATION_TARGETS,
+  serverUserAccountTarget,
+} from '../mutation-targets'
+import { UserAccountStorage } from '../../models/user-account.model.ts'
 import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningResult,
@@ -109,7 +109,6 @@ export async function provisionUserAccount(
     }
     mutations.create(accounts, UserAccountStorage.document, {
       email: input.email,
-      preferences: { ...UserAccountModel.preferences },
       terms: input.termsVersion
         ? {
             version: input.termsVersion,

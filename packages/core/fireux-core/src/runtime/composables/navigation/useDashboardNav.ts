@@ -1,10 +1,10 @@
 import type { NavItem, NavPosition } from './types'
-import { computed } from 'vue'
 import { useMounted } from '@vueuse/core'
 import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useDeveloperAccess } from '../../app/composables/useDeveloperAccess'
 import { useWorkspaceEntryCta } from '../../workspace/composables/useWorkspaceEntryCta'
 import { useNav } from './useNav'
+import { useDashboardProfiles } from './useDashboardProfiles'
 
 const canShowDashboardItem = (
   item: NavItem,
@@ -57,43 +57,8 @@ export const useDashboardNav = () => {
     return item.key && topPriorityKeys.has(item.key) ? 'top' : 'bottom'
   }
 
-  const isProfileEntry = (item: NavItem) =>
-    item.group === 'profiles' && Boolean(item.profileId)
-
-  const isPreferredProfileEntry = (item: NavItem) =>
-    item.to.endsWith('/profile')
-
-  const profileEntries = computed(() => {
-    const byProfileId = new Map<string, NavItem>()
-
-    for (const item of nav.desktop.value) {
-      if (!isProfileEntry(item) || !item.profileId) continue
-
-      const current = byProfileId.get(item.profileId)
-      const itemPreferred = isPreferredProfileEntry(item)
-      const currentPreferred = current
-        ? isPreferredProfileEntry(current)
-        : false
-
-      if (
-        !current ||
-        (itemPreferred && !currentPreferred) ||
-        (itemPreferred === currentPreferred && item.order < current.order)
-      ) {
-        byProfileId.set(item.profileId, item)
-      }
-    }
-
-    return [...byProfileId.values()].sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order
-      return a.label.localeCompare(b.label)
-    })
-  })
-
-  // Profile records are owned by their profile Entities, not AppUser.
-  // Until those readers provide presence, every configured profile is available.
-  const activeProfileEntries = computed<NavItem[]>(() => [])
-  const availableProfileEntries = computed(() => profileEntries.value)
+  const { profileEntries, activeProfileEntries, availableProfileEntries } =
+    useDashboardProfiles(nav.desktop)
 
   return {
     ...nav,

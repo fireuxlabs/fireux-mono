@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-07
-Ref: 97a7c205e
+Ref: d0f981eac
 Role: living context
 Scope: repository-wide
 
@@ -273,6 +273,12 @@ surface over an Entity, not a storage owner. UI placement and navigation groups
 do not change data ownership.
 
 Business is an independent Workspace Entity owned by `fireux-businesses`; it replaces the former Company/Place role. Business may use Free, and optional capabilities retain their own domain owners. Place links do not own the Business lifecycle.
+
+User setup belongs to `runtime/user/composables/account/useUserSetup.ts`;
+`useAuth` owns the Firebase session and provider actions without constructing
+setup state. Setup derives missing identity, consent and App membership from
+current readers and writes only after an explicit action. Existing Users join
+another App without repeating current consent. See [identity and membership](../concepts/entities.md#identity-plus-membership).
 
 User is the person; AppUser is membership in one App. A tenant App remains an
 App role and uses the same Entity contracts. Every App declares its canonical

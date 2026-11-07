@@ -1,6 +1,3 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
-// Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: preserve explicit current legal acceptance across redirect auth.
-// Concurrent edit — 2026-07-21 14:32 CEST — Runtime warning repair: coordinate account provisioning across every useAuth consumer.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: keep browser-only VueFire auth binding out of server rendering and Nuxt payload state.
 import { useState } from '#imports'
 import { getApps } from 'firebase/app'
@@ -18,15 +15,6 @@ import {
 import { computed, markRaw, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
-import { useUserBootstrap } from '../../../user/composables/identity/useUserBootstrap'
-import {
-  clearPendingAccountConsent,
-  rememberPendingAccountConsent,
-} from './account-consent'
-import {
-  createAuthAccountProvisioner,
-  type AccountProvisionState,
-} from './auth-account-provisioning'
 import { signInWithGoogleAuth } from './google-auth-actions'
 
 let authStateUnsubscribe: (() => void) | null = null
@@ -67,15 +55,6 @@ export function useAuth() {
   const isReady = useState('fireux_auth_ready', () => false)
   const hasAuthState = useState('fireux_auth_has_auth_state', () => false)
   const lastBindError = useState<unknown>('fireux_auth_bind_error', () => null)
-  const lastAccountProvisionError = useState<unknown>(
-    'fireux_auth_account_provision_error',
-    () => null
-  )
-  const accountProvisionState = useState<AccountProvisionState>(
-    'fireux_auth_account_provision_state',
-    () => ({ uid: null, status: 'idle', generation: 0 })
-  )
-
   const armAuthStateResolution = () => {
     if (!import.meta.client) return
     if (hasAuthState.value) return
@@ -186,32 +165,7 @@ export function useAuth() {
       : 'NOT_AUTHENTICATED'
   )
 
-  // Account and canonical User provisioning is an explicit onboarding action.
-  // Auth establishes the Firebase identity only; it must not turn a routine
-  // sign-in into a hidden Firestore or Storage mutation.
-  // IMPORTANT: composables like `useRouter()` / `useNuxtApp()` must be called
-  // while a component instance exists (i.e. during setup). We create the
-  // user-create composable once here, then call its methods later.
-  const userCreate = import.meta.client ? useUserBootstrap(currentUser) : null
-
-  const {
-    retry: retryProvisioning,
-    reset: resetAccountProvisioning,
-    creating,
-  } = createAuthAccountProvisioner({
-    currentUser,
-    isReady,
-    state: accountProvisionState,
-    lastError: lastAccountProvisionError,
-    userCreate,
-  })
-
-  const retryAccountProvisioning = async (termsVersion?: string) => {
-    if (termsVersion) rememberPendingAccountConsent(termsVersion)
-    return await retryProvisioning()
-  }
-
-  async function ensureSignedInUser(user: User | null, _termsVersion?: string) {
+  async function ensureSignedInUser(user: User | null) {
     if (!user?.uid) return user
     currentUser.value = user
     return user
@@ -220,12 +174,10 @@ export function useAuth() {
   // ─────────────────────────────────────────────
   // Auth actions (no-op safely until ready)
   // ─────────────────────────────────────────────
-  const signInWithGoogle = (termsVersion?: string) =>
-    signInWithGoogleAuth(auth, termsVersion, ensureSignedInUser)
+  const signInWithGoogle = () => signInWithGoogleAuth(auth, ensureSignedInUser)
 
   const signInWithEmailPassword = async (email: string, password: string) => {
     if (!auth.value) return null
-    clearPendingAccountConsent()
     const result = await signInWithEmailAndPassword(
       auth.value,
       email,
@@ -240,14 +192,12 @@ export function useAuth() {
     displayName?: string
   ) => {
     if (!auth.value) return null
-    clearPendingAccountConsent()
     const result = await createUserWithEmailAndPassword(
       auth.value,
       email,
       password
     ).catch(() => null)
     if (!result?.user) {
-      clearPendingAccountConsent()
       return null
     }
     const normalizedDisplayName = String(displayName || '').trim()
@@ -265,10 +215,7 @@ export function useAuth() {
       auth.value || (getApps().length ? getAuth() : null)
 
     // Always clear shared state so every auth consumer reacts immediately.
-    const signedOutUid = currentUser.value?.uid ?? null
-    resetAccountProvisioning(signedOutUid)
     currentUser.value = null
-    clearPendingAccountConsent()
 
     if (!authInstance) {
       await router?.replace(redirectTo).catch(() => {})
@@ -300,18 +247,15 @@ export function useAuth() {
     isAuthenticated,
     hasIdentity,
     authState,
-    creating,
 
     // readiness
     isReady,
     hasAuthState,
     lastBindError,
-    lastAccountProvisionError,
 
     signInWithGoogle,
     signInWithEmailPassword,
     signUpWithEmailPassword,
-    retryAccountProvisioning,
     signOutUser,
   }
 }
