@@ -1,4 +1,4 @@
-import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
+import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
 
 const observedAt = '2026-08-28'
 const geography = 'Switzerland'
@@ -166,9 +166,7 @@ export const demandObservations = [
     language: 'All languages',
     observed_at: observedAt,
     period: 'Past five years',
-    metrics: [
-      { label: 'Relative average interest', value: Number(interest) },
-    ],
+    metrics: [{ label: 'Relative average interest', value: Number(interest) }],
     note: 'Relative only within this five-query comparison; this is not monthly search volume.',
     source_url:
       'https://trends.google.com/trends/explore?date=today%205-y&q=app%20project%20management%20software,app%20development%20project%20management,SaaS%20app%20development%20platform,no%20code%20app%20builder,app%20development%20software',

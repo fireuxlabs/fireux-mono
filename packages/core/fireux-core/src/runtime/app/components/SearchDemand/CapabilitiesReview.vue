@@ -411,7 +411,7 @@ import type {
   AppSearchDemand,
   SearchDemandCapability,
   ResearchCapabilityAssessment,
-} from '../../../../config/app/search-demand'
+} from '../../models/search-demand'
 const props = defineProps<{ demand: AppSearchDemand }>()
 const view = ref('summary')
 const search = ref('')

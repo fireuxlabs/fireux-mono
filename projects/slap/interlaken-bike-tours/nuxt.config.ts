@@ -20,18 +20,6 @@ const fireux = defineFireuxApp({
     'business.team': { free: 1, pro: 5, business: 50 },
   },
   contactEmail: 'info@interlakenbiketours.com',
-  theme: {
-    palette: {
-      canvas: '#f5f5f1',
-      surface: '#e9eceb',
-      canvas_inverted: '#07162d',
-      text: '#101d31',
-      text_muted: '#687382',
-      ink: '#07162d',
-      accent: '#10d4dd',
-      accent_contrast: '#07162d',
-    },
-  },
   seo: {
     siteUrl: searchPlan.origin,
     disallowPaths: searchPlan.mode === 'public' ? [] : ['/'],

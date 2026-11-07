@@ -1,4 +1,4 @@
-import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
+import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
 
 export const demandTools = {
   summary:

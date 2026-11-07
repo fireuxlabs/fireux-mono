@@ -60,6 +60,7 @@ export function configureFireuxEcosystemModule(
 
   const nitro = ((nuxt.options as any).nitro ||= {}) as Record<string, any>
   const firebase = (nitro.firebase ||= {}) as Record<string, any>
+  firebase.region = ssrRegion
   const httpsOptions = (firebase.httpsOptions ||= {}) as Record<string, any>
   httpsOptions.region = ssrRegion
   if (serviceAccount) {

@@ -1,5 +1,5 @@
 // Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
-import type { ResearchCapabilityAssessment } from 'fireux-core/config/app/search-demand'
+import type { ResearchCapabilityAssessment } from 'fireux-core/runtime/app/models/search-demand'
 
 export const capabilityAssessments: Record<
   string,

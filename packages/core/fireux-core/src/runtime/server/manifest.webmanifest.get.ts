@@ -1,3 +1,5 @@
+import { useAppConfig } from '#imports'
+import { resolveAppTheme } from '../utils/app-theme'
 import { defineEventHandler, getQuery, getRequestURL, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../utils/brandAssets'
@@ -24,18 +26,6 @@ function readStartUrl(value: unknown): string {
   }
 }
 
-function readPaletteColor(
-  fireux: Record<string, unknown>,
-  role: 'accent' | 'canvas'
-): string | undefined {
-  const theme = fireux.theme
-  if (!theme || typeof theme !== 'object' || Array.isArray(theme)) return
-  const palette = (theme as Record<string, unknown>).palette
-  if (!palette || typeof palette !== 'object' || Array.isArray(palette)) return
-  const value = (palette as Record<string, unknown>)[role]
-  return typeof value === 'string' && value.trim() ? value.trim() : undefined
-}
-
 export default defineEventHandler((event) => {
   const query = getQuery(event)
   let startUrl = readStartUrl(query.start_url)
@@ -51,7 +41,10 @@ export default defineEventHandler((event) => {
   const workspaceConfig = fireux.workspaceConfig as
     | Record<string, { origin?: string }>
     | undefined
-  const requestOrigin = getRequestURL(event, { xForwardedHost: true, xForwardedProto: true }).origin
+  const requestOrigin = getRequestURL(event, {
+    xForwardedHost: true,
+    xForwardedProto: true,
+  }).origin
   const workspaceSurface =
     query.surface === 'workspace' &&
     enabledFamilies.some((family) => {
@@ -79,9 +72,9 @@ export default defineEventHandler((event) => {
       seo.defaultDescription.trim()) ||
     (typeof pub.appDescription === 'string' && pub.appDescription.trim()) ||
     'FireUX application'
-  const themeColor = readPaletteColor(fireux, 'accent') || DEFAULT_THEME
-  const backgroundColor =
-    readPaletteColor(fireux, 'canvas') || DEFAULT_BACKGROUND
+  const theme = resolveAppTheme(useAppConfig(event).theme)
+  const themeColor = theme?.palette.accent || DEFAULT_THEME
+  const backgroundColor = theme?.palette.canvas || DEFAULT_BACKGROUND
 
   const appConfig = runtimeConfig.app
   const buildId =

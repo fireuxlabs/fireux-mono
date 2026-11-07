@@ -9,18 +9,6 @@ const app: FireuxAppConfig = {
     'Friiites presents a Swiss-developed fries concept centred on hand-cut, brined potatoes triple-fried in beef tallow. Brand storytelling and confirmed menu availability remain separate.',
   name: 'Friiites',
   shortName: 'Friiites',
-  theme: {
-    palette: {
-      canvas: '#181817',
-      surface: '#242321',
-      canvas_inverted: '#f3e9d2',
-      text: '#f3e9d2',
-      text_muted: '#bdb6a5',
-      ink: '#181817',
-      accent: '#d99a22',
-      accent_contrast: '#181817',
-    },
-  },
   role: 'tenant',
   seo: {
     siteUrl: 'https://friiites.web.app',

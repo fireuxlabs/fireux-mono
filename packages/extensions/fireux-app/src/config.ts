@@ -7,7 +7,6 @@ import { setRuntime } from 'fireux-core/config/app/runtime'
 import { configViteWorkspace } from 'fireux-core/config/app/vite'
 import { createAppDatabaseRuntimeModule } from 'fireux-core/config/app/database'
 import { optEnv, reqEnv } from 'fireux-core/config/app/env'
-import { defaultNitroFirebaseRegion } from 'fireux-core/config/app/firebase-region'
 import { toValidJsIdentifier } from 'fireux-core/config/app/identifier'
 import {
   loadFireuxAppMetaContent,
@@ -41,6 +40,7 @@ export type { FireuxAppConfig } from 'fireux-core/config/app/types'
 
 const resolveDependency = createRequire(import.meta.url).resolve
 
+/** Assemble an App from Core defaults and its explicitly selected capabilities. */
 export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
   const app = { ...input, modules: withDefaultAppModules(input.modules) }
   validateFireuxAppConfig(app)
@@ -113,7 +113,6 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
       subscriptionCapacity: app.subscriptionCapacity || {},
       domains: app.domains || [],
       profiles: app.profiles || [],
-      ...(app.theme ? { theme: app.theme } : {}),
     },
 
     firebaseApp: {
@@ -132,16 +131,11 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
     id: app.id,
     name: app.name,
     shortName: app.shortName,
-    themeColor: app.theme?.palette.accent || '#000000',
-    backgroundColor: app.theme?.palette.canvas || '#000000',
     lang: 'en',
   })
 
   configNitroFirebase(nuxt, {
     serverFunctionName: toValidJsIdentifier(app.id),
-    region:
-      process.env.NITRO_FIREBASE_REGION ||
-      defaultNitroFirebaseRegion(app.ecosystem),
     secrets: app.firebaseSecrets,
   })
 

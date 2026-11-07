@@ -1,6 +1,6 @@
 import { supplierResearch } from './search-demand/supplier'
 import { kitchenReconciliation } from './search-demand/reconciliation'
-import { defineAppSearchDemand } from 'fireux-core/config/app/search-demand'
+import { defineAppSearchDemand } from 'fireux-core/runtime/app/utils/search-demand'
 import { demandAnalysis } from './search-demand/analysis'
 import { capabilities } from './search-demand/capabilities'
 import {

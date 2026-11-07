@@ -1,5 +1,3 @@
-// FILE: packages/core/fireux-core/config/app/runtime.ts
-import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig, FireuxSeoResolved } from './seo'
 import type { FireuxMetaContent } from './meta-content'
 import type {
@@ -8,7 +6,11 @@ import type {
   FireuxAppSubscriptionCapacity,
 } from './types'
 
+// Build-only inputs never form part of the public App runtime contract.
 type RuntimeNormalizedFields =
+  | 'context'
+  | 'authEnabled'
+  | 'firebaseSecrets'
   | 'extends'
   | 'databaseId'
   | 'modules'
@@ -71,51 +73,50 @@ export type RuntimeShape = {
   private?: Partial<RuntimePrivate>
 }
 
-// Supports BOTH:
-// - NuxtConfig object (nuxt.config.ts time)  -> nuxt.runtimeConfig
-// - Nuxt instance (module setup time)        -> nuxt.options.runtimeConfig
-function ensure(nuxt: any) {
-  const root = (nuxt?.options ?? nuxt) as any
-  const runtime = (root.runtimeConfig ||= {} as any)
-  const pub = (runtime.public ||= {} as any)
-  return { runtime, pub }
+// Accept only the configuration surface this writer needs, not Nuxt's full schema.
+type RuntimeTarget = {
+  runtimeConfig?: object
+  options?: { runtimeConfig?: object }
 }
 
-export function setRuntime(nuxt: NuxtConfig | any, s: RuntimeShape) {
-  const { runtime, pub } = ensure(nuxt)
+type RuntimeValues = {
+  public?: {
+    fireux?: Partial<RuntimeApp>
+    firebaseEcosystem?: Partial<RuntimeFirebaseEcosystem>
+    firebaseApp?: Partial<RuntimeFirebaseApp>
+  }
+  fireux?: Partial<RuntimePrivate>
+}
 
-  if (s.app) pub.fireux = { ...(pub.fireux || {}), ...s.app }
-  if (s.firebaseEcosystem)
-    pub.firebaseEcosystem = {
-      ...(pub.firebaseEcosystem || {}),
-      ...s.firebaseEcosystem,
+/** Config-time builders and module setup share the same runtime projection. */
+function ensureRuntime(target: RuntimeTarget) {
+  const config = target.options ?? target
+  const runtime = (config.runtimeConfig ||= {}) as RuntimeValues
+  const publicRuntime = (runtime.public ||= {})
+  return { runtime, publicRuntime }
+}
+
+export function setRuntime(target: RuntimeTarget, values: RuntimeShape) {
+  const { runtime, publicRuntime } = ensureRuntime(target)
+
+  if (values.app)
+    publicRuntime.fireux = { ...publicRuntime.fireux, ...values.app }
+  if (values.firebaseEcosystem)
+    publicRuntime.firebaseEcosystem = {
+      ...publicRuntime.firebaseEcosystem,
+      ...values.firebaseEcosystem,
     }
-  if (s.firebaseApp)
-    pub.firebaseApp = { ...(pub.firebaseApp || {}), ...s.firebaseApp }
-  if (s.private) runtime.fireux = { ...(runtime.fireux || {}), ...s.private }
-}
-
-export function setRuntimeApp(nuxt: NuxtConfig | any, c: Partial<RuntimeApp>) {
-  setRuntime(nuxt, { app: c })
+  if (values.firebaseApp)
+    publicRuntime.firebaseApp = {
+      ...publicRuntime.firebaseApp,
+      ...values.firebaseApp,
+    }
+  if (values.private) runtime.fireux = { ...runtime.fireux, ...values.private }
 }
 
 export function setRuntimeFirebaseEcosystem(
-  nuxt: NuxtConfig | any,
-  c: Partial<RuntimeFirebaseEcosystem>
+  target: RuntimeTarget,
+  config: Partial<RuntimeFirebaseEcosystem>
 ) {
-  setRuntime(nuxt, { firebaseEcosystem: c })
-}
-
-export function setRuntimeFirebaseApp(
-  nuxt: NuxtConfig | any,
-  c: Partial<RuntimeFirebaseApp>
-) {
-  setRuntime(nuxt, { firebaseApp: c })
-}
-
-export function setRuntimePrivate(
-  nuxt: NuxtConfig | any,
-  c: Partial<RuntimePrivate>
-) {
-  setRuntime(nuxt, { private: c })
+  setRuntime(target, { firebaseEcosystem: config })
 }

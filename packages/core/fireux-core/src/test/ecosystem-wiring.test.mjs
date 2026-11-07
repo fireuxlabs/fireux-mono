@@ -247,3 +247,65 @@ test('An ecosystem with bindings and assets alone does not require a page layer'
     { dir: '/ecosystem/src/runtime/public' },
   ])
 })
+
+test('each ecosystem owns both Firebase region fields and missing region is rejected', () => {
+  const configure = load(
+    resolve(
+      root,
+      'packages/core/fireux-core/src/config/module/ecosystem-wiring.ts'
+    ),
+    {
+      existsSync: () => false,
+      setRuntimeFirebaseEcosystem: () => {},
+      configurePages: () => {},
+      registerLayoutComponents: () => {},
+      registerComposablesDir: () => {},
+    },
+    'configureFireuxEcosystemModule'
+  )
+  const resolver = { resolve: (path) => path }
+  for (const name of readdirSync(resolve(root, 'packages/ecosystem'))) {
+    const file = resolve(
+      root,
+      'packages/ecosystem',
+      name,
+      'src/config/firebase/ecosystem.config.ts'
+    )
+    if (!existsSync(file)) continue
+    const ecosystem = load(file, {}, 'ecosystemConfig')
+    const nuxt = {
+      options: {
+        nitro: {
+          firebase: {
+            region: 'obsolete',
+            httpsOptions: {
+              region: 'obsolete',
+              maxInstances: 20,
+              secrets: ['EXAMPLE'],
+            },
+          },
+        },
+      },
+    }
+    configure(resolver, nuxt, { ecosystem })
+    assert.equal(nuxt.options.nitro.firebase.region, ecosystem.ssr.region, name)
+    assert.equal(
+      nuxt.options.nitro.firebase.httpsOptions.region,
+      ecosystem.ssr.region,
+      name
+    )
+    assert.equal(nuxt.options.nitro.firebase.httpsOptions.maxInstances, 20)
+    assert.deepEqual(nuxt.options.nitro.firebase.httpsOptions.secrets, [
+      'EXAMPLE',
+    ])
+  }
+  assert.throws(
+    () =>
+      configure(
+        resolver,
+        { options: {} },
+        { ecosystem: { ssr: { region: '' } } }
+      ),
+    /ssr.region must be a non-empty region/
+  )
+})

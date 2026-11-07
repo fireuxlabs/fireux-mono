@@ -183,6 +183,8 @@ test('Core manifest uses the App description and versioned brand assets', () => 
     'handler',
     {
       defineEventHandler: (value) => value,
+      useAppConfig: () => ({}),
+      resolveAppTheme: (value) => value,
       getQuery: () => ({}),
       getRequestURL: () => new URL('https://bike.example'),
       setHeader: () => {},
@@ -214,7 +216,7 @@ test('Firebase Hosting receives Core robots policy without invoking the reserved
     process: { env: { NODE_ENV: 'production' } },
   })
   const config = { nitro: { prerender: { routes: ['/existing'] } } }
-  configure(config, { serverFunctionName: 'bikeTours', region: 'europe-west1' })
+  configure(config, { serverFunctionName: 'bikeTours' })
   assert.deepEqual(config.nitro.prerender.routes, ['/existing', '/robots.txt'])
   assert.equal(config.nitro.prerender.failOnError, true)
 

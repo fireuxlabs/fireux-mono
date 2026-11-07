@@ -1,4 +1,4 @@
-import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
+import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
 import { demandFamilies } from './analysis'
 
 const observedAt = '2026-08-22'

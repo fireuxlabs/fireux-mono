@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import { loadAppSearchDemand } from '../../../../config/app/search-demand'
+import { loadAppSearchDemand } from '../../../app/server/research/load-search-demand'
 
 export default defineEventHandler((event) => {
   setResponseHeaders(event, {

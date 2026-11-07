@@ -81,6 +81,16 @@
         </p>
       </UPageSection>
 
+      <UPageSection title="Presentation">
+        <p>
+          Keep Nuxt UI settings, navigation and your optional semantic
+          <code>theme</code> palette and typography in
+          <code>app/app.config.ts</code>. Core uses that same theme for the
+          browser theme colour and PWA manifest. Keep it out of
+          <code>nuxt.config.ts</code>.
+        </p>
+      </UPageSection>
+
       <UPageSection title="Framework basics">
         <p>
           <ULink to="https://nuxt.com/docs/4.x/guide/going-further/layers">

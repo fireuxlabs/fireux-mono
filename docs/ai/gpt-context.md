@@ -49,6 +49,9 @@ independently and never imports either bundle or a product package.
 AI is available through the App bundle; execution remains explicitly enabled
 by the consuming feature and its provider configuration.
 
+Each ecosystem owns Firebase SSR region and execution identity in its `ssr`
+configuration. Core applies those values without a named-ecosystem region map.
+
 The App bundle owns default module and native-layer registration. Concrete Apps
 declare their selected bundle and the packages they import or configure directly.
 Named Ecosystem packages still own their bindings and domain composition; they
@@ -180,6 +183,10 @@ component setup and dock-only code are excluded from production execution.
 Nuxt UI owns its component API, accessibility behavior and theming API.
 FireUX Core adds only proved shared visual or interaction responsibilities;
 domains keep their business meaning and Apps keep deliberate product framing.
+App-authored palette and typography live in `app/app.config.ts` under `theme`,
+alongside native Nuxt UI and navigation settings. Core head and manifest consumers
+read that source through `useAppConfig`; assembly/runtime FireUX config carries
+no theme copy. Stored Workspace and domain themes retain their own owners.
 Use native Nuxt colour-mode state and persistence; do not add a parallel
 preference store, media listener or root-class observer. Appearance preference
 is stored automatically, initially following the device; other storage triggers
@@ -337,6 +344,12 @@ Existing access and resource-usage policies still apply; this is not unlimited
 provider usage or an automatic grant of editing authority. See
 [product language](../concepts/product-language.md) and the routed product
 contexts.
+
+Core App research uses `runtime/app/models/search-demand.ts` for its data
+contract, `runtime/app/utils/search-demand.ts` for pure reference validation and
+`runtime/app/server/research/load-search-demand.ts` for server-only file loading.
+Apps own the research records; FireUX AI owns the reusable method. Research data
+is not Nuxt assembly configuration or runtime capability authority.
 
 ## Working and verification rules
 

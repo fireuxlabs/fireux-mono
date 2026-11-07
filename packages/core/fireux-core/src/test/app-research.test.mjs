@@ -1,5 +1,14 @@
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync } from 'node:fs'
+import {
+  existsSync,
+  readFileSync,
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  rmSync,
+} from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { createRequire } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { fileURLToPath } from 'node:url'
@@ -23,7 +32,10 @@ const load = createJiti(import.meta.url, {
 })
 const { defineAppSearchDemand } = load(
   fileURLToPath(
-    new URL('packages/core/fireux-core/src/config/app/search-demand.ts', root)
+    new URL(
+      'packages/core/fireux-core/src/runtime/app/utils/search-demand.ts',
+      root
+    )
   )
 )
 const { searchDemand: misebox } = load(
@@ -590,4 +602,36 @@ test('website ordering maps reused configuration to existing capability owners w
     )
   )
   assert.ok(html.includes('Live proof pending'))
+})
+
+test('server-only research loader handles absent, valid and invalid App exports', () => {
+  const { loadAppSearchDemand } = load(
+    fileURLToPath(
+      new URL(
+        'packages/core/fireux-core/src/runtime/app/server/research/load-search-demand.ts',
+        root
+      )
+    )
+  )
+  const folder = mkdtempSync(join(tmpdir(), 'fireux-research-loader-'))
+  try {
+    assert.equal(loadAppSearchDemand(folder), null)
+    for (const [name, source] of [
+      ['valid', 'export const searchDemand = { domain: "Fixture" }'],
+      ['invalid', 'export const other = {}'],
+    ]) {
+      const app = join(folder, name)
+      mkdirSync(join(app, 'app'), { recursive: true })
+      writeFileSync(join(app, 'app/search-demand.ts'), source)
+      if (name === 'valid')
+        assert.equal(loadAppSearchDemand(app).domain, 'Fixture')
+      else
+        assert.throws(
+          () => loadAppSearchDemand(app),
+          /must export searchDemand/
+        )
+    }
+  } finally {
+    rmSync(folder, { recursive: true, force: true })
+  }
 })

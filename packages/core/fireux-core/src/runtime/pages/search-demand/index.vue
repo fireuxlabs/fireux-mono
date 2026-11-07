@@ -177,7 +177,7 @@ import { useAppResearchScope } from '../../app/composables/search-demand/useAppR
 import type {
   AppSearchDemand,
   SearchDemandObservation,
-} from '../../../config/app/search-demand'
+} from '../../app/models/search-demand'
 
 type SearchDemandResponse = {
   ok: true

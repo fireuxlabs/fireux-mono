@@ -97,7 +97,7 @@ App-owned `app/search-demand.ts` records the market-level evidence, analysis,
 Tool hypotheses, and capability decisions for that App domain. A domain package
 keeps deeper capability research beside the capability owner. Core renders the
 shared stages but does not decide an App's Tools or capabilities. The shared
-contract in `packages/core/fireux-core/src/config/app/search-demand.ts` also
+contract in `packages/core/fireux-core/src/runtime/app/models/search-demand.ts` also
 supports official statistics, surveys, interviews, discussions, regulatory and
 operational guidance, product documentation and operator cases. Direct observations carry findings and
 limitations, with stable IDs for cluster and assessment references. Capability

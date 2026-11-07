@@ -146,7 +146,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ResearchDeliveryBrief } from '../../../../config/app/search-demand'
+import type { ResearchDeliveryBrief } from '../../models/search-demand'
 const props = defineProps<{ brief: ResearchDeliveryBrief; workspace: string }>()
 const sourcePaths = computed(() => [
   ...new Set(

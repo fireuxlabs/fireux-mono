@@ -102,7 +102,7 @@ import { useAppResearchScope } from '../../app/composables/search-demand/useAppR
 import type {
   AppSearchDemand,
   SearchDemandToolHypothesis,
-} from '../../../config/app/search-demand'
+} from '../../app/models/search-demand'
 
 type SearchDemandResponse = { ok: true; demand: AppSearchDemand | null }
 

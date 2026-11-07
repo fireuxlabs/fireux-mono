@@ -1,5 +1,5 @@
 // Current source references identify the rebuilt ordering boundary; provider payment and dispatch remain separate.
-import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
+import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
 
 export const kitchenReconciliation = {
   first_journey: {
@@ -158,7 +158,7 @@ export const kitchenReconciliation = {
     checks: [
       'packages/extensions/fireux-kitchens/src/test/menu-publication.test.mjs',
       'packages/extensions/fireux-kitchens/src/test/menu-publication-client.test.mjs',
-      'packages/extensions/fireux-kitchens/src/test/kitchen/ordering-setup.test.mjs',
+      'packages/extensions/fireux-kitchens/src/test/kitchen/service-setup.test.mjs',
       'packages/extensions/fireux-kitchens/src/test/kitchen/order-submission.test.mjs',
     ],
   },

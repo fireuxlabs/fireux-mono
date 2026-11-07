@@ -1,6 +1,7 @@
 import { toValue, type MaybeRefOrGetter } from 'vue'
-import { useHead, useRoute, useRuntimeConfig } from '#imports'
+import { useAppConfig, useHead, useRoute, useRuntimeConfig } from '#imports'
 import { resolveSeoRobots } from '../../../utils/seoIndexing'
+import { resolveAppTheme } from '../../utils/app-theme'
 import { withBuildVersion } from '../../utils/build-version-url'
 
 /** Shared App head policy; optional capabilities supply their manifest path. */
@@ -9,13 +10,20 @@ export function useAppHead(
 ) {
   const runtimeConfig = useRuntimeConfig()
   const route = useRoute()
+  const appConfig = useAppConfig()
   useHead(() => ({
-    meta: resolveSeoRobots({
-      path: route.path,
-      ...runtimeConfig.public.fireux.seo,
-    }).includes('noindex')
-      ? [{ name: 'robots', content: 'noindex, nofollow' }]
-      : [],
+    meta: [
+      {
+        name: 'theme-color',
+        content: resolveAppTheme(appConfig.theme)?.palette.accent || '#000000',
+      },
+      ...(resolveSeoRobots({
+        path: route.path,
+        ...runtimeConfig.public.fireux.seo,
+      }).includes('noindex')
+        ? [{ name: 'robots', content: 'noindex, nofollow' }]
+        : []),
+    ],
     link: [
       {
         key: 'fireux-manifest',

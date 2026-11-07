@@ -1,7 +1,6 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from './meta-content'
-import type { AppTheme } from '../../types/theme'
 import type { AppRole } from '../../runtime/app/models/app.model'
 
 export type FireuxWorkspaceFamilyConfig = {
@@ -25,6 +24,7 @@ export type FireuxAppSubscriptionCapacity = Record<
   FireuxAppSubscriptionCapacityLimit
 >
 
+/** Authored App assembly input; public presentation lives in app.config.ts. */
 export type FireuxAppConfig = {
   /** Ecosystem package/Firebase binding key. This is infrastructure, not an entity relationship. */
   ecosystem: string
@@ -39,8 +39,6 @@ export type FireuxAppConfig = {
   context?: string
   /** Public Home navigation destination. Native index routes own initial arrival. Defaults to `/`. */
   homePath?: `/${string}`
-  /** Complete semantic palette confirmed during App onboarding. */
-  theme?: AppTheme
   /** Optional app-owned Firestore database id. Standalone apps should set this. */
   databaseId?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
@@ -48,7 +46,7 @@ export type FireuxAppConfig = {
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
   role: AppRole
-  /** Extra package capabilities or custom options for the default Blog and Products modules. */
+  /** Extra capabilities or custom options for the default Blogs, Products and AI modules. */
   modules?: NonNullable<NuxtConfig['modules']>
   /** Native Nuxt layers, in App-owned priority order. */
   extends?: NuxtConfig['extends']

@@ -23,7 +23,10 @@ into model requests. Consumers must select and supply the relevant runtime
 context. The current consumer is a public context page and JSON endpoint;
 automated browsing, research generation and saving are separate execution work.
 
-Core owns the research data contract and shared review pages. Each App owns its
+Core owns the research data contract, pure reference validator, server-only
+App-file loader and shared review pages. Research is an App runtime feature, not
+Nuxt assembly configuration. The model and validator import no filesystem or
+TypeScript loader. Each App owns its
 industry scope, source observations, interpretations and capability decisions.
 Capability definitions describe target purpose, managed and referenced information,
 bounded tool designs and responsibility boundaries, with a separate possible
@@ -59,7 +62,9 @@ Published context and proposed capabilities grant no execution permission.
 
 ## Current source and proving examples
 
-- [Research contract and reference validation](../../../../../packages/core/fireux-core/src/config/app/search-demand.ts)
+- [Research data contract](../../../../../packages/core/fireux-core/src/runtime/app/models/search-demand.ts)
+- [Reference validation](../../../../../packages/core/fireux-core/src/runtime/app/utils/search-demand.ts)
+- [Server-only App-file loader](../../../../../packages/core/fireux-core/src/runtime/app/server/research/load-search-demand.ts)
 - [Shared research pages](../../../../../packages/core/fireux-core/src/runtime/pages/search-demand)
 - [Project research](../../../../../projects/fireux/fireux-app/app/search-demand.ts)
 - [Kitchen research](../../../../../projects/misebox/misebox-app/app/search-demand.ts)
@@ -82,7 +87,6 @@ Use the source-owned [research tests](../../../../../packages/core/fireux-core/s
 and [context tests](../../src/test/research-context.test.mjs), plus appropriate
 consumer typechecks and a visual check when the public presentation changes.
 Do not make live model requests merely to verify static context.
-
 
 ## App context preparation
 

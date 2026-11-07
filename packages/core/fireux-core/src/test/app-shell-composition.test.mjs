@@ -277,18 +277,21 @@ test('actual App head retains one reactive registration across normal and Worksp
   const route = reactive({ path: '/' })
   const manifest = ref('/manifest.webmanifest')
   const registrations = []
+  const appConfig = reactive({ theme: { palette: { accent: '#123456' } } })
   const { useAppHead } = loadScript(
     readFileSync(join(runtime, 'app/composables/useAppHead.ts'), 'utf8'),
     {
       vue,
       '#imports': {
         useRoute: () => route,
+        useAppConfig: () => appConfig,
         useRuntimeConfig: () => ({
           app: { buildId: 'test-build' },
           public: { fireux: { seo: {} } },
         }),
         useHead: (callback) => registrations.push(callback),
       },
+      '../../utils/app-theme': { resolveAppTheme: (value) => value },
       '../../../utils/seoIndexing': {
         resolveSeoRobots: ({ path }) =>
           path.startsWith('/workspace') ? 'noindex' : 'index',
@@ -301,7 +304,9 @@ test('actual App head retains one reactive registration across normal and Worksp
   )
   useAppHead(manifest)
   assert.equal(registrations.length, 1)
-  assert.deepEqual(registrations[0]().meta, [])
+  assert.deepEqual(registrations[0]().meta, [
+    { name: 'theme-color', content: '#123456' },
+  ])
   assert.equal(
     registrations[0]().link[0].href,
     '/manifest.webmanifest?v=test-build'
@@ -310,6 +315,7 @@ test('actual App head retains one reactive registration across normal and Worksp
   manifest.value =
     '/manifest.webmanifest?surface=workspace&start_url=%2Fworkspace%2Fproject'
   assert.deepEqual(registrations[0]().meta, [
+    { name: 'theme-color', content: '#123456' },
     { name: 'robots', content: 'noindex, nofollow' },
   ])
   assert.match(
@@ -318,10 +324,58 @@ test('actual App head retains one reactive registration across normal and Worksp
   )
   route.path = '/docs'
   manifest.value = '/manifest.webmanifest'
-  assert.deepEqual(registrations[0]().meta, [])
+  assert.deepEqual(registrations[0]().meta, [
+    { name: 'theme-color', content: '#123456' },
+  ])
   assert.equal(
     registrations[0]().link[0].href,
     '/manifest.webmanifest?v=test-build'
   )
+  appConfig.theme.palette.accent = '#abcdef'
+  assert.equal(registrations[0]().meta[0].content, '#abcdef')
   assert.equal(registrations.length, 1)
+})
+
+test('App theme validates the same complete palette and typography contract', () => {
+  const types = loadScript(
+    readFileSync(
+      join(repo, 'packages/core/fireux-core/src/types/theme.ts'),
+      'utf8'
+    ),
+    {}
+  )
+  const { resolveAppTheme } = loadScript(
+    readFileSync(join(runtime, 'utils/app-theme.ts'), 'utf8'),
+    { '../../types/theme': types }
+  )
+  const theme = {
+    palette: Object.fromEntries(
+      types.APP_PALETTE_KEYS.map((key) => [key, '#123456'])
+    ),
+  }
+  assert.equal(resolveAppTheme(undefined), undefined)
+  assert.equal(resolveAppTheme(theme), theme)
+  assert.throws(() => resolveAppTheme(null), /must be an object/)
+  assert.throws(
+    () => resolveAppTheme({ palette: { accent: '#123456' } }),
+    /exactly eight/
+  )
+  assert.throws(
+    () => resolveAppTheme({ palette: { ...theme.palette, accent: 'red' } }),
+    /exactly eight/
+  )
+  assert.throws(
+    () =>
+      resolveAppTheme({
+        ...theme,
+        typography: { display_family: '', body_family: 'Arial' },
+      }),
+    /typography/
+  )
+  assert.ok(
+    resolveAppTheme({
+      ...theme,
+      typography: { display_family: 'Arial', body_family: 'Arial' },
+    })
+  )
 })

@@ -18,10 +18,6 @@ export type FireUXConfig = Omit<
   appName: string
   appShortName: string
 
-  primaryColor?: string
-  neutralColor?: string
-  secondaryColor?: string
-
   isTenant: boolean
   isGlobal: boolean
   isStandalone: boolean
@@ -155,7 +151,8 @@ function reqRole(src: AnyRecord): AppRole {
   return role
 }
 
-function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
+/** Validated public App identity, capabilities and policy for this request. */
+export function useFireUXConfig(event?: H3Event): Readonly<FireUXConfig> {
   const pub = (useRuntimeConfig(event).public ?? {}) as AnyRecord
   const fireux = (pub.fireux ?? {}) as AnyRecord
 
@@ -188,7 +185,6 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     subscriptionCapacity: toSubscriptionCapacity(fireux.subscriptionCapacity),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
-    theme: optRecord(fireux, 'theme') as FireUXConfig['theme'],
 
     contactEmail: optString(fireux, 'contactEmail'),
     designPacks: optRecord(fireux, 'designPacks') as
@@ -196,18 +192,10 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
       | undefined,
     developerId: optString(fireux, 'developerId'),
 
-    primaryColor: optString(fireux, 'primaryColor'),
-    neutralColor: optString(fireux, 'neutralColor'),
-    secondaryColor: optString(fireux, 'secondaryColor'),
-
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
     isStandalone: role === 'standalone',
   }
 
   return Object.freeze(cfg)
-}
-
-export function useFireUXConfig(event?: H3Event): Readonly<FireUXConfig> {
-  return buildConfig(event)
 }

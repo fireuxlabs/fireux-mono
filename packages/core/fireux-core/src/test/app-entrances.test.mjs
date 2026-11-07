@@ -15,7 +15,8 @@ const { renderToString } = vueRequire('@vue/server-renderer')
 function manifest(
   query = {},
   origin = 'https://misebox.app',
-  workspaceConfig = {}
+  workspaceConfig = {},
+  theme
 ) {
   const source = readFileSync(
     new URL('../runtime/server/manifest.webmanifest.get.ts', import.meta.url),
@@ -30,6 +31,8 @@ function manifest(
     'getRequestURL',
     'setHeader',
     'useRuntimeConfig',
+    'useAppConfig',
+    'resolveAppTheme',
     'brandAssets',
     'withBuildVersion',
   ])(
@@ -47,6 +50,8 @@ function manifest(
         },
       },
     }),
+    () => ({ theme }),
+    (value) => value,
     { pwaIcon192: '/192.png', pwaIcon512: '/512.png' },
     (url) => url
   )({})
@@ -528,4 +533,15 @@ test('subscription chrome renders settled guest or membership pricing without an
       await renderPolishComponent(file, { phase }),
       /<a|Free|Subscription unavailable/
     )
+})
+
+test('manifest colours come from App config', () => {
+  const result = manifest(
+    {},
+    undefined,
+    {},
+    { palette: { accent: '#123456', canvas: '#654321' } }
+  )
+  assert.equal(result.theme_color, '#123456')
+  assert.equal(result.background_color, '#654321')
 })

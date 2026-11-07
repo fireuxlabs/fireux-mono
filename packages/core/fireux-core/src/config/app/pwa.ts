@@ -6,8 +6,6 @@ export type FireUXPwaConfig = {
   id: string
   name: string
   shortName: string
-  themeColor: string
-  backgroundColor: string
   lang: string
 }
 
@@ -72,7 +70,6 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
   head.link ||= []
 
   head.meta.push(
-    { name: 'theme-color', content: c.themeColor },
     { name: 'apple-mobile-web-app-capable', content: 'yes' },
     {
       name: 'apple-mobile-web-app-status-bar-style',

@@ -26,6 +26,23 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts`
 
+## Configuration boundaries
+
+`FireuxAppConfig` is the authored assembly input. The App bundle validates it
+and publishes the normalized `RuntimeApp` projection; Core `useFireUXConfig`
+reads that projection for browser and server consumers. Build-only context,
+Auth installation settings and secret bindings are not public runtime fields.
+`app.config.ts` owns Nuxt UI, navigation and the optional `theme` palette and
+typography. Core `useAppHead` and the server manifest read that same native App
+config through `useAppConfig`; `resolveAppTheme` validates the palette. Theme is
+not an assembly input or a field in `runtimeConfig.public.fireux`.
+
+App-authored research stays in `app/search-demand.ts`, outside Nuxt assembly.
+Core's `runtime/app/models/search-demand.ts` owns its contract,
+`runtime/app/utils/search-demand.ts` validates references, and
+`runtime/app/server/research/load-search-demand.ts` loads it only on the server.
+Research proposals do not enable runtime capabilities.
+
 ## App pattern
 
 - Tenant and standalone Apps import `defineFireuxApp` from `fireux-app/config`.
@@ -81,7 +98,9 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   Places provider configuration, and `fireux-go-qr` owns its provider origin.
   Project Apps do not repeat those runtime values.
 - Firebase SSR region and execution identity belong to the selected
-  ecosystem's required `ssr` configuration. Apps inherit them and do not
+  ecosystem's required `ssr` configuration. Shared ecosystem setup applies that
+  region to both Nitro Firebase region fields; Core has no named-ecosystem
+  fallback or environment override for it. Apps inherit them and do not
   repeat deployment identity in the bundle configuration.
 - `workspaceConfig.<family>.origin` optionally declares an App-owned Workspace
   origin. The registered route with `nav.key: workspace-<family>` still owns Home.

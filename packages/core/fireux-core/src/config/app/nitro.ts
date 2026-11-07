@@ -1,9 +1,7 @@
-// packages/core/fireux-core/src/config/nitro.ts
 import type { NuxtConfig } from '@nuxt/schema'
 
 export type FireUXNitroConfig = {
   serverFunctionName: string
-  region: string
   serviceAccount?: string
   secrets?: string[]
 }
@@ -11,7 +9,7 @@ export type FireUXNitroConfig = {
 export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
   // TS-safe local handles (NuxtConfig's type won't reliably narrow on mutation)
   const nuxtWithNitro = nuxt as NuxtConfig & { nitro?: Record<string, any> }
-  const nitro = ((nuxtWithNitro.nitro ||= {}) as any)
+  const nitro = (nuxtWithNitro.nitro ||= {}) as any
 
   // FireUX deploys on Node 22. Override Nitro's ES2019 transform default so
   // modern dependency output (including bigint literals) is preserved.
@@ -42,10 +40,8 @@ export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
       gen: 2,
       nodeVersion: '22',
       serverFunctionName: c.serverFunctionName,
-      region: c.region,
-      // The Firebase preset reads deployment region from httpsOptions at runtime.
+      // The selected ecosystem supplies region and execution identity during setup.
       httpsOptions: {
-        region: c.region,
         ...(c.serviceAccount ? { serviceAccount: c.serviceAccount } : {}),
         ...(c.secrets?.length ? { secrets: c.secrets } : {}),
       },

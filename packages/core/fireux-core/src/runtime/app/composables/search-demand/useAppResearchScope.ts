@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useRoute } from '#imports'
-import type { AppSearchDemand } from '../../../../config/app/search-demand'
+import type { AppSearchDemand } from '../../models/search-demand'
 
 /** Select App-authored research, independently of enabled runtime Workspaces. */
 export function useAppResearchScope(root: Ref<AppSearchDemand | null>) {

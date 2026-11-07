@@ -30,7 +30,7 @@
 import { computed } from 'vue'
 import { useAsyncData } from '#imports'
 import { useAppResearchScope } from '../../app/composables/search-demand/useAppResearchScope'
-import type { AppSearchDemand } from '../../../config/app/search-demand'
+import type { AppSearchDemand } from '../../app/models/search-demand'
 type SearchDemandResponse = { ok: true; demand: AppSearchDemand | null }
 const { data, pending, error } = await useAsyncData(
   'search-demand-capabilities',

@@ -96,7 +96,7 @@ import { computed, ref, watch } from 'vue'
 import type {
   ResearchReconciliation,
   SearchDemandObservation,
-} from '../../../../config/app/search-demand'
+} from '../../models/search-demand'
 const props = defineProps<{
   review: ResearchReconciliation
   observations: SearchDemandObservation[]
