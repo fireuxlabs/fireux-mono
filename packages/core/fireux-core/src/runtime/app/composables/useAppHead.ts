@@ -1,6 +1,6 @@
 import { toValue, type MaybeRefOrGetter } from 'vue'
 import { useAppConfig, useHead, useRoute, useRuntimeConfig } from '#imports'
-import { resolveSeoRobots } from '../../../utils/seoIndexing'
+import { resolveSeoRobots } from '../../../utils/seo-indexing'
 import { resolveAppTheme } from '../../utils/app-theme'
 import { withBuildVersion } from '../../utils/build-version-url'
 

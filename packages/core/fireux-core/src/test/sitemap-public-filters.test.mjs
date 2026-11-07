@@ -18,9 +18,13 @@ function load(file, result, deps = {}) {
     Object.keys(deps)
   )(...Object.values(deps))
 }
-const normalize = load('../config/app/seo.ts', 'normalizeSitemapEntity', {
-  readSitemapPublicFilters,
-})
+const normalize = load(
+  '../config/app/seo-config.ts',
+  'normalizeSitemapEntity',
+  {
+    readSitemapPublicFilters,
+  }
+)
 const supplierModule = readFileSync(
   new URL(
     '../../../../extensions/fireux-suppliers/src/module.ts',

@@ -40,9 +40,24 @@ entrypoints and package-owned runtime paths; see
 Use Nuxt's public module and layer APIs. Do not insert package runtimes into
 private resolved-layer internals. The current source entrypoints are
 [App composition](../../packages/extensions/fireux-app/src/config.ts),
-[Core framework helpers](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts),
+[Core framework helpers](../../packages/core/fireux-core/src/config/app/nuxt-defaults.ts),
 [Core module](../../packages/core/fireux-core/src/module.ts), and the relevant
 App or package's nuxt.config.ts.
+
+## Native defaults
+
+Apps use the conventional `app/` source directory and root `public/` assets.
+The App bundle explicitly retains `srcDir: 'app'` because package layers declare
+`srcDir: '.'`; native layer merging would otherwise redirect App discovery to
+the project root. Core does not repeat the default viewport or manually register
+the App public folder. Nuxt's default `scanPageMeta: 'after-resolve'` timing supplies metadata to
+Core's `pages:resolved` policies; Core still explicitly requests `layout` for
+its Dashboard transition policy. Shared FireUX CSS, transitions and deliberate
+build/runtime settings remain in `nuxt-defaults.ts`.
+
+`nuxt-defaults.test.mjs` exercises layered App source/native public discovery, the default
+viewport and metadata extraction with Core's actual transition policy. Production
+verification also checks the copied public assets, not just directory discovery.
 
 ## Current compatibility bridge
 
@@ -51,7 +66,7 @@ experimental Nitro auto-imports enabled. The bridge remains because registered
 package server code still uses Nuxt's #imports alias. The source comment names
 the Nitro migration as its removal boundary. Treat this as existing integration
 work, not as a second Nuxt version or a permanent framework contract. See
-[nuxt-baseline.ts](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts).
+[nuxt-defaults.ts](../../packages/core/fireux-core/src/config/app/nuxt-defaults.ts).
 
 Exact Nuxt, Vue, Nuxt UI and integration package versions live in the root,
 Core and App manifests plus pnpm-lock.yaml. Check those sources before a

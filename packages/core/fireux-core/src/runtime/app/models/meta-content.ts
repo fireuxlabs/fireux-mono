@@ -1,9 +1,9 @@
 /**
- * Authored App literature supplied through App configuration.
- * This is configuration input, not a persisted model or route registry.
+ * Shared contract for authored App literature consumed by configuration and runtime.
+ * This is public content, not a persisted Entity or route registry.
  */
 
-import type { WorkspaceCapabilityFamilies } from './capability-families'
+import type { WorkspaceCapabilityFamilies } from '../../workspace/models/capability-families'
 
 export type FireuxMetaCta = {
   label: string

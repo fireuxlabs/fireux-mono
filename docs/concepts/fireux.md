@@ -112,7 +112,7 @@ shipping authorization. See [Entity storage](firestore-entity.md),
   adds the shared Ecosystem host layer.
 - [App module composition](../../packages/extensions/fireux-app/src/config.ts)
   registers Nuxt UI, Firebase integration and the shared Core module.
-- [Core framework helpers](../../packages/core/fireux-core/src/config/app/nuxt-baseline.ts)
+- [Core framework helpers](../../packages/core/fireux-core/src/config/app/nuxt-defaults.ts)
   supply the shared Nuxt defaults used by that composition.
 - [FireUX App composition](../../projects/fireux/fireux-app/nuxt.config.ts)
   selects the FireUX Ecosystem and its App-specific package layers.

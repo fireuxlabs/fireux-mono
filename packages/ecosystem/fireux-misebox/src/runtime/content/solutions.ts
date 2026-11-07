@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: give Misebox one reusable authored source.
 // Concurrent edit — 2026-07-21 13:47 CEST — Ingredient management solution: publish the proven Kitchen catalogue workflow.
-import type { FireuxMetaSolution } from 'fireux-core/config/app/meta-content'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
 
 const owner = {
   id: 'misebox',
@@ -62,7 +62,10 @@ export const miseboxSolutions = [
       'Organise sections, dishes, prices, availability, and presentation.',
       'Publish the Menu, or choose Pro when the Kitchen needs multiple Menus.',
     ],
-    cta: { label: 'Open kitchen workspace', to: '/workspace/kitchen/food-and-drink/menus' },
+    cta: {
+      label: 'Open kitchen workspace',
+      to: '/workspace/kitchen/food-and-drink/menus',
+    },
   },
   {
     slug: 'restaurant-menu-builder',
@@ -82,7 +85,10 @@ export const miseboxSolutions = [
       'Add sections, dishes, prices, and public presentation.',
       'Publish one Menu for free; choose Pro to create and manage additional Menus.',
     ],
-    cta: { label: 'Create menu', to: '/workspace/kitchen/food-and-drink/menus' },
+    cta: {
+      label: 'Create menu',
+      to: '/workspace/kitchen/food-and-drink/menus',
+    },
   },
   {
     slug: 'allergen-menu-software',

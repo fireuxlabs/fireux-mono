@@ -73,7 +73,7 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from '../../composables/fireux/seo/useSeo'
-import type { FireuxMetaOperation } from '../../../config/app/meta-content'
+import type { FireuxMetaOperation } from '../../app/models/meta-content'
 
 type OperationsResponse = {
   ok: boolean

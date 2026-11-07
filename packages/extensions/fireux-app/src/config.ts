@@ -28,11 +28,9 @@ import {
   configureNitroBaseline,
   configureNuxtRuntimeDefaults,
   configurePageTransition,
-  configureProjectPublicAssets,
-  configureViewport,
-} from 'fireux-core/config/app/nuxt-baseline'
-import { normalizeSiteUrl } from 'fireux-core/config/app/seo'
-import { resolveSeoConfig } from 'fireux-core/config/app/static-paths'
+} from 'fireux-core/config/app/nuxt-defaults'
+import { normalizeSiteUrl } from 'fireux-core/config/app/seo-config'
+import { resolveContentSeo } from 'fireux-core/config/app/seo-content'
 import type { FireuxAppConfig } from 'fireux-core/config/app/types'
 import { validateFireuxAppConfig } from 'fireux-core/config/app/validate'
 
@@ -64,10 +62,8 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
     app.databaseId
   )
 
-  configureViewport(nuxt)
   configurePageTransition(nuxt)
   configureNitroBaseline(nuxt)
-  configureProjectPublicAssets(nuxt)
   configureNuxtRuntimeDefaults(nuxt)
   configureAppModules(nuxt, app, appDatabaseRuntimeModule)
   configureFireuxModuleRestartWatch(nuxt)
@@ -90,7 +86,7 @@ export function defineFireuxApp(input: FireuxAppConfig): NuxtConfig {
     loadedMetaContent,
     loadFireuxSolutionsMarkdown()
   )
-  const resolvedSeo = resolveSeoConfig(app.seo, metaContent)
+  const resolvedSeo = resolveContentSeo(app.seo, metaContent)
 
   setRuntime(nuxt, {
     app: {

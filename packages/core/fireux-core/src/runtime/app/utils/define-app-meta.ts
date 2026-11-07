@@ -1,7 +1,4 @@
-import type { FireuxMetaContent } from './meta-content.types'
-
-export * from './capability-families'
-export type * from './meta-content.types'
+import type { FireuxMetaContent } from '../models/meta-content'
 
 /** Type-preserving helper for authored `app/meta.ts` configuration. */
 export function defineFireuxMeta<const T extends FireuxMetaContent>(

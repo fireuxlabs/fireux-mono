@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 
 export const metaContent = defineFireuxMeta({
   app: {
@@ -18,7 +18,6 @@ export const metaContent = defineFireuxMeta({
   },
   seo: {
     title: 'Kjordi',
-    description:
-      'Choose where to follow Kjordi from one personal sharing App.',
+    description: 'Choose where to follow Kjordi from one personal sharing App.',
   },
 })

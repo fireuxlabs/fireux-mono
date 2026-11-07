@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove the retired personal BNB route family.
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 
 export const sproochliProductSentence =
   'Translation-ready public pages for instructions, menus, signs, notices, and local information.'
@@ -89,7 +89,8 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'multilingual-qr-page-generator',
       title: 'Multilingual QR page generator',
-      description: 'Create one public QR page where visitors can choose the language they need.',
+      description:
+        'Create one public QR page where visitors can choose the language they need.',
       icon: 'i-lucide-qr-code',
       status: 'live',
       keywords: ['multilingual QR page generator', 'QR code translation page'],
@@ -101,21 +102,27 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'guest-instructions-translator',
       title: 'Guest instructions translator',
-      description: 'Translate check-in, Wi-Fi, rules, access, and stay instructions for guests.',
+      description:
+        'Translate check-in, Wi-Fi, rules, access, and stay instructions for guests.',
       icon: 'i-lucide-house',
       status: 'bridge',
-      keywords: ['guest instructions translation', 'Airbnb guest information translation'],
+      keywords: [
+        'guest instructions translation',
+        'Airbnb guest information translation',
+      ],
       relatedApp: {
         name: 'BuenoHost',
         to: 'https://buenohost.web.app',
-        description: 'BuenoHost owns the deeper property-aware guest guide workflow.',
+        description:
+          'BuenoHost owns the deeper property-aware guest guide workflow.',
         external: true,
       },
     },
     {
       slug: 'house-rules-translator',
       title: 'House rules translator',
-      description: 'Translate house rules and venue rules so guests understand expectations clearly.',
+      description:
+        'Translate house rules and venue rules so guests understand expectations clearly.',
       icon: 'i-lucide-clipboard-check',
       status: 'very-easy',
       keywords: ['house rules translation', 'Airbnb house rules translation'],
@@ -123,10 +130,14 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'rental-instructions-translator',
       title: 'Rental instructions translator',
-      description: 'Translate rental instructions for bikes, rooms, equipment, vehicles, or shared facilities.',
+      description:
+        'Translate rental instructions for bikes, rooms, equipment, vehicles, or shared facilities.',
       icon: 'i-lucide-bike',
       status: 'live',
-      keywords: ['rental instructions translation', 'bike rental instructions translation'],
+      keywords: [
+        'rental instructions translation',
+        'bike rental instructions translation',
+      ],
       cta: {
         label: 'View rental example',
         to: '/get-started',
@@ -135,7 +146,8 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'menu-translator',
       title: 'Menu translator',
-      description: 'Publish read-only translated menu pages before a full structured Misebox menu is needed.',
+      description:
+        'Publish read-only translated menu pages before a full structured Misebox menu is needed.',
       icon: 'i-lucide-utensils',
       status: 'bridge',
       keywords: ['menu translation', 'QR code menu translation'],
@@ -146,22 +158,28 @@ export const metaContent = defineFireuxMeta({
       relatedApp: {
         name: 'Misebox',
         to: 'https://misebox.app',
-        description: 'Misebox owns structured dishes, sections, prices, allergens, and ordering.',
+        description:
+          'Misebox owns structured dishes, sections, prices, allergens, and ordering.',
         external: true,
       },
     },
     {
       slug: 'safety-notice-translator',
       title: 'Safety notice translator',
-      description: 'Translate warnings, emergency steps, equipment notes, and safety instructions.',
+      description:
+        'Translate warnings, emergency steps, equipment notes, and safety instructions.',
       icon: 'i-lucide-triangle-alert',
       status: 'planned',
-      keywords: ['safety notice translation', 'emergency instructions translation'],
+      keywords: [
+        'safety notice translation',
+        'emergency instructions translation',
+      ],
     },
     {
       slug: 'sign-and-notice-translator',
       title: 'Sign and notice translator',
-      description: 'Turn signs, posters, counter cards, and printed notices into multilingual QR pages.',
+      description:
+        'Turn signs, posters, counter cards, and printed notices into multilingual QR pages.',
       icon: 'i-lucide-signpost',
       status: 'very-easy',
       keywords: ['sign translation QR code', 'notice translation QR page'],
@@ -169,24 +187,30 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'visitor-guide-translator',
       title: 'Visitor guide translator',
-      description: 'Translate local guides, recommendations, directions, parking, and visitor help.',
+      description:
+        'Translate local guides, recommendations, directions, parking, and visitor help.',
       icon: 'i-lucide-map',
       status: 'bridge',
       keywords: ['visitor guide translation', 'local guide translation'],
       relatedApp: {
         name: 'BuenoHost',
         to: 'https://buenohost.web.app',
-        description: 'BuenoHost owns richer property and local guide management for stays.',
+        description:
+          'BuenoHost owns richer property and local guide management for stays.',
         external: true,
       },
     },
     {
       slug: 'public-information-page-translator',
       title: 'Public information page translator',
-      description: 'Translate public-facing information pages for places, venues, services, and local operations.',
+      description:
+        'Translate public-facing information pages for places, venues, services, and local operations.',
       icon: 'i-lucide-file-text',
       status: 'live',
-      keywords: ['public information translation', 'visitor information translation'],
+      keywords: [
+        'public information translation',
+        'visitor information translation',
+      ],
       cta: {
         label: 'View info page',
         to: '/get-started',
@@ -195,7 +219,8 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'certified-page-translation',
       title: 'Certified page translation',
-      description: 'Publish owner-approved or human-approved translations for public visitor pages.',
+      description:
+        'Publish owner-approved or human-approved translations for public visitor pages.',
       icon: 'i-lucide-badge-check',
       status: 'planned',
       keywords: ['certified page translation', 'approved translation pages'],
@@ -204,19 +229,23 @@ export const metaContent = defineFireuxMeta({
   entities: [
     {
       id: 'Place',
-      purpose: 'The real-world place or business that owns one or more public info pages.',
+      purpose:
+        'The real-world place or business that owns one or more public info pages.',
     },
     {
       id: 'InfoPage',
-      purpose: 'A published QR-readable page for BNB, menu, or general information.',
+      purpose:
+        'A published QR-readable page for BNB, menu, or general information.',
     },
     {
       id: 'InfoSection',
-      purpose: 'A sorted page section with translated title and description fields.',
+      purpose:
+        'A sorted page section with translated title and description fields.',
     },
     {
       id: 'InfoBlock',
-      purpose: 'A sorted content block such as text, warning, list, contact, or link.',
+      purpose:
+        'A sorted content block such as text, warning, list, contact, or link.',
     },
   ],
   relations_ascii: `
@@ -227,7 +256,11 @@ Place
 
 `,
   routes: {
-    public: sproochliRoutes.filter((route) => route.kind === 'public').map((route) => route.path),
-    workspace: sproochliRoutes.filter((route) => route.kind === 'workspace').map((route) => route.path),
+    public: sproochliRoutes
+      .filter((route) => route.kind === 'public')
+      .map((route) => route.path),
+    workspace: sproochliRoutes
+      .filter((route) => route.kind === 'workspace')
+      .map((route) => route.path),
   },
 })

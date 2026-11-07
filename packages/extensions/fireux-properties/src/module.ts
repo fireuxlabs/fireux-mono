@@ -5,7 +5,7 @@ import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserve
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
-} from 'fireux-core/config/app/seo'
+} from 'fireux-core/config/app/seo-config'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'

@@ -6,7 +6,7 @@ import type {
   FireuxMetaLegalContent,
   FireuxMetaLegalNotice,
   FireuxMetaLegalSource,
-} from '../../../../config/app/meta-content'
+} from '../../models/meta-content'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import {
   normalizePublicImgAsset,

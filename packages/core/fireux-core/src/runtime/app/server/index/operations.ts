@@ -8,12 +8,12 @@ import {
   WORKSPACE_CAPABILITY_TOOL_FAMILIES,
   WORKSPACE_CAPABILITY_TOOL_SCOPES,
   type WorkspaceCapabilityFamilies,
-} from '../../../../config/app/capability-families'
+} from '../../../workspace/models/capability-families'
 import type {
   FireuxMetaContent,
   FireuxMetaOperation,
   FireuxMetaOperationWorkspace,
-} from '../../../../config/app/meta-content'
+} from '../../models/meta-content'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)

@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 
 export const metaContent = defineFireuxMeta({
   app: {
@@ -11,10 +11,8 @@ export const metaContent = defineFireuxMeta({
     headline: 'Metallbau im Berner Oberland.',
     positioning_html:
       'Michel AG Metallbau berät, plant, fertigt, liefert und montiert Metallbauaufträge.',
-    promise_html:
-      'Stahlbau, Metallbau und Tore aus Goldswil.',
-    workspace_bridge_html:
-      'Kontakt und Öffnungszeiten auf einen Blick.',
+    promise_html: 'Stahlbau, Metallbau und Tore aus Goldswil.',
+    workspace_bridge_html: 'Kontakt und Öffnungszeiten auf einen Blick.',
   },
   seo: {
     title: 'Michel AG Metallbau | Goldswil',

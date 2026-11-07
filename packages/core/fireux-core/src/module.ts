@@ -13,10 +13,10 @@ import {
 } from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
-  configureSeoDefaults,
+  configureSeo,
   mergeSitemapPaths,
   type FireuxSeoConfig,
-} from './config/app/seo'
+} from './config/app/seo-config'
 import { configureFireuxModule } from './config/module/module-wiring'
 import { registerComposablesDirs } from './config/module/module-helpers'
 import { configureComponents } from './config/module/components-config'
@@ -171,7 +171,7 @@ export default defineNuxtModule({
       const domain =
         typeof fireux.domain === 'string' ? fireux.domain.trim() : ''
 
-      const resolved = await configureSeoDefaults(nuxt, {
+      const resolved = await configureSeo(nuxt, {
         appName,
         domain,
         seo: asSeoConfig(privateFireux.seo),

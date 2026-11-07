@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 
 export const findMySeoProductSentence =
   'Find, compare, and contact SEO professionals for specific SEO problems.'
@@ -23,7 +23,11 @@ export const appMeta = {
     { label: 'SEO for SaaS', path: '/seo-for-saas', kind: 'public' },
     { label: 'SEO for eCommerce', path: '/seo-for-ecommerce', kind: 'public' },
     { label: 'Dashboard', path: '/dashboard', kind: 'dashboard' },
-    { label: 'Professional Profile', path: '/dashboard/professional/profile', kind: 'dashboard' },
+    {
+      label: 'Professional Profile',
+      path: '/dashboard/professional/profile',
+      kind: 'dashboard',
+    },
   ],
 } as const
 
@@ -91,38 +95,44 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'professional-profile',
       title: 'Create a professional profile',
-      description: 'Publish a focused SEO provider profile buyers can compare and understand.',
+      description:
+        'Publish a focused SEO provider profile buyers can compare and understand.',
       icon: 'i-lucide-id-card',
     },
     {
       slug: 'local-search-discovery',
       title: 'Improve local search discovery',
-      description: 'Use structured public profile information to help buyers find relevant SEO support.',
+      description:
+        'Use structured public profile information to help buyers find relevant SEO support.',
       icon: 'i-lucide-search',
     },
     {
       slug: 'service-landing-page',
       title: 'Build a service landing page',
-      description: 'Explain a specific SEO service with proof, fit, and a clear route to contact.',
+      description:
+        'Explain a specific SEO service with proof, fit, and a clear route to contact.',
       icon: 'i-lucide-file-search',
     },
     {
       slug: 'lead-ready-business-info',
       title: 'Make business info lead-ready',
-      description: 'Turn provider details into a page that can support enquiries and comparison.',
+      description:
+        'Turn provider details into a page that can support enquiries and comparison.',
       icon: 'i-lucide-inbox',
     },
     {
       slug: 'ai-search-visibility',
       title: 'Prepare for AI search visibility',
-      description: 'Shape public provider information so search and AI systems can understand it cleanly.',
+      description:
+        'Shape public provider information so search and AI systems can understand it cleanly.',
       icon: 'i-lucide-sparkles',
     },
   ],
   entities: [
     {
       id: 'Professional',
-      purpose: 'Public SEO provider identity used for discovery and comparison.',
+      purpose:
+        'Public SEO provider identity used for discovery and comparison.',
       to: '/get-started',
     },
     {
@@ -132,7 +142,8 @@ export const metaContent = defineFireuxMeta({
     },
     {
       id: 'Lead',
-      purpose: 'Lightweight enquiry placeholder for project-to-provider contact.',
+      purpose:
+        'Lightweight enquiry placeholder for project-to-provider contact.',
       to: '/dashboard/professional/profile',
     },
   ],

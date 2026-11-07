@@ -63,14 +63,14 @@ domain publication or an automatic optimization engine. See the package's
 
 Every visible route belongs to one explicit class:
 
-| Route class                            | Index policy                                            | Sitemap policy                               | Examples                                                  |
-| -------------------------------------- | ------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------- |
-| Public canonical                       | `index, follow` when the bounded outcome is publishable | Include the canonical route                  | Landing, public indexes, published detail                 |
-| Public utility                         | Deliberate per-route decision                           | Include only when it serves public discovery | Learn-more, pricing, tools                                |
-| Public duplicate or contextual doorway | Canonicalize or redirect to the accepted route          | Exclude the duplicate                        | Legacy profile id, contextual Menu doorway                |
+| Route class                            | Index policy                                            | Sitemap policy                               | Examples                                                    |
+| -------------------------------------- | ------------------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------- |
+| Public canonical                       | `index, follow` when the bounded outcome is publishable | Include the canonical route                  | Landing, public indexes, published detail                   |
+| Public utility                         | Deliberate per-route decision                           | Include only when it serves public discovery | Learn-more, pricing, tools                                  |
+| Public duplicate or contextual doorway | Canonicalize or redirect to the accepted route          | Exclude the duplicate                        | Legacy profile id, contextual Menu doorway                  |
 | Authenticated or personalized          | `noindex, nofollow` at the response-header layer        | Exclude                                      | Workspace, Dashboard, account, member, tenant personal home |
-| Admin, developer, or authoring         | `noindex, nofollow`; disallow where useful              | Exclude                                      | Admin, dev, create, edit                                  |
-| Redirect-only                          | Preserve the reviewed permanent or temporary status     | Exclude the source                           | Retired aliases, bounded tenant redirect                  |
+| Admin, developer, or authoring         | `noindex, nofollow`; disallow where useful              | Exclude                                      | Admin, dev, create, edit                                    |
+| Redirect-only                          | Preserve the reviewed permanent or temporary status     | Exclude the source                           | Retired aliases, bounded tenant redirect                    |
 
 Crawler exclusion is not an access-control mechanism. Authentication,
 authorization, Rules, and bounded server projections remain the security
@@ -160,6 +160,19 @@ private data out of public responses instead.
 Static public routes come from Nuxt route discovery plus explicit App and
 extension contributions. Dynamic public routes come from an owning entity
 provider.
+
+Configured, discovered and content-derived static route lists share
+`normalizePaths` in `seo-routes.ts`, backed by `seo-indexing.ts`. It removes
+query/fragment suffixes and trailing slashes, adds the leading slash and removes
+duplicates while preserving route case. Content eligibility remains separate:
+external, protocol-relative and backslash destinations are not local Solution
+routes. Entity document IDs and public-query filters are not normalized here.
+Sitemap document contributions are merged, normalized and checked once in
+`seo-config.ts`.
+
+A page's `sitemap: true` hint may override discovery heuristics such as a
+`success` segment, but cannot override explicit noindex, configured exclusions
+or the shared private prefixes. Domain publication checks remain mandatory.
 
 - A provider declares whether its route identity is an exact Firestore
   document ID or a source-defined field such as a reviewed slug or User handle.
@@ -264,9 +277,9 @@ templates have measurable baselines.
 | Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives                          |
 | Three landings have rendered shared SEO contracts                  | `accepted`   | FireUX, Misebox, and Interlaken smoke verifies canonical, robots, social metadata, and graph facts            |
 | FireUX Operations and Solutions prove hub/detail search transport  | `accepted`   | Source catalogues feed canonical collection/detail pages, connected lists, sitemap policy, and rendered smoke |
-| FireUX shows published Ecosystem details through one generic route | `accepted`   | The detail route reads the Ecosystem record and its published Apps                                             |
+| FireUX shows published Ecosystem details through one generic route | `accepted`   | The detail route reads the Ecosystem record and its published Apps                                            |
 | Dynamic App/Ecosystem details use one directory sitemap            | `accepted`   | JSON and XML share the bounded reader; App details expose their canonical parent relationship                 |
-| Every App declares one canonical Ecosystem parent                 | `accepted`   | App role does not remove its explicit Ecosystem relationship; infrastructure binding remains separate         |
+| Every App declares one canonical Ecosystem parent                  | `accepted`   | App role does not remove its explicit Ecosystem relationship; infrastructure binding remains separate         |
 | FireUX Blank remains visible but non-indexable                     | `migration`  | Current source defines a harness; archive its public record or approve a product role before indexing         |
 | Interlaken changes page language without crawlable alternate URLs  | `to-confirm` | Approve a stable language-route policy before emitting `hreflang` or multilingual sitemap entries             |
 | Public-template performance has no shared budget                   | `to-confirm` | Measure representative siblings before guarding thresholds                                                    |
@@ -276,9 +289,10 @@ templates have measurable baselines.
 
 Start with:
 
-- `packages/core/fireux-core/src/config/app/seo.ts`
-- `packages/core/fireux-core/src/config/app/seo-paths.ts`
-- `packages/core/fireux-core/src/utils/seoIndexing.ts`
+- `packages/core/fireux-core/src/config/app/seo-config.ts`
+- `packages/core/fireux-core/src/config/app/seo-routes.ts`
+- `packages/core/fireux-core/src/config/app/seo-content.ts`
+- `packages/core/fireux-core/src/utils/seo-indexing.ts`
 - `packages/core/fireux-core/src/config/app/nitro.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/seo/useSeo.ts`
 - `packages/core/fireux-core/src/runtime/server/robots.txt.get.ts`
@@ -289,7 +303,7 @@ Start with:
 
 For a change, verify the canonical origin, route/redirect outcome, headers,
 rendered metadata, sitemap membership, structured-data payload, public DTO,
-locale, and visible content together. Run Core's `src/test/seo-baseline.test.mjs` and `sitemap-public-filters.test.mjs`, the affected App typecheck/build, and a rendered HTML/endpoints check. The former `scripts/` guards and smoke wrappers are removed.
+locale, and visible content together. Run Core's `src/test/seo-config.test.mjs` and `sitemap-public-filters.test.mjs`, the affected App typecheck/build, and a rendered HTML/endpoints check. The former `scripts/` guards and smoke wrappers are removed.
 
 ## Alignment roadmap
 

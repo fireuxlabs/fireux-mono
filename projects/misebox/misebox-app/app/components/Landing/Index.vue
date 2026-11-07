@@ -100,7 +100,7 @@ import type { LandingProductCatalogueContent } from 'fireux-core/runtime/compone
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
-} from 'fireux-core/config/app/meta-content'
+} from 'fireux-core/runtime/app/models/meta-content'
 import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import { metaContent } from '../../meta'
 import LandingWorkspacePreview from './WorkspacePreview/Index.vue'

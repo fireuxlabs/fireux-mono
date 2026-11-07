@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 
 export const metaContent = defineFireuxMeta({
   app: {
@@ -14,7 +14,7 @@ export const metaContent = defineFireuxMeta({
     promise_html:
       'Potatoes are hand-cut, brined, and triple-fried in beef tallow.',
     workspace_bridge_html:
-      'Misebox connects each location\'s recipes, preparation, menus, service, and orders.',
+      "Misebox connects each location's recipes, preparation, menus, service, and orders.",
   },
   seo: {
     title: 'Friiites',

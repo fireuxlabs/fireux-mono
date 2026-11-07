@@ -8,7 +8,7 @@
 // Concurrent edit — 2026-08-03 — Keep Ignition as App intake and a private delivery workflow, not a Project Operation.
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: retain FireUX solution intent through intake.
 // Concurrent edit — 2026-07-23 12:13 CEST — FireUX landing makeover: align public metadata with the concrete Ignition offer.
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 import { sourceMeta } from './content/meta/source'
 import { fireuxSolutions } from './content/meta/solutions'
 
@@ -102,7 +102,11 @@ export const metaContent = defineFireuxMeta({
       'Nuxt UI',
     ],
     audience: ['industry founders', 'development teams', 'app operators'],
-    categories: ['industry SaaS', 'application frameworks', 'industry software'],
+    categories: [
+      'industry SaaS',
+      'application frameworks',
+      'industry software',
+    ],
     primary_topic: 'Industry SaaS framework',
   },
   cta: {

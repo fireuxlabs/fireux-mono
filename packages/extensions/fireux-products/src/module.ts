@@ -5,7 +5,7 @@ import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserve
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
-} from 'fireux-core/config/app/seo'
+} from 'fireux-core/config/app/seo-config'
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
@@ -66,9 +66,7 @@ export default defineNuxtModule({
             : {}),
         }),
       composables: (resolver) =>
-        registerComposablesDirs(resolver, [
-          './runtime/product/composables',
-        ]),
+        registerComposablesDirs(resolver, ['./runtime/product/composables']),
       components: configureComponents,
       pages: configurePages,
       server: configureServer,

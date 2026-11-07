@@ -1,4 +1,4 @@
-import { resolveSeoRobots } from '../../../utils/seoIndexing'
+import { resolveSeoRobots } from '../../../utils/seo-indexing'
 import {
   readSitemapPublicFilters,
   matchesSitemapPublicFilters,

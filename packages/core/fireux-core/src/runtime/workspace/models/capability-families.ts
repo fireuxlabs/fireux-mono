@@ -1,3 +1,4 @@
+/** Descriptive Workspace capability vocabulary; it does not enable routes or commands. */
 export const WORKSPACE_CAPABILITY_SURFACE_FAMILIES = [
   'entity-gate',
   'overview',
@@ -36,10 +37,7 @@ export const WORKSPACE_CAPABILITY_TOOL_FAMILIES = [
   'analysis',
 ] as const
 
-export const WORKSPACE_CAPABILITY_TOOL_SCOPES = [
-  'local',
-  'compound',
-] as const
+export const WORKSPACE_CAPABILITY_TOOL_SCOPES = ['local', 'compound'] as const
 
 export type WorkspaceCapabilitySurfaceFamily =
   (typeof WORKSPACE_CAPABILITY_SURFACE_FAMILIES)[number]

@@ -1,9 +1,7 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
-import type {
-  FireuxSeoExtendContext,
-} from 'fireux-core/config/app/seo'
+import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo-config'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
@@ -37,7 +35,6 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addStaticPath('/businesses/learn-more')
     })
 
-
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
         configureRuntimeDefaults(
@@ -47,9 +44,7 @@ export default defineNuxtModule<ModuleOptions>({
           { merge: true }
         ),
       composables: (resolver) =>
-        registerComposablesDirs(resolver, [
-          './runtime/business/composables',
-        ]),
+        registerComposablesDirs(resolver, ['./runtime/business/composables']),
       components: configureComponents,
       pages: configurePages,
       server: configureServer,

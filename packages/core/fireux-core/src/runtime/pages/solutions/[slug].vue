@@ -160,7 +160,7 @@ import {
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
-} from '../../../config/app/meta-content'
+} from '../../app/models/meta-content'
 
 type SolutionsResponse = {
   ok: boolean

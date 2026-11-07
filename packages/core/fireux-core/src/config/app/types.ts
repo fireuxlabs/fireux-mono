@@ -1,6 +1,6 @@
 import type { NuxtConfig } from '@nuxt/schema'
-import type { FireuxSeoConfig } from './seo'
-import type { FireuxMetaContent } from './meta-content'
+import type { FireuxSeoConfig } from './seo-config'
+import type { FireuxMetaContent } from '../../runtime/app/models/meta-content'
 import type { AppRole } from '../../runtime/app/models/app.model'
 
 export type FireuxWorkspaceFamilyConfig = {

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: compose Bringli Supplier operations.
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 import { supplierCapabilities } from 'fireux-suppliers/runtime/supplier/models/capabilities'
 import { sourceMeta } from './content/meta/source'
 
@@ -125,31 +125,36 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'supplier-profiles',
       title: 'Publish supplier profiles',
-      description: 'Give local suppliers a clean public surface for who they are and what they provide.',
+      description:
+        'Give local suppliers a clean public surface for who they are and what they provide.',
       icon: 'i-lucide-store',
     },
     {
       slug: 'product-catalogue-info',
       title: 'Share catalogue information',
-      description: 'Expose simple product and supply information without turning the app into a full marketplace too soon.',
+      description:
+        'Expose simple product and supply information without turning the app into a full marketplace too soon.',
       icon: 'i-lucide-boxes',
     },
     {
       slug: 'delivery-supplier-leads',
       title: 'Collect supplier leads',
-      description: 'Create an entry point for buyers, suppliers, and delivery operations to connect.',
+      description:
+        'Create an entry point for buyers, suppliers, and delivery operations to connect.',
       icon: 'i-lucide-handshake',
     },
     {
       slug: 'trade-supplier-pages',
       title: 'Create trade supplier pages',
-      description: 'Build focused pages for producers and trade suppliers that need clear public information.',
+      description:
+        'Build focused pages for producers and trade suppliers that need clear public information.',
       icon: 'i-lucide-file-text',
     },
     {
       slug: 'supplier-network',
       title: 'Grow a supplier network',
-      description: 'Use Bringli as the public and operational surface for a connected local supply network.',
+      description:
+        'Use Bringli as the public and operational surface for a connected local supply network.',
       icon: 'i-lucide-network',
     },
   ],

@@ -1,6 +1,7 @@
-// Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: include declared pages in static SEO paths.
-import type { FireuxMetaContent } from './meta-content'
-import type { FireuxSeoConfig } from './seo'
+/** Derive public solution/operation routes and the default description from App literature. */
+import type { FireuxMetaContent } from '../../runtime/app/models/meta-content'
+import type { FireuxSeoConfig } from './seo-config'
+import { normalizePaths } from './seo-routes'
 
 const NON_INDEXABLE_SOLUTION_STATUSES = new Set([
   'coming-soon',
@@ -8,37 +9,20 @@ const NON_INDEXABLE_SOLUTION_STATUSES = new Set([
   'later',
 ])
 
-function normalizePublicPath(input: unknown): string | undefined {
-  if (typeof input !== 'string') return undefined
-  const trimmed = input.trim()
-  if (!trimmed) return undefined
-  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`
-}
-
-function mergeStaticPaths(paths: readonly unknown[]): string[] {
-  const seen = new Set<string>()
-  const merged: string[] = []
-
-  for (const path of paths) {
-    const normalized = normalizePublicPath(path)
-    if (!normalized || seen.has(normalized)) continue
-    seen.add(normalized)
-    merged.push(normalized)
-  }
-
-  return merged
-}
-
 function resolveLocalSolutionPath(
   solution: NonNullable<FireuxMetaContent['solutions']>[number]
 ): string | undefined {
   if (solution.external === true) return undefined
   const destination = String(solution.to || '').trim()
-  if (/^https?:\/\//i.test(destination)) return undefined
-  return normalizePublicPath(destination || `/solutions/${solution.slug}`)
+  if (
+    /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(destination) ||
+    destination.includes('\\')
+  )
+    return undefined
+  return normalizePaths([destination || `/solutions/${solution.slug}`])[0]
 }
 
-export function resolveSeoConfig(
+export function resolveContentSeo(
   seo: FireuxSeoConfig | undefined,
   meta: FireuxMetaContent | undefined
 ): FireuxSeoConfig | undefined {
@@ -65,7 +49,7 @@ export function resolveSeoConfig(
   return {
     ...(seo || {}),
     ...(defaultDescription ? { defaultDescription } : {}),
-    staticPaths: mergeStaticPaths([
+    staticPaths: normalizePaths([
       ...(seo?.staticPaths || []),
       ...(solutionPaths.length ? ['/solutions', ...solutionPaths] : []),
       ...(operationPaths.length ? ['/operations', ...operationPaths] : []),

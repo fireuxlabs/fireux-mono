@@ -110,7 +110,7 @@ export function prepareIgnitionPreview(value: unknown) {
         2
       ) + '\n',
     'app/app.vue': '<template>\n  <FireuxApp />\n</template>\n',
-    'app/meta.ts': `import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'\n\nexport const metaContent = defineFireuxMeta(${JSON.stringify({ app: { id: appId, name, ecosystem: id }, copy: { headline: name, positioning_html: '', promise_html: '', workspace_bridge_html: '' }, seo: { title: name, description: outcome } }, null, 2)})\n`,
+    'app/meta.ts': `import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'\n\nexport const metaContent = defineFireuxMeta(${JSON.stringify({ app: { id: appId, name, ecosystem: id }, copy: { headline: name, positioning_html: '', promise_html: '', workspace_bridge_html: '' }, seo: { title: name, description: outcome } }, null, 2)})\n`,
     'app/ignition/brief.ts': `import type { IgnitionBrief } from 'fireux-ignite/runtime/models/ignition'\n\nexport const name = ${JSON.stringify(name)}\nexport const brief: IgnitionBrief = ${JSON.stringify(brief, null, 2)}\n`,
     'app/pages/index.vue': `<template>
   <UPage>

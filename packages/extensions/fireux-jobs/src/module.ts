@@ -14,7 +14,7 @@ import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-conf
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
-} from 'fireux-core/config/app/seo'
+} from 'fireux-core/config/app/seo-config'
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'

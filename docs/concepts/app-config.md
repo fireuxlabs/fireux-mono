@@ -23,7 +23,7 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 
 - `packages/extensions/fireux-app/package.json` (`fireux-app/config`)
 - `packages/extensions/fireux-ecosystem/package.json` (`fireux-ecosystem/config`)
-- `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
+- `packages/core/fireux-core/src/config/app/nuxt-defaults.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts`
 
 ## Configuration boundaries
@@ -42,6 +42,18 @@ Core's `runtime/app/models/search-demand.ts` owns its contract,
 `runtime/app/utils/search-demand.ts` validates references, and
 `runtime/app/server/research/load-search-demand.ts` loads it only on the server.
 Research proposals do not enable runtime capabilities.
+
+## Configuration source names
+
+- `nuxt-defaults.ts` applies shared Nuxt defaults.
+- `seo-config.ts` resolves indexing policy and extension sitemap contributions.
+- `seo-routes.ts` normalizes route inputs and discovers static sitemap routes.
+- `seo-content.ts` derives public routes and descriptions from App literature,
+  reusing `seo-routes.ts` normalization. Sitemap document lists are filtered once
+  after App and extension contributions are merged.
+
+These are FireUX integration files, not Nuxt-reserved filenames. Nuxt's native
+`nuxt.config.ts` and `app.config.ts` remain the App entrypoints.
 
 ## App pattern
 
@@ -73,6 +85,10 @@ Research proposals do not enable runtime capabilities.
   outputs. A standalone App never falls back to the FireUX ecosystem database.
   Global and tenant Apps inherit their ecosystem database unless a separately
   reviewed storage boundary proves otherwise.
+- The App bundle keeps `srcDir: 'app'` to override package layers' `srcDir: '.'`.
+  Nuxt discovers the root `public/` directory; Core does not repeat the viewport
+  or register that public folder again. Metadata scanning uses Nuxt's default `after-resolve` timing; shared
+  route policies run at `pages:resolved`.
 - Core automatically includes `app/assets/styles/main.css` when the App owns
   that conventional stylesheet. The stylesheet remains App-owned, but its
   registration is not a project Nuxt override.
@@ -124,7 +140,10 @@ Research proposals do not enable runtime capabilities.
 - Authored `app/meta.ts` is pure data and may be consumed by browser or server
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
   dependencies; filesystem and Markdown loading belong to Core's config-only
-  metadata loader. Its optional `legal.notices` are App-owned additions to
+  metadata loader. Shared literature types live in Core
+  `runtime/app/models/meta-content.ts`; the pure `defineFireuxMeta` helper lives
+  in `runtime/app/utils/define-app-meta.ts`. Workspace capability vocabulary
+  belongs to `runtime/workspace/models/capability-families.ts`. App metadata’s optional `legal.notices` are App-owned additions to
   Core's shared `/legal` page; `readAppMeta` exposes only the validated public
   projection. Core platform documents remain shared, and an installed extension
   does not add legal content unless the App explicitly composes it.
@@ -141,7 +160,7 @@ Research proposals do not enable runtime capabilities.
 ## Sitemap publication conditions
 
 Domains register canonical sitemap sources through `fireux:seo:sitemaps:extend`.
-Core's `config/app/seo.ts` normalizes that contract; `runtime/server/utils/seo-sitemaps.ts`
+Core's `config/app/seo-config.ts` normalizes that contract; `runtime/server/utils/seo-sitemaps.ts`
 applies it to counts, page queries and final document eligibility. A domain may
 contribute `additionalPublicFilters`, explicit scalar equality conditions beside
 its primary public field. `src/utils/sitemap-public-filters.ts` validates these

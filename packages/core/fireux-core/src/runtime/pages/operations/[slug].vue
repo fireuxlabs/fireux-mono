@@ -40,7 +40,7 @@ import {
   useSeo,
 } from '../../composables/fireux/seo/useSeo'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
-import type { FireuxMetaOperation } from '../../../config/app/meta-content'
+import type { FireuxMetaOperation } from '../../app/models/meta-content'
 
 type OperationsResponse = {
   ok: boolean

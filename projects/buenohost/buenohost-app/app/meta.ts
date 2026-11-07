@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: route product copy to the sanitized local preview.
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 import { propertyCapabilities } from 'fireux-properties/runtime/property/models/capabilities'
 
 export const buenoHostProductSentence =

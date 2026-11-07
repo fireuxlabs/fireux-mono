@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: bind baseline-only modules to their package owner.
+/** Shared Nuxt defaults applied by the App bundle. */
 import type { NuxtConfig } from '@nuxt/schema'
 import { existsSync, readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -9,19 +9,6 @@ export const FIREUX_PAGE_TRANSITION = {
   name: 'fx-page',
   mode: 'out-in',
 } as const
-
-export function configureViewport(nuxt: NuxtConfig) {
-  // Ensure responsive breakpoints behave correctly on mobile.
-  const head: any = (((nuxt as any).app ||= {}).head ||= {})
-  const meta: any[] = (head.meta ||= [])
-  const hasViewport = meta.some((m) => m?.name === 'viewport')
-  if (!hasViewport) {
-    meta.push({
-      name: 'viewport',
-      content: 'width=device-width, initial-scale=1',
-    })
-  }
-}
 
 export function configurePageTransition(nuxt: NuxtConfig) {
   const app = ((nuxt as any).app ||= {}) as Record<string, any>
@@ -37,21 +24,6 @@ export function configureNitroBaseline(nuxt: NuxtConfig) {
   }
 }
 
-export function configureProjectPublicAssets(nuxt: NuxtConfig) {
-  const projectPublicDir = resolve(process.cwd(), 'public')
-  if (!existsSync(projectPublicDir)) return
-
-  const nuxtWithNitro = nuxt as NuxtConfig & { nitro?: Record<string, any> }
-  const publicAssets = ((nuxtWithNitro.nitro as any).publicAssets ||=
-    []) as Array<string | { dir: string; maxAge?: number; baseURL?: string }>
-  const already = publicAssets.some((entry) =>
-    typeof entry === 'string'
-      ? entry === projectPublicDir
-      : entry?.dir === projectPublicDir
-  )
-  if (!already) publicAssets.push({ dir: projectPublicDir })
-}
-
 export function configureNuxtRuntimeDefaults(nuxt: NuxtConfig) {
   nuxt.future = {
     ...(nuxt.future || {}),
@@ -65,9 +37,9 @@ export function configureNuxtRuntimeDefaults(nuxt: NuxtConfig) {
     // current package server runtimes still consume Nuxt's #imports alias.
     // Keep this bridge centralized pending the Nitro 3 migration contract.
     nitroAutoImports: true,
-    scanPageMeta: true,
   }
 
+  // Package layers use srcDir '.', so the App must retain its own source root.
   nuxt.srcDir = 'app'
   nuxt.buildDir = 'app/.nuxt'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }

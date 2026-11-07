@@ -1,7 +1,8 @@
+/** Normalize SEO route inputs and discover indexable static Nuxt routes. */
 import {
   normalizeSeoPath as normalizePath,
   matchesSeoPath as patternMatchesPath,
-} from '../../utils/seoIndexing'
+} from '../../utils/seo-indexing'
 const AUTO_EXCLUDED_PREFIXES = [
   '/api',
   '/_nuxt',
@@ -72,8 +73,12 @@ function uniq(values: (string | null | undefined)[]): string[] {
   return Array.from(set)
 }
 
-export function normalizePaths(values: readonly string[]): string[] {
-  return uniq(values.map((v) => normalizePath(v)))
+export function normalizePaths(values: readonly unknown[]): string[] {
+  return uniq(
+    values.map((value) =>
+      typeof value === 'string' ? normalizePath(value) : null
+    )
+  )
 }
 
 export function normalizePatterns(values: readonly string[]): string[] {
@@ -174,18 +179,19 @@ export function collectAutoSitemapPaths(
     const path = normalizePath(rawPath)
     if (!path) continue
 
-    const forced = metaForcesSitemap(page.meta)
-    if (!forced) {
-      if (metaRequestsNoindex(page.meta)) continue
-      if (
-        AUTO_EXCLUDED_PREFIXES.some(
-          (prefix) => path === prefix || path.startsWith(`${prefix}/`)
-        )
+    // Explicit sitemap inclusion may override discovery heuristics, never indexing policy.
+    if (
+      metaRequestsNoindex(page.meta) ||
+      matchesAnyPattern(path, blockedPatterns)
+    )
+      continue
+    if (
+      AUTO_EXCLUDED_PREFIXES.some(
+        (prefix) => path === prefix || path.startsWith(`${prefix}/`)
       )
-        continue
-      if (hasBlockedSegment(path)) continue
-      if (matchesAnyPattern(path, blockedPatterns)) continue
-    }
+    )
+      continue
+    if (!metaForcesSitemap(page.meta) && hasBlockedSegment(path)) continue
 
     out.push(path)
   }

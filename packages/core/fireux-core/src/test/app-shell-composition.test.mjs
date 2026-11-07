@@ -292,7 +292,7 @@ test('actual App head retains one reactive registration across normal and Worksp
         useHead: (callback) => registrations.push(callback),
       },
       '../../utils/app-theme': { resolveAppTheme: (value) => value },
-      '../../../utils/seoIndexing': {
+      '../../../utils/seo-indexing': {
         resolveSeoRobots: ({ path }) =>
           path.startsWith('/workspace') ? 'noindex' : 'index',
       },

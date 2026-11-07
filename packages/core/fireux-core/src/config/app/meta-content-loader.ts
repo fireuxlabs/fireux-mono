@@ -5,7 +5,7 @@ import type {
   FireuxMetaChecklistItem,
   FireuxMetaContent,
   FireuxMetaSolution,
-} from './meta-content.types'
+} from '../../runtime/app/models/meta-content'
 
 type FireuxSolutionMarkdownContent = Pick<
   FireuxMetaSolution,

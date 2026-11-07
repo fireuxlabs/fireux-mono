@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty workspace-operation set.
-import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
 
 export const appMeta = {
   name: 'Slap',
@@ -29,12 +29,14 @@ export const appMeta = {
     },
     {
       title: 'Stories with culture',
-      description: 'Editorial posts for launches, routes, events, and scene notes.',
+      description:
+        'Editorial posts for launches, routes, events, and scene notes.',
       icon: 'i-lucide-newspaper',
     },
     {
       title: 'Gallery energy',
-      description: 'Lookbooks, photo essays, and visual proof that the brand is alive.',
+      description:
+        'Lookbooks, photo essays, and visual proof that the brand is alive.',
       icon: 'i-lucide-images',
     },
   ],
@@ -125,8 +127,18 @@ export const metaContent = defineFireuxMeta({
       'drops and stories',
       'indie ecommerce',
     ],
-    audience: ['lifestyle brands', 'bike shops', 'streetwear labels', 'artists', 'local brands'],
-    categories: ['commerce ecosystem', 'brand website platform', 'culture-commerce'],
+    audience: [
+      'lifestyle brands',
+      'bike shops',
+      'streetwear labels',
+      'artists',
+      'local brands',
+    ],
+    categories: [
+      'commerce ecosystem',
+      'brand website platform',
+      'culture-commerce',
+    ],
     primary_topic: 'lifestyle-commerce ecosystem',
   },
   cta: {
@@ -152,30 +164,35 @@ export const metaContent = defineFireuxMeta({
     {
       slug: 'slap-sites',
       title: 'Slap Sites',
-      description: 'Public websites with a strong brand surface for culture-led commerce.',
+      description:
+        'Public websites with a strong brand surface for culture-led commerce.',
       icon: 'i-lucide-monitor-smartphone',
     },
     {
       slug: 'slap-drops',
       title: 'Slap Drops',
-      description: 'Products, collections, stock states, and featured items with launch energy.',
+      description:
+        'Products, collections, stock states, and featured items with launch energy.',
       icon: 'i-lucide-package-open',
     },
     {
       slug: 'slap-stories',
       title: 'Slap Stories',
-      description: 'Editorial story surfaces for launches, local culture, routes, and behind-the-build notes.',
+      description:
+        'Editorial story surfaces for launches, local culture, routes, and behind-the-build notes.',
       icon: 'i-lucide-newspaper',
     },
   ],
   entities: [
     {
       id: 'Brand',
-      purpose: 'The public lifestyle-commerce identity for a Slap-powered project.',
+      purpose:
+        'The public lifestyle-commerce identity for a Slap-powered project.',
     },
     {
       id: 'Drop',
-      purpose: 'A product, collection, or launch item surfaced through Slap drops.',
+      purpose:
+        'A product, collection, or launch item surfaced through Slap drops.',
     },
     {
       id: 'Story',

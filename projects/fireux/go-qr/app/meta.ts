@@ -1,7 +1,5 @@
-import {
-  defineFireuxMeta,
-  type FireuxMetaSolution,
-} from 'fireux-core/config/app/meta-content'
+import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+import type { FireuxMetaSolution } from 'fireux-core/runtime/app/models/meta-content'
 
 export const goQrProductSentence =
   'Turn one public thing into a scannable QR page or QR code.'
@@ -22,8 +20,7 @@ export const goQrLanguage = {
       'Upload the doc, share the link, print the QR code, and let people open the right information on their phone.',
     workspace_bridge_html:
       'Go QR owns doc hosting and QR links. Sproochli can later plug in as a translation and localisation layer.',
-    about_p1:
-      'Go QR is for public information people need to scan and read.',
+    about_p1: 'Go QR is for public information people need to scan and read.',
     about_p2:
       'Create your first QR doc free. More owner-managed doc tools can come later.',
   },
@@ -152,7 +149,8 @@ export const goQrLanguage = {
     {
       slug: 'event',
       title: 'Event',
-      description: 'Create a QR code for event details, timing, location, or instructions.',
+      description:
+        'Create a QR code for event details, timing, location, or instructions.',
       icon: 'i-lucide-calendar-days',
       cta: {
         label: 'Create event QR',
@@ -193,7 +191,8 @@ export const goQrLanguage = {
   entities: [
     {
       id: 'GoQrRecord',
-      purpose: 'A hosted public doc with a stable doc slug, file URL, and QR code.',
+      purpose:
+        'A hosted public doc with a stable doc slug, file URL, and QR code.',
     },
     {
       id: 'DocumentFile',

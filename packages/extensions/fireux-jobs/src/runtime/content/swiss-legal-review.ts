@@ -1,4 +1,4 @@
-import type { FireuxMetaLegalNotice } from 'fireux-core/config/app/meta-content'
+import type { FireuxMetaLegalNotice } from 'fireux-core/runtime/app/models/meta-content'
 
 /** App-selected Swiss Jobs review notice for the shared Core Legal page. */
 export const swissJobsLegalReview = {

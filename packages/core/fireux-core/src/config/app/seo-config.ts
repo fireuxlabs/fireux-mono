@@ -1,4 +1,5 @@
-import { resolveSeoRobots } from '../../utils/seoIndexing'
+/** Resolve App SEO policy and collect extension-owned sitemap contributions. */
+import { resolveSeoRobots } from '../../utils/seo-indexing'
 import {
   readSitemapPublicFilters,
   type SitemapPublicFilter,
@@ -8,13 +9,13 @@ import {
   normalizePaths,
   normalizePatterns,
   normalizeSiteUrl,
-} from './seo-paths'
+} from './seo-routes'
 
 export {
   collectAutoSitemapPaths,
   mergeSitemapPaths,
   normalizeSiteUrl,
-} from './seo-paths'
+} from './seo-routes'
 
 type AnyRecord = Record<string, any>
 
@@ -189,13 +190,8 @@ async function collectSitemaps(nuxt: NuxtConfig | any): Promise<{
     byKey.set(normalized.entityKey, normalized)
   }
 
-  const normalizedDocuments = normalizePaths(documents)
-    .filter((path) => /^\/sitemaps\/[a-z0-9][a-z0-9-]*\.xml$/i.test(path))
-    .filter((path) => path !== '/sitemaps/index.xml')
-    .filter((path) => path !== '/sitemaps/static.xml')
-
   return {
-    documents: normalizedDocuments,
+    documents,
     entities: Array.from(byKey.values()).sort((a, b) =>
       a.entityKey.localeCompare(b.entityKey)
     ),
@@ -259,7 +255,7 @@ async function collectSeoExtensions(nuxt: NuxtConfig | any) {
   return { hubs, staticPaths, disallowPaths, noindexPaths }
 }
 
-export async function configureSeoDefaults(
+export async function configureSeo(
   nuxt: NuxtConfig | any,
   options: ConfigureFireuxSeoOptions
 ): Promise<FireuxSeoResolved> {

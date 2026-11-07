@@ -9,7 +9,7 @@ import {
   resolveSeoRobots,
   matchesSeoPath,
   normalizeSeoPath,
-} from '../utils/seoIndexing.ts'
+} from '../utils/seo-indexing.ts'
 
 function load(path, result, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -136,8 +136,18 @@ test('runtime sitemap excludes explicit paths, root and dynamic families on a no
   assert.deepEqual(result.entities, [])
 })
 
+const routeHelpers = load(
+  '../config/app/seo-routes.ts',
+  '({normalizePaths, normalizePatterns, normalizeSiteUrl, collectAutoSitemapPaths})',
+  { normalizePath: normalizeSeoPath, patternMatchesPath: matchesSeoPath }
+)
+
 test('App source description feeds the resolved SEO contract without requiring catalogue pages', () => {
-  const resolve = load('../config/app/static-paths.ts', 'resolveSeoConfig')
+  const resolve = load(
+    '../config/app/seo-content.ts',
+    'resolveContentSeo',
+    routeHelpers
+  )
   assert.equal(
     resolve(undefined, {
       seo: { description: 'Private guided cycling tours.' },
@@ -155,11 +165,11 @@ test('App source description feeds the resolved SEO contract without requiring c
 
 test('declared static paths cannot bypass configured noindex headers and sitemap policy', async () => {
   const normalizers = load(
-    '../config/app/seo-paths.ts',
+    '../config/app/seo-routes.ts',
     '({normalizePaths, normalizePatterns, normalizeSiteUrl})',
     { normalizePath: normalizeSeoPath, patternMatchesPath: matchesSeoPath }
   )
-  const configure = load('../config/app/seo.ts', 'configureSeoDefaults', {
+  const configure = load('../config/app/seo-config.ts', 'configureSeo', {
     ...normalizers,
     resolveSeoRobots,
     readSitemapPublicFilters,
@@ -232,5 +242,118 @@ test('Firebase Hosting receives Core robots policy without invoking the reserved
   assert.equal(
     handler({}),
     'User-agent: *\nDisallow: /\nSitemap: https://bike.example/sitemap.xml\n'
+  )
+})
+
+test('content, explicit and discovered routes share canonical paths without duplicate variants', () => {
+  const resolve = load(
+    '../config/app/seo-content.ts',
+    'resolveContentSeo',
+    routeHelpers
+  )
+  const result = resolve(
+    {
+      staticPaths: ['/solutions/example/', '/solutions/example?from=nav', null],
+    },
+    {
+      solutions: [
+        { slug: 'example', to: ' solutions/example/#details ' },
+        { slug: 'external', to: 'https://external.example/example' },
+        { slug: 'network', to: '//external.example/example' },
+        { slug: 'email', to: 'mailto:hello@example.com' },
+        { slug: 'flagged', to: '/other', external: true },
+        { slug: 'planned', status: 'planned' },
+      ],
+      operations: [{ slug: 'manage-records' }],
+    }
+  )
+  assert.deepEqual(result.staticPaths, [
+    '/solutions/example',
+    '/solutions',
+    '/operations',
+    '/operations/manage-records',
+  ])
+  assert.deepEqual(
+    routeHelpers.normalizePaths(result.staticPaths),
+    result.staticPaths
+  )
+  assert.deepEqual(
+    routeHelpers.collectAutoSitemapPaths([{ path: '/solutions/example/' }]),
+    ['/solutions/example']
+  )
+})
+
+test('sitemap inclusion never overrides noindex, private prefixes or configured exclusions', () => {
+  const pages = [
+    { path: '/public/', meta: { sitemap: true } },
+    { path: '/hidden', meta: { sitemap: true, robots: 'noindex' } },
+    { path: '/nested-hidden', meta: { seo: { sitemap: true, index: false } } },
+    { path: '/blocked', meta: { sitemap: true } },
+    { path: '/disallowed', meta: { sitemap: true } },
+    { path: '/workspace/example', meta: { sitemap: true } },
+    { path: '/api/example', meta: { sitemap: true } },
+    { path: '/stories/success', meta: { sitemap: true } },
+  ]
+  assert.deepEqual(
+    routeHelpers.collectAutoSitemapPaths(pages, {
+      noindexPaths: ['/blocked'],
+      disallowPaths: ['/disallowed'],
+    }),
+    ['/public', '/stories/success']
+  )
+  assert.deepEqual(
+    routeHelpers.collectAutoSitemapPaths(pages, { noindexPaths: ['/**'] }),
+    []
+  )
+})
+
+test('sitemap documents from App and extension contributions normalize and deduplicate once', async () => {
+  const configure = load('../config/app/seo-config.ts', 'configureSeo', {
+    ...routeHelpers,
+    resolveSeoRobots,
+    readSitemapPublicFilters,
+  })
+  const nuxt = {
+    options: {},
+    callHook: async (name, context) => {
+      if (name === 'fireux:seo:sitemaps:extend') {
+        context.addDocument('/sitemaps/catalogue.xml?source=extension')
+        context.addDocument('/sitemaps/index.xml')
+        context.addDocument('/sitemaps/static.xml')
+        context.addDocument('/private/not-a-sitemap.xml')
+      }
+    },
+  }
+  const result = await configure(nuxt, {
+    appName: 'Example',
+    domain: 'https://example.com',
+    seo: { sitemapDocuments: ['/sitemaps/catalogue.xml/'] },
+  })
+  assert.deepEqual(result.sitemapDocuments, ['/sitemaps/catalogue.xml'])
+})
+
+test('shared list normalization retains noindex wildcard and descendant matching', () => {
+  const patterns = routeHelpers.normalizePatterns([
+    ' /private/** ',
+    '/private/**',
+    '/account/',
+  ])
+  assert.deepEqual(patterns, ['/private/**', '/account'])
+  for (const path of [
+    '/private/record?from=public#section',
+    '/account/profile/',
+  ]) {
+    assert.equal(
+      resolveSeoRobots({
+        path,
+        noindexPaths: patterns,
+        robots: 'index, follow',
+      }),
+      'noindex, nofollow'
+    )
+  }
+  assert.equal(
+    resolveSeoRobots({ path: '/public', noindexPaths: patterns }),
+    'index, follow'
   )
 })

@@ -32,6 +32,13 @@ test('App bundles resolve their own defaults and retain watches for indirect dep
         }
       )
     }
+    mkdirSync(join(fixture, 'app'))
+    writeFileSync(
+      join(fixture, 'app/meta.ts'),
+      `import { defineFireuxMeta } from 'fireux-core/runtime/app/utils/define-app-meta'
+export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture public literature' } })
+`
+    )
     mkdirSync(join(fixture, 'node_modules'))
     writeFileSync(join(fixture, 'package.json'), '{"type":"module"}')
     for (const [lane, name] of [
@@ -61,8 +68,9 @@ test('App bundles resolve their own defaults and retain watches for indirect dep
         import assert from 'node:assert/strict'
         import { defineFireuxApp } from 'fireux-app/config'
         import { defineFireuxEcosystem } from 'fireux-ecosystem/config'
-        const input = { id: 'fixture', name: 'Fixture', shortName: 'Fixture', context: 'Local config fixture', ecosystem: 'fireux', ecosystemId: 'fireux', projectId: 'fireux', role: 'tenant', meta: {} }
+        const input = { id: 'fixture', name: 'Fixture', shortName: 'Fixture', context: 'Local config fixture', ecosystem: 'fireux', ecosystemId: 'fireux', projectId: 'fireux', role: 'tenant' }
         const app = defineFireuxApp(input)
+        assert.equal(app.runtimeConfig.fireux.meta.seo.description, 'Fixture public literature')
         for (const name of ['fireux-blogs', 'fireux-products', 'fireux-ai']) {
           assert.equal(app.modules.filter(entry => entry === name).length, 1)
           assert.ok(app.watch.some(path => path.endsWith('/' + name + '/src/module.ts')))

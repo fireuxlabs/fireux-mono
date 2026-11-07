@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAsyncData } from '#imports'
-import type { FireuxMetaLegalNotice } from '../../../config/app/meta-content'
+import type { FireuxMetaLegalNotice } from '../../app/models/meta-content'
 
 type AppMetaResponse = {
   ok: true

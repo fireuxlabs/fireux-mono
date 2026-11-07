@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
+import { transpileModule, ModuleKind } from 'typescript'
 
 const source = readFileSync(
   new URL('../config/app/meta-content-loader.ts', import.meta.url),
@@ -26,4 +27,24 @@ test('App literature accepts plain checklist items alongside checked and uncheck
       { label: 'Finished', done: true },
     ]
   )
+})
+
+test('shared literature contracts and helper have no executable loader imports', () => {
+  for (const file of [
+    '../runtime/app/models/meta-content.ts',
+    '../runtime/app/utils/define-app-meta.ts',
+    '../runtime/workspace/models/capability-families.ts',
+  ]) {
+    const { outputText } = transpileModule(
+      readFileSync(new URL(file, import.meta.url), 'utf8'),
+      {
+        compilerOptions: { module: ModuleKind.ESNext, target: 9 },
+      }
+    )
+    assert.doesNotMatch(
+      outputText,
+      /^\s*import(?:\s|['"])|\brequire\s*\(/m,
+      file
+    )
+  }
 })

@@ -1,7 +1,5 @@
-import type {
-  FireuxMetaOperation,
-  WorkspaceCapabilityFamilies,
-} from 'fireux-core/config/app/meta-content'
+import type { FireuxMetaOperation } from 'fireux-core/runtime/app/models/meta-content'
+import type { WorkspaceCapabilityFamilies } from 'fireux-core/runtime/workspace/models/capability-families'
 
 const propertyWorkspace = {
   id: 'property',
