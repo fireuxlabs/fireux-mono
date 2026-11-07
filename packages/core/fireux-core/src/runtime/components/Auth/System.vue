@@ -112,7 +112,7 @@ import { googleSignInFeedback, type SignInFeedback } from './sign-in-feedback'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
-} from '../../user/utils/onboarding-route'
+} from '../../user/utils/auth-redirect'
 const router = useRouter()
 const route = useRoute()
 const {

@@ -28,3 +28,8 @@ export function resolvePostAuthDestination(value: unknown): string {
     ? DEFAULT_ONBOARDING_DESTINATION
     : target
 }
+
+/** One safe sign-in URL for navigation guards and live session redirects. */
+export function authRedirectPath(value: unknown): string {
+  return `/auth?redirect=${encodeURIComponent(resolvePostAuthDestination(value))}`
+}

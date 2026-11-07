@@ -102,7 +102,7 @@ earlier route, storage and command assumptions as historical evidence.
   - browser/network errors in workspace for `/api/internal/user/account`
   - whether provisioning stays in `pending` without transition
 - Redirect resolution is owned by
-  `packages/core/fireux-core/src/runtime/user/utils/onboarding-route.ts`; nested
+  `packages/core/fireux-core/src/runtime/user/utils/auth-redirect.ts`; nested
   onboarding redirects collapse to the original destination and unsafe
   external-looking paths fall back to `/dashboard`.
 
@@ -130,8 +130,8 @@ What to verify next (in order):
    - should contain `handle`, `display_name`, `bio`, `avatar`, and stamps
 3. `users/{uid}/private/account`
    - should contain term acceptance + preferences record after onboarding
-User onboarding is complete when the public User, private account, and basic
-AppUser membership in the configured App exist.
+     User onboarding is complete when the public User, private account, and basic
+     AppUser membership in the configured App exist.
 
 ## Functional output contract
 
@@ -196,7 +196,7 @@ Quick in-app checks:
 - `packages/core/fireux-core/src/runtime/pages/users/create.vue`
 - `packages/core/fireux-core/src/runtime/user/composables/session/useUserSessionState.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
-- `packages/core/fireux-core/src/runtime/user/utils/onboarding-route.ts`
+- `packages/core/fireux-core/src/runtime/user/utils/auth-redirect.ts`
 
 ## App creation and runtime initialization
 

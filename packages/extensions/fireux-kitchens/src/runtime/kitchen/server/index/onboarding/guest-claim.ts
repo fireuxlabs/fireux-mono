@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { fail } from './request'
+import { fail } from './request.ts'
 
 export function guestKitchenClaimTarget(kitchenId: string) {
   return defineFirestoreMutationTarget({

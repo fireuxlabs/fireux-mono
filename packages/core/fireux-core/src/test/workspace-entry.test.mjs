@@ -7,8 +7,9 @@ import { computed, ref, watch } from 'vue'
 import * as routes from '../runtime/workspace/utils/routes.ts'
 import {
   resolvePostAuthDestination,
+  authRedirectPath,
   userOnboardingPath,
-} from '../runtime/user/utils/onboarding-route.ts'
+} from '../runtime/user/utils/auth-redirect.ts'
 
 const source = readFileSync(
   new URL(
@@ -103,7 +104,12 @@ test('auth return rejects external destinations and auth loops', () => {
 
 function workspaceGuard(
   config,
-  { server = false, authenticated = false, registeredHome = true } = {}
+  {
+    server = false,
+    authenticated = false,
+    registeredHome = true,
+    dev = true,
+  } = {}
 ) {
   const source = readFileSync(
     new URL(
@@ -115,17 +121,25 @@ function workspaceGuard(
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
     .replace('export default ', 'const middleware = ')
     .replaceAll('import.meta.server', String(server))
-    .replaceAll('import.meta.dev', 'true')
+    .replaceAll('import.meta.dev', String(dev))
   const bindings = {
     defineNuxtRouteMiddleware: (callback) => callback,
     navigateTo: (target) => target,
-    useRuntimeConfig: () => ({ public: { fireux: config } }),
+    useFireUXConfig: () => ({ ...config, workspaces: config.workspaces || [] }),
+    enforceClientRouteAuth: (to) =>
+      server || !to.meta.requiresAuth || authenticated
+        ? undefined
+        : authRedirectPath(to.fullPath),
+    abortNavigation: (error) => {
+      throw error
+    },
+    createError: (value) => value,
     useWorkspaceEntryCta: () => createEntry(config),
     normalizeWorkspaceFamily: routes.normalizeWorkspaceFamily,
     workspaceFamilyFromRouteContext: routes.workspaceFamilyFromRouteContext,
     useRouter: () => ({
       currentRoute: ref({ fullPath: '/' }),
-      getRoutes: () => registeredHome ? [{ path: '/workspace' }] : [],
+      getRoutes: () => (registeredHome ? [{ path: '/workspace' }] : []),
     }),
     createClientRouteCheck: () => ({
       signal: new AbortController().signal,
@@ -162,10 +176,10 @@ test('guest workspace access retains the full destination and authenticated acce
     meta: { requiresAuth: true },
   }
   const config = { role: 'tenant', workspaces: ['kitchen'] }
-  assert.deepEqual(await workspaceGuard(config)(target), {
-    path: '/auth',
-    query: { redirect: target.fullPath },
-  })
+  assert.equal(
+    await workspaceGuard(config)(target),
+    authRedirectPath(target.fullPath)
+  )
   assert.equal(
     await workspaceGuard(config, { authenticated: true })(target),
     undefined
@@ -192,5 +206,57 @@ test('a removed generic Workspace page is not recreated by a middleware redirect
       { server, registeredHome: false }
     )
     assert.equal(await guard({ path: '/workspace', meta: {} }), undefined)
+  }
+})
+
+test('Workspace availability agrees on server and client and ignores forged family queries', async () => {
+  for (const server of [false, true]) {
+    const guard = workspaceGuard(
+      { role: 'tenant', workspaces: ['kitchen'] },
+      { server }
+    )
+    assert.equal(
+      await guard({
+        path: '/workspace/kitchen',
+        fullPath: '/workspace/kitchen',
+        meta: { requiresAuth: false },
+        query: { family: 'supplier' },
+      }),
+      undefined
+    )
+    assert.equal(
+      await guard({
+        path: '/workspace/supplier',
+        fullPath: '/workspace/supplier',
+        meta: { workspace: 'kitchen' },
+        query: { family: 'kitchen' },
+      }),
+      '/'
+    )
+    const none = workspaceGuard(
+      { role: 'standalone', workspaces: [] },
+      { server }
+    )
+    assert.equal(
+      await none({ path: '/workspace/kitchen', meta: {}, query: {} }),
+      '/'
+    )
+  }
+})
+test('production developer-only Workspace routes are unavailable on server and client', () => {
+  for (const server of [false, true]) {
+    const guard = workspaceGuard(
+      { workspaces: ['kitchen'] },
+      { server, dev: false }
+    )
+    assert.throws(
+      () =>
+        guard({
+          path: '/workspace/kitchen/test',
+          meta: { roles: ['developer'] },
+          query: {},
+        }),
+      (error) => error.statusCode === 404
+    )
   }
 })

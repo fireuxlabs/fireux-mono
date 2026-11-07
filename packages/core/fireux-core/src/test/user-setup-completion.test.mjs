@@ -11,7 +11,7 @@ import {
   ref,
   watch,
 } from 'vue'
-import { resolveUserOnboardingDestination } from '../runtime/user/utils/onboarding-route.ts'
+import { resolveUserOnboardingDestination } from '../runtime/user/utils/auth-redirect.ts'
 function load(path, result, deps) {
   let source = readFileSync(
     new URL('../runtime/' + path, import.meta.url),
@@ -54,7 +54,7 @@ function setupHarness() {
   const control = owner.run(() =>
     load(
       'user/components/Create/System.vue',
-      '{handleEnsure,error,isEnsuring,onboardingConsentAcknowledged,signInTarget,returnTarget}',
+      '{handleCreateUser,error,isCreatingUser,onboardingConsentAcknowledged,signInTarget,returnTarget}',
       {
         computed,
         ref,
@@ -72,9 +72,7 @@ function setupHarness() {
           coreUser: ref(null),
         }),
         useUserAccount: () => ({
-          account: ref(
-            null
-          ),
+          account: ref(null),
           error: ref(null),
           outcome: ref('empty'),
         }),
@@ -97,7 +95,7 @@ for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
   for (const failure of [false, true])
     test(`User setup ${failure ? 'failure' : 'success'} completion respects ${change} context`, async () => {
       const h = setupHarness(),
-        pending = h.control.handleEnsure()
+        pending = h.control.handleCreateUser()
       assert.equal(h.calls.length, 1)
       if (change === 'account') {
         h.authUser.value = { uid: 'other' }
@@ -131,7 +129,7 @@ for (const change of ['stable', 'account', 'app', 'route', 'disposal'])
 test('Setup cannot start without explicit terms consent', async () => {
   const h = setupHarness()
   h.control.onboardingConsentAcknowledged.value = false
-  await h.control.handleEnsure()
+  await h.control.handleCreateUser()
   assert.equal(h.calls.length, 0)
   assert.equal(h.navigations.length, 0)
   assert.match(h.control.error.value, /Terms/)

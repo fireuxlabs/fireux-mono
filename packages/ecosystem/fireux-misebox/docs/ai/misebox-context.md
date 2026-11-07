@@ -289,6 +289,7 @@ and Footer components directly. Those shared components remain active.
   `homePath: '/home'` supplies the public Home link. Workspace and public pages,
   pricing and authentication share the same origin. The former host-switching
   middleware, configured Workspace origin and route-removal hook are removed.
+  Sign-in inherits Core's `/auth` page; Misebox has no duplicate auth route.
   App-owned `pages/workspace/kitchen/index.vue` composes KitchenHome; capability
   descendants retain their existing routes and authority. Workspace pages remain
   noindex/no-store. `app/tests/workspace-surface.test.mjs` covers entrance intent,

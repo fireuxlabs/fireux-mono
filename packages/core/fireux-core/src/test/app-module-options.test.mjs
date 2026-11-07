@@ -26,6 +26,8 @@ try {
   assert.deepEqual(nuxt.options.runtimeConfig.public.ordering, { channels: ['pos', 'kiosk', 'website'] })
   assert.equal(nuxt.options.runtimeConfig.public.packageComponents, undefined)
   await build(nuxt)
+  const authPage = nuxt.apps.default.pages.find(page => page.path === '/auth')
+  assert.ok(authPage.file.endsWith('/fireux-core/src/runtime/pages/auth.vue'))
   const catalogue = readFileSync(join(output, 'fireux-package-components.ts'), 'utf8')
   assert.ok(catalogue.includes('AppAssets'))
   assert.equal(catalogue.includes(${JSON.stringify(root)}), false)

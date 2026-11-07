@@ -244,6 +244,10 @@ the App relationship, `workspaces` declares capabilities, and `homePath` owns
 the public Home navigation destination. An empty Workspace list loads no
 Workspace frame. Route metadata still selects the frame for each page.
 
+Workspace middleware reads this declaration through `useFireUXConfig` on both
+server and client before client sign-in checks. Route path and metadata identify
+the family; query parameters do not enable Workspaces. See [route checks](pages.md#route-availability-and-sign-in).
+
 Ecosystem Main Apps with Workspaces use a thin native index route to open the
 registered Workspace entrance through `useWorkspaceEntryCta`, preserving query
 and fragment. Their traditional public landing is `/home`, also declared as

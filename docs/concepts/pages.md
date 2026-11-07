@@ -1,6 +1,6 @@
 # Pages
 
-Updated: 2026-10-26
+Updated: 2026-11-07
 Ref: ce2861c77
 Role: map, not canon
 
@@ -58,6 +58,25 @@ Map how route pages should be built and where consensus is still forming.
 - Do not migrate deliberately untrimmed public identifiers or route-projection
   grammar as mechanical cleanup. Review their 404, canonical, redirect, and
   sitemap effects as an explicit route/SEO decision first.
+
+## Route availability and sign-in
+
+Core's Workspace middleware checks the configured Workspace family on server
+and client. A query parameter cannot enable another family. Diagnostics and
+developer-only Workspace routes are unavailable in production on both sides.
+
+The auth, Workspace and diagnostics middleware delegate session and role
+decisions to [route-auth.ts](../../packages/core/fireux-core/src/runtime/composables/navigation/route-auth.ts).
+These client navigation checks wait for Firebase Auth settlement and cancel
+obsolete decisions after navigation. They do not authorize protected server
+commands or replace Firestore Rules.
+
+The Dashboard layout retains [useAuthRedirect](../../packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuthRedirect.ts)
+for sign-out while a page is open. It tracks the latest return destination;
+the shared safe sign-in URL preserves its query and fragment. Core owns the
+inherited `/auth` page; Apps only override it for a real product difference.
+See `arrival-route.test.mjs` and `workspace-entry.test.mjs` under Core's
+`src/test` for these navigation contracts.
 
 ## Common route families
 

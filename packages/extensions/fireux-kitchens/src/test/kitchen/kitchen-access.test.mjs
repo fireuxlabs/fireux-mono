@@ -32,7 +32,7 @@ import { createDefaultKitchenStation } from '../../runtime/kitchen/server/statio
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
-} from 'fireux-core/runtime/user/utils/onboarding-route'
+} from 'fireux-core/runtime/user/utils/auth-redirect'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/workspace/server/entity/creation-identity'
 import {
   serverKitchenAccessTarget,

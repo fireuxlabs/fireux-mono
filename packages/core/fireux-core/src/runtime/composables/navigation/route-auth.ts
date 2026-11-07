@@ -1,3 +1,14 @@
+import {
+  navigateTo,
+  onNuxtReady,
+  showError,
+  useNuxtApp,
+  useRouter,
+  useRuntimeConfig,
+} from '#imports'
+import type { RouteLocationNormalized } from 'vue-router'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import { authRedirectPath } from '../../user/utils/auth-redirect'
 import { watch } from 'vue'
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
@@ -140,4 +151,61 @@ async function readAppUser(
   return snapshot.exists()
     ? ({ id: snapshot.id, ...snapshot.data() } as AppUserWithId)
     : null
+}
+
+type RouteAuthPolicy = { requiresAuth?: boolean; roles?: readonly string[] }
+
+/** Shared client navigation decision; server commands retain their own authority. */
+export function enforceClientRouteAuth(
+  to: Pick<RouteLocationNormalized, 'fullPath' | 'meta'>,
+  policy: RouteAuthPolicy = {}
+) {
+  if (import.meta.server || !(policy.requiresAuth ?? to.meta.requiresAuth))
+    return
+  const roles: readonly unknown[] =
+    policy.roles ?? (Array.isArray(to.meta.roles) ? to.meta.roles : [])
+  const nuxtApp = useNuxtApp()
+  const router = useRouter()
+  const runtime = useRuntimeConfig()
+  const config = useFireUXConfig()
+  const redirect = (path: string) =>
+    nuxtApp.runWithContext(() => navigateTo(path))
+  const enforce = async () => {
+    const check = createClientRouteCheck(
+      () => router.currentRoute.value.fullPath
+    )
+    try {
+      const auth = await resolveClientAuthState(2500, check.signal)
+      if (check.signal.aborted) return
+      if (!auth.isAuthenticated) return redirect(authRedirectPath(to.fullPath))
+      if (
+        roles.includes('developer') &&
+        (!config.developerId || auth.uid !== config.developerId)
+      )
+        return redirect('/dashboard')
+      if (!roles.includes('admin')) return
+      const isAdmin = await resolveClientAppAdmin({
+        uid: auth.uid,
+        appId: config.appId,
+        databaseId: runtime.public.firebaseEcosystem?.firebase?.databaseId,
+        timeoutMs: 1500,
+      })
+      if (!check.signal.aborted && !isAdmin) return redirect('/dashboard')
+    } catch (error) {
+      if (!check.signal.aborted) throw error
+    } finally {
+      check.dispose()
+    }
+  }
+  if (nuxtApp.isHydrating) {
+    const guardedPath = to.fullPath
+    onNuxtReady(() => {
+      if (router.currentRoute.value.fullPath !== guardedPath) return
+      void enforce().catch((error) =>
+        nuxtApp.runWithContext(() => showError(error))
+      )
+    })
+    return
+  }
+  return enforce()
 }

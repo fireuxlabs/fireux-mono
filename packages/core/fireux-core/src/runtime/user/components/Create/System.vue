@@ -99,7 +99,7 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../composables/session/useUserSession'
 import { useUserAccount } from '../../composables/account/useUserAccount'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
-import { resolveUserOnboardingDestination } from '../../utils/onboarding-route'
+import { resolveUserOnboardingDestination } from '../../utils/auth-redirect'
 const route = useRoute()
 const router = useRouter()
 const config = useFireUXConfig()

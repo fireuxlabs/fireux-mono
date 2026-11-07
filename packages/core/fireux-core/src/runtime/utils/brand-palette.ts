@@ -9,7 +9,7 @@ import {
   type AppPalette,
   type AppPaletteLayer,
   type WorkspacePalette,
-} from '../../types/theme'
+} from '../../types/theme.ts'
 
 export const DEFAULT_BRAND_PALETTE = {
   primary_color: '#0f766e',
@@ -22,7 +22,7 @@ export type BrandPaletteParseResult =
 
 const record = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : null
 
 export const normalizeHexColor = (value: unknown) => {
@@ -41,7 +41,7 @@ export function parseBrandPalette(value: unknown): BrandPaletteParseResult {
   }
 
   const allowed = new Set<string>(BRAND_PALETTE_KEYS)
-  const unsupported = Object.keys(source).find(key => !allowed.has(key))
+  const unsupported = Object.keys(source).find((key) => !allowed.has(key))
   if (unsupported) {
     return {
       ok: false,
@@ -105,7 +105,7 @@ export function readAppPaletteLayer(value: unknown): AppPaletteLayer | null {
   const source = record(value)
   if (!source) return null
   const allowed = new Set<string>(APP_PALETTE_KEYS)
-  if (Object.keys(source).some(key => !allowed.has(key))) return null
+  if (Object.keys(source).some((key) => !allowed.has(key))) return null
 
   const palette: AppPaletteLayer = {}
   for (const key of APP_PALETTE_KEYS) {
@@ -117,7 +117,9 @@ export function readAppPaletteLayer(value: unknown): AppPaletteLayer | null {
   return palette
 }
 
-export const workspacePaletteFromApp = (palette: AppPalette): WorkspacePalette => ({
+export const workspacePaletteFromApp = (
+  palette: AppPalette
+): WorkspacePalette => ({
   canvas: palette.canvas,
   text: palette.text,
   accent: palette.accent,
@@ -130,7 +132,7 @@ export function compactAppPalette(
   workspacePalette: WorkspacePalette
 ): AppPaletteLayer {
   return Object.fromEntries(
-    APP_PALETTE_KEYS.flatMap(key =>
+    APP_PALETTE_KEYS.flatMap((key) =>
       palette[key] !== workspacePalette[key as keyof WorkspacePalette]
         ? [[key, palette[key]]]
         : []

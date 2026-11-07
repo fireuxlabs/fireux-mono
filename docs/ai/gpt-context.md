@@ -293,6 +293,12 @@ Public projections omit protected children; hiding data in Vue is not
 authorization. Routes and UI availability do not grant mutation authority.
 Protected writes use a named trusted command that validates the exact target.
 
+Core route middleware checks static Workspace availability on server and client.
+Client session and role decisions share `runtime/composables/navigation/route-auth.ts`;
+the Dashboard's `useAuthRedirect` separately handles sign-out while mounted.
+These navigation checks do not replace trusted command authority. See
+[route availability and sign-in](../concepts/pages.md#route-availability-and-sign-in).
+
 See [Entity ownership](../concepts/entities.md),
 [Workspace and Entity composition](../concepts/family-workspace-entity.md),
 [Firestore data ownership](../concepts/firestore-entity.md),
