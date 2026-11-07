@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useAuth } from './useAuth'
 
-export type WorkspaceAuthPhase = 'loading' | 'guest' | 'signed-in'
+export type AuthPhase = 'loading' | 'guest' | 'signed-in'
 
 const AUTH_WAIT_TIMEOUT_MS = 1500
 
@@ -16,10 +16,10 @@ async function waitFor(ready: () => boolean, timeoutMs: number) {
   }
 }
 
-export function useWorkspaceEntryState() {
+export function useAuthPhase() {
   const { uid, isAuthenticated, hasAuthState } = useAuth()
 
-  const authPhase = computed<WorkspaceAuthPhase>(() => {
+  const authPhase = computed<AuthPhase>(() => {
     if (!hasAuthState.value) return 'loading'
     return isAuthenticated.value ? 'signed-in' : 'guest'
   })

@@ -312,9 +312,9 @@ async function renderSidebar({
       if (id.endsWith('/FireUXConfig'))
         return { useFireUXConfig: () => ({ appName: 'BuenoHost' }) }
       if (id.endsWith('/useAuth')) return { useAuth: () => auth }
-      if (id.endsWith('/useWorkspaceEntryState'))
+      if (id.endsWith('/useAuthPhase'))
         return {
-          useWorkspaceEntryState: () => ({ isGuest: ref(phase === 'guest') }),
+          useAuthPhase: () => ({ isGuest: ref(phase === 'guest') }),
         }
       if (id.endsWith('/useUserSession'))
         return {
@@ -411,9 +411,9 @@ async function renderPolishComponent(
             fullPath: '/workspace/kitchen?from=directory#home',
           }),
         }
-      if (id.endsWith('/useWorkspaceEntryState'))
+      if (id.endsWith('/useAuthPhase'))
         return {
-          useWorkspaceEntryState: () => ({ isGuest: ref(phase === 'guest') }),
+          useAuthPhase: () => ({ isGuest: ref(phase === 'guest') }),
         }
       if (id.endsWith('/useAuth'))
         return {

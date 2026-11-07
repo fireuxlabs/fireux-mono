@@ -75,7 +75,7 @@ import { useWorkspaceEntryCta } from '../../../workspace/composables/useWorkspac
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useWorkspaceEntryState } from '../../../workspace/composables/useWorkspaceEntryState'
+import { useAuthPhase } from '../../../composables/fireux/firebase/useAuthPhase'
 import { useNav } from '../../../composables/navigation/useNav'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
@@ -117,7 +117,7 @@ const mobileItems = computed(() =>
 )
 
 /** Auth */
-const { authPhase, isSignedIn } = useWorkspaceEntryState()
+const { authPhase, isSignedIn } = useAuthPhase()
 const { currentUser, avatarSrc, subscription } = useUserSession()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()

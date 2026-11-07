@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
-const { isSignedIn } = useWorkspaceEntryState()
+import { useAuthPhase } from 'fireux-core/runtime/composables/fireux/firebase/useAuthPhase'
+const { isSignedIn } = useAuthPhase()
 import WorkspaceGuestWelcome from 'fireux-core/runtime/workspace/components/GuestWelcome.vue'
 import { useSeoMeta } from '#imports'
 

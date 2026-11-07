@@ -164,7 +164,8 @@ or subscription.
 
 ## App entrance and optional Workspace
 
-Keep one `FireuxApp` root for global, tenant and standalone Apps. `role` owns
+Use `FireuxApp` when no Workspaces are declared, and `FireuxWorkspaceApp` when
+`workspaces` is non-empty. Global, tenant and standalone roles share this rule. `role` owns
 the App relationship, `workspaces` declares capabilities, and `homePath` owns
 the public Home navigation destination. An empty Workspace list loads no
 Workspace frame. Route metadata still selects the frame for each page.
@@ -175,8 +176,8 @@ and fragment. Their traditional public landing is `/home`, also declared as
 `homePath`. The shared sidebar exposes this Home link when it differs from the
 Workspace entrance. The first declared Workspace supplies the default entrance.
 FireUX retains its authored public `/` and `homePath: '/'`.
-Tenant and standalone entrances remain App-owned. No separate root component or
-parallel entrance configuration is required.
+Tenant and standalone entrances remain App-owned. Root selection follows the existing Workspace declaration; there is no
+parallel entrance configuration or role-specific root.
 
 Misebox uses the same host for Home, Workspace, sign-in and public tools. Its
 former host-switching middleware and declared Kitchen Workspace origin are

@@ -51,7 +51,7 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useWorkspaceEntryState } from '../../../workspace/composables/useWorkspaceEntryState'
+import { useAuthPhase } from '../../../composables/fireux/firebase/useAuthPhase'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
@@ -73,7 +73,7 @@ const props = withDefaults(
 const fireux = useFireUXConfig()
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
-const { isGuest } = useWorkspaceEntryState()
+const { isGuest } = useAuthPhase()
 const { currentUser, coreOutcome } = useUserSession()
 const { pill: userInterface } = useUserView()
 

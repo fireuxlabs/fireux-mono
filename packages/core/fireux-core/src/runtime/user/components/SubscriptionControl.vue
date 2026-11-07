@@ -24,7 +24,7 @@
 import { computed, onMounted, ref, useToast } from '#imports'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useWorkspaceEntryState } from '../../workspace/composables/useWorkspaceEntryState'
+import { useAuthPhase } from '../../composables/fireux/firebase/useAuthPhase'
 import { useAppUserSubscriptions } from '../../app/composables/membership/useAppUserSubscriptions'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { resolveAppUserAccess } from '../../app/utils/app-user-access'
@@ -35,7 +35,7 @@ const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
 })
 
 const { currentUser, hasAuthState } = useAuth()
-const { isGuest: guest } = useWorkspaceEntryState()
+const { isGuest: guest } = useAuthPhase()
 const session = useAppSession()
 const config = useFireUXConfig()
 const membership = computed(() => {

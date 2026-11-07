@@ -128,12 +128,12 @@ const route = useRoute()
 import { computed } from '#imports'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
-import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
+import { useAuthPhase } from 'fireux-core/runtime/composables/fireux/firebase/useAuthPhase'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
-const { authPhase, isSignedIn } = useWorkspaceEntryState()
+const { authPhase, isSignedIn } = useAuthPhase()
 const { currentUser, avatarSrc } = useUserSession()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()

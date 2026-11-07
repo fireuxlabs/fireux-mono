@@ -1,10 +1,13 @@
-import { parse, compileTemplate } from 'vue/compiler-sfc'
+import { parse, compileTemplate, compileScript } from 'vue/compiler-sfc'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
-import { compile, createSSRApp, h } from 'vue'
+import * as vue from 'vue'
+import { compile, createSSRApp, h, reactive, ref } from 'vue'
+import { compileFunction } from 'node:vm'
+import { transpileModule, ModuleKind } from 'typescript'
 import { renderToString } from 'vue/server-renderer'
 
 const repo = fileURLToPath(new URL('../../../../../', import.meta.url))
@@ -20,7 +23,16 @@ test('maintained App roots delegate stock lifecycle; only Go QR embeds its own o
       const file = join(repo, 'projects', group.name, app.name, 'app/app.vue')
       if (!existsSync(file)) continue
       const source = readFileSync(file, 'utf8')
-      assert.match(source, /<FireuxApp\b/, file)
+      const config = readFileSync(
+        join(repo, 'projects', group.name, app.name, 'nuxt.config.ts'),
+        'utf8'
+      )
+      const hasWorkspace = /workspaces\s*[:=]\s*\[\s*["']/.test(config)
+      assert.match(
+        source,
+        hasWorkspace ? /<FireuxWorkspaceApp\b/ : /<FireuxApp\b/,
+        file
+      )
       if (group.name === 'fireux' && app.name === 'go-qr') {
         assert.match(source, /route\.path\.startsWith\('\/tools\/'\)/)
       } else assert.doesNotMatch(source, /<(UApp|NuxtPage|Workspace)\b/, file)
@@ -28,29 +40,35 @@ test('maintained App roots delegate stock lifecycle; only Go QR embeds its own o
   }
 })
 
-test('FireuxApp keeps route and initialization ownership apart from developer controls', () => {
-  const shell = readFileSync(
+test('ordinary root owns bootstrap without Workspace imports; optional root composes it', () => {
+  const base = readFileSync(
     join(runtime, 'app/components/FireuxApp.vue'),
     'utf8'
   )
-  const controls = readFileSync(
-    join(runtime, 'app/components/DevControls.vue'),
+  const workspace = readFileSync(
+    join(runtime, 'app/components/FireuxWorkspaceApp.vue'),
     'utf8'
   )
-  assert.equal((shell.match(/<UApp>/g) || []).length, 1)
-  assert.equal((shell.match(/<NuxtPage\b/g) || []).length, 1)
-  assert.match(
-    shell,
-    /<LazyWorkspace[\s\S]*?route\.meta\.workspacePage && fireuxConfig\.workspaces\.length/
+  const gate = readFileSync(
+    join(runtime, 'app/components/InitializationGate.vue'),
+    'utf8'
   )
-  assert.match(shell, /useAppRead\(fireuxConfig\.appId\)/)
-  assert.match(shell, /appExists\.value === false/)
-  assert.match(shell, /resolveSeoRobots/)
-  assert.match(shell, /withBuildVersion/)
-  assert.match(shell, /<AppDevControls\s*\/>/)
-  assert.match(shell, /<DevOnly>\s*<AppDevControls\s*\/>\s*<\/DevOnly>/)
-  assert.doesNotMatch(controls, /useAppRead|useAppInitialization|<NuxtPage/)
-  assert.match(controls, /onBeforeUnmount/)
+  const head = readFileSync(
+    join(runtime, 'app/composables/useAppHead.ts'),
+    'utf8'
+  )
+  assert.equal((base.match(/<UApp>/g) || []).length, 1)
+  assert.match(base, /<slot>/)
+  assert.match(base, /<NuxtPage/)
+  assert.doesNotMatch(base + head, /Workspace|workspace\//)
+  assert.match(base, /<DevOnly>\s*<AppDevControls\s*\/>\s*<\/DevOnly>/)
+  assert.match(base, /<AppInitializationGate/)
+  assert.match(gate, /useAppRead\(config\.appId\)/)
+  assert.match(gate, /exists\.value === false/)
+  assert.match(head, /resolveSeoRobots/)
+  assert.match(head, /withBuildVersion/)
+  assert.match(workspace, /<FireuxApp/)
+  assert.doesNotMatch(workspace, /<UApp|useAppRead|useHead/)
 })
 
 function surface(file, state = {}) {
@@ -63,19 +81,22 @@ for (const layout of [
   'docs',
   'bare',
   'workspace',
+  'workspace-normal',
   'without-workspace',
   'embedded',
 ]) {
   test(`${layout} composition renders one main around page content`, async () => {
-    const shell = surface(join(runtime, 'app/components/FireuxApp.vue'), {
-      route: {
-        meta: {
-          workspacePage: ['workspace', 'without-workspace'].includes(layout),
-        },
-      },
-      showOnboardingModal: false,
-      fireuxConfig: { workspaces: layout === 'workspace' ? ['example'] : [] },
-    })
+    const base = surface(join(runtime, 'app/components/FireuxApp.vue'))
+    const shell = [
+      'workspace',
+      'workspace-normal',
+      'without-workspace',
+    ].includes(layout)
+      ? surface(join(runtime, 'app/components/FireuxWorkspaceApp.vue'), {
+          showWorkspace: layout === 'workspace',
+          manifestPath: '/manifest.webmanifest',
+        })
+      : base
     const app = createSSRApp(
       layout === 'embedded'
         ? surface(join(repo, 'projects/fireux/go-qr/app/app.vue'), {
@@ -89,6 +110,7 @@ for (const layout of [
         () =>
           h(tag, slots.default?.()),
     })
+    app.component('FireuxApp', base)
     app.component('UApp', wrapper('div'))
     app.component('UMain', wrapper('main'))
     app.component('UContainer', wrapper('div'))
@@ -139,6 +161,10 @@ for (const layout of [
     app.component('WorkspaceBreadcrumbs', wrapper('nav'))
     app.component('NuxtErrorBoundary', wrapper('div'))
     for (const name of [
+      'FirePwaStatus',
+      'UButton',
+      'UAlert',
+      'AppInitializationGate',
       'ClientOnly',
       'DevOnly',
       'AppInitializeSystem',
@@ -164,6 +190,8 @@ for (const layout of [
 test('reviewed shared foundation templates compile with their named slots', () => {
   for (const file of [
     'app/components/FireuxApp.vue',
+    'app/components/FireuxWorkspaceApp.vue',
+    'app/components/InitializationGate.vue',
     'app/components/DevControls.vue',
     'components/layouts/default/Header.vue',
     'components/layouts/default/Footer.vue',
@@ -183,4 +211,117 @@ test('reviewed shared foundation templates compile with their named slots', () =
       file
     )
   }
+})
+
+function loadScript(source, dependencies) {
+  const code = transpileModule(source, {
+    compilerOptions: { module: ModuleKind.CommonJS, target: 9 },
+  }).outputText
+  const module = { exports: {} }
+  compileFunction(code, ['require', 'module', 'exports'])(
+    (id) => {
+      if (id in dependencies) return dependencies[id]
+      throw new Error(`Unexpected dependency: ${id}`)
+    },
+    module,
+    module.exports
+  )
+  return module.exports
+}
+
+test('actual Workspace root updates its branch and manifest through route changes', () => {
+  const route = reactive({ path: '/docs', meta: {} })
+  const config = reactive({ workspaces: ['project'] })
+  const routes = loadScript(
+    readFileSync(join(runtime, 'workspace/utils/routes.ts'), 'utf8'),
+    {}
+  )
+  const { descriptor } = parse(
+    readFileSync(join(runtime, 'app/components/FireuxWorkspaceApp.vue'), 'utf8')
+  )
+  const component = loadScript(
+    compileScript(descriptor, { id: 'workspace-root' }).content,
+    {
+      vue,
+      '#imports': { useRoute: () => route },
+      '../composables/config/FireUXConfig': { useFireUXConfig: () => config },
+      '../../workspace/utils/routes': routes,
+      '../../workspace/composables/useWorkspaceEntryCta': {
+        useWorkspaceEntryCta: () => ({
+          homePath: (family) => `/workspace/${family}`,
+        }),
+      },
+    }
+  ).default
+  const state = component.setup({}, { expose() {} })
+  assert.equal(state.showWorkspace.value, false)
+  assert.equal(state.manifestPath.value, '/manifest.webmanifest')
+  route.path = '/workspace/project/identity'
+  route.meta = { workspacePage: true, workspace: 'project' }
+  assert.equal(state.showWorkspace.value, true)
+  assert.equal(
+    state.manifestPath.value,
+    '/manifest.webmanifest?surface=workspace&start_url=%2Fworkspace%2Fproject'
+  )
+  config.workspaces = []
+  assert.equal(state.showWorkspace.value, false)
+  assert.equal(state.manifestPath.value, '/manifest.webmanifest')
+  config.workspaces = ['project']
+  route.path = '/docs/app'
+  route.meta = {}
+  assert.equal(state.showWorkspace.value, false)
+  assert.equal(state.manifestPath.value, '/manifest.webmanifest')
+})
+
+test('actual App head retains one reactive registration across normal and Workspace navigation', () => {
+  const route = reactive({ path: '/' })
+  const manifest = ref('/manifest.webmanifest')
+  const registrations = []
+  const { useAppHead } = loadScript(
+    readFileSync(join(runtime, 'app/composables/useAppHead.ts'), 'utf8'),
+    {
+      vue,
+      '#imports': {
+        useRoute: () => route,
+        useRuntimeConfig: () => ({
+          app: { buildId: 'test-build' },
+          public: { fireux: { seo: {} } },
+        }),
+        useHead: (callback) => registrations.push(callback),
+      },
+      '../../../utils/seoIndexing': {
+        resolveSeoRobots: ({ path }) =>
+          path.startsWith('/workspace') ? 'noindex' : 'index',
+      },
+      '../../utils/build-version-url': {
+        withBuildVersion: (path, build) =>
+          `${path}${path.includes('?') ? '&' : '?'}v=${build}`,
+      },
+    }
+  )
+  useAppHead(manifest)
+  assert.equal(registrations.length, 1)
+  assert.deepEqual(registrations[0]().meta, [])
+  assert.equal(
+    registrations[0]().link[0].href,
+    '/manifest.webmanifest?v=test-build'
+  )
+  route.path = '/workspace/project'
+  manifest.value =
+    '/manifest.webmanifest?surface=workspace&start_url=%2Fworkspace%2Fproject'
+  assert.deepEqual(registrations[0]().meta, [
+    { name: 'robots', content: 'noindex, nofollow' },
+  ])
+  assert.match(
+    registrations[0]().link[0].href,
+    /start_url=%2Fworkspace%2Fproject&v=test-build$/
+  )
+  route.path = '/docs'
+  manifest.value = '/manifest.webmanifest'
+  assert.deepEqual(registrations[0]().meta, [])
+  assert.equal(
+    registrations[0]().link[0].href,
+    '/manifest.webmanifest?v=test-build'
+  )
+  assert.equal(registrations.length, 1)
 })

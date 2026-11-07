@@ -160,15 +160,20 @@ The detailed UI and Entity conventions live in [components](../concepts/componen
 
 ## UI and design system
 
-Stock App roots delegate to Core `FireuxApp`, which owns the single `UApp`
-provider, route selection and App initialization lifecycle. App-owned theme and
+Apps without Workspaces use Core `FireuxApp`; Apps declaring Workspaces use
+`FireuxWorkspaceApp`. The Workspace root composes the ordinary root through a
+conditional native slot, sharing one `UApp` provider and App initialization
+lifecycle. App role does not choose the root. App-owned theme and
 language setup may remain around that delegation. Go QR's documented embedded
 tool branch retains its separate provider/outlet; another bypass needs a real
 product and lifecycle justification. See [the rendering map](../concepts/layouts.md).
 
 FireuxApp supplies the normal page's single `UMain` inside the selected layout;
-WorkspacePage owns the Workspace landmark. The frame loads lazily only when
-the App declares Workspaces and the route requests it. Layouts and page descendants do not
+WorkspacePage owns the Workspace landmark. The Workspace-capable root loads that frame lazily when the route requests it.
+The ordinary root and its head composable import no Workspace behavior. This is
+a root-composition boundary, not a guarantee that shared navigation imports no
+Workspace entry helpers. Shared sign-in phase belongs to Core authentication
+through `useAuthPhase`, independent of Workspace. Layouts and page descendants do not
 add another `main`. The developer dock stays inside native `DevOnly` so its
 component setup and dock-only code are excluded from production execution.
 
@@ -202,7 +207,7 @@ public names: `FireState`, `FireCollectionPagination`. Domain and
 Workspace registrations retain their named prefixes. App-local overrides of a
 shared component retain its canonical Fire name. The native Core runtime layer
 owns shared-library registration.
-`FireuxApp` is the explicitly registered Core application root. The other App,
+`FireuxApp` and `FireuxWorkspaceApp` are the explicitly registered Core roots. The other App,
 Workspace, Ecosystem and User registrations retain their existing prefixes.
 
 Use Nuxt's generated component names when package registration provides them.

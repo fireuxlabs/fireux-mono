@@ -1,5 +1,5 @@
 <template>
-  <FireuxApp />
+  <FireuxWorkspaceApp />
 </template>
 
 <script setup lang="ts">

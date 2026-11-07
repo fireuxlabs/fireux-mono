@@ -33,13 +33,7 @@
           aria-hidden="true"
         />
         <strong>
-          {{
-            copy(
-              isSignedIn
-                ? 'market_manage_stores'
-                : 'sell_register'
-            )
-          }}
+          {{ copy(isSignedIn ? 'market_manage_stores' : 'sell_register') }}
         </strong>
         <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
       </NuxtLink>
@@ -53,12 +47,12 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { useWorkspaceEntryState } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryState'
+import { useAuthPhase } from 'fireux-core/runtime/composables/fireux/firebase/useAuthPhase'
 
 defineProps<{
   id?: string
 }>()
 
-const { isSignedIn } = useWorkspaceEntryState()
+const { isSignedIn } = useAuthPhase()
 const { copy } = useInterlakenCopy()
 </script>

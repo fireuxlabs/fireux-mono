@@ -49,7 +49,10 @@ test('legacy premium retains Pro access and capacity while canonical writes acce
   assert.equal(appSubscriptionCapacity(capacity, 'project', 'pro'), 4)
   for (const value of ['professional', 'unknown', '', null, undefined]) {
     assert.equal(readAppUserSubscription(value), null)
-    assert.equal(resolveAppUserAccess({ role: 'user', subscription: value }).hasMembership, false)
+    assert.equal(
+      resolveAppUserAccess({ role: 'user', subscription: value }).hasMembership,
+      false
+    )
     assert.equal(appSubscriptionCapacity(capacity, 'project', value), 0)
   }
 })
@@ -144,7 +147,7 @@ function fixture({ role = 'dev', subscription = 'free', guest = false } = {}) {
     useAuth: () => auth,
     useAppSession: () => session,
     useFireUXConfig: () => config,
-    useWorkspaceEntryState: () => ({
+    useAuthPhase: () => ({
       isGuest: computed(
         () =>
           auth.hasAuthState.value &&
@@ -205,9 +208,9 @@ async function renderBadge(f) {
         return { useAppSession: f.dependencies.useAppSession }
       if (id.endsWith('/FireUXConfig'))
         return { useFireUXConfig: f.dependencies.useFireUXConfig }
-      if (id.endsWith('/useWorkspaceEntryState'))
+      if (id.endsWith('/useAuthPhase'))
         return {
-          useWorkspaceEntryState: f.dependencies.useWorkspaceEntryState,
+          useAuthPhase: f.dependencies.useAuthPhase,
         }
       if (id.endsWith('/useAppUserSubscriptions'))
         return {
@@ -482,7 +485,13 @@ test('existing production transactional authority permits admin/dev self target 
 })
 
 test('subscription mutations write Pro and reject legacy or invalid requested tiers', async () => {
-  for (const subscription of ['pro', 'premium', 'professional', 'invalid', '']) {
+  for (const subscription of [
+    'pro',
+    'premium',
+    'professional',
+    'invalid',
+    '',
+  ]) {
     const writes = []
     const state = {
       context: {

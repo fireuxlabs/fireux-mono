@@ -30,7 +30,7 @@ Map how route pages should be built and where consensus is still forming.
   Shared chrome belongs to a Nuxt layout or a named family composition; see
   [layouts](layouts.md) before changing route framing.
 - Workspace route pages set `layout: false` and `workspacePage: true`.
-  [FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
+  [FireuxWorkspaceApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxWorkspaceApp.vue)
   selects Core's Workspace composition, whose page frame owns the nested
   `<NuxtPage />` outlet. Workspace pages provide route content.
 - Core supplies the app-wide Nuxt page transition and disables it for Workspace

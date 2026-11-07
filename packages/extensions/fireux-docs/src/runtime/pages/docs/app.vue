@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="app.vue"
-      description="Keep the App root small. FireuxApp composes the shared FireUX lifecycle."
+      description="Choose the ordinary or Workspace root. Both share the FireUX App lifecycle."
     />
     <UPageBody>
       <UPageSection title="The Nuxt foundation">
@@ -22,21 +22,29 @@
         </UCard>
       </UPageSection>
       <UPageSection title="What FireUX adds">
-        <p>Use this in your App's <code>app/app.vue</code>:</p>
+        <p>
+          For an App without Workspaces, use this in <code>app/app.vue</code>:
+        </p>
         <UCard variant="subtle">
           <pre><code>{{ fireuxExample }}</code></pre>
         </UCard>
+        <p>If the App declares Workspaces, use the Workspace-capable root:</p>
+        <UCard variant="subtle">
+          <pre><code>{{ workspaceExample }}</code></pre>
+        </UCard>
+
         <p>
-          Core's <code>FireuxApp</code> supplies one <code>UApp</code>, selects
-          the normal layout or Workspace, and maintains the App initialization,
-          manifest, PWA status and robots metadata. Developer controls are
-          included only in development.
+          Core's <code>FireuxApp</code> supplies one <code>UApp</code>, normal
+          page layouts and the shared App initialization, manifest, PWA status
+          and robots metadata. Developer controls are included only in
+          development.
         </p>
         <p>
           Normal pages receive one <code>UMain</code> inside their layout. The
-          Workspace frame owns its own main content landmark. Apps with no
-          configured Workspaces do not load the Workspace frame. Nuxt still owns
-          routing and layouts; Nuxt UI supplies the controls.
+          Workspace frame owns its own main content landmark.
+          <code>FireuxWorkspaceApp</code> adds that frame and its manifest path;
+          the ordinary root has no Workspace imports. Nuxt still owns routing
+          and layouts; Nuxt UI supplies the controls.
         </p>
       </UPageSection>
       <UPageSection title="Choose the entrance">
@@ -56,8 +64,9 @@
       <UPageSection title="Keep these boundaries">
         <ul class="fx-list-stack">
           <li>
-            Use one <code>FireuxApp</code>. Do not repeat <code>UApp</code>, the
-            route outlet or App initialization around it.
+            Use one root: <code>FireuxApp</code> without Workspaces, or
+            <code>FireuxWorkspaceApp</code> with them. Do not repeat
+            <code>UApp</code>, the route outlet or App initialization around it.
           </li>
           <li>
             Put route content in pages and shared navigation, headers and
@@ -122,5 +131,8 @@ const uiExample = `<template>
 </template>`
 const fireuxExample = `<template>
   <FireuxApp />
+</template>`
+const workspaceExample = `<template>
+  <FireuxWorkspaceApp />
 </template>`
 </script>

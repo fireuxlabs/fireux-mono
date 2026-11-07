@@ -316,7 +316,7 @@ test('/mis reads account once live, never opens a profile automatically, and kee
       ref,
       watch,
       useInterlakenCopy: () => ({ copy: (key) => key, locale: ref('en-GB') }),
-      useWorkspaceEntryState: () => ({ authPhase: ref('authenticated') }),
+      useAuthPhase: () => ({ authPhase: ref('authenticated') }),
       useUserSession: () => ({
         currentUser: ref({ display_name: 'Person' }),
         avatarSrc: ref(''),

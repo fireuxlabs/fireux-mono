@@ -41,8 +41,9 @@ responsibility.
 The public [app.vue guide](../../packages/extensions/fireux-docs/src/runtime/pages/docs/app.vue) compares Nuxt, Nuxt UI and FireUX and explains the supported root constraints.
 
 Core [FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
-owns the stock UApp provider, PWA status, route branches, manifest/SEO policy and
-current-App initialization blocker. Every maintained App root delegates to it,
+owns the stock UApp provider, PWA status, normal-page fallback, shared head policy and
+current-App initialization blocker. Workspace-capable Apps compose it through `FireuxWorkspaceApp`; ordinary Apps
+use it directly,
 including the [starter](../../projects/templates/fireux-template/app/app.vue).
 The starter home uses native UPage/UPageHeader beneath the default layout; the
 layout supplies its only container. Repeating UApp plus Workspace/NuxtLayout in an App root bypasses that lifecycle
@@ -52,7 +53,7 @@ and is not a stock alternative.
 `/tools/` uses a UApp-wrapped NuxtPage without ordinary site chrome or App
 initialization. Other Go QR routes still use FireuxApp.
 
-Bangin Coffee and La Tap retain App-owned theme injection around FireuxApp;
+Bangin Coffee and La Tap retain App-owned theme injection around their chosen root;
 Interlaken Essen retains its language metadata. These are product deltas, not
 alternative route outlets or initialization owners. They remain with those Apps.
 
@@ -63,6 +64,13 @@ add another `main`. This also covers routes with `layout: false`.
 WorkspacePage owns the Workspace `main`; that branch does not receive another
 FireuxApp wrapper. Go QR's embedded branch and the standalone ErrorPage each own
 their own `UMain` because they bypass the ordinary shell.
+
+`useAppHead` owns shared robots and versioned-manifest policy.
+`AppInitializationGate` owns its single App read and setup modal. Workspace
+manifest paths are supplied by FireuxWorkspaceApp; the ordinary root imports no
+Workspace code. The default header still uses the Workspace entry-link helper;
+this root split does not establish complete Workspace bundle isolation. Shared
+sign-in phase belongs to Core `composables/fireux/firebase/useAuthPhase`, not Workspace.
 
 [AppDevControls](../../packages/core/fireux-core/src/runtime/app/components/DevControls.vue)
 owns the developer dock and its local feedback/cleanup. It consumes existing
@@ -85,12 +93,12 @@ Separate Workspace domains remain a future product decision.
 
 ## Workspace composition
 
-[FireuxApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxApp.vue)
+[FireuxWorkspaceApp](../../packages/core/fireux-core/src/runtime/app/components/FireuxWorkspaceApp.vue)
 lazily selects the named `Workspace` composition when the App declares
 Workspaces and the current route has
 `workspacePage` metadata. Workspace routes disable the separate Nuxt layout.
 Other routes continue through `<NuxtLayout><NuxtPage /></NuxtLayout>`.
-App roots delegate that choice to FireuxApp instead of repeating the route branches.
+App roots delegate that choice to FireuxWorkspaceApp instead of repeating the route branches.
 
 Core [Workspace](../../packages/core/fireux-core/src/runtime/workspace/components/Index.vue)
 composes the dashboard group, sidebar and one
@@ -115,7 +123,8 @@ relationship.
 
 ## Other route composition lanes
 
-- FireuxApp's non-Workspace branch composes the selected Nuxt layout and page.
+- FireuxApp owns the normal layout and page fallback. FireuxWorkspaceApp supplies
+  its default slot only for Workspace routes; ordinary routes reuse the fallback.
 - The Kitchen [Menu layout](../../packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue)
   uses Nuxt's layout slot for route-family chrome.
 - Core [default](../../packages/core/fireux-core/src/runtime/layouts/default.vue),

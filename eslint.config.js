@@ -188,7 +188,7 @@ export default [
     files: [
       'projects/**/app/app.vue',
       'projects/templates/fireux-template/app/pages/index.vue',
-      'packages/core/fireux-core/src/runtime/app/components/{Shell,DevControls}.vue',
+      'packages/core/fireux-core/src/runtime/app/components/{FireuxApp,FireuxWorkspaceApp,InitializationGate,DevControls}.vue',
       'packages/core/fireux-core/src/runtime/layouts/{default,landing}.vue',
       'packages/core/fireux-core/src/runtime/components/layouts/default/{Header,Footer,FooterAdmins}.vue',
       'packages/core/fireux-core/src/runtime/components/layouts/shared/PlatformFooter.vue',

@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import WorkspaceGettingStarted from './GettingStarted.vue'
-import { useWorkspaceEntryState } from '../composables/useWorkspaceEntryState'
+import { useAuthPhase } from '../../composables/fireux/firebase/useAuthPhase'
 const route = useRoute()
-const { isGuest } = useWorkspaceEntryState()
+const { isGuest } = useAuthPhase()
 </script>
