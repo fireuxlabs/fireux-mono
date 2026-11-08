@@ -193,7 +193,10 @@ test('Core manifest uses the App description and versioned brand assets', () => 
     'handler',
     {
       defineEventHandler: (value) => value,
-      useAppConfig: () => ({}),
+      useAppConfig: (...args) => {
+        assert.equal(args.length, 0)
+        return {}
+      },
       resolveAppTheme: (value) => value,
       getQuery: () => ({}),
       getRequestURL: () => new URL('https://bike.example'),

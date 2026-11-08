@@ -198,7 +198,7 @@ for (const [name, file, exported, rows] of members) {
         await arrived
         release()
         await retry
-        assert.deepEqual(cursors, [undefined, 'a'])
+        assert.deepEqual(cursors, name === 'App' ? ['a'] : [undefined, 'a'])
         assert.equal(page.ready, true)
         assert.equal(readers, 1)
       }
@@ -211,7 +211,7 @@ for (const [name, file, exported, rows] of members) {
       fail = false
       cursors = []
       await reader.loadMore()
-      assert.deepEqual(cursors, [undefined, 'a'])
+      assert.deepEqual(cursors, name === 'App' ? ['a'] : [undefined, 'a'])
       assert.equal(Boolean(reader.loadMoreError.value), false)
       assert.deepEqual(
         reader[rows].value.map((row) => row.id),

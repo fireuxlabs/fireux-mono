@@ -25,8 +25,7 @@
     <UPageHeader :title="appDisplayName">
       <template #links>
         <UButton
-          v-if="appPath"
-          :to="appPath"
+          :to="fireux.homePath"
           label="View app"
           icon="i-lucide-external-link"
           color="neutral"
@@ -65,7 +64,6 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAppRead } from '../../composables/useAppRead'
-import { useAppView } from '../../composables/useAppView'
 
 type AdminSurfaceMeta = {
   surface?: boolean
@@ -94,13 +92,10 @@ type AdminTool = {
 const fireux = useFireUXConfig()
 const router = useRouter()
 const { app, outcome: appOutcome } = useAppRead(fireux.appId)
-const { toCard } = useAppView()
 const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? (app.value ?? null) : null
 )
-const appCard = computed(() => toCard(appSnapshot.value))
-const appDisplayName = computed(() => appCard.value?.name || fireux.appName)
-const appPath = computed(() => appCard.value?.to)
+const appDisplayName = computed(() => appSnapshot.value?.name || fireux.appName)
 
 const adminTools = computed(() => {
   const seen = new Set<string>()

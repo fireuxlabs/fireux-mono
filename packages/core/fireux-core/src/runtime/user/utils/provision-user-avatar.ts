@@ -1,4 +1,5 @@
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { refreshNuxtData } from 'nuxt/app'
 import { captureCommandScope } from '../../composables/fireux/commands/useCommandScope'
 import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
 import { USER_ECOSYSTEM_AVATAR_SRC } from './user-avatar'
@@ -22,12 +23,10 @@ export async function provisionSignedInUserAvatar(
 ): Promise<string> {
   const { currentUser } = useAuth()
   const scope = captureCommandScope([() => currentUser.value?.uid])
+  const isCurrent = () =>
+    scope.isCurrent() && isOwnerCurrent() && currentUser.value?.uid === userId
   const assertCurrent = () => {
-    if (
-      !scope.isCurrent() ||
-      !isOwnerCurrent() ||
-      currentUser.value?.uid !== userId
-    )
+    if (!isCurrent())
       throw new Error('The account context changed. Please try again.')
   }
   try {
@@ -81,6 +80,15 @@ export async function provisionSignedInUserAvatar(
       throw new Error(
         detail || `Avatar could not be saved (${response.status}).`
       )
+    }
+    if (isCurrent()) {
+      try {
+        await refreshNuxtData()
+      } catch (error) {
+        // Attachment is committed; a projection failure must not undo success.
+        if (isCurrent())
+          console.warn('[User avatar] Saved; API refresh failed.', error)
+      }
     }
     return payload.avatar
   } finally {

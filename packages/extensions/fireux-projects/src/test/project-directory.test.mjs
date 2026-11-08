@@ -10,39 +10,123 @@ const source = readFileSync(
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
   .replace(/^export /gm, '')
-const parserSource=readFileSync(new URL('../runtime/project/utils/readProject.ts',import.meta.url),'utf8').replace(/^import[^\n]*\n/gm,'').replace(/^export /gm,'')
-const readProjectPublicSummary=compileFunction(`${stripTypeScriptTypes(parserSource)};return readProjectPublicSummary`,['isFirestoreDocumentId'])(isFirestoreDocumentId)
+const parserSource = readFileSync(
+  new URL('../runtime/project/utils/readProject.ts', import.meta.url),
+  'utf8'
+)
+  .replace(/^import[^\n]*\n/gm, '')
+  .replace(/^export /gm, '')
+const readProjectPublicSummary = compileFunction(
+  `${stripTypeScriptTypes(parserSource)};return readProjectPublicSummary`,
+  ['isFirestoreDocumentId']
+)(isFirestoreDocumentId)
 const projectRows = [
-  { id:'z', identity:{name:'Zulu',status:'active',description:'',image_url:''} },
-  { id:'a', identity:{name:'Alpha',status:'active',description:'',image_url:''} },
-  { id:'hidden', identity:{name:'Hidden',status:'inactive',description:'',image_url:''}, guest_owner_uid:'hidden' },
+  {
+    id: 'z',
+    identity: {
+      name: 'Zulu',
+      status: 'active',
+      description: '',
+      image_url: '',
+    },
+  },
+  {
+    id: 'a',
+    identity: {
+      name: 'Alpha',
+      status: 'active',
+      description: '',
+      image_url: '',
+    },
+  },
+  {
+    id: 'hidden',
+    identity: {
+      name: 'Hidden',
+      status: 'inactive',
+      description: '',
+      image_url: '',
+    },
+    guest_owner_uid: 'hidden',
+  },
 ]
-test('Project directory uses its named database and filters/sorts only canonical active Projects', async () => {
+function directoryHarness(rows = projectRows) {
   const reads = []
+  const filters = []
+  const parsedIds = []
+  const snapshot = (rows) => async () => ({
+    docs: rows.map((row) => ({
+      id: row.id,
+      data: () => {
+        parsedIds.push(row.id)
+        return row
+      },
+    })),
+  })
   const read = compileFunction(
     `${stripTypeScriptTypes(source)};return readProjects`,
     ['getRuntimeFirestore', 'readProjectPublicSummary']
-  )(
-    (id) => {
-      reads.push(id)
-      return {
-        collection: (name) => {
-          assert.equal(name, 'projects')
-          return {
-            get: async () => ({
-              docs: projectRows.map((row) => ({ id: row.id, data: () => row })),
-            }),
-          }
-        },
-      }
-    },
-    readProjectPublicSummary
-  )
+  )((id) => {
+    reads.push(id)
+    return {
+      collection: (name) => {
+        assert.equal(name, 'projects')
+        return {
+          get: snapshot(rows),
+          where: (field, operator, value) => {
+            filters.push([field, operator, value])
+            assert.deepEqual(
+              [field, operator, value],
+              ['identity.status', '==', 'active']
+            )
+            return {
+              get: snapshot(
+                rows.filter((row) => row.identity?.status === value)
+              ),
+            }
+          },
+        }
+      },
+    }
+  }, readProjectPublicSummary)
+  return { read, reads, filters, parsedIds }
+}
+
+test('Project directory queries active roots in its named database and sorts canonical public profiles', async () => {
+  const harness = directoryHarness()
+  const projects = await harness.read()
   assert.deepEqual(
-    (await read()).map((row) => row.id),
+    projects.map((row) => row.id),
     ['a', 'z']
   )
-  assert.deepEqual(reads, ['fireux'])
+  assert.deepEqual(harness.reads, ['fireux'])
+  assert.deepEqual(harness.filters, [['identity.status', '==', 'active']])
+  assert.deepEqual(harness.parsedIds, ['z', 'a'])
+  for (const project of projects)
+    assert.deepEqual(Object.keys(project).sort(), ['id', 'identity'])
+})
+
+test('malformed inactive Projects cannot break the public directory', async () => {
+  const harness = directoryHarness([
+    ...projectRows,
+    { id: 'malformed-draft', identity: { status: 'inactive', name: '' } },
+  ])
+  assert.deepEqual(
+    (await harness.read()).map((row) => row.id),
+    ['a', 'z']
+  )
+  assert.deepEqual(harness.parsedIds, ['z', 'a'])
+})
+
+test('malformed active Projects still fail canonical public validation', async () => {
+  const harness = directoryHarness([
+    ...projectRows,
+    { id: 'malformed-active', identity: { status: 'active', name: '' } },
+  ])
+  await assert.rejects(harness.read(), {
+    message: 'Invalid canonical Project: projects/malformed-active',
+  })
+  assert.deepEqual(harness.parsedIds, ['z', 'a', 'malformed-active'])
 })
 
 const detailSource = readFileSync(
@@ -69,7 +153,16 @@ function detailHarness({ exists = true, valid = true } = {}) {
                 get: async () => ({
                   id,
                   exists,
-                  data: () => ({ identity:{name:'Draft',status:'inactive',description:'',image_url:''}, guest_owner_uid:'private-owner', created:{by:'private-owner'} }),
+                  data: () => ({
+                    identity: {
+                      name: 'Draft',
+                      status: 'inactive',
+                      description: '',
+                      image_url: '',
+                    },
+                    guest_owner_uid: 'private-owner',
+                    created: { by: 'private-owner' },
+                  }),
                 }),
               }
             },
@@ -77,7 +170,7 @@ function detailHarness({ exists = true, valid = true } = {}) {
         },
       }
     },
-    (value, id) => (valid ? readProjectPublicSummary(value,id) : null),
+    (value, id) => (valid ? readProjectPublicSummary(value, id) : null),
     (value) => Object.assign(Error(value.statusMessage), value)
   )
   return { read, reads }
@@ -87,7 +180,7 @@ test('Project detail shares the named database without silently changing its exi
   const item = await h.read(' draft ')
   assert.equal(item.id, 'draft')
   assert.equal(item.identity.status, 'inactive')
-  assert.deepEqual(Object.keys(item).sort(),['id','identity'])
+  assert.deepEqual(Object.keys(item).sort(), ['id', 'identity'])
   assert.deepEqual(h.reads, ['draft'])
 })
 test('Project detail distinguishes missing documents, invalid stored data and invalid addresses', async () => {

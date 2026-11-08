@@ -54,7 +54,7 @@ import { useRoute } from '#imports'
 import { useAuthPhase } from '../../../composables/fireux/firebase/useAuthPhase'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUserSession } from '../../../user/composables/session/useUserSession'
+import { useUserRead } from '../../../user/composables/useUserRead'
 import { useUserView } from '../../../user/composables/useUserView'
 
 const props = withDefaults(
@@ -70,8 +70,9 @@ const props = withDefaults(
 const fireux = useFireUXConfig()
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
-const { isGuest } = useAuthPhase()
-const { user, userOutcome } = useUserSession()
+const { uid, isSignedIn, isGuest } = useAuthPhase()
+const target = computed(() => (isSignedIn.value ? uid.value : ''))
+const { user, outcome: userOutcome } = useUserRead(target)
 const { toView } = useUserView()
 
 const mounted = ref(false)
@@ -96,7 +97,6 @@ const pillUser = computed(() => {
   return {
     displayName: identity.display_name,
     avatarUrl: view.avatarUrl,
-    to: '/dashboard/settings',
   }
 })
 
@@ -106,7 +106,6 @@ const authenticatedUser = computed(() => {
   return {
     displayName: user.displayName?.trim() || 'Account',
     avatarUrl: user.photoURL?.trim() || '',
-    to: '/dashboard/settings',
   }
 })
 
@@ -126,19 +125,11 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   ],
   [
     { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/user-profile' },
-    { label: 'Billing', icon: 'i-lucide-credit-card', to: '/pricing' },
     { label: 'Settings', icon: 'i-lucide-settings', to: '/dashboard/settings' },
   ],
   [
     {
-      label: fireux.appShortName || fireux.appName,
-      icon: 'i-lucide-arrow-up-right',
-      to: '/about',
-    },
-  ],
-  [
-    {
-      label: 'Log out',
+      label: 'Sign out',
       icon: 'i-lucide-log-out',
       onSelect: () => signOutUser('/'),
     },

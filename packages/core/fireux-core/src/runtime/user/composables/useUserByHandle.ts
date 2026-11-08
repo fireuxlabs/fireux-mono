@@ -74,9 +74,7 @@ export function useUserByHandle(
     uid: computed(() => user.value?.id || null),
     handle: normalized,
     pending,
-    resolving: pending,
     error: state.error,
     outcome,
-    empty: computed(() => outcome.value === 'empty'),
   }
 }

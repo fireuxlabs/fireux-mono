@@ -383,6 +383,8 @@ test('Owning Ecosystem reads admit inactive management records without making th
     name: 'Example',
     status: 'inactive',
     id: 'forged',
+    created: { at: { seconds: 1, nanoseconds: 0 } },
+    updated: { at: { seconds: 1, nanoseconds: 0 } },
   }
   const db = {
     collection: () => ({

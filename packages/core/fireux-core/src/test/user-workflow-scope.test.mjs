@@ -187,6 +187,7 @@ function profileHarness(action) {
   const currentUser = ref(actor),
     user = ref({ id: 'A' })
   const deps = {
+    refreshNuxtData: async () => {},
     useAuth: () => ({ currentUser }),
     useCommandScope,
     captureCommandScope,
@@ -236,6 +237,140 @@ function profileHarness(action) {
     reply: reply.resolve,
   }
 }
+
+function completedProfileCommand(action, options = {}) {
+  const reached = deferred(),
+    reply = deferred()
+  const refreshReached = deferred(),
+    finishRefresh = deferred()
+  const actor = { uid: 'A', getIdToken: async () => 'token-A' }
+  const currentUser = ref(actor)
+  let ownerCurrent = true,
+    refreshes = 0
+  const warnings = []
+  const expected =
+    action === 'handle'
+      ? {
+          uid: 'A',
+          handle: 'ada',
+          created: false,
+          changed: options.changed !== false,
+        }
+      : { ok: true, avatar: 'saved-avatar' }
+  const deps = {
+    captureCommandScope,
+    useAuth: () => ({ currentUser }),
+    useRequireUser: async () => actor,
+    validateUserHandleForPublicRoute: (handle) => ({ isValid: true, handle }),
+    USER_ECOSYSTEM_AVATAR_SRC: '/img/ecosystem/avatar.png',
+    console: { warn: (...args) => warnings.push(args) },
+    refreshNuxtData: async () => {
+      refreshes++
+      refreshReached.resolve()
+      if (options.pauseRefresh) await finishRefresh.promise
+      if (options.refreshFails) throw new Error('Projection refresh failed')
+    },
+    fetch: async () => {
+      reached.resolve()
+      await reply.promise
+      return {
+        ok: options.ok !== false,
+        status: options.ok === false ? 403 : 200,
+        json: async () => (options.invalid ? {} : expected),
+      }
+    },
+  }
+  const invoke =
+    action === 'handle'
+      ? load(
+          '../runtime/user/utils/update-user-handle.ts',
+          'updateUserHandle',
+          deps
+        )
+      : load(
+          '../runtime/user/utils/provision-user-avatar.ts',
+          'provisionSignedInUserAvatar',
+          deps
+        )
+  return {
+    currentUser,
+    actor,
+    warnings,
+    reached: reached.promise,
+    reply: reply.resolve,
+    refreshReached: refreshReached.promise,
+    finishRefresh: finishRefresh.resolve,
+    dispose: () => {
+      ownerCurrent = false
+    },
+    refreshes: () => refreshes,
+    expected: action === 'handle' ? expected : expected.avatar,
+    invoke: () =>
+      action === 'handle'
+        ? invoke('A', 'ada', undefined, () => ownerCurrent)
+        : invoke(
+            'A',
+            new Blob(['image'], { type: 'image/png' }),
+            () => ownerCurrent
+          ),
+  }
+}
+
+for (const action of ['handle', 'avatar']) {
+  for (const change of ['none', 'account-round-trip', 'owner-disposal']) {
+    test(`confirmed ${action} success preserves its result and refreshes only current intent: ${change}`, async () => {
+      const h = completedProfileCommand(action)
+      const flight = h.invoke()
+      await h.reached
+      if (change === 'account-round-trip') {
+        h.currentUser.value = { uid: 'B' }
+        h.currentUser.value = h.actor
+      }
+      if (change === 'owner-disposal') h.dispose()
+      h.reply()
+      assert.deepEqual(await flight, h.expected)
+      assert.equal(h.refreshes(), change === 'none' ? 1 : 0)
+      assert.deepEqual(h.warnings, [])
+    })
+  }
+  for (const options of [{ ok: false }, { invalid: true }]) {
+    test(`${action} failures and invalid acknowledgements do not refresh projections: ${JSON.stringify(options)}`, async () => {
+      const h = completedProfileCommand(action, options)
+      const flight = h.invoke()
+      await h.reached
+      h.reply()
+      await assert.rejects(flight)
+      assert.equal(h.refreshes(), 0)
+    })
+  }
+  for (const obsolete of [false, true]) {
+    test(`${action} remains saved after a projection failure without obsolete feedback: ${obsolete}`, async () => {
+      const h = completedProfileCommand(action, {
+        refreshFails: true,
+        pauseRefresh: true,
+      })
+      const flight = h.invoke()
+      await h.reached
+      h.reply()
+      await h.refreshReached
+      if (obsolete) h.dispose()
+      h.finishRefresh()
+      assert.deepEqual(await flight, h.expected)
+      assert.equal(h.refreshes(), 1)
+      assert.equal(h.warnings.length, obsolete ? 0 : 1)
+    })
+  }
+}
+
+test('idempotent handle provisioning does not refresh unchanged projections', async () => {
+  const h = completedProfileCommand('handle', { changed: false })
+  const flight = h.invoke()
+  await h.reached
+  h.reply()
+  assert.deepEqual(await flight, h.expected)
+  assert.equal(h.refreshes(), 0)
+})
+
 for (const action of ['handle', 'avatar']) {
   for (const changed of [
     'none',

@@ -15,7 +15,7 @@
     />
     <UPageCard v-else title="Current App" icon="i-lucide-box" variant="subtle">
       <AppCardsCell
-        :to="appCard.to"
+        :to="homePath"
         :thumbnail-url="appCard.thumbnailUrl"
         :avatar-text="appCard.avatarText"
         :name="appCard.name"
@@ -45,7 +45,7 @@ import { computed } from 'vue'
 import { useAppRead } from '../../composables/useAppRead'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAppView } from '../../composables/useAppView'
-const { appId } = useFireUXConfig()
+const { appId, homePath } = useFireUXConfig()
 const { app, pending: appPending, error: appError } = useAppRead(appId)
 const { toCard: toAppCard } = useAppView()
 const appCard = computed(() => toAppCard(app.value))

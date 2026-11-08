@@ -1,5 +1,6 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -202,7 +203,7 @@ test('App parsing projects obsolete fields and rejects invalid identity', () => 
   const parse = load(
     'packages/core/fireux-core/src/runtime/app/utils/readApp.ts',
     'readAppDocument',
-    {}
+    { APP_ROLES, APP_STATUSES }
   )
   const stamp = { at: { seconds: 1, nanoseconds: 0 } }
   const valid = {

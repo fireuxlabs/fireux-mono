@@ -34,7 +34,7 @@ function load(path, name, dependencies) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
-function controller(fetch) {
+function controller(fetch, { clearDataOnFailure = false } = {}) {
   let execute
   const data = ref()
   const pending = ref(false)
@@ -67,6 +67,7 @@ function controller(fetch) {
               )),
             handler({}, { signal: new AbortController().signal }))
           } catch (cause) {
+            if (clearDataOnFailure) data.value = undefined
             error.value = cause
           } finally {
             pending.value = false
@@ -100,7 +101,33 @@ test('App pages append without duplicates and expose the next cursor', async () 
     ['a', 'b', 'c']
   )
   assert.equal(c.state.hasMore.value, false)
-  assert.match(urls[2], /cursor=b/)
+  assert.deepEqual(urls, ['/apps?limit=2', '/apps?limit=2&cursor=b'])
+})
+
+test('Ten App pages require ten fetches; an explicit refresh reacquires the loaded window', async () => {
+  const urls = []
+  const c = controller(async (url) => {
+    urls.push(url)
+    const index = Number(
+      new URL(url, 'https://example.test').searchParams.get('cursor') || 0
+    )
+    return {
+      ok: true,
+      items: [{ id: String(index) }],
+      nextCursor: index < 9 ? String(index + 1) : null,
+    }
+  })
+  await c.execute()
+  for (let index = 1; index < 10; index++) await c.state.loadMore()
+  assert.equal(urls.length, 10)
+  assert.deepEqual(
+    c.state.apps.value.map((app) => app.id),
+    Array.from({ length: 10 }, (_, index) => String(index))
+  )
+  await c.state.refresh()
+  assert.equal(urls.length, 20)
+  assert.equal(c.state.apps.value.length, 10)
+  assert.equal(c.state.hasMore.value, false)
 })
 
 test('A late page cannot enter a different relationship', async () => {
@@ -163,15 +190,18 @@ test('Merged pages have stable cursors and reject duplicate identities', () => {
 test('A failed next page preserves ready records and can retry', async () => {
   let fail = true
   let release
-  const c = controller(async (url) => {
-    if (!url.includes('cursor='))
-      return { ok: true, items: [{ id: 'a' }], nextCursor: 'a' }
-    await new Promise((done) => {
-      release = done
-    })
-    if (fail) throw new Error('Next page unavailable')
-    return { ok: true, items: [{ id: 'b' }], nextCursor: null }
-  })
+  const c = controller(
+    async (url) => {
+      if (!url.includes('cursor='))
+        return { ok: true, items: [{ id: 'a' }], nextCursor: 'a' }
+      await new Promise((done) => {
+        release = done
+      })
+      if (fail) throw new Error('Next page unavailable')
+      return { ok: true, items: [{ id: 'b' }], nextCursor: null }
+    },
+    { clearDataOnFailure: true }
+  )
   await c.execute()
   const failed = c.state.loadMore()
   while (!release) await new Promise((done) => setImmediate(done))

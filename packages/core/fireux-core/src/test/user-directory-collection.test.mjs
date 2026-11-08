@@ -16,7 +16,7 @@ const compileFunction = (source, args = []) => {
     ...names.map((name) => mocks[name])
   )
 }
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, toRefs } from 'vue'
 import { resolveReadOutcome } from '../runtime/utils/read-outcome.ts'
 
 function load(file, names, deps) {
@@ -54,15 +54,15 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
           globalReads++
           return source
         },
-        useUserSession: () => ({
-          user: ref({ id: 'self', handle: 'self' }),
-          appUser: ref(null),
-          appUserOutcome: ref('empty'),
-        }),
+        useUserSession: () =>
+          assert.fail('The directory must use supplied viewer refs'),
         isUserDirectoryEligible: (user) => Boolean(user.handle),
       }
     )
-    const directory = useUserDirectory()
+    const directory = useUserDirectory({
+      currentUser: ref({ id: 'self', handle: 'self' }),
+      hasAppMembership: ref(false),
+    })
     assert.equal(tenantReads, 0)
     assert.equal(globalReads, 1)
     assert.deepEqual(
@@ -77,6 +77,84 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
     assert.deepEqual(directory.users.value, [])
     assert.equal(directory.outcome.value, 'pending')
   }
+})
+
+test('the collection page acquires one session and supplies live viewer facts to its directory', () => {
+  let sessions = 0,
+    collections = 0
+  const currentUser = ref({ id: 'self', handle: 'self' })
+  const appUser = ref(null),
+    appUserOutcome = ref('empty')
+  const config = { appId: 'tenant', appName: 'Tenant', isTenant: true }
+  const source = {
+    users: ref([{ id: 'member', handle: 'member' }]),
+    pending: ref(false),
+    error: ref(null),
+    outcome: ref('ready'),
+    hasMore: ref(false),
+    loadMore() {},
+  }
+  const { useUserDirectory } = load(
+    '../runtime/user/composables/directory/useUserDirectory.ts',
+    'useUserDirectory',
+    {
+      computed,
+      resolveReadOutcome,
+      useFireUXConfig: () => config,
+      useUserCollection: () => {
+        collections++
+        return source
+      },
+      isUserDirectoryEligible: (user) => Boolean(user.handle),
+      useUserSession: () =>
+        assert.fail('Child directory reacquired the session'),
+    }
+  )
+  const { useUserCollectionPage } = load(
+    '../runtime/user/composables/useUserCollectionPage.ts',
+    'useUserCollectionPage',
+    {
+      computed,
+      reactive,
+      toRefs,
+      useUserDirectory,
+      useFireUXConfig: () => config,
+      useUserSession: () => {
+        sessions++
+        return { user: currentUser, appUser, appUserOutcome }
+      },
+      useSeo() {},
+      useCollectionPage: (options) =>
+        reactive({ diagnostics: options.diagnostics }),
+    }
+  )
+  const page = useUserCollectionPage()
+  assert.equal(sessions, 1)
+  assert.equal(collections, 1)
+  assert.equal(page.currentUser, currentUser.value)
+  assert.deepEqual(
+    page.users.map((user) => user.id),
+    ['member']
+  )
+  appUser.value = { role: 'user' }
+  appUserOutcome.value = 'ready'
+  assert.deepEqual(
+    page.users.map((user) => user.id),
+    ['self', 'member']
+  )
+  currentUser.value = { id: 'changed', handle: 'changed' }
+  assert.equal(page.currentUser, currentUser.value)
+  assert.deepEqual(
+    page.users.map((user) => user.id),
+    ['changed', 'member']
+  )
+  appUserOutcome.value = 'error'
+  assert.deepEqual(
+    page.users.map((user) => user.id),
+    ['member']
+  )
+  assert.equal(sessions, 1)
+  assert.equal(collections, 1)
 })
 
 function serverHarness() {

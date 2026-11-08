@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
 Updated: 2026-11-08
-Ref: d9e120c46
+Ref: 470b97114
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -279,7 +279,10 @@ records. Public meal-deal projection remains read-only.
   including account change-away-and-back and component disposal. Outside a
   component, it releases its temporary watcher. Profile handle/avatar commands
   carry their editor's current-intent predicate through credentials and upload
-  preparation. Private-account provisioning also rejects obsolete credentials
+  preparation. Confirmed handle and avatar changes refresh native Nuxt projections
+  only in the current intent; refresh failure does not invalidate a committed
+  result, and obsolete completion triggers no refresh or feedback.
+  Private-account provisioning also rejects obsolete credentials
   and validates the server result shape. Source-owned behavioral coverage is
   `src/test/user-workflow-scope.test.mjs`.
   Generated handles reserve the UID discriminator and retry only confirmed

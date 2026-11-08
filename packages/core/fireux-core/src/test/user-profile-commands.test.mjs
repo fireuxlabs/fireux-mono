@@ -8,6 +8,7 @@ import imageSize from 'image-size'
 
 function load(path, name, dependencies = {}) {
   dependencies = {
+    refreshNuxtData: async () => {},
     userDisplayNameSeed,
     useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
     useCommandScope: () => () => () => true,

@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-11-08
-Ref: d9e120c46
+Ref: 470b97114
 Role: map, not canon
 
 ## Purpose
@@ -500,6 +500,10 @@ existing User document; incomplete identities remain readable for explicit repai
 identity and returns only `handleLabel`, `avatarUrl` and `to`; a missing identity
 or blank id returns `null`. Consumers bind `display_name` and `bio` directly from
 User. Domain-profile metadata has its own owner.
+The User collection-page owner acquires one session and supplies only the current
+User and membership-presence refs to its directory. Public User profile
+presentation uses settled registered Auth for edit availability, without acquiring
+another User or AppUser read.
 
 `user/utils/display-name-seed.ts` supplies the same initial public-name policy
 to bootstrap and identity provisioning. It prefers an explicit name, strips
@@ -515,6 +519,9 @@ normalization/validation, immutable consumed field-formatting contracts,
 avatar and identity provisioning accept the originating owner's current-intent
 predicate. This checks client continuation only; trusted server commands retain
 their existing self-only authority and committed results remain truthful.
+Confirmed handle and avatar changes refresh native Nuxt API projections only
+while the originating intent is current. Refresh failure does not turn a saved
+change into a mutation failure; obsolete completion causes no refresh or feedback.
 
 Unused membership admin/removal wrappers and unused email/avatar formatting
 contracts are retired. Membership execution belongs to App's `runAppUserCommand`.
@@ -726,6 +733,11 @@ cancellation and refresh. Entity readers retain scope, domain normalization and
 request-key checks. API authorization and database selection stay server-owned.
 Core `runtime/composables/http/readPages.ts` only aggregates the requested cursor
 pages through a supplied native fetcher; it does not own an HTTP transport.
+
+App collection appends request only the next cursor through their existing
+`useAsyncData` owner and merge by document id. Explicit refresh reacquires the
+loaded window through `readPages`. A failed append retains only that scope's
+last successful window; a later independent refresh failure remains an error.
 
 Successful actions use native `refreshNuxtData` to reacquire API projections.
 Direct Firestore views retain their existing Firebase listeners. Server-only

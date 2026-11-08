@@ -1,4 +1,4 @@
-import { reactive, toRefs } from 'vue'
+import { computed, reactive, toRefs } from 'vue'
 import { useUserSession } from './session/useUserSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
@@ -8,9 +8,12 @@ import { useCollectionPage } from '../../composables/shared/useCollectionPage'
 /** One Entity acquisition and SEO owner over shared collection-page presentation. */
 export function useUserCollectionPage() {
   const { appName } = useFireUXConfig()
+  const { user: currentUser, appUser, appUserOutcome } = useUserSession()
+  const hasAppMembership = computed(
+    () => appUserOutcome.value === 'ready' && Boolean(appUser.value)
+  )
   const { users, outcome, error, pending, hasMore, loadMore } =
-    useUserDirectory()
-  const { user: currentUser, appUser } = useUserSession()
+    useUserDirectory({ currentUser, hasAppMembership })
 
   const pageTitle = 'Users'
   const pageDescription = 'Browse user profiles.'
@@ -42,7 +45,6 @@ export function useUserCollectionPage() {
     ...toRefs(page),
     users,
     currentUser,
-    appUser,
     pending,
   })
 }

@@ -5,6 +5,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 export async function readProjects(): Promise<ProjectPublicSummary[]> {
   const snapshot = await getRuntimeFirestore('fireux')
     .collection('projects')
+    .where('identity.status', '==', 'active')
     .get()
   const projects = snapshot.docs
     .map((document): ProjectPublicSummary => {
@@ -14,9 +15,10 @@ export async function readProjects(): Promise<ProjectPublicSummary[]> {
       }
       return project
     })
-    .filter((project) => project.identity.status === 'active')
     .sort((left, right) =>
-      (left.identity.name || left.id).localeCompare(right.identity.name || right.id)
+      (left.identity.name || left.id).localeCompare(
+        right.identity.name || right.id
+      )
     )
 
   return projects

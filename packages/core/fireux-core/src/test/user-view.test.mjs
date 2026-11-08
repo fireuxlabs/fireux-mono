@@ -3,7 +3,16 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, reactive } from 'vue'
+import {
+  compile,
+  computed,
+  createSSRApp,
+  defineComponent,
+  h,
+  reactive,
+  ref,
+} from 'vue'
+import { renderToString } from 'vue/server-renderer'
 import { useCollectionSearch } from '../runtime/composables/shared/useCollectionSearch.ts'
 
 function load(source, name, dependencies) {
@@ -121,4 +130,85 @@ test('User collection still searches direct name, handle and bio with the three-
   assert.deepEqual(state.visibleItems.value, [])
   state.query.value = ''
   assert.deepEqual(state.visibleItems.value, props.users)
+})
+
+test('the public User profile uses shared presentation and settled Auth without acquiring a session', async () => {
+  const props = reactive({
+    user: {
+      id: 'person',
+      handle: 'person',
+      display_name: 'Direct Name',
+      avatar: 'https://example.test/avatar.png',
+      bio: 'Direct biography',
+    },
+  })
+  const auth = {
+    uid: ref('person'),
+    hasAuthState: ref(true),
+    isAuthenticated: ref(true),
+  }
+  const presentation = view()
+  const text = readFileSync(
+    new URL('../runtime/user/components/Profile/Index.vue', import.meta.url),
+    'utf8'
+  )
+  const script = text.match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+  const state = load(script, '{view,canEdit}', {
+    defineProps: () => props,
+    computed,
+    useAuth: () => auth,
+    useUserView: () => presentation.format,
+    useUserSession: () =>
+      assert.fail('Public presentation must not acquire User or AppUser reads'),
+  })
+  const component = defineComponent({
+    setup: () => ({ user: props.user, ...state }),
+    render: compile(
+      text.slice(
+        text.indexOf('<template>') + 10,
+        text.lastIndexOf('</template>')
+      )
+    ),
+  })
+  async function render() {
+    const app = createSSRApp(component)
+    app.component(
+      'UAvatar',
+      defineComponent({
+        props: ['src', 'alt'],
+        setup: (p) => () => h('img', { src: p.src, alt: p.alt }),
+      })
+    )
+    app.component(
+      'UButton',
+      defineComponent({
+        props: ['to', 'label'],
+        setup:
+          (p, { attrs }) =>
+          () =>
+            h('a', { href: p.to, 'aria-label': attrs['aria-label'] }, p.label),
+      })
+    )
+    return renderToString(app)
+  }
+  const ready = await render()
+  assert.match(ready, /src="proxy:https:\/\/example.test\/avatar.png"/)
+  assert.match(ready, /alt="Direct Name"/)
+  assert.match(ready, /Direct Name/)
+  assert.match(ready, /Direct biography/)
+  assert.match(ready, /@person/)
+  assert.doesNotMatch(ready, /@@person/)
+  assert.match(ready, /aria-label="Edit your profile"/)
+  assert.deepEqual(presentation.normalizations, [props.user.avatar])
+  assert.deepEqual(presentation.avatars, [props.user.avatar])
+  for (const change of ['unresolved', 'anonymous', 'other-account']) {
+    auth.hasAuthState.value = change !== 'unresolved'
+    auth.isAuthenticated.value = change !== 'anonymous'
+    auth.uid.value = change === 'other-account' ? 'other' : 'person'
+    assert.equal(state.canEdit.value, false)
+    assert.doesNotMatch(
+      await render(),
+      /Edit your profile|\/dashboard\/user-profile/
+    )
+  }
 })

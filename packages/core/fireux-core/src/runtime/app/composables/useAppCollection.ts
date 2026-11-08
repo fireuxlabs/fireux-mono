@@ -8,8 +8,12 @@ import type { CollectionPage } from '../../models/utils/directory'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
 type Options = { authenticated?: boolean }
+type AppWindow = CollectionPage<App> & {
+  requestKey: string
+  pages: number
+}
 
-/** Shared App transport state. The caller supplies the directory or relationship URL. */
+/** Native acquisition owns the loaded window; appends request only its next cursor. */
 export function useAppCollection(
   endpoint: MaybeRefOrGetter<string>,
   options: Options = {}
@@ -24,48 +28,121 @@ export function useAppCollection(
     Boolean(url.value && (!options.authenticated || currentUser.value))
   )
   const pageCount = ref(1)
-  const state = useAsyncData<CollectionPage<App> & { requestKey: string }>(
+  const retained = ref<AppWindow>()
+  const loadingMore = ref(false)
+  const loadMoreError = ref<unknown>(null)
+  const requestKind = ref<'window' | 'append'>('window')
+  let scopeVersion = 0
+  let appendIntent: { base: AppWindow } | undefined
+
+  // Reset before Nuxt's reactive-key watcher starts the new scope's acquisition.
+  watch(
+    key,
+    () => {
+      scopeVersion++
+      pageCount.value = 1
+      retained.value = undefined
+      appendIntent = undefined
+      loadingMore.value = false
+      loadMoreError.value = null
+      requestKind.value = 'window'
+    },
+    { flush: 'sync' }
+  )
+
+  const state = useAsyncData<AppWindow>(
     key,
     async (_nuxtApp, { signal }) => {
-      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-
+      const append = appendIntent
+      appendIntent = undefined
+      requestKind.value = append ? 'append' : 'window'
+      if (!append) loadMoreError.value = null
       const requestKey = key.value
+      const requestVersion = scopeVersion
       const requestUrl = url.value
       const requestedPages = pageCount.value
+      const actor = currentUser.value
+      const fetchRead = $fetch.create({ signal, cache: 'no-store' })
       const headers =
-        options.authenticated && currentUser.value
-          ? { authorization: `Bearer ${await currentUser.value.getIdToken()}` }
+        options.authenticated && actor
+          ? { authorization: `Bearer ${await actor.getIdToken()}` }
           : undefined
-      const page = active.value
-        ? await readPages<CollectionPage<App>>(
-            fetchRead,
-            requestUrl,
-            requestedPages,
-            { headers }
-          )
-        : { ok: true as const, items: [], nextCursor: null }
-      return { ...page, requestKey }
+      const assertCurrent = () => {
+        if (
+          signal.aborted ||
+          requestVersion !== scopeVersion ||
+          requestKey !== key.value
+        )
+          throw new Error('The App collection scope changed.')
+      }
+      assertCurrent()
+      if (!active.value)
+        return {
+          ok: true as const,
+          items: [],
+          nextCursor: null,
+          requestKey,
+          pages: 1,
+        }
+
+      if (append) {
+        const page = await fetchRead<CollectionPage<App>>(requestUrl, {
+          query: { cursor: append.base.nextCursor },
+          headers,
+        })
+        assertCurrent()
+        const items = new Map(append.base.items.map((app) => [app.id, app]))
+        for (const app of page.items) items.set(app.id, app)
+        return {
+          ...page,
+          items: [...items.values()],
+          requestKey,
+          pages: append.base.pages + 1,
+        }
+      }
+      const page = await readPages<CollectionPage<App>>(
+        fetchRead,
+        requestUrl,
+        requestedPages,
+        { headers }
+      )
+      assertCurrent()
+      return { ...page, requestKey, pages: requestedPages }
     },
     { server: !options.authenticated }
   )
-  const current = computed(() =>
-    state.data.value?.requestKey === key.value ? state.data.value : undefined
+  watch(
+    state.data,
+    (value) => {
+      if (value?.requestKey === key.value) {
+        retained.value = value
+        pageCount.value = value.pages
+      }
+    },
+    { immediate: true, flush: 'sync' }
   )
+  const current = computed(() => {
+    if (state.data.value?.requestKey === key.value) return state.data.value
+    // Nuxt clears data on failure. Only a failed append retains its proved window.
+    return requestKind.value === 'append' &&
+      retained.value?.requestKey === key.value
+      ? retained.value
+      : undefined
+  })
   const apps = computed<App[]>(() =>
     active.value ? (current.value?.items ?? []) : []
   )
   const count = computed(() => apps.value.length)
-  const loadingMore = ref(false)
-  const loadMoreError = ref<unknown>(null)
   const pending = computed(
     () =>
       Boolean(options.authenticated && !hasAuthState.value) ||
       (active.value &&
         state.pending.value &&
-        !(loadingMore.value && current.value))
+        !(requestKind.value === 'append' && loadingMore.value && current.value))
   )
   const error = computed(() =>
     count.value > 0 &&
+    requestKind.value === 'append' &&
     (loadingMore.value ||
       (loadMoreError.value && state.error.value === loadMoreError.value))
       ? null
@@ -81,35 +158,31 @@ export function useAppCollection(
     })
   )
   const hasMore = computed(() => Boolean(current.value?.nextCursor))
-  let scopeVersion = 0
-  watch(
-    key,
-    () => {
-      scopeVersion++
-      pageCount.value = 1
-      loadingMore.value = false
-      loadMoreError.value = null
-    },
-    { flush: 'sync' }
-  )
+
   async function loadMore() {
-    if (!hasMore.value || loadingMore.value) return
+    if (
+      !hasMore.value ||
+      loadingMore.value ||
+      state.pending.value ||
+      !current.value
+    )
+      return
     const requestVersion = scopeVersion
+    const intent = { base: current.value }
+    appendIntent = intent
     loadingMore.value = true
-    pageCount.value++
     try {
       await state.refresh()
-      if (scopeVersion === requestVersion) {
+      if (scopeVersion === requestVersion && requestKind.value === 'append')
         loadMoreError.value = state.error.value
-        if (state.error.value) pageCount.value--
-      }
     } catch (cause) {
-      if (scopeVersion === requestVersion) {
+      if (scopeVersion === requestVersion && requestKind.value === 'append')
         loadMoreError.value = cause
-        pageCount.value--
-      }
     } finally {
-      if (scopeVersion === requestVersion) loadingMore.value = false
+      if (scopeVersion === requestVersion) {
+        if (appendIntent === intent) appendIntent = undefined
+        loadingMore.value = false
+      }
     }
   }
   return {

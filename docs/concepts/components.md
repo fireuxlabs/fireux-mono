@@ -91,6 +91,11 @@ User identity link. It has no profile switcher or shared selection state.
 Domain sidebar entries follow the current route's `nav.profileId`; their
 readers and editors remain with their owning extensions.
 
+The shared sidebar footer reads the settled signed-in User directly, without
+acquiring App membership. Its account menu offers Profile, Settings and Sign out;
+the configured App Home action remains separate. Auth owns sign-out and the
+provider identity fallback; the mounted guard keeps hydration stable.
+
 ## Profile and Settings composition
 
 The shared Profile route composes `UserEditProfile`, which reads only the public

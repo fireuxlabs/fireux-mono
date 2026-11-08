@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-07
-Ref: dbcd2f326
+Updated: 2026-11-08
+Ref: 470b97114
 Role: map, not canon
 
 ## Purpose
@@ -1223,7 +1223,7 @@ updates recheck it inside the authority transaction and write sparse
 `ProjectPublicSummary` contains only id and Identity; it excludes guest authority
 and audit. The directory lists active Projects. Direct detail supports both
 active and inactive Projects. The connected-App publication DTO
-remains a separate presentation contract. See the ecosystem's
+remains a separate presentation contract. See `fireux-projects/src/test/` for
 `project-model-shape.test.mjs`, `project-access.test.mjs`,
 `project-directory.test.mjs`, and `project-guest.test.mjs`. The offline Project
 planner retains exact preimages/revisions and has no apply mode; its length

@@ -97,6 +97,7 @@ function harness(options = {}) {
       }),
   })
   const dependencies = {
+    refreshNuxtData: async () => {},
     useAuth: () => ({ currentUser }),
     captureCommandScope,
     useRequireUser: async () => actor,

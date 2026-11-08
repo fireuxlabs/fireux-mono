@@ -72,7 +72,7 @@ export default defineEventHandler((event) => {
       seo.defaultDescription.trim()) ||
     (typeof pub.appDescription === 'string' && pub.appDescription.trim()) ||
     'FireUX application'
-  const theme = resolveAppTheme(useAppConfig(event).theme)
+  const theme = resolveAppTheme(useAppConfig().theme)
   const themeColor = theme?.palette.accent || DEFAULT_THEME
   const backgroundColor = theme?.palette.canvas || DEFAULT_BACKGROUND
 

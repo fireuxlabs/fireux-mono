@@ -14,7 +14,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isStamp(
   value: unknown,
   allowAppId = false
-): value is NonNullable<Ecosystem['created']> {
+): value is Ecosystem['created'] {
   if (!isRecord(value) || !isRecord(value.at)) return false
   if (
     typeof value.at.seconds !== 'number' ||
@@ -24,8 +24,7 @@ function isStamp(
   }
   return (
     Object.keys(value).every(
-      (key) =>
-        key === 'at' || key === 'by' || (allowAppId && key === 'app_id')
+      (key) => key === 'at' || key === 'by' || (allowAppId && key === 'app_id')
     ) &&
     (value.by === undefined || typeof value.by === 'string') &&
     (!allowAppId ||
@@ -55,6 +54,17 @@ function canonicalEcosystem(
     return null
   }
 
+  if (!isStamp(source.created, true) || !isStamp(source.updated)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `Ecosystem ${id} has invalid audit stamps.`,
+    })
+  }
+  const projectStamp = (stamp: Ecosystem['created']) => ({
+    at: { seconds: stamp.at.seconds, nanoseconds: stamp.at.nanoseconds },
+    ...(stamp.by !== undefined ? { by: stamp.by } : {}),
+  })
+
   return {
     id,
     project_id: source.project_id,
@@ -69,8 +79,13 @@ function canonicalEcosystem(
     ...(typeof source.website_url === 'string'
       ? { website_url: source.website_url }
       : {}),
-    ...(isStamp(source.created, true) ? { created: source.created } : {}),
-    ...(isStamp(source.updated) ? { updated: source.updated } : {}),
+    created: {
+      ...projectStamp(source.created),
+      ...(source.created.app_id !== undefined
+        ? { app_id: source.created.app_id }
+        : {}),
+    },
+    updated: projectStamp(source.updated),
   }
 }
 

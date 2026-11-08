@@ -160,14 +160,14 @@ test('User directory cannot turn a failed collection into a self-only result', (
       useFireUXConfig: () => ({ appId: 'app', isTenant: false }),
       useUserCollection: () => source,
       isUserDirectoryEligible: () => true,
-      useUserSession: () => ({
-        user: ref(self),
-        appUser: ref(null),
-        appUserOutcome: ref('empty'),
-      }),
+      useUserSession: () =>
+        assert.fail('The directory must use supplied viewer refs'),
     }
   )
-  const state = useUserDirectory()
+  const state = useUserDirectory({
+    currentUser: ref(self),
+    hasAppMembership: ref(false),
+  })
   assert.deepEqual(state.users.value, [self])
   source.error.value = new Error('Denied')
   assert.deepEqual(state.users.value, [])

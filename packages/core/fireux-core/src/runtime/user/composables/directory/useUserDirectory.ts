@@ -1,15 +1,20 @@
 import { resolveReadOutcome } from '../../../utils/read-outcome'
-import { computed } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useUserSession } from '../session/useUserSession'
+import type { User } from '../../models/user.model'
 import { isUserDirectoryEligible } from '../../utils/normalize-user'
 import { useUserCollection } from '../useUserCollection'
 
 /** Live User directory with App-owned eligibility on tenant surfaces. */
-export function useUserDirectory() {
+export function useUserDirectory({
+  currentUser,
+  hasAppMembership,
+}: {
+  currentUser: Readonly<Ref<User | null | undefined>>
+  hasAppMembership: Readonly<Ref<boolean>>
+}) {
   const { appId, isTenant } = useFireUXConfig()
   const source = useUserCollection()
-  const { user: currentUser, appUser, appUserOutcome } = useUserSession()
   const users = computed(() => {
     if (source.pending.value || source.error.value) return []
     const visible = source.users.value.filter(isUserDirectoryEligible)
@@ -17,7 +22,7 @@ export function useUserDirectory() {
     const canShowSelf =
       self &&
       isUserDirectoryEligible(self) &&
-      (!isTenant || (appUserOutcome.value === 'ready' && appUser.value))
+      (!isTenant || hasAppMembership.value)
     if (!canShowSelf) return visible
     const index = visible.findIndex(
       (entry) => entry.id === self.id || entry.handle === self.handle

@@ -1,4 +1,5 @@
 import type { UserHandleInput, UserHandleResult } from '../models/user-handle'
+import { refreshNuxtData } from 'nuxt/app'
 import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { captureCommandScope } from '../../composables/fireux/commands/useCommandScope'
@@ -35,12 +36,10 @@ export async function updateUserHandle(
   }
   const { currentUser } = useAuth()
   const scope = captureCommandScope([() => currentUser.value?.uid])
+  const isCurrent = () =>
+    scope.isCurrent() && isOwnerCurrent() && currentUser.value?.uid === userId
   const assertCurrent = () => {
-    if (
-      !scope.isCurrent() ||
-      !isOwnerCurrent() ||
-      currentUser.value?.uid !== userId
-    )
+    if (!isCurrent())
       throw new Error('The account context changed. Please try again.')
   }
   try {
@@ -84,6 +83,15 @@ export async function updateUserHandle(
       typeof payload.changed !== 'boolean'
     ) {
       throw new Error('User handle response did not match the requested User.')
+    }
+    if (payload.changed && isCurrent()) {
+      try {
+        await refreshNuxtData()
+      } catch (error) {
+        // The confirmed mutation remains successful if an API refresh fails.
+        if (isCurrent())
+          console.warn('[User handle] Saved; API refresh failed.', error)
+      }
     }
     return payload as UserHandleResult
   } finally {

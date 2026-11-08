@@ -1,7 +1,7 @@
 # Core Models
 
 Updated: 2026-11-08
-Ref: d9e120c46
+Ref: 470b97114
 Role: map, not canon
 
 ## Purpose
@@ -85,6 +85,16 @@ validate required fields and project canonical fields; unrelated stored
 metadata does not become relationship authority. A stored-schema audit is
 separate from this source shape. AppUser's actual trusted membership commands
 remain under App; no compulsory CRUD symmetry is implied.
+
+App and Ecosystem require canonical created/updated audit stamps. Ecosystem
+readers reject missing or malformed stamps rather than returning an unstamped
+record. Public stamp projections contain only their defined timestamp and actor
+fields, plus the optional creation App id.
+
+Current-App controls navigate to the runtime's configured `homePath`. Catalogue
+cards retain their `/apps/:id` destinations on the Main App surface that owns
+those routes. FireUX App detail acquires its exact Ecosystem once; its existing
+Project relation reads that exact Project and presents only active relationships.
 
 The native Core reader exposes documents and collections through the same
 settled-data contract: idle, pending and failed bindings expose no retained

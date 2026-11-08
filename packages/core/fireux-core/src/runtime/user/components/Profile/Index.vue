@@ -3,12 +3,12 @@
     <div class="user-identity__wash" aria-hidden="true" />
     <div class="user-identity__content">
       <UAvatar
-        :src="user.avatar || undefined"
+        :src="view?.avatarUrl || undefined"
         :alt="user.display_name"
         size="3xl"
       />
       <div>
-        <p>@{{ user.handle }}</p>
+        <p v-if="view?.handleLabel">{{ view.handleLabel }}</p>
         <h1>
           {{ user.display_name }}
         </h1>
@@ -36,12 +36,18 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../../composables/session/useUserSession'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useUserView } from '../../composables/useUserView'
 import { computed } from 'vue'
 import type { User } from '../../models/user.model'
 const props = defineProps<{ user: User }>()
-const { user: viewer } = useUserSession()
-const canEdit = computed(() => viewer.value?.id === props.user.id)
+const { uid, hasAuthState, isAuthenticated } = useAuth()
+const { toView } = useUserView()
+const view = computed(() => toView(props.user))
+const canEdit = computed(
+  () =>
+    hasAuthState.value && isAuthenticated.value && uid.value === props.user.id
+)
 </script>
 
 <style scoped>

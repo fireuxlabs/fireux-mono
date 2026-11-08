@@ -1,23 +1,15 @@
 <template>
-  <UCard v-if="ecosystem">
+  <UCard>
     <template #header>Ecosystem</template>
-    <ULink :to="ecosystem.detail_url">{{ ecosystem.name }}</ULink>
+    <ULink :to="`/ecosystems/${encodeURIComponent(ecosystem.id)}`">{{
+      ecosystem.name
+    }}</ULink>
     <p class="fx-type-caption">{{ ecosystem.description }}</p>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { App } from 'fireux-core/runtime/app/models/app.model'
-import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/directory'
-import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 
-const props = defineProps<{ app: App }>()
-const { data: directory } = usePlatformDirectory()
-const ecosystem = computed(
-  () =>
-    directory.value?.ecosystems.find(
-      (entry: EcosystemDirectoryEntry) => entry.id === props.app.ecosystem_id
-    ) ?? null
-)
+defineProps<{ ecosystem: Ecosystem }>()
 </script>
