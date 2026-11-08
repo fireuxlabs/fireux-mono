@@ -1,7 +1,7 @@
 <template>
   <FireState v-if="isLoading" outcome="pending" entity="your profile" />
   <FireDashboardOverviewRecovery
-    v-else-if="hasError || !user || !view"
+    v-else-if="hasError || !isUserIdentityComplete(user) || !view"
     :outcome="hasError ? 'error' : 'empty'"
     :error="error"
   />
@@ -44,6 +44,7 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserRead } from '../../../user/composables/useUserRead'
 import { useUserAccount } from '../../../user/composables/account/useUserAccount'
 import { useUserView } from '../../../user/composables/useUserView'
+import { isUserIdentityComplete } from '../../../user/utils/normalize-user'
 
 const { uid } = useAuth()
 const { user, outcome, error } = useUserRead(uid)

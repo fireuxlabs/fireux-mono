@@ -6,7 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compile, computed, createSSRApp, defineComponent, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 
-const root = new URL('../runtime/user/components/', import.meta.url)
+const root = new URL('../../../runtime/user/components/', import.meta.url)
 function source(file) {
   return readFileSync(new URL(file, root), 'utf8')
 }

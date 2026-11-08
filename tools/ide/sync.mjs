@@ -73,7 +73,7 @@ export function buildIdeFiles(root, apps) {
     ),
     task('FireUX: Lint changed files', ['lint:changed'], '$eslint-stylish'),
     task('FireUX: Check formatting of changed files', ['format:changed']),
-    task('FireUX: Test current owner', ['test:scope', '${file}']),
+    task('FireUX: Test current file or owner', ['test:scope', '${file}']),
     task(
       'FireUX: Typecheck current owner',
       ['typecheck:scope', '${file}'],

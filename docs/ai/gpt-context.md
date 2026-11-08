@@ -418,6 +418,12 @@ cleanup for progress. Separate release-only gates from functional dependencies.
 - Use focused package checks and source-owned tests for code changes. For
   prose-only changes, verify claims, local paths and anchors, then run
   git diff --check.
+- Prefer tests of behaviour, domain authority, state transitions and reproduced
+  regressions. Keep tests outside runtime and align their paths with the owning
+  source area or user journey; shared test execution belongs to
+  `tools/ide`. Use the [focused test workflow](../../tools/ide/README.md#choosing-tests)
+  and simplify stale mocks or incidental source-shape assertions when touching
+  their responsibility. Passing Node tests does not replace type or browser checks.
 - A typecheck proves compilation. A guard proves only its encoded contract.
   Neither proves ownership, live behavior or repository-wide alignment.
 

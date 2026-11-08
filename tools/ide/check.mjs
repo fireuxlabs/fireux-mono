@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, lstatSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -59,37 +59,54 @@ export function ownerFor(root, target) {
   return root
 }
 
+const isRunnableTest = (file) =>
+  /\.test\.(mjs|ts)$/.test(file) && !/\.types\.test\.ts$/.test(file)
+
 export function testFiles(directory) {
   const files = []
   if (!existsSync(directory)) return files
+  const target = lstatSync(directory)
+  if (target.isSymbolicLink()) return files
+  if (target.isFile()) return isRunnableTest(directory) ? [directory] : files
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     if (ignored.has(entry.name) || entry.isSymbolicLink()) continue
     const target = path.join(directory, entry.name)
     if (entry.isDirectory()) files.push(...testFiles(target))
-    else if (/\.test\.mjs$/.test(entry.name)) files.push(target)
+    else if (isRunnableTest(entry.name)) files.push(target)
   }
   return files.sort()
+}
+
+export function nodeTestArgs(files) {
+  return [
+    '--import',
+    fileURLToPath(new URL('./register-test-loader.mjs', import.meta.url)),
+    '--test',
+    ...files,
+  ]
 }
 
 export function planChecks(root, mode, { scope, files = [] } = {}) {
   if (!['check', 'lint', 'format', 'test', 'typecheck'].includes(mode)) {
     throw new Error(`Unknown check: ${mode}`)
   }
-  const owner = scope ? ownerFor(root, scope) : undefined
-  const owners = owner
-    ? [owner]
+  const scopes = typeof scope === 'string' ? [scope] : (scope ?? [])
+  const owners = scopes.length
+    ? [...new Set(scopes.map((target) => ownerFor(root, target)))]
     : [...new Set(files.map((file) => ownerFor(root, file)))]
   const commands = []
   const add = (command, args, cwd = root) =>
     commands.push({ command, args, cwd })
   if (mode === 'check' || mode === 'lint') {
-    const targets = owner
-      ? [path.relative(root, owner) || '.']
+    const targets = scopes.length
+      ? owners.map((owner) => path.relative(root, owner) || '.')
       : files.filter((file) => /\.(?:[cm]?js|ts|vue)$/.test(file))
     if (targets.length) add('pnpm', ['exec', 'eslint', '--', ...targets])
   }
   if (mode === 'check' || mode === 'format') {
-    const targets = owner ? [path.relative(root, owner) || '.'] : files
+    const targets = scopes.length
+      ? owners.map((owner) => path.relative(root, owner) || '.')
+      : files
     if (targets.length)
       add('pnpm', [
         'exec',
@@ -101,17 +118,25 @@ export function planChecks(root, mode, { scope, files = [] } = {}) {
       ])
   }
   if (mode === 'check' || mode === 'test') {
-    // A root-owned edit runs the tooling suite, never every App by accident.
-    const tests = [
-      ...new Set(
-        owners.flatMap((directory) =>
-          testFiles(
-            directory === root ? path.join(root, 'tools/ide') : directory
+    const ownerTests = (owner) =>
+      owner === root ? path.join(root, 'tools/ide') : owner
+    const targets = scopes.length
+      ? scopes.map((scope) => {
+          const target = path.resolve(root, scope)
+          if (target === root) return ownerTests(root)
+          if (
+            lstatSync(target).isDirectory() ||
+            /\.test\.(mjs|ts)$/.test(target)
           )
-        )
-      ),
-    ]
-    if (tests.length) add(process.execPath, ['--test', ...tests])
+            return target
+          return ownerTests(ownerFor(root, scope))
+        })
+      : owners.map(ownerTests)
+    // Exact files/directories stay focused; changed source retains owner coverage.
+    const tests = [
+      ...new Set(targets.flatMap((target) => testFiles(target))),
+    ].sort()
+    if (tests.length) add(process.execPath, nodeTestArgs(tests))
   }
   if (mode === 'check' || mode === 'typecheck') {
     for (const directory of owners) {
@@ -149,14 +174,11 @@ if (
   try {
     const [mode = 'check', ...args] = process.argv.slice(2)
     const positional = args.filter((arg) => !arg.startsWith('--'))
-    if (
-      positional.length > 1 ||
-      args.some((arg) => arg.startsWith('--') && arg !== '--dry-run')
-    )
+    if (args.some((arg) => arg.startsWith('--') && arg !== '--dry-run'))
       throw new Error(
-        'Usage: check.mjs <check|lint|format|test|typecheck> [owner-path] [--dry-run]'
+        'Usage: check.mjs <check|lint|format|test|typecheck> [paths...] [--dry-run]'
       )
-    const scope = positional[0]
+    const scope = positional.length ? positional : undefined
     const files = scope ? [] : changedFiles(repoRoot)
     const commands = planChecks(repoRoot, mode, { scope, files })
     if (args.includes('--dry-run'))

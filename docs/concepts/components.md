@@ -78,13 +78,15 @@ for interaction and return-navigation checks.
 Overview only arranges its User and App children and has no readers or props.
 User owns identity, private-account state and Recovery. It shows a small identity
 summary with Profile and Settings links, plus account recovery only when needed.
+Missing or incomplete identity uses the existing User identity-completeness
+policy and Recovery, while loading and read errors retain their own outcomes.
 App owns current membership and its role/plan summary, Join, Workspace and
 management actions. It reads no App-status document; initialization stays with
 the root App gate. Overview has no profile catalogue, welcome banner or completion
 prompt system. Recovery owns no reads or writes. Workspace remains a link to
 its separate operational surface. Each section handles its own outcomes.
 See `foundation-read-contract.test.mjs` and
-`dashboard-composition.test.mjs` under Core's `src/test`.
+`components/Dashboard/Overview.test.mjs` under Core's `src/test`.
 
 The Dashboard header uses `FireLayoutsDashboardProfileButton` for the current
 User identity link. It has no profile switcher or shared selection state.
@@ -105,7 +107,7 @@ private-context editor is a ready-account slot. Details owns its account read,
 while Session owns only Auth state and sign-out. Its initial loading state
 stays stable through hydration before displaying the browser session. Routes retain metadata and
 native Dashboard framing, with no duplicated account summaries or plan cards.
-See Core's `profile-settings.test.mjs`, editable-completion/workflow tests and
+See Core's `pages/dashboard/profile-settings.test.mjs`, editable-completion/workflow tests and
 native module registration check. The FireUX App has no competing Profile route.
 Overview, Profile and Settings share the semantic `fx-account-content` width
 in `page-layouts.scss`; field groups reuse `pagebody` spacing.

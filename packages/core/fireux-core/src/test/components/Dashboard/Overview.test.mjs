@@ -5,8 +5,9 @@ import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { compile, computed, createSSRApp, defineComponent, h, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
+import { isUserIdentityComplete } from '../../../runtime/user/utils/normalize-user.ts'
 
-const root = new URL('../runtime/components/Dashboard/', import.meta.url)
+const root = new URL('../../../runtime/components/Dashboard/', import.meta.url)
 
 async function render(file, values) {
   const source = readFileSync(new URL(file, root), 'utf8')
@@ -28,6 +29,7 @@ async function render(file, values) {
       }
       const dependencies = {
         computed,
+        isUserIdentityComplete,
         useAuth: () => ({ uid: ref('person') }),
         useFireUXConfig: () => ({ appId: 'app', appName: values.appName }),
         useUserRead: () => ({
@@ -61,7 +63,7 @@ async function render(file, values) {
         }),
       }
       const result = file.endsWith('User.vue')
-        ? '{user,view,accountOutcome,isLoading,hasError,error}'
+        ? '{user,view,accountOutcome,isLoading,hasError,error,isUserIdentityComplete}'
         : '{config,appUser,outcome,hasWorkspaceEntry,workspaceEntryHref,canManageApp,roleLabels,planLabels,reload}'
       return compileFunction(
         stripTypeScriptTypes(script) + '; return ' + result,
@@ -100,15 +102,16 @@ async function render(file, values) {
       },
     })
   )
-  for (const name of [
-    'USeparator',
-    'UIcon',
-    'UAvatar',
-    'UUser',
-    'FireState',
-    'FireDashboardOverviewRecovery',
-  ])
+  for (const name of ['USeparator', 'UIcon', 'UAvatar', 'UUser', 'FireState'])
     app.component(name, container)
+  app.component(
+    'FireDashboardOverviewRecovery',
+    defineComponent({
+      props: ['outcome'],
+      setup: (props) => () =>
+        h('section', { 'data-recovery-outcome': props.outcome }),
+    })
+  )
   app.component(
     'FireDiagnosticsDebugPanel',
     defineComponent({
@@ -178,6 +181,22 @@ test('User presentation and private-account recovery remain separate', async () 
   assert.match(html, /your private account/)
   assert.doesNotMatch(html, /Welcome back|Choose a public handle|Edit profile/)
   assert.match(html, /href="\/dashboard\/settings"/)
+})
+
+test('incomplete User identity selects setup recovery instead of the ready identity card', async () => {
+  for (const identity of [
+    { display_name: 'Example Person', handle: '' },
+    { display_name: '', handle: 'example' },
+    { display_name: 'Example Person', handle: 'x' },
+  ]) {
+    const html = await render('Overview/User.vue', {
+      user: { id: 'person', avatar: '', bio: '', ...identity },
+      userOutcome: 'ready',
+      accountOutcome: 'ready',
+    })
+    assert.match(html, /data-recovery-outcome="empty"/)
+    assert.doesNotMatch(html, /href="\/dashboard\/(user-profile|settings)"/)
+  }
 })
 
 test('identity recovery keeps Dashboard return links and excludes development diagnostics from production rendering', async () => {

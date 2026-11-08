@@ -1,4 +1,4 @@
-import { useDashboardProfiles } from '../runtime/composables/navigation/useDashboardProfiles.ts'
+import { useDashboardProfiles } from '../../../runtime/composables/navigation/useDashboardProfiles.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -9,7 +9,7 @@ import { renderToString } from 'vue/server-renderer'
 
 const source = readFileSync(
   new URL(
-    '../runtime/composables/navigation/useDashboardNav.ts',
+    '../../../runtime/composables/navigation/useDashboardNav.ts',
     import.meta.url
   ),
   'utf8'
@@ -102,7 +102,7 @@ test('cached permissions do not change the pre-hydration Dashboard tree; mounted
 test('Profile button follows User identity and keeps an accessible collapsed link', async () => {
   const text = readFileSync(
     new URL(
-      '../runtime/components/layouts/dashboard/ProfileButton.vue',
+      '../../../runtime/components/layouts/dashboard/ProfileButton.vue',
       import.meta.url
     ),
     'utf8'
@@ -164,7 +164,7 @@ test('Profile button follows User identity and keeps an accessible collapsed lin
 
 test('member and admin Workspace navigation follows configured availability, not admin access', async () => {
   const text = readFileSync(
-    new URL('../runtime/pages/dashboard/workspace.vue', import.meta.url),
+    new URL('../../../runtime/pages/dashboard/workspace.vue', import.meta.url),
     'utf8'
   )
   const script = text

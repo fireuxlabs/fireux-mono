@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-// Node fixtures import authored Nuxt TypeScript with extensionless relative paths.
+// Node tests import authored Nuxt TypeScript with extensionless relative paths.
 // Preserve Node resolution first; this does not change application resolution.
 export async function resolve(specifier, context, nextResolve) {
   try {

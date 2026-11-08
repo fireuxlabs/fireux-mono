@@ -8,7 +8,7 @@ import { computed, ref } from 'vue'
 test('footer uses the settled User reader and keeps only account actions', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/components/layouts/shared/SideBarFooter.vue',
+      '../../../../runtime/components/layouts/shared/SideBarFooter.vue',
       import.meta.url
     ),
     'utf8'

@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import { createSSRApp, h, ref } from 'vue'
 import { transpileModule, ModuleKind } from 'typescript'
 
-const root = new URL('../../../../../', import.meta.url)
+const root = new URL('../../../../../../', import.meta.url)
 const require = createRequire(import.meta.url)
 const vueRequire = createRequire(require.resolve('vue'))
 const { parse, compileScript } = vueRequire('@vue/compiler-sfc')
@@ -19,7 +19,10 @@ function manifest(
   theme
 ) {
   const source = readFileSync(
-    new URL('../runtime/server/manifest.webmanifest.get.ts', import.meta.url),
+    new URL(
+      '../../runtime/server/manifest.webmanifest.get.ts',
+      import.meta.url
+    ),
     'utf8'
   )
   const code = stripTypeScriptTypes(
@@ -219,7 +222,7 @@ test('failed discovery never renders stale properties or claims an empty collect
 
 async function renderCell(cell) {
   const path = new URL(
-    '../runtime/components/Collection/Cell.vue',
+    '../../runtime/components/Collection/Cell.vue',
     import.meta.url
   )
   const { descriptor } = parse(readFileSync(path, 'utf8'), {
@@ -282,7 +285,7 @@ async function renderSidebar({
   mounted = true,
 } = {}) {
   const path = new URL(
-    '../runtime/components/layouts/shared/SideBarFooter.vue',
+    '../../runtime/components/layouts/shared/SideBarFooter.vue',
     import.meta.url
   )
   const { descriptor } = parse(readFileSync(path, 'utf8'), {
@@ -319,13 +322,20 @@ async function renderSidebar({
       if (id.endsWith('/useAuth')) return { useAuth: () => auth }
       if (id.endsWith('/useAuthPhase'))
         return {
-          useAuthPhase: () => ({ isGuest: ref(phase === 'guest') }),
+          useAuthPhase: () => ({
+            uid: ref(phase === 'signed-in' ? 'actor' : ''),
+            isSignedIn: ref(phase === 'signed-in'),
+            isGuest: ref(
+              phase === 'guest' ||
+                (phase === 'signed-in' && Boolean(user?.isAnonymous))
+            ),
+          }),
         }
-      if (id.endsWith('/useUserSession'))
+      if (id.endsWith('/useUserRead'))
         return {
-          useUserSession: () => ({
+          useUserRead: () => ({
             user: ref(null),
-            userOutcome: ref('idle'),
+            outcome: ref('idle'),
           }),
         }
       if (id.endsWith('/useUserView'))
@@ -391,7 +401,7 @@ async function renderPolishComponent(
   file,
   { phase = 'guest', member = null } = {}
 ) {
-  const path = new URL(`../runtime/${file}`, import.meta.url)
+  const path = new URL(`../../runtime/${file}`, import.meta.url)
   const { descriptor } = parse(readFileSync(path, 'utf8'), {
     filename: path.pathname,
   })

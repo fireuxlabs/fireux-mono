@@ -172,7 +172,7 @@ component mounts, using native VueUse mounted state. Cached client permissions
 therefore cannot change the server tree during hydration. After mounting, the
 existing current-account permission and Workspace checks still govern visibility.
 See [Dashboard navigation](../../packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts)
-and its [regression check](../../packages/core/fireux-core/src/test/dashboard-nav.test.mjs).
+and its [regression check](../../packages/core/fireux-core/src/test/composables/navigation/useDashboardNav.test.mjs).
 
 WorkspacePage supplies the native document-title fallback from its shared route
 title. Domain pages can still provide their more specific head metadata.

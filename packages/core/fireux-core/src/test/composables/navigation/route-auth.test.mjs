@@ -7,7 +7,7 @@ import { computed, effectScope, nextTick, ref, toValue, watch } from 'vue'
 import {
   authRedirectPath,
   resolvePostAuthDestination,
-} from '../runtime/user/utils/auth-redirect.ts'
+} from '../../../runtime/user/utils/auth-redirect.ts'
 
 function load(path, result, deps, { server = false, dev = true } = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -29,7 +29,7 @@ function authHarness(dependencies = {}) {
     unsubscribed = 0,
     timers = 0
   const api = load(
-    '../runtime/composables/navigation/route-auth.ts',
+    '../../../runtime/composables/navigation/route-auth.ts',
     '{resolveClientAuthState,createClientRouteCheck,enforceClientRouteAuth}',
     {
       watch,
@@ -182,7 +182,7 @@ function guardHarness({
   }
   const h = authHarness(bindings)
   const guard = load(
-    `../runtime/middleware/fireux-${kind === 'dev' ? 'diagnostics' : kind}.global.ts`,
+    `../../../runtime/middleware/fireux-${kind === 'dev' ? 'diagnostics' : kind}.global.ts`,
     'middleware',
     { ...bindings, ...h.api }
   )
@@ -257,7 +257,7 @@ test('Dashboard auth hydration preserves the original protected destination even
     calls = [],
     scope = effectScope()
   const useAuthRedirect = load(
-    '../runtime/composables/fireux/firebase/useAuthRedirect.ts',
+    '../../../runtime/composables/fireux/firebase/useAuthRedirect.ts',
     'useAuthRedirect',
     {
       onNuxtReady: () => {},
@@ -295,7 +295,7 @@ test('Dashboard auth hydration preserves the original protected destination even
 test('production diagnostics is unavailable on server and client before auth', () => {
   for (const server of [false, true]) {
     const guard = load(
-      '../runtime/middleware/fireux-diagnostics.global.ts',
+      '../../../runtime/middleware/fireux-diagnostics.global.ts',
       'middleware',
       {
         defineNuxtRouteMiddleware: (callback) => callback,
@@ -313,7 +313,7 @@ test('production diagnostics is unavailable on server and client before auth', (
 
 test('server auth policy does not acquire client session state', () => {
   const enforce = load(
-    '../runtime/composables/navigation/route-auth.ts',
+    '../../../runtime/composables/navigation/route-auth.ts',
     'enforceClientRouteAuth',
     {
       useNuxtApp: () => {
@@ -375,7 +375,7 @@ test('live sign-out returns to the latest Dashboard destination and disposal sto
     calls = [],
     scope = effectScope()
   const useAuthRedirect = load(
-    '../runtime/composables/fireux/firebase/useAuthRedirect.ts',
+    '../../../runtime/composables/fireux/firebase/useAuthRedirect.ts',
     'useAuthRedirect',
     {
       onNuxtReady: () => {},

@@ -41,8 +41,10 @@ workspaces from App manifests; `pnpm ide:check` detects drift. See the
 - `pnpm check:changed`: check changed files and their direct owners.
 - `pnpm check:assets [App-directory]`: validate App artwork; defaults to every
   Nuxt App, including the starter.
-- `pnpm check:scope <path>`, `pnpm test:scope <path>` and
-  `pnpm typecheck:scope <path>`: check one owner.
+- `pnpm check:scope <path>` and `pnpm typecheck:scope <path>`: check one owner.
+- `pnpm test:scope <paths...>`: run exact test files, tests beneath selected
+  directories, or source files' owning suites. See the IDE workflow for test
+  selection, TypeScript resolution and the separate type-contract checks.
 - `pnpm test:unit`: run the bounded offline Core and IDE suite.
 - `pnpm ide:sync` / `pnpm ide:check`: update / verify generated IDE files.
 - `pnpm ide:doctor`: inspect local toolchain and editor prerequisites.

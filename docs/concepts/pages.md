@@ -75,7 +75,7 @@ The Dashboard layout retains [useAuthRedirect](../../packages/core/fireux-core/s
 for sign-out while a page is open. It tracks the latest return destination;
 the shared safe sign-in URL preserves its query and fragment. Core owns the
 inherited `/auth` page; Apps only override it for a real product difference.
-See `arrival-route.test.mjs` and `workspace-entry.test.mjs` under Core's
+See `composables/navigation/route-auth.test.mjs` and `workspace-entry.test.mjs` under Core's
 `src/test` for these navigation contracts.
 
 ## Common route families

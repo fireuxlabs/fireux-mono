@@ -126,6 +126,61 @@ test('focused checks resolve the nearest package and exclude generated tests', (
   )
 })
 
+test('test scopes select exact files and directories once, including TypeScript but not type contracts', (t) => {
+  const { root, put } = fixture(t)
+  const owner = 'projects/werkbox/richies-reinigung'
+  const first = `${owner}/src/test/first.test.mjs`
+  const second = `${owner}/src/test/nested/second.test.ts`
+  put(first)
+  put(second)
+  put(`${owner}/src/test/search.types.test.ts`)
+  put(`${owner}/.nuxt/generated.test.mjs`)
+  const selected = (scope) =>
+    planChecks(root, 'test', { scope })[0]?.args.filter(
+      (arg) => arg.endsWith('.test.mjs') || arg.endsWith('.test.ts')
+    ) ?? []
+  assert.deepEqual(selected(first), [path.join(root, first)])
+  assert.deepEqual(selected(`${owner}/src/test/nested`), [
+    path.join(root, second),
+  ])
+  assert.deepEqual(selected([first, `${owner}/src/test`, second]), [
+    path.join(root, first),
+    path.join(root, second),
+  ])
+  assert.deepEqual(selected(`${owner}/src/test/search.types.test.ts`), [])
+  put('tools/ide/runner.test.mjs')
+  assert.deepEqual(selected('.'), [
+    path.join(root, 'tools/ide/runner.test.mjs'),
+  ])
+})
+
+test('the planned Node command executes TypeScript tests with extensionless source imports', (t) => {
+  const { root, put } = fixture(t)
+  const owner = 'projects/werkbox/richies-reinigung'
+  put(`${owner}/package.json`, JSON.stringify({ type: 'module' }))
+  put(`${owner}/src/answer.ts`, 'export const answer: number = 42')
+  const target = `${owner}/src/test/answer.test.ts`
+  put(
+    target,
+    `import assert from 'node:assert/strict'
+import test from 'node:test'
+import { answer } from '../answer'
+test('extensionless TypeScript import', () => assert.equal(answer, 42))
+`
+  )
+  const [command] = planChecks(root, 'test', { scope: target })
+  const environment = { ...process.env }
+  delete environment.NODE_TEST_CONTEXT
+  const result = spawnSync(command.command, command.args, {
+    cwd: command.cwd,
+    env: environment,
+    encoding: 'utf8',
+    timeout: 10000,
+  })
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.match(result.stdout, /extensionless TypeScript import/)
+})
+
 test('changed files include staged, unstaged and untracked paths, preserving spaces and skipping deletions', (t) => {
   const { root, put } = fixture(t)
   const git = (...args) => {

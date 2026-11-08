@@ -955,7 +955,7 @@
       }
     },
     {
-      "label": "FireUX: Test current owner",
+      "label": "FireUX: Test current file or owner",
       "type": "process",
       "command": "pnpm",
       "args": [

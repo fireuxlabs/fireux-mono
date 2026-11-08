@@ -34,7 +34,10 @@ the desktop sidebar if the app requests source-folder consent.
   first failure. Root-owned edits run IDE tests, not every App's tests.
 - `pnpm lint:changed` / `pnpm format:changed`: read-only checks of changed files.
 - `pnpm check:scope projects/werkbox/richies-reinigung`: check one owner.
-- `pnpm test:scope <file-or-owner-path>`: run that owner's `.test.mjs` files.
+- `pnpm test:scope <paths...>`: run exact test files, tests beneath a directory,
+  or an ordinary source file's owning suite. Multiple targets are deduplicated.
+  Runnable `.test.mjs` and `.test.ts` files share the test-only TypeScript
+  resolver; `.types.test.ts` contracts stay with typechecking.
 - `pnpm typecheck:scope <file-or-owner-path>`: Nuxt typing for an App or `tsc`
   for a package with a `tsconfig.json`.
 - Add `--dry-run` to a focused command to inspect exactly what it will execute.
@@ -51,6 +54,40 @@ saved file inside the owner. Checks do not format, stage, commit, push or deploy
 They cover direct owners; a shared change can require checks of dependent Apps
 and live verification. No applicable tests/typecheck is not proof of coverage.
 `pnpm format` remains the explicit repository-wide formatting command.
+
+## Choosing tests
+
+Keep tests beside their package owner, normally in `src/test`; App consumer
+tests remain with the App. Within that test root, mirror the source area and
+use the source component or responsibility as the filename. For example,
+Core's `runtime/components/Dashboard/Overview.vue` is covered under
+`src/test/components/Dashboard/Overview.test.mjs`. Tests spanning several
+surfaces belong under `journeys` with a name describing the user flow; do not
+force them into a single component's folder. Group related behaviour without
+requiring one test file for every source file.
+
+Shared Node test resolution belongs here in
+`register-test-loader.mjs` and `test-loader.mjs`, outside application runtime.
+
+- Use `pnpm test:unit` for the bounded offline CI smoke suite. It is not complete
+  domain or browser coverage.
+- For a focused repair, select its regression file and relevant sibling tests,
+  for example `pnpm test:scope packages/core/fireux-core/src/test/components/Dashboard/Overview.test.mjs`.
+- Select an owner directory when broader coverage is warranted. Owner suites can
+  include Nuxt preparation/build fixtures and other slower integration checks;
+  inspect their setup and use `--dry-run` before an unfamiliar broad run.
+- `check:changed` retains direct-owner coverage for changed source. Explicit
+  file selection does not infer a dependency graph or dependent App coverage.
+- Typechecks and browser journeys provide separate evidence; Node passing does
+  not establish either.
+
+Prefer assertions about user-visible behaviour, domain rules, authorization,
+state transitions and reproduced regressions. Source-text assertions are useful
+for real registration/build boundaries, but should not freeze incidental
+formatting, folder anatomy or private variable names. Simplify stale mocks and
+duplicated assertions when changing that responsibility; do not add tests merely
+to reproduce the implementation. Do not introduce a universal test harness
+without repeated consumers that need the same behaviour.
 
 ## Routine Git Save
 
