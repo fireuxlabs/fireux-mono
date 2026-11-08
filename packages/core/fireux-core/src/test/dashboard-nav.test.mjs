@@ -161,3 +161,56 @@ test('Profile button follows User identity and keeps an accessible collapsed lin
   assert.match(compact, /aria-label="Daniel"/)
   assert.doesNotMatch(compact, />Daniel<\/a>/)
 })
+
+test('member and admin Workspace navigation follows configured availability, not admin access', async () => {
+  const text = readFileSync(
+    new URL('../runtime/pages/dashboard/workspace.vue', import.meta.url),
+    'utf8'
+  )
+  const script = text
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  for (const isAdmin of [false, true]) {
+    for (const available of [false, true]) {
+      let meta
+      const destinations = []
+      const run = compileFunction(
+        'return async () => {' + stripTypeScriptTypes(script) + '}',
+        ['definePageMeta', 'useWorkspaceEntryCta', 'navigateTo']
+      )(
+        (value) => {
+          meta = value
+        },
+        () => ({
+          hasWorkspaceEntry: ref(available),
+          openWorkspace: async () => destinations.push('/workspace/project'),
+          workspaceRootPath: '/home',
+        }),
+        async (path) => destinations.push(path)
+      )
+      await run()
+      assert.equal(meta.requiresAuth, true)
+      assert.equal(meta.roles, undefined)
+      assert.deepEqual(destinations, [
+        available ? '/workspace/project' : '/home',
+      ])
+      const nav = load(
+        computed,
+        () => ref(true),
+        () => ({ desktop: ref([]) }),
+        () => ({ isAdmin: ref(isAdmin) }),
+        () => ({ isDeveloper: ref(false) }),
+        () => ({ hasWorkspaceEntry: ref(available) }),
+        useDashboardProfiles
+      )()
+      assert.equal(
+        nav.baseNavFilter({ ...meta.nav, roles: meta.roles }),
+        available
+      )
+      assert.equal(
+        nav.baseNavFilter({ key: 'dashboard-admin', roles: ['admin'] }),
+        isAdmin
+      )
+    }
+  }
+})

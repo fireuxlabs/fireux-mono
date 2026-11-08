@@ -18,10 +18,10 @@ definePageMeta({
     layouts: ['dashboard'],
   },
   requiresAuth: true,
-  roles: ['admin'],
 })
 
-const { hasWorkspaceEntry, openWorkspace, workspaceRootPath } = useWorkspaceEntryCta()
+const { hasWorkspaceEntry, openWorkspace, workspaceRootPath } =
+  useWorkspaceEntryCta()
 
 if (hasWorkspaceEntry.value) await openWorkspace()
 else await navigateTo(workspaceRootPath, { replace: true })

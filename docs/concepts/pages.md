@@ -93,6 +93,12 @@ See `arrival-route.test.mjs` and `workspace-entry.test.mjs` under Core's
 - Workspace child operation: `/workspace/x/<operation>`.
 - Dashboard/admin/dev surfaces where packages expose them.
 
+Dashboard Overview and the sidebar Workspace entrance both use
+`useWorkspaceEntryCta` availability from the App's configured Workspaces.
+The Dashboard redirect requires sign-in, not an administrator role. Apps without
+Workspaces expose neither entrance. Entry visibility grants no Entity access;
+Workspace selection, membership and trusted domain commands retain their checks.
+
 ## Dashboard overview notes
 
 - Core owns the shared `/dashboard` route shell and the named Dashboard Overview
