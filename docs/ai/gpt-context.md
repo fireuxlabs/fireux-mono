@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-11-07
+Updated: 2026-11-08
 Ref: d0f981eac
 Role: living context
 Scope: repository-wide
@@ -215,6 +215,11 @@ shared semantic style. Remove redundant utility overrides rather than copying
 them into new CSS. Flag a concrete visibility, accessibility or geometry need
 before retaining an exception; future unique or pixel-perfect work does not
 authorize utility classes in current work.
+
+Core owns the explicit public component catalogue in
+`src/catalogue/public-components.mjs`; Docs publishes those supported building
+blocks with safe previews. Nuxt registration does not publish a component.
+The complete source inventory is development-only at `/dev/core-components`.
 
 Core shared UI uses the `Fire` library prefix. Atomic Design folders such as
 atoms, molecules and organisms are internal organisation and are omitted from

@@ -1,8 +1,9 @@
+import { publicComponents } from 'fireux-core/catalogue/public-components'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { coreInventory } from '../catalogue/core-inventory.mjs'
+import { coreInventory, publicLibrary } from '../catalogue/core-inventory.mjs'
 
 const runtime = fileURLToPath(
   new URL('../../../../core/fireux-core/src/runtime/', import.meta.url)
@@ -61,5 +62,47 @@ test('Every preview names a real Core component; connected components are not au
     inventory.find((entry) => entry.source === 'components/Auth/System.vue')
       .preview,
     false
+  )
+})
+
+test('public library contains only explicit entries with real source and safe previews', () => {
+  const library = publicLibrary(runtime, [], preview)
+  assert.equal(library.length, publicComponents.length)
+  assert.equal(new Set(library.map((entry) => entry.name)).size, library.length)
+  assert.equal(
+    new Set(library.map((entry) => entry.source)).size,
+    library.length
+  )
+  for (const entry of library) {
+    assert.equal(entry.preview, true, entry.name)
+    assert.ok(entry.description.trim(), entry.name)
+    assert.equal(entry.scope, 'Shared', entry.name)
+  }
+  const internal = coreInventory(runtime, [], preview)
+  assert.ok(
+    internal.some((entry) => entry.name === 'FireLayoutsDashboardProfileButton')
+  )
+  assert.equal(
+    library.some((entry) => entry.name === 'FireLayoutsDashboardProfileButton'),
+    false
+  )
+  assert.equal(
+    library.some((entry) => entry.name === 'FireAuthSystem'),
+    false
+  )
+  assert.equal(
+    library.some((entry) => entry.scope === 'App'),
+    false
+  )
+  assert.throws(() => publicLibrary(runtime, [], ''), /needs a safe preview/)
+  const source = library[0].source
+  assert.throws(
+    () =>
+      publicLibrary(
+        runtime,
+        [{ filePath: `${runtime}${source}`, pascalName: 'Renamed' }],
+        preview
+      ),
+    /source or registration changed/
   )
 })

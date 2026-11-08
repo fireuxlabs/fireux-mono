@@ -51,7 +51,11 @@
       "types": "./src/runtime/*.ts",
       "default": "./src/runtime/*.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./catalogue/public-components": {
+      "types": "./src/catalogue/public-components.d.mts",
+      "default": "./src/catalogue/public-components.mjs"
+    }
   },
   "typesVersions": {
     "*": {

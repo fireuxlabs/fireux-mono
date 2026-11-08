@@ -1,3 +1,4 @@
+import { publicComponents } from 'fireux-core/catalogue/public-components'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
@@ -73,4 +74,23 @@ export function coreInventory(
       })
     )
     .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+/** Only the explicit Core catalogue is published; the full scan stays build-time. */
+export function publicLibrary(
+  runtimeRoot,
+  components = [],
+  previewSource = ''
+) {
+  const inventory = coreInventory(runtimeRoot, components, previewSource)
+  return publicComponents.map((entry) => {
+    const component = inventory.find((item) => item.source === entry.source)
+    if (!component || component.name !== entry.name)
+      throw new Error(
+        `Public component source or registration changed: ${entry.name}`
+      )
+    if (!component.preview)
+      throw new Error(`Public component needs a safe preview: ${entry.name}`)
+    return { ...component, group: entry.group, description: entry.description }
+  })
 }

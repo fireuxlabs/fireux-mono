@@ -40,8 +40,7 @@ export function useDashboardProfiles(
 
   // Profile records are owned by their profile Entities, not AppUser.
   // Until those readers provide presence, every configured profile is available.
-  const activeProfileEntries = computed<NavItem[]>(() => [])
   const availableProfileEntries = computed(() => profileEntries.value)
 
-  return { profileEntries, activeProfileEntries, availableProfileEntries }
+  return { profileEntries, availableProfileEntries }
 }

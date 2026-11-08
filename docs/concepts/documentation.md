@@ -1,6 +1,6 @@
 # Documentation system
 
-Updated: 2026-11-06
+Updated: 2026-11-08
 Ref: 614700fd9
 Role: map, not canon
 
@@ -132,21 +132,26 @@ The public reference follows the parts of a Nuxt App that developers work
 with: configuration, app.vue, pages, layouts, components, composables, and server
 routes. Each guide leads with what FireUX adds, shows an example, and links
 to the relevant Nuxt or Nuxt UI reference for the basics.
-The public library at `/docs/components` inventories all Core Vue sources,
-including App, User, Ecosystem and Workspace components. The Docs layer generates
-that inventory from Core source and Nuxt registration through
-`fireux-docs/src/catalogue/core-inventory.mjs`; do not maintain a second list.
-`fireux-docs/src/runtime/components/CorePreview.vue` owns explicit sample-data
-previews and local-only callbacks. Components without an isolated preview remain
-visible as source-only entries; do not auto-mount connected screens or claim that
-an inventory entry is a supported standalone control.
+The public library at `/docs/components` is explicit. Core owns
+[`src/catalogue/public-components.mjs`](../../packages/core/fireux-core/src/catalogue/public-components.mjs):
+each entry names a component, source, purpose and group. Nuxt registration alone
+does not publish a component. Add an entry only for a useful supported building
+block, with a safe sample-data preview in Docs' `CorePreview.vue`. The Docs
+builder checks source/name agreement and requires that preview. Restart the dev
+server after editing catalogue metadata. The Docs `core-inventory.test.mjs` and
+`library-routes.test.mjs` check publication and development/production boundaries.
 
-The Core inventory stays Core-only. Reusable Extension components with a
-separate public preview are presented on their own Docs pages, rendered from
-the owning package with generic placeholder data. Keep those previews outside
-`core-inventory.mjs`; they do not change Core ownership. The
-[Bookings customer form preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue)
-is the current example.
+The full source inventory is internal at `/dev/core-components`. It includes
+App, User, Ecosystem, Workspace and shared implementation components; inclusion
+is not a public API promise. Its detail pages show source and existing previews.
+The Docs layer excludes those routes in production and generates an empty
+internal inventory there. Public detail routes resolve only the public catalogue,
+so an internal component's old Docs URL returns 404.
+
+Extension components keep separate package-owned previews, such as the
+[Bookings customer form](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue).
+They do not become Core components by appearing in Docs. Previews use sample
+data and local callbacks; never auto-mount connected account or App screens.
 
 The smaller `fireux-docs/src/runtime/models/catalogue.ts` supplies the curated
 usage guides and sidebar links. Patterns and templates remain separate

@@ -86,6 +86,11 @@ its separate operational surface. Each section handles its own outcomes.
 See `foundation-read-contract.test.mjs` and
 `dashboard-composition.test.mjs` under Core's `src/test`.
 
+The Dashboard header uses `FireLayoutsDashboardProfileButton` for the current
+User identity link. It has no profile switcher or shared selection state.
+Domain sidebar entries follow the current route's `nav.profileId`; their
+readers and editors remain with their owning extensions.
+
 ## Profile and Settings composition
 
 The shared Profile route composes `UserEditProfile`, which reads only the public
@@ -266,7 +271,10 @@ fetch records. App collection acquisition keeps next-page failures separate
 from initial-load errors, retaining the current records while loading or retrying.
 
 The public [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
-keeps its generated inventory Core-only. Extension previews live separately
+publishes only Core's explicit `src/catalogue/public-components.mjs` entries,
+each with a safe preview. The complete inventory lives at the development-only
+`/dev/core-components`; internal implementation components are not a public API.
+Extension previews live separately
 and may render a package-owned component with generic placeholder data; this
 does not make that component part of Core. The
 [Bookings preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue)

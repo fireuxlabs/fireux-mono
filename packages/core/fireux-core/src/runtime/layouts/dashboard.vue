@@ -13,7 +13,7 @@
     >
       <template #header="{ collapsed }">
         <div class="workspace-sidebar__brand">
-          <FireLayoutsDashboardProfilesMenu
+          <FireLayoutsDashboardProfileButton
             v-if="!collapsed"
             :collapsed="false"
           />
@@ -76,8 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDashboardNav } from '../composables/navigation/useDashboardNav'
 import { useNavGrouping } from '../composables/navigation/useNavGrouping'
@@ -88,10 +87,6 @@ defineOptions({ name: 'dashboard' })
 
 const open = ref(false)
 const route = useRoute()
-const activeProfileState = useState<string | null>(
-  'fireux-dashboard-profile',
-  () => null
-)
 
 const { isOpen: isNotificationsSlideoverOpen } = useUserNotifications()
 const { desktop, baseNavFilter, resolveItemPosition } = useDashboardNav()
@@ -100,30 +95,8 @@ useAuthRedirect()
 const routeProfileId = computed(
   () => (route.meta as { nav?: { profileId?: string } }).nav?.profileId ?? null
 )
-const routeNavKey = computed(
-  () => (route.meta as { nav?: { key?: string } }).nav?.key ?? ''
-)
-
-watch(
-  [routeProfileId, routeNavKey],
-  ([value, key]: [string | null, string]) => {
-    if (value && activeProfileState.value !== value) {
-      activeProfileState.value = value
-    } else if (
-      !value &&
-      (key === 'dashboard-home' || key === 'dashboard-user-profile') &&
-      activeProfileState.value !== null
-    ) {
-      activeProfileState.value = null
-    }
-  },
-  { immediate: true }
-)
-
-const activeProfileId = computed(() => activeProfileState.value)
-
 const profileExtras = computed(() => {
-  const profileId = activeProfileId.value
+  const profileId = routeProfileId.value
   if (!profileId) return []
   return desktop.value
     .filter((item) => item.group !== 'profiles')

@@ -1,13 +1,10 @@
 <template>
   <UPage v-if="entry">
-    <UPageHeader
-      :title="entry.name"
-      :description="`${entry.scope} · ${entry.source}`"
-    >
+    <UPageHeader :title="entry.name" :description="entry.description">
       <template #links
         ><UButton
           to="/docs/components"
-          label="All Core components"
+          label="Component library"
           color="neutral"
           variant="ghost"
           icon="i-lucide-arrow-left"
@@ -62,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import inventory from '#build/fireux-core-inventory'
+import inventory from '#build/fireux-public-components'
 const route = useRoute()
 const entry = computed(() =>
   inventory.find((item) => item.id === route.params.id)

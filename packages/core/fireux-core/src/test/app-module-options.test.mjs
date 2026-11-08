@@ -31,7 +31,7 @@ try {
   const profilePage = nuxt.apps.default.pages.find(page => page.path === '/dashboard/user-profile')
   assert.ok(profilePage.file.endsWith('/fireux-core/src/runtime/pages/dashboard/user-profile.vue'))
   const components = readFileSync(join(output, 'components.d.ts'), 'utf8')
-  for (const name of ['FireAuthBrand', 'FireAuthSignIn', 'FireAuthContinue', 'FireDashboardOverviewRecovery', 'UserEditProfile', 'UserEditAvatar', 'UserAccountDetails', 'UserAccountSession']) {
+  for (const name of ['FireAuthBrand', 'FireAuthSignIn', 'FireAuthContinue', 'FireDashboardOverviewRecovery', 'UserEditProfile', 'UserEditAvatar', 'UserAccountDetails', 'UserAccountSession', 'FireLayoutsDashboardProfileButton']) {
     assert.ok(components.includes(name))
   }
   assert.equal(components.includes('FireDashboardOverviewEcosystem'), false)

@@ -4,7 +4,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref } from 'vue'
+import { compile, computed, createSSRApp, defineComponent, h, ref } from 'vue'
+import { renderToString } from 'vue/server-renderer'
 
 const source = readFileSync(
   new URL(
@@ -64,7 +65,6 @@ test('profile navigation stays reactive and prefers one canonical entry per prof
     profiles.availableProfileEntries.value.map((item) => item.to),
     ['/host/profile', '/cook/profile']
   )
-  assert.deepEqual(profiles.activeProfileEntries.value, [])
   items.value = []
   assert.deepEqual(profiles.availableProfileEntries.value, [])
 })
@@ -97,4 +97,59 @@ test('cached permissions do not change the pre-hydration Dashboard tree; mounted
   developer.value = false
   workspace.value = false
   assert.deepEqual(privateItems.map(nav.baseNavFilter), [false, false, false])
+})
+
+test('Profile button follows User identity and keeps an accessible collapsed link', async () => {
+  const text = readFileSync(
+    new URL(
+      '../runtime/components/layouts/dashboard/ProfileButton.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const script = text
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const currentUser = ref(null)
+  const state = compileFunction(
+    stripTypeScriptTypes(script) + '; return { label }',
+    ['computed', 'defineProps', 'useUserSession', 'useUserView']
+  )(
+    computed,
+    () => ({}),
+    () => ({ currentUser }),
+    () => ({
+      pill: (user) => (user ? { displayName: user.name } : null),
+    })
+  )
+  const collapsed = ref(false)
+  const component = defineComponent({
+    setup: () => ({ ...state, collapsed }),
+    render: compile(
+      text.slice(text.indexOf('<template>') + 10, text.indexOf('</template>'))
+    ),
+  })
+  const app = createSSRApp(component)
+  app.component(
+    'UButton',
+    defineComponent({
+      inheritAttrs: false,
+      setup(_, { attrs }) {
+        return () =>
+          h(
+            'a',
+            { href: attrs.to, 'aria-label': attrs['aria-label'] },
+            attrs.label
+          )
+      },
+    })
+  )
+  assert.match(await renderToString(app), /aria-label="Your profile"/)
+  currentUser.value = { name: 'Daniel' }
+  assert.match(await renderToString(app), />Daniel<\/a>/)
+  collapsed.value = true
+  const compact = await renderToString(app)
+  assert.match(compact, /href="\/dashboard\/user-profile"/)
+  assert.match(compact, /aria-label="Daniel"/)
+  assert.doesNotMatch(compact, />Daniel<\/a>/)
 })

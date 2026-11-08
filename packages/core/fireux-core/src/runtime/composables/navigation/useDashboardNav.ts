@@ -57,15 +57,15 @@ export const useDashboardNav = () => {
     return item.key && topPriorityKeys.has(item.key) ? 'top' : 'bottom'
   }
 
-  const { profileEntries, activeProfileEntries, availableProfileEntries } =
-    useDashboardProfiles(nav.desktop)
+  const { profileEntries, availableProfileEntries } = useDashboardProfiles(
+    nav.desktop
+  )
 
   return {
     ...nav,
     baseNavFilter,
     resolveItemPosition,
     profileEntries,
-    activeProfileEntries,
     availableProfileEntries,
   }
 }

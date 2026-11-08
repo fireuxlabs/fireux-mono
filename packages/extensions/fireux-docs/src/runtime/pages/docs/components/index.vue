@@ -1,95 +1,54 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Core components"
-      description="Everything currently in Core, including the smaller helpers and connected screens."
+      title="Component library"
+      description="Useful Core building blocks for extending FireUX. Every component here has a working example."
     />
     <UPageBody>
       <p>
-        {{ inventory.length }} components: {{ sharedCount }} shared Fire
-        components and {{ inventory.length - sharedCount }} App, User, Ecosystem
-        and Workspace components. {{ previewCount }} have sample-data previews.
-        The rest show their source. Connected screens need their owning App
-        context.
+        Use <ULink to="https://ui.nuxt.com/docs/components">Nuxt UI</ULink>
+        for the basic controls. FireUX adds shared editing, collection, feedback
+        and workflow behaviour. Your feature keeps its data, permissions and
+        commands.
       </p>
       <p>
-        Use <ULink to="https://ui.nuxt.com/docs/components">Nuxt UI</ULink> for
-        the basic controls. This inventory shows what is in FireUX today; being
-        listed does not mean it should stay in Core.
+        Examples use sample data and local actions. They do not save to your
+        account.
       </p>
-      <section class="extension-library">
-        <h2 class="fx-type-section-title">Extension component previews</h2>
-        <UCard variant="subtle">
-          <div class="extension-library__card">
-            <div>
-              <h3 class="fx-type-card-heading">Reusable booking form</h3>
-              <p>
-                A provider-independent customer form with sample reservation
-                fields. Apps supply their own services, availability and booking
-                rules.
-              </p>
-            </div>
-            <UButton
-              to="/docs/components/bookings"
-              label="Preview"
-              color="neutral"
-              variant="ghost"
-              trailing-icon="i-lucide-arrow-right"
-            />
-          </div>
-        </UCard>
-      </section>
-      <div class="core-library-filters">
-        <UInput
-          v-model="search"
-          aria-label="Search Core components"
-          placeholder="Search names or folders…"
-          icon="i-lucide-search"
-        />
-        <USelect v-model="scope" :items="scopes" aria-label="Component owner" />
-        <USwitch v-model="previewsOnly" label="With previews" />
-      </div>
-      <p role="status">
-        {{ filtered.length }}
-        {{ filtered.length === 1 ? 'component' : 'components' }} shown
-      </p>
+      <UInput
+        v-model="search"
+        aria-label="Search component library"
+        placeholder="Search components…"
+        icon="i-lucide-search"
+      />
+      <p role="status">{{ filtered.length }} components</p>
       <section
         v-for="group in groups"
         :key="group.name"
         class="core-library-group"
       >
-        <h2 class="fx-type-section-title">
-          {{ group.name }} <span>({{ group.entries.length }})</span>
-        </h2>
+        <h2 class="fx-type-section-title">{{ group.name }}</h2>
         <div class="core-library-grid">
           <UCard
             v-for="entry in group.entries"
             :key="entry.id"
             variant="subtle"
           >
-            <h3 class="fx-type-card-heading">
+            <h3>
               <ULink :to="`/docs/components/core/${entry.id}`">{{
                 entry.name
               }}</ULink>
             </h3>
-            <p class="core-library-path">{{ entry.source }}</p>
+            <p>{{ entry.description }}</p>
             <template #footer>
-              <div class="core-library-card-footer">
-                <UBadge
-                  :color="entry.preview ? 'success' : 'neutral'"
-                  variant="subtle"
-                  >{{ entry.preview ? 'Live preview' : 'Source only' }}</UBadge
-                >
-                <UButton
-                  :to="`/docs/components/core/${entry.id}`"
-                  :label="entry.preview ? 'Preview' : 'Inspect'"
-                  :aria-label="`${entry.preview ? 'Preview' : 'Inspect'} ${entry.name}`"
-                  color="neutral"
-                  variant="ghost"
-                  size="sm"
-                  trailing-icon="i-lucide-arrow-right"
-                />
-              </div>
+              <UButton
+                :to="`/docs/components/core/${entry.id}`"
+                label="Preview and source"
+                :aria-label="`Preview ${entry.name}`"
+                color="neutral"
+                variant="ghost"
+                trailing-icon="i-lucide-arrow-right"
+              />
             </template>
           </UCard>
         </div>
@@ -97,29 +56,31 @@
       <UAlert
         v-if="!filtered.length"
         title="No matching components"
-        description="Try a different name or owner, or turn off the preview filter."
+        description="Try another name or purpose."
         color="neutral"
       />
+      <section class="extension-library">
+        <h2 class="fx-type-section-title">Extensions</h2>
+        <p>Domain components stay with their owning extension.</p>
+        <UButton
+          to="/docs/components/bookings"
+          label="Booking form preview"
+          color="neutral"
+          variant="soft"
+        />
+      </section>
     </UPageBody>
   </UPage>
 </template>
-
 <script setup lang="ts">
-import inventory from '#build/fireux-core-inventory'
-
+import library from '#build/fireux-public-components'
 const search = ref('')
-const scope = ref('Shared')
-const previewsOnly = ref(false)
-const scopes = ['All Core', 'Shared', 'App', 'User', 'Ecosystem', 'Workspace']
-const sharedCount = inventory.filter((entry) => entry.scope === 'Shared').length
-const previewCount = inventory.filter((entry) => entry.preview).length
 const filtered = computed(() => {
   const query = search.value.trim().toLowerCase()
-  return inventory.filter(
-    (entry) =>
-      (scope.value === 'All Core' || entry.scope === scope.value) &&
-      (!previewsOnly.value || entry.preview) &&
-      (!query || `${entry.name} ${entry.source}`.toLowerCase().includes(query))
+  return library.filter((entry) =>
+    `${entry.name} ${entry.description} ${entry.group}`
+      .toLowerCase()
+      .includes(query)
   )
 })
 const groups = computed(() =>
@@ -128,55 +89,20 @@ const groups = computed(() =>
     entries: filtered.value.filter((entry) => entry.group === name),
   }))
 )
-
-definePageMeta({ layout: 'docs', title: 'Core components' })
+definePageMeta({ layout: 'docs', title: 'Component library' })
 useSeoMeta({
-  title: 'Core components · FireUX',
-  description:
-    'Browse the current Core components, sample-data previews and source.',
+  title: 'Component library · FireUX',
+  description: 'Supported FireUX building blocks with sample-data previews.',
 })
 </script>
-
 <style scoped>
-.core-library-filters,
-.core-library-card-footer,
-.extension-library__card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: calc(var(--spacing) * 3);
-}
-.core-library-filters {
-  margin-block: calc(var(--spacing) * 6);
-}
+.core-library-group,
 .extension-library {
   margin-block: calc(var(--spacing) * 8);
 }
-.extension-library__card {
-  justify-content: space-between;
-}
-.extension-library__card h3 {
-  font-weight: 600;
-}
-.extension-library__card p {
-  margin-top: calc(var(--spacing) * 2);
-  color: var(--ui-text-muted);
-}
-.core-library-card-footer {
-  justify-content: space-between;
-}
-.core-library-group {
-  margin-block: calc(var(--spacing) * 8);
-}
-.core-library-group h2 {
+.core-library-group h2,
+.extension-library h2 {
   margin-bottom: calc(var(--spacing) * 4);
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-.core-library-group h2 span,
-.core-library-path {
-  color: var(--ui-text-muted);
-  font-size: 0.875rem;
 }
 .core-library-grid {
   display: grid;
@@ -185,10 +111,6 @@ useSeoMeta({
 }
 .core-library-grid h3 {
   font-weight: 600;
-  overflow-wrap: anywhere;
-}
-.core-library-path {
-  margin-top: calc(var(--spacing) * 2);
   overflow-wrap: anywhere;
 }
 </style>
