@@ -15,7 +15,7 @@
       </span>
     </div>
 
-    <UserCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
+    <UserCollectionList v-if="filteredUsers.length" :users="filteredUsers" />
     <div v-else role="status">
       <p>
         {{ hasMore ? 'No matches in loaded users' : 'No matching people' }}
@@ -57,22 +57,19 @@ const searchPlaceholder = computed(() =>
 const showCount = true
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => totalCount.value > 15)
-const { interface: makeCard } = useUserView()
+const { toView } = useUserView()
 
 const { query, visibleItems, visibleCount } = useCollectionSearch<
   User,
-  NonNullable<ReturnType<typeof makeCard>>
+  NonNullable<ReturnType<typeof toView>>
 >({
   items: collection,
-  makeCard: (user) => makeCard(user),
+  makeCard: toView,
+  searchText: (user) => [user.display_name, user.handle, user.bio].join(' '),
   initialVariant: 'cell',
 })
 
-const cardsFiltered = computed(() =>
-  visibleItems.value
-    .map((user) => makeCard(user))
-    .filter((card): card is NonNullable<typeof card> => Boolean(card))
-)
+const filteredUsers = visibleItems
 
 const countLabel = computed(
   () =>

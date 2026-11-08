@@ -2,23 +2,19 @@
   <UCard class="profile">
     <template #header>
       <UserCardsCell
-        :avatar-url="avatarUrl"
-        :display-name="displayName"
-        :handle="handle"
-        :summary="summary"
+        v-bind="view"
+        :display-name="user.display_name"
+        :bio="user.bio"
         :show-subtitle="showSubtitle"
         :show-tagline="false"
       />
     </template>
     <div class="profile__body">
-      <section
-        v-if="showDescription && profileSummary"
-        class="profile__section"
-      >
+      <section v-if="showDescription && user.bio" class="profile__section">
         <div class="profile__label">About</div>
-        <div class="profile__value">{{ profileSummary }}</div>
+        <div class="profile__value">{{ user.bio }}</div>
       </section>
-      <section v-if="showDetails && user?.id" class="profile__section">
+      <section v-if="showDetails" class="profile__section">
         <div class="profile__label">Details</div>
         <div class="profile__value">
           <div class="profile__kv">
@@ -30,9 +26,8 @@
     </div>
     <template v-if="showFooter" #footer>
       <UserCardsPill
-        :avatar-url="avatarUrl"
-        :display-name="displayName"
-        :handle="handle"
+        v-bind="view"
+        :display-name="user.display_name"
         :show-subtitle="showSubtitle"
       />
     </template>
@@ -41,33 +36,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { User } from '../models/user.model'
+import { useUserView } from '../composables/useUserView'
 const props = withDefaults(
   defineProps<{
-    avatarUrl?: string
-    displayName?: string
-    handle?: string
-    summary?: string
-    bio?: string
-    user?: Pick<User, 'id'> | null
-    bioOverride?: string
+    user: User
     showSubtitle?: boolean
     showDescription?: boolean
     showDetails?: boolean
     showFooter?: boolean
   }>(),
   {
-    avatarUrl: '',
-    displayName: '',
-    handle: '',
-    summary: '',
-    bio: '',
     showSubtitle: true,
     showDescription: true,
     showDetails: true,
     showFooter: true,
   }
 )
-const profileSummary = computed(() =>
-  String(props.bioOverride || props.summary || props.bio || '').trim()
-)
+const { toView } = useUserView()
+const view = computed(() => toView(props.user))
 </script>

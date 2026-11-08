@@ -17,19 +17,19 @@
 
     <UserCardsSummary
       v-if="view === 'preview'"
-      v-bind="userInterface(currentUser)"
+      :avatar-url="presentation?.avatarUrl"
+      :handle-label="presentation?.handleLabel"
+      :display-name="currentUser.display_name"
+      :bio="currentUser.bio"
     />
 
-    <UserIdentitySummary
-      v-else
-      v-bind="userInterface(currentUser)"
-      :user="currentUser"
-    />
+    <UserIdentitySummary v-else :user="currentUser" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { User } from '../../models/user.model.ts'
+import { computed } from 'vue'
 import { useUserView } from '../../composables/useUserView'
 import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 
@@ -37,6 +37,7 @@ const props = defineProps<{
   currentUser: User
 }>()
 
-const { profile: userInterface } = useUserView()
+const { toView } = useUserView()
+const presentation = computed(() => toView(props.currentUser))
 const { view, toggleView } = useCardViewToggle(() => Boolean(props.currentUser))
 </script>

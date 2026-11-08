@@ -100,7 +100,13 @@ for (const [name, owner, database, collection] of [
 test('Dashboard sections keep their reads and outcomes separate without another App-status read', () => {
   const uid = ref('person')
   const identity = {
-    user: ref({ id: 'person' }),
+    user: ref({
+      id: 'person',
+      display_name: 'Person',
+      handle: 'person',
+      avatar: '',
+      bio: '',
+    }),
     outcome: ref('ready'),
     error: ref(null),
   }
@@ -123,7 +129,16 @@ test('Dashboard sections keep their reads and outcomes separate without another 
       calls.push(['account'])
       return account
     },
-    useUserView: () => ({ profile: (value) => value }),
+    useUserView: () => ({
+      toView: (value) =>
+        value
+          ? {
+              handleLabel: '@' + value.handle,
+              avatarUrl: value.avatar,
+              to: '/users/' + value.handle,
+            }
+          : null,
+    }),
     useAppUserRead: (appId, target) => {
       calls.push(['membership', appId, target])
       return membership
@@ -151,7 +166,7 @@ test('Dashboard sections keep their reads and outcomes separate without another 
       Object.keys(dependencies)
     )(...Object.values(dependencies))
   }
-  const user = section('User.vue', '{card,hasError,accountOutcome}')
+  const user = section('User.vue', '{user,view,hasError,accountOutcome}')
   assert.deepEqual(
     calls.map(([owner]) => owner),
     ['user', 'account']
@@ -167,7 +182,12 @@ test('Dashboard sections keep their reads and outcomes separate without another 
   assert.equal(app.canManageApp.value, true)
   membership.outcome.value = 'error'
   assert.equal(app.canManageApp.value, false)
-  assert.equal(user.card.value.id, 'person')
+  assert.equal(user.user.value.id, 'person')
+  assert.deepEqual(user.view.value, {
+    handleLabel: '@person',
+    avatarUrl: '',
+    to: '/users/person',
+  })
   assert.equal(app.hasWorkspaceEntry.value, true)
   membership.outcome.value = 'ready'
   identity.outcome.value = 'error'

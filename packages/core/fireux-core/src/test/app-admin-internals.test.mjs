@@ -51,7 +51,7 @@ function fixture() {
       administrators: ref([]),
       userById: () => null,
     }),
-    useUserView: () => ({ pill: () => null }),
+    useUserView: () => ({ toView: () => null }),
   }
   const owner = effectScope()
   const api = owner.run(() =>

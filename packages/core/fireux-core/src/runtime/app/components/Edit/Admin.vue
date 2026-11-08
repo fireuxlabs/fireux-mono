@@ -77,13 +77,10 @@ import { useCommandScope } from '../../../composables/fireux/commands/useCommand
 import { useAppSession } from '../../composables/useAppSession'
 import { runAppUserCommand } from '../../utils/runAppUserCommand'
 import { useAppUsers } from '../../composables/membership/useAppUsers'
-import {
-  useUserView,
-  type UserCard,
-} from '../../../user/composables/useUserView'
+import { useUserView } from '../../../user/composables/useUserView'
+import type { UserPillProps } from '../../../user/components/Cards/Pill.vue'
 import type { App } from '../../models/app.model.ts'
 import type { AppUserSubscription } from '../../models/app-user.model.ts'
-import type { UserIdentitySummary } from '../../../user/models/user-directory.model.ts'
 
 const props = defineProps<{ app: App }>()
 const app = computed(() => props.app)
@@ -120,7 +117,7 @@ const {
   adminsHasMore,
   loadMoreAdmins,
 } = useAppUsers()
-const { pill: userCard } = useUserView()
+const { toView } = useUserView()
 
 const withToast =
   <T,>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
@@ -185,62 +182,16 @@ const adminRows = computed(() =>
   }))
 )
 
-const fallbackUserCard = (options: {
-  id: string
-  displayName: string
-  handle?: string
-}): UserCard => {
-  const id = options.id
-  const displayName = options.displayName
-  const handle = (options.handle ?? '').trim()
-
-  return {
-    id,
-    to: handle ? `/users/${encodeURIComponent(handle)}` : '',
-
-    imageUrl: '',
-    avatarUrl: '',
-    displayName,
-    subtitle: '',
-    summary: '',
-
-    handle: handle ? `@${handle}` : '',
-
-    bio: '',
-  }
-}
-
-const cardForUser = (
-  target?: UserIdentitySummary | null | undefined
-): UserCard => {
-  const payload = userCard(target ?? undefined)
-  if (payload) return payload
-
-  const id = (target?.id ?? '').trim()
-  const displayName = (target?.display_name ?? id).trim() || 'Unknown user'
-  const handle = (target?.handle ?? '').trim()
-
-  return {
-    ...fallbackUserCard({ id, displayName, handle }),
-    avatarUrl: target?.avatar ?? '',
-    imageUrl: target?.avatar ?? '',
-    summary: '',
-    bio: '',
-  }
-}
-
 const adminPillFor = (row: {
   id: string
   role: 'admin' | 'user' | 'dev'
   display_name: string
-}) => {
+}): UserPillProps => {
   const user = userById(row.id)
-  if (user) return cardForUser(user)
-
-  return fallbackUserCard({
-    id: row.id,
-    displayName: row.display_name || row.id,
-  })
+  return {
+    ...toView(user),
+    displayName: user ? user.display_name : row.display_name || row.id,
+  }
 }
 
 const removeAdmin = withToast(

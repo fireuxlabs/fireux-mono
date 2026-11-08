@@ -21,21 +21,21 @@
 
     <div>
       <UAvatar
-        :src="card.avatarUrl || undefined"
-        :alt="card.displayName"
+        :src="view?.avatarUrl || undefined"
+        :alt="user.display_name"
         size="3xl"
       />
 
       <h3>
-        {{ card.displayName }}
+        {{ user.display_name }}
       </h3>
-      <p v-if="card.handle">
-        {{ card.handle }}
+      <p v-if="view?.handleLabel">
+        {{ view.handleLabel }}
       </p>
 
       <p>
         {{
-          card.bio ||
+          user.bio ||
           'Add a short bio to tell people what you build, do or care about.'
         }}
       </p>
@@ -49,8 +49,8 @@
         </div>
 
         <UButton
-          v-if="card.to"
-          :to="card.to"
+          v-if="view?.to"
+          :to="view.to"
           label="Open profile"
           icon="i-lucide-external-link"
           color="neutral"
@@ -63,7 +63,11 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../composables/useUserView'
+import { computed } from 'vue'
+import type { User } from '../../models/user.model'
+import { useUserView } from '../../composables/useUserView'
 
-defineProps<{ card: UserCard }>()
+const props = defineProps<{ user: User }>()
+const { toView } = useUserView()
+const view = computed(() => toView(props.user))
 </script>

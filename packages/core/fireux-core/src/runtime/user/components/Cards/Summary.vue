@@ -2,7 +2,7 @@
   <UCard class="preview">
     <div class="preview__row">
       <UAvatar
-        :src="proxiedAvatarUrl || undefined"
+        :src="avatarUrl || USER_ECOSYSTEM_AVATAR_SRC"
         :alt="displayName"
         size="sm"
       />
@@ -12,15 +12,12 @@
           <div class="preview__title">{{ displayName }}</div>
         </div>
 
-        <div v-if="showSubtitle && handle" class="preview__subtitle">
-          {{ handle }}
+        <div v-if="showSubtitle && handleLabel" class="preview__subtitle">
+          {{ handleLabel }}
         </div>
 
-        <div
-          v-if="showBody && (bioOverride || summary || bio)"
-          class="preview__body"
-        >
-          <div class="preview__line">{{ bioOverride || summary || bio }}</div>
+        <div v-if="showBody && bio" class="preview__body">
+          <div class="preview__line">{{ bio }}</div>
         </div>
       </div>
     </div>
@@ -29,33 +26,23 @@
 
 <script setup lang="ts">
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar'
-import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 
 type Props = {
   avatarUrl?: string
   displayName?: string
-  handle?: string
-  summary?: string
+  handleLabel?: string
   bio?: string
 
-  /** Optional override for the primary bio line. */
-  bioOverride?: string
   showSubtitle?: boolean
   showBody?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   avatarUrl: '',
   displayName: '',
-  handle: '',
-  summary: '',
+  handleLabel: '',
   bio: '',
   showSubtitle: true,
   showBody: true,
 })
-
-const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(
-  () => props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC
-)
 </script>

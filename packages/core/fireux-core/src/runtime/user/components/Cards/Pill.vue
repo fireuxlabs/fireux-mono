@@ -7,7 +7,7 @@
   >
     <UUser
       :name="displayName"
-      :description="showSubtitle ? handle || undefined : undefined"
+      :description="showSubtitle ? handleLabel || undefined : undefined"
       :avatar="avatar"
       size="sm"
     />
@@ -18,12 +18,10 @@
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar'
 import { computed } from 'vue'
 
-import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import { type UserCard } from '../../composables/useUserView'
+import type { UserView } from '../../composables/useUserView'
 
-type PillProps = Partial<
-  Pick<UserCard, 'to' | 'avatarUrl' | 'displayName' | 'handle'>
-> & {
+export type UserPillProps = Partial<UserView> & {
+  displayName?: string
   showSubtitle?: boolean
   link?: boolean
   action?: boolean
@@ -33,23 +31,21 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<PillProps>(), {
+const props = withDefaults(defineProps<UserPillProps>(), {
   to: '',
   avatarUrl: '',
   displayName: '',
-  handle: '',
+  handleLabel: '',
   showSubtitle: true,
   link: false,
   action: false,
 })
 
-const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(
-  () => props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC
+const avatarAlt = computed(
+  () => props.displayName || props.handleLabel || 'User'
 )
-const avatarAlt = computed(() => props.displayName || props.handle || 'User')
 const avatar = computed(() => ({
-  src: proxiedAvatarUrl.value || undefined,
+  src: props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC,
   alt: avatarAlt.value,
 }))
 </script>

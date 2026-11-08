@@ -329,7 +329,7 @@ async function renderSidebar({
           }),
         }
       if (id.endsWith('/useUserView'))
-        return { useUserView: () => ({ pill: () => undefined }) }
+        return { useUserView: () => ({ toView: () => null }) }
       return require(id)
     },
     mod,

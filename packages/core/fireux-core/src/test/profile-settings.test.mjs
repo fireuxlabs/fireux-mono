@@ -85,7 +85,14 @@ test('Profile owns only the public User read and keeps its recovery destination'
         return { user, outcome, error }
       },
       useUserView: () => ({
-        profile: (value) => (value ? { to: '/users/' + value.handle } : null),
+        toView: (value) =>
+          value
+            ? {
+                to: '/users/' + value.handle,
+                handleLabel: '@' + value.handle,
+                avatarUrl: '',
+              }
+            : null,
       }),
       useUserAccount: forbidden,
       useUserSession: forbidden,

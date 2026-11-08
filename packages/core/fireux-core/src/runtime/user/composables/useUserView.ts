@@ -1,56 +1,28 @@
-import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { User } from '../models/user.model'
 import { resolveUserAvatarSource } from '../utils/user-avatar'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
-import { normalizeUserHandle } from '../utils/user-handle'
 
-/** User-owned values consumed by the current card components. */
-export type UserCard = {
-  id: string
-  to: string
-  imageUrl: string
+/** Calculated presentation; the User retains its stored identity fields. */
+export type UserView = {
+  handleLabel: string
   avatarUrl: string
-  displayName: string
-  subtitle: string
-  summary: string
-  handle: string
-  bio: string
+  to: string
 }
 
-export type UserIdentitySurface = Pick<
-  User,
-  'id' | 'display_name' | 'avatar' | 'handle'
-> &
-  Partial<Pick<User, 'bio'>>
-
-/** Presentation only: callers supply their owning User read. */
+/** Format a supplied User without acquiring data or copying stored fields. */
 export function useUserView() {
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
-  function map(target?: UserIdentitySurface | null): UserCard | null {
-    if (!target) return null
-    const id = safeString(target.id).trim()
-    if (!id) return null
-    const handle = normalizeUserHandle(safeString(target.handle))
-    const handleLabel = handle ? `@${handle}` : ''
-    const displayName = safeString(target.display_name).trim()
-    const bio = safeString(target.bio).trim()
-    const avatarUrl = getProxiedAvatarUrl(
-      resolveUserAvatarSource(target.avatar)
-    )
-
+  function toView(
+    user: Pick<User, 'id' | 'handle' | 'avatar'> | null | undefined
+  ): UserView | null {
+    if (!user?.id.trim()) return null
     return {
-      id,
-      to: handle ? `/users/${encodeURIComponent(handle)}` : '',
-      imageUrl: avatarUrl,
-      avatarUrl,
-      displayName,
-      subtitle: displayName !== handleLabel ? handleLabel : '',
-      summary: bio,
-      handle: handleLabel,
-      bio,
+      handleLabel: user.handle ? `@${user.handle}` : '',
+      avatarUrl: getProxiedAvatarUrl(resolveUserAvatarSource(user.avatar)),
+      to: user.handle ? `/users/${encodeURIComponent(user.handle)}` : '',
     }
   }
 
-  return { interface: map, pill: map, profile: map }
+  return { toView }
 }

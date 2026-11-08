@@ -31,12 +31,21 @@ async function render(file, values) {
         useAuth: () => ({ uid: ref('person') }),
         useFireUXConfig: () => ({ appId: 'app', appName: values.appName }),
         useUserRead: () => ({
-          user: ref(values.card ?? null),
+          user: ref(values.user ?? null),
           outcome: ref(values.userOutcome ?? 'ready'),
           error: ref(null),
         }),
         useUserAccount: () => ({ outcome: ref(values.accountOutcome) }),
-        useUserView: () => ({ profile: (value) => value }),
+        useUserView: () => ({
+          toView: (value) =>
+            value
+              ? {
+                  handleLabel: value.handle ? '@' + value.handle : '',
+                  avatarUrl: value.avatar,
+                  to: value.handle ? '/users/' + value.handle : '',
+                }
+              : null,
+        }),
         useAppRead: () => assert.fail('App initialization belongs to the root'),
         useAppUserRead: () => ({
           appUser: ref({
@@ -52,7 +61,7 @@ async function render(file, values) {
         }),
       }
       const result = file.endsWith('User.vue')
-        ? '{card,accountOutcome,isLoading,hasError,error}'
+        ? '{user,view,accountOutcome,isLoading,hasError,error}'
         : '{config,appUser,outcome,hasWorkspaceEntry,workspaceEntryHref,canManageApp,roleLabels,planLabels,reload}'
       return compileFunction(
         stripTypeScriptTypes(script) + '; return ' + result,
@@ -154,11 +163,12 @@ test('missing App membership has an explicit join action back to Dashboard', asy
 
 test('User presentation and private-account recovery remain separate', async () => {
   const html = await render('Overview/User.vue', {
-    card: {
-      displayName: 'Example Person',
-      handle: '@example',
-      avatarUrl: '',
-      to: '/users/example',
+    user: {
+      id: 'person',
+      display_name: 'Example Person',
+      handle: 'example',
+      avatar: '',
+      bio: '',
     },
     accountOutcome: 'error',
   })

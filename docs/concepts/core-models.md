@@ -115,9 +115,11 @@ the single `user` and `appUser` values. The User reader preserves `undefined`
 for inactive or unsettled reads and `null` for a settled missing record.
 It does not instantiate private
 account reads, mutation commands or card formatting. Screens that display
-private account fields use `useUserAccount`; presentation uses `useUserView`
-explicitly. App and User sessions have different responsibilities and reuse
-the same AppUser reader without becoming one combined controller.
+private account fields use `useUserAccount`; `useUserView().toView` supplies only
+the derived handle label, avatar URL and profile destination, while consumers
+read name and bio directly from User. App and User sessions have different
+responsibilities and reuse the same AppUser reader without becoming one combined
+controller.
 
 Dashboard Overview composes the individual User, App, AppUser and private
 account readers because it displays their states independently. An AppUser

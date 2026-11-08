@@ -3,71 +3,122 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { computed, reactive } from 'vue'
+import { useCollectionSearch } from '../runtime/composables/shared/useCollectionSearch.ts'
 
-const source = readFileSync(
-  new URL('../runtime/user/composables/useUserView.ts', import.meta.url),
-  'utf8'
-).replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+function load(source, name, dependencies) {
+  const script = source
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  return compileFunction(
+    stripTypeScriptTypes(script) + '; return ' + name,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
+}
 
 function view() {
-  const avatars = []
-  const useUserView = compileFunction(
-    `${stripTypeScriptTypes(source).replace(/^export /gm, '')}; return useUserView`,
-    [
-      'safeString',
-      'resolveUserAvatarSource',
-      'useAvatarProxy',
-      'normalizeUserHandle',
-    ]
-  )(
-    (value) => String(value ?? ''),
-    (value) => value || '/user-avatar.svg',
-    () => ({
+  const avatars = [],
+    normalizations = []
+  const source = readFileSync(
+    new URL('../runtime/user/composables/useUserView.ts', import.meta.url),
+    'utf8'
+  )
+  const useUserView = load(source, 'useUserView', {
+    resolveUserAvatarSource: (value) => {
+      normalizations.push(value)
+      return value || '/img/ecosystem/avatar.png'
+    },
+    useAvatarProxy: () => ({
       getProxiedAvatarUrl: (value) => {
         avatars.push(value)
         return `proxy:${value}`
       },
     }),
-    (value) => value.trim().replace(/^@/, '').toLowerCase()
-  )
-  return { format: useUserView(), avatars }
+  })
+  return { format: useUserView(), avatars, normalizations }
 }
 
-test('User presentation requires an explicit identity and does not fabricate a name', () => {
-  const { format, avatars } = view()
-  assert.equal(format.profile(), null)
-  assert.equal(format.interface({ id: '', display_name: 'No id' }), null)
+test('User View exposes one formatter and requires an explicit nonblank identity', () => {
+  const { format, avatars, normalizations } = view()
+  assert.deepEqual(Object.keys(format), ['toView'])
+  for (const target of [undefined, null, { id: '' }, { id: '  ' }])
+    assert.equal(format.toView(target), null)
   assert.deepEqual(avatars, [])
-  const card = format.pill({
-    id: 'person',
-    display_name: '',
-    handle: '',
-    avatar: '',
-    bio: '',
+  assert.deepEqual(normalizations, [])
+  assert.deepEqual(format.toView({ id: 'person', handle: '', avatar: '' }), {
+    handleLabel: '',
+    avatarUrl: 'proxy:/img/ecosystem/avatar.png',
+    to: '',
   })
-  assert.equal(card.displayName, '')
-  assert.equal(card.to, '')
 })
 
-test('User presentation carries canonical identity fields and computes the avatar once', () => {
-  const { format, avatars } = view()
-  const card = format.interface({
+test('User View derives only handle label, avatar and destination without reading name or bio', () => {
+  const { format, avatars, normalizations } = view()
+  const user = {
     id: ' person ',
-    display_name: ' Daniel ',
-    handle: 'daniel',
-    avatar: 'avatar.png',
-    bio: ' Builds things ',
+    handle: 'daniel-watson',
+    avatar: 'https://example.test/avatar.png',
+    get display_name() {
+      assert.fail('User View read the direct display name')
+    },
+    get bio() {
+      assert.fail('User View read the direct biography')
+    },
+  }
+  assert.deepEqual(format.toView(user), {
+    handleLabel: '@daniel-watson',
+    avatarUrl: 'proxy:https://example.test/avatar.png',
+    to: '/users/daniel-watson',
   })
-  assert.deepEqual(card, {
-    id: 'person',
-    to: '/users/daniel',
-    imageUrl: 'proxy:avatar.png',
-    avatarUrl: 'proxy:avatar.png',
-    displayName: 'Daniel',
-    subtitle: '@daniel',
-    summary: 'Builds things',
-    handle: '@daniel',
-    bio: 'Builds things',
+  assert.deepEqual(normalizations, ['https://example.test/avatar.png'])
+  assert.deepEqual(avatars, ['https://example.test/avatar.png'])
+})
+
+test('User collection still searches direct name, handle and bio with the three-field View', () => {
+  const props = reactive({
+    users: [
+      {
+        id: 'one',
+        display_name: 'Alex Unique',
+        handle: 'first-handle',
+        bio: 'Repairs bicycles',
+        avatar: '',
+      },
+      {
+        id: 'two',
+        display_name: 'Blair Example',
+        handle: 'second-handle',
+        bio: 'Bakes bread',
+        avatar: '',
+      },
+    ],
   })
-  assert.deepEqual(avatars, ['avatar.png'])
+  const { format } = view()
+  const source = readFileSync(
+    new URL('../runtime/user/components/Collection/Index.vue', import.meta.url),
+    'utf8'
+  ).match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+  const state = load(source, '{query,visibleItems}', {
+    defineProps: () => props,
+    computed,
+    useUserView: () => format,
+    useCollectionSearch,
+  })
+  for (const text of ['Alex Unique', 'first-handle', 'Repairs bicycles']) {
+    state.query.value = text
+    assert.deepEqual(
+      state.visibleItems.value.map((user) => user.id),
+      ['one']
+    )
+    assert.equal(state.visibleItems.value[0], props.users[0])
+  }
+  state.query.value = 'Bakes bread'
+  assert.deepEqual(
+    state.visibleItems.value.map((user) => user.id),
+    ['two']
+  )
+  state.query.value = 'does not exist'
+  assert.deepEqual(state.visibleItems.value, [])
+  state.query.value = ''
+  assert.deepEqual(state.visibleItems.value, props.users)
 })

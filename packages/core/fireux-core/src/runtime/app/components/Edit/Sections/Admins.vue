@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../user/composables/useUserView'
+import type { UserPillProps } from '../../../../user/components/Cards/Pill.vue'
 
 type AdminRow = {
   id: string
@@ -49,7 +49,7 @@ defineProps<{
   hasMore?: boolean
   rows: AdminRow[]
   actionUid: string | null
-  pillFor: (row: AdminRow) => UserCard
+  pillFor: (row: AdminRow) => UserPillProps
   onRemoveAdmin: (uid: string) => Promise<unknown>
 }>()
 

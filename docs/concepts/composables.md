@@ -496,9 +496,10 @@ profile field editing and AppUser membership remain separate responsibilities.
 independent `user*` and `appUser*` read states. Its state projection reuses the
 same Auth refs. Setup requires a valid handle and display name, not merely an
 existing User document; incomplete identities remain readable for explicit repair.
-`useUserView` reads nothing. Its consumed `interface`, `pill` and `profile`
-formatters require a supplied User and return only identity presentation and
-the public profile destination. Domain-profile metadata has its own owner.
+`useUserView` reads nothing. Its single `toView` formatter takes supplied User
+identity and returns only `handleLabel`, `avatarUrl` and `to`; a missing identity
+or blank id returns `null`. Consumers bind `display_name` and `bio` directly from
+User. Domain-profile metadata has its own owner.
 
 `user/utils/display-name-seed.ts` supplies the same initial public-name policy
 to bootstrap and identity provisioning. It prefers an explicit name, strips

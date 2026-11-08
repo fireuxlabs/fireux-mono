@@ -36,8 +36,8 @@ import { useUserView } from '../../composables/useUserView'
 
 const { uid } = useAuth()
 const { user, outcome, error } = useUserRead(uid)
-const { profile } = useUserView()
-const publicPath = computed(() => profile(user.value ?? null)?.to)
+const { toView } = useUserView()
+const publicPath = computed(() => toView(user.value)?.to)
 const isPending = computed(
   () => outcome.value === 'idle' || outcome.value === 'pending'
 )

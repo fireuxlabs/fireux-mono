@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../user/composables/useUserView'
+import type { UserPillProps } from '../../../../user/components/Cards/Pill.vue'
 import type { AppUserSubscription } from '../../../models/app-user.model.ts'
 
 type AppUserRow = {
@@ -80,7 +80,7 @@ const props = defineProps<{
   rows: AppUserRow[]
   roleActionUid: string | null
   subscriptionActionUid: string | null
-  pillFor: (row: AppUserRow) => UserCard
+  pillFor: (row: AppUserRow) => UserPillProps
   onMakeAdmin: (uid: string) => Promise<unknown>
   onSetSubscription: (value: {
     uid: string

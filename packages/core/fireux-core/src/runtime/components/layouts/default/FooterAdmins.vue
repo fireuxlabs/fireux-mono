@@ -16,8 +16,9 @@
       <UserCardsPill
         v-for="admin in adminCards"
         :key="admin.key"
-        v-bind="admin.card"
-        :link="Boolean(admin.card.to)"
+        v-bind="admin.view"
+        :display-name="admin.user.displayName"
+        :link="Boolean(admin.view?.to)"
       />
     </div>
 
@@ -29,7 +30,7 @@
 import { useFetch } from 'nuxt/app'
 
 import { computed } from 'vue'
-import type { UserCard } from '../../../user/composables/useUserView'
+import { useUserView } from '../../../user/composables/useUserView'
 
 type PublicAppAdmin = {
   id: string
@@ -45,35 +46,15 @@ const adminRead = useFetch<{ admins: PublicAppAdmin[] }>('/api/app/admins', {
 })
 const admins = computed(() => adminRead.data.value?.admins || [])
 const pending = adminRead.pending
+const { toView } = useUserView()
 
-const adminCards = computed(() => {
-  const entries = admins.value
-  const result: Array<{ key: string; card: UserCard }> = []
-
-  entries.forEach((record: PublicAppAdmin, index: number) => {
-    const handle = record.handle ? `@${record.handle}` : ''
-    const to = record.handle
-      ? `/users/${encodeURIComponent(record.handle)}`
-      : ''
-
-    result.push({
-      key: record.id || `${index}`,
-      card: {
-        id: record.id,
-        to,
-        imageUrl: record.avatar,
-        avatarUrl: record.avatar,
-        displayName: record.displayName,
-        subtitle: handle,
-        summary: '',
-        handle,
-        bio: '',
-      },
-    })
-  })
-
-  return result
-})
+const adminCards = computed(() =>
+  admins.value.map((user, index) => ({
+    key: user.id || `${index}`,
+    user,
+    view: toView(user),
+  }))
+)
 
 const isLoading = computed(() => Boolean(pending.value))
 </script>

@@ -27,8 +27,11 @@
 
         <div class="fx-card-body-stack">
           <UserCardsSummary
-            v-if="signedInUserPreview"
-            v-bind="signedInUserPreview"
+            v-if="user && signedInUserPreview"
+            :avatar-url="signedInUserPreview.avatarUrl"
+            :handle-label="signedInUserPreview.handleLabel"
+            :display-name="user.display_name"
+            :bio="user.bio"
           />
 
           <div v-if="signedInUserSummary" class="fx-card__stack">
@@ -143,7 +146,7 @@ const userModelRuntime: User = {
 const { currentUser: authUser } = useAuth()
 const { user, appUser, avatarSrc, subscription, canOwnMultipleWorkspaces } =
   useUserSession()
-const { pill: userInterface } = useUserView()
+const { toView } = useUserView()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const userCollection = computed(() => users.value ?? [])
@@ -223,7 +226,7 @@ const signedInUserSummary = computed(() => {
   }
 })
 
-const signedInUserPreview = computed(() => userInterface(user.value))
+const signedInUserPreview = computed(() => toView(user.value))
 
 const signedInUserJson = computed(() => {
   if (user.value) {

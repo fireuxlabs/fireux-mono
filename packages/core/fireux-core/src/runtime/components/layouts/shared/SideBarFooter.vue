@@ -55,10 +55,7 @@ import { useAuthPhase } from '../../../composables/fireux/firebase/useAuthPhase'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
-import {
-  useUserView,
-  type UserCard,
-} from '../../../user/composables/useUserView'
+import { useUserView } from '../../../user/composables/useUserView'
 
 const props = withDefaults(
   defineProps<{
@@ -75,7 +72,7 @@ const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
 const { isGuest } = useAuthPhase()
 const { user, userOutcome } = useUserSession()
-const { pill: userInterface } = useUserView()
+const { toView } = useUserView()
 
 const mounted = ref(false)
 const signInTo = computed(() => ({
@@ -87,17 +84,18 @@ onMounted(() => {
   mounted.value = true
 })
 
-const pillUser = computed((): UserCard | undefined => {
+const pillUser = computed(() => {
   if (!mounted.value) return undefined
   if (userOutcome.value === 'idle' || userOutcome.value === 'pending') {
     return undefined
   }
   const identity = user.value
   if (!identity) return undefined
-  const card = userInterface(identity)
-  if (!card) return undefined
+  const view = toView(identity)
+  if (!view) return undefined
   return {
-    ...card,
+    displayName: identity.display_name,
+    avatarUrl: view.avatarUrl,
     to: '/dashboard/settings',
   }
 })

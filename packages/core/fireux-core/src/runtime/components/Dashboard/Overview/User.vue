@@ -1,15 +1,15 @@
 <template>
   <FireState v-if="isLoading" outcome="pending" entity="your profile" />
   <FireDashboardOverviewRecovery
-    v-else-if="hasError || !card"
+    v-else-if="hasError || !user || !view"
     :outcome="hasError ? 'error' : 'empty'"
     :error="error"
   />
-  <UPageCard v-else-if="card" variant="subtle">
+  <UPageCard v-else-if="user && view" variant="subtle">
     <UUser
-      :name="card.displayName"
-      :description="card.handle || undefined"
-      :avatar="{ src: card.avatarUrl, alt: card.displayName }"
+      :name="user.display_name"
+      :description="view.handleLabel || undefined"
+      :avatar="{ src: view.avatarUrl, alt: user.display_name }"
     />
     <div class="fx-card__actions">
       <UButton
@@ -48,8 +48,8 @@ import { useUserView } from '../../../user/composables/useUserView'
 const { uid } = useAuth()
 const { user, outcome, error } = useUserRead(uid)
 const { outcome: accountOutcome } = useUserAccount()
-const { profile } = useUserView()
-const card = computed(() => profile(user.value ?? null))
+const { toView } = useUserView()
+const view = computed(() => toView(user.value))
 const isLoading = computed(
   () => outcome.value === 'idle' || outcome.value === 'pending'
 )

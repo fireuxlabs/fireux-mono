@@ -7,7 +7,7 @@
   >
     <div class="card__media">
       <UAvatar
-        :src="proxiedAvatarUrl || undefined"
+        :src="avatarUrl || USER_ECOSYSTEM_AVATAR_SRC"
         :alt="displayName"
         size="sm"
       />
@@ -16,15 +16,14 @@
         <div class="card__header">
           <div>
             <div class="card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && handle" class="card__subtitle">
-              {{ handle }}
+            <div v-if="showSubtitle && handleLabel" class="card__subtitle">
+              {{ handleLabel }}
             </div>
           </div>
         </div>
 
-        <div v-if="showTagline" class="card__tagline">
-          <span v-if="taglineOverride">{{ taglineOverride }}</span>
-          <span v-else-if="summary">{{ summary }}</span>
+        <div v-if="showTagline && bio" class="card__tagline">
+          {{ bio }}
         </div>
       </div>
     </div>
@@ -33,14 +32,11 @@
 
 <script setup lang="ts">
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar'
-import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import { type UserCard } from '../../composables/useUserView'
+import type { UserView } from '../../composables/useUserView'
 
-type Props = Partial<
-  Pick<UserCard, 'to' | 'avatarUrl' | 'displayName' | 'handle' | 'summary'>
-> & {
-  /** Optional override for the tagline line. */
-  taglineOverride?: string
+type Props = Partial<UserView> & {
+  displayName?: string
+  bio?: string
   showSubtitle?: boolean
   showTagline?: boolean
   link?: boolean
@@ -51,21 +47,16 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   to: '',
   avatarUrl: '',
   displayName: '',
-  handle: '',
-  summary: '',
+  handleLabel: '',
+  bio: '',
 
   showSubtitle: true,
   showTagline: true,
   link: false,
   action: false,
 })
-
-const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(
-  () => props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC
-)
 </script>
