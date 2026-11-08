@@ -35,7 +35,7 @@
         <div v-if="agentPreviewCards.length" class="fx-card-body-stack">
           <p>Preview cards</p>
           <div class="fx-card-body-stack">
-            <AgentCardsSummary
+            <AgentCardsPreview
               v-for="card in agentPreviewCards"
               :key="`agent-preview-${card.id}`"
               v-bind="card"
@@ -46,7 +46,7 @@
         <div v-if="agentProfileCards.length" class="fx-card-body-stack">
           <p>Profile cards</p>
           <div class="fx-card-body-stack">
-            <AgentProfile
+            <AgentCardsOverview
               v-for="entry in agentProfileCards"
               :key="`agent-profile-${entry.card.id}`"
               :card="entry.card"

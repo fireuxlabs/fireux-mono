@@ -1,35 +1,3 @@
-<script setup lang="ts">
-import { useColorMode } from '#imports'
-import { ref } from 'vue'
-
-// Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: expose stable visual specimens for shared atomic contracts.
-// Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: demonstrate Nuxt UI in place of one-off CSS metrics and card foundations.
-
-const activationCount = ref(0)
-const contractColorMode = useColorMode()
-
-const contractSolutions = [
-  {
-    slug: 'shared-css',
-    title: 'Shared CSS contract',
-    description:
-      'One reusable visual contract supports many named domain components.',
-    icon: 'i-lucide-layers-3',
-    to: '/packages/fireux-core/design/contracts',
-    owner: { id: 'fireux-core', name: 'FireUX core' },
-  },
-  {
-    slug: 'domain-delta',
-    title: 'Domain-owned delta',
-    description:
-      'Pages and components keep their business meaning and local presentation.',
-    icon: 'i-lucide-blocks',
-    to: '/packages/fireux-core/design/contracts',
-    owner: { id: 'named-domain', name: 'Named domain' },
-  },
-]
-</script>
-
 <template>
   <div
     class="fx-page-stack fx-page-stack--compact"
@@ -353,7 +321,7 @@ const contractSolutions = [
             <div class="profile__identity">
               <UAvatar icon="i-lucide-user-round" size="lg" />
               <div class="profile__titles">
-                <p class="profile__title">Profile card</p>
+                <p class="profile__title">Overview card</p>
                 <p class="profile__subtitle">
                   Shared anatomy, domain-owned data
                 </p>
@@ -367,7 +335,8 @@ const contractSolutions = [
             <div class="profile__section">
               <span class="profile__label">Responsibility</span>
               <span class="profile__value">
-                Named Profile and Detail components own the actual content.
+                Named Cards/Overview and Detail components own the actual
+                content.
               </span>
             </div>
           </div>
@@ -432,3 +401,35 @@ const contractSolutions = [
   }
 }
 </style>
+
+<script setup lang="ts">
+import { useColorMode } from '#imports'
+import { ref } from 'vue'
+
+// Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: expose stable visual specimens for shared atomic contracts.
+// Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: demonstrate Nuxt UI in place of one-off CSS metrics and card foundations.
+
+const activationCount = ref(0)
+const contractColorMode = useColorMode()
+
+const contractSolutions = [
+  {
+    slug: 'shared-css',
+    title: 'Shared CSS contract',
+    description:
+      'One reusable visual contract supports many named domain components.',
+    icon: 'i-lucide-layers-3',
+    to: '/packages/fireux-core/design/contracts',
+    owner: { id: 'fireux-core', name: 'FireUX core' },
+  },
+  {
+    slug: 'domain-delta',
+    title: 'Domain-owned delta',
+    description:
+      'Pages and components keep their business meaning and local presentation.',
+    icon: 'i-lucide-blocks',
+    to: '/packages/fireux-core/design/contracts',
+    owner: { id: 'named-domain', name: 'Named domain' },
+  },
+]
+</script>

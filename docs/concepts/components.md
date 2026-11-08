@@ -152,8 +152,8 @@ slots, known runtime prerequisites and real consumer evidence. A package
 catalogue, auto-registration or visual similarity does not prove shared use.
 Use [spine.md](spine.md) to compare materially different consumers.
 
-Entity Cards use the [Pill, Cell, Preview and Profile roles](card-family.md).
-Core User is the four-role baseline; its Detail composes `UserCardsProfile`
+Entity Cards use the [Pill, Cell, Preview and Overview roles](card-family.md).
+Core User is the four-role baseline; its Detail composes `UserCardsOverview`
 beside the App-owned membership capability. Card presentation does not own
 route acquisition, editing or trusted command authority.
 

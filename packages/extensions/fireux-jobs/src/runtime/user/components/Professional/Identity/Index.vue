@@ -31,7 +31,7 @@
     </UPageCard>
 
     <ClientOnly v-else>
-      <ProfessionalProfile
+      <ProfessionalCardsOverview
         v-if="professionalProfileView"
         :model="professionalProfileView"
       />

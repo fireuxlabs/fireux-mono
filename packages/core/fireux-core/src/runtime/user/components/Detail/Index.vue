@@ -1,5 +1,5 @@
 <template>
-  <UserCardsProfile :user="user" />
+  <UserCardsOverview :user="user" />
   <UserAppMembership
     v-if="membershipVisible"
     :user="user"

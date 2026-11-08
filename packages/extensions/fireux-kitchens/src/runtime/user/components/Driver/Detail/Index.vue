@@ -1,5 +1,5 @@
 <template>
-  <DriverProfile v-if="driverCard" :card="driverCard" :profile="profile">
+  <DriverCardsOverview v-if="driverCard" :card="driverCard" :profile="profile">
     <template #actions>
       <UButton
         v-if="isSelf"
@@ -10,7 +10,7 @@
         @click="navigateTo('/dashboard/driver')"
       />
     </template>
-  </DriverProfile>
+  </DriverCardsOverview>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

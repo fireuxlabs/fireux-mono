@@ -1,5 +1,5 @@
 <template>
-  <ProfessionalProfile
+  <ProfessionalCardsOverview
     v-if="professionalProfileView"
     :model="professionalProfileView"
   >
@@ -27,7 +27,7 @@
         @click="navigateTo('/dashboard/professional/profile')"
       />
     </template>
-  </ProfessionalProfile>
+  </ProfessionalCardsOverview>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

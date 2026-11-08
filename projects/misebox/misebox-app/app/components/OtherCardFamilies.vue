@@ -89,7 +89,7 @@
       <ChefCardsPill v-bind="chefCard" />
     </CardSpecimen>
     <CardSpecimen label="Summary">
-      <ChefCardsSummary v-bind="chefCard" specialties-csv="Grill" />
+      <ChefCardsPreview v-bind="chefCard" specialties-csv="Grill" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -210,7 +210,7 @@
       <AgentCardsPill v-bind="agentCard" />
     </CardSpecimen>
     <CardSpecimen label="Summary">
-      <AgentCardsSummary v-bind="agentCard" />
+      <AgentCardsPreview v-bind="agentCard" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -250,7 +250,7 @@
       <ProfessionalCardsPill v-bind="professionalCard" />
     </CardSpecimen>
     <CardSpecimen label="Summary">
-      <ProfessionalCardsSummary v-bind="professionalCard" />
+      <ProfessionalCardsPreview v-bind="professionalCard" />
     </CardSpecimen>
   </CardFamilySection>
 </template>

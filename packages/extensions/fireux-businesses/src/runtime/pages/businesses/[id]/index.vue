@@ -33,7 +33,7 @@
         description="This business does not exist or is no longer available."
       />
       <div v-else>
-        <BusinessDetailProfile
+        <BusinessCardsOverview
           v-if="businessProfile"
           :model="businessProfile"
         />

@@ -1,7 +1,7 @@
 <template>
   <section data-entity-cta-family="profile-managed">
     <div v-if="hasProfile && profileCard">
-      <ChefCardsSummary v-if="profileCard" v-bind="profileCard" :link="false" />
+      <ChefCardsPreview v-if="profileCard" v-bind="profileCard" :link="false" />
 
       <div>
         <UButton v-if="profileTo" color="primary" :to="profileTo">

@@ -1,7 +1,7 @@
 <template>
   <section data-entity-cta-family="profile-managed">
     <div v-if="hasProfile && profileCard">
-      <AgentCardsSummary
+      <AgentCardsPreview
         v-if="profileCard"
         v-bind="profileCard"
         :link="false"

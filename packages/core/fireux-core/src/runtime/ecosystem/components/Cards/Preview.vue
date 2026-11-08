@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+import type { Ecosystem } from '../../models/ecosystem.model'
 
 defineProps<{ ecosystem: Ecosystem }>()
 </script>

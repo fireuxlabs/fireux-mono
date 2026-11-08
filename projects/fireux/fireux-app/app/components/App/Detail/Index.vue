@@ -8,7 +8,7 @@
         :error="ecosystemError"
       />
       <EcosystemDetailProject v-if="ecosystem" :ecosystem="ecosystem" />
-      <AppDetailEcosystem v-if="ecosystem" :ecosystem="ecosystem" />
+      <EcosystemCardsPreview v-if="ecosystem" :ecosystem="ecosystem" />
     </div>
   </article>
 </template>

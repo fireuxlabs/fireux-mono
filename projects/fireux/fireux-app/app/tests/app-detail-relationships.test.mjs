@@ -44,6 +44,7 @@ const ecosystem = {
   project_id: 'own-project',
   status: 'active',
   name: 'Own Ecosystem',
+  description: 'Ecosystem description',
 }
 const project = {
   id: 'own-project',
@@ -85,8 +86,12 @@ async function render({
     app: { id: 'own-app', name: 'Own App', ecosystem_id: ecosystem.id },
   })
   app.component(
-    'AppDetailEcosystem',
-    component(path + 'App/Detail/Ecosystem.vue', ['ecosystem'], '{}')
+    'EcosystemCardsPreview',
+    component(
+      'packages/core/fireux-core/src/runtime/ecosystem/components/Cards/Preview.vue',
+      ['ecosystem'],
+      '{}'
+    )
   )
   app.component(
     'EcosystemDetailProject',
@@ -113,6 +118,14 @@ async function render({
         useProjects: () =>
           assert.fail('A relation must not acquire all Projects'),
       }
+    )
+  )
+  app.component(
+    'ProjectCardsPreview',
+    component(
+      'packages/extensions/fireux-projects/src/runtime/project/components/Cards/Preview.vue',
+      ['project'],
+      '{}'
     )
   )
   app.component(
@@ -158,7 +171,11 @@ test('App detail acquires one exact Ecosystem and its exact Project without dire
     ['project', 'own-project'],
   ])
   assert.match(html, /href="\/ecosystems\/own-eco"/)
+  assert.match(html, /Own Ecosystem/)
+  assert.match(html, /Ecosystem description/)
   assert.match(html, /href="\/projects\/own-project"/)
+  assert.match(html, /Own Project/)
+  assert.match(html, /Project description/)
 })
 
 test('Unavailable Ecosystem relations display their state without starting a Project read', async () => {

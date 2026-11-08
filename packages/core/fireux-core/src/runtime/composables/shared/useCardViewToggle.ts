@@ -1,6 +1,6 @@
 import { ref, watch, type ComputedRef, type Ref } from 'vue'
 
-type View = 'preview' | 'profile'
+type View = 'preview' | 'overview'
 
 type ViewToggleSource = (() => boolean) | Ref<boolean> | ComputedRef<boolean>
 
@@ -21,7 +21,7 @@ export const useCardViewToggle = (
   const view = ref<View>(options.initialView ?? 'preview')
 
   const toggleView = () => {
-    view.value = view.value === 'preview' ? 'profile' : 'preview'
+    view.value = view.value === 'preview' ? 'overview' : 'preview'
   }
 
   const setView = (next: View) => {

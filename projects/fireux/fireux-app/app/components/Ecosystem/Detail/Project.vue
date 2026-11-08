@@ -4,13 +4,7 @@
     entity="published Project"
     :error="error"
   />
-  <UCard v-if="publicProject">
-    <template #header>Project</template>
-    <ULink :to="`/projects/${encodeURIComponent(publicProject.id)}`">
-      {{ publicProject.identity.name || publicProject.id }}
-    </ULink>
-    <p class="fx-type-caption">{{ publicProject.identity.description }}</p>
-  </UCard>
+  <ProjectCardsPreview v-if="publicProject" :project="publicProject" />
   <FireDiagnosticsDebugPanel
     title="Ecosystem Project relation"
     context="The exact Project related to the passed Ecosystem."

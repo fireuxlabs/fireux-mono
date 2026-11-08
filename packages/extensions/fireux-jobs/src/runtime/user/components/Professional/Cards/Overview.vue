@@ -367,4 +367,4 @@ const {
 } = useProfessionalProfilePresentation(props)
 </script>
 
-<style scoped src="./profile.css"></style>
+<style scoped src="../Profile/profile.css"></style>

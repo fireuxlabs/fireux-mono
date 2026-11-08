@@ -234,6 +234,11 @@ Use Nuxt's generated component names when package registration provides them.
 Do not add an explicit import or alias without an inspected registration gap or
 name collision. See [component ownership and reuse](../concepts/components.md).
 
+Entity Cards use Pill, Cell, Preview and Overview as presentation roles. User-owned
+profile records retain their domain names. A Workspace Overview may compose a
+Cards/Overview surface alongside its other sections; the card remains reusable
+in Detail and other consumers. See the [Cards family](../concepts/card-family.md).
+
 Apps provide the standard artwork family under `public/img/app`. Core's single
 asset inspector is used by the all-App CI audit, production App builds, setup
 diagnostics and release artifact checks. Run `pnpm check:assets` locally after

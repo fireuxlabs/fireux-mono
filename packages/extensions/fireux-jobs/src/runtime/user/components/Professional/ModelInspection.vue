@@ -35,7 +35,7 @@
         <div v-if="professionalPreviewCards.length" class="fx-card-body-stack">
           <p>Preview cards</p>
           <div class="fx-card-body-stack">
-            <ProfessionalCardsSummary
+            <ProfessionalCardsPreview
               v-for="card in professionalPreviewCards"
               :key="`professional-preview-${card.id}`"
               v-bind="card"
@@ -49,7 +49,7 @@
         >
           <p>Profile cards</p>
           <div class="fx-card-body-stack">
-            <ProfessionalProfile
+            <ProfessionalCardsOverview
               v-for="entry in professionalProfileEntries"
               :key="`professional-profile-${entry.card.id}`"
               :card="entry.card"

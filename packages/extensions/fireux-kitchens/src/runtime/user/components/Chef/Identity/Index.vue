@@ -31,7 +31,7 @@
     </UPageCard>
 
     <ClientOnly v-else>
-      <ChefProfile
+      <ChefCardsOverview
         v-if="chefCard"
         :card="chefCard"
         :profile="resolvedProfile"

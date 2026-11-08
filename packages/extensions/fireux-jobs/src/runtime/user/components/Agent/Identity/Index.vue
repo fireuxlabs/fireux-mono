@@ -31,7 +31,7 @@
     </UPageCard>
 
     <ClientOnly v-else>
-      <AgentProfile
+      <AgentCardsOverview
         v-if="agentCard"
         :card="agentCard"
         :profile="resolvedProfile"

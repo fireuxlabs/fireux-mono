@@ -39,7 +39,7 @@
         <div v-if="chefPreviewCards.length" class="fx-card-body-stack">
           <p>Preview cards</p>
           <div class="fx-card-body-stack">
-            <ChefCardsSummary
+            <ChefCardsPreview
               v-for="entry in chefPreviewCards"
               :key="`chef-preview-${entry.card.id}`"
               :avatar-url="entry.card.avatarUrl"
@@ -55,7 +55,7 @@
         <div v-if="filteredCollection.length" class="fx-card-body-stack">
           <p>Profile cards</p>
           <div class="fx-card-body-stack">
-            <ChefProfile
+            <ChefCardsOverview
               v-for="entry in filteredCollection"
               :key="`chef-profile-${String((entry as any)?.id ?? '')}`"
               :card="makeChefCard(entry as any, userById((entry as any)?.id))!"

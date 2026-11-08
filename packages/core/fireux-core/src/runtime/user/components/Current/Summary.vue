@@ -7,10 +7,10 @@
         :icon="view === 'preview' ? 'i-lucide-id-card' : 'i-lucide-eye'"
         :aria-label="
           view === 'preview'
-            ? 'Switch to profile view'
+            ? 'Switch to overview view'
             : 'Switch to preview view'
         "
-        :title="view === 'preview' ? 'Profile' : 'Preview'"
+        :title="view === 'preview' ? 'Overview' : 'Preview'"
         @click="toggleView"
       />
     </div>
@@ -23,7 +23,7 @@
       :bio="currentUser.bio"
     />
 
-    <UserCardsProfile v-else :user="currentUser" />
+    <UserCardsOverview v-else :user="currentUser" />
   </div>
 </template>
 

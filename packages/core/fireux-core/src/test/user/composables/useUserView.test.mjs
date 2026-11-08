@@ -140,7 +140,7 @@ test('User collection still searches direct name, handle and bio with the three-
   assert.deepEqual(state.visibleItems.value, props.users)
 })
 
-test('the current User switches between Preview and Profile cards with the supplied identity', async (t) => {
+test('the current User switches between Preview and Overview cards with the supplied identity', async (t) => {
   const props = reactive({
     currentUser: {
       id: 'person',
@@ -180,7 +180,7 @@ test('the current User switches between Preview and Profile cards with the suppl
   })
   async function render() {
     const app = createSSRApp(component)
-    app.component('UButton', { render: () => null })
+    app.component('UButton', { render: () => h('button') })
     app.component(
       'UserCardsPreview',
       defineComponent({
@@ -193,14 +193,14 @@ test('the current User switches between Preview and Profile cards with the suppl
       })
     )
     app.component(
-      'UserCardsProfile',
+      'UserCardsOverview',
       defineComponent({
         props: ['user'],
         setup: (card) => () => {
           assert.equal(card.user, props.currentUser)
           return h(
             'div',
-            { 'data-user-card': 'profile' },
+            { 'data-user-card': 'overview' },
             card.user.display_name
           )
         },
@@ -209,16 +209,22 @@ test('the current User switches between Preview and Profile cards with the suppl
     return renderToString(app)
   }
   const preview = await render()
+  assert.equal(state.view.value, 'preview')
   assert.match(preview, /data-user-card="preview"/)
+  assert.match(preview, /aria-label="Switch to overview view"/)
+  assert.match(preview, /title="Overview"/)
   assert.match(preview, /Direct Name/)
   assert.match(preview, /Direct biography/)
   state.toggleView()
-  const profile = await render()
-  assert.match(profile, /data-user-card="profile"/)
-  assert.match(profile, /Direct Name/)
+  const overview = await render()
+  assert.equal(state.view.value, 'overview')
+  assert.match(overview, /data-user-card="overview"/)
+  assert.match(overview, /aria-label="Switch to preview view"/)
+  assert.match(overview, /title="Preview"/)
+  assert.match(overview, /Direct Name/)
 })
 
-test('the User Profile card uses shared presentation and settled Auth without acquiring a session', async () => {
+test('the User Overview card uses shared presentation and settled Auth without acquiring a session', async () => {
   const props = reactive({
     user: {
       id: 'person',
@@ -236,7 +242,7 @@ test('the User Profile card uses shared presentation and settled Auth without ac
   const presentation = view()
   const text = readFileSync(
     new URL(
-      '../../../runtime/user/components/Cards/Profile.vue',
+      '../../../runtime/user/components/Cards/Overview.vue',
       import.meta.url
     ),
     'utf8'
