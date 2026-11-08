@@ -5,12 +5,12 @@
   <section aria-label="Edit profile">
     <ClientOnly>
       <UPageCard v-if="user" :key="user.id" variant="subtle">
-        <div>
-          <AvatarEditor :user="user" />
+        <div class="pagebody">
+          <UserEditAvatar :user="user" />
 
           <USeparator />
 
-          <div>
+          <div class="pagebody">
             <FireFormsEditableSimpleField
               :capture-intent="captureCompletion"
               label="Display name"
@@ -52,13 +52,6 @@
             :validation-function="Bio.validate"
             :formatting-function="Bio.format"
           />
-
-          <USeparator />
-
-          <div>
-            <p>User ID</p>
-            <UInput :model-value="user.id" disabled />
-          </div>
         </div>
       </UPageCard>
 
@@ -75,7 +68,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import AvatarEditor from './Avatar.vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'

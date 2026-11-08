@@ -63,7 +63,7 @@
       </template>
     </UDashboardSidebar>
 
-    <div class="flex min-w-0 flex-1 overflow-y-auto">
+    <div class="fx-dashboard-content">
       <slot />
     </div>
   </UDashboardGroup>

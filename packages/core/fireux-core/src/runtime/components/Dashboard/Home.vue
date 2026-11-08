@@ -6,7 +6,7 @@
 
     <template #body>
       <UPage>
-        <UPageBody class="pagebody">
+        <UPageBody class="pagebody fx-account-content">
           <FireDashboardOverview />
         </UPageBody>
       </UPage>

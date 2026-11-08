@@ -1,115 +1,21 @@
-<!-- Concurrent edit — 2026-07-19 16:58 CEST — User/Profile pass: use the single User update seam. -->
-<!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: present real private-account state and the one implemented appearance preference. -->
-<!-- Concurrent edit — 2026-07-21 20:36 CEST — Settings Dashboard cleanup: remove preferences UI, retain account/session basics, and link back to Profile. -->
 <template>
   <UDashboardPanel id="account-settings">
-    <template #header>
-      <FireLayoutsDashboardNavbar title="Settings" />
-    </template>
-
+    <template #header><FireLayoutsDashboardNavbar title="Settings" /></template>
     <template #body>
       <UPage>
-        <UPageBody class="pagebody">
-          <UPageHeader
-            headline="Your account"
-            title="Settings"
-            description="Review your private account details and manage your current session."
-          >
-            <template #links>
-              <UButton
-                to="/dashboard/user-profile"
-                label="Profile"
-                icon="i-lucide-user-round"
-                color="neutral"
-                variant="soft"
+        <UPageBody class="pagebody fx-account-content">
+          <UserAccountDetails>
+            <details>
+              <summary>Private AI context</summary>
+              <FireContextRecord
+                title="Private AI context"
+                endpoint="/api/internal/user/context"
+                :scope="{}"
+                :maxlength="8000"
               />
-            </template>
-          </UPageHeader>
-
-          <FireStateCard
-            v-if="accountOutcome === 'idle' || accountOutcome === 'pending'"
-            entity="private account"
-            kind="document"
-            loading
-          />
-
-          <FireStateCard
-            v-else-if="accountOutcome === 'error'"
-            entity="private account"
-            kind="document"
-            state="error"
-            title="Account unavailable"
-            description="Your public profile still works, but private account details could not be loaded."
-          />
-
-          <FireStateCard
-            v-else-if="accountOutcome === 'empty'"
-            entity="private account"
-            kind="document"
-            state="empty"
-            title="Private account record missing"
-            description="The private account record must be restored before account details can be shown."
-          />
-
-          <div v-else-if="account">
-            <UPageCard
-              title="Account"
-              description="Sign-in and signup-agreement details."
-              icon="i-lucide-lock-keyhole"
-              variant="subtle"
-            >
-              <dl class="fx-card__detail-grid">
-                <div>
-                  <dt>Email</dt>
-                  <dd>
-                    {{ accountEmail || 'Not available' }}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Terms accepted</dt>
-                  <dd>
-                    {{ termsAcceptedLabel || 'Not recorded' }}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Terms version</dt>
-                  <dd>
-                    {{ account.terms.version || 'Not recorded' }}
-                  </dd>
-                </div>
-              </dl>
-
-              <div>
-                <div>
-                  <p>Current session</p>
-                  <p>Signed in as {{ accountEmail || 'your account' }}.</p>
-                </div>
-
-                <UButton
-                  label="Sign out"
-                  icon="i-lucide-log-out"
-                  color="neutral"
-                  variant="soft"
-                  :loading="signOutLoading"
-                  :disabled="signOutLoading"
-                  @click="handleSignOut"
-                />
-              </div>
-            </UPageCard>
-            <FireContextRecord
-              title="Private AI context"
-              endpoint="/api/internal/user/context"
-              :scope="{}"
-              :maxlength="8000"
-            />
-          </div>
-
-          <FireStateCard
-            v-else
-            entity="private account"
-            kind="document"
-            loading
-          />
+            </details>
+          </UserAccountDetails>
+          <UserAccountSession />
         </UPageBody>
       </UPage>
     </template>
@@ -117,11 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, definePageMeta, ref, useHead } from '#imports'
-import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUserAccount } from '../../user/composables/account/useUserAccount'
-import { formatFirestoreTimestamp } from '../../utils/firestore-timestamp'
-
+import { definePageMeta, useHead } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
@@ -135,30 +37,5 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const { currentUser: authUser, signOutUser } = useAuth()
-const { outcome: accountOutcome, account } = useUserAccount()
-const signOutLoading = ref(false)
-
-const accountEmail = computed(
-  () => account.value?.email || authUser.value?.email || ''
-)
-const termsAcceptedLabel = computed(() =>
-  formatFirestoreTimestamp(account.value?.terms.accepted_at, {
-    fallback: '',
-    locale: 'en-GB',
-  })
-)
-
-const handleSignOut = async () => {
-  if (signOutLoading.value) return
-  signOutLoading.value = true
-  try {
-    await signOutUser('/')
-  } finally {
-    signOutLoading.value = false
-  }
-}
-
 useHead({ title: 'Settings' })
 </script>

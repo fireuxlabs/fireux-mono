@@ -115,13 +115,15 @@ See `arrival-route.test.mjs` and `workspace-entry.test.mjs` under Core's
 - Core owns the shared `/dashboard/user-profile` route and its named `User/Edit`
   components. Projects consume that Profile hub rather than forking it app by
   app.
-- Public User and owner-private account outcomes remain independent on the
-  route. Only canonical public User identity is editable there: photo, display
-  name, handle, and the optional 280-character bio. The private section is a
-  read-only account summary; Settings owns session actions. AppUser membership
-  and entitlements are not presented as editable profile fields.
-- The signed-in Profile header may show the derived highest current-App access
-  badge. It never stores or publishes that App-private authority on User.
+- Profile edits only the public User: photo, display name, handle and bio.
+  `UserEditProfile` owns the self read and recovery, and composes `UserEditCore`.
+  The existing profile and avatar commands retain validation and authority.
+- Settings composes private account details and session actions. Session actions
+  use Auth independently, so failed account reads do not remove sign-out.
+  The existing private context editor remains behind the ready account state.
+- Membership, subscription and plan offers are not Profile fields. Overview owns
+  the membership summary; the owning App surfaces retain plan management.
+- FireUX App inherits Core's Profile route. There is no separate Account override.
 - A signed-in user may also see that private derived badge on their own public
   User detail page. It is not part of the public User DTO and is not shown to
   other visitors.

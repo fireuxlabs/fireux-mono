@@ -28,8 +28,10 @@ try {
   await build(nuxt)
   const authPage = nuxt.apps.default.pages.find(page => page.path === '/auth')
   assert.ok(authPage.file.endsWith('/fireux-core/src/runtime/pages/auth.vue'))
+  const profilePage = nuxt.apps.default.pages.find(page => page.path === '/dashboard/user-profile')
+  assert.ok(profilePage.file.endsWith('/fireux-core/src/runtime/pages/dashboard/user-profile.vue'))
   const components = readFileSync(join(output, 'components.d.ts'), 'utf8')
-  for (const name of ['FireAuthBrand', 'FireAuthSignIn', 'FireAuthContinue', 'FireDashboardOverviewRecovery']) {
+  for (const name of ['FireAuthBrand', 'FireAuthSignIn', 'FireAuthContinue', 'FireDashboardOverviewRecovery', 'UserEditProfile', 'UserEditAvatar', 'UserAccountDetails', 'UserAccountSession']) {
     assert.ok(components.includes(name))
   }
   assert.equal(components.includes('FireDashboardOverviewEcosystem'), false)

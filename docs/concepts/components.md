@@ -86,6 +86,20 @@ its separate operational surface. Each section handles its own outcomes.
 See `foundation-read-contract.test.mjs` and
 `dashboard-composition.test.mjs` under Core's `src/test`.
 
+## Profile and Settings composition
+
+The shared Profile route composes `UserEditProfile`, which reads only the public
+User and delegates editing to the existing `UserEditCore` and `UserEditAvatar`.
+Settings composes `UserAccountDetails` and `UserAccountSession`; the existing
+private-context editor is a ready-account slot. Details owns its account read,
+while Session owns only Auth state and sign-out. Its initial loading state
+stays stable through hydration before displaying the browser session. Routes retain metadata and
+native Dashboard framing, with no duplicated account summaries or plan cards.
+See Core's `profile-settings.test.mjs`, editable-completion/workflow tests and
+native module registration check. The FireUX App has no competing Profile route.
+Overview, Profile and Settings share the semantic `fx-account-content` width
+in `page-layouts.scss`; field groups reuse `pagebody` spacing.
+
 ## Component placement and names
 
 Core's native [runtime layer](../../packages/core/fireux-core/src/runtime/nuxt.config.ts)
