@@ -47,6 +47,27 @@ test('Nuxt registration supplies names and source remains inspectable when overr
   )
 })
 
+test('the internal User card family exposes Pill, Cell, Preview and Profile', () => {
+  const cards = coreInventory(runtime)
+    .filter((entry) => entry.source.startsWith('user/components/Cards/'))
+    .map((entry) => entry.name)
+    .sort()
+  assert.deepEqual(cards, [
+    'UserCardsCell',
+    'UserCardsPill',
+    'UserCardsPreview',
+    'UserCardsProfile',
+  ])
+})
+
+test('the internal App card family exposes Cell and Preview', () => {
+  const cards = coreInventory(runtime)
+    .filter((entry) => entry.source.startsWith('app/components/Cards/'))
+    .map((entry) => entry.name)
+    .sort()
+  assert.deepEqual(cards, ['AppCardsCell', 'AppCardsPreview'])
+})
+
 test('Every preview names a real Core component; connected components are not auto-mounted', () => {
   const inventory = coreInventory(runtime, [], preview)
   const examples = [...preview.matchAll(/name === '([^']+)'/g)].map(

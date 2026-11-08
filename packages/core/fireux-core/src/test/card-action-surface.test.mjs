@@ -10,9 +10,15 @@ import ts from 'typescript'
 function component(relative) {
   const filename = new URL(relative, import.meta.url).pathname
   const { descriptor } = parse(readFileSync(filename, 'utf8'), { filename })
-  const script = compileScript(descriptor, { id: filename, inlineTemplate: true })
+  const script = compileScript(descriptor, {
+    id: filename,
+    inlineTemplate: true,
+  })
   const code = ts.transpileModule(script.content, {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
   }).outputText
   const exports = {}
   compileFunction(code, ['require', 'exports'])((id) => {
@@ -21,21 +27,35 @@ function component(relative) {
   }, exports)
   return exports.default
 }
-const ActionSurface = component('../runtime/components/Molecules/ActionSurface.vue')
+const ActionSurface = component(
+  '../runtime/components/molecules/ActionSurface.vue'
+)
 const cards = [
-  component('../../../../extensions/fireux-products/src/runtime/product/components/Cards/Pill.vue'),
-  component('../../../../extensions/fireux-suppliers/src/runtime/supplier/components/Item/Cards/Cell.vue'),
+  component(
+    '../../../../extensions/fireux-products/src/runtime/product/components/Cards/Pill.vue'
+  ),
+  component(
+    '../../../../extensions/fireux-suppliers/src/runtime/supplier/components/Item/Cards/Cell.vue'
+  ),
   component('../runtime/app/components/Cards/Cell.vue'),
 ]
 const ULink = Vue.defineComponent({
   props: ['to', 'disabled'],
-  setup: (props, { slots }) => () => Vue.h('a', { href: props.disabled ? undefined : props.to }, slots.default?.()),
+  setup:
+    (props, { slots }) =>
+    () =>
+      Vue.h(
+        'a',
+        { href: props.disabled ? undefined : props.to },
+        slots.default?.()
+      ),
 })
 async function render(Card, props) {
   const app = Vue.createSSRApp({ render: () => Vue.h(Card, props) })
   app.component('FireActionSurface', ActionSurface)
   app.component('ULink', ULink)
-  for (const name of ['UAvatar', 'UBadge', 'UIcon']) app.component(name, { render: () => null })
+  for (const name of ['UAvatar', 'UBadge', 'UIcon'])
+    app.component(name, { render: () => null })
   return renderToString(app)
 }
 for (const [i, Card] of cards.entries()) {

@@ -15,7 +15,7 @@
       />
     </div>
 
-    <UserCardsSummary
+    <UserCardsPreview
       v-if="view === 'preview'"
       :avatar-url="presentation?.avatarUrl"
       :handle-label="presentation?.handleLabel"
@@ -23,7 +23,7 @@
       :bio="currentUser.bio"
     />
 
-    <UserIdentitySummary v-else :user="currentUser" />
+    <UserCardsProfile v-else :user="currentUser" />
   </div>
 </template>
 

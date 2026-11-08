@@ -81,14 +81,14 @@ Every Entity Detail route should:
   related read or material projection shows that object and its own derived
   surface data.
 - Agent, Chef, Driver, and Professional details share Core
-  `PublicProfileDetailSurface`, `PublicProfileHero`, and
-  `PublicProfileSection` presentation. Their named `X/Profile/Index.vue` roots own
+  `UserProfileDetailSurface`, `UserProfileHero`, and
+  `UserProfileSection` presentation. Their named `X/Profile/Index.vue` roots own
   domain content, icons, and section presence; profile tone is presentation
   only and never changes identity, transport, publication, or authority.
 - Canonical User detail proves the one-object boundary: the route acquires the
   canonical User and renders `<UserDetail v-if="user" :user="user" />`.
   `UserDetail` owns the separately authorized AppUser membership read and
-  composes `UserProfile` and `UserAppMembership`. Profile, membership, and
+  composes `UserCardsProfile` and `UserAppMembership`. Profile, membership, and
   App-owned capability components derive their own
   viewer decisions, labels, links, pending state, and commands from the object
   plus runtime context; the route does not spray those decisions through scalar

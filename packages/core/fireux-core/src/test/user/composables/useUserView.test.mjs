@@ -8,12 +8,14 @@ import {
   computed,
   createSSRApp,
   defineComponent,
+  effectScope,
   h,
   reactive,
   ref,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { useCollectionSearch } from '../runtime/composables/shared/useCollectionSearch.ts'
+import { useCollectionSearch } from '../../../runtime/composables/shared/useCollectionSearch.ts'
+import { useCardViewToggle } from '../../../runtime/composables/shared/useCardViewToggle.ts'
 
 function load(source, name, dependencies) {
   const script = source
@@ -29,7 +31,10 @@ function view() {
   const avatars = [],
     normalizations = []
   const source = readFileSync(
-    new URL('../runtime/user/composables/useUserView.ts', import.meta.url),
+    new URL(
+      '../../../runtime/user/composables/useUserView.ts',
+      import.meta.url
+    ),
     'utf8'
   )
   const useUserView = load(source, 'useUserView', {
@@ -104,7 +109,10 @@ test('User collection still searches direct name, handle and bio with the three-
   })
   const { format } = view()
   const source = readFileSync(
-    new URL('../runtime/user/components/Collection/Index.vue', import.meta.url),
+    new URL(
+      '../../../runtime/user/components/Collection/Index.vue',
+      import.meta.url
+    ),
     'utf8'
   ).match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
   const state = load(source, '{query,visibleItems}', {
@@ -132,7 +140,85 @@ test('User collection still searches direct name, handle and bio with the three-
   assert.deepEqual(state.visibleItems.value, props.users)
 })
 
-test('the public User profile uses shared presentation and settled Auth without acquiring a session', async () => {
+test('the current User switches between Preview and Profile cards with the supplied identity', async (t) => {
+  const props = reactive({
+    currentUser: {
+      id: 'person',
+      handle: 'person',
+      display_name: 'Direct Name',
+      avatar: '',
+      bio: 'Direct biography',
+    },
+  })
+  const presentation = view()
+  const text = readFileSync(
+    new URL(
+      '../../../runtime/user/components/Current/Summary.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const scope = effectScope()
+  t.after(() => scope.stop())
+  const state = scope.run(() =>
+    load(
+      text.match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1],
+      '{presentation,view,toggleView}',
+      {
+        defineProps: () => props,
+        computed,
+        useUserView: () => presentation.format,
+        useCardViewToggle,
+      }
+    )
+  )
+  const component = defineComponent({
+    setup: () => ({ currentUser: props.currentUser, ...state }),
+    render: compile(
+      text.slice(text.indexOf('<template>') + 10, text.indexOf('</template>'))
+    ),
+  })
+  async function render() {
+    const app = createSSRApp(component)
+    app.component('UButton', { render: () => null })
+    app.component(
+      'UserCardsPreview',
+      defineComponent({
+        props: ['displayName', 'bio'],
+        setup: (card) => () =>
+          h('div', { 'data-user-card': 'preview' }, [
+            card.displayName,
+            card.bio,
+          ]),
+      })
+    )
+    app.component(
+      'UserCardsProfile',
+      defineComponent({
+        props: ['user'],
+        setup: (card) => () => {
+          assert.equal(card.user, props.currentUser)
+          return h(
+            'div',
+            { 'data-user-card': 'profile' },
+            card.user.display_name
+          )
+        },
+      })
+    )
+    return renderToString(app)
+  }
+  const preview = await render()
+  assert.match(preview, /data-user-card="preview"/)
+  assert.match(preview, /Direct Name/)
+  assert.match(preview, /Direct biography/)
+  state.toggleView()
+  const profile = await render()
+  assert.match(profile, /data-user-card="profile"/)
+  assert.match(profile, /Direct Name/)
+})
+
+test('the User Profile card uses shared presentation and settled Auth without acquiring a session', async () => {
   const props = reactive({
     user: {
       id: 'person',
@@ -149,7 +235,10 @@ test('the public User profile uses shared presentation and settled Auth without 
   }
   const presentation = view()
   const text = readFileSync(
-    new URL('../runtime/user/components/Profile/Index.vue', import.meta.url),
+    new URL(
+      '../../../runtime/user/components/Cards/Profile.vue',
+      import.meta.url
+    ),
     'utf8'
   )
   const script = text.match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]

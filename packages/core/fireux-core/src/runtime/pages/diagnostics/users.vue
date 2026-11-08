@@ -26,7 +26,7 @@
         </template>
 
         <div class="fx-card-body-stack">
-          <UserCardsSummary
+          <UserCardsPreview
             v-if="user && signedInUserPreview"
             :avatar-url="signedInUserPreview.avatarUrl"
             :handle-label="signedInUserPreview.handleLabel"

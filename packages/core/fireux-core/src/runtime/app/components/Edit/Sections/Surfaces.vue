@@ -28,7 +28,7 @@
         <div>
           <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
         </div>
-        <AppCardsSummary
+        <AppCardsPreview
           :id="appCard.id"
           :short-name="appCard.shortName"
           :thumbnail-url="appCard.thumbnailUrl"

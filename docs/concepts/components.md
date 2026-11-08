@@ -152,6 +152,11 @@ slots, known runtime prerequisites and real consumer evidence. A package
 catalogue, auto-registration or visual similarity does not prove shared use.
 Use [spine.md](spine.md) to compare materially different consumers.
 
+Entity Cards use the [Pill, Cell, Preview and Profile roles](card-family.md).
+Core User is the four-role baseline; its Detail composes `UserCardsProfile`
+beside the App-owned membership capability. Card presentation does not own
+route acquisition, editing or trusted command authority.
+
 Core [FireDisclosureCard](../../packages/core/fireux-core/src/runtime/components/molecules/DisclosureCard.vue)
 combines Nuxt UI's native disclosure with the shared card-cell surface. Its
 consumer controls `v-model:open` when several cards share one-open-at-a-time
