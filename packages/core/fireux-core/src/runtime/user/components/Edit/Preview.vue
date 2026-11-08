@@ -33,17 +33,6 @@
         {{ card.handle }}
       </p>
 
-      <div v-if="profileLabels.length">
-        <UBadge
-          v-for="profile in profileLabels"
-          :key="profile"
-          :label="profile"
-          color="neutral"
-          variant="soft"
-          size="sm"
-        />
-      </div>
-
       <p>
         {{
           card.bio ||
@@ -74,16 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { UserCard } from '../../composables/useUserView'
 
-const props = defineProps<{ card: UserCard }>()
-
-const profileLabels = computed(() =>
-  props.card.profiles.map((profile) =>
-    profile
-      .replace(/[-_]+/g, ' ')
-      .replace(/\b\w/g, (letter) => letter.toUpperCase())
-  )
-)
+defineProps<{ card: UserCard }>()
 </script>

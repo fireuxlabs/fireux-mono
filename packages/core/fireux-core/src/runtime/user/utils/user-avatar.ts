@@ -2,24 +2,9 @@
 import { readHttpsUrl } from '../../utils/https-url'
 
 export const USER_ECOSYSTEM_AVATAR_SRC = '/img/ecosystem/avatar.png'
-export const USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE = USER_ECOSYSTEM_AVATAR_SRC
-
-const LEGACY_USER_AVATAR_PLACEHOLDERS = new Set([
-  '/img/core/defaults/default-thumbnail.png',
-  '/img/core/brand/avatar.png',
-  '/img/core/brand/logo.png',
-  USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
-])
-
-export function isLegacyUserAvatarPlaceholder(value: unknown): boolean {
-  return LEGACY_USER_AVATAR_PLACEHOLDERS.has(String(value ?? '').trim())
-}
 
 export function resolveUserAvatarSource(value: unknown): string {
   const source = String(value ?? '').trim()
-  if (!source || isLegacyUserAvatarPlaceholder(source)) {
-    return USER_ECOSYSTEM_AVATAR_SRC
-  }
   if (source === USER_ECOSYSTEM_AVATAR_SRC) return source
   return readHttpsUrl(source) || USER_ECOSYSTEM_AVATAR_SRC
 }

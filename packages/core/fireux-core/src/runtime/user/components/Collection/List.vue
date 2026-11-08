@@ -31,7 +31,6 @@ const cells = computed<CollectionCellData[]>(() =>
         ? card.handle
         : `@${card.handle}`
       : '',
-    badges: card.badges,
     to: card.to,
   }))
 )

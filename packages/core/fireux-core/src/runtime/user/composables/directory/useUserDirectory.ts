@@ -9,7 +9,7 @@ import { useUserCollection } from '../useUserCollection'
 export function useUserDirectory() {
   const { appId, isTenant } = useFireUXConfig()
   const source = useUserCollection()
-  const { user: currentUser, appUser, appOutcome } = useUserSession()
+  const { user: currentUser, appUser, appUserOutcome } = useUserSession()
   const users = computed(() => {
     if (source.pending.value || source.error.value) return []
     const visible = source.users.value.filter(isUserDirectoryEligible)
@@ -17,7 +17,7 @@ export function useUserDirectory() {
     const canShowSelf =
       self &&
       isUserDirectoryEligible(self) &&
-      (!isTenant || (appOutcome.value === 'ready' && appUser.value))
+      (!isTenant || (appUserOutcome.value === 'ready' && appUser.value))
     if (!canShowSelf) return visible
     const index = visible.findIndex(
       (entry) => entry.id === self.id || entry.handle === self.handle

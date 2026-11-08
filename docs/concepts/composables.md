@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-07
-Ref: dbcd2f326
+Updated: 2026-11-08
+Ref: d9e120c46
 Role: map, not canon
 
 ## Purpose
@@ -477,9 +477,9 @@ a canonical identity reader is not a substitute for that projection.
 `useUserBootstrap` captures one account/App intent before credentials and retains
 it through identity provisioning, default App membership and event publication.
 Component scopes also invalidate that intent on disposal; calls outside a
-component release their own temporary watcher. `useAuth` supplies its
-current-User ref directly to bootstrap, avoiding recursive Auth construction.
-Other setup callers reuse the lower VueFire current-User ref. User setup creates
+component release their own temporary watcher. `useUserSetup` supplies Auth's
+current-User ref directly to bootstrap, avoiding recursive setup construction.
+`useAuth` owns no setup or provisioning. User setup creates
 the default AppUser; Auth sign-in itself remains read-only. The Firebase Auth
 service remains opaque to Vue reactivity (`markRaw`): state
 watchers must not traverse SDK internals such as Google's cross-origin popup.
@@ -491,6 +491,14 @@ not navigate a different account or overwrite its setup feedback/consent. Its
 sign-in fallback retains the validated destination. Core's full profile editor
 and FireUX's minimal account presentation share the User-owned avatar editor;
 profile field editing and AppUser membership remain separate responsibilities.
+
+`useUserSession` exposes one canonical `user` and a separate `appUser`, with
+independent `user*` and `appUser*` read states. Its state projection reuses the
+same Auth refs. Setup requires a valid handle and display name, not merely an
+existing User document; incomplete identities remain readable for explicit repair.
+`useUserView` reads nothing. Its consumed `interface`, `pill` and `profile`
+formatters require a supplied User and return only identity presentation and
+the public profile destination. Domain-profile metadata has its own owner.
 
 `user/utils/display-name-seed.ts` supplies the same initial public-name policy
 to bootstrap and identity provisioning. It prefers an explicit name, strips
@@ -520,7 +528,10 @@ loaded page is read through `readPages` when the owning Nuxt reader refreshes.
 Failures hide retained rows. Profile directory/detail factories use the same
 native H3 request boundary as their client readers. Existing-User
 provisioning retains the server's canonical handle; new creation and handle edits
-still verify the requested handle. Core `user-directory-collection`,
+still verify the requested handle. Generated handles reserve a UID discriminator
+before the display-name prefix. Provisioning retries at most five candidates,
+only for a confirmed handle reservation conflict, under the original account intent.
+Core `user-directory-collection`,
 `user-directory-detail` and `user-profile-commands` tests protect these boundaries.
 
 The `profile` group's existing four-family vocabulary remains a bounded legacy

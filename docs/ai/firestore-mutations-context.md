@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-11-07
-Ref: dbcd2f326
+Updated: 2026-11-08
+Ref: d9e120c46
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -282,6 +282,13 @@ records. Public meal-deal projection remains read-only.
   preparation. Private-account provisioning also rejects obsolete credentials
   and validates the server result shape. Source-owned behavioral coverage is
   `src/test/user-workflow-scope.test.mjs`.
+  Generated handles reserve the UID discriminator and retry only confirmed
+  reservation conflicts, for at most five candidates in the same captured intent.
+  Profile name/bio and avatar writes include an `updated` audit stamp from the
+  authenticated actor. Private User context uses the self-only command at
+  `user/server/context/update.ts`; the internal API route only delegates.
+  The command authenticates before reading the body and retains previous-value
+  conflict checks and stamps.
   Domain profile creators compose `bootstrapUser(actor)` and
   `useProfileCreate().createProfile(actor)`; Core's profile command remains
   self-only and rejects a changed signed-in account.

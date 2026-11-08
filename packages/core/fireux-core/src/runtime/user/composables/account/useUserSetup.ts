@@ -23,18 +23,19 @@ export function useUserSetup() {
     resolveUserSetup({
       authResolved: auth.hasAuthState.value,
       signedIn: auth.isAuthenticated.value,
-      identity: session.coreOutcome.value,
+      identity: session.userOutcome.value,
+      identityData: session.user.value,
       account: account.outcome.value,
-      membership: session.appOutcome.value,
+      membership: session.appUserOutcome.value,
       accountData: account.account.value,
     })
   )
   const error = computed(() => {
     if (!auth.hasAuthState.value || !auth.isAuthenticated.value) return null
     return (
-      session.coreError.value ||
+      session.userError.value ||
       account.error.value ||
-      session.appError.value ||
+      session.appUserError.value ||
       (status.value.failed
         ? new Error('Your account could not be loaded. Please try again.')
         : null)

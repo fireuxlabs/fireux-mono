@@ -60,9 +60,9 @@ function context() {
     useFireUXConfig: () => config,
     useUserSession: () => ({
       appUser,
-      appPending,
-      appError,
-      appOutcome,
+      appUserPending: appPending,
+      appUserError: appError,
+      appUserOutcome: appOutcome,
     }),
     useKitchenWorkspace: () => ({ id: kitchenId }),
     useKitchenAccess: () => access,
@@ -237,7 +237,10 @@ function detail(h) {
       '({removeIngredient, deleteOpen, deleting, deleteError})',
       {
         ...h.deps,
-        useKitchenWorkspace: () => ({ outcome: vue.ref('ready'), id: h.kitchenId }),
+        useKitchenWorkspace: () => ({
+          outcome: vue.ref('ready'),
+          id: h.kitchenId,
+        }),
         useRouteParam: () => h.ingredientId,
         useKitchenIngredientDetail: () => ({
           ingredient,

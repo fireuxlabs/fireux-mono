@@ -62,8 +62,11 @@ export async function updateUserHandle(
     })
     const payload = await response.json().catch(() => null)
     if (!response.ok) {
-      throw new Error(
-        responseMessage(payload, `Handle update failed (${response.status}).`)
+      throw Object.assign(
+        new Error(
+          responseMessage(payload, `Handle update failed (${response.status}).`)
+        ),
+        { statusCode: response.status, data: payload?.data }
       )
     }
 

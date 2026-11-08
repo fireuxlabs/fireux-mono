@@ -41,5 +41,5 @@
 </template>
 <script setup lang="ts">
 import { useUserSession } from '../../../user/composables/session/useUserSession'
-const { appUser, appOutcome: appUserOutcome } = useUserSession()
+const { appUser, appUserOutcome } = useUserSession()
 </script>

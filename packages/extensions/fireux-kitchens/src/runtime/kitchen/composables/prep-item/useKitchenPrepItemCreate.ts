@@ -32,15 +32,16 @@ type KitchenPrepItemCreateOptions = {
 export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const access = useKitchenAccess()
   const captureIntent = useCommandScope([
     () => currentUser.value?.uid,
     () => config.appId,
     () => JSON.stringify(appUser.value),
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => JSON.stringify(access.ids.value),
     () => access.outcome.value,
     ...ownerSources,
@@ -65,9 +66,9 @@ export function useKitchenPrepItemCreate(ownerSources: WatchSource[] = []) {
         !uid ||
         currentUser.value?.uid !== uid ||
         !isCurrent() ||
-        appPending.value ||
-        appError.value ||
-        appOutcome.value !== 'ready' ||
+        appUserPending.value ||
+        appUserError.value ||
+        appUserOutcome.value !== 'ready' ||
         access.outcome.value !== 'ready'
       )
         throw new Error(

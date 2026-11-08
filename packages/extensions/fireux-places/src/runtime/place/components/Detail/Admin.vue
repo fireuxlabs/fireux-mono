@@ -29,13 +29,11 @@ import { useUserSession } from 'fireux-core/runtime/user/composables/session/use
 import { computed } from 'vue'
 import type { Place } from '../../models/place.model.ts'
 const props = defineProps<{ place: Place }>()
-const { currentUser, isAdmin, isDeveloper } = useUserSession()
+const { user, isAdmin, isDeveloper } = useUserSession()
 const canManage = computed(() => isAdmin.value || isDeveloper.value)
 const canEdit = computed(
   () =>
     canManage.value ||
-    Boolean(
-      props.place.claimed_by && props.place.claimed_by === currentUser.value?.id
-    )
+    Boolean(props.place.claimed_by && props.place.claimed_by === user.value?.id)
 )
 </script>

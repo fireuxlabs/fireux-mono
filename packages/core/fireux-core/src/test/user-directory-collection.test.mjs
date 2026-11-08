@@ -57,7 +57,7 @@ test('Tenant directories choose App-scoped reads and never substitute global ide
         useUserSession: () => ({
           user: ref({ id: 'self', handle: 'self' }),
           appUser: ref(null),
-          appOutcome: ref('empty'),
+          appUserOutcome: ref('empty'),
         }),
         isUserDirectoryEligible: (user) => Boolean(user.handle),
       }

@@ -11,14 +11,15 @@ export function useBusinessCreate() {
   const { currentUser } = useAuth(),
     config = useFireUXConfig(),
     route = useRoute()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const captureIntent = useCommandScope([
     () => currentUser.value?.uid,
     () => config.appId,
     appUser,
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => route.fullPath,
   ])
   async function createBusiness(input: { id: string }): Promise<string> {

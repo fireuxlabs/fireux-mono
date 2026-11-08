@@ -1,47 +1,20 @@
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: keep public User surfaces on canonical root identity.
-// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: accept minimal allowlisted User identity on public and admin cards.
-// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: map optional biography into shared User cards.
 import { safeString } from '../../composables/shared/useInterfaceUtils'
-import type { Ref } from 'vue'
-import type { User } from '../models/user.model.ts'
-import {
-  resolveUserAvatarSource,
-  USER_ECOSYSTEM_AVATAR_SRC,
-} from '../utils/user-avatar'
+import type { User } from '../models/user.model'
+import { resolveUserAvatarSource } from '../utils/user-avatar'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { normalizeUserHandle } from '../utils/user-handle'
 
+/** User-owned values consumed by the current card components. */
 export type UserCard = {
-    id: string
-    to: string
-
-    // Media (empty string means unset)
-    imageUrl: string
-    avatarUrl: string
-    secondaryAvatarUrl?: string
-
-    displayName: string
-    title: string
-    subtitle: string
-    summary: string
-
-    // Public handle (empty string means unset)
-    handle: string
-
-    badges: string[]
-
-    contactEmail: string
-    contactPhone: string
-    websiteUrl: string
-
-    // IMPORTANT: do not expose user.email on public UI surfaces.
-    bio: string
-    profiles: string[]
-  appsLabel: string
-}
-
-export type UserSurfaceParts<TUser extends object = Partial<User>> = {
-  user?: TUser | null | undefined
+  id: string
+  to: string
+  imageUrl: string
+  avatarUrl: string
+  displayName: string
+  subtitle: string
+  summary: string
+  handle: string
+  bio: string
 }
 
 export type UserIdentitySurface = Pick<
@@ -50,106 +23,34 @@ export type UserIdentitySurface = Pick<
 > &
   Partial<Pick<User, 'bio'>>
 
-export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
-
-export function useUserView(
-  userRef?: Ref<UserIdentitySurface | null | undefined>
-) {
-  type UserPill = UserCard
-  type UserCell = UserCard
-  type UserPreview = UserCard
-  type UserProfile = UserCard
-
+/** Presentation only: callers supply their owning User read. */
+export function useUserView() {
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
-  function surface<TUser extends object = Partial<User>>(
-    parts: UserSurfaceParts<TUser>
-  ): (TUser & User) | null {
-    const source = parts.user ?? null
-    if (!source) return null
-
-    const merged = { ...source } as TUser & User
-    const id = safeString(merged.id).trim()
+  function map(target?: UserIdentitySurface | null): UserCard | null {
+    if (!target) return null
+    const id = safeString(target.id).trim()
     if (!id) return null
-
-    return {
-      ...merged,
-      id,
-    }
-  }
-
-  function resolveAvatarUrl(user: UserIdentitySurface): string {
-    return getProxiedAvatarUrl(resolveUserAvatarSource(user.avatar))
-  }
-
-  function map(user: UserIdentitySurface): UserCard {
-    const id = safeString(user.id).trim()
-    const handle = normalizeUserHandle(safeString(user.handle))
+    const handle = normalizeUserHandle(safeString(target.handle))
     const handleLabel = handle ? `@${handle}` : ''
-    const displayName = safeString(user.display_name).trim() || handleLabel || id
-    const bio = safeString(user.bio).trim()
-    const profiles: string[] = []
+    const displayName = safeString(target.display_name).trim()
+    const bio = safeString(target.bio).trim()
+    const avatarUrl = getProxiedAvatarUrl(
+      resolveUserAvatarSource(target.avatar)
+    )
 
     return {
       id,
-      to: handle
-        ? `/${'users'}/${encodeURIComponent(handle)}`
-        : '',
-
-      imageUrl: resolveAvatarUrl(user),
-      avatarUrl: resolveAvatarUrl(user),
-      secondaryAvatarUrl: '',
+      to: handle ? `/users/${encodeURIComponent(handle)}` : '',
+      imageUrl: avatarUrl,
+      avatarUrl,
       displayName,
-      title: profiles[0] || '',
       subtitle: displayName !== handleLabel ? handleLabel : '',
       summary: bio,
-
       handle: handleLabel,
-      badges: profiles,
-
-      contactEmail: '',
-      contactPhone: '',
-      websiteUrl: '',
-
       bio,
-      profiles,
-      appsLabel: '',
     }
   }
 
-  function buildInterface(
-    target?: UserIdentitySurface | null | undefined
-  ): UserCard | null {
-    const user = target ?? userRef?.value ?? null
-    if (!user) return null
-    const mapped = map(user)
-    return mapped.id ? mapped : null
-  }
-
-  const toInterface = buildInterface
-
-  function pill(target?: UserIdentitySurface | null | undefined): UserPill | null {
-    return buildInterface(target)
-  }
-
-  function cell(target?: UserIdentitySurface | null | undefined): UserCell | null {
-    return buildInterface(target)
-  }
-
-  function preview(target?: UserIdentitySurface | null | undefined): UserPreview | null {
-    return buildInterface(target)
-  }
-
-  function profile(target?: UserIdentitySurface | null | undefined): UserProfile | null {
-    return buildInterface(target)
-  }
-
-  return {
-    surface,
-    interface: toInterface,
-    pill,
-    cell,
-    preview,
-    profile,
-  }
+  return { interface: map, pill: map, profile: map }
 }

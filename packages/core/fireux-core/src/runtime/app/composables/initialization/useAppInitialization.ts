@@ -12,7 +12,7 @@ import { useCommandScope } from '../../../composables/fireux/commands/useCommand
 import { useFireUXConfig } from '../config/FireUXConfig'
 
 export interface AppInitializationState {
-  coreUser: Ref<User | null>
+  user: Ref<User | null>
   userPending: Ref<boolean>
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
@@ -29,15 +29,15 @@ export interface AppInitializationState {
  * new-App onboarding and must not be mounted on `/apps/create`.
  */
 export function useAppInitialization(): AppInitializationState {
-  const { coreUser: coreUserRef, pending: userPending } = useUserSession()
-  const coreUser = computed(() => coreUserRef.value ?? null)
+  const { user: userRef, pending: userPending } = useUserSession()
+  const user = computed(() => userRef.value ?? null)
   const toast = useToastify()
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
   const context = [
     () => currentUser.value?.uid,
     () => config.appId,
-    () => coreUser.value?.id,
+    () => user.value?.id,
   ]
   const captureIntent = useCommandScope(context)
 
@@ -67,7 +67,7 @@ export function useAppInitialization(): AppInitializationState {
   const canProceed = computed(() =>
     Boolean(
       currentUser.value?.uid &&
-        coreUser.value &&
+        user.value &&
         !userPending.value &&
         !envPending.value &&
         !envError.value &&
@@ -125,7 +125,7 @@ export function useAppInitialization(): AppInitializationState {
   }
 
   return {
-    coreUser,
+    user,
     userPending,
     env,
     envError,

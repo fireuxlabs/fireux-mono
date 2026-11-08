@@ -4,13 +4,16 @@
 
 import { updateUserHandle } from './update-user-handle'
 import { userDisplayNameSeed } from './display-name-seed'
-import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from './user-avatar'
+import { USER_ECOSYSTEM_AVATAR_SRC } from './user-avatar'
 import { provisionSignedInUserAvatar } from './provision-user-avatar'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { captureCommandScope } from '../../composables/fireux/commands/useCommandScope'
 
 import type {
   UserProvisioningOptions,
   UserProvisioningResult,
 } from '../models/user-provisioning'
+import type { UserHandleResult } from '../models/user-handle'
 
 export async function provisionUserIdentity(
   uid: string,
@@ -21,31 +24,68 @@ export async function provisionUserIdentity(
   if (!displayName) {
     throw new Error('[provisionUserIdentity] Missing displayName')
   }
-  const handle = makeHandle(displayName, uid)
-  const result = await updateUserHandle(
-    uid,
-    handle,
-    {
-      display_name: displayName,
-      avatar: USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
-    },
-    isOwnerCurrent
-  )
-  // Establish identity and its terms/handle checks before uploading any file.
-  // Repeated bootstrap must not replace an existing User's selected avatar.
-  if (result.created && options.avatar) {
-    await provisionSignedInUserAvatar(uid, options.avatar, isOwnerCurrent)
+  const avatar = options.avatar
+  const { currentUser } = useAuth()
+  const scope = captureCommandScope([() => currentUser.value?.uid])
+  const isCurrent = () =>
+    scope.isCurrent() && isOwnerCurrent() && currentUser.value?.uid === uid
+  const assertCurrent = () => {
+    if (!isCurrent())
+      throw new Error('The account context changed. Please try again.')
   }
 
-  return { created: result.created, displayName, handle: result.handle }
+  try {
+    for (let attempt = 0; ; attempt += 1) {
+      assertCurrent()
+      let result: UserHandleResult
+      try {
+        result = await updateUserHandle(
+          uid,
+          makeHandle(displayName, uid, attempt),
+          {
+            display_name: displayName,
+            avatar: USER_ECOSYSTEM_AVATAR_SRC,
+          },
+          isCurrent
+        )
+      } catch (error) {
+        assertCurrent()
+        const failure = error as {
+          statusCode?: unknown
+          data?: { code?: unknown }
+        }
+        if (
+          attempt >= 4 ||
+          failure?.statusCode !== 409 ||
+          failure.data?.code !== 'USER_HANDLE_UNAVAILABLE'
+        )
+          throw error
+        continue
+      }
+      assertCurrent()
+      // Establish identity before optional upload; retries keep saved avatars.
+      if (result.created && avatar) {
+        await provisionSignedInUserAvatar(uid, avatar, isCurrent)
+        assertCurrent()
+      }
+      return { created: result.created, displayName, handle: result.handle }
+    }
+  } finally {
+    scope.stop()
+  }
 }
 
-function makeHandle(displayName: string, uid: string) {
-  // Strict rule: NEVER invent a word fallback.
-  // Deterministic handle: cleaned displayName prefix (may be empty) + uid suffix.
-  const cleaned = displayName.toLowerCase().replaceAll(/[^a-z0-9]/g, '')
-  const suffix = uid.slice(0, 8)
-  const combined = `${cleaned}${suffix}`.slice(0, 12)
-  if (!combined) throw new Error('[makeHandle] Unable to derive handle')
-  return combined
+function makeHandle(displayName: string, uid: string, attempt: number) {
+  const name = displayName
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]/g, '')
+    .slice(0, 16)
+  const discriminator = uid
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]/g, '')
+    .slice(0, 8)
+  if (!discriminator) throw new Error('[makeHandle] Unable to derive handle')
+  // Reserve the UID portion before adding the name. All five candidates fit
+  // the shared 30-character limit and pass through the normal handle validator.
+  return `${name ? `${name}-` : ''}${discriminator}${attempt ? `-${attempt + 1}` : ''}`
 }

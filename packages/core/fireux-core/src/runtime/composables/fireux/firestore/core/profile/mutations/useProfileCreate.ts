@@ -33,11 +33,29 @@ function responseMessage(payload: unknown, fallback: string) {
  * A composing workflow can retain the authenticated actor from its earlier step.
  */
 export function useProfileCreate(config: ProfileConfig) {
-  const { currentUser } = useAuth(), runtime = useFireUXConfig(), route = useRoute()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
-  const sources = [() => currentUser.value?.uid, () => runtime.appId, appUser, appPending, appError, appOutcome, () => route.fullPath]
-  const captureIntent = useCommandScope(sources), scopeEpoch = ref(0)
-  watch(sources, () => { scopeEpoch.value += 1 }, { flush: 'sync' })
+  const { currentUser } = useAuth(),
+    runtime = useFireUXConfig(),
+    route = useRoute()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
+  const sources = [
+    () => currentUser.value?.uid,
+    () => runtime.appId,
+    appUser,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
+    () => route.fullPath,
+  ]
+  const captureIntent = useCommandScope(sources),
+    scopeEpoch = ref(0)
+  watch(
+    sources,
+    () => {
+      scopeEpoch.value += 1
+    },
+    { flush: 'sync' }
+  )
   const createProfile = async (
     actor?: User
   ): Promise<ProfileProvisionResult> => {

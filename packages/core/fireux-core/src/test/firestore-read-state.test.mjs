@@ -163,7 +163,7 @@ test('User directory cannot turn a failed collection into a self-only result', (
       useUserSession: () => ({
         user: ref(self),
         appUser: ref(null),
-        appOutcome: ref('empty'),
+        appUserOutcome: ref('empty'),
       }),
     }
   )

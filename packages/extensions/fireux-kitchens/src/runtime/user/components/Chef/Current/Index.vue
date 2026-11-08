@@ -34,15 +34,13 @@ import { computed } from 'vue'
 import { useChef } from '../../../composables/chef/useChef'
 
 const { appName } = useFireUXConfig()
-const { currentUser } = useUserSession()
+const { user } = useUserSession()
 const { pill: chefInterface } = useChef()
 
 const profileCard = computed(() => chefInterface())
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
 const profileTo = computed(() => String(profileCard.value?.to || '').trim())
-const userName = computed(() =>
-  String(currentUser.value?.display_name || '').trim()
-)
+const userName = computed(() => String(user.value?.display_name || '').trim())
 const createTitle = computed(() =>
   userName.value
     ? `Hi ${userName.value}, you are in the right place to create your chef profile`

@@ -20,24 +20,11 @@
               {{ handle }}
             </div>
           </div>
-
-          <div v-if="showBadges && badges.length" class="card__badges">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
         </div>
 
         <div v-if="showTagline" class="card__tagline">
           <span v-if="taglineOverride">{{ taglineOverride }}</span>
           <span v-else-if="summary">{{ summary }}</span>
-          <span v-else-if="appsLabel">{{ appsLabel }}</span>
         </div>
       </div>
     </div>
@@ -45,30 +32,16 @@
 </template>
 
 <script setup lang="ts">
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import {
-  USER_AVATAR_FALLBACK_SRC,
-  type UserCard,
-} from '../../composables/useUserView'
+import { type UserCard } from '../../composables/useUserView'
 
 type Props = Partial<
-  Pick<
-    UserCard,
-    | 'to'
-    | 'avatarUrl'
-    | 'displayName'
-    | 'handle'
-    | 'badges'
-    | 'title'
-    | 'summary'
-    | 'profiles'
-    | 'appsLabel'
-  >
+  Pick<UserCard, 'to' | 'avatarUrl' | 'displayName' | 'handle' | 'summary'>
 > & {
   /** Optional override for the tagline line. */
   taglineOverride?: string
   showSubtitle?: boolean
-  showBadges?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -83,14 +56,9 @@ const props = withDefaults(defineProps<Props>(), {
   avatarUrl: '',
   displayName: '',
   handle: '',
-  badges: () => [],
-  title: '',
   summary: '',
-  profiles: () => [],
-  appsLabel: '',
 
   showSubtitle: true,
-  showBadges: true,
   showTagline: true,
   link: false,
   action: false,
@@ -98,6 +66,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(
-  () => props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+  () => props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC
 )
 </script>

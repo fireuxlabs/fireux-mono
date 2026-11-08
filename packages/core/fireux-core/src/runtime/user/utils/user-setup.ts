@@ -1,5 +1,7 @@
 import type { UserAccount } from '../models/user-account.model'
+import type { User } from '../models/user.model'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../models/user-account-provisioning.ts'
+import { isUserIdentityComplete } from './normalize-user'
 
 type ReadOutcome = 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 
@@ -8,6 +10,7 @@ export function resolveUserSetup(input: {
   authResolved: boolean
   signedIn: boolean
   identity: ReadOutcome
+  identityData: User | null | undefined
   account: ReadOutcome
   membership: ReadOutcome
   accountData: UserAccount | null
@@ -25,7 +28,9 @@ export function resolveUserSetup(input: {
     (input.account !== 'ready' ||
       input.accountData?.terms?.version !== FIREUX_ACCOUNT_TERMS_VERSION ||
       input.accountData?.terms?.accepted_at == null)
-  const requiresIdentity = settled && input.identity === 'empty'
+  const requiresIdentity =
+    settled &&
+    (input.identity !== 'ready' || !isUserIdentityComplete(input.identityData))
   const requiresMembership = settled && input.membership === 'empty'
   return {
     pending,

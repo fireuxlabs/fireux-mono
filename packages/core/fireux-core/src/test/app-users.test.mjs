@@ -109,7 +109,7 @@ test('one membership uses one exact read and follows viewer authority and select
     useUserSession: () => ({
       user: viewer,
       appUser: viewerMembership,
-      appOutcome: ref('ready'),
+      appUserOutcome: ref('ready'),
       subscription: ref('business'),
       isAdmin,
       isDeveloper: ref(false),
@@ -240,7 +240,7 @@ function subscriptionFixture() {
     useUserSession: () => ({
       user: viewer,
       appUser: viewerMembership,
-      appOutcome: ref('ready'),
+      appUserOutcome: ref('ready'),
       subscription: ref('business'),
       isAdmin: computed(() => viewerMembership.value.role === 'admin'),
       isDeveloper: ref(false),

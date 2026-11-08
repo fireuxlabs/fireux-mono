@@ -32,14 +32,15 @@ export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
   const { currentUser } = useAuth(),
     config = useFireUXConfig(),
     route = useRoute()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const sources = [
     () => currentUser.value?.uid,
     () => config.appId,
     () => JSON.stringify(appUser.value),
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => route.fullPath,
     ...(options.sources || []),
   ]

@@ -30,7 +30,8 @@ export function useKitchenOfferings(
   const config = useFireUXConfig()
   const identity = useKitchenIdentity(explicitKitchenId)
   const { currentUser } = useAuth()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const access = useKitchenAccess()
   const disposed = ref(false)
   const ownerSources = [
@@ -38,9 +39,9 @@ export function useKitchenOfferings(
     () => currentUser.value?.uid,
     () => config.appId,
     () => JSON.stringify(appUser.value),
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => JSON.stringify(access.ids.value),
     access.pending,
     access.error,
@@ -67,14 +68,17 @@ export function useKitchenOfferings(
   const captureIntent = useCommandScope(ownerSources)
   const ownerOutcome = computed(() => {
     if (disposed.value || !currentUser.value) return 'idle'
-    if (appError.value || appOutcome.value === 'error') return 'error'
-    if (appPending.value || ['idle', 'pending'].includes(appOutcome.value))
+    if (appUserError.value || appUserOutcome.value === 'error') return 'error'
+    if (
+      appUserPending.value ||
+      ['idle', 'pending'].includes(appUserOutcome.value)
+    )
       return 'pending'
     if (
       !config.appId ||
       !appUser.value ||
       appUser.value.id !== currentUser.value.uid ||
-      appOutcome.value !== 'ready'
+      appUserOutcome.value !== 'ready'
     )
       return 'idle'
     if (access.error.value || access.outcome.value === 'error') return 'error'
@@ -202,7 +206,7 @@ export function useKitchenOfferings(
     canWrite,
     error: computed(
       () =>
-        appError.value ||
+        appUserError.value ||
         access.error.value ||
         (ownerOutcome.value === 'error'
           ? new Error('Kitchen could not be loaded.')

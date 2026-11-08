@@ -43,7 +43,7 @@ const defaultBlogPost: BlogPostCreateInput = {
  */
 export function useBlogDraftState() {
   const { appId } = useFireUXConfig()
-  const { currentUser } = useUserSession()
+  const { user } = useUserSession()
   const { getAuthor, getDefaultImages } = useBlogUtils()
 
   const blogPost = useStorage<BlogPostCreateInput>(
@@ -58,7 +58,7 @@ export function useBlogDraftState() {
 
   onMounted(() => {
     if (!blogPost.value.author.id) {
-      blogPost.value.author = getAuthor(currentUser.value)
+      blogPost.value.author = getAuthor(user.value)
     }
 
     const defaults = getDefaultImages()

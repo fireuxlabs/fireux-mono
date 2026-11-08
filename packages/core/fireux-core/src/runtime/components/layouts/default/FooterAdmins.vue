@@ -18,7 +18,6 @@
         :key="admin.key"
         v-bind="admin.card"
         :link="Boolean(admin.card.to)"
-        :show-badges="false"
       />
     </div>
 
@@ -64,19 +63,11 @@ const adminCards = computed(() => {
         to,
         imageUrl: record.avatar,
         avatarUrl: record.avatar,
-        secondaryAvatarUrl: '',
         displayName: record.displayName,
-        title: '',
         subtitle: handle,
         summary: '',
         handle,
-        badges: [],
-        contactEmail: '',
-        contactPhone: '',
-        websiteUrl: '',
         bio: '',
-        profiles: [],
-        appsLabel: '',
       },
     })
   })

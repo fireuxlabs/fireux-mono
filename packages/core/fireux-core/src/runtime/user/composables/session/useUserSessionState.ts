@@ -3,7 +3,7 @@ import { resolveUserAvatarSource } from '../../utils/user-avatar'
 import type { User } from '../../models/user.model.ts'
 import type { AppUserWithId } from '../../../app/models/app-user.model.ts'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import type { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
 import { useAppUserAccess } from '../../../app/composables/membership/useAppUserAccess'
 
@@ -14,64 +14,64 @@ export type ActiveUserOutcome =
   | 'empty'
   | 'ready'
 
-export function useUserSessionState(user: {
-  coreUser: Ref<User | null | undefined>
-  appUser: Ref<AppUserWithId | null | undefined>
-  coreOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
-  coreError: Ref<unknown>
-  appError: Ref<unknown>
-  appPending: Ref<boolean>
-  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
-}) {
-  const coreUser = user.coreUser
+export function useUserSessionState(
+  source: {
+    user: Ref<User | null | undefined>
+    appUser: Ref<AppUserWithId | null | undefined>
+    userOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
+    userError: Ref<unknown>
+    appUserError: Ref<unknown>
+    appUserPending: Ref<boolean>
+    appUserOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
+  },
+  auth: Pick<
+    ReturnType<typeof useAuth>,
+    'uid' | 'isAuthenticated' | 'hasAuthState' | 'currentUser'
+  >
+) {
+  const user = source.user
 
-  const {
-    uid,
-    isAuthenticated,
-    hasAuthState,
-    currentUser: authUserRef,
-  } = useAuth()
+  const { uid, isAuthenticated, hasAuthState, currentUser: authUserRef } = auth
   const { getProxiedAvatarUrl } = useAvatarProxy()
-  const permissions = useAppUserAccess(user)
-  const coreOutcome = user.coreOutcome
-  const coreError = user.coreError
-  const appError = user.appError
+  const permissions = useAppUserAccess({
+    appUser: source.appUser,
+    appOutcome: source.appUserOutcome,
+  })
+  const userOutcome = source.userOutcome
+  const userError = source.userError
+  const appUserError = source.appUserError
 
   const isPending = computed(
-    () =>
-      coreOutcome.value === 'pending' ||
-      user.appPending.value
+    () => userOutcome.value === 'pending' || source.appUserPending.value
   )
   const error = computed<unknown>(() =>
     !hasAuthState.value || !isAuthenticated.value || !uid.value
       ? null
-      : coreError.value || appError.value || null
+      : userError.value || appUserError.value || null
   )
   const outcome = computed<ActiveUserOutcome>(() => {
     if (!hasAuthState.value) return 'loading'
     if (!isAuthenticated.value || !uid.value) return 'unauthenticated'
-    if (error.value || coreOutcome.value === 'error') return 'error'
+    if (error.value || userOutcome.value === 'error') return 'error'
     if (
       isPending.value ||
-      coreOutcome.value === 'idle' ||
-      coreOutcome.value === 'pending' ||
-      user.appOutcome.value === 'pending'
+      userOutcome.value === 'idle' ||
+      userOutcome.value === 'pending' ||
+      source.appUserOutcome.value === 'pending'
     ) {
       return 'loading'
     }
-    if (coreOutcome.value === 'empty') return 'empty'
+    if (userOutcome.value === 'empty') return 'empty'
     return 'ready'
   })
   const pending = computed(() => outcome.value === 'loading')
-  const currentUser = computed(() => coreUser.value ?? null)
 
   const avatarSrc = computed<string | undefined>(() => {
-    const raw = coreUser.value?.avatar || authUserRef.value?.photoURL
+    const raw = user.value?.avatar || authUserRef.value?.photoURL
     return getProxiedAvatarUrl(resolveUserAvatarSource(raw))
   })
 
   return {
-    currentUser,
     avatarSrc,
     outcome,
     error,

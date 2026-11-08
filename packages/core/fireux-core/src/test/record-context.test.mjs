@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { APP_ROLES, APP_STATUSES } from '../runtime/app/models/app.model.ts'
 
 const root = new URL('../../../../../', import.meta.url)
 function load(path, result, dependencies) {
@@ -91,19 +92,45 @@ for (const [entity, packageName] of [
               Object.assign(stored, patch)
             },
           }),
-        APP_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-USER_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-ECOSYSTEM_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-FIREUX_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-SPROOCHLI_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-PLACE_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-KITCHEN_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-INGREDIENT_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-PRODUCT_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-PROPERTY_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-PORTFOLIO_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-SUPPLIER_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
-JOB_MUTATION_TARGETS: { [entity === 'property' ? 'properties' : `${entity}s`]: target },
+        APP_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        USER_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        ECOSYSTEM_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        FIREUX_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        SPROOCHLI_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        PLACE_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        KITCHEN_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        INGREDIENT_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        PRODUCT_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        PROPERTY_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        PORTFOLIO_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        SUPPLIER_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
+        JOB_MUTATION_TARGETS: {
+          [entity === 'property' ? 'properties' : `${entity}s`]: target,
+        },
         serverAuditStamp: () => ({ by: 'operator' }),
       }
     )
@@ -149,7 +176,9 @@ test('App context is confined to configured App and transactional admin authorit
       readRecordString,
       useFireUXConfig: () => ({ appId: 'local' }),
       requireFirebaseBearerUser: async () => ({ uid: 'actor' }),
-      APP_MUTATION_TARGETS: { runtimeApps: { database: 'runtime', collectionPath: 'apps' } },
+      APP_MUTATION_TARGETS: {
+        runtimeApps: { database: 'runtime', collectionPath: 'apps' },
+      },
       serverAppUsersTarget: () => ({ collectionPath: 'members' }),
       serverAuditStamp: () => ({ by: 'actor' }),
       runGuardedServerTransaction: async (_, action) =>
@@ -257,7 +286,7 @@ test('public Project and App projections omit stored context', () => {
   const readApp = load(
     'packages/core/fireux-core/src/runtime/app/utils/readApp.ts',
     'readAppDocument',
-    {}
+    { APP_ROLES, APP_STATUSES }
   )
   const app = readApp(
     {
@@ -277,28 +306,54 @@ test('public Project and App projections omit stored context', () => {
 test('User editing writes only the authenticated private context and detects conflicts', async () => {
   let body = { context: 'Personal background', previous: '' }
   let saved = ''
+  let authenticated = true
+  let bodyReads = 0
   const writes = []
-  const handler = load('packages/core/fireux-core/src/runtime/server/api/internal/user/context.patch.ts', 'handler', {
-    contextChange: contract.contextChange, createError,
-    FieldValue: { serverTimestamp: () => 'now' },
-    defineEventHandler: value => value,
-    readBody: async () => body,
-    requireFirebaseBearerUser: async () => ({ uid: 'self' }),
-    USER_CONTEXT_MAX_LENGTH: 8000,
-    UserContextStorage: { document: 'context' },
-    USER_MUTATION_TARGETS: { users: { collectionPath: 'users' } },
-    serverUserContextTarget: uid => ({ database: 'identity', collectionPath: `users/${uid}/private` }),
-    runGuardedServerTransaction: async (_, action) => action({
-      read: async target => target.collectionPath === 'users' ? { exists: true } : { exists: true, data: { context: saved } },
-      update: (target, id, patch) => { writes.push({ target, id, patch }); saved = patch.context },
-    }),
-  })
-  await handler({})
+  const updateUserContext = load(
+    'packages/core/fireux-core/src/runtime/user/server/context/update.ts',
+    'updateUserContext',
+    {
+      contextChange: contract.contextChange,
+      createError,
+      FieldValue: { serverTimestamp: () => 'now' },
+      requireFirebaseBearerUser: async () => {
+        if (!authenticated) throw new Error('Authentication required')
+        return { uid: 'self' }
+      },
+      readBody: async () => {
+        bodyReads += 1
+        return body
+      },
+      USER_CONTEXT_MAX_LENGTH: 8000,
+      UserContextStorage: { document: 'context' },
+      USER_MUTATION_TARGETS: { users: { collectionPath: 'users' } },
+      serverUserContextTarget: (uid) => ({
+        database: 'identity',
+        collectionPath: `users/${uid}/private`,
+      }),
+      runGuardedServerTransaction: async (_, action) =>
+        action({
+          read: async (target) =>
+            target.collectionPath === 'users'
+              ? { exists: true }
+              : { exists: true, data: { context: saved } },
+          update: (target, id, patch) => {
+            writes.push({ target, id, patch })
+            saved = patch.context
+          },
+        }),
+    }
+  )
+  await updateUserContext({})
   assert.equal(writes[0].target.collectionPath, 'users/self/private')
   assert.equal(writes[0].id, 'context')
   assert.deepEqual(Object.keys(writes[0].patch).sort(), ['context', 'updated'])
-  await assert.rejects(handler({}), /changed elsewhere/)
+  await assert.rejects(updateUserContext({}), /changed elsewhere/)
   body = { context: 'Other account', userId: 'other' }
-  await assert.rejects(handler({}), /Only User context/)
+  await assert.rejects(updateUserContext({}), /Only User context/)
   assert.equal(writes.length, 1)
+  authenticated = false
+  const before = bodyReads
+  await assert.rejects(updateUserContext({}), /Authentication required/)
+  assert.equal(bodyReads, before)
 })

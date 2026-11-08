@@ -27,6 +27,12 @@ const readName = load(validation, 'readUserDisplayName')
 const readChanges = load(validation, 'readUserProfileChanges')
 const createError = (input) =>
   Object.assign(new Error(input.statusMessage), input)
+const auditTimestamp = { seconds: 123, nanoseconds: 0 }
+const serverAuditStamp = load(
+  '../runtime/server/utils/records/stamps.ts',
+  'serverAuditStamp',
+  { FieldValue: { serverTimestamp: () => auditTimestamp } }
+)
 
 test('Creation, profile edits and form validation preserve the same name range', () => {
   const creation = load(
@@ -78,6 +84,43 @@ test('Profile saves accept nonempty name/bio patches and reject avatar or unknow
   }
 })
 
+test('profile writes stamp the bearer-owned User while responses retain only editable changes', async () => {
+  for (const change of [
+    { display_name: 'New name' },
+    { bio: 'New bio' },
+    { display_name: 'New name', bio: '' },
+  ]) {
+    const writes = []
+    const update = load(
+      '../runtime/user/server/profile/update.ts',
+      'updateUserProfile',
+      {
+        createError,
+        readBody: async () => change,
+        readUserProfileChanges: readChanges,
+        requireFirebaseBearerUser: async () => ({ uid: 'actor' }),
+        serverAuditStamp,
+        USER_MUTATION_TARGETS: { users: { database: 'identity' } },
+        runGuardedServerTransaction: async (_database, run) =>
+          run({
+            read: async (_target, uid) => {
+              assert.equal(uid, 'actor')
+              return { exists: true }
+            },
+            update: (_target, uid, data) => writes.push({ uid, data }),
+          }),
+      }
+    )
+    assert.deepEqual(await update({}), { ok: true, uid: 'actor', change })
+    assert.deepEqual(writes, [
+      {
+        uid: 'actor',
+        data: { ...change, updated: { at: auditTimestamp, by: 'actor' } },
+      },
+    ])
+  }
+})
+
 const png = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jR9sAAAAASUVORK5CYII=',
   'base64'
@@ -91,7 +134,8 @@ const parseUrl = load(
 
 function avatarHarness(options = {}) {
   const saved = [],
-    deleted = []
+    deleted = [],
+    writes = []
   let selected = options.previous || storageUrl('users/actor/avatar/old')
   let sequence = 0,
     transactionCount = 0
@@ -102,6 +146,7 @@ function avatarHarness(options = {}) {
       randomUUID: () => `upload-${++sequence}`,
       imageSize,
       createError,
+      serverAuditStamp,
       requireFirebaseBearerUser: async () => {
         if (options.unauthenticated)
           throw createError({ statusCode: 401, statusMessage: 'Sign in' })
@@ -144,6 +189,7 @@ function avatarHarness(options = {}) {
           update: (_target, uid, data) => {
             assert.equal(uid, 'actor')
             patch = data
+            writes.push(data)
           },
         })
         if (patch) {
@@ -156,7 +202,7 @@ function avatarHarness(options = {}) {
       },
     }
   )
-  return { update, saved, deleted, selected: () => selected }
+  return { update, saved, deleted, writes, selected: () => selected }
 }
 
 test('Avatar command detects image bytes, attaches a unique file and cleans only the previous owned file', async () => {
@@ -165,6 +211,11 @@ test('Avatar command detects image bytes, attaches a unique file and cleans only
   assert.equal(result.avatar, h.selected())
   assert.equal(h.saved[0].contentType, 'image/png')
   assert.equal(h.saved[0].objectPath, 'users/actor/avatar/upload-1')
+  assert.deepEqual(h.writes[0], {
+    avatar: result.avatar,
+    updated: { at: auditTimestamp, by: 'actor' },
+  })
+  assert.deepEqual(Object.keys(result).sort(), ['avatar', 'ok'])
   assert.deepEqual(h.deleted, ['users/actor/avatar/old'])
   await h.update({})
   assert.equal(h.saved[1].objectPath, 'users/actor/avatar/upload-2')
@@ -286,7 +337,7 @@ test('Provisioning establishes User before an optional avatar and never replaces
       '../runtime/user/utils/provision-user.ts',
       'provisionUserIdentity',
       {
-        USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE: '/img/ecosystem/avatar.png',
+        USER_ECOSYSTEM_AVATAR_SRC: '/img/ecosystem/avatar.png',
         updateUserHandle: async (_uid, handle, input) => {
           calls.push(['user', input.avatar])
           return { created, handle }

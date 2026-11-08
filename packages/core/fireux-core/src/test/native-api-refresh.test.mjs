@@ -100,9 +100,9 @@ test('native command response hooks refresh successful writes, preserve failures
         useRoute: () => ({ fullPath: '/workspace/jobs' }),
         useUserSession: () => ({
           appUser: ref({ role: 'admin' }),
-          appPending: ref(false),
-          appError: ref(null),
-          appOutcome: ref('ready'),
+          appUserPending: ref(false),
+          appUserError: ref(null),
+          appUserOutcome: ref('ready'),
         }),
         useCommandScope: () => () => () => true,
         refreshNuxtData: async () => {

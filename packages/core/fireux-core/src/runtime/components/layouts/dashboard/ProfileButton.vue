@@ -13,14 +13,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUserSession } from '../../../user/composables/session/useUserSession'
-import { useUserView } from '../../../user/composables/useUserView'
+import { useAuthPhase } from '../../../composables/fireux/firebase/useAuthPhase'
+import { useUserRead } from '../../../user/composables/useUserRead'
 
 defineProps<{ collapsed?: boolean }>()
 
-const { currentUser } = useUserSession()
-const { pill } = useUserView()
-const label = computed(
-  () => pill(currentUser.value)?.displayName || 'Your profile'
-)
+const { uid, isSignedIn } = useAuthPhase()
+const target = computed(() => (isSignedIn.value ? uid.value : ''))
+const { user } = useUserRead(target)
+const label = computed(() => user.value?.display_name || 'Your profile')
 </script>

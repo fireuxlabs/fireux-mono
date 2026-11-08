@@ -6,7 +6,10 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import { agentConfig } from './config/agentConfig'
 import type { Agent } from '../../../utils/profiles/Agent/agent'
 import { useAgentComputed } from './utils/view/useAgentComputed'
-import { useAgentInterface, type AgentCard } from './utils/view/useAgentInterface'
+import {
+  useAgentInterface,
+  type AgentCard,
+} from './utils/view/useAgentInterface'
 import { useAgentUpdate } from './mutations/useAgentUpdate'
 import { useAgentCreate } from './mutations/useAgentCreate'
 import { useAgentSeo } from './utils/useAgentSeo'
@@ -21,15 +24,15 @@ export type { Agent, AgentCard }
 export function useAgent() {
   const { profile: refs, pending } = useProfile<Agent>(agentConfig)
   // canonical user for UI layer
-  const { coreUser } = useUserSession()
+  const { user } = useUserSession()
 
   const agent = computed<AgentState>(() => ({
-    user: (coreUser.value ?? null) as unknown,
+    user: (user.value ?? null) as unknown,
     profile: refs.profile.value ?? null,
   }))
 
   const agentComputed = useAgentComputed(refs, pending)
-  const ui = useAgentInterface(refs, coreUser)
+  const ui = useAgentInterface(refs, user)
   const update = useAgentUpdate(refs)
   const create = useAgentCreate()
 

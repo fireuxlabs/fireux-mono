@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-07
-Ref: d0f981eac
+Updated: 2026-11-08
+Ref: d9e120c46
 Role: map, not canon
 
 ## Purpose
@@ -162,7 +162,9 @@ User setup is owned by Core `user/composables/account/useUserSetup.ts`.
 It derives identity, private-account consent and current-App membership needs
 from their separate readers. `/auth` uses that decision to choose the return
 route; only the explicit setup action invokes the trusted account, identity and
-App membership commands. An existing User can join another App without
+App membership commands. A ready but incomplete User still needs explicit setup:
+`isUserIdentityComplete` reuses canonical handle and display-name validation.
+An existing User can join another App without
 recreating identity or repeating current consent. Guest Workspace access stays
 available without membership.
 
@@ -170,6 +172,8 @@ available without membership.
 identity with audit stamps and no stored id. `UserAccount` describes private
 email, terms evidence and audit stamps. It has no unused preferences or fake
 blank-record defaults. Appearance remains owned by native colour mode.
+Private AI background belongs to `UserContext` at
+`users/{uid}/private/context`, not the public User projection.
 See Core's `user-setup`, `user-setup-completion` and
 `user-membership-lifecycle` tests for the setup boundary.
 

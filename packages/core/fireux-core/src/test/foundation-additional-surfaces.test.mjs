@@ -226,6 +226,7 @@ for (const [body, exists, valid] of [
         createError,
         readBody: async () => body,
         readUserProfileChanges,
+        serverAuditStamp: ({ by }) => ({ at: 'server-time', by }),
         requireFirebaseBearerUser: async () => ({ uid: 'actor' }),
         USER_MUTATION_TARGETS: { users: { database: 'identity' } },
         runGuardedServerTransaction: async (database, callback) => {
@@ -243,8 +244,15 @@ for (const [body, exists, valid] of [
     if (valid) {
       const result = await update({})
       assert.equal(result.uid, 'actor')
+      assert.deepEqual(result.change, { display_name: 'New' })
       assert.deepEqual(writes, [
-        { id: 'actor', patch: { display_name: 'New' } },
+        {
+          id: 'actor',
+          patch: {
+            display_name: 'New',
+            updated: { at: 'server-time', by: 'actor' },
+          },
+        },
       ])
     } else {
       await assert.rejects(update({}))

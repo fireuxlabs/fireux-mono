@@ -1,4 +1,3 @@
-import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
 
 /** Private ecosystem-scoped AI memory for one authenticated User. */
@@ -17,19 +16,6 @@ export const UserContextStorage = {
   parent: 'user',
   idParam: 'userId',
 } as const
-
-export const UserContextModel: UserContext = {
-  id: '',
-  context: '',
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
-}
 
 export type UserContextUpdateInput = Pick<UserContext, 'context'>
 

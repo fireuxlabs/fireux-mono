@@ -10,16 +10,16 @@ export type { Customer }
 export function useCustomer() {
   const { profile: profileRefs, pending } = useProfile<Customer>(customerConfig)
   const { profile: customerProfile } = profileRefs
-  const { coreUser } = useUserSession()
+  const { user } = useUserSession()
   const customer = computed(() => ({
-    user: coreUser.value ?? null,
+    user: user.value ?? null,
     profile: customerProfile.value ?? null,
   }))
 
   return {
     profileRefs,
     customerProfile,
-    coreUser,
+    user,
     customer,
     pending,
   }

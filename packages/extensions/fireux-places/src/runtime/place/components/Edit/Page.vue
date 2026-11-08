@@ -102,7 +102,7 @@ const backTo = computed(() =>
   locator.value ? `/places/${encodeURIComponent(locator.value)}` : '/places'
 )
 const showDebug = import.meta.dev
-const { currentUser, appUser, isAdmin, isDeveloper } = useUserSession()
+const { user, appUser, isAdmin, isDeveloper } = useUserSession()
 const { isDeveloper: isConfiguredDeveloper } = useDeveloperAccess()
 const claimedBy = computed(() => place.value?.claimed_by ?? '')
 const hasStoredEditRole = computed(
@@ -117,7 +117,7 @@ const canEdit = computed(() =>
       isDeveloper.value ||
       hasStoredEditRole.value ||
       hasLocalDeveloperAccess.value ||
-      (claimedBy.value && currentUser.value?.id === claimedBy.value)
+      (claimedBy.value && user.value?.id === claimedBy.value)
   )
 )
 

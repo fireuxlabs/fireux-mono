@@ -99,9 +99,9 @@ test('location command submits one paired sparse patch under existing authority'
         useFireUXConfig: () => ({ appId: 'app' }),
         useUserSession: () => ({
           appUser: ref({ role: 'user' }),
-          appPending: ref(false),
-          appError: ref(null),
-          appOutcome: ref('ready'),
+          appUserPending: ref(false),
+          appUserError: ref(null),
+          appUserOutcome: ref('ready'),
         }),
         useRoute: () => ({ fullPath: '/workspace/kitchen/identity' }),
         useCommandScope,

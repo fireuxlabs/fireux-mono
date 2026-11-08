@@ -52,7 +52,9 @@ function context() {
     currentUser = ref(user),
     appUser = ref({ created: { at: 1 }, role: 'user' })
   const config = reactive({ appId: 'app' }),
-    route = reactive({ fullPath: '/workspace/kitchen/food-and-drink/menus?create=1' }),
+    route = reactive({
+      fullPath: '/workspace/kitchen/food-and-drink/menus?create=1',
+    }),
     kitchenId = ref('kitchen'),
     canWrite = ref(true),
     activeKitchenAppId = computed(() => config.appId)
@@ -67,9 +69,9 @@ function context() {
     useAuth: () => ({ currentUser }),
     useUserSession: () => ({
       appUser,
-      appPending: ref(false),
-      appError: ref(null),
-      appOutcome: ref('ready'),
+      appUserPending: ref(false),
+      appUserError: ref(null),
+      appUserOutcome: ref('ready'),
     }),
     useKitchenAccess: () => ({ ids: ref(['kitchen']), outcome: ref('ready') }),
     useWorkspace: () => ({ selectedId: kitchenId }),
@@ -234,7 +236,9 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       assert.deepEqual(
         h.effects,
         changed === 'stable'
-          ? ['/workspace/kitchen/food-and-drink/menus/uploads/source-test-source']
+          ? [
+              '/workspace/kitchen/food-and-drink/menus/uploads/source-test-source',
+            ]
           : []
       )
       assert.equal(api.pending.value, changed !== 'stable')

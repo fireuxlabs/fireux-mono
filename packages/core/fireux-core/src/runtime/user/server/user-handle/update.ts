@@ -14,7 +14,10 @@ import { resolveUserAvatarSource } from '../../utils/user-avatar.ts'
 import { readHttpsUrl } from '../../../utils/https-url'
 import { validatePublicSlug } from '../../../utils/slug/validate-public-slug'
 import { readUserDisplayName } from '../../utils/profile-validation'
-import { USER_MUTATION_TARGETS, serverUserAccountTarget } from '../mutation-targets'
+import {
+  USER_MUTATION_TARGETS,
+  serverUserAccountTarget,
+} from '../mutation-targets'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -118,15 +121,13 @@ export async function updateUserHandle(input: {
       limit: 2,
     })
     if (conflicts.some((row) => row.id !== uid)) {
-      fail(409, 'This handle is already in use.')
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'This handle is already in use.',
+        data: { code: 'USER_HANDLE_UNAVAILABLE' },
+      })
     }
 
-    if (creation && currentHandle && currentHandle !== handle) {
-      fail(
-        409,
-        'The user identity changed while handle provisioning was in progress.'
-      )
-    }
     if (!userSnapshot.exists) {
       if (!creation) fail(409, 'Public identity provisioning is required.')
       if (!isCurrentTermsAccount(accountSnapshot)) {
@@ -158,7 +159,9 @@ export async function updateUserHandle(input: {
     const patch: Record<string, unknown> = {}
     if (storedHandle !== handle) patch.handle = handle
     if (creation) {
-      if (typeof data.display_name !== 'string' || !data.display_name.trim()) {
+      try {
+        readUserDisplayName(data.display_name)
+      } catch {
         patch.display_name = creation.displayName
       }
       if (typeof data.bio !== 'string') patch.bio = ''

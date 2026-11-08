@@ -22,9 +22,9 @@ export function commandScopeDeps(deps) {
     useNuxtApp: () => ({ payload: { data: {} } }),
     useUserSession: () => ({
       appUser: ref({ role: 'user', created: { at: 'one' } }),
-      appPending: ref(false),
-      appError: ref(null),
-      appOutcome: ref('ready'),
+      appUserPending: ref(false),
+      appUserError: ref(null),
+      appUserOutcome: ref('ready'),
     }),
     useKitchenAccess: () => ({ ids: ref([]), outcome: ref('ready') }),
     onScopeDispose: dispose,

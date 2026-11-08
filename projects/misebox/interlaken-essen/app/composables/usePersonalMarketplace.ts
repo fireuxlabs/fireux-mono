@@ -38,7 +38,7 @@ export function usePersonalMarketplace() {
   const marketplace = useMarketplaceCommands()
 
   const { authPhase } = useAuthPhase()
-  const { currentUser, avatarSrc } = useUserSession()
+  const { user, avatarSrc } = useUserSession()
   const { currentUser: authUser } = useAuth()
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
@@ -109,9 +109,7 @@ export function usePersonalMarketplace() {
   )
 
   const profileName = computed(() =>
-    String(
-      currentUser.value?.display_name || authUser.value?.displayName || ''
-    ).trim()
+    String(user.value?.display_name || authUser.value?.displayName || '').trim()
   )
 
   const profileDisplayName = computed(

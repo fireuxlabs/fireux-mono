@@ -120,11 +120,8 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { currentUser } = useUserSession()
-const greetingName = computed(() => {
-  const user = currentUser.value
-  return user?.display_name?.trim() || 'there'
-})
+const { user } = useUserSession()
+const greetingName = computed(() => user.value?.display_name?.trim() || 'there')
 
 const { agentProfile } = useAgent()
 

@@ -133,9 +133,9 @@ test('Place editors reuse a parent-domain command and suppress obsolete publicat
     useRoute: () => ({ fullPath: '/workspace/supplier/identity' }),
     useUserSession: () => ({
       appUser: ref({ role: 'user' }),
-      appPending: ref(false),
-      appError: ref(null),
-      appOutcome: ref('ready'),
+      appUserPending: ref(false),
+      appUserError: ref(null),
+      appUserOutcome: ref('ready'),
     }),
     usePlaceDetailState: () => ({ publish: (value) => published.push(value) }),
     useRequireUser: () => {

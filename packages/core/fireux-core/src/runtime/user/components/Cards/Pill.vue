@@ -15,22 +15,16 @@
 </template>
 
 <script setup lang="ts">
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar'
 import { computed } from 'vue'
 
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import {
-  USER_AVATAR_FALLBACK_SRC,
-  type UserCard,
-} from '../../composables/useUserView'
+import { type UserCard } from '../../composables/useUserView'
 
 type PillProps = Partial<
-  Pick<
-    UserCard,
-    'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles'
-  >
+  Pick<UserCard, 'to' | 'avatarUrl' | 'displayName' | 'handle'>
 > & {
   showSubtitle?: boolean
-  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -44,18 +38,14 @@ const props = withDefaults(defineProps<PillProps>(), {
   avatarUrl: '',
   displayName: '',
   handle: '',
-  badges: () => [],
-  profiles: () => [],
   showSubtitle: true,
-  showBadges: true,
   link: false,
   action: false,
 })
 
-
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(
-  () => props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+  () => props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC
 )
 const avatarAlt = computed(() => props.displayName || props.handle || 'User')
 const avatar = computed(() => ({

@@ -141,13 +141,8 @@ const userModelRuntime: User = {
   avatar: '',
 }
 const { currentUser: authUser } = useAuth()
-const {
-  currentUser,
-  appUser,
-  avatarSrc,
-  subscription,
-  canOwnMultipleWorkspaces,
-} = useUserSession()
+const { user, appUser, avatarSrc, subscription, canOwnMultipleWorkspaces } =
+  useUserSession()
 const { pill: userInterface } = useUserView()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
@@ -203,11 +198,11 @@ const usersDriftCopyPayload = computed(() => ({
 }))
 
 const signedInUserSummary = computed(() => {
-  const id = String(currentUser.value?.id || authUser.value?.uid || '').trim()
+  const id = String(user.value?.id || authUser.value?.uid || '').trim()
   if (!id) return null
 
   const displayName = String(
-    currentUser.value?.display_name || authUser.value?.displayName || ''
+    user.value?.display_name || authUser.value?.displayName || ''
   ).trim()
   const parts = displayName.split(/\s+/).filter(Boolean)
   const initials =
@@ -218,7 +213,7 @@ const signedInUserSummary = computed(() => {
   return {
     id,
     displayName,
-    handle: String(currentUser.value?.handle || '').trim(),
+    handle: String(user.value?.handle || '').trim(),
     email: String(authUser.value?.email || '').trim(),
     avatarUrl: getProxiedAvatarUrl(
       String(avatarSrc.value || authUser.value?.photoURL || '').trim() ||
@@ -228,12 +223,12 @@ const signedInUserSummary = computed(() => {
   }
 })
 
-const signedInUserPreview = computed(() => userInterface(currentUser.value))
+const signedInUserPreview = computed(() => userInterface(user.value))
 
 const signedInUserJson = computed(() => {
-  if (currentUser.value) {
+  if (user.value) {
     return {
-      ...currentUser.value,
+      ...user.value,
       appUser: appUser.value ?? null,
       permissions: {
         subscription: subscription.value,

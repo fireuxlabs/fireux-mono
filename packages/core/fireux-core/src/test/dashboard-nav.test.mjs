@@ -110,17 +110,21 @@ test('Profile button follows User identity and keeps an accessible collapsed lin
   const script = text
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-  const currentUser = ref(null)
+  const user = ref(null)
+  const uid = ref('person')
+  const isSignedIn = ref(false)
+  let readTarget
   const state = compileFunction(
     stripTypeScriptTypes(script) + '; return { label }',
-    ['computed', 'defineProps', 'useUserSession', 'useUserView']
+    ['computed', 'defineProps', 'useAuthPhase', 'useUserRead']
   )(
     computed,
     () => ({}),
-    () => ({ currentUser }),
-    () => ({
-      pill: (user) => (user ? { displayName: user.name } : null),
-    })
+    () => ({ uid, isSignedIn }),
+    (target) => {
+      readTarget = target
+      return { user: computed(() => (target.value ? user.value : undefined)) }
+    }
   )
   const collapsed = ref(false)
   const component = defineComponent({
@@ -145,7 +149,11 @@ test('Profile button follows User identity and keeps an accessible collapsed lin
     })
   )
   assert.match(await renderToString(app), /aria-label="Your profile"/)
-  currentUser.value = { name: 'Daniel' }
+  assert.equal(readTarget.value, '')
+  user.value = { display_name: 'Daniel' }
+  assert.match(await renderToString(app), /aria-label="Your profile"/)
+  isSignedIn.value = true
+  assert.equal(readTarget.value, 'person')
   assert.match(await renderToString(app), />Daniel<\/a>/)
   collapsed.value = true
   const compact = await renderToString(app)

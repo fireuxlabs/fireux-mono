@@ -118,13 +118,11 @@ const mobileItems = computed(() =>
 
 /** Auth */
 const { authPhase, isSignedIn } = useAuthPhase()
-const { currentUser, avatarSrc, subscription } = useUserSession()
+const { user, avatarSrc, subscription } = useUserSession()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const headerAvatarName = computed(() =>
-  String(
-    currentUser.value?.display_name || authUser.value?.displayName || ''
-  ).trim()
+  String(user.value?.display_name || authUser.value?.displayName || '').trim()
 )
 
 const headerAvatarText = computed(() => {

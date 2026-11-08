@@ -21,29 +21,29 @@ export function useJobPermissions(
   const resolvedAgent = agentRef ?? localAgent!.agent
   const resolvedAgentPending =
     agentPendingRef ?? localAgent?.pending ?? computed(() => false)
-  const { appUser, appOutcome } = useUserSession()
+  const { appUser, appUserOutcome } = useUserSession()
   const config = useFireUXConfig()
 
   const hasAppMembership = computed(() => {
     const role = appUser.value?.role
     return role === 'user' || role === 'admin' || role === 'dev'
   })
-  const hasAgentProfile = computed(() => Boolean(resolvedAgent.value?.profile?.id))
+  const hasAgentProfile = computed(() =>
+    Boolean(resolvedAgent.value?.profile?.id)
+  )
   const hasAgentCapability = computed(() =>
-    Boolean(
-      config.profiles.includes('agent')
-    )
+    Boolean(config.profiles.includes('agent'))
   )
   const authorReadiness = computed<JobAuthorReadiness>(() => {
     if (
       resolvedAgentPending.value ||
-      appOutcome.value === 'idle' ||
-      appOutcome.value === 'pending'
+      appUserOutcome.value === 'idle' ||
+      appUserOutcome.value === 'pending'
     ) {
       return 'loading'
     }
-    if (appOutcome.value === 'error') return 'unavailable'
-    if (appOutcome.value !== 'ready' || !hasAppMembership.value) {
+    if (appUserOutcome.value === 'error') return 'unavailable'
+    if (appUserOutcome.value !== 'ready' || !hasAppMembership.value) {
       return 'needs-app-membership'
     }
     if (!hasAgentProfile.value) return 'needs-agent-profile'

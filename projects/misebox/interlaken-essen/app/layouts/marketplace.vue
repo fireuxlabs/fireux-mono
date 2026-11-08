@@ -134,16 +134,14 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 const { authPhase, isSignedIn } = useAuthPhase()
-const { currentUser, avatarSrc } = useUserSession()
+const { user, avatarSrc } = useUserSession()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const siteSproochli = useInterlakenCopy()
 const { copy } = siteSproochli
 
 const headerAvatarName = computed(() =>
-  String(
-    currentUser.value?.display_name || authUser.value?.displayName || ''
-  ).trim()
+  String(user.value?.display_name || authUser.value?.displayName || '').trim()
 )
 
 const headerAvatarText = computed(() => {

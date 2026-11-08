@@ -28,7 +28,7 @@
 import { computed } from 'vue'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { useDashboardNav } from '../../../composables/navigation/useDashboardNav'
-const { appOutcome: appUserOutcome } = useUserSession()
+const { appUserOutcome } = useUserSession()
 const { availableProfileEntries } = useDashboardNav()
 const profileEntries = computed(() =>
   appUserOutcome.value === 'ready' ? availableProfileEntries.value : []

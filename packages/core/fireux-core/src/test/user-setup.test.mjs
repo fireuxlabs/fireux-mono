@@ -12,12 +12,20 @@ import {
   watch,
 } from 'vue'
 import { resolveUserSetup } from '../runtime/user/utils/user-setup.ts'
+import { normalizeUser } from '../runtime/user/utils/normalize-user.ts'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../runtime/user/models/user-account-provisioning.ts'
 
 const ready = {
   authResolved: true,
   signedIn: true,
   identity: 'ready',
+  identityData: {
+    id: 'person',
+    handle: 'person',
+    display_name: 'Person',
+    bio: '',
+    avatar: '/img/ecosystem/avatar.png',
+  },
   account: 'ready',
   membership: 'ready',
   accountData: {
@@ -80,10 +88,11 @@ for (const change of ['none', 'account', 'app', 'route', 'disposal']) {
           isReady: ref(true),
         }),
         useUserSession: () => ({
-          coreOutcome: ref('ready'),
-          appOutcome: ref('empty'),
-          coreError: ref(null),
-          appError: ref(null),
+          user: ref(ready.identityData),
+          userOutcome: ref('ready'),
+          appUserOutcome: ref('empty'),
+          userError: ref(null),
+          appUserError: ref(null),
         }),
         useUserAccount: () => ({
           account: ref(ready.accountData),
@@ -182,6 +191,43 @@ test('an existing User joins another App without another identity or consent ste
   assert.equal(status.requiresMembership, true)
   assert.equal(status.requiresIdentity, false)
   assert.equal(status.requiresConsent, false)
+})
+
+test('a ready but incomplete User still requires identity completion', () => {
+  for (const identityData of [
+    undefined,
+    null,
+    { ...ready.identityData, handle: '' },
+    { ...ready.identityData, handle: '!' },
+    { ...ready.identityData, display_name: '' },
+    { ...ready.identityData, display_name: '   ' },
+    { ...ready.identityData, display_name: 'x'.repeat(121) },
+  ]) {
+    const status = resolveUserSetup({ ...ready, identityData })
+    assert.equal(status.requiresIdentity, true)
+    assert.equal(status.requiresConsent, false)
+    assert.equal(status.requiresMembership, false)
+    assert.equal(status.needsSetup, true)
+  }
+})
+
+test('malformed stored identity fields remain editable and cannot finish setup', () => {
+  for (const key of ['handle', 'display_name']) {
+    for (const value of [123, { name: 'Person' }]) {
+      const identityData = normalizeUser('person', {
+        ...ready.identityData,
+        [key]: value,
+        bio: { text: 'Bio' },
+      })
+      assert.equal(identityData.id, 'person')
+      assert.equal(identityData[key], '')
+      assert.equal(identityData.bio, '')
+      assert.equal(
+        resolveUserSetup({ ...ready, identityData }).requiresIdentity,
+        true
+      )
+    }
+  }
 })
 
 test('new Users need identity, consent and membership; completed Users need none', () => {

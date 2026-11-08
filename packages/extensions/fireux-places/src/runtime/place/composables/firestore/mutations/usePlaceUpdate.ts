@@ -90,15 +90,16 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   const { currentUser } = useAuth(),
     config = useFireUXConfig(),
     route = useRoute()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const parentAdapter = inject(placeUpdateAdapterKey, undefined)
   const captureLocalIntent = useCommandScope([
     () => currentUser.value?.uid,
     () => config.appId,
     appUser,
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => route.fullPath,
     () => JSON.stringify(resolvedAuthority(options)),
   ])

@@ -200,21 +200,13 @@ const fallbackUserCard = (options: {
 
     imageUrl: '',
     avatarUrl: '',
-    secondaryAvatarUrl: '',
     displayName,
-    title: '',
     subtitle: '',
     summary: '',
 
     handle: handle ? `@${handle}` : '',
-    badges: [],
-    contactEmail: '',
-    contactPhone: '',
-    websiteUrl: '',
 
     bio: '',
-    profiles: [],
-    appsLabel: '',
   }
 }
 
@@ -232,11 +224,8 @@ const cardForUser = (
     ...fallbackUserCard({ id, displayName, handle }),
     avatarUrl: target?.avatar ?? '',
     imageUrl: target?.avatar ?? '',
-    title: '',
     summary: '',
     bio: '',
-    profiles: [],
-    appsLabel: '',
   }
 }
 

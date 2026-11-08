@@ -10,14 +10,15 @@ export function useIngredientImageGeneration(ownerSources: WatchSource[] = []) {
   const { currentUser } = useAuth(),
     runtime = useFireUXConfig(),
     route = useRoute()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const sources = [
     () => currentUser.value?.uid,
     () => runtime.appId,
     appUser,
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => route.fullPath,
     ...ownerSources,
   ]

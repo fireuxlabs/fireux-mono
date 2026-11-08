@@ -7,10 +7,10 @@
         entity="account"
       />
 
-      <template v-else-if="!coreUser && !isAuthenticated">
+      <template v-else-if="!user && !isAuthenticated">
         <FireAuthSystem />
       </template>
-      <template v-else-if="!coreUser">
+      <template v-else-if="!user">
         <UserCreateSystem />
       </template>
 
@@ -75,7 +75,7 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
 const { hasAuthState, isAuthenticated } = useAuth()
 const {
-  coreUser,
+  user,
   userPending,
   env,
   envError,

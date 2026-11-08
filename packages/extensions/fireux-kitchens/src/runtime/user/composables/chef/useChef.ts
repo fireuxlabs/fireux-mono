@@ -30,10 +30,10 @@ export type { ChefCard, Chef }
  */
 export function useChef() {
   const { profile: refs, pending } = useProfile<Chef>(chefConfig)
-  const { coreUser } = useUserSession()
+  const { user } = useUserSession()
 
   const computed = useChefComputed(refs, pending)
-  const ui = useChefInterface(refs, coreUser)
+  const ui = useChefInterface(refs, user)
   const update = useChefUpdate(refs)
   const create = useChefCreate()
 

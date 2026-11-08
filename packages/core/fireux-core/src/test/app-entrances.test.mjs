@@ -324,8 +324,8 @@ async function renderSidebar({
       if (id.endsWith('/useUserSession'))
         return {
           useUserSession: () => ({
-            currentUser: ref(null),
-            coreOutcome: ref('idle'),
+            user: ref(null),
+            userOutcome: ref('idle'),
           }),
         }
       if (id.endsWith('/useUserView'))

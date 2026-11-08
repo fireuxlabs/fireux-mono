@@ -2,6 +2,7 @@ import { createError, readBody, type H3Event } from 'h3'
 import { USER_MUTATION_TARGETS } from '../mutation-targets'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
+import { serverAuditStamp } from '../../../server/utils/records/stamps'
 import { readUserProfileChanges } from '../../utils/profile-validation'
 
 function readChange(body: unknown): Record<string, string> {
@@ -28,7 +29,10 @@ export async function updateUserProfile(event: H3Event) {
         statusMessage: 'Create the User before updating the profile.',
       })
     }
-    mutations.update(users, uid, change)
+    mutations.update(users, uid, {
+      ...change,
+      updated: serverAuditStamp({ by: uid }),
+    })
   })
 
   return { ok: true as const, uid, change }

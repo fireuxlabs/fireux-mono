@@ -9,7 +9,6 @@ import {
   isAppUserRole,
   type AppUserRole,
 } from '../../models/app-user.model.ts'
-import { USER_MUTATION_TARGETS } from '../../../user/server/mutation-targets'
 import { serverAppUsersTarget } from '../mutation-targets'
 import type { GuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 
@@ -101,5 +100,3 @@ export type MembershipTransactionState = {
   actorMembershipExists: boolean
   actorMembership: DocumentData | undefined
 }
-
-export const runtimeUsersTarget = USER_MUTATION_TARGETS.runtimeUsers

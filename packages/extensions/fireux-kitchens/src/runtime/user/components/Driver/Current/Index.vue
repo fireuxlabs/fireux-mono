@@ -37,19 +37,17 @@ import { useDriver } from '../../../composables/driver/useDriver'
 import { useDriverInterface } from '../../../composables/driver/useDriverInterface'
 
 const { appName } = useFireUXConfig()
-const { currentUser } = useUserSession()
+const { user } = useUserSession()
 const { driverProfile, createDriverProfile } = useDriver()
 const { cell } = useDriverInterface()
 const creating = ref(false)
 
 const profileCard = computed(() =>
-  cell(driverProfile.value, currentUser.value ?? null)
+  cell(driverProfile.value, user.value ?? null)
 )
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
 const profileTo = computed(() => String(profileCard.value?.to || '').trim())
-const userName = computed(() =>
-  String(currentUser.value?.display_name || '').trim()
-)
+const userName = computed(() => String(user.value?.display_name || '').trim())
 const createTitle = computed(() =>
   userName.value
     ? `Hi ${userName.value}, create your driver profile`

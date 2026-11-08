@@ -29,7 +29,8 @@ export function useProductCreate() {
     { currentUser } = useAuth(),
     route = useRoute(),
     scopeEpoch = ref(0)
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const attempts = useStorage<
     Record<string, { key: string; requestId: string }>
   >('productCreateRequests', {}, undefined, {
@@ -44,9 +45,9 @@ export function useProductCreate() {
       () => config.appId,
       () => route.fullPath,
       appUser,
-      appPending,
-      appError,
-      appOutcome,
+      appUserPending,
+      appUserError,
+      appUserOutcome,
     ],
     invalidate,
     { flush: 'sync' }

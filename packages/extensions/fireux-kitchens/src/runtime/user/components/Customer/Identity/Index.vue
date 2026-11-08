@@ -42,7 +42,7 @@ import { useCustomer } from '../../../composables/customer/useCustomer'
 import { useCustomerInterface } from '../../../composables/customer/useCustomerInterface'
 import { useCustomerCreate } from '../../../composables/firestore/profiles/Customer/mutations/useCustomerCreate'
 
-const { coreUser } = useUserSession()
+const { user } = useUserSession()
 const { customerProfile, pending } = useCustomer()
 const { createCustomerProfile, captureIntent, scopeEpoch } = useCustomerCreate()
 const { cell: customerCardFromProfile } = useCustomerInterface()
@@ -64,7 +64,7 @@ const customerCard = computed(() =>
   resolvedProfile.value
     ? customerCardFromProfile({
         ...resolvedProfile.value,
-        user: coreUser.value ?? null,
+        user: user.value ?? null,
       })
     : null
 )

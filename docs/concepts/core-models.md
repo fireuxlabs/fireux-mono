@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-08
+Ref: d9e120c46
 Role: map, not canon
 
 ## Purpose
@@ -109,7 +109,11 @@ UID; null and anonymous guests keep both bindings inactive. Explicit public
 User targets and bootstrap retain their separate responsibilities. Core's
 `src/test/user-session.test.mjs` verifies this target and its transitions.
 Its aggregate `pending`, `error` and `outcome` describe the same Auth/User/membership state;
-the independent read states remain available. It does not instantiate private
+the independent `userPending`, `userError`, `userOutcome` and
+`appUserPending`, `appUserError`, `appUserOutcome` remain available beside
+the single `user` and `appUser` values. The User reader preserves `undefined`
+for inactive or unsettled reads and `null` for a settled missing record.
+It does not instantiate private
 account reads, mutation commands or card formatting. Screens that display
 private account fields use `useUserAccount`; presentation uses `useUserView`
 explicitly. App and User sessions have different responsibilities and reuse

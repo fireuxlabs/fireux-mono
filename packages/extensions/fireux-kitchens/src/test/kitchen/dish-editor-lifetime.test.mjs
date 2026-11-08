@@ -83,7 +83,12 @@ function context() {
     isFirestoreDocumentId,
     useAuth: () => ({ currentUser }),
     useFireUXConfig: () => config,
-    useUserSession: () => ({ appUser, appPending, appError, appOutcome }),
+    useUserSession: () => ({
+      appUser,
+      appUserPending: appPending,
+      appUserError: appError,
+      appUserOutcome: appOutcome,
+    }),
     useKitchenAccess: () => access,
     useRoute: () => route,
     useWorkspace: () => ({ selectedId }),

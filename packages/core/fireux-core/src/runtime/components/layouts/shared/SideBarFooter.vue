@@ -74,7 +74,7 @@ const fireux = useFireUXConfig()
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
 const { isGuest } = useAuthPhase()
-const { currentUser, coreOutcome } = useUserSession()
+const { user, userOutcome } = useUserSession()
 const { pill: userInterface } = useUserView()
 
 const mounted = ref(false)
@@ -89,12 +89,12 @@ onMounted(() => {
 
 const pillUser = computed((): UserCard | undefined => {
   if (!mounted.value) return undefined
-  if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending') {
+  if (userOutcome.value === 'idle' || userOutcome.value === 'pending') {
     return undefined
   }
-  const user = currentUser.value
-  if (!user) return undefined
-  const card = userInterface(user)
+  const identity = user.value
+  if (!identity) return undefined
+  const card = userInterface(identity)
   if (!card) return undefined
   return {
     ...card,

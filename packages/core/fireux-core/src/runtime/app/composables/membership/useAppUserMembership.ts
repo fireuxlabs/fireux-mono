@@ -29,7 +29,7 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
   const {
     user: sessionUser,
     appUser: viewerAppUser,
-    appOutcome,
+    appUserOutcome,
     subscription: viewerSubscription,
     isAdmin,
     isDeveloper,
@@ -77,7 +77,7 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
   const resolved = computed(() => {
     if (!canInspect.value) return false
     if (membership.value) return true
-    if (isOwnProfile.value) return appOutcome.value === 'empty'
+    if (isOwnProfile.value) return appUserOutcome.value === 'empty'
     return adminOutcome.value === 'empty'
   })
   const visible = computed(() => canInspect.value && resolved.value)

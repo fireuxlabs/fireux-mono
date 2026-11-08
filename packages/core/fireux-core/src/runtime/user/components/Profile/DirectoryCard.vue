@@ -95,9 +95,9 @@
 </template>
 
 <script setup lang="ts">
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar'
 import { computed } from 'vue'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import { USER_AVATAR_FALLBACK_SRC } from '../../composables/useUserView'
 
 defineOptions({ name: 'UserProfileDirectoryCard' })
 
@@ -163,7 +163,7 @@ const cleanBadges = computed(() =>
 
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(
-  () => props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+  () => props.avatarUrl || USER_ECOSYSTEM_AVATAR_SRC
 )
 const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
   const secondary = String(props.secondaryAvatarUrl || '').trim()

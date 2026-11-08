@@ -68,7 +68,12 @@ function context() {
     isFirestoreDocumentId,
     useAuth: () => ({ currentUser }),
     useFireUXConfig: () => config,
-    useUserSession: () => ({ appUser, appPending, appError, appOutcome }),
+    useUserSession: () => ({
+      appUser,
+      appUserPending: appPending,
+      appUserError: appError,
+      appUserOutcome: appOutcome,
+    }),
     useKitchenAccess: () => access,
     useRoute: () => route,
     useWorkspace: () => ({ selectedId }),
@@ -670,10 +675,10 @@ test('Recipe and Prep commands reject unsettled membership before starting prepa
       const h = context(),
         member = h.deps.useUserSession(),
         access = h.deps.useKitchenAccess()
-      if (blocked === 'pending') member.appPending.value = true
+      if (blocked === 'pending') member.appUserPending.value = true
       if (blocked === 'error')
-        member.appError.value = new Error('Member read failed')
-      if (blocked === 'outcome') member.appOutcome.value = 'empty'
+        member.appUserError.value = new Error('Member read failed')
+      if (blocked === 'outcome') member.appUserOutcome.value = 'empty'
       if (blocked === 'access') access.outcome.value = 'pending'
       const api = h.scope.run(() =>
         kind === 'recipe'

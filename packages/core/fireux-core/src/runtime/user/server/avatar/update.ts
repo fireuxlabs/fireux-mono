@@ -14,6 +14,7 @@ import {
 } from '../../../server/utils/uploads/storage'
 import { USER_MUTATION_TARGETS } from '../mutation-targets'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
+import { serverAuditStamp } from '../../../server/utils/records/stamps'
 
 const MAX_AVATAR_BYTES = 10 * 1024 * 1024
 
@@ -71,7 +72,10 @@ export async function updateUserAvatar(event: H3Event) {
             statusMessage: 'Create the User before updating the avatar.',
           })
         }
-        mutations.update(users, uid, { avatar: saved.fileUrl })
+        mutations.update(users, uid, {
+          avatar: saved.fileUrl,
+          updated: serverAuditStamp({ by: uid }),
+        })
         return user.data?.avatar
       }
     )

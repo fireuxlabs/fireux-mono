@@ -1,5 +1,6 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
 import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
+import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -30,16 +31,22 @@ test('User session composes its readers and aggregate state without account, com
     outcome: ref('pending'),
   }
   const calls = []
+  const auth = {
+    uid,
+    isAuthenticated: ref(true),
+    hasAuthState: ref(true),
+    currentUser: ref({ uid: 'user-a' }),
+  }
+  let authCalls = 0
   const forbidden = () => {
     throw new Error('A session read constructed an unrelated responsibility')
   }
   const dependencies = {
     computed,
-    useAuth: () => ({
-      uid,
-      isAuthenticated: ref(true),
-      hasAuthState: ref(true),
-    }),
+    useAuth: () => {
+      authCalls++
+      return auth
+    },
     useFireUXConfig: () => ({ appId: 'app-a' }),
     useUserRead: (id) => {
       calls.push({ kind: 'user', id })
@@ -49,12 +56,17 @@ test('User session composes its readers and aggregate state without account, com
       calls.push({ kind: 'membership', appId, id })
       return membership
     },
-    useUserSessionState: (source) => {
+    useUserSessionState: (source, originalAuth) => {
+      assert.equal(originalAuth, auth)
       const error = computed(
-        () => source.coreError.value || source.appError.value
+        () => source.userError.value || source.appUserError.value
       )
       const outcome = computed(() =>
-        error.value ? 'error' : source.appPending.value ? 'loading' : 'ready'
+        error.value
+          ? 'error'
+          : source.appUserPending.value
+            ? 'loading'
+            : 'ready'
       )
       return {
         pending: computed(() => outcome.value === 'loading'),
@@ -82,6 +94,8 @@ test('User session composes its readers and aggregate state without account, com
     Object.keys(dependencies)
   )(...Object.values(dependencies))
   const state = useSession()
+  assert.equal(authCalls, 1)
+  assert.equal(state.user, identity.user)
   assert.deepEqual(
     calls.map(({ kind }) => kind),
     ['user', 'membership']
@@ -93,7 +107,7 @@ test('User session composes its readers and aggregate state without account, com
     'identity and membership share one Auth-gated own-User target'
   )
   assert.equal(calls[1].appId, 'app-a')
-  assert.equal(state.corePending.value, false)
+  assert.equal(state.userPending.value, false)
   assert.equal(state.pending.value, true)
   assert.equal(state.outcome.value, 'loading')
   membership.pending.value = false
@@ -118,6 +132,14 @@ test('User session composes its readers and aggregate state without account, com
     'pill',
     'profile',
     'cell',
+    'coreUser',
+    'currentUser',
+    'corePending',
+    'coreError',
+    'coreOutcome',
+    'appPending',
+    'appError',
+    'appOutcome',
   ]) {
     assert.equal(key in state, false, `Session still exposes ${key}`)
   }
@@ -231,10 +253,14 @@ function nativeSession(initial = {}) {
     'useUserSessionState',
     {
       computed,
-      useAuth: () => auth,
+      useAuth: () => assert.fail('Session state reconstructed Auth'),
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
       resolveUserAvatarSource: (value) => value || '/img/ecosystem/avatar.png',
-      useAppUserAccess: () => ({}),
+      useAppUserAccess: loadRuntime(
+        'app/composables/membership/useAppUserAccess.ts',
+        'useAppUserAccess',
+        { computed, resolveAppUserAccess }
+      ),
     }
   )
   const useUserSession = loadRuntime(
@@ -292,12 +318,11 @@ for (const [name, initial, expected] of [
       0,
       'guest sessions do not construct own-User or membership references'
     )
-    assert.equal(f.state.coreOutcome.value, 'idle')
-    assert.equal(f.state.appOutcome.value, 'idle')
-    assert.equal(f.state.coreUser.value, undefined)
+    assert.equal(f.state.userOutcome.value, 'idle')
+    assert.equal(f.state.appUserOutcome.value, 'idle')
+    assert.equal(f.state.user.value, undefined)
     assert.equal(f.state.appUser.value, undefined)
-    assert.equal(f.state.currentUser.value, null)
-    assert.equal(f.state.coreError.value, undefined)
+    assert.equal(f.state.userError.value, undefined)
     assert.equal(f.state.error.value, null)
     assert.equal(f.state.outcome.value, expected)
     f.scope.stop()
@@ -315,8 +340,8 @@ test('settled registered nonmember resolves own User before membership exists', 
   f.settle('users', { display_name: 'Person', handle: 'person' })
   f.settle('apps/runtime/users', undefined)
   assert.equal(f.state.outcome.value, 'ready')
-  assert.equal(f.state.currentUser.value.id, 'person')
-  assert.equal(f.state.appOutcome.value, 'empty')
+  assert.equal(f.state.user.value.id, 'person')
+  assert.equal(f.state.appUserOutcome.value, 'empty')
   assert.equal(f.state.appUser.value, null)
   f.scope.stop()
 })
@@ -325,16 +350,27 @@ test('authorized missing own User remains onboarding and failed own User remains
   await nextTick()
   f.settle('users', undefined)
   f.settle('apps/runtime/users', undefined)
-  assert.equal(f.state.coreOutcome.value, 'empty')
+  assert.equal(f.state.userOutcome.value, 'empty')
   assert.equal(f.state.outcome.value, 'empty')
-  assert.equal(f.state.coreUser.value, null)
+  assert.equal(f.state.user.value, null)
   const error = new Error('User read denied')
   f.settle('users', { display_name: 'Retained person' }, error)
-  assert.equal(f.state.coreOutcome.value, 'error')
-  assert.equal(f.state.coreUser.value, undefined)
-  assert.equal(f.state.currentUser.value, null)
+  assert.equal(f.state.userOutcome.value, 'error')
+  assert.equal(f.state.user.value, undefined)
   assert.equal(f.state.error.value, error)
   assert.equal(f.state.outcome.value, 'error')
+  f.scope.stop()
+})
+test('an incomplete User remains readable for explicit identity completion', async () => {
+  const f = nativeSession({ user: { uid: 'person' }, settled: true })
+  await nextTick()
+  f.settle('users', { display_name: '', handle: '' })
+  f.settle('apps/runtime/users', { role: 'user', subscription: 'free' })
+  assert.equal(f.state.userOutcome.value, 'ready')
+  assert.equal(f.state.user.value.id, 'person')
+  assert.equal(f.state.user.value.handle, '')
+  assert.equal(f.state.user.value.display_name, '')
+  assert.equal(f.state.outcome.value, 'ready')
   f.scope.stop()
 })
 test('sign-out immediately masks own User, avatar and membership before anonymous fallback', async () => {
@@ -344,23 +380,26 @@ test('sign-out immediately masks own User, avatar and membership before anonymou
     display_name: 'Person',
     avatar: 'https://example.com/person.png',
   })
-  f.settle('apps/runtime/users', { role: 'user', subscription: 'free' })
-  assert.equal(f.state.currentUser.value.id, 'person')
+  f.settle('apps/runtime/users', { role: 'admin', subscription: 'business' })
+  assert.equal(f.state.user.value.id, 'person')
   assert.equal(f.state.avatarSrc.value, 'https://example.com/person.png')
   assert.equal(f.state.appUser.value.id, 'person')
+  assert.equal(f.state.isAdmin.value, true)
+  assert.equal(f.state.canOwnMultipleWorkspaces.value, true)
   f.auth.currentUser.value = null
-  assert.equal(f.state.coreOutcome.value, 'idle')
-  assert.equal(f.state.appOutcome.value, 'idle')
-  assert.equal(f.state.coreUser.value, undefined)
+  assert.equal(f.state.userOutcome.value, 'idle')
+  assert.equal(f.state.appUserOutcome.value, 'idle')
+  assert.equal(f.state.user.value, undefined)
   assert.equal(f.state.appUser.value, undefined)
-  assert.equal(f.state.currentUser.value, null)
   assert.equal(f.state.avatarSrc.value, '/img/ecosystem/avatar.png')
+  assert.equal(f.state.isAdmin.value, false)
+  assert.equal(f.state.canOwnMultipleWorkspaces.value, false)
   assert.equal(f.state.outcome.value, 'unauthenticated')
   await nextTick()
   f.auth.currentUser.value = { uid: 'anonymous', isAnonymous: true }
   await nextTick()
   assert.equal(f.docCalls.length, 2)
-  assert.equal(f.state.coreOutcome.value, 'idle')
+  assert.equal(f.state.userOutcome.value, 'idle')
   assert.equal(f.state.error.value, null)
   f.scope.stop()
 })
@@ -382,7 +421,7 @@ test('account switch masks previous identity and membership until exact new read
   f.settle('users', { display_name: 'Person A' })
   f.settle('apps/runtime/users', { role: 'admin' })
   f.auth.currentUser.value = { uid: 'person-b' }
-  assert.equal(f.state.coreUser.value, undefined)
+  assert.equal(f.state.user.value, undefined)
   assert.equal(f.state.appUser.value, undefined)
   assert.equal(f.state.outcome.value, 'loading')
   await nextTick()
@@ -392,8 +431,8 @@ test('account switch masks previous identity and membership until exact new read
   ])
   f.settle('users', { display_name: 'Person B' })
   f.settle('apps/runtime/users', undefined)
-  assert.equal(f.state.currentUser.value.id, 'person-b')
-  assert.equal(f.state.currentUser.value.display_name, 'Person B')
+  assert.equal(f.state.user.value.id, 'person-b')
+  assert.equal(f.state.user.value.display_name, 'Person B')
   assert.equal(f.state.appUser.value, null)
   assert.equal(f.state.outcome.value, 'ready')
   f.scope.stop()
@@ -414,7 +453,7 @@ test('anonymous viewer can still bind an explicitly targeted public User identit
   f.settle('users', { display_name: 'Public Person', handle: 'public-person' })
   assert.equal(publicUser.outcome.value, 'ready')
   assert.equal(publicUser.user.value.id, 'public-person')
-  assert.equal(f.state.currentUser.value, null)
+  assert.equal(f.state.user.value, undefined)
   assert.equal(f.state.outcome.value, 'unauthenticated')
   f.scope.stop()
 })

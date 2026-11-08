@@ -10,14 +10,15 @@ export function useKitchenIngredientUpdate(ownerSources: WatchSource[] = []) {
   const { currentUser } = useAuth()
   const access = useKitchenAccess()
   const config = useFireUXConfig()
-  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const { appUser, appUserPending, appUserError, appUserOutcome } =
+    useUserSession()
   const authoritySources = [
     () => currentUser.value?.uid,
     () => config.appId,
     () => JSON.stringify(appUser.value),
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
     () => JSON.stringify(access.ids.value),
     () => access.outcome.value,
   ]
@@ -44,9 +45,9 @@ export function useKitchenIngredientUpdate(ownerSources: WatchSource[] = []) {
       Boolean(
         isCurrent() &&
           uid &&
-          !appPending.value &&
-          !appError.value &&
-          appOutcome.value === 'ready' &&
+          !appUserPending.value &&
+          !appUserError.value &&
+          appUserOutcome.value === 'ready' &&
           currentUser.value?.uid === uid &&
           access.ids.value.includes(kitchenId) &&
           kitchenCollectionPath === 'kitchens'

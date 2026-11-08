@@ -8,7 +8,8 @@ import { useUserSessionState } from './useUserSessionState'
 
 /** Auth plus the canonical live User and AppUser readers. */
 export function useUserSession() {
-  const { uid: authUid, isAuthenticated, hasAuthState } = useAuth()
+  const auth = useAuth()
+  const { uid: authUid, isAuthenticated, hasAuthState } = auth
   const uid = computed(() =>
     hasAuthState.value && isAuthenticated.value
       ? String(authUid.value ?? '').trim()
@@ -18,34 +19,32 @@ export function useUserSession() {
   const identity = useUserRead(uid)
   const membership = useAppUserRead(appId, uid)
 
-  const coreUser = identity.user
-  const user = computed(() => coreUser.value ?? null)
-  const coreOutcome = identity.outcome
-  const corePending = identity.pending
-  const coreError = identity.error
+  const user = identity.user
+  const userOutcome = identity.outcome
+  const userPending = identity.pending
+  const userError = identity.error
   const appUser = computed<AppUserWithId | null | undefined>(() => {
     const value = membership.appUser.value as AppUser | null | undefined
     if (value === undefined) return undefined
     if (value === null) return null
     return uid.value ? { ...value, id: uid.value } : null
   })
-  const appPending = membership.pending
-  const appError = membership.error
-  const appOutcome = membership.outcome
+  const appUserPending = membership.pending
+  const appUserError = membership.error
+  const appUserOutcome = membership.outcome
   const refs = {
     user,
-    coreUser,
-    corePending,
-    coreError,
-    coreOutcome,
+    userPending,
+    userError,
+    userOutcome,
     appUser,
-    appPending,
-    appError,
-    appOutcome,
+    appUserPending,
+    appUserError,
+    appUserOutcome,
   }
   return {
     ...refs,
-    ...useUserSessionState(refs),
+    ...useUserSessionState(refs, auth),
   }
 }
 

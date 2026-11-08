@@ -11,15 +11,15 @@ const firstDefaultSavedAddress = (
   null
 
 export function useCustomerAutofill() {
-  const { customerProfile, coreUser, pending } = useCustomerProfile()
+  const { customerProfile, user, pending } = useCustomerProfile()
 
   const customer = computed(() => {
     const preferences = customerProfile.value?.preferences
-    const user = coreUser.value
+    const identity = user.value
     const savedAddress = firstDefaultSavedAddress(preferences?.saved_addresses)
 
     return {
-      name: text(preferences?.name || user?.display_name),
+      name: text(preferences?.name || identity?.display_name),
       phone: text(preferences?.phone),
       address: text(
         savedAddress?.address || preferences?.default_delivery_address

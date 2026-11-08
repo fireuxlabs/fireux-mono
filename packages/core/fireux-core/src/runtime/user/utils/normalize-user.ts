@@ -1,5 +1,6 @@
 import type { User } from '../models/user.model'
 import { resolveUserAvatarSource } from './user-avatar'
+import { readUserDisplayName } from './profile-validation'
 
 const USER_HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]{2,29}$/
 
@@ -8,7 +9,7 @@ const record = (value: unknown): Record<string, unknown> | null =>
     ? (value as Record<string, unknown>)
     : null
 
-const text = (value: unknown) => String(value ?? '').trim()
+const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 
 /**
  * Resolve a stored root document into the one canonical runtime User.
@@ -18,7 +19,7 @@ const text = (value: unknown) => String(value ?? '').trim()
  * directory readers separately require a valid public handle.
  */
 export function normalizeUser(idValue: unknown, value: unknown): User | null {
-  const id = text(idValue)
+  const id = String(idValue ?? '').trim()
   const source = record(value)
   if (!id || !source) return null
 
@@ -36,4 +37,15 @@ export function normalizeUser(idValue: unknown, value: unknown): User | null {
 
 export function isUserDirectoryEligible(user: User): boolean {
   return Boolean(user.handle)
+}
+
+/** Minimum identity needed to finish setup; incomplete Users remain readable. */
+export function isUserIdentityComplete(user: User | null | undefined): boolean {
+  if (!user || !USER_HANDLE_PATTERN.test(user.handle)) return false
+  try {
+    readUserDisplayName(user.display_name)
+    return true
+  } catch {
+    return false
+  }
 }

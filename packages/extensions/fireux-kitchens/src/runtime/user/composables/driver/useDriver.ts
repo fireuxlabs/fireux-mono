@@ -14,9 +14,9 @@ export function useDriver() {
     driverConfig
   )
   const { profile: driverProfile, appState: driverAppState } = refs
-  const { coreUser } = useUserSession()
+  const { user } = useUserSession()
   const driver = computed(() => ({
-    user: coreUser.value ?? null,
+    user: user.value ?? null,
     profile: driverProfile.value ?? null,
     appState: driverAppState.value ?? null,
   }))
@@ -27,7 +27,7 @@ export function useDriver() {
     profileRefs: refs,
     driverProfile,
     driverAppState,
-    coreUser,
+    user,
     driver,
     pending,
 

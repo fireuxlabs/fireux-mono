@@ -4,8 +4,12 @@ import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
 import { ref, reactive, watch } from 'vue'
-const dispose=[]
-const useCommandScope=load('../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts','useCommandScope',{watch,onScopeDispose:fn=>dispose.push(fn)})
+const dispose = []
+const useCommandScope = load(
+  '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+  'useCommandScope',
+  { watch, onScopeDispose: (fn) => dispose.push(fn) }
+)
 
 function load(path, name, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -49,7 +53,26 @@ function workflow(name, { pause, bootstrapError } = {}) {
     },
   }
   const auth = reactive({ currentUser: actor })
-  const profileDeps={ref,watch,useCommandScope,useAuth:()=>({currentUser:{get value(){return auth.currentUser}}}),useUserSession:()=>({appUser:ref({role:'user'}),appPending:ref(false),appError:ref(null),appOutcome:ref('ready')}),useFireUXConfig:()=>({appId:'app'}),useRoute:()=>({fullPath:'/profile'})}
+  const profileDeps = {
+    ref,
+    watch,
+    useCommandScope,
+    useAuth: () => ({
+      currentUser: {
+        get value() {
+          return auth.currentUser
+        },
+      },
+    }),
+    useUserSession: () => ({
+      appUser: ref({ role: 'user' }),
+      appUserPending: ref(false),
+      appUserError: ref(null),
+      appUserOutcome: ref('ready'),
+    }),
+    useFireUXConfig: () => ({ appId: 'app' }),
+    useRoute: () => ({ fullPath: '/profile' }),
+  }
   const useProfileCreate = load(
     '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate.ts',
     'useProfileCreate',
@@ -138,7 +161,9 @@ for (const name of ['Professional', 'Agent']) {
   })
 
   test(`${name} creation stops when User bootstrap fails`, async () => {
-    const failure = new Error('App access is required before creating a profile.')
+    const failure = new Error(
+      'App access is required before creating a profile.'
+    )
     const subject = workflow(name, { bootstrapError: failure })
     await assert.rejects(subject.create(), failure)
     assert.deepEqual(subject.events, ['bootstrap'])
