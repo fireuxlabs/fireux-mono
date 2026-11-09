@@ -4,7 +4,7 @@ import {
   configureRuntime,
   configureOrdering,
 } from './config/module/runtime-config'
-import type { OrderingConfiguration } from './runtime/kitchen/models/order.model'
+import type { OrderingConfiguration } from './runtime/kitchen/models/order.model.ts'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import {
   registerComposablesDirs,

@@ -1,8 +1,13 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { readPages } from 'fireux-core/runtime/composables/http/readPages'
 
 import { computed, ref } from 'vue'
 import type { PortfolioDirectoryPage } from '../models/portfolio-read.model.ts'
+
+type PortfolioDirectoryRefresh = AsyncData<
+  PortfolioDirectoryPage,
+  Error
+>['refresh']
 
 export function usePortfolioDirectory() {
   const pageCount = ref(1)
@@ -65,6 +70,6 @@ export function usePortfolioDirectory() {
     loadingMore,
     loadMoreError,
     loadMore,
-    refresh: state.refresh,
+    refresh: state.refresh as PortfolioDirectoryRefresh,
   }
 }

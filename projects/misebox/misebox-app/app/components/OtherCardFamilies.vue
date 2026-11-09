@@ -32,7 +32,7 @@
       <KitchenCardsPill v-bind="kitchenPill" />
     </CardSpecimen>
     <CardSpecimen label="Summary">
-      <KitchenCardsSummary v-bind="kitchenPreview" />
+      <KitchenCardsPreview v-bind="kitchenPreview" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -52,7 +52,7 @@
       <MenuCardsPill :menu="menu" :route-scope="routeScope" />
     </CardSpecimen>
     <CardSpecimen label="Summary">
-      <MenuCardsSummary :menu="menu" :route-scope="routeScope" />
+      <MenuCardsPreview :menu="menu" :route-scope="routeScope" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -176,7 +176,7 @@
       <SupplierCardsPill v-bind="supplierCard" />
     </CardSpecimen>
     <CardSpecimen label="Summary">
-      <SupplierCardsSummary v-bind="supplierCard" />
+      <SupplierCardsPreview v-bind="supplierCard" />
     </CardSpecimen>
   </CardFamilySection>
 

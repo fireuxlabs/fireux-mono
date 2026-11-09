@@ -32,19 +32,19 @@ test('default search keeps the existing pill/cell cycle and starting variant', (
 })
 
 test('custom single and subset variants never toggle into an unlisted variant', () => {
-  const single = useCollectionSearch({ ...base(), variants: ['summary'] })
+  const single = useCollectionSearch({ ...base(), variants: ['preview'] })
   for (let i = 0; i < 4; i++) {
     single.toggleVariant()
-    assert.equal(single.variant.value, 'summary')
+    assert.equal(single.variant.value, 'preview')
   }
-  const variants = ['summary', 'cell']
+  const variants = ['preview', 'cell']
   const subset = useCollectionSearch({
     ...base(),
     variants,
     initialVariant: 'cell',
   })
   variants.push('pill')
-  for (const expected of ['summary', 'cell', 'summary', 'cell']) {
+  for (const expected of ['preview', 'cell', 'preview', 'cell']) {
     subset.toggleVariant()
     assert.equal(subset.variant.value, expected)
   }
@@ -53,7 +53,7 @@ test('custom single and subset variants never toggle into an unlisted variant', 
 test('initial selection and externally changed selection fall back inside the allowed set', () => {
   const search = useCollectionSearch({
     ...base(),
-    variants: ['cell', 'summary'],
+    variants: ['cell', 'preview'],
     initialVariant: 'pill',
   })
   assert.equal(search.variant.value, 'cell')
@@ -67,10 +67,12 @@ test('empty or unsupported runtime variant sets are rejected', () => {
     () => useCollectionSearch({ ...base(), variants: [] }),
     /at least one variant/
   )
-  assert.throws(
-    () => useCollectionSearch({ ...base(), variants: ['table'] }),
-    /unsupported variant/
-  )
+  for (const variant of ['table', 'summary']) {
+    assert.throws(
+      () => useCollectionSearch({ ...base(), variants: [variant] }),
+      /unsupported variant/
+    )
+  }
 })
 
 test('shared card filtering normalizes queries and reacts to collection changes', () => {

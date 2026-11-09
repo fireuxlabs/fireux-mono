@@ -5,6 +5,7 @@ import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { computed, ref, compile, createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
+import { placeIdentityMedia } from '../../../fireux-places/src/runtime/place/utils/place-identity-media.ts'
 const runtime = new URL('../runtime/', import.meta.url)
 function load(path, result, deps) {
   const source = readFileSync(new URL(path, runtime), 'utf8')
@@ -115,4 +116,89 @@ test('Supplier public identity renders the same passed Place used by SEO without
   assert.doesNotMatch(html, /opaque-supplier-id|opaque-business-id|old-slug/)
   assert.equal(seo[0], props.supplier)
   assert.equal(seo[1], props.place)
+})
+
+test('Supplier Overview preserves supplied identity, media, delivery counts and fallbacks', async () => {
+  const path = 'supplier/components/Cards/Overview.vue'
+  const source = readFileSync(new URL(path, runtime), 'utf8')
+  async function render(supplier) {
+    const props = { supplier }
+    const state = load(
+      path,
+      '({title,headline,summary,media,imageUrl,headquartersLabel,status,categories,deliveryAreas})',
+      { computed, defineProps: () => props, placeIdentityMedia }
+    )
+    const app = createSSRApp({
+      setup: () => ({ ...props, ...state }),
+      render: compile(
+        source.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
+      ),
+    })
+    app.component('UCard', {
+      setup:
+        (_, { slots }) =>
+        () =>
+          h('article', slots.default?.()),
+    })
+    app.component('UChip', { setup: () => () => h('span') })
+    app.component('UIcon', {
+      props: ['name'],
+      setup: (p) => () => h('i', { 'data-icon': p.name }),
+    })
+    app.component('UBadge', {
+      setup:
+        (_, { slots }) =>
+        () =>
+          h('span', slots.default?.()),
+    })
+    return renderToString(app)
+  }
+
+  const html = await render({
+    id: 'supplier-a',
+    identity: { status: 'active' },
+    delivery: { areas: [' Bern ', '', ' Zürich '] },
+    business_place: {
+      short_name: 'Local Food',
+      name: 'Local Food Wholesale',
+      tagline: 'Local deliveries',
+      about: 'Fresh produce',
+      logo_image: '/supplier.svg',
+      image_url: '/supplier.jpg',
+      media_backdrop_color: '#f0f0f0',
+      short_address: 'Bern',
+    },
+  })
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')
+  for (const content of [
+    'Local Food',
+    'Local deliveries',
+    'Fresh produce',
+    'Status: active',
+    'Categories: 0',
+    'Delivery areas: 2',
+    'Headquarters: Bern',
+  ])
+    assert.ok(text.includes(content), content)
+  assert.match(html, /src="\/supplier.svg"/)
+  assert.match(html, /alt="Local Food"/)
+  assert.match(html, /loading="lazy"/)
+  assert.match(html, /object-fit:contain/)
+  assert.match(html, /background-color:#f0f0f0/)
+  assert.doesNotMatch(html, /src="\/supplier.jpg"/)
+
+  const photo = await render({
+    id: 'supplier-a',
+    business_place: { name: 'Photo Supplier', image_url: '/supplier.jpg' },
+  })
+  assert.match(photo, /src="\/supplier.jpg"/)
+  assert.match(photo, /object-fit:cover/)
+  assert.doesNotMatch(photo, /background-color:/)
+
+  const fallback = await render({ id: 'fallback-supplier' })
+  assert.match(fallback, /fallback-supplier/)
+  assert.match(fallback, /Linked/)
+  assert.match(fallback, /data-icon="i-lucide-truck"/)
+  assert.doesNotMatch(fallback, /<img/)
+  assert.doesNotMatch(await render(null), /<article/)
 })

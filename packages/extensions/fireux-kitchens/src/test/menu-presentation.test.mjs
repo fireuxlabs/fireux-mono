@@ -37,7 +37,7 @@ function collectionView(items) {
   }
   const view = load(
     '../runtime/menu/components/Collection/Index.vue',
-    '{ query, variant, toggleVariant, visibleItems, visibleCount, selectedPicks, showSearchInput }',
+    '{ query, variant, variantIcon, nextVariantLabel, toggleVariant, visibleItems, visibleCount, selectedPicks, showSearchInput }',
     {
       computed,
       ref,
@@ -89,10 +89,18 @@ test('collection search keeps real Menu and Kitchen fields, service filters and 
   assert.equal(view.visibleCount.value, 0)
   view.query.value = ''
   assert.equal(view.visibleCount.value, 1)
-  assert.equal(view.variant.value, 'summary')
-  for (const expected of ['cell', 'pill', 'summary']) {
+  assert.equal(view.variant.value, 'preview')
+  assert.equal(view.variantIcon.value, 'i-lucide-panels-top-left')
+  assert.equal(view.nextVariantLabel.value, 'cell')
+  for (const [expected, icon, next] of [
+    ['cell', 'i-lucide-list', 'pill'],
+    ['pill', 'i-lucide-layout-grid', 'preview'],
+    ['preview', 'i-lucide-panels-top-left', 'cell'],
+  ]) {
     view.toggleVariant()
     assert.equal(view.variant.value, expected)
+    assert.equal(view.variantIcon.value, icon)
+    assert.equal(view.nextVariantLabel.value, next)
   }
 })
 

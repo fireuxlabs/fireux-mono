@@ -79,11 +79,10 @@
 import { computed } from 'vue'
 import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 
-import type { SupplierSurface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
-type KitchenSupplierSurface = SupplierSurface
+import type { SupplierSurface } from '../../composables/firestore/utils/view/useSupplierInterface'
 
 const props = defineProps<{
-  supplier: KitchenSupplierSurface | null
+  supplier: SupplierSurface | null
 }>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

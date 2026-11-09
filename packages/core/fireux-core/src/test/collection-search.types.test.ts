@@ -16,24 +16,26 @@ export function collectionSearchTypeContract() {
   const singleVariant: Ref<'cell'> = single.variant
   const subset = useCollectionSearch({
     ...options,
-    variants: ['summary', 'cell'],
+    variants: ['preview', 'cell'],
     initialVariant: 'cell',
   })
-  const subsetVariant: Ref<'summary' | 'cell'> = subset.variant
-  const menu = useCollectionSearch<Item, Item, 'summary' | 'cell' | 'pill'>({
+  const subsetVariant: Ref<'preview' | 'cell'> = subset.variant
+  const menu = useCollectionSearch<Item, Item, 'preview' | 'cell' | 'pill'>({
     ...options,
-    variants: ['summary', 'cell', 'pill'],
-    initialVariant: 'summary',
+    variants: ['preview', 'cell', 'pill'],
+    initialVariant: 'preview',
   })
 
   // @ts-expect-error A custom generic cannot manufacture an omitted default set.
-  useCollectionSearch<Item, Item, 'summary'>(options)
+  useCollectionSearch<Item, Item, 'preview'>(options)
   // @ts-expect-error Custom sets must be nonempty.
   useCollectionSearch({ ...options, variants: [] })
+  // @ts-expect-error Summary is no longer a supported presentation mode.
+  useCollectionSearch({ ...options, variants: ['summary'] })
   // @ts-expect-error An initial value cannot expand the declared allowed set.
   useCollectionSearch({
     ...options,
-    variants: ['summary'],
+    variants: ['preview'],
     initialVariant: 'pill',
   })
   // @ts-expect-error A single default-named variant still declares a custom set.

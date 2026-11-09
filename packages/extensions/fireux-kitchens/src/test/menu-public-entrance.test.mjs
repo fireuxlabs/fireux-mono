@@ -89,6 +89,7 @@ async function currency(service, place) {
     computed,
     toRef,
     defineProps: () => props,
+    defineEmits: () => () => {},
     readPlaceCurrencyCode,
     useAsyncData: () => ({
       data: ref({ sources: [] }),

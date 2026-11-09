@@ -2,6 +2,7 @@ import { ref, reactive, toRefs, computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useMenuDirectory } from './useMenuDirectory'
+import type { UseMenuDirectoryReturn } from './useMenuDirectory'
 import { useCollectionPage } from 'fireux-core/runtime/composables/shared/useCollectionPage'
 
 /** One Entity acquisition and SEO owner over shared collection-page presentation. */
@@ -50,7 +51,7 @@ export function useMenuCollectionPage() {
     menus,
     pending,
     error,
-    refresh,
+    refresh: refresh as UseMenuDirectoryReturn['refresh'],
     unavailable: computed(() => Boolean(error.value)),
     search,
     service,

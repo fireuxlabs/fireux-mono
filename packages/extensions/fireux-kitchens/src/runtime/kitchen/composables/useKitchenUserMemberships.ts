@@ -1,9 +1,14 @@
-import { useAsyncData } from 'nuxt/app'
+import { useAsyncData, type AsyncData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { KitchenUserMembershipsResponse } from '../models/user-memberships.model.ts'
+import type { KitchenUserMembershipsResponse } from '../models/user-memberships.model'
+
+type KitchenUserMembershipsRefresh = AsyncData<
+  KitchenUserMembershipsResponse | null,
+  Error
+>['refresh']
 
 export function useKitchenUserMemberships(
   subjectUserId: MaybeRefOrGetter<string>
@@ -50,6 +55,6 @@ export function useKitchenUserMemberships(
     error: computed(() => state.error.value),
     canInspect,
     isOwnProfile,
-    refresh: state.refresh,
+    refresh: state.refresh as KitchenUserMembershipsRefresh,
   }
 }

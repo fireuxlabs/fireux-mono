@@ -1,7 +1,7 @@
 # Menu family
 
-Updated: 2026-11-02
-Ref: a2bd21763
+Updated: 2026-11-09
+Ref: 5a5a26e2d
 Role: map, not canon
 
 ## Purpose
@@ -351,6 +351,13 @@ actions; `FireDiagnostics` owns JSON inspection. Components use Menu-prefixed Nu
 registration, with real consumers updated together. `RouteSurface` is Menu-specific
 URL dispatch, not a required section or component for every Entity. Collection,
 Detail, Cards and Create keep the shared Entity vocabulary.
+
+Menu's [Card family](card-family.md) supplies Pill, Cell and Preview. The
+controller-backed Collection defaults to Preview and cycles through Cell and
+Pill; scoped collections reuse Preview. Cards present supplied records through
+`useMenuCardPresentation`, serving-time presentation and separate service Actions.
+`Cards/FoodVenue.vue` keeps its grouped venue/result responsibility. Detail keeps
+the full reading composition; current consumers need no separate Overview card.
 
 `Collection/Results.vue` collates eligible Collection/Delivery Menu rows into one result per Kitchen, with menu names leading, secondary venue identity and only matching service times. Other menus sit behind a quiet venue browse link. It adds no Kitchen reader. Service choices open the venue service presentation; browse choices open the individual Menu.
 `Collection/Index.vue` consumes a scoped controller, paging, outcomes and

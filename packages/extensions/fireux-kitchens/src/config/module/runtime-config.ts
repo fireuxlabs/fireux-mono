@@ -2,7 +2,7 @@ import type { Nuxt } from '@nuxt/schema'
 import {
   OrderChannels,
   type OrderingConfiguration,
-} from '../../runtime/kitchen/models/order.model'
+} from '../../runtime/kitchen/models/order.model.ts'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 
 export function configureRuntime(

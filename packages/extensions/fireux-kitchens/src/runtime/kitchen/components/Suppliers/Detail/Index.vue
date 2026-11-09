@@ -10,7 +10,7 @@
       Back to suppliers
     </UButton>
 
-    <KitchenSuppliersDetailSummary v-if="supplier" :supplier="supplier" />
+    <SupplierCardsOverview v-if="supplier" :supplier="supplier" />
 
     <UCard v-if="supplier">
       <div class="fx-card-body-stack">

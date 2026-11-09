@@ -3,6 +3,11 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
+import * as Vue from 'vue'
+import { renderToString } from 'vue/server-renderer'
+import { compileScript, parse } from 'vue/compiler-sfc'
+import ts from 'typescript'
+import { usePortfolioInterface } from '../runtime/portfolio/composables/firestore/utils/view/usePortfolioInterface.ts'
 const source = readFileSync(
   new URL('../runtime/portfolio/server/index/read.ts', import.meta.url),
   'utf8'
@@ -53,11 +58,19 @@ function harness(records) {
 }
 const fixture = {
   identity: {
-    slug: 'a', name: 'Public name', tagline: 'Public tagline',
-    image_url: 'https://example.test/image.jpg', region_label: 'Bern', status: 'active',
-    notes: 'INTERNAL NOTES', owner_label: 'INTERNAL OWNER', strategy_label: 'INTERNAL STRATEGY',
+    slug: 'a',
+    name: 'Public name',
+    tagline: 'Public tagline',
+    image_url: 'https://example.test/image.jpg',
+    region_label: 'Bern',
+    status: 'active',
+    notes: 'INTERNAL NOTES',
+    owner_label: 'INTERNAL OWNER',
+    strategy_label: 'INTERNAL STRATEGY',
   },
-  management: { mode: 'root' }, created: { by: 'ACTOR' }, updated: { by: 'ACTOR' },
+  management: { mode: 'root' },
+  created: { by: 'ACTOR' },
+  updated: { by: 'ACTOR' },
 }
 test('directory and detail return only public Identity, independent of management metadata', async () => {
   const api = harness([['a', fixture]])
@@ -66,12 +79,12 @@ test('directory and detail return only public Identity, independent of managemen
   const expected = {
     id: 'a',
     identity: {
-    slug: 'a',
-    name: 'Public name',
-    tagline: 'Public tagline',
-    image_url: 'https://example.test/image.jpg',
-    region_label: 'Bern',
-    status: 'active',
+      slug: 'a',
+      name: 'Public name',
+      tagline: 'Public tagline',
+      image_url: 'https://example.test/image.jpg',
+      region_label: 'Bern',
+      status: 'active',
     },
   }
   assert.deepEqual(directory.items, [expected])
@@ -87,17 +100,17 @@ test('directory and detail return only public Identity, independent of managemen
 })
 test('inactive records and records without explicit active status do not enter public Identity', async () => {
   const api = harness([
-    ['a', { identity: {status: 'archived', notes: 'Secret'} }],
-    ['b', { identity: {name: 'Unknown', slug: 'b'} }],
+    ['a', { identity: { status: 'archived', notes: 'Secret' } }],
+    ['b', { identity: { name: 'Unknown', slug: 'b' } }],
   ])
   assert.deepEqual((await api.readPortfolioDirectoryPage()).items, [])
   await assert.rejects(api.readPortfolioDetail('a'), { statusCode: 404 })
 })
 test('malformed active public summaries fail explicitly and invalid cursors are rejected', async () => {
   for (const record of [
-    { ...fixture, identity: {...fixture.identity, name: ''} },
-    { ...fixture, identity: {...fixture.identity, slug: 'different'} },
-    { ...fixture, identity: {...fixture.identity, image_url: 4} },
+    { ...fixture, identity: { ...fixture.identity, name: '' } },
+    { ...fixture, identity: { ...fixture.identity, slug: 'different' } },
+    { ...fixture, identity: { ...fixture.identity, image_url: 4 } },
   ]) {
     const api = harness([['a', record]])
     await assert.rejects(api.readPortfolioDirectoryPage(), { statusCode: 500 })
@@ -120,14 +133,18 @@ test('public SEO never falls back to internal notes or strategy', () => {
   const build = compileFunction(
     `${stripTypeScriptTypes(code)};return buildPortfolioJsonLd`
   )()
-  const result = build({ id: 'a', ...fixture, identity: {...fixture.identity, tagline: ''} })
+  const result = build({
+    id: 'a',
+    ...fixture,
+    identity: { ...fixture.identity, tagline: '' },
+  })
   assert.equal(result.description, '')
   assert.doesNotMatch(JSON.stringify(result), /INTERNAL/)
 })
 test('public pagination retains the bounded cursor contract', async () => {
   const records = Array.from({ length: 25 }, (_, i) => {
     const id = `p${i}`
-    return [id, { ...fixture, identity: {...fixture.identity, slug: id} }]
+    return [id, { ...fixture, identity: { ...fixture.identity, slug: id } }]
   })
   const response = await harness(records).readPortfolioDirectoryPage()
   assert.equal(response.items.length, 24)
@@ -135,4 +152,52 @@ test('public pagination retains the bounded cursor contract', async () => {
     Buffer.from(response.nextCursor, 'base64url').toString('utf8'),
     'p23'
   )
+})
+
+test('Portfolio Overview renders the public identity without internal team context', async () => {
+  const { portfolio } = await harness([['a', fixture]]).readPortfolioDetail('a')
+  const card = usePortfolioInterface().profile(portfolio)
+  const filename = new URL(
+    '../runtime/portfolio/components/Cards/Overview.vue',
+    import.meta.url
+  ).pathname
+  const { descriptor } = parse(readFileSync(filename, 'utf8'), { filename })
+  const script = compileScript(descriptor, {
+    id: filename,
+    inlineTemplate: true,
+  })
+  const code = ts.transpileModule(script.content, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  }).outputText
+  const exports = {}
+  compileFunction(code, ['require', 'exports'])((id) => {
+    assert.equal(id, 'vue')
+    return Vue
+  }, exports)
+  const app = Vue.createSSRApp(exports.default, { card })
+  app.component('UCard', {
+    setup:
+      (_, { slots }) =>
+      () =>
+        Vue.h('article', slots.default?.()),
+  })
+  app.component('UAvatar', {
+    props: ['src', 'alt'],
+    setup: (props) => () => Vue.h('img', { src: props.src, alt: props.alt }),
+  })
+  app.component('UBadge', {
+    setup:
+      (_, { slots }) =>
+      () =>
+        Vue.h('span', slots.default?.()),
+  })
+  const html = await renderToString(app)
+  for (const text of ['Public name', 'Public tagline', 'Bern', 'active'])
+    assert.ok(html.includes(text), text)
+  assert.match(html, /src="https:\/\/example.test\/image.jpg"/)
+  assert.match(html, /alt="Public name"/)
+  assert.doesNotMatch(html, /INTERNAL|ACTOR|Owner|Strategy|Notes/)
 })

@@ -1,4 +1,4 @@
-import { refreshNuxtData, useAsyncData } from 'nuxt/app'
+import { refreshNuxtData, useAsyncData, type AsyncData } from 'nuxt/app'
 
 import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -24,6 +24,8 @@ type SupplierTeamResponse = {
     roleIds: string[]
   }>
 }
+
+type SupplierTeamRefresh = AsyncData<SupplierTeamResponse, Error>['refresh']
 
 export function useSupplierWorkspaceTeam() {
   const workspace = useSupplierWorkspace()
@@ -224,7 +226,7 @@ export function useSupplierWorkspaceTeam() {
     context,
     derived: team.derived,
     error,
-    refresh,
+    refresh: refresh as SupplierTeamRefresh,
     primitives: { create, update, delete: remove },
     natives: { select: team.select, selectCreated: team.selectCreated },
   }

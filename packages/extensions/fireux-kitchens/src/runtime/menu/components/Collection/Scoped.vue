@@ -67,7 +67,7 @@
               </NuxtLink>
             </template>
             <template v-else>
-              <MenuCardsSummary
+              <MenuCardsPreview
                 v-for="menu in menus"
                 :key="menu.id"
                 :menu="menu"
