@@ -113,12 +113,28 @@ function isConfiguration(value: Record<string, unknown>): boolean {
   return true
 }
 
-/** Validate stored Kitchen truth without borrowing Place fields or adding defaults. */
+// These stored fields are outside the Workspace Kitchen model. Server owners
+// can still use the original document (for example, its management scope).
+const omittedWorkspaceFields = [
+  'slug',
+  'status',
+  'visibility',
+  'identity_source',
+  'currency',
+  'management',
+  'integrations',
+]
+
+/** Read the Workspace Kitchen without borrowing Place facts or legacy defaults. */
 export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
+  if (!isFirestoreDocumentId(id) || !isRecord(raw)) return null
+  const kitchen = { ...raw }
+  for (const field of omittedWorkspaceFields) delete kitchen[field]
+  // Historical service lists do not supply current service presentation settings.
+  if (Array.isArray(kitchen.services)) delete kitchen.services
+
   if (
-    !isFirestoreDocumentId(id) ||
-    !isRecord(raw) ||
-    !hasFields(raw, [
+    !hasFields(kitchen, [
       'id',
       'identity',
       'context',
@@ -129,15 +145,15 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
       'services',
       'tables',
     ]) ||
-    (raw.id !== undefined && raw.id !== id) ||
-    !isStamp(raw.created) ||
-    (raw.updated !== undefined && !isStamp(raw.updated)) ||
-    (raw.context !== undefined &&
-      (typeof raw.context !== 'string' || raw.context.length > 32000))
+    (kitchen.id !== undefined && kitchen.id !== id) ||
+    !isStamp(kitchen.created) ||
+    (kitchen.updated !== undefined && !isStamp(kitchen.updated)) ||
+    (kitchen.context !== undefined &&
+      (typeof kitchen.context !== 'string' || kitchen.context.length > 32000))
   )
     return null
 
-  const identity = raw.identity
+  const identity = kitchen.identity
   if (
     !isRecord(identity) ||
     !hasFields(identity, ['source', 'slug', 'status', 'visibility']) ||
@@ -153,9 +169,9 @@ export function readKitchenDocument(raw: unknown, id: string): Kitchen | null {
       identity.status as Kitchen['identity']['status']
     ) ||
     typeof identity.visibility !== 'boolean' ||
-    !isConfiguration(raw)
+    !isConfiguration(kitchen)
   )
     return null
 
-  return { ...raw, id } as Kitchen
+  return { ...kitchen, id } as Kitchen
 }

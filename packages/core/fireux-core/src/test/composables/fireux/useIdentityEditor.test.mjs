@@ -139,6 +139,77 @@ function change(h, shape, kind) {
   else if (kind === 'disposed') h.owner.stop()
 }
 
+const kitchen = shapes[1]
+for (const listenerFirst of [true, false]) {
+  test(`a confirmed save becomes the baseline for continued editing (${listenerFirst ? 'listener' : 'response'} first)`, async () => {
+    const h = fixture(kitchen)
+    prepare(h, kitchen)
+    const flight = h.editor.save()
+    const attempt = h.attempts[0]
+    attempt.credentials.resolve()
+    await flush()
+    assert.equal(h.dispatched.length, 1)
+    kitchen.edit(h.editor.draft.value, 'original-kitchen')
+    assert.equal(attempt.isCurrent(), false)
+
+    if (listenerFirst) h.source.value = { ...attempt.snapshot }
+    attempt.response.resolve()
+    await flight
+    assert.equal(h.editor.changed.value, true)
+    if (!listenerFirst) h.source.value = { ...attempt.snapshot }
+    assert.equal(h.editor.draft.value.slug, 'original-kitchen')
+    assert.equal(h.editor.changed.value, true)
+    assert.equal(h.open.value, true)
+    assert.deepEqual(h.successes, [])
+    kitchen.edit(h.editor.draft.value, '  reviewed  ')
+    assert.equal(
+      h.editor.changed.value,
+      false,
+      'the baseline uses the submitted signature'
+    )
+    h.owner.stop()
+  })
+}
+
+test('obsolete responses cannot set the baseline for another edit or overwrite a foreign source revision', async () => {
+  for (const boundary of [
+    'reopened',
+    'new attempt',
+    'disposed',
+    'saved source',
+  ]) {
+    const h = fixture(kitchen)
+    prepare(h, kitchen)
+    const first = h.editor.save()
+    h.attempts[0].credentials.resolve()
+    await flush()
+    if (boundary === 'reopened' || boundary === 'new attempt') {
+      h.open.value = false
+      prepare(h, kitchen)
+    } else {
+      change(h, kitchen, boundary)
+      if (boundary === 'saved source') {
+        // A later matching echo cannot erase the intervening foreign update.
+        h.source.value = { ...h.attempts[0].snapshot }
+      }
+    }
+    // The identical draft is still an edit relative to this session's baseline.
+    const second = boundary === 'new attempt' ? h.editor.save() : undefined
+    h.attempts[0].response.resolve()
+    await first
+    assert.equal(h.editor.changed.value, true, boundary)
+    assert.deepEqual(h.successes, [], boundary)
+    if (second) {
+      assert.equal(h.editor.saving.value, true)
+      assert.equal(h.attempts[1].isCurrent(), true)
+      h.attempts[1].credentials.resolve()
+      h.attempts[1].response.resolve()
+      await second
+    }
+    h.owner.stop()
+  }
+})
+
 for (const shape of shapes) {
   test(`${shape.name} controlled opening loads current saved fields without requiring begin`, () => {
     const h = fixture(shape)
@@ -384,6 +455,7 @@ for (const shape of shapes) {
     h.attempts[0].response.reject(new Error('Try this command again.'))
     await first
     assert.equal(h.editor.error.value, 'Try this command again.')
+    assert.equal(h.editor.changed.value, true)
     assert.equal(h.editor.saving.value, false)
     assert.equal(h.open.value, true)
     assert.equal(shape.value(h.editor.draft.value), 'reviewed')

@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-09
-Ref: cc65fd8ef
+Ref: 426cb858c
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -665,13 +665,13 @@ The separate `/identity/profile` page is retired without an alias;
 The former duplicate `/identity/place` editor is retired without an alias.
 These are explicit child pages, without query-view switching. Venue profile
 excludes hours from the shared Place editor; standalone Place editing retains them.
-Kitchen publication remains on Overview and uses Kitchen read/access
-state independently of Place loading or failure. Currency is edited in the
-Place-owned Visit section and follows Place read/access state. The root
+Kitchen listing controls use Kitchen read/access state independently of Place
+loading or failure. Currency is edited in the Place-owned Visit section and
+follows Place read/access state. The root
 update command checks Kitchen record authority; Place edits still require the
 same-id Place. Identity research lists implemented human controls separately
 from agent-callable tools and does not propose Place relinking or a Workspace
-completion/theme layer. See `identity-state.test.mjs` and
+completion/theme layer. See `kitchen-read.test.mjs` and
 `kitchen/identity-publication.test.mjs` for scope and delayed-result checks.
 The shared hours editor presents a Monday–Sunday schedule, with a focused editor
 for selected days, split opening times, overnight closing and 24-hour opening.
@@ -707,9 +707,9 @@ Updates preserve the exact day membership of unrelated windows and use the exist
 Place hours command. An empty schedule remains unset under the current Place model.
 Venue profile presents five current-value sections: Profile, Brand, Photos, Contact
 and Location and currency, with saved logo/wordmark and photo previews. Each opens its existing Place-owned editor in a focused
-side panel. The Overview listing card shows the nested Identity URL and
-status, reuses the Home listing editor, and retains the directory visibility
-switch even when Place details are unavailable. Editor panels close synchronously
+side panel. The Identity listing card shows the nested Identity URL and status,
+reuses the listing dialog also opened from Home, and retains the directory
+visibility switch even when Place details are unavailable. Editor panels close synchronously
 on Kitchen or write-authority changes. Opening/operating hours and colour editing
 remain explicit destinations from the relevant section. `PlaceEdit` composes
 those same named editors together on protected public edit pages. Operator-facing
@@ -779,14 +779,29 @@ requested identity grants no access.
   and `kitchen/kitchen-directory-contribution.test.ts`.
   The joined display profile is named `presentation`, so it cannot replace the
   canonical Identity map. See `kitchen-identity-shape.test.mjs`.
-  `read-kitchen-document.ts` validates the stored root, stamps and capability
-  configuration for exact and membership-collection reads. Invalid settled
+  `read-kitchen-document.ts` projects current Kitchen fields for exact and
+  membership-collection reads. Stored flat identity fields, currency, management,
+  integrations and historical service arrays are omitted from this view. Nested
+  Identity, stamps and current configuration still require valid values. Verify
+  `kitchen-document.test.mjs` and `kitchen-read.test.mjs`. Invalid settled
   records produce errors and clear displayed data. Public summaries remain
   separate, stamp-free projections. `archived` remains a supported Kitchen status.
   The root Identity command checks slug uniqueness inside its write transaction
   and records the verified actor/App in its update stamp.
-  Listing edits pass the existing dialog/draft scope predicate into command
-  preparation so obsolete credentials cannot dispatch an old edit; a dispatched
+  Listing edits use Core `useIdentityEditor` for grouped drafts and save
+  lifetimes, with the existing parent-supplied Kitchen Identity state.
+  `useKitchenRead` supplies the validated root from the same exact read used
+  for the joined view. Workspace exposes it only for the currently granted,
+  selected ID. Identity uses that root for the listing while venue controls
+  follow the joined Kitchen and Place outcome. A pending or failed Place read
+  can therefore leave the selected listing available while venue editing pauses.
+  Verify `kitchen-read.test.mjs` and `kitchen/identity-publication.test.mjs`. Kitchen
+  retains the typed slug/status/visibility form, canonical slug signature,
+  validation, native dismissal policy and protected update command. Save requires
+  a change to the stored listing, including normalization of a historical URL
+  when an operator explicitly submits it. Its Identity controller forwards the
+  editor's scope predicate into command preparation so obsolete credentials
+  cannot dispatch an old edit; a dispatched
   result remains truthful while stale editor completion is suppressed. Busy
   state belongs to its save attempt, so changed drafts can retry and an old
   completion cannot release a newer editor's save. Verify
@@ -2790,7 +2805,9 @@ Kitchen shared capability composition uses zero-ID-argument
 `useKitchenIdentity(kitchenId)`, which acquires Kitchen and linked Place together.
 Workspace Identity and Home reuse the selected owner’s records through
 `useKitchenIdentityProjection`; this projection acquires no reads or commands.
-Home does not acquire Identity management or publish Identity page context.
+Home acquires the same Identity controller for its existing listing-edit
+entrance, reusing the shared Workspace instance without another reader. It
+does not publish Identity page context.
 The explicit-ID reader does not choose or reconcile Workspace selection. Core owns shared management/read state and Calendar date
 state; Kitchen retains fields, roster authority, commands and event integration.
 

@@ -1,20 +1,19 @@
 <template>
   <UModal
-    :open="open"
+    v-model:open="open"
     title="Kitchen listing"
     description="Choose your Kitchen URL, status and directory visibility."
-    @update:open="emit('update:open', $event)"
   >
     <template #body>
       <form class="workspace-surface" @submit.prevent="save">
         <UFormField label="URL name" :error="updateError || undefined">
-          <UInput v-model="slug" maxlength="80" autofocus />
+          <UInput v-model="draft.slug" maxlength="80" autofocus />
         </UFormField>
         <UFormField label="Status">
-          <USelect v-model="status" :items="statusItems" />
+          <USelect v-model="draft.status" :items="statusItems" />
         </UFormField>
         <UFormField label="Show in directory">
-          <USwitch v-model="visibility" />
+          <USwitch v-model="draft.visibility" />
         </UFormField>
         <FireCopyError v-if="updateError" :message="updateError" />
         <div class="fx-card__actions">
@@ -23,13 +22,13 @@
             color="neutral"
             variant="ghost"
             type="button"
-            @click="emit('update:open', false)"
+            @click="open = false"
           />
           <UButton
             label="Save changes"
             type="submit"
             :loading="saving"
-            :disabled="!status"
+            :disabled="!canSave"
           />
         </div>
       </form>
@@ -38,103 +37,86 @@
 </template>
 
 <script setup lang="ts">
-import { onScopeDispose, ref, watch } from 'vue'
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { computed } from 'vue'
+import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenUpdate } from '../../composables/useKitchenUpdate'
-import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
+import type { KitchenWorkspaceIdentityState } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 import type { KitchenStatus } from '../../models/kitchen.model'
 
-const props = defineProps<{ open: boolean }>()
-const workspace = useKitchenWorkspace()
-const { updateKitchen } = useKitchenUpdate()
+const props = defineProps<{
+  open: boolean
+  identity: KitchenWorkspaceIdentityState
+}>()
 const emit = defineEmits<{ 'update:open': [open: boolean] }>()
-
-const editingKitchenId = ref('')
-const slug = ref('')
-const status = ref<KitchenStatus>()
-const visibility = ref(false)
-const updateError = ref('')
-const saving = ref(false)
-let savingAttempt: symbol | undefined
-onScopeDispose(() => {
-  savingAttempt = undefined
+const open = computed({
+  get: () => props.open,
+  set: (value: boolean) => emit('update:open', value),
 })
 const statusItems: KitchenStatus[] = ['active', 'inactive', 'archived']
 const { currentUser } = useAuth()
-const captureCompletion = useCommandScope([
-  () => currentUser.value?.uid,
-  workspace.id,
-  workspace.outcome,
-  () => props.open,
-  slug,
-  status,
-  visibility,
-])
-
-watch(
-  () => props.open,
-  (open: boolean) => {
-    savingAttempt = undefined
-    saving.value = false
-    if (!open) return
-    const kitchen = workspace.data.value
-    if (workspace.outcome.value !== 'ready' || !kitchen) {
-      emit('update:open', false)
-      return
+type KitchenListingDraft = {
+  kitchenId: string
+  slug: string
+  status: KitchenStatus | undefined
+  visibility: boolean
+}
+const canonicalSlug = (slug: string) => normalizeSlug(slug, { maxLength: 80 })
+const {
+  draft,
+  changed,
+  saving,
+  error: updateError,
+  save: saveDraft,
+} = useIdentityEditor<KitchenListingDraft>({
+  open,
+  scope: [() => currentUser.value?.uid, () => props.identity.kitchenId.value],
+  canEdit: () => props.identity.canWriteKitchen.value,
+  createDraft: () => {
+    const kitchen = props.identity.listing.value
+    return {
+      kitchenId: props.identity.kitchenId.value,
+      slug: kitchen?.identity.slug || '',
+      status: kitchen?.identity.status,
+      visibility: kitchen?.identity.visibility ?? false,
     }
-    editingKitchenId.value = workspace.id.value
-    slug.value = kitchen.identity.slug
-    status.value = kitchen.identity.status
-    visibility.value = kitchen.identity.visibility
-    updateError.value = ''
   },
-  { flush: 'sync' }
-)
-
-async function save() {
-  if (saving.value || !status.value) return
-  if (
-    !editingKitchenId.value ||
-    editingKitchenId.value !== workspace.id.value ||
-    workspace.outcome.value !== 'ready'
-  ) {
-    updateError.value =
-      'The selected Kitchen changed or is unavailable. Reopen the editor.'
-    return
-  }
-  const normalizedSlug = slug.value.trim()
-  if (!normalizedSlug) {
-    updateError.value = 'Enter a Kitchen slug.'
-    return
-  }
-  const isCurrent = captureCompletion()
-  const attempt = Symbol()
-  savingAttempt = attempt
-  saving.value = true
-  updateError.value = ''
-  try {
-    await updateKitchen(
+  signature: (value) =>
+    JSON.stringify([canonicalSlug(value.slug), value.status, value.visibility]),
+  save: async (value, isCurrent) => {
+    if (!value.kitchenId || value.kitchenId !== props.identity.kitchenId.value)
+      throw new Error(
+        'The selected Kitchen changed or is unavailable. Reopen the editor.'
+      )
+    const slug = value.slug.trim()
+    if (!slug) throw new Error('Enter a Kitchen slug.')
+    if (!value.status) throw new Error('Choose a Kitchen status.')
+    await props.identity.update(
       {
-        kitchenId: editingKitchenId.value,
-        changes: {
-          'identity.slug': normalizedSlug,
-          'identity.status': status.value,
-          'identity.visibility': visibility.value,
-        },
+        'identity.slug': slug,
+        'identity.status': value.status,
+        'identity.visibility': value.visibility,
       },
       isCurrent
     )
-    if (isCurrent()) emit('update:open', false)
-  } catch (cause) {
-    if (!isCurrent()) return
-    updateError.value =
-      cause instanceof Error ? cause.message : 'Kitchen could not be updated.'
-  } finally {
-    if (savingAttempt === attempt) {
-      savingAttempt = undefined
-      saving.value = false
-    }
-  }
+  },
+  onSaved: () => {
+    open.value = false
+  },
+  errorMessage: 'Kitchen could not be updated.',
+})
+const canSave = computed(() => {
+  const saved = props.identity.listing.value?.identity
+  const { slug, status, visibility } = draft.value
+  if (!saved || !status) return false
+  if (status !== saved.status || visibility !== saved.visibility)
+    return changed.value
+  const nextSlug = canonicalSlug(slug)
+  if (nextSlug === saved.slug) return false
+  // A legacy slug can change on save even when the draft matches on opening.
+  return changed.value || nextSlug === canonicalSlug(saved.slug)
+})
+function save() {
+  if (canSave.value) return saveDraft()
 }
 </script>

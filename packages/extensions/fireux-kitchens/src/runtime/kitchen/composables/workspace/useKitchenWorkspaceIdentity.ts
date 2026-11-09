@@ -24,8 +24,14 @@ export function useKitchenWorkspaceIdentity() {
         Boolean(currentUser.value && workspace.data.value) &&
         workspace.outcome.value === 'ready'
     ),
-    update: (changes: Parameters<typeof updater.updateKitchen>[0]['changes']) =>
-      updater.updateKitchen({ kitchenId: workspace.id.value, changes }),
+    update: (
+      changes: Parameters<typeof updater.updateKitchen>[0]['changes'],
+      isSurfaceCurrent?: () => boolean
+    ) =>
+      updater.updateKitchen(
+        { kitchenId: workspace.id.value, changes },
+        isSurfaceCurrent
+      ),
   }
   const { appId } = useFireUXConfig()
   const fields = computed(() => readPlaceIdentity(state.place.value))
@@ -51,8 +57,8 @@ export function useKitchenWorkspaceIdentity() {
       status,
       canWrite: state.canWrite,
     })
-  const canWriteKitchen = computed(
-    () => state.outcome.value === 'ready' && state.canWrite.value
+  const canWriteKitchen = computed(() =>
+    Boolean(currentUser.value && workspace.root.value)
   )
   const mutationAuthority = computed(() => ({
     appId,
@@ -84,6 +90,7 @@ export function useKitchenWorkspaceIdentity() {
   }))
   return {
     ...state,
+    listing: workspace.root,
     fields,
     status,
     readState,

@@ -71,9 +71,17 @@ These are separate responsibilities:
 | Capability page | Do the named domain work with its own controls and authority.                                                   |
 | Record page     | Inspect or edit a record when the journey needs a separate destination.                                         |
 
+The [Workspace sidebar](../../packages/core/fireux-core/src/runtime/workspace/components/Sidebar.vue)
+links the App wordmark to the configured public `homePath`. Compact mode uses
+the App logo for the same link. Signed-in users can also reach App Home from
+their account menu. The [Entity switcher](../../packages/core/fireux-core/src/runtime/workspace/components/EntitySwitcher.vue)
+opens one menu from the selected Entity's avatar, name or chevrons when choices
+are available. Compact mode opens the same menu from the avatar. Both menus
+offer the active family's Workspace Home followed by its available Entities.
+With no switching choices, the control links directly to Workspace Home.
+
 Kitchen's inspected navigation places shared Identity & brand and Team before
-Misebox domain groups, with Settings after domain work. Home is reached through
-the persistent selected-Kitchen control rather than another normal sidebar row.
+Misebox domain groups, with Settings after domain work.
 Other families retain their own declared navigation; this is not a claim that
 all have adopted Kitchen's grouping or need the same number of groups.
 

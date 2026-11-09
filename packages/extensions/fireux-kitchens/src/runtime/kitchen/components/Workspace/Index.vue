@@ -42,7 +42,7 @@
     v-else
     ref="single"
     :selected="selected"
-    :can-update="workspace.outcome.value === 'ready'"
+    :identity="identity"
   />
   <WorkspaceKitchenHomeCreate
     v-if="creation.canCreate.value"
@@ -64,6 +64,7 @@ import {
 import { useKitchenCreate } from '../../composables/useKitchenCreate'
 import { useKitchenAnonymousAdoption } from '../../composables/workspace/useKitchenAnonymousAdoption'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+import { useKitchenWorkspaceIdentity } from '../../composables/workspace/useKitchenWorkspaceIdentity'
 
 import { useWorkspacePageState } from 'fireux-core/runtime/workspace/composables/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'
@@ -74,6 +75,7 @@ const { currentUser } = useAuth()
 const creation = useKitchenCreate()
 const adoption = useKitchenAnonymousAdoption()
 const workspace = useKitchenWorkspace()
+const identity = useKitchenWorkspaceIdentity()
 const session = useAppSession()
 const createOpen = ref(false)
 const single = ref<InstanceType<typeof WorkspaceKitchenHomeSingle> | null>(null)

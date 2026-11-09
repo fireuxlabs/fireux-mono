@@ -5,7 +5,7 @@ import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { computed, ref } from 'vue'
 
-test('footer uses the settled User reader and keeps only account actions', async () => {
+test('footer reads the settled User and preserves account destinations and sign-out', async () => {
   const source = readFileSync(
     new URL(
       '../../../../runtime/components/layouts/shared/SideBarFooter.vue',
@@ -28,9 +28,8 @@ test('footer uses the settled User reader and keeps only account actions', async
     onMounted: (fn) => {
       mount = fn
     },
-    defineProps: () => ({}),
-    withDefaults: () => ({ collapsed: false, showHome: true }),
-    useFireUXConfig: () => ({ appName: 'Example', homePath: '/home' }),
+    defineProps: () => ({ collapsed: false }),
+    useFireUXConfig: () => ({ appShortName: 'Example', homePath: '/home' }),
     useAuth: () => ({
       currentUser: ref({ displayName: 'Provider', isAnonymous: false }),
       signOutUser: async (to) => calls.push(to),
@@ -50,7 +49,7 @@ test('footer uses the settled User reader and keeps only account actions', async
   }
   const state = compileFunction(
     stripTypeScriptTypes(script) +
-      '; return {profileUser,userMenuItems,actionItems,target,signInTo}',
+      '; return {profileUser,userMenuItems,target,signInTo}',
     Object.keys(deps)
   )(...Object.values(deps))
   assert.equal(state.profileUser.value, undefined)
@@ -69,7 +68,6 @@ test('footer uses the settled User reader and keeps only account actions', async
   )
   await actions[2].onSelect()
   assert.deepEqual(calls, ['/'])
-  assert.equal(state.actionItems.value[0].to, '/home')
   outcome.value = 'error'
   user.value = null
   assert.equal(state.profileUser.value.displayName, 'Provider')

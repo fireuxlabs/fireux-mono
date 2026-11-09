@@ -13,9 +13,23 @@ import {
   createSSRApp,
   h,
   nextTick,
+  shallowReactive,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import test from 'node:test'
+import { useIdentityEditor } from '../../../../../core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts'
+import { useWorkspaceIdentity } from '../../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspaceIdentity.ts'
+import { normalizeString } from '../../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
+import { normalizeSlug } from '../../../../../core/fireux-core/src/runtime/utils/slug/normalize-slug.ts'
+import { readPlaceCurrencyCode } from '../../../../fireux-places/src/runtime/place/utils/place-spine.ts'
+import {
+  readPlaceIdentity,
+  placeIdentityFields,
+} from '../../../../fireux-places/src/runtime/place/models/identity-edit.ts'
+import {
+  kitchenIdentityPurpose,
+  kitchenIdentityBoundary,
+} from '../../runtime/kitchen/models/identity-intent.ts'
 
 const runtime = new URL('../../runtime/', import.meta.url)
 function load(path, expression, deps) {
@@ -49,7 +63,14 @@ const deferred = () => {
   return { promise, resolve }
 }
 
-async function listingHarness() {
+async function listingHarness({
+  initialOpen = false,
+  missingPlace = false,
+  kitchenId = 'a',
+  storedSlug = 'original',
+  reviewed = true,
+  mountEditor = true,
+} = {}) {
   const scope = effectScope()
   const token = deferred(),
     response = deferred(),
@@ -57,26 +78,37 @@ async function listingHarness() {
     laterResponse = deferred(),
     calls = [],
     events = []
-  let credentials = 0
-  const props = reactive({ open: false })
+  let credentials = 0,
+    workspaceReads = 0
   const currentUser = ref({
     uid: 'alice',
     getIdToken: () =>
       ++credentials === 1 ? token.promise : laterToken.promise,
   })
+  const session = {
+    appUser: ref({ role: 'user', subscription: 'free' }),
+  }
+  const root = ref({
+    id: kitchenId,
+    identity: { slug: storedSlug, status: 'active', visibility: true },
+  })
+  const outcome = ref('ready')
   const workspace = {
-    id: ref('a'),
-    outcome: ref('ready'),
-    data: ref({
-      identity: { slug: 'original', status: 'active', visibility: true },
-    }),
+    id: ref(kitchenId),
+    root,
+    outcome,
+    data: computed(() =>
+      root.value && outcome.value === 'ready'
+        ? { ...root.value, presentation: { display_name: 'Supplied Kitchen' } }
+        : null
+    ),
+    place: ref(missingPlace ? null : { id: kitchenId, name: 'Venue A' }),
+    placeOutcome: ref(missingPlace ? 'empty' : 'ready'),
   }
   const updater = scope.run(() =>
     load('kitchen/composables/useKitchenUpdate.ts', 'useKitchenUpdate()', {
       useAuth: () => ({ currentUser }),
-      useAppSession: () => ({
-        appUser: ref({ role: 'user', subscription: 'free' }),
-      }),
+      useAppSession: () => session,
       useFireUXConfig: () => ({ appId: 'app' }),
       useRoute: () => ({ path: '/workspace/kitchen/identity' }),
       useCommandScope,
@@ -88,29 +120,58 @@ async function listingHarness() {
       },
     })
   )
-  const editor = scope.run(() =>
+  const useKitchenIdentityProjection = load(
+    'kitchen/composables/useKitchenIdentity.ts',
+    'useKitchenIdentityProjection',
+    { computed, normalizeString, readPlaceCurrencyCode }
+  )
+  const identity = scope.run(() =>
     load(
-      'kitchen/components/Identity/ListingEdit.vue',
-      '({save,slug,status,visibility,saving})',
+      'kitchen/composables/workspace/useKitchenWorkspaceIdentity.ts',
+      'useKitchenWorkspaceIdentity()',
       {
-        ref,
-        watch,
-        onScopeDispose,
-        useCommandScope,
-        defineProps: () => props,
-        defineEmits:
-          () =>
-          (...event) =>
-            events.push(event),
-        useAuth: () => ({ currentUser }),
-        useKitchenWorkspace: () => workspace,
+        computed,
+        useWorkspaceIdentity,
+        useKitchenIdentityProjection,
+        useKitchenWorkspace: () => {
+          workspaceReads++
+          return workspace
+        },
         useKitchenUpdate: () => updater,
+        useAuth: () => ({ currentUser }),
+        useFireUXConfig: () => ({ appId: 'app' }),
+        readPlaceIdentity,
+        placeIdentityFields,
+        kitchenIdentityPurpose,
+        kitchenIdentityBoundary,
       }
     )
   )
-  props.open = true
+  const props = shallowReactive({ open: initialOpen, identity })
+  const createEditor = (supplied, emit) =>
+    scope.run(() =>
+      load(
+        'kitchen/components/Identity/ListingEdit.vue',
+        '({save,draft,canSave,saving,updateError})',
+        {
+          computed,
+          useIdentityEditor,
+          normalizeSlug,
+          defineProps: () => supplied,
+          defineEmits: () => emit,
+          useAuth: () => ({ currentUser }),
+        }
+      )
+    )
+  const editor = mountEditor
+    ? createEditor(props, (...event) => {
+        events.push(event)
+        if (event[0] === 'update:open') props.open = event[1]
+      })
+    : undefined
+  if (mountEditor && !initialOpen) props.open = true
   await nextTick()
-  editor.slug.value = 'reviewed'
+  if (mountEditor && reviewed) editor.draft.value.slug = 'reviewed'
   return {
     scope,
     token,
@@ -121,6 +182,11 @@ async function listingHarness() {
     events,
     props,
     workspace,
+    identity,
+    currentUser,
+    session,
+    workspaceReads: () => workspaceReads,
+    createEditor,
     editor,
   }
 }
@@ -133,6 +199,12 @@ for (const change of [
   'status',
   'visibility',
   'Kitchen ABA',
+  'account ABA',
+  'authority ABA',
+  'root ABA',
+  'source ABA',
+  'membership ABA',
+  'disposal',
 ]) {
   test(`listing preparation respects the captured editor through credentials: ${change}`, async () => {
     const h = await listingHarness()
@@ -143,19 +215,41 @@ for (const change of [
       h.props.open = false
       h.props.open = true
     }
-    if (change === 'slug') h.editor.slug.value = 'new draft'
-    if (change === 'status') h.editor.status.value = 'inactive'
-    if (change === 'visibility') h.editor.visibility.value = false
+    if (change === 'slug') h.editor.draft.value.slug = 'new draft'
+    if (change === 'status') h.editor.draft.value.status = 'inactive'
+    if (change === 'visibility') h.editor.draft.value.visibility = false
     if (change === 'Kitchen ABA') {
       h.workspace.id.value = 'b'
       h.workspace.id.value = 'a'
     }
+    if (change === 'account ABA' || change === 'authority ABA') {
+      const previous = h.currentUser.value
+      h.currentUser.value = change === 'account ABA' ? { uid: 'bob' } : null
+      h.currentUser.value = previous
+    }
+    if (change === 'root ABA') {
+      const previous = h.workspace.root.value
+      h.workspace.root.value = null
+      h.workspace.root.value = previous
+    }
+    if (change === 'source ABA') {
+      h.workspace.data.value.identity.slug = 'other-source'
+      h.workspace.data.value.identity.slug = 'original'
+    }
+    if (change === 'membership ABA') {
+      const previous = h.session.appUser.value
+      h.session.appUser.value = { role: 'user', subscription: 'pro' }
+      h.session.appUser.value = previous
+    }
+    if (change === 'disposal') h.scope.stop()
+    const priorEvents = [...h.events]
     h.token.resolve('token')
     h.response.resolve({ ok: true, kitchen_id: 'a' })
     await pending
     assert.equal(h.editor.saving.value, false)
     if (change === 'none') {
       assert.equal(h.calls.length, 1)
+      assert.equal(h.calls[0].url, '/api/workspace/kitchen/update')
       assert.deepEqual(h.calls[0].options.body, {
         kitchen_id: 'a',
         patch: {
@@ -165,17 +259,257 @@ for (const change of [
         },
       })
       assert.deepEqual(h.events, [['update:open', false]])
+      assert.equal(h.props.open, false)
     } else {
       assert.deepEqual(
         h.calls,
         [],
         'obsolete preparation never dispatches a root edit'
       )
-      assert.deepEqual(h.events, [])
+      assert.deepEqual(
+        h.events,
+        priorEvents,
+        'obsolete completion emits no new dialog action'
+      )
     }
     h.scope.stop()
   })
 }
+
+test('an initially open controlled listing uses the supplied Identity without acquiring another Workspace', async () => {
+  const h = await listingHarness({
+    initialOpen: true,
+    kitchenId: 'supplied',
+    reviewed: false,
+  })
+  assert.equal(
+    h.workspaceReads(),
+    1,
+    'only the owning Identity controller acquires Workspace state'
+  )
+  assert.equal(h.editor.draft.value.kitchenId, 'supplied')
+  assert.equal(h.editor.draft.value.slug, 'original')
+  h.editor.draft.value.status = 'archived'
+  const pending = h.editor.save()
+  await nextTick()
+  h.token.resolve('token')
+  h.response.resolve({ ok: true, kitchen_id: 'supplied' })
+  await pending
+  assert.equal(h.calls[0].options.body.kitchen_id, 'supplied')
+  assert.equal(h.calls[0].options.body.patch['identity.status'], 'archived')
+  assert.equal(h.props.open, false)
+  h.scope.stop()
+})
+
+test('unchanged and reverted listings do not submit or overwrite a different saved URL', async () => {
+  const h = await listingHarness({ reviewed: false })
+  h.token.resolve('token')
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  assert.equal(h.editor.canSave.value, false)
+  h.editor.draft.value.slug = ' ORIGINAL '
+  assert.equal(h.editor.canSave.value, false)
+  await h.editor.save()
+  h.editor.draft.value.visibility = false
+  assert.equal(h.editor.canSave.value, true)
+  h.editor.draft.value.visibility = true
+  h.workspace.root.value.identity.slug = 'another-name'
+  assert.equal(h.editor.canSave.value, false)
+  await h.editor.save()
+  h.editor.draft.value.slug = 'another-name'
+  assert.equal(
+    h.editor.canSave.value,
+    false,
+    'already matches the saved listing'
+  )
+  await h.editor.save()
+  assert.equal(h.calls.length, 0)
+  assert.equal(h.props.open, true)
+  h.scope.stop()
+})
+
+test('an explicit save can still normalize a historical listing URL', async () => {
+  const h = await listingHarness({
+    reviewed: false,
+    storedSlug: 'Älpha Kitchen',
+  })
+  assert.equal(h.editor.canSave.value, true)
+  const pending = h.editor.save()
+  h.token.resolve('token')
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  await pending
+  assert.equal(h.calls.length, 1)
+  assert.equal(h.calls[0].options.body.patch['identity.slug'], 'Älpha Kitchen')
+  assert.equal(h.props.open, false)
+  h.scope.stop()
+})
+
+for (const echoFirst of [true, false]) {
+  test(`returning to the opening URL during a save allows restoring it after the ${echoFirst ? 'listener' : 'response'} arrives first`, async () => {
+    const h = await listingHarness()
+    const first = h.editor.save()
+    h.token.resolve('token')
+    await nextTick()
+    await nextTick()
+    assert.equal(h.calls.length, 1)
+    h.editor.draft.value.slug = 'original'
+    if (echoFirst) h.workspace.root.value.identity.slug = 'reviewed'
+    h.response.resolve({ ok: true, kitchen_id: 'a' })
+    await first
+    if (!echoFirst) h.workspace.root.value.identity.slug = 'reviewed'
+    assert.equal(h.props.open, true)
+    assert.equal(h.editor.canSave.value, true)
+    const restore = h.editor.save()
+    h.laterToken.resolve('token')
+    h.laterResponse.resolve({ ok: true, kitchen_id: 'a' })
+    await restore
+    assert.equal(h.calls.length, 2)
+    assert.equal(h.calls[1].options.body.patch['identity.slug'], 'original')
+    assert.equal(h.props.open, false)
+    h.scope.stop()
+  })
+}
+
+test('missing Place identity does not disable a granted root listing edit', async () => {
+  const h = await listingHarness({ initialOpen: true, missingPlace: true })
+  assert.equal(h.identity.status.value, 'empty')
+  assert.equal(h.identity.canWrite.value, false)
+  assert.equal(h.identity.canWriteKitchen.value, true)
+  assert.equal(h.props.open, true)
+  const pending = h.editor.save()
+  await nextTick()
+  h.token.resolve('token')
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  await pending
+  assert.equal(h.calls.length, 1)
+  assert.equal(h.calls[0].options.body.kitchen_id, 'a')
+  assert.equal(h.props.open, false)
+  h.scope.stop()
+})
+
+test('a venue read failure during a listing edit preserves the authorised draft and save', async () => {
+  const h = await listingHarness({ kitchenId: 'selected' })
+  const pending = h.editor.save()
+  for (const phase of ['pending', 'error']) {
+    h.workspace.placeOutcome.value = phase
+    h.workspace.outcome.value = phase
+    assert.equal(h.identity.selectedKitchen.value, null)
+    assert.equal(h.identity.canWrite.value, false)
+    assert.equal(h.identity.canWriteKitchen.value, true)
+    assert.equal(h.props.open, true)
+    assert.equal(h.editor.draft.value.slug, 'reviewed')
+  }
+  h.token.resolve('token')
+  h.response.resolve({ ok: true, kitchen_id: 'selected' })
+  await pending
+  assert.equal(h.calls.length, 1)
+  assert.equal(h.calls[0].options.body.kitchen_id, 'selected')
+  assert.equal(h.calls[0].options.body.patch['identity.slug'], 'reviewed')
+  assert.equal(h.props.open, false)
+  h.scope.stop()
+})
+
+test('the Identity controller keeps its changes-first API and forwards the optional surface predicate', async () => {
+  const h = await listingHarness()
+  const pending = h.identity.update(
+    { 'identity.visibility': false },
+    () => false
+  )
+  h.token.resolve('token')
+  await assert.rejects(pending, /context changed/)
+  assert.deepEqual(h.calls, [])
+  const retry = h.identity.update({ 'identity.visibility': false })
+  h.laterToken.resolve('token')
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  await retry
+  assert.deepEqual(h.calls[0].options.body, {
+    kitchen_id: 'a',
+    patch: { 'identity.visibility': false },
+  })
+  h.scope.stop()
+})
+
+test('the canonical echo of this listing write preserves its completion', async () => {
+  const h = await listingHarness()
+  h.editor.draft.value.slug = '  Älpha Kitchen  '
+  const pending = h.editor.save()
+  await nextTick()
+  h.token.resolve('token')
+  await nextTick()
+  assert.equal(h.calls.length, 1)
+  assert.equal(h.calls[0].options.body.patch['identity.slug'], 'Älpha Kitchen')
+  h.workspace.data.value.identity.slug = 'aelpha-kitchen'
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  await pending
+  assert.equal(h.editor.updateError.value, '')
+  assert.equal(h.editor.saving.value, false)
+  assert.equal(h.props.open, false)
+  assert.deepEqual(h.events, [['update:open', false]])
+  h.scope.stop()
+})
+
+test('Home Single opens the supplied root listing and receives its controlled close', async () => {
+  const fixture = await listingHarness({
+    mountEditor: false,
+    missingPlace: true,
+  })
+  const props = shallowReactive({
+    selected: fixture.workspace.data.value,
+    identity: fixture.identity,
+  })
+  const source = readFileSync(
+    new URL('kitchen/components/Workspace/Home/Single.vue', runtime),
+    'utf8'
+  )
+  let home, dialog
+  const app = createSSRApp({
+    setup: () => {
+      home = fixture.scope.run(() =>
+        load(
+          'kitchen/components/Workspace/Home/Single.vue',
+          '({editOpen,openEdit})',
+          { ref, defineProps: () => props, defineExpose: () => {} }
+        )
+      )
+      home.openEdit()
+      return { ...home, ...props, kitchenWorkspaceAvatar: () => ({}) }
+    },
+    render: compile(
+      source.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
+    ),
+  })
+  app.component('WorkspaceSingleCard', { render: () => null })
+  app.component('UAvatar', { render: () => null })
+  app.component('KitchenIdentityListingEdit', {
+    props: ['identity', 'open'],
+    setup: (supplied, { emit }) => {
+      assert.equal(supplied.identity, fixture.identity)
+      assert.equal(supplied.open, true)
+      dialog = fixture.createEditor(supplied, emit)
+      return () => null
+    },
+  })
+  await renderToString(app)
+  assert.equal(home.editOpen.value, true)
+  assert.equal(dialog.draft.value.kitchenId, 'a')
+  assert.equal(
+    fixture.identity.canWrite.value,
+    false,
+    'the venue editor is unavailable'
+  )
+  dialog.draft.value.slug = 'home-reviewed'
+  const pending = dialog.save()
+  await nextTick()
+  fixture.token.resolve('token')
+  fixture.response.resolve({ ok: true, kitchen_id: 'a' })
+  await pending
+  assert.equal(
+    fixture.calls[0].options.body.patch['identity.slug'],
+    'home-reviewed'
+  )
+  assert.equal(home.editOpen.value, false)
+  assert.equal(fixture.workspaceReads(), 1)
+  fixture.scope.stop()
+})
 
 test('a dispatched listing update retains its result while a closed editor gets no completion', async () => {
   const h = await listingHarness()
@@ -202,7 +536,7 @@ for (const dispatched of [false, true]) {
       await nextTick()
       assert.equal(h.calls.length, 1)
     }
-    h.editor.slug.value = 'replacement'
+    h.editor.draft.value.slug = 'replacement'
     h.token.resolve('token')
     h.response.resolve({ ok: true, kitchen_id: 'a' })
     await pending
@@ -231,6 +565,7 @@ test('an old listing result cannot release a reopened editor newer save', async 
   assert.equal(h.calls.length, 1)
   h.props.open = false
   h.props.open = true
+  h.editor.draft.value.slug = 'newer'
   const newer = h.editor.save()
   await nextTick()
   h.laterToken.resolve('token')
@@ -447,8 +782,9 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
     const identity = {
       status: ref(status),
       readState: ref(status === 'pending' ? 'loading' : status),
-      outcome: ref(kitchenReady ? 'ready' : 'idle'),
-      selectedKitchen: ref(
+      outcome: ref(status),
+      selectedKitchen: ref(null),
+      listing: ref(
         kitchenReady
           ? {
               id: 'a',
@@ -458,6 +794,8 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
           : null
       ),
       kitchenId: ref(kitchenReady ? 'a' : ''),
+      placeId: ref(kitchenReady ? 'a' : ''),
+      currencyCode: ref(''),
       canWriteKitchen: ref(kitchenReady),
       canWrite: ref(false),
       fields: ref({}),
@@ -489,7 +827,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       'USlideover',
       'PlaceEditGoogleReview',
       'PlaceDetail',
-      'KitchenIdentityListingEdit',
+      'WorkspaceKitchenContext',
       'UAvatar',
       'UBadge',
       'UIcon',
@@ -525,6 +863,19 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
     )
     app.component('KitchenIdentityProfile', {
       props: ['identity'],
+      setup: (props) =>
+        load(
+          'kitchen/components/Identity/Profile.vue',
+          '({sections,section,sectionTitle,kitchenPath,publicTo,editor})',
+          {
+            computed,
+            ref,
+            watch,
+            defineProps: () => props,
+            defineExpose: () => {},
+            readKitchenVisibility: (kitchen) => kitchen?.identity?.visibility,
+          }
+        ),
       render: compile(
         profileSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
       ),
@@ -549,7 +900,22 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       props: ['title'],
       setup: (props) => () => h('p', props.title),
     })
-    return renderToString(app)
+    let suppliedToEditor = false
+    app.component('KitchenIdentityListingEdit', {
+      props: ['identity', 'open'],
+      setup: (supplied) => {
+        assert.equal(supplied.identity, identity)
+        suppliedToEditor = true
+        return () => null
+      },
+    })
+    const html = await renderToString(app)
+    assert.equal(
+      suppliedToEditor,
+      true,
+      'Identity Listing passes its existing controller to the editor'
+    )
+    return html
   }
   for (const status of ['empty', 'error', 'pending']) {
     const html = await render(status, true)
@@ -564,16 +930,18 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
 
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {
   const scope = effectScope()
+  const kitchen = ref({
+    identity: { slug: 'kitchen-a', status: 'active', visibility: true },
+    currency_code: 'USD',
+  })
   const identity = {
     status: ref('ready'),
     kitchenId: ref('a'),
     placeId: ref('a'),
     canWrite: ref(true),
     canWriteKitchen: ref(true),
-    selectedKitchen: ref({
-      identity: { slug: 'kitchen-a', status: 'active', visibility: true },
-      currency_code: 'USD',
-    }),
+    selectedKitchen: kitchen,
+    listing: kitchen,
     place: ref({
       name: 'Venue A',
       tagline: 'Hello',

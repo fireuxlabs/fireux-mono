@@ -13,22 +13,24 @@
     }}</span>
   </WorkspaceSingleCard>
   <p v-else class="fx-type-caption">Choose a Kitchen.</p>
-  <KitchenIdentityListingEdit v-model:open="editOpen" />
+  <KitchenIdentityListingEdit v-model:open="editOpen" :identity="identity" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import type { KitchenWorkspaceIdentityState } from '../../../composables/workspace/useKitchenWorkspaceIdentity'
 
 const props = defineProps<{
   selected:
     | ReturnType<typeof useKitchenWorkspace>['collection']['value'][number]
     | undefined
-  canUpdate: boolean
+  identity: KitchenWorkspaceIdentityState
 }>()
 const editOpen = ref(false)
 function openEdit() {
-  if (props.selected && props.canUpdate) editOpen.value = true
+  if (props.selected && props.identity.canWriteKitchen.value)
+    editOpen.value = true
 }
 defineExpose({ openEdit })
 </script>

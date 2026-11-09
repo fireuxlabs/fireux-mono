@@ -277,11 +277,11 @@ test('Recipes and Ingredients are production children outside the Menus group', 
   }
 })
 
-test('Home uses the footer Kitchen switcher while Overview remains in primary navigation', () => {
+test('Misebox Kitchen Home declares bottom placement while Overview uses primary navigation', () => {
   const home = navigation(
     fileURLToPath(
       new URL(
-        '../../../../../projects/misebox/misebox-app/app/pages/index.vue',
+        '../../../../../projects/misebox/misebox-app/app/pages/workspace/kitchen/index.vue',
         import.meta.url
       )
     )
@@ -290,7 +290,7 @@ test('Home uses the footer Kitchen switcher while Overview remains in primary na
   assert.equal(home.key, 'workspace-kitchen')
   assert.equal(home.label, 'Home')
   assert.equal(home.position, 'bottom')
-  assert.equal(home.group, '')
+  assert.ok(!home.group, 'Kitchen Home should be ungrouped')
   assert.equal(overview.position, 'top')
 })
 

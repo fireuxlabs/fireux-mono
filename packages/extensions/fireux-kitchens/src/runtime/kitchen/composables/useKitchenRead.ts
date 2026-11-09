@@ -70,6 +70,9 @@ export function useKitchenRead(
     })
   )
   return {
+    root: computed(() =>
+      source.pending.value || source.error.value ? null : parsed.value
+    ),
     kitchen: computed(() => (outcome.value === 'ready' ? parsed.value : null)),
     place: computed(() =>
       outcome.value === 'ready' &&

@@ -2,8 +2,9 @@
 <template>
   <div>
     <UNavigationMenu
+      v-if="!homeInUserMenu"
       :collapsed="collapsed"
-      :items="actionItems"
+      :items="[appHome]"
       orientation="vertical"
     />
 
@@ -57,17 +58,17 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserRead } from '../../../user/composables/useUserRead'
 import { useUserView } from '../../../user/composables/useUserView'
 
-const props = withDefaults(
-  defineProps<{
-    collapsed: boolean
-    showHome?: boolean
-  }>(),
-  {
-    showHome: true,
-  }
-)
+const props = defineProps<{
+  collapsed: boolean
+  homeInUserMenu?: boolean
+}>()
 
 const fireux = useFireUXConfig()
+const appHome = {
+  label: `${fireux.appShortName} home`,
+  icon: 'i-lucide-house',
+  to: fireux.homePath || '/',
+}
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
 const { uid, isSignedIn, isGuest } = useAuthPhase()
@@ -124,6 +125,7 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
     },
   ],
   [
+    ...(props.homeInUserMenu ? [appHome] : []),
     { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/user-profile' },
     { label: 'Settings', icon: 'i-lucide-settings', to: '/dashboard/settings' },
   ],
@@ -135,18 +137,4 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
     },
   ],
 ])
-
-const actionItems = computed(() => {
-  const items: any[] = []
-
-  if (props.showHome) {
-    items.push({
-      label: `${fireux.appShortName || fireux.appName} home`,
-      icon: 'i-lucide-house',
-      to: fireux.homePath || '/',
-    })
-  }
-
-  return items
-})
 </script>

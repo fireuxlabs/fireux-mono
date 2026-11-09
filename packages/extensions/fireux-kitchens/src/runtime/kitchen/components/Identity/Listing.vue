@@ -1,8 +1,5 @@
 <template>
-  <UCard
-    v-if="identity.outcome.value === 'ready' && identity.selectedKitchen.value"
-    aria-label="Kitchen listing"
-  >
+  <UCard v-if="identity.listing.value" aria-label="Kitchen listing">
     <template #header>
       <div class="workspace-profile__header">
         <div class="workspace-profile__heading-row">
@@ -30,13 +27,16 @@
       </div>
       <KitchenEditPublication
         :key="identity.kitchenId.value"
-        :kitchen="identity.selectedKitchen.value"
+        :kitchen="identity.listing.value"
         :kitchen-id="identity.kitchenId.value"
         :can-write="identity.canWriteKitchen.value"
       />
     </div>
   </UCard>
-  <KitchenIdentityListingEdit v-model:open="kitchenEditorOpen" />
+  <KitchenIdentityListingEdit
+    v-model:open="kitchenEditorOpen"
+    :identity="identity"
+  />
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
@@ -46,11 +46,11 @@ const props = defineProps<{
 }>()
 const kitchenEditorOpen = ref(false)
 const kitchenPath = computed(() => {
-  const slug = props.identity.selectedKitchen.value?.identity?.slug
+  const slug = props.identity.listing.value?.identity.slug
   return slug ? `/kitchens/${encodeURIComponent(slug)}` : ''
 })
 const kitchenStatus = computed(() => {
-  const status = props.identity.selectedKitchen.value?.identity?.status
+  const status = props.identity.listing.value?.identity.status
   return status === 'active'
     ? 'Active'
     : status === 'archived'

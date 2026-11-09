@@ -1,7 +1,7 @@
 # Workspace entity family
 
 Updated: 2026-11-09
-Ref: cc65fd8ef
+Ref: 426cb858c
 Role: map, not canon
 
 ## Purpose
@@ -87,14 +87,14 @@ host, with a one-year lifetime. A browser reload or server restart preserves a
 valid selection. Reconciliation may replace it only after the available list is
 settled; a restored ID never grants read or write authority. Kitchen's collection
 propagates unresolved access and idle Kitchen/Place reads instead of reporting an
-empty list during startup. Checks: Core `workspace-selection.test.mjs` and Kitchen
-`workspace-readiness.test.mjs`. This is last-selection memory, not an account
-primary-Entity preference. Kitchen prioritises an authorised explicit link, then a
+empty list during startup. Kitchen's `kitchen/kitchen-access.test.mjs` and
+`kitchen-document.test.mjs` cover that collection. This is last-selection memory,
+not an account primary-Entity preference. Kitchen prioritises an authorised explicit link, then a
 valid remembered selection, then the first available Kitchen after access settles.
 There is no separate Primary Kitchen control, preference field or command.
 Core synchronises every component-local cookie ref with shared selection so
 navigation/disposal cannot flush an older selection. Verify Core's
-`workspace-selection.test.mjs` and Kitchen's `workspace-readiness.test.mjs`.
+`workspace-selection.test.mjs`.
 
 ## Workspace arrival language
 
@@ -975,14 +975,14 @@ this interaction comparison is still limited to the named surfaces.
 | Test       | Strings / focused string        | Same layout; one form for create dialog and record editor; Info/JSON                      | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model |
 | Team       | People / focused person         | Same layout; Team person forms, focus, capacity and role-label UI; Info/JSON              | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior   |
 
-| Workspace concern   | Kitchen                                                                                    | Project                                           | Classification                                                 |
-| ------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- | -------------------------------------------------------------- |
-| Landing display     | Kitchen joined with same-id Place; display name/image/tagline                              | Project name, image and description               | Accepted domain difference                                     |
-| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway       | Project creation and Project Identity editor      | Accepted domain difference                                     |
-| Test transport      | Kitchen child reader; Kitchen id in request body                                           | Project collection reader; Project id in endpoint | Accepted transport difference; matching simple command surface |
-| Team records        | Shared member profile enriched from linked accounts                                        | Same profile and account enrichment               | Shared record/interaction contract                             |
-| Team extras         | Invitation links and richer person details                                                 | Project-owned roles and identity composition      | Domain additions; not branches in the shared layout            |
-| Inspector           | Bounded collection/selected/derived; workspace id where an enclosing workspace is consumed | Same sections                                     | Shared composition; no unused section or full-record dump      |
+| Workspace concern   | Kitchen                                                                                    | Project                                           | Classification                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- | --------------------------------------------------------------- |
+| Landing display     | Kitchen joined with same-id Place; display name/image/tagline                              | Project name, image and description               | Accepted domain difference                                      |
+| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway       | Project creation and Project Identity editor      | Shared grouped Identity lifecycle; domain fields and onboarding |
+| Test transport      | Kitchen child reader; Kitchen id in request body                                           | Project collection reader; Project id in endpoint | Accepted transport difference; matching simple command surface  |
+| Team records        | Shared member profile enriched from linked accounts                                        | Same profile and account enrichment               | Shared record/interaction contract                              |
+| Team extras         | Invitation links and richer person details                                                 | Project-owned roles and identity composition      | Domain additions; not branches in the shared layout             |
+| Inspector           | Bounded collection/selected/derived; workspace id where an enclosing workspace is consumed | Same sections                                     | Shared composition; no unused section or full-record dump       |
 
 Landing's enclosing workspace section is omitted because the selected record
 is itself the workspace. Test and Team include the parent workspace id. The
@@ -1604,16 +1604,20 @@ as listener acknowledgement. This is UI lifecycle, not server revision or
 optimistic-concurrency enforcement. Success/error feedback applies only to the
 current attempt.
 
-Kitchen's grouped listing editor is the second proving case: slug, status and
-visibility, with editing and cancellation available during save. Its production
-editor still owns that lifecycle locally; migration to the shared composable
-must retain the optional surface predicate in the existing Kitchen updater and
-its native dismissal policy. Core's
+Kitchen's grouped listing editor also adopts this lifecycle for slug, status and
+visibility, with editing and cancellation available during save. Its Identity
+and Home parents supply Kitchen Identity state over the shared Workspace
+instance; root readiness and `canWriteKitchen` remain independent of Place
+readiness. The typed draft,
+canonical slug signature, validation and patch stay Kitchen-owned. Its Identity
+controller forwards the optional surface predicate through the existing Kitchen
+updater before dispatch. Core's
 [two-shape behavioural tests](../../packages/core/fireux-core/src/test/composables/fireux/useIdentityEditor.test.mjs)
 cover both draft shapes and their credential, source, disposal and retry races;
-Project's `project-internals` and `project-identity` tests cover production
-adoption. Per-field Place/Portfolio controls keep their existing interaction;
-this grouped seam does not introduce a universal form or field registry.
+Project's `project-internals` and `project-identity` tests and Kitchen's
+`kitchen/identity-publication` tests cover production adoption. Per-field
+Place/Portfolio controls keep their existing interaction; this grouped seam
+does not introduce a universal form or field registry.
 
 Kitchen Identity composes venue profile sections, listing controls and domain
 context at `/workspace/kitchen/identity` inside Core's named Workspace route

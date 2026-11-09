@@ -25,8 +25,8 @@ export function useIdentityEditor<Draft extends object>(options: {
   const copy = (value: Draft): Draft => structuredClone(toRaw(value))
   const draft = ref(copy(options.createDraft())) as Ref<Draft>
   const signature = computed(() => options.signature(draft.value))
-  const original = ref(signature.value)
-  const changed = computed(() => signature.value !== original.value)
+  const baseline = ref(signature.value)
+  const changed = computed(() => signature.value !== baseline.value)
   const saving = ref(false)
   const error = ref('')
   const canEdit = computed(() => Boolean(toValue(options.canEdit)))
@@ -62,7 +62,7 @@ export function useIdentityEditor<Draft extends object>(options: {
   function reset() {
     release()
     draft.value = copy(options.createDraft())
-    original.value = signature.value
+    baseline.value = signature.value
     error.value = ''
   }
   watch(
@@ -99,6 +99,7 @@ export function useIdentityEditor<Draft extends object>(options: {
     if (disposed || saving.value || !options.open.value || !canEdit.value)
       return
     const attempt = { signature: signature.value }
+    const revision = sourceRevision.value
     activeAttempt = attempt
     const inScope = capture()
     const isCurrent = () => activeAttempt === attempt && inScope()
@@ -106,6 +107,9 @@ export function useIdentityEditor<Draft extends object>(options: {
     error.value = ''
     try {
       await options.save(copy(draft.value), isCurrent)
+      if (activeAttempt !== attempt || sourceRevision.value !== revision) return
+      // A confirmed write can finish while the user is editing the next draft.
+      baseline.value = attempt.signature
       if (isCurrent()) options.onSaved?.()
     } catch (cause) {
       if (isCurrent())

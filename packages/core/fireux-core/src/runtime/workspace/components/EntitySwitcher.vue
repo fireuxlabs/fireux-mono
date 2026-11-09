@@ -11,17 +11,28 @@
     variant="ghost"
   />
   <UDropdownMenu
-    v-else-if="item.choices.length && collapsed"
-    :items="[item.choices]"
+    v-else-if="item.choices.length"
+    :items="[
+      [
+        {
+          label: `${workspaceLabel} Workspace home`,
+          icon: 'i-lucide-house',
+          to,
+        },
+      ],
+      item.choices,
+    ]"
     :content="{ align: 'center', collisionPadding: 12 }"
   >
     <UButton
+      :label="collapsed ? undefined : item.label"
       :icon="item.avatar?.src || item.image ? undefined : item.icon"
+      :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
       color="neutral"
       variant="ghost"
       size="sm"
       block
-      square
+      :square="collapsed"
       :aria-label="`${item.label}: change ${workspaceLabel}`"
     >
       <template v-if="item.avatar?.src || item.image" #leading>
@@ -34,41 +45,6 @@
       </template>
     </UButton>
   </UDropdownMenu>
-
-  <div v-else-if="item.choices.length">
-    <UButton
-      :to="to"
-      :label="item.label"
-      :icon="item.avatar?.src || item.image ? undefined : item.icon"
-      color="neutral"
-      variant="ghost"
-      size="sm"
-      block
-      :aria-label="`Open ${item.label}`"
-    >
-      <template v-if="item.avatar?.src || item.image" #leading>
-        <UAvatar
-          :src="item.image"
-          :alt="item.label"
-          v-bind="item.avatar"
-          size="2xs"
-        />
-      </template>
-    </UButton>
-    <UDropdownMenu
-      :items="[item.choices]"
-      :content="{ align: 'end', collisionPadding: 12 }"
-    >
-      <UButton
-        icon="i-lucide-chevrons-up-down"
-        color="neutral"
-        variant="ghost"
-        size="sm"
-        square
-        :aria-label="`Change ${workspaceLabel}`"
-      />
-    </UDropdownMenu>
-  </div>
 
   <UButton
     v-else

@@ -8,14 +8,17 @@
     :ui="{ body: 'workspace-sidebar__body' }"
   >
     <template #header="{ collapsed }">
-      <div class="workspace-sidebar__brand">
+      <div
+        class="workspace-sidebar__brand"
+        :class="{ 'workspace-sidebar__brand--compact': collapsed }"
+      >
         <NuxtLink
-          v-if="!collapsed"
-          :to="workspaceEntryPath"
+          :to="homePath || '/'"
           class="workspace-sidebar__home"
-          aria-label="Workspace Home"
+          :aria-label="`${appShortName} home`"
         >
-          <AppBrandWordmark size="card" alt="FireUX" />
+          <AppBrandLogo v-if="collapsed" size="small" :alt="appShortName" />
+          <AppBrandWordmark v-else size="card" :alt="appShortName" />
         </NuxtLink>
         <UTooltip :text="sidebarNext.label">
           <UButton
@@ -84,7 +87,7 @@
 
           <FireLayoutsSharedSideBarFooter
             :collapsed="collapsed ?? false"
-            :show-home="publicHomePath !== workspaceEntryPath"
+            home-in-user-menu
           />
         </div>
       </div>
@@ -107,7 +110,6 @@ import {
 } from '../utils/routes'
 import { useWorkspaceNav } from '../composables/useWorkspaceNav'
 import { workspaceActiveDestination } from '../utils/active-destination'
-import { useWorkspaceEntryCta } from '../composables/useWorkspaceEntryCta'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 
 const open = ref(false)
@@ -123,8 +125,7 @@ const sidebarCollapsed = computed({
 const groupVisit = ref(0)
 const workspaceNav = useWorkspaceNav()
 const route = useRoute()
-const { workspaceEntryPath } = useWorkspaceEntryCta()
-const { homePath: publicHomePath } = useFireUXConfig()
+const { appShortName, homePath } = useFireUXConfig()
 const nuxtApp = useNuxtApp()
 const workspace = computed(() =>
   workspaceFamilyFromRouteContext(

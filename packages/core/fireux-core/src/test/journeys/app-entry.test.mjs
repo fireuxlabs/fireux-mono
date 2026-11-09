@@ -283,24 +283,17 @@ async function renderSidebar({
   user = null,
   phase = 'guest',
   mounted = true,
+  workspace = true,
+  collapsed = false,
+  homePath = '/home',
+  entityPending = false,
+  entityItem = { label: 'Alpine house', choices: [{ label: 'Lake house' }] },
+  buttons = [],
+  dropdowns = [],
 } = {}) {
-  const path = new URL(
-    '../../runtime/components/layouts/shared/SideBarFooter.vue',
-    import.meta.url
-  )
-  const { descriptor } = parse(readFileSync(path, 'utf8'), {
-    filename: path.pathname,
-  })
-  const script = compileScript(descriptor, {
-    id: 'sidebar-auth',
-    inlineTemplate: true,
-  })
-  const code = transpileModule(script.content, {
-    compilerOptions: { module: ModuleKind.CommonJS, target: 9 },
-  }).outputText
-  const mod = { exports: {} }
   const vue = require('vue')
   const auth = { currentUser: ref(user), signOutUser() {} }
+  const config = { appShortName: 'Example', appName: 'Example App', homePath }
   const mocks = {
     vue: {
       ...vue,
@@ -310,15 +303,38 @@ async function renderSidebar({
     },
     '#imports': {
       useRoute: () => ({
+        path: '/workspace/property',
+        meta: { workspace: 'property' },
         fullPath: '/workspace/property?from=directory#details',
       }),
+      useNuxtApp: () => ({ vueApp: { component: (name) => name } }),
     },
+    '../utils/sidebar-mode': { workspaceSidebarNext: () => ({}) },
+    '../utils/routes': {
+      workspaceFamilyFromRouteContext: () => 'property',
+      toWorkspaceFamilyLabel: () => 'Property',
+    },
+    '../composables/useWorkspaceNav': {
+      useWorkspaceNav: () => ({ desktop: ref([]) }),
+    },
+    '../utils/active-destination': { workspaceActiveDestination: () => null },
   }
-  compileFunction(code, ['require', 'module', 'exports'])(
-    (id) => {
+  function component(file) {
+    const path = new URL(`../../runtime/${file}`, import.meta.url)
+    const { descriptor } = parse(readFileSync(path, 'utf8'), {
+      filename: path.pathname,
+    })
+    const script = compileScript(descriptor, {
+      id: file,
+      inlineTemplate: true,
+    })
+    const code = transpileModule(script.content, {
+      compilerOptions: { module: ModuleKind.CommonJS, target: 9 },
+    }).outputText
+    const mod = { exports: {} }
+    const importModule = (id) => {
       if (id in mocks) return mocks[id]
-      if (id.endsWith('/FireUXConfig'))
-        return { useFireUXConfig: () => ({ appName: 'BuenoHost' }) }
+      if (id.endsWith('/FireUXConfig')) return { useFireUXConfig: () => config }
       if (id.endsWith('/useAuth')) return { useAuth: () => auth }
       if (id.endsWith('/useAuthPhase'))
         return {
@@ -341,43 +357,246 @@ async function renderSidebar({
       if (id.endsWith('/useUserView'))
         return { useUserView: () => ({ toView: () => null }) }
       return require(id)
-    },
-    mod,
-    mod.exports
-  )
-  const app = createSSRApp(mod.exports.default, {
-    collapsed: false,
-    showHome: false,
-  })
-  app.component('UNavigationMenu', { render: () => null })
-  app.component('UButton', {
-    props: ['to', 'label'],
-    setup: (p) => () =>
-      h(
-        'a',
-        {
-          href:
-            typeof p.to === 'object'
-              ? `${p.to.path}?${new URLSearchParams(p.to.query)}`
-              : p.to,
-        },
-        p.label
-      ),
-  })
-  app.component('UDropdownMenu', {
+    }
+    compileFunction(code, ['require', 'module', 'exports'])(
+      importModule,
+      mod,
+      mod.exports
+    )
+    return mod.exports.default
+  }
+  const footer = component('components/layouts/shared/SideBarFooter.vue')
+  const app = workspace
+    ? createSSRApp(component('workspace/components/Sidebar.vue'))
+    : createSSRApp(footer, { collapsed })
+  const links = (items) =>
+    items.flat().map((item) => h('a', { href: item.to }, item.label))
+  app.component('FireLayoutsSharedSideBarFooter', footer)
+  app.component('UDashboardSidebar', {
     setup:
       (_, { slots }) =>
       () =>
-        h('div', slots.default?.()),
+        h('aside', [
+          h('header', slots.header({ collapsed })),
+          h('footer', slots.footer({ collapsed })),
+        ]),
   })
-  app.component('UAvatar', { render: () => null })
+  app.component('NuxtLink', {
+    props: ['to'],
+    setup:
+      (p, { slots }) =>
+      () =>
+        h('a', { href: p.to }, slots.default?.()),
+  })
+  app.component('ClientOnly', { setup: (_, { slots }) => slots.default })
+  const switcher = component('workspace/components/EntitySwitcher.vue')
+  app.component('WorkspacePropertyNavigation', {
+    props: ['collapsed'],
+    setup: (p) => () =>
+      h(switcher, {
+        collapsed: p.collapsed,
+        workspaceLabel: 'Property',
+        to: '/workspace/property',
+        pending: entityPending,
+        item: entityItem,
+      }),
+  })
+  app.component('UNavigationMenu', {
+    props: ['items'],
+    setup: (p) => () => h('nav', links(p.items)),
+  })
+  app.component('UButton', {
+    props: {
+      to: [String, Object],
+      label: String,
+      trailingIcon: String,
+      square: Boolean,
+      loading: Boolean,
+      disabled: Boolean,
+    },
+    setup: (p, { attrs, slots }) => {
+      buttons.push({ ...p, ariaLabel: attrs['aria-label'] })
+      return () =>
+        h(
+          p.to ? 'a' : 'button',
+          {
+            href:
+              typeof p.to === 'object'
+                ? `${p.to.path}?${new URLSearchParams(p.to.query)}`
+                : p.to,
+            disabled: p.disabled || undefined,
+          },
+          [slots.leading?.(), p.label, slots.trailing?.()]
+        )
+    },
+  })
+  app.component('UDropdownMenu', {
+    props: ['items'],
+    setup: (p, { slots }) => {
+      dropdowns.push(p.items)
+      return () => h('div', [slots.default?.(), h('menu', links(p.items))])
+    },
+  })
+  app.component('UAvatar', {
+    props: ['src', 'alt'],
+    setup: (p) => () => h('img', { src: p.src, alt: p.alt }),
+  })
+  for (const name of ['AppBrandWordmark', 'AppBrandLogo']) {
+    app.component(name, { render: () => h('img', { src: name }) })
+  }
+  for (const name of ['USeparator', 'USkeleton', 'UTooltip']) {
+    app.component(name, { render: () => null })
+  }
   return renderToString(app)
 }
+
+test('Workspace choices share one identity trigger and the same Home and domain menu in either sidebar mode', async () => {
+  for (const collapsed of [false, true]) {
+    const calls = []
+    const choice = { label: 'Lake house', onSelect: () => calls.push('lake') }
+    const buttons = [],
+      dropdowns = []
+    const html = await renderSidebar({
+      collapsed,
+      buttons,
+      dropdowns,
+      entityItem: {
+        label: 'Alpine house',
+        avatar: { src: '/alpine.png' },
+        choices: [choice],
+      },
+    })
+    assert.equal(dropdowns.length, 1, 'the Entity has one native dropdown')
+    const [home, ...choices] = dropdowns[0].flat()
+    assert.deepEqual(home, {
+      label: 'Property Workspace home',
+      icon: 'i-lucide-house',
+      to: '/workspace/property',
+    })
+    assert.deepEqual(choices, [choice])
+    choices[0].onSelect()
+    assert.deepEqual(
+      calls,
+      ['lake'],
+      'the menu keeps the domain selection action'
+    )
+    const triggers = buttons.filter((button) =>
+      button.ariaLabel?.includes('Alpine house')
+    )
+    assert.equal(
+      triggers.length,
+      1,
+      'identity and change control are one trigger'
+    )
+    assert.equal(
+      triggers[0].to,
+      undefined,
+      'the trigger opens the menu; Home is a menu action'
+    )
+    assert.equal(triggers[0].label, collapsed ? undefined : 'Alpine house')
+    assert.equal(
+      triggers[0].trailingIcon,
+      collapsed ? undefined : 'i-lucide-chevrons-up-down'
+    )
+    assert.equal(Boolean(triggers[0].square), collapsed)
+    assert.match(html, /src="\/alpine.png" alt="Alpine house"/)
+  }
+})
+
+test('Workspace pending and no-choice states retain their loading and direct Home behavior', async () => {
+  for (const collapsed of [false, true]) {
+    for (const pending of [false, true]) {
+      const buttons = [],
+        dropdowns = []
+      await renderSidebar({
+        collapsed,
+        buttons,
+        dropdowns,
+        entityPending: pending,
+        entityItem: {
+          label: 'Property Workspace',
+          choices: pending ? [{ label: 'Retained choice' }] : [],
+        },
+      })
+      assert.deepEqual(
+        dropdowns,
+        [],
+        'loading and empty choices do not open a menu'
+      )
+      const control = buttons.find((button) =>
+        button.ariaLabel?.includes('Property')
+      )
+      assert.ok(control)
+      assert.equal(control.to, pending ? undefined : '/workspace/property')
+      assert.equal(Boolean(control.disabled), pending)
+      assert.equal(Boolean(control.loading), pending)
+      assert.equal(control.trailingIcon, undefined)
+      assert.equal(Boolean(control.square), collapsed)
+      assert.equal(
+        control.label,
+        collapsed
+          ? undefined
+          : pending
+            ? 'Loading Property'
+            : 'Property Workspace'
+      )
+    }
+  }
+})
+
+test('Workspace brand and account link to public App Home while the switcher opens Workspace Home', async () => {
+  for (const collapsed of [false, true]) {
+    for (const homePath of ['/home', '/']) {
+      const html = await renderSidebar({
+        phase: 'signed-in',
+        user: { displayName: 'Operator' },
+        collapsed,
+        homePath,
+      })
+      const header = html.match(/<header>([\s\S]*?)<\/header>/)[1]
+      const footer = html.match(/<footer>([\s\S]*?)<\/footer>/)[1]
+      assert.ok(header.includes(`href="${homePath}"`), header)
+      assert.match(header, /aria-label="Example home"/)
+      assert.ok(
+        header.includes(collapsed ? 'AppBrandLogo' : 'AppBrandWordmark'),
+        header
+      )
+      const account = footer.match(
+        /aria-label="Open user menu"[\s\S]*?<menu>(.*?)<\/menu>/
+      )[1]
+      assert.ok(
+        account.includes(`href="${homePath}">Example home</a>`),
+        account
+      )
+      assert.match(account, /href="\/dashboard\/user-profile"/)
+      assert.equal(footer.split(`href="${homePath}"`).length - 1, 1, footer)
+      assert.match(footer, /href="\/workspace\/property"/)
+      assert.match(footer, /Lake house/)
+    }
+  }
+})
+
+test('Dashboard footer keeps its public Home link outside the account menu', async () => {
+  const html = await renderSidebar({
+    workspace: false,
+    phase: 'signed-in',
+    user: { displayName: 'Operator' },
+    homePath: '/welcome',
+  })
+  const actions = html.match(/<nav[^>]*>(.*?)<\/nav>/)[1]
+  assert.match(actions, /href="\/welcome">Example home<\/a>/)
+  assert.doesNotMatch(html.match(/<menu>(.*?)<\/menu>/)[1], /Example home/)
+})
 
 test('settled signed-out and anonymous Workspace guests can sign in with exact destination', async () => {
   for (const user of [null, { isAnonymous: true }]) {
     const html = await renderSidebar({ user })
     assert.match(html, /aria-label="Sign in"/)
+    assert.doesNotMatch(html, /aria-label="Open user menu"/)
+    assert.doesNotMatch(
+      html.match(/<footer>([\s\S]*?)<\/footer>/)[1],
+      /href="\/home"/
+    )
     assert.match(
       html,
       /redirect=%2Fworkspace%2Fproperty%3Ffrom%3Ddirectory%23details/

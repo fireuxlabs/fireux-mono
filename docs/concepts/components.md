@@ -93,10 +93,12 @@ User identity link. It has no profile switcher or shared selection state.
 Domain sidebar entries follow the current route's `nav.profileId`; their
 readers and editors remain with their owning extensions.
 
-The shared sidebar footer reads the settled signed-in User directly, without
-acquiring App membership. Its account menu offers Profile, Settings and Sign out;
-the configured App Home action remains separate. Auth owns sign-out and the
-provider identity fallback; the mounted guard keeps hydration stable.
+The [shared sidebar footer](../../packages/core/fireux-core/src/runtime/components/layouts/shared/SideBarFooter.vue)
+reads the signed-in User directly. Its account menu offers Profile, Settings
+and Sign out. Workspace adds the configured App Home link to that menu.
+Dashboard presents App Home as a separate footer link. Guests see Sign in
+with a return to their current route. Auth supplies sign-out and the provider
+identity fallback. The mounted guard keeps hydration stable.
 
 ## Profile and Settings composition
 
