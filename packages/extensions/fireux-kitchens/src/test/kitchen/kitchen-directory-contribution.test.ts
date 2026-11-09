@@ -11,9 +11,8 @@ function harness(existing: boolean, unlisted = false, visibility = true) {
     data: Record<string, unknown>
   }> = []
   const oldKitchen = {
-    slug: 'existing',
-    management: { level: 'app' },
-    visibility,
+    identity: { slug: 'existing', status: 'active', visibility },
+    created: { at: { seconds: 1, nanoseconds: 0 }, by: 'original' },
   }
   const source = readFileSync(
     new URL(
@@ -43,7 +42,7 @@ function harness(existing: boolean, unlisted = false, visibility = true) {
     requireFirestoreDocumentId: (id: string) => id,
     serverKitchenMenusTarget: () => 'menus',
     PLACE_MUTATION_TARGETS: { places: 'places' },
-KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
+    KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
     runGuardedServerTransaction: async (_: unknown, callback: Function) =>
       callback({
         read: async (target: string) =>
@@ -63,7 +62,11 @@ KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
       }),
     assertKitchenOnboardingPlaceDefaults: () => {},
     normalizeSlug: () => 'venue',
-    serverAuditStamp: (value: unknown) => value,
+    serverAuditStamp: ({ by, appId }: { by: string; appId?: string }) => ({
+      at: { seconds: 10, nanoseconds: 20 },
+      by,
+      ...(appId ? { app_id: appId } : {}),
+    }),
     createKitchenSystemMenus: ({ mutations, target }: any) => {
       for (const slug of ['food', 'drinks'])
         mutations.create(target, `generated-${slug}`, { slug, status: 'draft' })
@@ -89,15 +92,23 @@ test('directory contribution records attribution without granting Team or My Kit
   )
   const root = writes[0]
   assert.equal(root.id, 'verified-place')
-  assert.equal(root.data.visibility, true)
-  assert.equal(root.data.currency, 'CHF')
+  assert.equal((root.data.identity as { visibility: boolean }).visibility, true)
+  assert.equal('currency' in root.data, false)
   assert.deepEqual(root.data.created, {
+    at: { seconds: 10, nanoseconds: 20 },
     by: 'contributor',
-    appId: 'misebox-app',
+    app_id: 'misebox-app',
+  })
+  assert.deepEqual(root.data.updated, {
+    at: { seconds: 10, nanoseconds: 20 },
+    by: 'contributor',
   })
   assert.equal('owner' in root.data, false)
   assert.equal('app_user' in result, false)
-  assert.equal(writes.some(write => /\/(team|access|users)(\/|$)/.test(write.target)), false)
+  assert.equal(
+    writes.some((write) => /\/(team|access|users)(\/|$)/.test(write.target)),
+    false
+  )
 })
 
 test('repeated or racing directory contribution preserves existing Kitchen and all fields', async () => {
@@ -121,11 +132,18 @@ test('name-only directory contribution publishes with creator attribution and no
   )
   assert.equal(writes[0].data.name, 'Community kitchen')
   assert.equal(writes[0].data.place_type, 'non_physical')
-  assert.equal(writes[1].data.identity_source, 'user')
-  assert.equal(writes[1].data.visibility, true)
-  assert.equal(writes[1].data.currency, '')
+  assert.deepEqual(writes[1].data.identity, {
+    source: 'user',
+    slug: 'venue',
+    status: 'active',
+    visibility: true,
+  })
+  assert.equal('currency' in writes[1].data, false)
   assert.equal('app_user' in result, false)
-  assert.equal(writes.some(write => /\/(team|access|users)(\/|$)/.test(write.target)), false)
+  assert.equal(
+    writes.some((write) => /\/(team|access|users)(\/|$)/.test(write.target)),
+    false
+  )
 })
 
 test('name-only retry preserves an existing hidden Kitchen instead of publishing or renaming it', async () => {
@@ -135,7 +153,7 @@ test('name-only retry preserves an existing hidden Kitchen instead of publishing
   assert.equal(result.created_root, false)
   assert.deepEqual(writes, [])
   assert.deepEqual(oldKitchen, before)
-  assert.equal(oldKitchen.visibility, false)
+  assert.equal(oldKitchen.identity.visibility, false)
 })
 
 test('name-only contribution rejects blank or mixed source input before any write', async () => {

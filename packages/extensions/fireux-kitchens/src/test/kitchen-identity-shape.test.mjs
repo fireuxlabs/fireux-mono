@@ -160,10 +160,17 @@ test('joined presentation retains canonical Identity and reads currency only fro
 
 test('guest creation persists nested Kitchen Identity and shared facts only on Place', async () => {
   const writes = []
+  const records = new Map()
   const tx = {
-    read: async () => ({ exists: false }),
+    read: async (owner, id) => ({
+      exists: records.has(`${owner}/${id}`),
+      data: records.get(`${owner}/${id}`),
+    }),
     readAll: async () => [],
-    create: (...args) => writes.push(args),
+    create: (owner, id, data) => {
+      writes.push([owner, id, data])
+      records.set(`${owner}/${id}`, data)
+    },
   }
   const { startGuestKitchen } = load(
     'kitchen/server/index/onboarding/guest.ts',
@@ -186,8 +193,15 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
       runGuardedServerTransaction: async (_, run) => run(tx),
       KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
       PLACE_MUTATION_TARGETS: { places: 'places' },
-      serverAuditStamp: () => ({ by: 'guest', app_id: 'app' }),
-      buildKitchenTeamMemberRecord: (v) => v,
+      serverAuditStamp: ({ by, appId }) => ({
+        at: { seconds: 10, nanoseconds: 20 },
+        by,
+        ...(appId ? { app_id: appId } : {}),
+      }),
+      buildKitchenTeamMemberRecord: ({ name, userId }) => ({
+        name,
+        user_id: userId,
+      }),
       createKitchenSystemMenus() {},
       createDefaultKitchenStation() {},
       fail: (_, message) => {
@@ -200,6 +214,12 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
   })
   const kitchen = writes.find(([owner]) => owner === 'kitchens')[2]
   const place = writes.find(([owner]) => owner === 'places')[2]
+  assert.deepEqual(kitchen.created, {
+    at: { seconds: 10, nanoseconds: 20 },
+    by: 'guest',
+    app_id: 'app',
+  })
+  assert.deepEqual(kitchen.updated, { at: kitchen.created.at, by: 'guest' })
   assert.deepEqual(kitchen.identity, {
     source: 'user',
     slug: 'guest',
@@ -217,6 +237,15 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
   ])
     assert.equal(field in kitchen, false)
   assert.ok(normalizeKitchen('guest', kitchen, { ...place, id: 'guest' }))
+  delete kitchen.updated
+  const previousWrites = writes.length
+  await startGuestKitchen({}, { claim_secret: 'secret' })
+  assert.equal(
+    writes.length,
+    previousWrites,
+    'resuming a legacy guest does not rewrite its root'
+  )
+  assert.equal(Object.hasOwn(kitchen, 'updated'), false)
 })
 
 test('Kitchen presentation reads shared Place currency, with no Kitchen fallback', () => {

@@ -1,7 +1,7 @@
 # Workspace entity family
 
 Updated: 2026-11-09
-Ref: ac88daacf
+Ref: cc65fd8ef
 Role: map, not canon
 
 ## Purpose
@@ -688,16 +688,16 @@ ownership.
 
 ## Migration and drift register
 
-| Difference                                                                          | State       | Required direction                                                                                                                                   |
-| ----------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Supplier readers return canonical Supplier and related Place Entities               | `accepted`  | Preserve both canonical records; Workspace consumers must not manufacture replacement Entity DTOs                                                    |
-| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`     | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed                 |
-| Kitchen authored route slug differs from stable root identity                       | `accepted`  | Resolve the slug through the bounded Kitchen route resolver while Workspace and operation relationships retain the stable root ID                    |
-| Workspace Entity implementation uses `runtime/<entity>/<technical role>`            | `accepted`  | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                                  |
-| Kitchen new-root writer initializes only `created`                                  | `migration` | Align the trusted Kitchen creation event to initialize `updated` too; retain historical optional reads and do not backfill stored records implicitly |
-| Supplier browser Identity retains the former same-ID Business/Place assumption      | `drift`     | Resolve the independent Business and its explicit Place link; retain protected validation of the actual update target                                |
-| Supplier public detail returns the normalized full root                             | `drift`     | Separate an explicit public projection from the protected Workspace root; source review does not prove deployed contents                             |
-| Business API Workspace lacks grant-only revocation refresh                          | `drift`     | Keep its domain reader and commands while adding bounded grant reactivity and query-specific refresh; no universal execution controller is required  |
+| Difference                                                                          | State      | Required direction                                                                                                                                  |
+| ----------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Supplier readers return canonical Supplier and related Place Entities               | `accepted` | Preserve both canonical records; Workspace consumers must not manufacture replacement Entity DTOs                                                   |
+| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`    | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed                |
+| Kitchen authored route slug differs from stable root identity                       | `accepted` | Resolve the slug through the bounded Kitchen route resolver while Workspace and operation relationships retain the stable root ID                   |
+| Workspace Entity implementation uses `runtime/<entity>/<technical role>`            | `accepted` | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                                 |
+| Kitchen new roots initialize both audit stamps                                      | `accepted` | Existing creation commands initialize both stamps in their trusted transaction; retain historical optional reads and never backfill on retry/resume |
+| Supplier browser Identity retains the former same-ID Business/Place assumption      | `drift`    | Resolve the independent Business and its explicit Place link; retain protected validation of the actual update target                               |
+| Supplier public detail returns the normalized full root                             | `drift`    | Separate an explicit public projection from the protected Workspace root; source review does not prove deployed contents                            |
+| Business API Workspace lacks grant-only revocation refresh                          | `drift`    | Keep its domain reader and commands while adding bounded grant reactivity and query-specific refresh; no universal execution controller is required |
 
 ## Component and composable naming
 
@@ -1531,7 +1531,7 @@ guest Kitchen connection consumes only its exact recovery proof and publishes
 selection only to the current owner.
 
 Current behavioral entrypoints are Kitchen's `kitchen-workspace-internals` and
-`kitchen-identity-internals` tests, Supplier's `supplier-workspace-internals`
+`kitchen/identity-publication` tests, Supplier's `supplier-workspace-internals`
 tests, Property/Portfolio's `workspace-foundation-internals` tests, and Core's
 Workspace projection, selection and page-state tests. These establish the
 inspected foundation contracts; capability-record workflows and live browser
@@ -1583,6 +1583,37 @@ Core `useIdentity` owns read states and content scope. Core
 Generic `useCalendar` lives under shared composables; `useWorkspaceCalendar`
 adds selected-Entity date-state disposal. Home uses existing shared collection, entry and overview components through
 `useXWorkspaceHome()`, which owns the real chooser and summary composition.
+
+Core's [useIdentityEditor](../../packages/core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts)
+owns grouped Identity draft/reset, dirty state, busy/error and save-attempt
+lifetimes. It composes `useCommandScope`; it acquires no reader or command.
+Domains provide a typed plain-data draft factory, canonical signature, scope,
+readiness/permission decision, named save callback and current-success action.
+Fields, validation, patch/target construction and native modal dismissal policy
+remain domain-owned. The save callback must pass the supplied `isCurrent`
+predicate through credential acquisition to the dispatch guard, not only use
+it to suppress UI completion.
+
+[Project Identity Write](../../packages/extensions/fireux-projects/src/runtime/project/components/Identity/Write.vue)
+adopts this lifecycle while retaining its fields, manual/requested opening and
+proposal overlays. Each new opening or proposal resets ownership, including an
+already-open editor. An old save cannot clear a newer attempt's busy state.
+Unrelated saved-source changes invalidate pending continuation without replacing
+an open draft; a canonical signature matching the submitted snapshot is treated
+as listener acknowledgement. This is UI lifecycle, not server revision or
+optimistic-concurrency enforcement. Success/error feedback applies only to the
+current attempt.
+
+Kitchen's grouped listing editor is the second proving case: slug, status and
+visibility, with editing and cancellation available during save. Its production
+editor still owns that lifecycle locally; migration to the shared composable
+must retain the optional surface predicate in the existing Kitchen updater and
+its native dismissal policy. Core's
+[two-shape behavioural tests](../../packages/core/fireux-core/src/test/composables/fireux/useIdentityEditor.test.mjs)
+cover both draft shapes and their credential, source, disposal and retry races;
+Project's `project-internals` and `project-identity` tests cover production
+adoption. Per-field Place/Portfolio controls keep their existing interaction;
+this grouped seam does not introduce a universal form or field registry.
 
 Kitchen Identity composes venue profile sections, listing controls and domain
 context at `/workspace/kitchen/identity` inside Core's named Workspace route

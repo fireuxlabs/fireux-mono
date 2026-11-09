@@ -1,4 +1,5 @@
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { resolveAppUserAccess } from '../../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
 import { readKitchenDocument } from '../../runtime/kitchen/utils/read-kitchen-document.ts'
 import { useCommandScope } from '../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import assert from 'node:assert/strict'
@@ -99,6 +100,7 @@ test('native Kitchen access clears on live removal, failed read and App membersh
       computed,
       toValue,
       readMembershipAccessIds,
+      resolveAppUserAccess,
       useFirestoreRead: () => ({
         firestoreFetchDoc: (path, id) => {
           locator = { path, id }
@@ -213,7 +215,11 @@ function shellHarness({
       resolveKitchenGrantIds,
       createMembershipAccess,
       normalizeSlug: (name) => name.toLowerCase().replaceAll(' ', '-'),
-      serverAuditStamp: ({ by, appId }) => ({ at: created, by, app_id: appId }),
+      serverAuditStamp: ({ by, appId }) => ({
+        at: created,
+        by,
+        ...(appId ? { app_id: appId } : {}),
+      }),
       buildKitchenTeamMemberRecord,
       createKitchenSystemMenus,
       createDefaultKitchenStation,
@@ -274,6 +280,13 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
     'kitchens/user/team/user',
   ])
     assert.ok(h.records.has(path), path)
+  const kitchen = h.records.get('kitchens/user')
+  assert.deepEqual(kitchen.created, {
+    at: created,
+    by: 'user',
+    app_id: 'misebox-app',
+  })
+  assert.deepEqual(kitchen.updated, { at: created, by: 'user' })
   const menus = [...h.records].filter(([path]) =>
     path.startsWith('kitchens/user/menus/')
   )
@@ -290,10 +303,33 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
   )
   const reopened = await h.create()
   assert.equal(reopened.created_root, false)
+  assert.equal(h.records.get('kitchens/user'), kitchen)
   assert.deepEqual(
     h.records.get('kitchen_access/user').apps['misebox-app'].ids,
     ['user']
   )
+})
+
+test('reopening a historical shell does not backfill or replace its root stamps', async () => {
+  const h = shellHarness()
+  const historical = {
+    identity: { slug: 'old', status: 'active', visibility: false },
+    created: { at: { seconds: 1, nanoseconds: 2 }, by: 'original' },
+  }
+  h.records.set('kitchens/user', historical)
+  h.records.set('places/user', { name: 'Original venue' })
+  h.records.set('kitchens/user/team/user', { user_id: 'user' })
+  assert.equal((await h.create()).created_root, false)
+  assert.equal(h.records.get('kitchens/user'), historical)
+  assert.equal(Object.hasOwn(historical, 'updated'), false)
+  assert.equal(
+    h.writes.some((write) => write.path === 'kitchens/user'),
+    false
+  )
+  assert.deepEqual(readKitchenDocument(historical, 'user'), {
+    ...historical,
+    id: 'user',
+  })
 })
 
 test('missing App membership cannot be created implicitly by Kitchen onboarding', async () => {

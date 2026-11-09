@@ -98,7 +98,11 @@ function harness({
     }),
     text: (x) => String(x || ''),
     normalizeSlug: (x) => x,
-    serverAuditStamp: (x) => x,
+    serverAuditStamp: ({ by, appId }) => ({
+      at: { seconds: 10, nanoseconds: 20 },
+      by,
+      ...(appId ? { app_id: appId } : {}),
+    }),
     buildKitchenTeamMemberRecord: (x) => x,
     fail: (_, message) => {
       throw Error(message || 'denied')
@@ -131,6 +135,16 @@ test('new management root gets the same defaults', async () => {
   const h = harness({ exists: false })
   await h.run()
   assert.equal(h.writes.filter((x) => x.target === 'kitchens').length, 1)
+  const root = h.writes.find((x) => x.target === 'kitchens').data
+  assert.deepEqual(root.created, {
+    at: { seconds: 10, nanoseconds: 20 },
+    by: 'actor',
+    app_id: 'app',
+  })
+  assert.deepEqual(root.updated, {
+    at: root.created.at,
+    by: 'actor',
+  })
   assert.equal(h.writes.filter((x) => x.target === 'menus').length, 2)
 })
 test('existing customized and archived Menus are preserved without adding missing starters', async () => {

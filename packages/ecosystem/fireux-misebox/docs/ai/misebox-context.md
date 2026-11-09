@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-11-09
-Ref: e7b188cbf
+Ref: cc65fd8ef
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -769,6 +769,14 @@ requested identity grants no access.
   origin remains unset rather than inferred from classification or document id.
   Audit stamps and proved Kitchen capability configuration remain separate
   root concerns. Readers and protected edits use nested Identity exclusively.
+  New roots initialize `created` and `updated` in the same trusted transaction
+  through the existing shell, Place-onboarding, guest and directory-contribution
+  commands under `kitchen/server/index/onboarding`. Creation keeps actor/App
+  provenance; the initial update stamp keeps actor/time. Existing roots without
+  `updated` remain readable, and retry/resume does not backfill their stamps.
+  Verify these boundaries through `kitchen/kitchen-access.test.mjs`,
+  `kitchen/kitchen-management-defaults.test.mjs`, `kitchen-identity-shape.test.mjs`
+  and `kitchen/kitchen-directory-contribution.test.ts`.
   The joined display profile is named `presentation`, so it cannot replace the
   canonical Identity map. See `kitchen-identity-shape.test.mjs`.
   `read-kitchen-document.ts` validates the stored root, stamps and capability
@@ -777,6 +785,12 @@ requested identity grants no access.
   separate, stamp-free projections. `archived` remains a supported Kitchen status.
   The root Identity command checks slug uniqueness inside its write transaction
   and records the verified actor/App in its update stamp.
+  Listing edits pass the existing dialog/draft scope predicate into command
+  preparation so obsolete credentials cannot dispatch an old edit; a dispatched
+  result remains truthful while stale editor completion is suppressed. Busy
+  state belongs to its save attempt, so changed drafts can retry and an old
+  completion cannot release a newer editor's save. Verify
+  `kitchen/identity-publication.test.mjs` and `kitchen-identity-command.test.mjs`.
 - A name-only Kitchen shell may use a generated id while being manifested, but
   its name is persisted on the same-id Place rather than copied onto Kitchen.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,

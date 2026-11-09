@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onScopeDispose, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenUpdate } from '../../composables/useKitchenUpdate'
@@ -56,6 +56,10 @@ const status = ref<KitchenStatus>()
 const visibility = ref(false)
 const updateError = ref('')
 const saving = ref(false)
+let savingAttempt: symbol | undefined
+onScopeDispose(() => {
+  savingAttempt = undefined
+})
 const statusItems: KitchenStatus[] = ['active', 'inactive', 'archived']
 const { currentUser } = useAuth()
 const captureCompletion = useCommandScope([
@@ -71,19 +75,21 @@ const captureCompletion = useCommandScope([
 watch(
   () => props.open,
   (open: boolean) => {
+    savingAttempt = undefined
+    saving.value = false
     if (!open) return
     const kitchen = workspace.data.value
     if (workspace.outcome.value !== 'ready' || !kitchen) {
       emit('update:open', false)
       return
     }
-    saving.value = false
     editingKitchenId.value = workspace.id.value
     slug.value = kitchen.identity.slug
     status.value = kitchen.identity.status
     visibility.value = kitchen.identity.visibility
     updateError.value = ''
-  }
+  },
+  { flush: 'sync' }
 )
 
 async function save() {
@@ -103,24 +109,32 @@ async function save() {
     return
   }
   const isCurrent = captureCompletion()
+  const attempt = Symbol()
+  savingAttempt = attempt
   saving.value = true
   updateError.value = ''
   try {
-    await updateKitchen({
-      kitchenId: editingKitchenId.value,
-      changes: {
-        'identity.slug': normalizedSlug,
-        'identity.status': status.value,
-        'identity.visibility': visibility.value,
+    await updateKitchen(
+      {
+        kitchenId: editingKitchenId.value,
+        changes: {
+          'identity.slug': normalizedSlug,
+          'identity.status': status.value,
+          'identity.visibility': visibility.value,
+        },
       },
-    })
+      isCurrent
+    )
     if (isCurrent()) emit('update:open', false)
   } catch (cause) {
     if (!isCurrent()) return
     updateError.value =
       cause instanceof Error ? cause.message : 'Kitchen could not be updated.'
   } finally {
-    if (isCurrent()) saving.value = false
+    if (savingAttempt === attempt) {
+      savingAttempt = undefined
+      saving.value = false
+    }
   }
 }
 </script>

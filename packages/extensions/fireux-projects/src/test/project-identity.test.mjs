@@ -157,13 +157,14 @@ test('Project status changes require current membership and exact Project access
   assert.deepEqual(h.writes, [])
 })
 
-test('Project status transport snapshots its input and rejects obsolete selection', async () => {
-  for (const changedSelection of [false, true]) {
+test('Project status transport snapshots its input and rejects obsolete selection or editor intent', async () => {
+  for (const changed of ['none', 'selection', 'editor']) {
     let resolveToken
     const token = new Promise((resolve) => {
       resolveToken = resolve
     })
     const selectedId = ref('project')
+    let surfaceCurrent = true
     const calls = []
     const owner = effectScope()
     const useProjectUpdate = load(
@@ -186,21 +187,24 @@ test('Project status transport snapshots its input and rejects obsolete selectio
     )
     const command = owner.run(() => useProjectUpdate([selectedId]))
     const changes = { status: 'active' }
-    const pending = command.updateProject({
-      projectId: selectedId.value,
-      changes,
-    })
-    const done = changedSelection
-      ? assert.rejects(pending, /context changed/)
-      : pending
+    const pending = command.updateProject(
+      {
+        projectId: selectedId.value,
+        changes,
+      },
+      () => surfaceCurrent
+    )
+    const done =
+      changed !== 'none' ? assert.rejects(pending, /context changed/) : pending
     changes.status = 'inactive'
-    if (changedSelection) {
+    if (changed === 'selection') {
       selectedId.value = 'other'
       selectedId.value = 'project'
     }
+    if (changed === 'editor') surfaceCurrent = false
     resolveToken('token')
     await done
-    assert.equal(calls.length, changedSelection ? 0 : 1)
+    assert.equal(calls.length, changed === 'none' ? 1 : 0)
     if (calls.length) {
       assert.equal(
         calls[0][0],

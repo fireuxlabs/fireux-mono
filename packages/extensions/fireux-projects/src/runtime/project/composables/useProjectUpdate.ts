@@ -24,10 +24,10 @@ export function useProjectUpdate(sources: WatchSource[] = []) {
     ...sources,
   ])
 
-  async function updateProject(input: {
-    projectId: string
-    changes: ProjectIdentityChanges
-  }) {
+  async function updateProject(
+    input: { projectId: string; changes: ProjectIdentityChanges },
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
     const projectId = String(input.projectId || '').trim()
     const changes = { ...input.changes }
     const user = currentUser.value
@@ -35,7 +35,7 @@ export function useProjectUpdate(sources: WatchSource[] = []) {
       throw new Error('Sign in and select a Project before editing Identity.')
     const isCurrent = capture()
     const token = await user.getIdToken()
-    if (!isCurrent())
+    if (!isCurrent() || !isSurfaceCurrent())
       throw new Error('The Project or account context changed. Try again.')
     const result = await $fetch<{ ok: true; project_id: string }>(
       `/api/internal/control/projects/${encodeURIComponent(projectId)}/identity`,

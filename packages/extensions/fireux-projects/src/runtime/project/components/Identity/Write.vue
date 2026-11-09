@@ -10,7 +10,7 @@
       <form class="workspace-profile__form" @submit.prevent="save">
         <UFormField label="Name" required
           ><UInput
-            v-model="name"
+            v-model="draft.name"
             maxlength="120"
             class="workspace-profile__input"
             autofocus
@@ -18,7 +18,7 @@
         /></UFormField>
         <UFormField label="Description"
           ><UTextarea
-            v-model="description"
+            v-model="draft.description"
             maxlength="2000"
             class="workspace-profile__input"
             :disabled="saving"
@@ -27,7 +27,7 @@
           label="Image URL"
           hint="HTTPS; leave empty to remove the image."
           ><UInput
-            v-model="imageUrl"
+            v-model="draft.imageUrl"
             type="url"
             class="workspace-profile__input"
             :disabled="saving"
@@ -37,7 +37,7 @@
           hint="Active Projects appear in the public directory. Inactive Projects remain available in Workspace."
         >
           <USelect
-            v-model="status"
+            v-model="draft.status"
             :items="statusItems"
             class="workspace-profile__input"
             :disabled="saving"
@@ -67,8 +67,8 @@
             label="Save changes"
             :loading="saving"
             :disabled="
-              !name.trim() ||
-              !status ||
+              !draft.name.trim() ||
+              !draft.status ||
               !sameProject ||
               !identity.canWrite.value ||
               !changed
@@ -82,7 +82,8 @@
 <script setup lang="ts">
 import { useToast } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { computed, onScopeDispose, ref, watch } from 'vue'
+import { useIdentityEditor } from 'fireux-core/runtime/composables/fireux/useIdentityEditor'
+import { computed, ref, watch } from 'vue'
 import type { ProjectIdentityIntent } from '../../models/identity-intent'
 import type { ProjectWorkspaceIdentityState } from '../../composables/workspace/useProjectWorkspaceIdentity'
 import type { ProjectStatus } from '../../models/project.model'
@@ -92,53 +93,61 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ close: [] }>()
 const open = ref(false)
-const saving = ref(false)
-const name = ref('')
-const description = ref('')
-const imageUrl = ref('')
-const status = ref<ProjectStatus>()
 const statusItems = [
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' },
 ] satisfies { label: string; value: ProjectStatus }[]
-const projectId = ref('')
-const error = ref('')
-const original = ref('')
 const toast = useToast()
 const { currentUser } = useAuth()
-let scopeEpoch = 0
-function resetEditor() {
-  scopeEpoch++
-  open.value = false
-  saving.value = false
-  error.value = ''
-  name.value = ''
-  description.value = ''
-  imageUrl.value = ''
-  status.value = undefined
-  projectId.value = ''
+type ProjectIdentityDraft = {
+  projectId: string
+  name: string
+  description: string
+  imageUrl: string
+  status: ProjectStatus | undefined
 }
-watch(
-  [
+const {
+  draft,
+  changed,
+  saving,
+  error,
+  begin,
+  save: saveDraft,
+} = useIdentityEditor<ProjectIdentityDraft>({
+  open,
+  scope: [
     () => currentUser.value?.uid,
     () => props.identity.projectId.value,
-    () => props.identity.canWrite.value,
+    () => props.identity.outcome.value,
   ],
-  resetEditor,
-  { flush: 'sync' }
-)
-onScopeDispose(resetEditor, true)
+  canEdit: () => props.identity.canWrite.value,
+  createDraft: () => ({
+    projectId: props.identity.projectId.value,
+    name: props.identity.name.value,
+    description: props.identity.description.value,
+    imageUrl: props.identity.imageUrl.value,
+    status: props.identity.projectStatus.value,
+  }),
+  signature: (value) =>
+    JSON.stringify([
+      value.name.trim().replace(/\s+/g, ' '),
+      value.description.trim(),
+      value.imageUrl.trim(),
+      value.status,
+    ]),
+  save: (value, isCurrent) => {
+    if (!value.status) throw new Error('Choose active or inactive.')
+    return props.identity.update({ ...value, status: value.status }, isCurrent)
+  },
+  onSaved: () => {
+    open.value = false
+    toast.add({ title: 'Project Identity saved', color: 'success' })
+  },
+  errorMessage: 'Try again.',
+})
 const sameProject = computed(
-  () => projectId.value === props.identity.projectId.value
+  () => draft.value.projectId === props.identity.projectId.value
 )
-const signature = () =>
-  JSON.stringify([
-    name.value.trim(),
-    description.value.trim(),
-    imageUrl.value.trim(),
-    status.value,
-  ])
-const changed = computed(() => signature() !== original.value)
 watch(
   () => props.requestedOpen,
   (value: boolean | undefined) => {
@@ -152,50 +161,22 @@ watch(open, (value: boolean) => {
   if (!value) emit('close')
 })
 function show(intent?: ProjectIdentityIntent) {
-  if (!props.identity.canWrite.value) return
-  projectId.value = props.identity.projectId.value
-  name.value = props.identity.name.value
-  description.value = props.identity.description.value
-  imageUrl.value = props.identity.imageUrl.value
-  status.value = props.identity.projectStatus.value
-  original.value = signature()
-  if (intent?.action === 'update') {
-    if (intent.name !== null) name.value = intent.name
-    if (intent.description !== null) description.value = intent.description
-    if (intent.imageUrl !== null) imageUrl.value = intent.imageUrl
-  }
-  error.value = ''
-  open.value = true
+  begin((value) => {
+    if (intent?.action !== 'update') return
+    if (intent.name !== null) value.name = intent.name
+    if (intent.description !== null) value.description = intent.description
+    if (intent.imageUrl !== null) value.imageUrl = intent.imageUrl
+  })
 }
 async function save() {
   if (
-    saving.value ||
-    !status.value ||
+    !draft.value.status ||
     !sameProject.value ||
     !props.identity.canWrite.value ||
     !changed.value
   )
     return
-  const epoch = scopeEpoch
-  saving.value = true
-  error.value = ''
-  try {
-    await props.identity.update({
-      projectId: projectId.value,
-      name: name.value,
-      description: description.value,
-      imageUrl: imageUrl.value,
-      status: status.value,
-    })
-    if (epoch !== scopeEpoch) return
-    open.value = false
-    toast.add({ title: 'Project Identity saved', color: 'success' })
-  } catch (cause) {
-    if (epoch === scopeEpoch)
-      error.value = cause instanceof Error ? cause.message : 'Try again.'
-  } finally {
-    if (epoch === scopeEpoch) saving.value = false
-  }
+  await saveDraft()
 }
 defineExpose({ show })
 </script>

@@ -6,12 +6,15 @@ import test from 'node:test'
 import {
   computed,
   effectScope,
+  nextTick,
   onScopeDispose,
   reactive,
   ref,
+  shallowReactive,
   watch,
 } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
+import { useIdentityEditor } from '../../../../core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts'
 import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 
 function load(path, expression, dependencies, component = false) {
@@ -222,35 +225,46 @@ test('Project AI captures nested input before credentials and preserves the huma
 
 function editorFixture() {
   const response = deferred(),
+    responses = [response, deferred()],
     notices = [],
-    updates = []
+    updates = [],
+    predicates = [],
+    emitted = []
+  const currentUser = ref({ uid: 'actor' })
   const identity = {
     canWrite: ref(true),
+    outcome: ref('ready'),
     publication: ref(null),
     projectId: ref('misebox'),
     name: ref('Before'),
     description: ref(''),
     imageUrl: ref(''),
     projectStatus: ref('inactive'),
-    update: (input) => {
+    update: (input, isCurrent) => {
       updates.push(input)
-      return response.promise
+      predicates.push(isCurrent)
+      return responses[updates.length - 1].promise
     },
   }
+  const props = shallowReactive({ identity, requestedOpen: false })
   const owner = effectScope()
   const api = owner.run(() =>
     load(
       '../runtime/project/components/Identity/Write.vue',
-      '{ show, save, open, saving, error, name, status }',
+      '{ show, save, open, saving, error, draft, changed, sameProject }',
       {
         computed,
         ref,
         watch,
         onScopeDispose,
-        defineProps: () => ({ identity }),
-        defineEmits: () => () => {},
+        useIdentityEditor,
+        defineProps: () => props,
+        defineEmits:
+          () =>
+          (...args) =>
+            emitted.push(args),
         defineExpose() {},
-        useAuth: () => ({ currentUser: ref({ uid: 'actor' }) }),
+        useAuth: () => ({ currentUser }),
         useToast: () => ({ add: (notice) => notices.push(notice) }),
       },
       true
@@ -262,10 +276,23 @@ function editorFixture() {
     description: null,
     imageUrl: null,
   })
-  return { response, notices, updates, identity, owner, api }
+  return {
+    response,
+    responses,
+    notices,
+    updates,
+    predicates,
+    emitted,
+    identity,
+    props,
+    currentUser,
+    owner,
+    api,
+  }
 }
 test('Project Identity coordinates stored status and activation without broadening selected-record access', async () => {
-  const calls = []
+  const calls = [],
+    predicates = []
   const workspace = {
     id: ref('project'),
     data: ref({
@@ -300,7 +327,12 @@ test('Project Identity coordinates stored status and activation without broadeni
       useProjectWorkspace: () => workspace,
       useProjectUpdate: (sources) => {
         assert.equal(sources[0], workspace.id)
-        return { updateProject: async (input) => calls.push(input) }
+        return {
+          updateProject: async (input, isCurrent) => {
+            calls.push(input)
+            predicates.push(isCurrent)
+          },
+        }
       },
     }
   )
@@ -312,7 +344,9 @@ test('Project Identity coordinates stored status and activation without broadeni
     imageUrl: '',
     status: 'active',
   }
-  await identity.update(input)
+  const isCurrent = () => true
+  await identity.update(input, isCurrent)
+  assert.equal(predicates[0], isCurrent)
   assert.deepEqual(calls, [
     {
       projectId: 'project',
@@ -338,8 +372,8 @@ test('Project Identity coordinates stored status and activation without broadeni
 })
 test('Project Identity editor retains stored status and submits activation with the captured Project', async () => {
   const fixture = editorFixture()
-  assert.equal(fixture.api.status.value, 'inactive')
-  fixture.api.status.value = 'active'
+  assert.equal(fixture.api.draft.value.status, 'inactive')
+  fixture.api.draft.value.status = 'active'
   const flight = fixture.api.save()
   assert.deepEqual(fixture.updates, [
     {
@@ -356,6 +390,21 @@ test('Project Identity editor retains stored status and submits activation with 
   assert.equal(fixture.notices.length, 1)
   fixture.owner.stop()
 })
+
+test('Project Identity accepts its listener acknowledgement before the save response', async () => {
+  const fixture = editorFixture()
+  fixture.api.draft.value.name = '  Prepared   name  '
+  const flight = fixture.api.save()
+  fixture.identity.name.value = 'Prepared name'
+  assert.equal(fixture.predicates[0](), true)
+  fixture.response.resolve()
+  await flight
+  assert.equal(fixture.api.open.value, false)
+  assert.equal(fixture.api.saving.value, false)
+  assert.equal(fixture.notices.length, 1)
+  fixture.owner.stop()
+})
+
 for (const changed of ['revoked', 'disposed'])
   for (const completion of ['success', 'error']) {
     test(`Project Identity suppresses ${completion} after ${changed} editor ownership`, async () => {
@@ -379,11 +428,93 @@ for (const changed of ['revoked', 'disposed'])
       assert.equal(fixture.api.saving.value, false)
       if (changed === 'revoked') {
         assert.equal(fixture.api.open.value, true)
-        assert.equal(fixture.api.name.value, 'New draft')
+        assert.equal(fixture.api.draft.value.name, 'New draft')
       }
       fixture.owner.stop()
     })
   }
+
+for (const completion of ['success', 'error']) {
+  test(`Project Identity preserves a newer AI proposal and save after an old ${completion}`, async () => {
+    const fixture = editorFixture()
+    const first = fixture.api.save()
+    assert.equal(fixture.api.saving.value, true)
+    assert.equal(fixture.predicates[0](), true)
+    fixture.api.show({
+      action: 'update',
+      name: 'New AI proposal',
+      description: null,
+      imageUrl: null,
+    })
+    assert.equal(fixture.predicates[0](), false)
+    assert.equal(fixture.api.saving.value, false)
+    const second = fixture.api.save()
+    assert.equal(fixture.updates.length, 2)
+    assert.equal(fixture.api.saving.value, true)
+    assert.equal(fixture.predicates[1](), true)
+    if (completion === 'success') fixture.responses[0].resolve()
+    else fixture.responses[0].reject(new Error('Obsolete failure'))
+    await first
+    assert.equal(fixture.api.open.value, true)
+    assert.equal(fixture.api.draft.value.name, 'New AI proposal')
+    assert.equal(fixture.api.saving.value, true)
+    assert.equal(fixture.api.error.value, '')
+    assert.deepEqual(fixture.notices, [])
+    fixture.responses[1].resolve()
+    await second
+    assert.equal(fixture.api.open.value, false)
+    assert.equal(fixture.api.saving.value, false)
+    assert.equal(fixture.notices.length, 1)
+    fixture.owner.stop()
+  })
+}
+
+test('Project Identity prepares manual and AI drafts without conflating null and empty fields', () => {
+  const fixture = editorFixture()
+  fixture.identity.description.value = 'Stored description'
+  fixture.identity.imageUrl.value = 'https://example.com/project.png'
+  fixture.api.show()
+  assert.equal(fixture.api.draft.value.name, 'Before')
+  assert.equal(fixture.api.draft.value.description, 'Stored description')
+  assert.equal(fixture.api.changed.value, false)
+  fixture.api.show({
+    action: 'update',
+    name: 'Prepared name',
+    description: null,
+    imageUrl: '',
+  })
+  assert.equal(fixture.api.draft.value.name, 'Prepared name')
+  assert.equal(fixture.api.draft.value.description, 'Stored description')
+  assert.equal(fixture.api.draft.value.imageUrl, '')
+  assert.equal(fixture.api.changed.value, true)
+  fixture.owner.stop()
+})
+
+test('Project requested-open retains its human review and in-flight dismissal behavior', async () => {
+  const fixture = editorFixture()
+  fixture.api.open.value = false
+  await nextTick()
+  fixture.props.requestedOpen = true
+  await nextTick()
+  assert.equal(fixture.api.open.value, true)
+  assert.equal(fixture.api.draft.value.name, 'Before')
+  assert.equal(fixture.api.changed.value, false)
+  fixture.api.draft.value.name = 'Reviewed name'
+  const flight = fixture.api.save()
+  fixture.props.requestedOpen = false
+  await nextTick()
+  assert.equal(fixture.api.open.value, true)
+  assert.equal(fixture.api.saving.value, true)
+  fixture.response.resolve()
+  await flight
+  assert.equal(fixture.api.open.value, false)
+  fixture.identity.canWrite.value = false
+  fixture.props.requestedOpen = true
+  await nextTick()
+  assert.equal(fixture.api.open.value, false)
+  assert.ok(fixture.emitted.some(([event]) => event === 'close'))
+  fixture.owner.stop()
+})
 
 for (const changed of ['record', 'actions'])
   for (const completion of ['success', 'error']) {

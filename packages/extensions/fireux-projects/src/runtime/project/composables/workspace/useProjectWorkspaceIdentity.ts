@@ -39,13 +39,16 @@ export function useProjectWorkspaceIdentity() {
       status: workspace.outcome,
       canWrite: authorized,
     })
-  async function update(input: {
-    projectId: string
-    name: string
-    description: string
-    imageUrl: string
-    status: ProjectStatus
-  }) {
+  async function update(
+    input: {
+      projectId: string
+      name: string
+      description: string
+      imageUrl: string
+      status: ProjectStatus
+    },
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
     if (!canWrite.value)
       throw new Error('Project management access is required to edit Identity.')
     if (input.projectId !== workspace.id.value)
@@ -72,10 +75,13 @@ export function useProjectWorkspaceIdentity() {
       if (url.protocol !== 'https:' || url.username || url.password)
         throw new Error('Use an HTTPS image URL without credentials.')
     }
-    await updateProject({
-      projectId: input.projectId,
-      changes: { name, description, image_url, status },
-    })
+    await updateProject(
+      {
+        projectId: input.projectId,
+        changes: { name, description, image_url, status },
+      },
+      isSurfaceCurrent
+    )
   }
   const intro = computed(() => ({
     title: 'Project Identity',

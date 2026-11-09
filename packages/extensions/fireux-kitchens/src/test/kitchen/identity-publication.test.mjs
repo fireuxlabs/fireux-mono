@@ -12,6 +12,7 @@ import {
   compile,
   createSSRApp,
   h,
+  nextTick,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import test from 'node:test'
@@ -47,6 +48,205 @@ const deferred = () => {
   })
   return { promise, resolve }
 }
+
+async function listingHarness() {
+  const scope = effectScope()
+  const token = deferred(),
+    response = deferred(),
+    laterToken = deferred(),
+    laterResponse = deferred(),
+    calls = [],
+    events = []
+  let credentials = 0
+  const props = reactive({ open: false })
+  const currentUser = ref({
+    uid: 'alice',
+    getIdToken: () =>
+      ++credentials === 1 ? token.promise : laterToken.promise,
+  })
+  const workspace = {
+    id: ref('a'),
+    outcome: ref('ready'),
+    data: ref({
+      identity: { slug: 'original', status: 'active', visibility: true },
+    }),
+  }
+  const updater = scope.run(() =>
+    load('kitchen/composables/useKitchenUpdate.ts', 'useKitchenUpdate()', {
+      useAuth: () => ({ currentUser }),
+      useAppSession: () => ({
+        appUser: ref({ role: 'user', subscription: 'free' }),
+      }),
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useRoute: () => ({ path: '/workspace/kitchen/identity' }),
+      useCommandScope,
+      useRequireUser: async () => currentUser.value,
+      refreshNuxtData: async () => {},
+      $fetch: async (url, options) => {
+        calls.push({ url, options })
+        return calls.length === 1 ? response.promise : laterResponse.promise
+      },
+    })
+  )
+  const editor = scope.run(() =>
+    load(
+      'kitchen/components/Identity/ListingEdit.vue',
+      '({save,slug,status,visibility,saving})',
+      {
+        ref,
+        watch,
+        onScopeDispose,
+        useCommandScope,
+        defineProps: () => props,
+        defineEmits:
+          () =>
+          (...event) =>
+            events.push(event),
+        useAuth: () => ({ currentUser }),
+        useKitchenWorkspace: () => workspace,
+        useKitchenUpdate: () => updater,
+      }
+    )
+  )
+  props.open = true
+  await nextTick()
+  editor.slug.value = 'reviewed'
+  return {
+    scope,
+    token,
+    response,
+    laterToken,
+    laterResponse,
+    calls,
+    events,
+    props,
+    workspace,
+    editor,
+  }
+}
+
+for (const change of [
+  'none',
+  'closed',
+  'reopened',
+  'slug',
+  'status',
+  'visibility',
+  'Kitchen ABA',
+]) {
+  test(`listing preparation respects the captured editor through credentials: ${change}`, async () => {
+    const h = await listingHarness()
+    const pending = h.editor.save()
+    await nextTick()
+    if (change === 'closed') h.props.open = false
+    if (change === 'reopened') {
+      h.props.open = false
+      h.props.open = true
+    }
+    if (change === 'slug') h.editor.slug.value = 'new draft'
+    if (change === 'status') h.editor.status.value = 'inactive'
+    if (change === 'visibility') h.editor.visibility.value = false
+    if (change === 'Kitchen ABA') {
+      h.workspace.id.value = 'b'
+      h.workspace.id.value = 'a'
+    }
+    h.token.resolve('token')
+    h.response.resolve({ ok: true, kitchen_id: 'a' })
+    await pending
+    assert.equal(h.editor.saving.value, false)
+    if (change === 'none') {
+      assert.equal(h.calls.length, 1)
+      assert.deepEqual(h.calls[0].options.body, {
+        kitchen_id: 'a',
+        patch: {
+          'identity.slug': 'reviewed',
+          'identity.status': 'active',
+          'identity.visibility': true,
+        },
+      })
+      assert.deepEqual(h.events, [['update:open', false]])
+    } else {
+      assert.deepEqual(
+        h.calls,
+        [],
+        'obsolete preparation never dispatches a root edit'
+      )
+      assert.deepEqual(h.events, [])
+    }
+    h.scope.stop()
+  })
+}
+
+test('a dispatched listing update retains its result while a closed editor gets no completion', async () => {
+  const h = await listingHarness()
+  const pending = h.editor.save()
+  await nextTick()
+  h.token.resolve('token')
+  await nextTick()
+  assert.equal(h.calls.length, 1)
+  h.props.open = false
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  await pending
+  assert.equal(h.calls.length, 1)
+  assert.deepEqual(h.events, [])
+  h.scope.stop()
+})
+
+for (const dispatched of [false, true]) {
+  test(`a changed listing draft can be saved again after its ${dispatched ? 'dispatched' : 'preparing'} attempt finishes`, async () => {
+    const h = await listingHarness()
+    const pending = h.editor.save()
+    await nextTick()
+    if (dispatched) {
+      h.token.resolve('token')
+      await nextTick()
+      assert.equal(h.calls.length, 1)
+    }
+    h.editor.slug.value = 'replacement'
+    h.token.resolve('token')
+    h.response.resolve({ ok: true, kitchen_id: 'a' })
+    await pending
+    assert.equal(h.editor.saving.value, false)
+    const retry = h.editor.save()
+    await nextTick()
+    h.laterToken.resolve('token')
+    h.laterResponse.resolve({ ok: true, kitchen_id: 'a' })
+    await retry
+    assert.equal(h.calls.length, dispatched ? 2 : 1)
+    assert.equal(
+      h.calls.at(-1).options.body.patch['identity.slug'],
+      'replacement'
+    )
+    assert.equal(h.editor.saving.value, false)
+    h.scope.stop()
+  })
+}
+
+test('an old listing result cannot release a reopened editor newer save', async () => {
+  const h = await listingHarness()
+  const old = h.editor.save()
+  await nextTick()
+  h.token.resolve('token')
+  await nextTick()
+  assert.equal(h.calls.length, 1)
+  h.props.open = false
+  h.props.open = true
+  const newer = h.editor.save()
+  await nextTick()
+  h.laterToken.resolve('token')
+  await nextTick()
+  assert.equal(h.calls.length, 2)
+  h.response.resolve({ ok: true, kitchen_id: 'a' })
+  await old
+  assert.equal(h.editor.saving.value, true)
+  assert.deepEqual(h.events, [])
+  h.laterResponse.resolve({ ok: true, kitchen_id: 'a' })
+  await newer
+  assert.equal(h.editor.saving.value, false)
+  assert.deepEqual(h.events, [['update:open', false]])
+  h.scope.stop()
+})
+
 for (const change of [
   'Kitchen ABA',
   'authority ABA',
