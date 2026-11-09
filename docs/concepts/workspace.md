@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-09
+Ref: ac88daacf
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -166,11 +166,14 @@ Home is available as a surface even before a domain record exists. Creation and
 attachment use existing domain commands, access checks and capacity policy;
 there is no universal `crud.create` shape required of every controller.
 
-Misebox serves public discovery at its public host's `/` and Kitchen Home at the
-Workspace host's `/`, without a `/workspace/kitchen` Home alias. BuenoHost and
-Granite retain `/workspace/property` and `/workspace/portfolio`. FireUX presents
-its industry SaaS offering and framework resources at `/` and keeps Project Workspace at
-`/workspace/project`. Only its Workspace host redirects root to Project Home.
+Misebox keeps public discovery, authentication and Kitchen Workspace on one
+host: `/` redirects through the registered Workspace entrance to
+`/workspace/kitchen`, and public Home is `/home`. Its
+[index route](../../projects/misebox/misebox-app/app/pages/index.vue) and
+[App config](../../projects/misebox/misebox-app/nuxt.config.ts) own that composition.
+BuenoHost and Granite retain `/workspace/property` and `/workspace/portfolio`.
+FireUX presents its industry SaaS offering and framework resources at `/` and
+keeps Project Workspace at `/workspace/project`.
 Tenant Apps retain their customer root and an
 App-resolved Workspace entrance. Use `useWorkspaceEntryCta`, not a hard-coded
 family path, for shared entry actions.

@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-11-08
-Ref: d9e120c46
+Updated: 2026-11-09
+Ref: ac88daacf
 Role: map, not canon
 
 ## Purpose
@@ -130,11 +130,12 @@ Ecosystem carries `project_id`; App carries only `ecosystem_id`. FireUX may use
 that chain to discover an App's domain Entities, while those Entities remain
 ignorant of Project, App, and Ecosystem.
 
-`management` may associate the root with an App or the ecosystem Workspace,
-but that relationship never relocates the Entity or creates a same-id App
-access record. A selected target must resolve one valid root, management
-relationship and the domain’s current authorization checks. A universal
-Team-record gate must not be inferred from the presence of a Workspace.
+Where a domain retains a `management` relationship, it does not relocate the
+Entity or replace the domain's current authorization checks. Do not require
+that field on every Workspace Entity: Kitchen's current model has no
+`management` field. A selected target must resolve a valid root and pass its
+owning access contract. A universal Team-record gate must not be inferred from
+the presence of a Workspace.
 
 ### Business and Place
 
@@ -149,8 +150,8 @@ Business subscription is an entitlement and is separate from Business identity.
 Legacy Company records require the reviewed data cutover described in
 `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
 
-Run the retired operational artifact in Git history against an owning ecosystem
-database to verify the complete relationship without writing data.
+Use the Business context's current source and verification guidance for this
+relationship; historical migration artifacts are not current executable checks.
 
 ### Identity plus membership
 
@@ -284,32 +285,31 @@ Recipe, KitchenPrepItem, and Dish are confirmed Kitchen-scoped Entities. Recipe
 owns authored preparation content; KitchenPrepItem owns a reusable intermediate
 product's inputs, yield, and method; Dish owns reusable food identity and media.
 MenuItem is a MenuSection-owned placement Record and must reference a Dish from
-the same Kitchen. Run the retired operational artifact in Git history and
-the retired operational artifact in Git history to verify those scope fields and
-relationships in Misebox without writing data.
+the same Kitchen. Inspect the owning models, readers and protected commands for
+that scope; local source review does not verify stored Misebox records.
 
-KitchenStation is a confirmed Kitchen-owned operational Record at
-`kitchens/{kitchenId}/stations/{stationId}`. Run
-the retired operational artifact in Git history to verify its Kitchen parent,
-scope, required fields, ordering, and Station references without writing data.
+KitchenStation is a Kitchen-owned operational Record at
+`kitchens/{kitchenId}/stations/{stationId}`. Its
+[model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts)
+defines its Kitchen id, presentation, active state and ordering; the
+[Station read-scope tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/station-read-scope.test.mjs)
+exercise the reader's scope and lifecycle.
 
 KitchenPrepItem is stored at
-`kitchens/{kitchenId}/prep-items/{prepItemId}`. The protected
-legacy `mise` migration is complete; new code must not restore those duplicate
-documents or normalize them as Mise tasks. Keep
-the retired operational artifact in Git history as the migration record and
-use the read-only audit to detect storage regression.
+`kitchens/{kitchenId}/prep-items/{prepItemId}`. New code must not restore legacy
+duplicate `mise` documents or normalize Prep Items as Mise tasks. The
+[Prep Item model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts)
+and [scope tests](../../packages/extensions/fireux-kitchens/src/test/kitchen/prep-scope.test.mjs)
+describe the current contract; this map does not establish live migration status.
 
 KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
 Completing a ready Order atomically creates its same-id immutable KitchenSale
 and FinancialFact. CustomerProfile is an optional User-owned profile Record at
 `users/{uid}/profiles/customer`; registered customer identity is AppUser and
 guest details stay on the Order. CustomerOrderLink is a User-owned pointer at
-`users/{uid}/orders/{orderId}`. Run
-the retired operational artifact in Git history for the read-only integrity
-check. Legacy root links are planned by
-the retired operational artifact in Git history and require an explicit
-confirmation hash plus protected preimage before application.
+`users/{uid}/orders/{orderId}`. Any legacy-link migration needs a current reviewed
+plan, protected preimages, concurrency checks and explicit mutation authority;
+retired scripts do not authorize or verify a new migration.
 
 ChefProfile and DriverProfile are confirmed User-owned Records at
 `users/{uid}/profiles/{kind}`. Presentation reads join canonical User rather
@@ -317,10 +317,9 @@ than copying person identity. Genuine App-specific capability state may live
 beneath that profile at `app-state/{appId}`. KitchenTeamMember is the canonical roster
 record at `kitchens/{kitchenId}/team/{uid}` and may carry Kitchen-specific
 operational roles. Workspace access is the separate Kitchen-owned record bound
-to the current App membership creation timestamp. KitchenTeamJoinRequest remains workflow,
-never authority. Run
-the retired operational artifact in Git history to verify these profile,
-membership, Kitchen, and workflow joins without writing data.
+to the current App membership creation timestamp. KitchenTeamJoinRequest remains
+workflow, never authority. Verify each join through its current owning reader
+and command; source inspection does not establish live membership integrity.
 
 Product is a commercial root owned by `fireux-products`. It has an
 independent lifecycle, route identity, pricing children, authorship, and
@@ -337,15 +336,24 @@ Product document ids are supplied by Firestore readers and need not be copied
 into sparse stored records. A slug is required by a published doorway, not by
 an inactive provider-imported Product that has no public route.
 
-Run the retired operational artifact in Git history to verify Product,
-Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
-Misebox owner database without writing data.
+These Product and Supplier relationships describe source contracts, not a live
+integrity audit of the Misebox database.
 
-Kitchen root shape, its required same-id Place, and root-owned Team are verified by
-the retired operational artifact in Git history. Kitchen root IDs remain stable
-operational identity; authored slugs resolve through the Kitchen
-server route seam. The owner-first migration must retain a protected preimage
-and an explicit confirmation hash before changing data.
+Kitchen's [current model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts)
+contains nested `identity`, capability configuration, audit stamps and optional
+internal `context`. The [configuration model](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen-configuration.model.ts)
+owns theme, ordering, services and tables. Its
+[public projection](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/normalize-kitchen.ts)
+returns identity and services with the same-id Place, omitting private root
+metadata. Team roster and Workspace access retain separate records and authority.
+Kitchen root IDs remain stable operational identity; authored slugs resolve
+through the [Kitchen server reader](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts).
+
+Retired operational artifacts in Git history are historical evidence, not
+supported audit commands. Live storage verification requires a current reviewed
+read-only procedure. Any data migration separately requires an exact plan,
+protected preimages, concurrency checks and explicit authorization under the
+[Firestore mutation context](../ai/firestore-mutations-context.md).
 
 ## Storage and route implications
 
@@ -358,9 +366,9 @@ and an explicit confirmation hash before changing data.
   merely to reuse UI.
 - Model and composable folder placement follows the declared owner; folders do
   not create ownership.
-- Workspace-capable roots store the generic `management` relationship, never a
-  domain-enumerated Core type: `root`, `workspace`, or `app` with `app_id` only
-  in the final mode. Team and operations remain root-owned in every mode.
+- Workspace availability does not imply a universal stored `management` field.
+  Inspect the domain model and access contract. Where retained, management
+  association does not move Team or operational ownership to the App.
 - Cross-root relationships prefer canonical ids over copied Entity objects or
   inverse child arrays unless a named Directory or presentation view owns that
   optimization.
@@ -376,7 +384,7 @@ Directory and Entity Detail family maps.
 | Existing domain concepts exceed this descriptive map           | `drift`    | Review one owning package when a concrete feature needs the distinction; use source behavior to name its role                                                                                        |
 | Independent Business with optional Place links                 | `accepted` | Business owns organisation identity and Workspace; Place owns each linked location                                                                                                                   |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
-| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration |
+| Kitchen root + Place + Team composition                        | `accepted` | Kitchen owns nested identity, configuration and audit/private metadata; its public projection joins the same-id Place. Team roster and membership-bound Workspace access retain separate authority.  |
 | Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                                  |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
 | Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |

@@ -8,6 +8,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { test } from 'node:test'
 import { computed, ref, toValue } from 'vue'
+import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 const load = (path, name, deps) => {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
@@ -36,6 +37,7 @@ for (const [family, path] of Object.entries(paths))
         uid: ref('actor'),
         app: ref({ id: 'app' }),
         appUser: ref({
+          role: 'user',
           subscription: 'free',
           created: { at: { seconds: 1, nanoseconds: 0 } },
         }),
@@ -60,6 +62,7 @@ for (const [family, path] of Object.entries(paths))
       {
         computed,
         toValue,
+        resolveAppUserAccess,
         readMembershipAccessIds,
         useFirestoreRead: () => ({ firestoreFetchDoc: () => grant }),
       }
@@ -158,7 +161,21 @@ for (const [family, path] of Object.entries(paths))
     assert.equal(readId.value, '')
     assert.equal(workspace.data.value, null)
     app.pending.value = false
+    for (const invalid of [
+      { role: undefined, subscription: 'free' },
+      { role: 'unknown-role', subscription: 'free' },
+      { role: 'user', subscription: 'unknown-tier' },
+    ]) {
+      app.appUser.value = {
+        ...invalid,
+        created: { at: { seconds: 1, nanoseconds: 0 } },
+      }
+      assert.equal(readId.value, '')
+      assert.equal(workspace.data.value, null)
+      assert.notEqual(workspace.outcome.value, 'ready')
+    }
     app.appUser.value = {
+      role: 'user',
       subscription: 'free',
       created: { at: { seconds: 2, nanoseconds: 0 } },
     }

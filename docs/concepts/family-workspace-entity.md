@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-11-08
-Ref: 470b97114
+Updated: 2026-11-09
+Ref: ac88daacf
 Role: map, not canon
 
 ## Purpose
@@ -217,18 +217,40 @@ not proved by this presentation pass. Focused explanation checks live in
 
 Every Workspace Entity must share these rules:
 
-- The Entity index owns only `{ collection, outcome, selectedId, select }`.
-  The selected Entity entrance has `{ data, id, outcome, crud }`, where
-  `crud` exposes named `create`, `update`, and `delete` functions. Collection
-  choice does not leak into the selected-Entity entrance, and page state,
-  presentation, Demo, refresh, and compatibility aliases do not belong to
-  either contract. Kitchen additionally exposes its actual account allowance
-  and creation availability through `useKitchenWorkspace`; the numeric policy
-  remains in its adjacent domain-owned pure policy, shared with trusted
-  onboarding. Target-specific write authority remains with the command.
-  Index `outcome` describes its collection read; entrance `outcome` describes
-  its selected document read. A document outcome must never stand in for the
-  collection's loading or error result.
+- The domain's `useXWorkspace` binds Core selection to its authorized reader.
+  Selected `data`, `id` and `outcome` must describe the same exact root. It may
+  also expose `collection`, `collectionOutcome` and `select` for its Index;
+  those responsibilities do not require a second controller. Collection and
+  selected-document outcomes remain distinct. Named domain commands keep
+  their existing owners; there is no compulsory generic CRUD bag. Kitchen's
+  allowance remains a domain-owned policy shared with trusted onboarding.
+  [Project's adapter](../../packages/extensions/fireux-projects/src/runtime/project/composables/workspace/useProjectWorkspace.ts)
+  is a current reference for the combined projection; Business's API-backed
+  adapter still needs the same access-revocation and exact-root guarantees.
+
+- Root IDs come from canonical document paths. Reuse Core's
+  [stamp value types](../../packages/core/fireux-core/src/runtime/models/utils/stamps.model.ts),
+  without making the App/Ecosystem `FireuxEntity` type a universal superclass.
+  New roots initialize `created` and `updated` in the same trusted creation
+  event; later updates preserve `created`. Shared App provenance belongs on
+  `created`. Kitchen's historical optional `updated` and domain-specific stamp
+  fields remain readable; aligning new writes does not authorize a backfill or
+  an isolated tightening of its stored model.
+
+- Browser membership validity comes from Core's
+  [`resolveAppUserAccess`](../../packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts):
+  recognized role and readable subscription are both required, including the
+  intentional legacy subscription read. `useMembershipAccess` applies that
+  decision before reading a grant; its lower timestamp/ID utility retains only
+  grant-shape and exact membership-lifetime validation. Domain commands still
+  enforce current authority on the submitted target.
+
+- Neutral Identity read presentation and availability reuse
+  [`useIdentity`](../../packages/core/fireux-core/src/runtime/composables/fireux/useIdentity.ts)
+  and [`useWorkspaceIdentity`](../../packages/core/fireux-core/src/runtime/workspace/composables/useWorkspaceIdentity.ts).
+  The domain supplies identity fields, readiness and write availability; linked
+  locations and protected update targets remain domain-owned. An enabled UI
+  action is never mutation authority.
 
 - An App supplies the product lens through which a Workspace Entity is viewed:
   FireUX presents Project, Misebox presents Kitchen, and Granite presents its
@@ -666,12 +688,16 @@ ownership.
 
 ## Migration and drift register
 
-| Difference                                                                          | State      | Required direction                                                                                                                   |
-| ----------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Supplier readers return canonical Supplier and related Place Entities               | `accepted` | Preserve both canonical records; Workspace consumers must not manufacture replacement Entity DTOs                                    |
-| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`    | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed |
-| Kitchen authored route slug differs from stable root identity                       | `accepted` | Resolve the slug through the bounded Kitchen route resolver while Workspace and operation relationships retain the stable root ID    |
-| Workspace Entity implementation uses `runtime/<entity>/<technical role>`            | `accepted` | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                  |
+| Difference                                                                          | State       | Required direction                                                                                                                                   |
+| ----------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Supplier readers return canonical Supplier and related Place Entities               | `accepted`  | Preserve both canonical records; Workspace consumers must not manufacture replacement Entity DTOs                                                    |
+| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`     | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed                 |
+| Kitchen authored route slug differs from stable root identity                       | `accepted`  | Resolve the slug through the bounded Kitchen route resolver while Workspace and operation relationships retain the stable root ID                    |
+| Workspace Entity implementation uses `runtime/<entity>/<technical role>`            | `accepted`  | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                                  |
+| Kitchen new-root writer initializes only `created`                                  | `migration` | Align the trusted Kitchen creation event to initialize `updated` too; retain historical optional reads and do not backfill stored records implicitly |
+| Supplier browser Identity retains the former same-ID Business/Place assumption      | `drift`     | Resolve the independent Business and its explicit Place link; retain protected validation of the actual update target                                |
+| Supplier public detail returns the normalized full root                             | `drift`     | Separate an explicit public projection from the protected Workspace root; source review does not prove deployed contents                             |
+| Business API Workspace lacks grant-only revocation refresh                          | `drift`     | Keep its domain reader and commands while adding bounded grant reactivity and query-specific refresh; no universal execution controller is required  |
 
 ## Component and composable naming
 
@@ -1133,7 +1159,9 @@ Project Home, navigation, selection and Identity use the saved Project profile.
 Both Workspace families retain their Identity editors.
 
 Supplier, Property, Portfolio and Blank have named Identity controllers consuming
-`useWorkspaceIdentity`. Supplier reads the linked Business and its explicit Place profile. Its
+`useWorkspaceIdentity`. Supplier should resolve the independent Business and its
+explicit Place profile. Its browser Identity reader and interface still assume
+the former same-ID relationship; that is migration debt, not the Business contract. Its
 focused profile, brand, photo, contact and location panels reuse `PlaceEdit`,
 with a Supplier-owned update adapter. Supplier identity media uses the same
 Place logo/backdrop and photo-fallback resolution as Kitchen; settled joined

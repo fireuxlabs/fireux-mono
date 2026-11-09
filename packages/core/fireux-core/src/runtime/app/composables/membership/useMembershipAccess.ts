@@ -1,9 +1,10 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { readMembershipAccessIds } from '../../utils/membership-access'
+import { resolveAppUserAccess } from '../../utils/app-user-access'
 import type { AppUser } from '../../models/app-user.model'
 
-/** The domain supplies its path; Core owns the live read and membership-lifetime check. */
+/** The domain supplies its path; Core validates membership and its grant lifetime. */
 export function useMembershipAccess(
   collectionPath: MaybeRefOrGetter<string>,
   userId: MaybeRefOrGetter<string | null | undefined>,
@@ -11,7 +12,11 @@ export function useMembershipAccess(
   selectAccess: (value: unknown) => unknown = (value) => value
 ) {
   const path = computed(() => toValue(collectionPath))
-  const id = computed(() => (toValue(membership) ? toValue(userId) : null))
+  const id = computed(() =>
+    resolveAppUserAccess(toValue(membership)).hasMembership
+      ? toValue(userId)
+      : null
+  )
   const { firestoreFetchDoc } = useFirestoreRead()
   const source = firestoreFetchDoc<Record<string, unknown>>(path, id)
   const parsed = computed(() => {

@@ -4,6 +4,7 @@ import {
   readAppUserSubscription,
 } from '../runtime/app/models/app-user.model.ts'
 import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
+import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -352,6 +353,7 @@ test('removing a disposable member revokes live domain access and a new membersh
     {
       computed,
       toValue,
+      resolveAppUserAccess,
       readMembershipAccessIds: accessContract,
       useFirestoreRead: () => ({
         firestoreFetchDoc: () =>

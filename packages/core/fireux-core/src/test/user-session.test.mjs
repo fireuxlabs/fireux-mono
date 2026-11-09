@@ -1,5 +1,4 @@
 import { resolveHttpDocumentOutcome } from '../runtime/utils/http-document-outcome.ts'
-import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
 import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -242,7 +241,7 @@ function nativeSession(initial = {}) {
     'app/composables/membership/useAppUserRead.ts',
     'useAppUserRead',
     {
-      readAppUserSubscription,
+      resolveAppUserAccess,
       computed,
       unref,
       useFirestoreRead,
@@ -403,16 +402,57 @@ test('sign-out immediately masks own User, avatar and membership before anonymou
   assert.equal(f.state.error.value, null)
   f.scope.stop()
 })
-test('membership reads expose legacy premium as Pro and reject unknown stored tiers', async () => {
+test('membership reads accept valid roles and tiers, normalize legacy Pro, and reject malformed membership', async () => {
   const f = nativeSession({ user: { uid: 'person' }, settled: true })
   await nextTick()
   f.settle('users', { display_name: 'Person' })
-  const stored = { role: 'user', subscription: 'premium' }
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      const stored = { role, subscription }
+      f.settle('apps/runtime/users', stored)
+      assert.equal(f.state.appUser.value.role, role)
+      assert.equal(
+        f.state.appUser.value.subscription,
+        subscription === 'premium' ? 'pro' : subscription
+      )
+      assert.equal(stored.subscription, subscription)
+    }
+  }
+  for (const stored of [
+    { role: 'user', subscription: 'unknown' },
+    { role: 'unknown-role', subscription: 'free' },
+    { subscription: 'free' },
+    { role: 'user' },
+  ]) {
+    f.settle('apps/runtime/users', stored)
+    assert.equal(f.state.appUser.value, null)
+    assert.equal(f.state.isAdmin.value, false)
+    assert.equal(f.state.canOwnMultipleWorkspaces.value, false)
+  }
+  f.scope.stop()
+})
+test('membership pending and error states hide retained valid membership', async () => {
+  const f = nativeSession({ user: { uid: 'person' }, settled: true })
+  await nextTick()
+  f.settle('users', { display_name: 'Person' })
+  const stored = { role: 'admin', subscription: 'business' }
   f.settle('apps/runtime/users', stored)
-  assert.equal(f.state.appUser.value.subscription, 'pro')
-  assert.equal(stored.subscription, 'premium')
-  f.settle('apps/runtime/users', { role: 'user', subscription: 'unknown' })
-  assert.equal(f.state.appUser.value, null)
+  const membership = f.bindings.find(
+    ({ reference }) => reference.value?.path === 'apps/runtime/users'
+  ).binding
+  membership.pending.value = true
+  assert.equal(f.state.appUser.value, undefined)
+  assert.equal(f.state.appUserOutcome.value, 'pending')
+  assert.equal(f.state.isAdmin.value, false)
+  membership.pending.value = false
+  const error = new Error('Membership read denied')
+  f.settle('apps/runtime/users', stored, error)
+  assert.equal(f.state.appUser.value, undefined)
+  assert.equal(f.state.appUserOutcome.value, 'error')
+  assert.equal(f.state.isAdmin.value, false)
+  f.settle('apps/runtime/users', stored)
+  assert.equal(f.state.appUser.value.role, 'admin')
+  assert.equal(f.state.isAdmin.value, true)
   f.scope.stop()
 })
 test('account switch masks previous identity and membership until exact new reads settle', async () => {

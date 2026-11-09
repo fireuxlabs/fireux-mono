@@ -1,7 +1,7 @@
 # Card family
 
 Updated: 2026-11-09
-Ref: e7b188cbf
+Ref: ac88daacf
 Role: source map, not executable certification
 
 ## Purpose and authority
@@ -90,9 +90,10 @@ compose `CardsOverview` from supplied profile data and the canonical User
 projection. Those parents retain acquisition, creation, permissions and management
 actions. Preview retains the shared directory card's `summary` visual variant;
 Overview retains Core's Hero and sections plus its supplied actions slot.
-Professional retains its presentation helper. `ProfessionalProfileEvidence` and
-the scoped stylesheet remain under `Professional/Profile`; its parents retain
-Place enrichment and share/print actions.
+Professional retains its presentation helper. `ProfessionalProfileEvidence`
+remains under `Professional/Profile`; the scoped styles live in
+`Professional/Cards/Overview.vue`. Its parents retain Place enrichment and
+share/print actions.
 
 Driver supplies Pill, Cell and Overview under
 [`Driver/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/Cards).

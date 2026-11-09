@@ -4,6 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
 import { computed, ref, toValue } from 'vue'
+import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 
 function load(path, result, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -26,6 +27,12 @@ const {
 )
 const birth = { seconds: 123, nanoseconds: 456 }
 const membership = () => ({ created: { at: { ...birth } } })
+const browserMembership = (overrides = {}) => ({
+  role: 'user',
+  subscription: 'free',
+  ...membership(),
+  ...overrides,
+})
 const access = (ids = ['first']) => ({
   ids,
   membership_created_at: { ...birth },
@@ -163,6 +170,7 @@ function reader() {
     {
       computed,
       toValue,
+      resolveAppUserAccess,
       readMembershipAccessIds,
       useFirestoreRead: () => ({
         firestoreFetchDoc: (p, id) => {
@@ -176,7 +184,7 @@ function reader() {
   )
   const collection = ref('example_access/app-a/users')
   const uid = ref('person-a')
-  const member = ref(membership())
+  const member = ref(browserMembership())
   const result = useMembershipAccess(collection, uid, member)
   return {
     source,
@@ -201,6 +209,43 @@ test('one live binding tracks domain path and user identity reactively', () => {
   assert.equal(state.reads(), 1)
 })
 
+test('browser grants require valid governance and subscription before using a matching lifetime', () => {
+  const state = reader()
+  state.source.value = access()
+  state.source.outcome.value = 'ready'
+  for (const role of ['user', 'admin', 'dev']) {
+    for (const subscription of ['free', 'pro', 'business', 'premium']) {
+      state.member.value = browserMembership({ role, subscription })
+      assert.equal(state.target.value, 'person-a')
+      assert.deepEqual(state.result.ids.value, ['first'])
+      assert.equal(state.result.outcome.value, 'ready')
+    }
+  }
+  for (const member of [
+    browserMembership({ role: undefined }),
+    browserMembership({ role: 'unknown-role' }),
+    browserMembership({ subscription: undefined }),
+    browserMembership({ subscription: 'unknown-tier' }),
+    {},
+    [],
+    null,
+  ]) {
+    state.member.value = member
+    assert.equal(state.target.value, null)
+    assert.deepEqual(state.result.ids.value, [])
+    assert.equal(state.result.outcome.value, 'idle')
+    assert.equal(state.result.error.value, undefined)
+  }
+  state.member.value = browserMembership()
+  assert.deepEqual(state.result.ids.value, ['first'])
+  assert.equal(state.result.outcome.value, 'ready')
+  assert.equal(
+    state.reads(),
+    1,
+    'validation does not reconstruct the live reader'
+  )
+})
+
 test('live revocation and rejoining clear granted ids immediately', () => {
   const { source, result, member, target } = reader()
   assert.equal(result.outcome.value, 'empty')
@@ -215,7 +260,9 @@ test('live revocation and rejoining clear granted ids immediately', () => {
   assert.equal(target.value, null)
   assert.deepEqual(result.ids.value, [])
   assert.equal(result.outcome.value, 'idle')
-  member.value = { created: { at: { seconds: 124, nanoseconds: 0 } } }
+  member.value = browserMembership({
+    created: { at: { seconds: 124, nanoseconds: 0 } },
+  })
   assert.deepEqual(
     result.ids.value,
     [],

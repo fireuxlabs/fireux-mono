@@ -1,7 +1,7 @@
 # Tenant and global App family
 
-Updated: 2026-11-05
-Ref: d6240d394
+Updated: 2026-11-09
+Ref: ac88daacf
 Role: map, not canon
 
 ## Purpose
@@ -40,15 +40,15 @@ Global and tenant Apps must:
 
 ## Runtime behavior matrix
 
-| Concern               | Global App                               | Tenant App                               | Why the delta exists                                                       |
-| --------------------- | ---------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- |
-| Example               | Misebox                                  | La Tap Berne                             | Product composition                                                        |
-| App role              | `global`                                 | `tenant`                                 | Explicit runtime identity                                                  |
-| Target source         | Root management + Team + AppUser          | Root management + Team + AppUser          | Entity Team owns Workspace access; AppUser proves App membership           |
-| Selection             | User chooses among authorized targets    | One persisted target may auto-select     | Tenant removes redundant choice, not authority checks                      |
-| Create default        | Allowed unless family config disables it | Disabled unless family config enables it | Tenant Apps usually manage an existing bounded target                      |
-| Directory routes      | Often explicit entity/directory scope    | May omit the persisted target segment    | Authorized target selection supplies the bounded scope                    |
-| Domain implementation | Owning package                           | Same owning package                      | App role is composition, not a domain fork                                 |
+| Concern               | Global App                                 | Tenant App                                 | Why the delta exists                                                                                        |
+| --------------------- | ------------------------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Example               | Misebox                                    | La Tap Berne                               | Product composition                                                                                         |
+| App role              | `global`                                   | `tenant`                                   | Explicit runtime identity                                                                                   |
+| Target source         | Valid App membership + domain access grant | Valid App membership + domain access grant | Grants are membership-bound; Team roster labels do not grant access; domain attachment policy still applies |
+| Selection             | User chooses among authorized targets      | One persisted target may auto-select       | Tenant removes redundant choice, not authority checks                                                       |
+| Create default        | Allowed unless family config disables it   | Disabled unless family config enables it   | Tenant Apps usually manage an existing bounded target                                                       |
+| Directory routes      | Often explicit entity/directory scope      | May omit the persisted target segment      | Authorized target selection supplies the bounded scope                                                      |
+| Domain implementation | Owning package                             | Same owning package                        | App role is composition, not a domain fork                                                                  |
 
 `standalone` is a third FireUX-owned App role. It shares explicit config and
 package contracts; it must not become an implicit fallback for unknown roles.
@@ -57,14 +57,18 @@ An Ecosystem Main App can host tenant Apps, standalone Apps, or both. Its own
 
 ## Entity management vocabulary
 
-App role remains `global`, `tenant`, or `standalone`. Workspace roots use one
-separate management relationship:
+App role remains `global`, `tenant`, or `standalone`. Where the owning root
+model declares management, it uses a separate relationship:
 
 - `{ mode: 'root' }` has no App host;
 - `{ mode: 'workspace' }` uses the ecosystem Workspace App convention; and
 - `{ mode: 'app', app_id }` names a dedicated App host.
 
-Management affects host and App-admin override, never the Entity path. Former
+Management affects host and App-admin override, never the Entity path. It is
+not required on every Workspace root: Kitchen declares no management field.
+Retain a domain's existing attachment checks until its product policy changes;
+shared Workspace presentation does not establish a universal single-App rule.
+Former
 `parent_app`, `tenant_app`, `root_only`, and `dedicated_app` support-scope values
 are migration input only and receive no new writes.
 
@@ -81,12 +85,14 @@ are migration input only and receive no new writes.
 ## Ownership and transfer
 
 - Creating an App record does not transfer a root from another host.
-- A new tenant-managed Entity is created at its canonical root with
-  `{ mode: 'app', app_id }` and root-owned Team.
-- Attaching an existing root managed by another App requires an explicit
+- Where the domain declares management, a new tenant-managed Entity is created
+  at its canonical root with `{ mode: 'app', app_id }` and its domain-owned
+  Team/access records.
+- Attaching an existing management-bound root from another App requires an explicit
   transfer workflow.
-- A transfer updates the root management relationship and verifies Team and
-  AppUser authority. The root, Team, and operations do not move collections.
+- A transfer updates that root's management relationship and verifies current
+  App membership, domain access and command authority. The root, Team and
+  operations do not move collections.
 - The fixed safe phase order is inspect authority → retained preimage → update
   management → verify old and new access → retire obsolete membership support.
 
@@ -125,7 +131,7 @@ accepted while only one mature tenant proves the shape.
 
 | Difference                                                            | State        | Required direction                                                                                    |
 | --------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
-| Stored support-scope values                                          | `migration`  | Replace them with root management and Team through reviewed family migrations                         |
+| Stored support-scope values                                           | `migration`  | Replace them with root management and Team through reviewed family migrations                         |
 | Transfer executor is absent                                           | `to-confirm` | Define authentication, recursive inventory, backup, verification ledger, and recovery before live use |
 | La Tap Berne is the only mature tenant page-composition reference     | `to-confirm` | Compare a second tenant before extracting generic Tenant Page components                              |
 | Hard-coded tenant ids, hosts, or domain branches in reusable packages | `drift`      | Replace with App config, target authority, or entity support data; do not add another branch          |

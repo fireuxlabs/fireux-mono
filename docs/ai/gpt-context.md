@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-11-09
-Ref: d0f981eac
+Ref: ac88daacf
 Role: living context
 Scope: repository-wide
 
@@ -300,6 +300,18 @@ User is the person; AppUser is membership in one App. A tenant App remains an
 App role and uses the same Entity contracts. Every App declares its canonical
 Ecosystem relationship, including standalone Apps. Preserve exact owner,
 scope and lifecycle in cross-domain flows.
+
+Browser App membership readers and Workspace grant readers reuse Core's
+`resolveAppUserAccess` decision: a recognized role and readable subscription
+are both required. Domain grants additionally bind to the exact membership
+creation timestamp; selection and Team roster labels never replace that check.
+
+New Entity roots initialize both `created` and `updated` in the same trusted
+creation event. Later updates preserve `created` and replace `updated`.
+Shared stamp types keep App provenance on `created`; domain-specific historical
+stamp data remains readable until its owner defines a reviewed migration.
+This convention does not authorize backfills or require a universal Entity
+superclass. See [Workspace Entity contracts](../concepts/family-workspace-entity.md#shared-spine).
 
 The Workspace surface exists on arrival, even with no saved Entity. An `empty`
 read is not a missing Workspace or onboarding flag; creating a record still
