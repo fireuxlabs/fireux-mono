@@ -1,11 +1,15 @@
+import { canonicalPlaceId } from '../../../../utils/canonical-place-id'
 // Concurrent edit — 2026-07-20 19:40 CEST — Repo Efficiency Pass 2 of 6: map Norwegian canonical Places to NOK.
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: carry real Google defaults without inventing missing Place truth.
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: consume the shared country-to-currency suggestion.
-import type { PlaceAddress, PlaceBusinessHours } from '../../../../models/place.model.ts'
+import type {
+  PlaceAddress,
+  PlaceBusinessHours,
+} from '../../../../models/place.model.ts'
 import type { PlaceUpsertInput } from '../../../../models/place-onboarding.model.ts'
-import type { BasePlace } from '../search/types'
-import type { PlaceSearchLocation } from '../search/types'
-import { toShortAddress } from '../../utils/view/formatPlaceAddress'
+import type { BasePlace } from '../../../../models/place-search'
+import type { PlaceSearchLocation } from '../../../../models/place-search'
+import { toShortAddress } from '../../../../utils/format-place-address'
 import {
   placeBusinessHoursFromGooglePeriods,
   suggestPlaceCurrencyCode,
@@ -48,19 +52,6 @@ const log = (...args: unknown[]) => {
   }
 }
 
-/** Normalize any incoming place_id:
- *  - trim
- *  - remove surrounding quotes
- *  - remove accidental `places/` prefix
- *  - return null if empty after normalization
- */
-export const canonicalPlaceId = (id?: string | null): string | null =>
-  (id ?? '')
-    .trim()
-    .replace(/^"+/, '')
-    .replace(/"+$/, '')
-    .replace(/^places\//, '') || null
-
 /** Type for Google Autocomplete prediction */
 interface GooglePrediction {
   place_id: string
@@ -100,10 +91,7 @@ export async function fetchGoogle(
         'location',
         `${options.location.lat},${options.location.lng}`
       )
-      url.searchParams.set(
-        'radius',
-        String(options.location.radiusMeters)
-      )
+      url.searchParams.set('radius', String(options.location.radiusMeters))
     }
 
     const res = await fetch(url.toString(), {
@@ -235,7 +223,9 @@ export async function fetchGoogle(
 function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
   const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
   const address = Object.fromEntries(
-    Object.entries(g.address).filter(([, value]) => Boolean(String(value || '').trim()))
+    Object.entries(g.address).filter(([, value]) =>
+      Boolean(String(value || '').trim())
+    )
   )
   const stored: Record<string, unknown> = {
     id: g.id,

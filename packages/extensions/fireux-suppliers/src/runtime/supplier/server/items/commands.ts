@@ -7,10 +7,19 @@ import {
 } from '../team/authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { SUPPLIER_MUTATION_TARGETS, serverSupplierItemsTarget } from '../mutation-targets'
+import {
+  SUPPLIER_MUTATION_TARGETS,
+  serverSupplierItemsTarget,
+} from '../mutation-targets'
 import { PRODUCT_MUTATION_TARGETS } from 'fireux-products/runtime/product/server/mutation-targets'
-import { INGREDIENT_MUTATION_TARGETS } from 'fireux-kitchens/runtime/ingredient/server/mutation-targets'
+import { defineFirestoreReadTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 type SupplierItemAction = 'create' | 'update' | 'delete'
+
+const ingredientReferenceTarget = defineFirestoreReadTarget({
+  key: 'supplier.items.ingredient',
+  database: { kind: 'runtime' },
+  collectionPath: 'ingredients',
+})
 
 const text = (value: unknown) => String(value ?? '').trim()
 function fail(statusCode: number, statusMessage: string): never {
@@ -199,7 +208,7 @@ export async function createSupplierItem(
         ),
         ingredientId
           ? mutations.read<Record<string, unknown>>(
-              INGREDIENT_MUTATION_TARGETS.ingredients,
+              ingredientReferenceTarget,
               ingredientId
             )
           : Promise.resolve({ exists: false, data: undefined }),

@@ -224,7 +224,7 @@ import {
   objectArrayHasDateFields,
   sortObjectArrayByDate,
   type ObjectArrayDateSortFields,
-} from './object-array-date-sort'
+} from '../../../../utils/forms/object-array-date-sort'
 
 // Concurrent edit — 2026-07-20 19:22 CEST — Repo Efficiency Pass 2 of 6: bound reusable object-array creation.
 
@@ -366,4 +366,50 @@ defineExpose({
 })
 </script>
 
-<style scoped src="./ObjectArray.css"></style>
+<style scoped>
+.object-array {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+}
+
+.object-array__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+
+.object-array__item-body {
+  position: relative;
+}
+
+.object-array__item-body :deep(.pill) {
+  margin-top: calc(var(--spacing) * 2);
+  max-width: 100%;
+}
+
+.object-array__item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+
+.object-array__item-title {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+
+.object-array__item-title h3 {
+  margin: 0;
+}
+
+.object-array__item-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  flex-shrink: 0;
+}
+</style>

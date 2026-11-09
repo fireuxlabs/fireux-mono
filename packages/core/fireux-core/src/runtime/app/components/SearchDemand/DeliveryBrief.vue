@@ -161,4 +161,4 @@ const sourcePaths = computed(() => [
   ),
 ])
 </script>
-<style scoped src="./reading.css"></style>
+<style scoped src="../../assets/styles/search-demand-reading.css"></style>

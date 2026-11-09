@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetCard as WorkspaceTargetCardType } from '../types'
+import type { WorkspaceTargetCard as WorkspaceTargetCardType } from '../../models/target-card'
 import type { WorkspaceOutcome } from '../../models/outcome'
 
 type WorkspaceOverviewFocusState = {

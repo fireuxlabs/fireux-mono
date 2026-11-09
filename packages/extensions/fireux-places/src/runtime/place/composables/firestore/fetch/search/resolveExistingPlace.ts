@@ -1,5 +1,5 @@
 import type { PlaceDetailResponse } from '../../../../models/place-read.model.ts'
-import type { MapToBasePlace } from './types'
+import type { MapToBasePlace } from '../../../../models/place-search'
 
 export const resolveExistingPlace = async (
   id: string,

@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import { useBuenoHostHome } from '../../composables/useBuenoHostHome'
 import { useBuenoHostPricing } from '../../composables/useBuenoHostPricing'
-import { content, railItems, surfaceItems } from './landing-content'
+import { content, railItems, surfaceItems } from '../../content/landing'
 
 const { workspaceFeatures, isExternalUrl, resolvedIntegrationCards } =
   useBuenoHostHome()

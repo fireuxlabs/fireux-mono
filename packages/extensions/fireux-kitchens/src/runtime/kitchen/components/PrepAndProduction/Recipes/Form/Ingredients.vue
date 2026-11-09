@@ -75,4 +75,4 @@ defineProps<{
 }>()
 </script>
 
-<style scoped src="./input-rows.css" />
+<style scoped src="../../../../assets/styles/recipe-input-rows.css" />

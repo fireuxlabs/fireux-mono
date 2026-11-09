@@ -4,18 +4,15 @@ import type {
   BasePlaceRecord,
   PlaceSearchLocation,
   PlaceSearchSource,
-} from './firestore/fetch/search/types'
+} from '../models/place-search'
 import type { PlaceImageShade } from '../utils/place-spine'
-import { mapPlaceToBasePlace } from './firestore/utils/view/mapPlaceToBasePlace'
-import { canonicalPlaceId } from './firestore/fetch/google/usePlacesGoogle'
-import { normalizeQuery } from './firestore/fetch/search/normalizeQuery'
+import { mapPlaceToBasePlace } from '../utils/map-place-to-base-place'
+import { canonicalPlaceId } from '../utils/canonical-place-id'
+import { normalizeQuery } from '../utils/normalize-query'
 import { searchPrimary } from './firestore/fetch/search/searchPrimary'
 import { searchGoogle } from './firestore/fetch/search/searchGoogle'
 
-export type {
-  BasePlace,
-  PlaceSearchLocation,
-} from './firestore/fetch/search/types'
+export type { BasePlace, PlaceSearchLocation } from '../models/place-search'
 
 type UsePlaceSearchOptions = {
   allowGoogle?: boolean

@@ -11,7 +11,6 @@ import type {
   FireuxEntityCreateResult,
   FireuxRootCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { SupplierOnboardingCompleteResult } from '../../../models/supplier-onboarding.model.ts'
 
@@ -37,10 +36,6 @@ type SupplierTestCreateInput = {
   subtitle?: string
   image_url?: string
 }
-
-export const SupplierCreatePlan = defineFireuxCreatePlan({
-  family: 'idempotent',
-})
 
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const { currentUser } = useAuth()
@@ -140,7 +135,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   }
 
   return {
-    createPlan: SupplierCreatePlan,
     createSupplier,
     createSupplierWorkspace,
     createTestSupplier,

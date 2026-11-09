@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref } from 'vue'
 import { loadLogoForPlace } from './place-logo-loader'
-import { toLogoCard } from './place-logo-card'
+import { toLogoCard } from '../../../../utils/place-logo-card'
 import type {
   HydrateLogoOptions,
   LoadLogoOptions,
@@ -8,7 +8,7 @@ import type {
   PlaceLogoTarget,
   SanitizedAvatar,
   UsePlaceLogoStateOptions,
-} from './place-logo.types.ts'
+} from '../../../../models/place-logo.ts'
 
 export const DEFAULT_LOGO_TIMEOUT_MS = 9000
 
@@ -171,4 +171,4 @@ export type {
   HydrateLogoOptions,
   PlaceLogoState,
   UsePlaceLogoStateOptions,
-} from './place-logo.types.ts'
+} from '../../../../models/place-logo.ts'

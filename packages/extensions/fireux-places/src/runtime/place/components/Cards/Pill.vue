@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceCard } from '../../composables/firestore/utils/view/usePlaceInterface'
+import type { PlaceCard } from '../../models/place-card'
 import type { PlaceImageShade } from '../../utils/place-spine'
 
 defineOptions({ inheritAttrs: false })

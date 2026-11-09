@@ -3,7 +3,7 @@ import type {
   PlaceOnboardingCompleteInput,
   PlaceUpsertInput,
 } from '../models/place-onboarding.model.ts'
-import { canonicalPlaceId } from '../composables/firestore/fetch/google/usePlacesGoogle'
+import { canonicalPlaceId } from './canonical-place-id'
 import {
   placeOnboardingErrorMessage,
   placeOnboardingText as text,
@@ -41,8 +41,12 @@ export async function completePlaceDraft({
   completePlaceOnboarding,
   uploadImage,
 }: PlaceOnboardingCompletionOptions): Promise<PlaceOnboardingResult> {
-  const draft = originalDraft ? JSON.parse(JSON.stringify(originalDraft)) as PlaceUpsertInput : null
-  const brandPalette = JSON.parse(JSON.stringify(originalPalette)) as SparseBrandPalette
+  const draft = originalDraft
+    ? (JSON.parse(JSON.stringify(originalDraft)) as PlaceUpsertInput)
+    : null
+  const brandPalette = JSON.parse(
+    JSON.stringify(originalPalette)
+  ) as SparseBrandPalette
   const id = canonicalPlaceId(draft?.id)
   if (!id) throw new Error('Choose a Place before continuing.')
 
@@ -82,13 +86,15 @@ export async function completePlaceDraft({
       if (!isCurrent()) return { id, path: `/places/${encodeURIComponent(id)}` }
       if (imageFile) {
         const imageUrl = await uploadImage(`places/${id}/avatar`, imageFile)
-        if (!isCurrent()) return { id, path: `/places/${encodeURIComponent(id)}` }
+        if (!isCurrent())
+          return { id, path: `/places/${encodeURIComponent(id)}` }
         await completePlaceOnboarding({ ...defaults, image_url: imageUrl })
       }
       if (!isCurrent()) return { id, path: `/places/${encodeURIComponent(id)}` }
       if (coverFile) {
         const coverImage = await uploadImage(`places/${id}/cover`, coverFile)
-        if (!isCurrent()) return { id, path: `/places/${encodeURIComponent(id)}` }
+        if (!isCurrent())
+          return { id, path: `/places/${encodeURIComponent(id)}` }
         await completePlaceOnboarding({ ...defaults, cover_image: coverImage })
       }
     }

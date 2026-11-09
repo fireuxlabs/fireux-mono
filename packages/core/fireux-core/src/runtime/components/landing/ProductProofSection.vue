@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingProductAction } from './product.types'
+import type { LandingProductAction } from '../../models/landing/product'
 
 withDefaults(
   defineProps<{

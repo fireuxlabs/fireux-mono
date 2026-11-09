@@ -13,7 +13,7 @@
         :key="item.product.id"
         :to="resolveSolutionRoute(item.product)"
       >
-        <ProductCardsSummary
+        <ProductCardsPreview
           :card="item.card"
           :product="item.product"
           prop="Solution"

@@ -1,10 +1,13 @@
-import { fetchGoogle, getLastPlacesAutocompleteDebug } from '../google/usePlacesGoogle'
+import {
+  fetchGoogle,
+  getLastPlacesAutocompleteDebug,
+} from '../google/usePlacesGoogle'
 import { resolveExistingPlace } from './resolveExistingPlace'
 import type {
   MapToBasePlace,
   PlaceSearchLocation,
   SearchStage,
-} from './types'
+} from '../../../../models/place-search'
 
 export const searchGoogle = async (params: {
   term: string
@@ -16,7 +19,11 @@ export const searchGoogle = async (params: {
   const { term, allowGoogle, location, mapToCard, type } = params
 
   if (!allowGoogle) {
-    return { results: [], stage: 'skip-google', debug: { stage: 'skip-google' } }
+    return {
+      results: [],
+      stage: 'skip-google',
+      debug: { stage: 'skip-google' },
+    }
   }
 
   if (term.length < 4) {
@@ -32,8 +39,8 @@ export const searchGoogle = async (params: {
     type,
   })
   const resolved = await Promise.all(
-    googleCells.map(async (cell) =>
-      (await resolveExistingPlace(cell.id, mapToCard)) ?? cell
+    googleCells.map(
+      async (cell) => (await resolveExistingPlace(cell.id, mapToCard)) ?? cell
     )
   )
 

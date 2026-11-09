@@ -17,7 +17,7 @@
       </template>
 
       <template #onboarding>
-        <FireLandingPricingStrip />
+        <LandingPricingStrip />
         <section aria-labelledby="team-access-heading" class="pagebody">
           <h2 id="team-access-heading" class="fx-type-section-title">
             Your team, your way
@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import type { LandingProductCatalogueContent } from 'fireux-core/runtime/components/landing/product.types'
+import type { LandingProductCatalogueContent } from 'fireux-core/runtime/models/landing/product'
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
@@ -105,7 +105,6 @@ import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppColl
 import { metaContent } from '../../meta'
 import LandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import LandingHeroImage from './HeroImage.vue'
-import FireLandingPricingStrip from '../FireLandingPricingStrip.vue'
 import {
   workspaceSurfaceCopy,
   content as landingContent,
@@ -113,7 +112,7 @@ import {
   featuredAppMedia,
   toolsCatalogue,
   type WorkspaceSurfaceCopy,
-} from './landing-content'
+} from '~/content/landing'
 
 const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 const content = computed(() => ({

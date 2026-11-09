@@ -6,7 +6,6 @@ import { useStorage, StorageSerializers } from '@vueuse/core'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import type {
   ProductCreateInput as CanonicalProductCreateInput,
   StripePriceInput,
@@ -21,9 +20,6 @@ export type ProductCreateResult = {
   id?: string
   error?: string
 }
-export const ProductCreatePlan = defineFireuxCreatePlan({
-  family: 'with_provision',
-})
 export function useProductCreate() {
   const config = useFireUXConfig(),
     { currentUser } = useAuth(),
@@ -138,7 +134,6 @@ export function useProductCreate() {
     }
   }
   return {
-    createPlan: ProductCreatePlan,
     createProduct: createProductFromInput,
     createProductFromInput,
     captureIntent,

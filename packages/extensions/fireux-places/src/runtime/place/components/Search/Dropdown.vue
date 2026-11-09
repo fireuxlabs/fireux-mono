@@ -39,10 +39,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { PlaceSearchCell } from '../../composables/usePlaceSearch'
-import type {
-  BasePlace,
-  PlaceSearchSource,
-} from '../../composables/firestore/fetch/search/types'
+import type { BasePlace, PlaceSearchSource } from '../../models/place-search'
 import type { PlaceImageShade } from '../../utils/place-spine'
 
 const props = withDefaults(

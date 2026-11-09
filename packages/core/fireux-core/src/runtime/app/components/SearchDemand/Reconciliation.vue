@@ -138,4 +138,4 @@ const evidence = computed(
   () => new Map(props.observations.filter((o) => o.id).map((o) => [o.id!, o]))
 )
 </script>
-<style scoped src="./reading.css"></style>
+<style scoped src="../../assets/styles/search-demand-reading.css"></style>

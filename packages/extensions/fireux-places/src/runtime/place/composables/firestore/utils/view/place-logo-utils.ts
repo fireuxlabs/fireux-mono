@@ -1,4 +1,4 @@
-import type { PlaceDetailsResult } from './place-logo.types.ts'
+import type { PlaceDetailsResult } from '../../../../models/place-logo.ts'
 
 const LOG_PREFIX = '[places][logos]'
 

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IngredientCreateForm } from './types'
+import type { IngredientCreateForm } from '../../models/ingredient-create-form'
 import { INGREDIENT_CATEGORY_OPTIONS } from '../../models/ingredient-taxonomy'
 
 const form = defineModel<IngredientCreateForm>('form', { required: true })

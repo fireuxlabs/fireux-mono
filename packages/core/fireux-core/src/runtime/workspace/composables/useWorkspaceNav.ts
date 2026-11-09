@@ -6,7 +6,7 @@ import {
   normalizeWorkspaceFamily,
   workspaceFamilyFromRouteContext,
 } from '../utils/routes'
-import type { NavItem, NavPosition } from '../../composables/navigation/types'
+import type { NavItem, NavPosition } from '../../models/navigation'
 
 function normalizePath(value: unknown): string {
   return String(value || '')

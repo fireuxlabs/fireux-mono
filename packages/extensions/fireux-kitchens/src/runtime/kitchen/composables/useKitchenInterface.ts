@@ -3,7 +3,7 @@ import {
   readMediaBackdropColor,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import { toShortAddress } from 'fireux-places/runtime/place/composables/firestore/utils/view/formatPlaceAddress'
+import { toShortAddress } from 'fireux-places/runtime/place/utils/format-place-address'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import { readKitchenVisibility } from '../utils/kitchen-readers'
 import {

@@ -116,7 +116,6 @@ function creation() {
       useFireUXConfig: () => config,
       useRequireUser: async () => user.value,
       usePlaceCreate: () => ({ ensurePlaceExists: () => place.promise }),
-      defineFireuxCreatePlan: (input) => input,
       $fetch: (path, options) => {
         calls.push({ path, options })
         return fetch(path, options)

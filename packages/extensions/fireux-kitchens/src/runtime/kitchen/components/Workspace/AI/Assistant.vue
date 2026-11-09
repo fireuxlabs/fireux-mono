@@ -297,4 +297,4 @@ function stageFile(file: File) {
 }
 </script>
 
-<style src="./welcome.css"></style>
+<style src="../../../assets/styles/ai-welcome.css"></style>

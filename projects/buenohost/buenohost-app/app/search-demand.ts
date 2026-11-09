@@ -333,7 +333,7 @@ export const searchDemand = defineAppSearchDemand({
               'Property manual fields and tenant presentation exist. A complete reusable publication/access journey has not been proved. Source inspection only, not fresh live acceptance testing.',
             source_paths: [
               'packages/extensions/fireux-properties/src/runtime/property/models/property.model.ts',
-              'projects/buenohost/buenohost-app/app/components/Landing/landing-content.ts',
+              'projects/buenohost/buenohost-app/app/content/landing.ts',
             ],
           },
         },

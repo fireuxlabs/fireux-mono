@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { canonicalPlaceId } from 'fireux-places/runtime/place/composables/firestore/fetch/google/usePlacesGoogle'
+import { canonicalPlaceId } from '../../../../../../fireux-places/src/runtime/place/utils/canonical-place-id'
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref } from 'vue'

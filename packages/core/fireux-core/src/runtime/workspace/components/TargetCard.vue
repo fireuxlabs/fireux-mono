@@ -15,7 +15,11 @@
         :src="card.imageUrl || undefined"
         :alt="card.imageAlt || card.title"
         :text="card.imageUrl ? undefined : initials"
-        :icon="card.imageUrl || initials ? undefined : card.icon || 'i-lucide-layout-grid'"
+        :icon="
+          card.imageUrl || initials
+            ? undefined
+            : card.icon || 'i-lucide-layout-grid'
+        "
         size="md"
         class="workspace-target-card__avatar"
         :class="{
@@ -66,9 +70,7 @@
       :selected="selected"
     >
       <span class="workspace-target-card__indicator" aria-hidden="true">
-        <UIcon
-          :name="selected ? 'i-lucide-check' : 'i-lucide-chevron-right'"
-        />
+        <UIcon :name="selected ? 'i-lucide-check' : 'i-lucide-chevron-right'" />
       </span>
     </slot>
   </FireActionSurface>
@@ -76,7 +78,7 @@
 
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
-import type { WorkspaceTargetCard } from './types'
+import type { WorkspaceTargetCard } from '../models/target-card'
 
 const props = withDefaults(
   defineProps<{
@@ -113,7 +115,7 @@ const initials = computed(() =>
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map(part => part.charAt(0))
+    .map((part) => part.charAt(0))
     .join('')
     .toUpperCase()
 )

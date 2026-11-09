@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { LandingWorkspacePreviewItem } from './product.types'
+import type { LandingWorkspacePreviewItem } from '../../models/landing/product'
 
 const props = withDefaults(
   defineProps<{

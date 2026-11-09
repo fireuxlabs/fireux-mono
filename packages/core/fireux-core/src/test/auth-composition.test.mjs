@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { computed, effectScope, nextTick, reactive, ref, watch } from 'vue'
-import { googleSignInFeedback } from '../runtime/components/Auth/sign-in-feedback.ts'
+import { googleSignInFeedback } from '../runtime/utils/auth/sign-in-feedback.ts'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,

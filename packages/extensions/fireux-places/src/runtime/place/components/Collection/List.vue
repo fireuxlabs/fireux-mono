@@ -17,7 +17,7 @@
 import { computed } from 'vue'
 import FireCollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
-import type { PlaceCard } from '../../composables/firestore/utils/view/usePlaceInterface'
+import type { PlaceCard } from '../../models/place-card'
 const props = defineProps<{ cards: PlaceCard.Card[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({

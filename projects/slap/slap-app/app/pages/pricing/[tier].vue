@@ -7,14 +7,13 @@
   />
 </template>
 <script setup lang="ts">
-import type { RouteLocationNormalized } from 'vue-router'
-
 const { appName, contactEmail, tiers } = useSlapPricing()
-const route = useRoute()
+const route = useRoute<'pricing-tier'>()
 const tierId = computed(() => String(route.params.tier || ''))
 definePageMeta({
   layout: 'landing',
-  validate: (route: RouteLocationNormalized) =>
+  validate: (route) =>
+    route.name === 'pricing-tier' &&
     ['free', 'pro', 'business', 'managed', 'your-app'].includes(
       String(route.params.tier)
     ),

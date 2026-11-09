@@ -60,12 +60,9 @@ import {
   sanitizeLogoAvatar,
   usePlaceLogoState,
 } from '../../composables/firestore/utils/view/usePlaceLogos'
-import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
+import { usePlaceInterface } from '../../composables/usePlaceInterface'
 import type { PlaceUpsertInput } from '../../models/place-onboarding.model.ts'
-import type {
-  BasePlace,
-  PlaceSearchSource,
-} from '../../composables/firestore/fetch/search/types'
+import type { BasePlace, PlaceSearchSource } from '../../models/place-search'
 import type { PlaceImageShade } from '../../utils/place-spine'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 

@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-11-08
+Updated: 2026-11-09
 Ref: 470b97114
 Role: map, not canon
 
@@ -27,6 +27,10 @@ Map where reusable runtime logic belongs.
 ## Core principle
 
 Composables should name a real seam. Do not create a composable just to hide a messy file.
+
+Keep shared type contracts in their owner's models and stateless transformations
+in its utils. Request, subscription and lifecycle helpers may remain beside the
+composable that owns them; a filename without `use` is not by itself drift.
 
 An entity family is a set of named capabilities, not one all-purpose `useX()`
 object. Common names make sibling families predictable; they do not require an

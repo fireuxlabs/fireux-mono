@@ -1,6 +1,6 @@
-import type { BasePlace } from '../../fetch/search/types'
-import type { LoadLogoOptions } from './place-logo.types.ts'
-import { toLogoCard } from './place-logo-card'
+import type { BasePlace } from '../../../../models/place-search'
+import type { LoadLogoOptions } from '../../../../models/place-logo.ts'
+import { toLogoCard } from '../../../../utils/place-logo-card'
 import { fetchLogo } from './place-logo-network'
 import {
   isAbortError,
@@ -9,7 +9,7 @@ import {
   roundDuration,
   sanitizeLogValue,
 } from './place-logo-utils'
-import type { PlaceCard } from './usePlaceInterface.ts'
+import type { PlaceCard } from '../../../../models/place-card'
 
 const logoResultCache = new Map<string, string | null>()
 const logoPromiseCache = new Map<string, Promise<string | null>>()

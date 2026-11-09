@@ -1,10 +1,10 @@
 // Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: enrich projected Professional detail from canonical Places.
 // Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich public profiles through bounded exact Place reads.
-import { canonicalPlaceId } from 'fireux-places/runtime/place/composables/firestore/fetch/google/usePlacesGoogle'
+import { canonicalPlaceId } from '../../../../../../../../../fireux-places/src/runtime/place/utils/canonical-place-id'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
-import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/composables/firestore/utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
-import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/utils/map-place-to-base-place'
+import type { PlaceCard } from '../../../../../../../../../fireux-places/src/runtime/place/models/place-card'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/usePlaceInterface'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'

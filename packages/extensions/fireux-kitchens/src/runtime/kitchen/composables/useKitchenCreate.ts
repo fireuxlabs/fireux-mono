@@ -11,7 +11,6 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { FireuxEntityCreateResult } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import type {
@@ -32,10 +31,6 @@ type KitchenCreateDraft = KitchenCreateInput
 export type KitchenCreateResult = FireuxEntityCreateResult & {
   slug?: string
 }
-
-export const KitchenCreatePlan = defineFireuxCreatePlan({
-  family: 'idempotent',
-})
 
 export function useKitchenCreate() {
   const { currentUser } = useAuth()
@@ -241,7 +236,6 @@ export function useKitchenCreate() {
     creationEnabled: creation.creationEnabled,
     completeKitchenOnboarding,
     contributeKitchenDirectory,
-    createPlan: KitchenCreatePlan,
     createKitchen,
     createKitchenShell,
     previewKitchenOnboarding,

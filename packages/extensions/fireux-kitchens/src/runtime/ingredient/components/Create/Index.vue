@@ -48,7 +48,10 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { computed, ref, watch } from 'vue'
 import { useIngredientCreate } from '../../composables/firestore/mutations/useIngredientCreate'
-import { createDefaultIngredientForm, type IngredientCreateForm } from './types'
+import {
+  createDefaultIngredientForm,
+  type IngredientCreateForm,
+} from '../../models/ingredient-create-form'
 
 const emit = defineEmits<{
   (e: 'created', id: string): void

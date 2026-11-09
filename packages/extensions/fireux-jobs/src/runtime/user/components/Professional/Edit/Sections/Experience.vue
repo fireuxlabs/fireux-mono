@@ -200,11 +200,11 @@
 </template>
 
 <script setup lang="ts">
-import { canonicalPlaceId } from 'fireux-places/runtime/place/composables/firestore/fetch/google/usePlacesGoogle'
+import { canonicalPlaceId } from '../../../../../../../../fireux-places/src/runtime/place/utils/canonical-place-id'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
-import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/composables/firestore/utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
-import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/utils/map-place-to-base-place'
+import type { PlaceCard } from '../../../../../../../../fireux-places/src/runtime/place/models/place-card'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/usePlaceInterface'
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import { useBusinessCreate } from 'fireux-businesses/runtime/business/composables/firestore/business/mutations/useBusinessCreate'
 import { BusinessStorage } from 'fireux-businesses/runtime/business/models/business.entity'

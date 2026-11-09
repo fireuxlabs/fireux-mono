@@ -29,7 +29,7 @@ const families = [
   ],
   [
     'Project',
-    'extensions/fireux-projects/src/runtime/project/composables/workspace/useProjectWorkspaceCreate.ts',
+    'extensions/fireux-projects/src/runtime/project/composables/useProjectCreate.ts',
   ],
 ]
 for (const [family, path] of families)
@@ -60,7 +60,6 @@ for (const [family, path] of families)
         useRequireUser: async () => user,
         useFirestore: () => ({}),
         useFirestoreCreate: () => ({ createDocument: async () => true }),
-        defineFireuxCreatePlan: (x) => x,
         normalizeSlug: (x) => x,
         PortfolioStorage: { rootCollection: 'portfolios' },
         $fetch: async (url, options) => {
@@ -79,9 +78,7 @@ for (const [family, path] of families)
         getDoc() {},
       }
       const owner =
-        family === 'Project'
-          ? 'useProjectWorkspaceCreate'
-          : `use${family}Create`
+        family === 'Project' ? 'useProjectCreate' : `use${family}Create`
       const controller = scope.run(() =>
         compileFunction(
           `${stripTypeScriptTypes(source)};return ${owner}()`,

@@ -1,4 +1,4 @@
-import type { PlaceDetailsResult } from './place-logo.types.ts'
+import type { PlaceDetailsResult } from '../../../../models/place-logo.ts'
 import {
   applyLogoSearchParams,
   isAbortError,
@@ -9,7 +9,7 @@ import {
   roundDuration,
   sanitizeLogValue,
 } from './place-logo-utils'
-import type { PlaceCard } from './usePlaceInterface.ts'
+import type { PlaceCard } from '../../../../models/place-card'
 
 const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'

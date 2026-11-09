@@ -10,7 +10,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import type { PlaceUpsertInput } from '../../../models/place-onboarding.model.ts'
 import type {
   PlaceOnboardingCompleteInput,
@@ -18,15 +17,11 @@ import type {
   PlaceOnboardingEnrichment,
   PlaceOnboardingPreview,
 } from '../../../models/place-onboarding.model.ts'
-import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
+import { canonicalPlaceId } from '../../../utils/canonical-place-id'
 
 export interface UsePlaceCreateOptions {
   sources?: WatchSource[]
 }
-
-export const PlaceCreatePlan = defineFireuxCreatePlan({
-  family: 'with_provision',
-})
 
 export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
   const { currentUser } = useAuth(),
@@ -178,7 +173,6 @@ export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
     captureIntent,
     scopeEpoch,
     completePlaceOnboarding,
-    createPlan: PlaceCreatePlan,
     ensurePlaceExists,
     enrichPlaceOnboarding,
     createPlace: ensurePlaceExists,

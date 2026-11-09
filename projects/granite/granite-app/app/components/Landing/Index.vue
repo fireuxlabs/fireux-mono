@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { content, railItems, surfaceItems } from './landing-content'
+import { content, railItems, surfaceItems } from '../../content/landing'
 
 const { landingTiers } = useGranitePricing()
 </script>

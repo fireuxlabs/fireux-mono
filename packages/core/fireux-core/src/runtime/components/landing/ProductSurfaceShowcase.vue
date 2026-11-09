@@ -1,5 +1,8 @@
 <template>
-  <section class="landing-surface-showcase" :aria-labelledby="`${sectionId}-title`">
+  <section
+    class="landing-surface-showcase"
+    :aria-labelledby="`${sectionId}-title`"
+  >
     <div
       v-if="items.length > 1"
       class="landing-surface-showcase__selector"
@@ -32,7 +35,10 @@
       }"
     >
       <slot name="preview" :surface="selected">
-        <div class="landing-surface-showcase__preview" data-landing-reveal="scale">
+        <div
+          class="landing-surface-showcase__preview"
+          data-landing-reveal="scale"
+        >
           <UIcon :name="selected.icon" aria-hidden="true" />
           <p>{{ selected.title }}</p>
           <span>{{ selected.description }}</span>
@@ -44,20 +50,25 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { LandingProductSurface } from './product.types'
+import type { LandingProductSurface } from '../../models/landing/product'
 
-const props = withDefaults(defineProps<{
-  items: readonly LandingProductSurface[]
-  sectionId?: string
-  selectorLabel?: string
-}>(), {
-  sectionId: 'product-surfaces',
-  selectorLabel: 'Choose a product surface',
-})
+const props = withDefaults(
+  defineProps<{
+    items: readonly LandingProductSurface[]
+    sectionId?: string
+    selectorLabel?: string
+  }>(),
+  {
+    sectionId: 'product-surfaces',
+    selectorLabel: 'Choose a product surface',
+  }
+)
 
 const selectedId = ref(props.items[0]?.id || '')
-const selected = computed(() =>
-  props.items.find(surface => surface.id === selectedId.value) || props.items[0]!
+const selected = computed(
+  () =>
+    props.items.find((surface) => surface.id === selectedId.value) ||
+    props.items[0]!
 )
 </script>
 
@@ -84,7 +95,10 @@ const selected = computed(() =>
   color: var(--ui-text-muted);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
-  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
 }
 
 .landing-surface-showcase__selector button[aria-pressed='true'] {

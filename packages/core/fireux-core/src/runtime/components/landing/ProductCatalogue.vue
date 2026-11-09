@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingProductCatalogueContent } from './product.types'
+import type { LandingProductCatalogueContent } from '../../models/landing/product'
 
 defineProps<{
   content: LandingProductCatalogueContent

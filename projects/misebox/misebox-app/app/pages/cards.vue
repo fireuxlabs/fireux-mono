@@ -1,10 +1,8 @@
 <template>
-  <CardStyleLab />
-  <OtherCards />
+  <DemoCards />
 </template>
 
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'landing',
 })

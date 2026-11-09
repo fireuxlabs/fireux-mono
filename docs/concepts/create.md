@@ -1,6 +1,6 @@
 # Create spine map
 
-Updated: 2026-11-03
+Updated: 2026-11-09
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -307,23 +307,8 @@ the final mutation, and completion routing.
   authority, and route query state never mutates an existing Kitchen
   automatically.
 
-## Current create plan primitive
-
-`createStrategy.ts` currently exposes:
-
-- `family`: `idempotent` or `with_provision`
-- `transport`: `client` or `server`
-- `location`: `root`, `scoped`, or `user-owned`
-- `id`: `generated` or `known`
-- `steps`: `single` or `multi`
-
-This is emerging, not complete. Treat existing `CreatePlan` exports as useful
-markers, not a complete registry.
-
 ## Source evidence
 
-- Core create-plan vocabulary:
-  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/createStrategy.ts`
 - Workspace-target examples:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenCreate.ts`,
   `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierCreate.ts`,
@@ -370,15 +355,14 @@ that distinction inside the create family.
 
 ## Delta register
 
-| Difference                                                                                         | State        | Reason or alignment trigger                                                                                                                              |
-| -------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                                                       |
-| Workspace-target create writes root identity plus Team                                             | `accepted`   | The domain transaction writes its canonical root, any family-declared relationship, and caller Team record; Kitchen deliberately has no management field |
-| Place and Kitchen creation compose provider confirmation with trusted domain commands              | `accepted`   | Place owns provider resolution; Kitchen may present a compact search modal or review route while both call the same entity-owned command                 |
-| `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                                                               |
-| Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                                                                |
-| Optional blank-field omission is described but not uniformly enforced                              | `drift`      | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical                                             |
-| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language              | `accepted`   | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction                                         |
+| Difference                                                                                         | State       | Reason or alignment trigger                                                                                                                              |
+| -------------------------------------------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`  | Irreversible work and credential authority differ; all must still expose one named create boundary                                                       |
+| Workspace-target create writes root identity plus Team                                             | `accepted`  | The domain transaction writes its canonical root, any family-declared relationship, and caller Team record; Kitchen deliberately has no management field |
+| Place and Kitchen creation compose provider confirmation with trusted domain commands              | `accepted`  | Place owns provider resolution; Kitchen may present a compact search modal or review route while both call the same entity-owned command                 |
+| Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration` | Rename when Product Create is next changed; do not add the older ordering to new families                                                                |
+| Optional blank-field omission is described but not uniformly enforced                              | `drift`     | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical                                             |
+| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language              | `accepted`  | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction                                         |
 
 ## Alignment roadmap
 
@@ -387,7 +371,6 @@ that distinction inside the create family.
 - Choose the create family before naming a component, composable, or endpoint.
 - Keep root Menu upload transactions separate from scoped Kitchen Menu
   mutations.
-- Do not adopt `CreatePlan` metadata in another family merely for symmetry.
 
 ### Next
 
@@ -399,7 +382,5 @@ that distinction inside the create family.
 
 ### Later
 
-- Promote `CreatePlan` into a registry or guard only if multiple consumers need
-  to query it.
 - Add transaction tests around multi-write workspace onboarding and file-backed
   create flows before extracting further shared machinery.

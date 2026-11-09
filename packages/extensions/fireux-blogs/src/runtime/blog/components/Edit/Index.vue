@@ -100,7 +100,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useBlogPermissions } from '../../composables/useBlogPermissions'
 import { useBlogUpdate } from '../../composables/firestore/mutations/useBlogUpdate'
-import { isBlogPostInRuntimeScope } from '../../composables/firestore/utils/blogScope'
+import { isBlogPostInRuntimeScope } from '../../utils/blog-scope'
 import { BlogPostStorage, type BlogPost } from '../../utils/blog-post'
 import { normalizeBlogPost } from '../../utils/normalize-blog-post'
 import { buildBlogEditorialUpdate } from '../../utils/blog-editor'

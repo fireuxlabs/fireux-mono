@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { NavItem, NavPosition } from './types'
+import type { NavItem, NavPosition } from '../../models/navigation'
 
 type NavPriority = {
   key?: string

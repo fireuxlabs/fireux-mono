@@ -3,8 +3,8 @@ import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 import {
   isNavVisibleForScope,
   normaliseNavVisibility,
-} from '../composables/navigation/visibility'
-import type { NavMeta, NavVisibility } from '../composables/navigation/types'
+} from '../utils/navigation/visibility'
+import type { NavMeta, NavVisibility } from '../models/navigation'
 import type { AppRole } from '../app/models/app.model'
 
 type RouteMetaWithVisibility = {

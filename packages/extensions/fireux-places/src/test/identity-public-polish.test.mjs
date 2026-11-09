@@ -164,7 +164,7 @@ test('location command submits one paired sparse patch under existing authority'
   }
   const place = { ...saved, name: 'Venue', gallery_images: [] }
   const presenter = interfaceFactory()
-  const card = presenter.identity(presenter.surface({ kitchen, place }))
+  const card = presenter.interface(presenter.surface({ kitchen, place }))
   assert.equal(card.shortAddress, 'New city')
   assert.equal(card.formattedAddress, 'New street')
   assert.equal(card.to, '/kitchens/venue-url')

@@ -10,11 +10,12 @@
 import { useBuenoHostPricing } from '../../composables/useBuenoHostPricing'
 
 const { appName, contactEmail, tiers } = useBuenoHostPricing()
-const route = useRoute()
+const route = useRoute<'pricing-tier'>()
 const tierId = computed(() => String(route.params.tier || ''))
 definePageMeta({
   layout: 'landing',
   validate: (route) =>
+    route.name === 'pricing-tier' &&
     ['free', 'pro', 'business', 'managed', 'your-app'].includes(
       String(route.params.tier)
     ),

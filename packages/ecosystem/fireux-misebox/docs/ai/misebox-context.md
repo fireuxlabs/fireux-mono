@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-11-07
-Ref: a38377207
+Updated: 2026-11-09
+Ref: e7b188cbf
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -758,10 +758,10 @@ public Kitchen lookup filtered by exact Place id. When a Kitchen is present, the
 through its Place/Kitchen adapter; Place itself has no Kitchen dependency. Missing or
 unpublished Kitchen relationships add no Kitchen content; failed relationship
 reads remain visible errors. Supplier enrichment is deliberately disconnected.
-Kitchen workspace actions carry `kitchenId` through the App-owned host redirect;
-the receiving Workspace selects it only after its current access-bound collection
-contains that id. Public and local Misebox workspace paths use the dedicated
-workspace host. This does not grant access or share authentication across origins.
+Kitchen workspace actions carry `kitchenId` through Core's configured Workspace
+entrance. The receiving Workspace selects it only after its current access-bound
+collection contains that id. The Main App uses same-origin Workspace routes; the
+requested identity grants no access.
 
 - Canonical Kitchen has root `id` and nested `identity` with `slug`, `status`,
   `visibility` and optional `source`. Source is `user` for an explicitly created
@@ -1223,6 +1223,18 @@ acceptance remains distinct from source inspection.
   for source owners, read-only boundaries and verification.
 - Media, brand, SEO, translation, finance, jobs, blogs, and marketplace work read
   their named concept maps and owner source rather than expanding this context.
+
+The Main App's `/cards` route composes `app/components/Demo/Cards` as a plain
+catalogue of real domain Cards using native Nuxt UI layout. Its illustrative
+inputs belong in `app/content/demo-cards.ts`; the gallery acquires no domain
+records and supplies no alternate card styling system. App `components` contains
+Vue components only: component-local styles stay in their SFC, authored copy and
+examples live under `app/content`, and App preview contracts live under `app/types`.
+The active Landing pricing adapter is `Landing/PricingStrip.vue`, using
+`useMiseboxPricing` and Core's Product pricing strip without overriding Core's
+`FireLandingPricingStrip` registration. The shared Core Dashboard remains its owner.
+Verify this composition through `app/tests/components/Demo/Cards.test.mjs`, the
+existing product-demo foundation checks and the Main App typecheck.
 
 ## Verification
 
@@ -2144,15 +2156,11 @@ still invalidate completion. No stale record is retained to disguise deletion.
 
 ## Directory and Workspace entrances
 
-Misebox Main App renders public Kitchen discovery at its public origin's `/` and
-management directly at its Workspace origin's `/`. There is one registered Home;
-the inherited `/workspace` and `/workspace/kitchen` entrances are excluded without
-aliases or redirects. The App owns its discovery copy; Core DirectoryHome owns
-shared framing and Header exposes Workspace without an account-mode toggle.
-The Workspace sidebar omits a separate Directory row. Its logo opens Workspace
-Home; existing account and brand navigation remain available. Tenant Apps retain
-their customer root and domain-scoped management. Workspace manifests start at Home; this is not
-proof of dual-PWA installation, offline support or cross-origin account handoff.
+The Main App uses the single-origin entrance contract under Apps and Workspace
+above. Its root page preserves query and fragment while opening the registered
+Kitchen Workspace; `/home` owns public discovery. Tenant Apps retain their own
+customer root and domain-scoped management. See `app/tests/workspace-surface.test.mjs`
+for current entrance, native metadata and indexing-header checks.
 
 ## Capability read-state and Overview boundaries
 

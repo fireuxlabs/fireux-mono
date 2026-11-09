@@ -44,7 +44,7 @@
   </FireDisclosurePanel>
 </template>
 <script setup lang="ts">
-import type { NavItem } from 'fireux-core/runtime/composables/navigation/types'
+import type { NavItem } from 'fireux-core/runtime/models/navigation'
 defineProps<{ entries: NavItem[]; drinksRoute?: string }>()
 // Only facts missing from navigation metadata belong here. No destination catalogue.
 const notes: Record<

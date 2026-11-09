@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingOperationRailItem } from './product.types'
+import type { LandingOperationRailItem } from '../../models/landing/product'
 
 defineProps<{
   ariaLabel: string

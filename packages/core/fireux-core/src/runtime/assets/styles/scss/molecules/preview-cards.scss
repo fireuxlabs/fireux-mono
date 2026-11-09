@@ -1,105 +1,105 @@
 /* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate the shared card-preview contract. */
 /*
-Shared compact-card anatomy used by domain `X/Cards/Summary` components.
+Shared compact-card anatomy used by domain `X/Cards/Preview` components.
 Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
 */
 
 :where(.preview) {
-	width: 100%;
+  width: 100%;
 }
 
 :where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
-	border-color: var(--ui-border-accented);
-	background: var(--ui-bg-elevated);
+  border-color: var(--ui-border-accented);
+  background: var(--ui-bg-elevated);
 }
 
 :where(a.preview, button.preview, [role='button'].preview):focus-visible {
-	outline: 2px solid var(--fx-card-surface-accent);
-	outline-offset: var(--spacing);
+  outline: 2px solid var(--fx-card-surface-accent);
+  outline-offset: var(--spacing);
 }
 
 :where(.preview__row) {
-	display: flex;
-	align-items: flex-start;
-	gap: calc(var(--spacing) * 4);
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 4);
 }
 
 :where(.preview__main) {
-	min-width: 0;
-	flex: 1;
+  min-width: 0;
+  flex: 1;
 }
 
 :where(.preview__top) {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: calc(var(--spacing) * 3);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
 }
 
 :where(.preview__title) {
-	min-width: 0;
-	font-size: var(--text-lg);
-	font-weight: var(--font-weight-bold);
-	letter-spacing: var(--tracking-tight);
-	color: var(--ui-text-highlighted);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  min-width: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--ui-text-highlighted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 :where(.preview__subtitle) {
-	margin-top: var(--spacing);
-	font-size: var(--text-sm);
-	line-height: var(--leading-snug);
-	color: var(--ui-text-muted, var(--ui-text));
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  margin-top: var(--spacing);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--ui-text-muted, var(--ui-text));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 :where(.preview__badges) {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-end;
-	gap: var(--spacing);
-	flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing);
+  flex-shrink: 0;
 }
 
 :where(.preview__body) {
-	margin-top: calc(var(--spacing) * 3);
-	display: grid;
-	gap: calc(var(--spacing) * 2);
-	padding-top: calc(var(--spacing) * 3);
-	border-top: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
+  margin-top: calc(var(--spacing) * 3);
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+  padding-top: calc(var(--spacing) * 3);
+  border-top: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
 }
 
 :where(.preview__line) {
-	font-size: var(--text-sm);
-	line-height: var(--leading-relaxed);
-	color: var(--ui-text);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--ui-text);
 }
 
 :where(.preview) :where(.fx-card__title) {
-	font-size: var(--text-lg);
-	line-height: var(--leading-tight);
-	letter-spacing: var(--tracking-tight);
+  font-size: var(--text-lg);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
 }
 
 :where(.preview) :where(.fx-card__body) {
-	margin-top: calc(var(--spacing) * 2);
-	font-size: var(--text-sm);
-	line-height: var(--leading-relaxed);
+  margin-top: calc(var(--spacing) * 2);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
 }
 
 :where(.preview__meta) {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: calc(var(--spacing) * 2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
 }
 
 @media (prefers-reduced-motion: reduce) {
-	:where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
-		transform: none;
-	}
+  :where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
+    transform: none;
+  }
 }

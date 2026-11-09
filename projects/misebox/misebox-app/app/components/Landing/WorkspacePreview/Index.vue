@@ -85,7 +85,7 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/
 import { computed, ref } from 'vue'
 import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
-import type { DishChildPage } from './Dishes/types'
+import type { DishChildPage } from '~/types/product-demo'
 import LandingWorkspacePreviewFinance from './Finance.vue'
 import LandingWorkspacePreviewStations from './Stations.vue'
 import LandingWorkspacePreviewSuppliers from './Suppliers.vue'

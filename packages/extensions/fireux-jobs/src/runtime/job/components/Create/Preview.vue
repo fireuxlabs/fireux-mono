@@ -93,7 +93,7 @@
 import { useBusinessDetail } from 'fireux-businesses/runtime/business/composables/business/useBusinessDetail'
 import { useBusinessInterface } from 'fireux-businesses/runtime/business/composables/business/useBusinessInterface'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
-import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/usePlaceInterface'
 import { computed, defineComponent } from 'vue'
 import { useAgent } from '../../../user/composables/profiles/Agent/useAgent'
 import {

@@ -75,7 +75,6 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
     useAuth: () => ({ currentUser: ref({ uid: 'user' }) }),
     useCommandScope: () => () => () => true,
     usePlaceCreate: () => ({ ensurePlaceExists() {} }),
-    defineFireuxCreatePlan: (plan) => plan,
   }
   const useKitchenCreate = compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn useKitchenCreate`,

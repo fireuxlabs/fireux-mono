@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import CatalogueSummary from './Catalogue.vue'
 import { computed } from 'vue'
-import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/components/types'
+import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/models/target-card'
 import { useSupplierWorkspaceHome } from '../../../composables/workspace/useSupplierWorkspaceHome'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
 

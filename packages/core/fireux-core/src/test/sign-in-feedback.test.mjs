@@ -3,7 +3,7 @@ import test from 'node:test'
 import {
   googleSignInFeedback,
   emailSignInFeedback,
-} from '../runtime/components/Auth/sign-in-feedback.ts'
+} from '../runtime/utils/auth/sign-in-feedback.ts'
 
 test('a closed Google window offers recovery without blaming the user', () => {
   const feedback = googleSignInFeedback({ code: 'auth/popup-closed-by-user' })

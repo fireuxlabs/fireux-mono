@@ -13,8 +13,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
-import type { BasePlace } from '../../composables/firestore/fetch/search/types'
+import { usePlaceInterface } from '../../composables/usePlaceInterface'
+import type { BasePlace } from '../../models/place-search'
 
 const props = defineProps<{ collection: BasePlace[] }>()
 const { cell } = usePlaceInterface()

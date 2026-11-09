@@ -1,6 +1,6 @@
 # Suppliers
 
-Updated: 2026-10-07
+Updated: 2026-11-09
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -126,6 +126,9 @@ Supplier-owned offer commands live in `supplier/server/items/commands.ts`; their
 HTTP handlers remain thin runtime routes. Product and optional active Ingredient
 links are fixed at creation. Provided prices and lead times are non-negative whole
 values; quantities are positive; unknown commercial values remain null or absent.
+The optional Ingredient link is checked through a fixed runtime read target in
+the same guarded transaction. Suppliers does not import Kitchen mutation targets
+or gain Ingredient write authority.
 A known price requires a currency. Updates check this invariant against the current
 record inside the same transaction as Supplier authority. Metadata accepts JSON
 values representable by Firestore, excluding directly nested arrays. Presentation

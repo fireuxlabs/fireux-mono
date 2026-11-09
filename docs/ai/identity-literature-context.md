@@ -1,6 +1,6 @@
 # Identity and product literature context
 
-Updated: 2026-11-05
+Updated: 2026-11-09
 Ref: d6240d394
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
@@ -175,7 +175,7 @@ Review implementation claims when their referenced owners change.
 - `packages/core/fireux-core/src/runtime/workspace/components/GuestWelcome.vue`
 - `packages/core/fireux-core/src/runtime/workspace/components/EntityCollection.vue`
 
-- `packages/core/fireux-core/src/runtime/components/landing/product.types.ts`
+- `packages/core/fireux-core/src/runtime/models/landing/product.ts`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue`
 - `packages/extensions/fireux-ecosystem/src/runtime/components/landing/EcosystemHome.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductSurfaceShowcase.vue`

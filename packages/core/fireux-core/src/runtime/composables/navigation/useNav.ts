@@ -9,8 +9,11 @@ import type {
   NavPosition,
   NavVisibility,
   NavigationConfig,
-} from './types'
-import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
+} from '../../models/navigation'
+import {
+  isNavVisibleForScope,
+  normaliseNavVisibility,
+} from '../../utils/navigation/visibility'
 
 const DEFAULT_LAYOUT = 'default'
 const DEFAULT_ORDER = 999

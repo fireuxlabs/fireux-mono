@@ -3,10 +3,8 @@ import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref, watch } from 'vue'
-import {
-  canonicalPlaceId,
-  fetchPlaceDetails,
-} from './firestore/fetch/google/usePlacesGoogle'
+import { fetchPlaceDetails } from './firestore/fetch/google/usePlacesGoogle'
+import { canonicalPlaceId } from '../utils/canonical-place-id'
 import { usePlaceCreate } from './firestore/mutations/usePlaceCreate'
 import type {
   PlaceUpsertInput,
@@ -48,7 +46,10 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     ensurePlaceExists,
     previewPlaceOnboarding,
   } = usePlaceCreate()
-  const { uploadImage } = useImageStorage({ endpoint: '/api/places/images', fields: () => ({ mode: 'onboarding' }) })
+  const { uploadImage } = useImageStorage({
+    endpoint: '/api/places/images',
+    fields: () => ({ mode: 'onboarding' }),
+  })
 
   const isExisting = computed(() => selectionKind.value === 'existing')
   const canConfigure = computed(() => preview.value?.can_configure === true)
@@ -173,7 +174,8 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     if (validation !== true) throw new Error(validation)
     const defaultsValidation = validateDefaults()
     if (defaultsValidation !== true) throw new Error(defaultsValidation)
-    const contextCurrent = captureIntent(), sequence = selectionSequence
+    const contextCurrent = captureIntent(),
+      sequence = selectionSequence
     const isCurrent = () => contextCurrent() && sequence === selectionSequence
     const result = await completePlaceDraft({
       isCurrent,
@@ -206,7 +208,9 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     const sequence = ++selectionSequence
     const contextCurrent = captureIntent()
     const isCurrent = () => contextCurrent() && sequence === selectionSequence
-    selection = JSON.parse(JSON.stringify(selection)) as PlaceOnboardingSelection
+    selection = JSON.parse(
+      JSON.stringify(selection)
+    ) as PlaceOnboardingSelection
     onboarding.reset()
     completion.value = null
     selectionError.value = ''

@@ -167,7 +167,7 @@
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
 import type { WorkspaceEntityOutcome } from '../models/outcome'
-import type { WorkspaceEntityCard } from './types'
+import type { WorkspaceEntityCard } from '../models/target-card'
 
 const props = withDefaults(
   defineProps<{

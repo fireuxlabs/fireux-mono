@@ -1,7 +1,7 @@
 # Card family
 
 Updated: 2026-11-09
-Ref: 5a5a26e2d
+Ref: e7b188cbf
 Role: source map, not executable certification
 
 ## Purpose and authority
@@ -144,8 +144,9 @@ and Business commands; it is not an Overview card.
 
 Kitchen supplies Pill, Cell and Preview under
 [`kitchen/components/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Cards).
-Driver delivery beacons and the developer gallery consume Pill; Misebox's
-PowerCards demo consumes Cell, and the gallery consumes `KitchenCardsPreview`.
+Driver delivery beacons and the App gallery consume Pill; the gallery also
+consumes `KitchenCardsPreview`. Cell retains its supplied-data presentation with
+no current direct component consumer.
 The public Collection retains its discovery-card composition. Public Detail
 composes Place-owned identity with Kitchen menu and operator controls;
 `Identity/Profile` retains its Workspace editors and explicit mutation authority.
@@ -193,11 +194,122 @@ scope; Detail retains the full Menu reading composition. Current consumers do
 not need a separate Menu Overview card. Core's `useCollectionSearch` supports
 the `preview` mode while retaining its default Pill/Cell cycle.
 
-Other Entities still contain `Cards/Summary.vue` and richer Profile or Detail
-compositions. Their correspondence to the four roles is `to-confirm`: compare
-actual consumers, data and interaction before moving them. A named domain
-Summary outside Cards may describe a different capability and does not become a
-Preview merely because its name matches an older card.
+Dish supplies Cell under
+[`kitchen/components/FoodAndDrink/Items/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Cards).
+The Kitchen catalogue and Misebox Workspace preview reuse the card with
+supplied props. It retains grid/list presentation and Core's
+`FireActionSurface` for link, action or static behavior. Collection parents retain
+their reads, filtering, navigation and selection. Dish Detail retains its reader,
+identity header, pricing/specification/preparation/menu perspectives and management
+workflow. The separate `Items/Overview.vue` summarizes the whole catalogue; it
+is not a single-Dish Overview card. Current consumers need no separate Pill,
+Preview or Overview card.
+
+Kitchen's Ingredient and Supplier association Cards retain their separate Cell
+roles under
+[`PrepAndProduction/Ingredients/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Ingredients/Cards)
+and [`Suppliers/Cards`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Suppliers/Cards).
+Their Kitchen collections own acquisition, scope, destinations and selection;
+the App gallery also consumes their supplied projections. Ingredient
+Cell retains image-failure recovery and link/open intents. Supplier Cell retains
+the Supplier projection's identity and media options. Neither association needs
+additional card roles solely to mirror its root Entity.
+
+Recipe supplies Cell under
+[`kitchen/components/PrepAndProduction/Recipes/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Recipes/Cards).
+Cell currently has no direct component consumer; the operational Collection
+uses `WorkspaceKitchenCollectionRow`. Recipe's named
+[`Preparation.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/Recipes/Preparation.vue)
+presents supplied ingredients, Prep items, yield and method within Detail and
+the collection preview. Those parents retain acquisition, linked-read outcomes,
+creation, editing and deletion. Preparation remains domain content rather than
+becoming an identity Overview card. Current consumers need no separate Pill,
+Preview or Overview card.
+
+KitchenPrepItem currently has no standalone Cards family. Its
+[`Create.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue)
+control belongs to the Recipe form; Dish specification retains its own creation
+workflow. Recipe Preparation presents supplied definitions, while
+[`Dish Preparation`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Preparation.vue)
+presents Dish-specific requirements and linked batch methods. These controls
+retain their existing readers, draft state and protected commands. Current
+consumers need no separate Pill, Cell, Preview or Overview component.
+
+KitchenOrder retains the named
+[`Orders/Ticket.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Orders/Ticket.vue)
+presentation instead of introducing a parallel Cards family. The Order board,
+editor, examples and Menu Order response consume its supplied Order. Ticket
+retains local quantity-editing state and emits intents; its parents retain reads,
+draft ownership, protected commands and lifecycle transitions. Board and customer
+response consumers keep the Ticket read-only. `Orders/Examples/Preview.vue`
+remains an illustrative Ticket-and-data composition, not a Cards Preview role.
+Current consumers need no separate Pill, Cell, Preview or Overview component.
+
+Supplier Item supplies Pill and Cell under
+[`supplier/components/Item/Cards` in Suppliers](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Item/Cards).
+The App gallery consumes Pill; Supplier Workspace Items consumes Cell. Both present the supplied `SupplierItemCard` projection
+and reuse Core's `FireActionSurface`. The pure `useSupplierItemInterface` retains
+offer identity, packaging and price formatting; Workspace retains acquisition
+and read outcomes. Current consumers need no separate Preview or Overview card.
+
+Supplier Catalogue retains
+[`Catalogue/Detail`](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Catalogue/Detail)
+for a supplied Catalogue's grouped sections and offer terms. Workspace Catalogue
+retains its reader, projection and outcomes, then composes that Detail. Its
+section/offer composition is not a missing identity Overview card. Supplier's
+public `Detail/Catalogue.vue` separately presents the root's catalogue-mode
+configuration. Neither surface requires new Pill, Cell, Preview or Overview roles.
+
+Supplier Ingredient remains an association with canonical Ingredient identity.
+[`Workspace/Ingredients/Read.vue`](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Ingredients/Read.vue)
+uses the existing Workspace reader and pure `useSupplierIngredientInterface`
+projection for inline association rows, including missing-root warnings. There
+is no separate consumed Supplier Ingredient Cards family to rename or expand.
+These children retain the boundaries in the [Supplier map](suppliers.md).
+
+Ingredient supplies all four roles under
+[`ingredient/components/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Cards).
+The developer gallery consumes Preview; Ingredient Detail composes Overview from
+its existing `IngredientProfile` projection. Detail retains session-derived edit
+availability and the editor workflow. Pill and Cell retain their existing
+presentation contracts; no acquisition or command moves into Cards.
+
+Place supplies all four roles under
+[`place/components/Cards` in Places](../../packages/extensions/fireux-places/src/runtime/place/components/Cards).
+Onboarding Review and the developer gallery consume Preview; Review retains
+draft ownership and staged-image URL cleanup. Kitchen Detail's Place section
+composes `PlaceCardsOverview` from its existing supplied `PlaceProfile`, retaining
+its Google-hours option. Place's own public Detail keeps its Header, About,
+Gallery, Contact and VisitInfo composition. Place's domain projections and
+profile editor retain their names and responsibilities.
+
+Job supplies Pill, Cell and Preview under
+[`job/components/Cards` in Jobs](../../packages/extensions/fireux-jobs/src/runtime/job/components/Cards).
+The developer gallery consumes Preview. The separate Create Preview retains its
+draft and related-identity composition. Job Detail keeps its Header, category/
+contract facts Summary, Business, Place and Apply sections; that facts section
+does not require a separate identity Overview card.
+
+Product supplies Pill, Cell and Preview under
+[`product/components/Cards` in Products](../../packages/extensions/fireux-products/src/runtime/product/components/Cards).
+Collection consumes Pill and Cell; Solutions and FireUX's module detail page
+consume Preview from their existing supplied Product/card projections. Purchase
+retains its commercial role and Create preview consumer. Product Detail keeps
+its content and Checkout Action composition; its separate facts/checkout Summary
+is not a standalone identity Overview card.
+
+Blog supplies Pill, Cell and Preview under
+[`blog/components/Cards` in Blogs](../../packages/extensions/fireux-blogs/src/runtime/blog/components/Cards).
+Collection consumes Pill and Cell, while Editorial consumes the named Story
+card. Preview retains supplied title, author, excerpt, image and badge
+presentation with no current direct consumer. Create Preview retains draft
+ownership and the article-review workflow; Detail retains the full article.
+Neither workflow becomes a separate Overview card.
+
+Other named Profile, Summary and Detail compositions retain their actual domain
+responsibilities. Compare consumers, data and interaction before moving them;
+a Summary outside Cards does not become Preview merely because its name matches
+an older card.
 
 ## Composition and interaction
 
@@ -213,8 +325,8 @@ Specialist Agent, Professional, Chef and Driver profiles compose Core's
 `UserProfileHero`, `UserProfileSection` and `UserProfileDirectoryCard` primitives.
 These specialist rich presentations live in their `Cards/Overview.vue` files.
 Domain content and permissions remain
-with their owners. Place retains its rich `Detail/Profile.vue` section.
-Ingredient uses `Detail/Summary.vue` for its bounded single-record presentation.
+with their owners. Place and Ingredient keep their supplied rich identity
+presentations under `Cards/Overview.vue`.
 Unconsumed
 legacy Profile cards are retired rather than retained as a parallel family.
 
@@ -254,3 +366,19 @@ Core's `src/test/collection-search.test.mjs` and adjacent type contract cover
 allowed modes, cycling and filtering. Kitchens' `src/test/menu-presentation.test.mjs`
 checks Menu's default Preview, view controls, live filtering and service states;
 `src/test/menu-public-slug.test.mjs` covers scoped entrances and ordering links.
+Kitchens' `src/test/item-presentation.test.mjs` covers Dish Cell imagery,
+identity fallbacks and supplied price presentation; `dish-reader-internals.test.mjs`
+covers catalogue state and navigation.
+Kitchens' `src/test/recipe-reader-internals.test.mjs` covers Recipe/Prep read
+outcomes, linked-data failures and retained editor state. The Recipe and Prep
+scope checks under `src/test/kitchen` cover creation and stale-intent handling.
+Suppliers' `src/test/supplier-catalogue-presentation.test.mjs` covers grouped
+offer terms, inactive states and optional Catalogue headers. Core's shared
+action-surface checks include Supplier Item Cell interaction.
+Products' `src/test/product-detail.test.mjs` compiles Product and Blog detail
+compositions and their Preview cards, and checks the existing purchase boundary.
+Misebox's App-owned `Demo/Cards` composition uses native Nuxt UI sections and
+grids around the actual domain Cards. Its illustrative inputs live in
+`app/content/demo-cards.ts`; it owns no domain readers, mutations or alternate
+card design system. `app/tests/components/Demo/Cards.test.mjs` covers its
+composition and reference-copy behavior.

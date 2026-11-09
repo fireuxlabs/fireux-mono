@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingPricingPlan } from './product.types'
+import type { LandingPricingPlan } from '../../models/landing/product'
 import CoreLandingPricingStrip from './PricingStrip.vue'
 
 const props = defineProps<{

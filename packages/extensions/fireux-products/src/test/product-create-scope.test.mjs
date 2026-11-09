@@ -77,7 +77,6 @@ test('Product creation snapshots draft and rejects credential/response scope rou
             },
           }),
           useRequireUser: () => auth.promise,
-          defineFireuxCreatePlan: (x) => x,
           crypto: { randomUUID: () => 'request' },
           $fetch: (...args) => {
             calls.push(args)
@@ -153,7 +152,6 @@ test('Uncertain Product retry retains request across composable recreation', asy
     useFireUXConfig: () => ({ appId: 'app' }),
     useRoute: () => ({ fullPath: '/create' }),
     useRequireUser: async () => ({ uid: 'u', getIdToken: async () => 'token' }),
-    defineFireuxCreatePlan: (x) => x,
     crypto: { randomUUID: () => String(++ids) },
     $fetch: async (_path, input) => {
       calls.push(input)

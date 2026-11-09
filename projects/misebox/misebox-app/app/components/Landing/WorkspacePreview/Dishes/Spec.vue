@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductDemoDish } from './types'
+import type { ProductDemoDish } from '~/types/product-demo'
 
 defineProps<{
   dish: ProductDemoDish

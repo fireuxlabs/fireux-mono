@@ -46,4 +46,4 @@ definePageMeta({
     'Read capability priorities, current implementation and the next delivery journey.',
 })
 </script>
-<style scoped src="../../app/components/SearchDemand/reading.css"></style>
+<style scoped src="../../app/assets/styles/search-demand-reading.css"></style>

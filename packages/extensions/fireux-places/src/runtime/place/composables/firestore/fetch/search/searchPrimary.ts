@@ -1,5 +1,8 @@
 import type { PlaceIndexPage } from '../../../../models/place-read.model.ts'
-import type { MapToBasePlace, SearchStage } from './types'
+import type {
+  MapToBasePlace,
+  SearchStage,
+} from '../../../../models/place-search'
 
 async function search(query: string) {
   return $fetch<PlaceIndexPage>(`/api/places?q=${encodeURIComponent(query)}`)

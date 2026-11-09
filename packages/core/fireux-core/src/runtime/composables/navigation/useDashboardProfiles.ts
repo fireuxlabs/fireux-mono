@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { NavItem } from './types'
+import type { NavItem } from '../../models/navigation'
 
 /** Profile navigation projects route metadata without acquiring account readers. */
 export function useDashboardProfiles(

@@ -1,6 +1,6 @@
 # Pages
 
-Updated: 2026-11-08
+Updated: 2026-11-09
 Ref: a801fb79f
 Role: map, not canon
 
@@ -26,6 +26,9 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Current convention
 
+- Authored page trees contain Vue route entrypoints. Page-specific styles stay
+  in their SFCs; shared styles and consumed literature keep their own style or
+  content owner outside the route tree. Remove unconsumed sidecar copy.
 - A page owns route metadata, route outcome and high-level domain composition.
   Shared chrome belongs to a Nuxt layout or a named family composition; see
   [layouts](layouts.md) before changing route framing.

@@ -3,7 +3,7 @@ import type {
   PlaceUpsertInput,
 } from '../models/place-onboarding.model.ts'
 import type { OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
-import type { PlaceSearchSource } from '../composables/firestore/fetch/search/types'
+import type { PlaceSearchSource } from '../models/place-search'
 
 export type PlaceOnboardingStepId =
   | 'find'

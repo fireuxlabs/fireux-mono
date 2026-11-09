@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/components/types'
+import type { WorkspaceTargetCard } from 'fireux-core/runtime/workspace/models/target-card'
 import { usePortfolioWorkspaceHome } from '../../../composables/workspace/usePortfolioWorkspaceHome'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
 

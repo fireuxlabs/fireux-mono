@@ -359,7 +359,7 @@ async function render(path, state) {
   for (const name of [
     'KitchenPrepAndProductionIngredientsCollection',
     'NuxtLink',
-    'IngredientDetailSummary',
+    'IngredientCardsOverview',
     'IngredientDetail',
     'IngredientEdit',
     'KitchenPrepAndProductionIngredientsPreview',

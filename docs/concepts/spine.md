@@ -1,6 +1,6 @@
 # Spine
 
-Updated: 2026-10-01
+Updated: 2026-11-09
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -215,4 +215,3 @@ experience-based rationale unless measured.
 - Do not guard unresolved product choices or cosmetic prose.
 - Prove a second AI document domain before generalizing review persistence.
 - Test the two layout renderer lanes before choosing or guarding one syntax.
-- Promote `CreatePlan` metadata only if real consumers need to query it.

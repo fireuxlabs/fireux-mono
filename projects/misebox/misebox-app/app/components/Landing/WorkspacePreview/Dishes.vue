@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DishChildPage, ProductDemoDish } from './Dishes/types'
+import type { DishChildPage, ProductDemoDish } from '~/types/product-demo'
 
 const props = defineProps<{
   dishes: ProductDemoDish[]

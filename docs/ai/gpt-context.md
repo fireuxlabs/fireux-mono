@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-11-08
+Updated: 2026-11-09
 Ref: d0f981eac
 Role: living context
 Scope: repository-wide
@@ -247,6 +247,12 @@ faithful geometry and visual contrast still require review through the App's
 asset previews. See [asset ownership and enforcement](../concepts/brand-assets.md).
 
 ### Vue file convention
+
+Runtime `components` directories contain Vue components and folders of Vue
+components only. Keep component-specific styles in the owning single-file
+component; genuinely shared styles, content, types, utilities and composables
+belong outside that tree with their existing owner. Tests may mirror component
+paths beneath the separate test tree.
 
 Authored Vue single-file components put `<template>` first, then
 `<script setup>`, then any `<style>` blocks. Omit blocks that have no purpose.

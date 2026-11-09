@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceSearchSource } from '../../../composables/firestore/fetch/search/types'
+import type { PlaceSearchSource } from '../../../models/place-search'
 import type { PlaceImageShade } from '../../../utils/place-spine'
 
 type Props = {

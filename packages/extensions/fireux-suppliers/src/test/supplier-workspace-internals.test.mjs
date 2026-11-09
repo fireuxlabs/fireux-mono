@@ -340,7 +340,6 @@ function createHarness() {
         useAppSession: () => ({ appUser }),
         useFireUXConfig: () => config,
         useRoute: () => route,
-        defineFireuxCreatePlan: (value) => value,
         useRequireUser: () => credentials.promise,
         isFirestoreDocumentId,
         normalizeSlug,

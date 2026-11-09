@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-11-08
+Updated: 2026-11-09
 Ref: a801fb79f
 Role: map, not canon
 
@@ -113,6 +113,15 @@ Overview, Profile and Settings share the semantic `fx-account-content` width
 in `page-layouts.scss`; field groups reuse `pagebody` spacing.
 
 ## Component placement and names
+
+Runtime component trees contain `.vue` files and folders of components only.
+Put styles used by one component in its SFC style block. Styles shared by
+several components belong in the existing owner's assets/styles directory,
+preserving scoped imports where required. App copy belongs in App content;
+types, pure helpers and reactive lifecycle code belong in the corresponding
+owner's models/types, utils and composables. Do not introduce a new shared
+abstraction merely to relocate a file. Tests remain outside runtime and may
+mirror the component hierarchy.
 
 Core's native [runtime layer](../../packages/core/fireux-core/src/runtime/nuxt.config.ts)
 registers the shared library with `Fire`. Atomic Design folders are scanned as

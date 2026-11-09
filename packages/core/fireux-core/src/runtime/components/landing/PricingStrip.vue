@@ -14,7 +14,8 @@
           <span class="landing-pricing-strip__summary">
             <strong>{{ plan.title }}</strong>
             <span class="landing-pricing-strip__price">
-              {{ plan.price }}<small v-if="plan.billingCycle">{{ plan.billingCycle }}</small>
+              {{ plan.price
+              }}<small v-if="plan.billingCycle">{{ plan.billingCycle }}</small>
             </span>
             <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
           </span>
@@ -40,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingPricingPlan } from './product.types'
+import type { LandingPricingPlan } from '../../models/landing/product'
 
 defineProps<{
   ariaLabel: string

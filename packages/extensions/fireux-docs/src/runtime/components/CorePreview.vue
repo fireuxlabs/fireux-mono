@@ -269,18 +269,6 @@
         ]"
       />
     </div>
-    <div v-else-if="name === 'FireLandingCardOrbit'">
-      <FireLandingCardOrbit
-        :items="[
-          { id: 'one', label: 'First' },
-          { id: 'two', label: 'Second' },
-          { id: 'three', label: 'Third' },
-        ]"
-        data-source="demo"
-        :autoplay="false"
-        :mobile-autoplay="false"
-      />
-    </div>
     <div v-else-if="name === 'FireLandingDirectoryHome'">
       <FireLandingDirectoryHome
         eyebrow="Explore"

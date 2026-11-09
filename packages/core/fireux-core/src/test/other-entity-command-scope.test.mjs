@@ -152,7 +152,6 @@ for (const [domain, path, name, run, result, validates] of domains) {
           }
         const deps = {
           inject: () => undefined,
-          defineFireuxCreatePlan: (x) => x,
           canonicalPlaceId: (x) => x,
           ref,
           watch,
@@ -217,7 +216,6 @@ for (const [domain, path, name, run, result, validates] of domains) {
         user = { uid: 'actor', getIdToken: async () => 'token' }
       const deps = {
         inject: () => undefined,
-        defineFireuxCreatePlan: (x) => x,
         canonicalPlaceId: (x) => x,
         ref,
         watch,
@@ -276,7 +274,6 @@ for (const [domain, path, name] of domains.filter((row) =>
     }
     const deps = {
       inject: () => undefined,
-      defineFireuxCreatePlan: (x) => x,
       canonicalPlaceId: (x) => x,
       ref,
       watch,

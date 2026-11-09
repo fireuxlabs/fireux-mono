@@ -4,7 +4,7 @@
   </UPageCard>
 
   <div v-else-if="placeProfile">
-    <PlaceDetailProfile :model="placeProfile" :show-google-hours="false" />
+    <PlaceCardsOverview :model="placeProfile" :show-google-hours="false" />
 
     <UPageCard
       v-if="operationHourLines.length"
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
-import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/usePlaceInterface'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import { useMenuOfferingComputed } from '../../../menu/composables/useMenuOfferingComputed'
 import { readKitchenOperationHours } from '../../utils/kitchen-readers'

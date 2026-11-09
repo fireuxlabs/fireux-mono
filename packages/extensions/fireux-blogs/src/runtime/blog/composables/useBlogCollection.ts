@@ -2,10 +2,14 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import { collection as firestoreCollection, query, where } from 'firebase/firestore'
+import {
+  collection as firestoreCollection,
+  query,
+  where,
+} from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { BlogPostStorage, type BlogPost } from '../utils/blog-post'
-import { isBlogPostInRuntimeScope } from './firestore/utils/blogScope'
+import { isBlogPostInRuntimeScope } from '../utils/blog-scope'
 import { normalizeBlogPost } from '../utils/normalize-blog-post'
 
 const timestampToMillis = (value: unknown): number => {
@@ -28,10 +32,19 @@ export function useBlogCollection() {
   const { firestoreQuery } = useFirestoreRead()
   // This is the authoring collection; public discovery uses useBlogDirectory.
   // Scope the query before Rules evaluate it, rather than filtering other Apps afterwards.
-  const scopedQuery = computed(() => fireux.appId
-    ? query(firestoreCollection(db, BlogPostStorage.collection), where('source_app_id', '==', fireux.appId))
-    : null)
-  const source = firestoreQuery<Record<string, unknown>>(scopedQuery, `blogs:authoring:${fireux.appId}`, BlogPostStorage.collection)
+  const scopedQuery = computed(() =>
+    fireux.appId
+      ? query(
+          firestoreCollection(db, BlogPostStorage.collection),
+          where('source_app_id', '==', fireux.appId)
+        )
+      : null
+  )
+  const source = firestoreQuery<Record<string, unknown>>(
+    scopedQuery,
+    `blogs:authoring:${fireux.appId}`,
+    BlogPostStorage.collection
+  )
 
   const collection = computed(() => {
     const posts = (source.value ?? [])

@@ -1,4 +1,5 @@
 import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { defineFirestoreReadTarget } from '../../../../core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -35,19 +36,6 @@ const authorize = load(
   {
     createError,
     readMembershipAccessIds,
-    APP_MUTATION_TARGETS: targets,
-USER_MUTATION_TARGETS: targets,
-ECOSYSTEM_MUTATION_TARGETS: targets,
-FIREUX_MUTATION_TARGETS: targets,
-SPROOCHLI_MUTATION_TARGETS: targets,
-PLACE_MUTATION_TARGETS: targets,
-KITCHEN_MUTATION_TARGETS: targets,
-INGREDIENT_MUTATION_TARGETS: targets,
-PRODUCT_MUTATION_TARGETS: targets,
-PROPERTY_MUTATION_TARGETS: targets,
-PORTFOLIO_MUTATION_TARGETS: targets,
-SUPPLIER_MUTATION_TARGETS: targets,
-JOB_MUTATION_TARGETS: targets,
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverSupplierAccessTarget: (app) => `supplier_access/${app}/users`,
     readAppUserSubscription,
@@ -77,27 +65,18 @@ function harness() {
     ],
   ])
   const writes = []
+  const reads = []
   let before = () => {}
   const commands = load(
     '../runtime/supplier/server/items/commands.ts',
     '({createSupplierItem, updateSupplierItem, deleteSupplierItem})',
     {
       createError,
+      defineFirestoreReadTarget,
       requireFirestoreDocumentId,
       requireSupplierMutationAuthority: authorize,
-      APP_MUTATION_TARGETS: targets,
-USER_MUTATION_TARGETS: targets,
-ECOSYSTEM_MUTATION_TARGETS: targets,
-FIREUX_MUTATION_TARGETS: targets,
-SPROOCHLI_MUTATION_TARGETS: targets,
-PLACE_MUTATION_TARGETS: targets,
-KITCHEN_MUTATION_TARGETS: targets,
-INGREDIENT_MUTATION_TARGETS: targets,
-PRODUCT_MUTATION_TARGETS: targets,
-PROPERTY_MUTATION_TARGETS: targets,
-PORTFOLIO_MUTATION_TARGETS: targets,
-SUPPLIER_MUTATION_TARGETS: targets,
-JOB_MUTATION_TARGETS: targets,
+      PRODUCT_MUTATION_TARGETS: targets,
+      SUPPLIER_MUTATION_TARGETS: targets,
       serverSupplierItemsTarget: (id) => `suppliers/${id}/items`,
       randomUUID: () => 'new-offer',
       serverAuditStamp: (value) => ({ ...value, at: 'server' }),
@@ -109,10 +88,15 @@ JOB_MUTATION_TARGETS: targets,
       runGuardedServerTransaction: async (_, run) => {
         before()
         return run({
-          read: async (target, id) => ({
-            exists: records.has(`${target}/${id}`),
-            data: records.get(`${target}/${id}`),
-          }),
+          read: async (target, id) => {
+            reads.push([target, id])
+            const collection =
+              typeof target === 'string' ? target : target.collectionPath
+            return {
+              exists: records.has(`${collection}/${id}`),
+              data: records.get(`${collection}/${id}`),
+            }
+          },
           create: (...args) => writes.push(['create', ...args]),
           update: (...args) => writes.push(['update', ...args]),
           delete: (...args) => writes.push(['delete', ...args]),
@@ -120,7 +104,7 @@ JOB_MUTATION_TARGETS: targets,
       },
     }
   )
-  return { ...commands, records, writes, before: (fn) => (before = fn) }
+  return { ...commands, records, reads, writes, before: (fn) => (before = fn) }
 }
 
 test('Supplier creates an exact parent-owned Product offer with optional active Ingredient and normalized commercial data', async () => {
@@ -149,6 +133,13 @@ test('Supplier creates an exact parent-owned Product offer with optional active 
   assert.equal(body.supplier_id, 's')
   assert.equal(body.product_id, 'p')
   assert.equal(body.ingredient_id, 'i')
+  const [ingredientTarget, ingredientId] = h.reads.find(
+    ([target]) => target.collectionPath === 'ingredients'
+  )
+  assert.equal(ingredientId, 'i')
+  assert.deepEqual(ingredientTarget.database, { kind: 'runtime' })
+  assert.equal('lane' in ingredientTarget, false)
+  assert.equal('verbs' in ingredientTarget, false)
 })
 
 test('Unknown commercial facts remain unknown; invalid numbers, currency and unsupported fields never write', async () => {

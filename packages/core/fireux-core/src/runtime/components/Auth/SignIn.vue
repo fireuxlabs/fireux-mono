@@ -59,7 +59,10 @@
 <script setup lang="ts">
 import { computed, ref, useRoute } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { googleSignInFeedback, type SignInFeedback } from './sign-in-feedback'
+import {
+  googleSignInFeedback,
+  type SignInFeedback,
+} from '../../utils/auth/sign-in-feedback'
 const route = useRoute()
 const { lastBindError, signInWithGoogle } = useAuth()
 const providerLoading = ref(false)

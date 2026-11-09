@@ -45,7 +45,10 @@
 <script setup lang="ts">
 import { computed, ref } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { emailSignInFeedback, type SignInFeedback } from './sign-in-feedback'
+import {
+  emailSignInFeedback,
+  type SignInFeedback,
+} from '../../utils/auth/sign-in-feedback'
 
 type AuthMode = 'sign-in' | 'sign-up'
 

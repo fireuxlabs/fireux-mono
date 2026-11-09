@@ -65,10 +65,9 @@ export function useLandingMotion(landingRoot: LandingRootRef) {
       '[data-landing-hero-part="preview"]'
     )
     const copy = root.querySelector<HTMLElement>('.landing-product__hero-copy')
-    const entities = [...root.querySelectorAll<HTMLElement>(
-      '[data-landing-motion-entity]'
-    )]
-    const orbitSphere = root.querySelector<HTMLElement>('.landing-card-orbit__sphere')
+    const entities = [
+      ...root.querySelectorAll<HTMLElement>('[data-landing-motion-entity]'),
+    ]
     if (hero && preview && copy) {
       const handoff = gsap.timeline({
         scrollTrigger: {
@@ -84,32 +83,36 @@ export function useLandingMotion(landingRoot: LandingRootRef) {
       handoff.to(copy, { autoAlpha: 0, scale: 0.78, xPercent: -28 }, 0)
       handoff.to(preview, { scale: 1.24, xPercent: -22, yPercent: 8 }, 0)
       if (entities.length) {
-        handoff.to(entities, {
+        handoff.to(
+          entities,
+          {
+            autoAlpha: 0,
+            ease: 'none',
+            filter: 'blur(10px)',
+            rotation: (index) => (index % 2 ? -18 : 18),
+            scale: 1.45,
+            stagger: 0.055,
+            xPercent: (_, entity) =>
+              entity.dataset.landingMotionEntity === 'app' ? 130 : -130,
+            yPercent: (_, entity) =>
+              entity.dataset.landingMotionEntity === 'app' ? 80 : -55,
+          },
+          0
+        )
+      }
+      handoff.to(
+        preview,
+        {
           autoAlpha: 0,
-          ease: 'none',
+          duration: 0.3,
           filter: 'blur(10px)',
-          rotation: (index) => (index % 2 ? -18 : 18),
-          scale: 1.45,
-          stagger: 0.055,
-          xPercent: (_, entity) =>
-            entity.dataset.landingMotionEntity === 'app' ? 130 : -130,
-          yPercent: (_, entity) =>
-            entity.dataset.landingMotionEntity === 'app' ? 80 : -55,
-        }, 0)
-      }
-      if (orbitSphere) {
-        handoff.to(orbitSphere, { autoAlpha: 0, rotation: 90, scale: 1.8 }, 0)
-      }
-      handoff.to(preview, {
-        autoAlpha: 0,
-        duration: 0.3,
-        filter: 'blur(10px)',
-        overwrite: 'auto',
-        scale: 1.42,
-      }, 0.35)
+          overwrite: 'auto',
+          scale: 1.42,
+        },
+        0.35
+      )
       handoff.set(preview, { visibility: 'hidden' }, 0.66)
     }
-
   }
 
   function animateHero(root: HTMLElement) {
@@ -124,8 +127,10 @@ export function useLandingMotion(landingRoot: LandingRootRef) {
       heroMedia = gsap!.matchMedia()
       heroMedia.add(
         {
-          compact: '(width < 48rem) and (prefers-reduced-motion: no-preference)',
-          desktop: '(width >= 48rem) and (prefers-reduced-motion: no-preference)',
+          compact:
+            '(width < 48rem) and (prefers-reduced-motion: no-preference)',
+          desktop:
+            '(width >= 48rem) and (prefers-reduced-motion: no-preference)',
           reduce: REDUCED_MOTION_QUERY,
         },
         (mediaContext) => {
@@ -217,10 +222,7 @@ export function useLandingMotion(landingRoot: LandingRootRef) {
     element.style.removeProperty('will-change')
   }
 
-  function prepareWithGsap(
-    element: HTMLElement,
-    direction: RevealDirection
-  ) {
+  function prepareWithGsap(element: HTMLElement, direction: RevealDirection) {
     if (!gsap || element.classList.contains('is-reveal-visible')) return
 
     gsap.set(element, {

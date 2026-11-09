@@ -1,7 +1,7 @@
 # Demo data
 
-Updated: 2026-10-28
-Ref: cf2413355
+Updated: 2026-11-09
+Ref: e7b188cbf
 Role: map, not canon
 
 ## Purpose and ownership
@@ -18,12 +18,12 @@ presentation adapters define the contract; fixtures follow those owners.
 
 ## Retained examples
 
-| Owner | Source | Use |
-| --- | --- | --- |
-| Kitchen | [scenarios](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts) | Misebox Restaurant, Deanos and Pizza the Action; Menus, Dishes and their related operational examples |
-| Supplier | [scenarios](../../packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts) | Three Suppliers with Ingredient references, Items and Catalogues |
-| Business and Place | [linked fixtures](../../packages/extensions/fireux-businesses/src/runtime/business/demo/business/scenarios.ts) | Required Supplier Business/Place relationships |
-| Demo media | [URL contract](../../packages/extensions/fireux-demo/src/runtime/utils/media/misebox.ts) | Immutable owner-relative Misebox image URLs |
+| Owner              | Source                                                                                                         | Use                                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Kitchen            | [scenarios](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts)                   | Misebox Restaurant, Deanos and Pizza the Action; Menus, Dishes and their related operational examples |
+| Supplier           | [scenarios](../../packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts)                 | Three Suppliers with Ingredient references, Items and Catalogues                                      |
+| Business and Place | [linked fixtures](../../packages/extensions/fireux-businesses/src/runtime/business/demo/business/scenarios.ts) | Required Supplier Business/Place relationships                                                        |
+| Demo media         | [URL contract](../../packages/extensions/fireux-demo/src/runtime/utils/media/misebox.ts)                       | Immutable owner-relative Misebox image URLs                                                           |
 
 Deanos carries the richer production and historical-order example. Its fixed
 sample period is declared by the [Order history owner](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts),
@@ -40,8 +40,10 @@ The App owns its named
 [Product Demo adapter](../../projects/misebox/misebox-app/app/composables/product-demo/useMiseboxProductDemo.ts)
 and [composition](../../projects/misebox/misebox-app/app/composables/product-demo/loadMiseboxProductDemo.ts).
 They dynamically compose domain fixtures and project them into existing Menu
-and landing components. [PowerCards](../../projects/misebox/misebox-app/app/composables/product-demo/useMiseboxPowerCardsProductDemo.ts)
-uses its own bounded read-only projection over the same domain examples.
+and landing components. The App's [Cards gallery](../../projects/misebox/misebox-app/app/components/Demo/Cards/Index.vue)
+uses illustrative [card inputs](../../projects/misebox/misebox-app/app/content/demo-cards.ts)
+for the real domain presentations; these are not operational records or a second
+Demo data reader.
 
 FireUX's [assisted Ignition source recipe](../../projects/fireux/fireux-app/shared/ignition-preview.ts)
 also consumes the existing Kitchen Menu manifest and catalogue in its generated
@@ -56,8 +58,6 @@ routes are absent; do not add links or inactive preview buttons for them.
 
 The showroom resolves stable Ingredient IDs through the supported public
 canonical Ingredient reader. It is read-only, but not an offline catalogue.
-PowerCards keeps its data projection network-free; immutable image delivery is
-separate from operational data reads.
 
 ## Boundaries
 

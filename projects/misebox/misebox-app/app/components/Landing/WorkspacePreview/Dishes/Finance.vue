@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductDemoDish } from './types'
+import type { ProductDemoDish } from '~/types/product-demo'
 
 const props = defineProps<{
   dish: ProductDemoDish

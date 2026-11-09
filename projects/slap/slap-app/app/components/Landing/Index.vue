@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { content, surfaceItems } from './landing-content'
+import { content, surfaceItems } from '../../content/landing'
 
 const { landingTiers } = useSlapPricing()
 </script>
