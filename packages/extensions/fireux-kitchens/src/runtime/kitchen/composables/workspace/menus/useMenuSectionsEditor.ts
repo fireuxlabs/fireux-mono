@@ -76,7 +76,7 @@ export function useMenuSectionsEditor() {
   const newSectionLabel = ref('')
   const newSectionDescription = ref('')
   const captureScope = useMenuEditorScope(
-    [kitchenId, menuId, selectedDate],
+    [kitchenId, menuId, selectedDate, canWrite],
     () => {
       showArchived.value = false
       archiveCandidate.value = null
@@ -126,12 +126,15 @@ export function useMenuSectionsEditor() {
     const isCurrent = captureScope()
     savingSection.value = true
     try {
-      await createSection({
-        kitchenId: kitchenId.value,
-        menuId: menuId.value,
-        label: text(newSectionLabel.value),
-        description: text(newSectionDescription.value),
-      })
+      await createSection(
+        {
+          kitchenId: kitchenId.value,
+          menuId: menuId.value,
+          label: text(newSectionLabel.value),
+          description: text(newSectionDescription.value),
+        },
+        isCurrent
+      )
       if (!isCurrent()) return
       newSectionLabel.value = ''
       newSectionDescription.value = ''
@@ -155,12 +158,22 @@ export function useMenuSectionsEditor() {
     }
   }
 
-  async function saveSectionLabel(sectionId: string, value: string) {
-    const isCurrent = captureScope()
+  async function saveSectionLabel(
+    sectionId: string,
+    value: string,
+    isCurrent = captureScope()
+  ) {
+    if (!canWrite.value) throw new Error('This menu is read-only.')
     try {
-      await updateSection(kitchenId.value, menuId.value, sectionId, {
-        label: text(value),
-      })
+      await updateSection(
+        kitchenId.value,
+        menuId.value,
+        sectionId,
+        {
+          label: text(value),
+        },
+        isCurrent
+      )
       if (!isCurrent()) return
       toast.add({
         title: 'Section label saved',
@@ -287,6 +300,7 @@ export function useMenuSectionsEditor() {
     emptyTitle,
     emptyDescription,
     validateSectionLabel,
+    captureScope,
     displaySectionLabel,
     canCreateSection,
     addSection,

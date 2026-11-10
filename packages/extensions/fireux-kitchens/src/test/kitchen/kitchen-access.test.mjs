@@ -45,8 +45,16 @@ import {
   withKitchenAppAccess,
   readKitchenAppAccess,
 } from '../../runtime/kitchen/utils/kitchen-access.ts'
-import { KITCHEN_USER_LIMIT } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
+import {
+  KITCHEN_USER_LIMIT,
+  resolveKitchenAllowance,
+} from '../../runtime/kitchen/utils/kitchen-capacity.ts'
 import { buildKitchenTeamMemberRecord } from '../../runtime/kitchen/server/team/member-record.ts'
+import {
+  readKitchenTeamAccountLink,
+  readKitchenTeamAccountLinkInTransaction,
+  requireUnambiguousKitchenTeamLink,
+} from '../../runtime/kitchen/server/team/account-link.ts'
 import { createKitchenSystemMenus } from '../../runtime/kitchen/server/index/onboarding/system-menus.ts'
 import {
   guestKitchenClaimTarget,
@@ -83,6 +91,135 @@ const member = () => ({
   subscription: 'free',
   created: { at: created },
   updated: { at: created },
+})
+
+function queryRecords(records, path, { field, op, value, limit }) {
+  assert.equal(op, '==')
+  return [...records]
+    .filter(
+      ([key, data]) => key.startsWith(path + '/') && data[field] === value
+    )
+    .slice(0, limit)
+    .map(([key, data]) => ({ id: key.slice(path.length + 1), data }))
+}
+
+test('User Detail and onboarding preview agree on the linked account regardless of member ID', async () => {
+  const records = new Map([
+    ['apps/misebox-app/users/user', member()],
+    ['places/venue', { name: 'Venue' }],
+    ['kitchens/venue', { identity: { slug: 'venue' } }],
+    [
+      'kitchen_access/user',
+      {
+        apps: { 'misebox-app': createMembershipAccess(['venue'], member()) },
+      },
+    ],
+  ])
+  const doc = (path) => ({
+    path,
+    get: async () => ({
+      ref: { path },
+      exists: records.has(path),
+      data: () => records.get(path),
+      get: (field) => records.get(path)?.[field],
+    }),
+  })
+  const db = {
+    doc,
+    getAll: (...refs) => Promise.all(refs.map((ref) => ref.get())),
+    collection: (path) => ({
+      doc: (id) => doc(path + '/' + id),
+      where: (field, op, value) => ({
+        limit: (limit) => ({
+          get: async () => ({
+            docs: queryRecords(records, path, { field, op, value, limit }).map(
+              (row) => ({ id: row.id, data: () => row.data })
+            ),
+          }),
+        }),
+      }),
+    }),
+  }
+  const deps = {
+    requireFirestoreDocumentId,
+    createError,
+    KITCHEN_ACCESS_COLLECTION_PATH,
+    readKitchenAccessIds,
+    readKitchenTeamAccountLink,
+    requireUnambiguousKitchenTeamLink,
+  }
+  const membership = compile(
+    new URL('kitchen/server/core/user-memberships.ts', runtime),
+    'readKitchenUserMemberships',
+    {
+      ...deps,
+      requireFirebaseBearerUser: () => ({ uid: 'user' }),
+      useFireUXConfig: () => ({ appId: 'misebox-app' }),
+      getRuntimeFirestore: () => db,
+      resolveAppUserAccess,
+      normalizePlace: (_id, data) => data,
+      normalizeKitchen: (_id, data) => data,
+    }
+  )
+  const preview = compile(
+    new URL('kitchen/server/index/onboarding/preview.ts', runtime),
+    'previewKitchenOnboarding',
+    {
+      ...deps,
+      request: (body) => body,
+      actor: () => ({
+        uid: 'user',
+        appId: 'misebox-app',
+        role: 'user',
+        canCreate: true,
+        db,
+      }),
+      resolveKitchenOnboardingBeneficiaryUserId: () => 'user',
+      resolveKitchenOnboardingPreviewLocator: () => ({
+        kitchenId: 'venue',
+        placeId: 'venue',
+        kitchen: records.get('kitchens/venue'),
+      }),
+      requireOnboardingMemberRole: () => 'user',
+      assertKitchenOnboardingPlaceDefaults: () => {},
+      text: (value) => String(value ?? '').trim(),
+      kitchenOnboardingAccessDecision: compile(
+        new URL(
+          'kitchen/server/index/onboarding/onboarding-policy.ts',
+          runtime
+        ),
+        'kitchenOnboardingAccessDecision',
+        { resolveKitchenAllowance }
+      ),
+    }
+  )
+  const readState = async () =>
+    (await membership({}, { userId: 'user' })).items[0].team_state
+  const grant = records.get('kitchen_access/user')
+  for (const id of ['user', 'roster-uuid']) {
+    records.set('kitchens/venue/team/' + id, { user_id: 'user' })
+    assert.equal(await readState(), 'linked')
+    records.delete('kitchen_access/user')
+    assert.equal((await preview({}, { kitchen_id: 'venue' })).action, 'connect')
+    assert.deepEqual((await membership({}, { userId: 'user' })).items, [])
+    records.set('kitchen_access/user', grant)
+    records.delete('kitchens/venue/team/' + id)
+  }
+  assert.equal(await readState(), 'missing')
+  records.set('kitchens/venue/team/user', { user_id: 'someone-else' })
+  assert.equal(await readState(), 'invalid')
+  await assert.rejects(preview({}, { kitchen_id: 'venue' }), {
+    statusCode: 409,
+  })
+  records.set('kitchens/venue/team/roster-uuid', { user_id: 'user' })
+  assert.equal(await readState(), 'linked')
+  records.delete('kitchens/venue/team/roster-uuid')
+  records.set('kitchens/venue/team/user', { user_id: 'user' })
+  records.set('kitchens/venue/team/duplicate', { user_id: 'user' })
+  assert.equal(await readState(), 'invalid')
+  await assert.rejects(preview({}, { kitchen_id: 'venue' }), {
+    statusCode: 409,
+  })
 })
 
 test('native Kitchen access clears on live removal, failed read and App membership replacement', () => {
@@ -221,12 +358,16 @@ function shellHarness({
         ...(appId ? { app_id: appId } : {}),
       }),
       buildKitchenTeamMemberRecord,
+      readKitchenTeamAccountLinkInTransaction,
+      requireUnambiguousKitchenTeamLink,
       createKitchenSystemMenus,
       createDefaultKitchenStation,
       runGuardedServerTransaction: async (_scope, run) => {
         const queued = []
         const tx = {
           read: async (owner, id) => snapshot(owner, id),
+          query: async (owner, input) =>
+            queryRecords(records, owner.collectionPath, input),
           readMany: async (owner, ids) => ids.map((id) => snapshot(owner, id)),
           readAll: async (owner, limit) =>
             [...records]
@@ -336,6 +477,21 @@ test('missing App membership cannot be created implicitly by Kitchen onboarding'
   const h = shellHarness({ membership: null })
   await assert.rejects(h.create(), /Current App membership is required/)
   assert.equal(h.writes.length, 0)
+})
+
+test('reopening a shell with an existing non-UID roster link preserves the member', async () => {
+  const h = shellHarness()
+  h.records.set('kitchens/user', { identity: { slug: 'venue' } })
+  h.records.set('places/user', { name: 'Venue' })
+  h.records.set('kitchens/user/team/roster-uuid', {
+    user_id: 'user',
+    role_ids: ['cook'],
+  })
+  assert.equal((await h.create()).created_team_member, false)
+  assert.equal(h.records.has('kitchens/user/team/user'), false)
+  assert.deepEqual(h.records.get('kitchens/user/team/roster-uuid').role_ids, [
+    'cook',
+  ])
 })
 
 test('malformed access blocks creation and retained access enforces subscription capacity', async () => {
@@ -606,6 +762,8 @@ function adoptionHarness({
     'connectGuestKitchen',
     {
       guestKitchenClaimTarget,
+      readKitchenTeamAccountLinkInTransaction,
+      requireUnambiguousKitchenTeamLink,
       hashGuestKitchenSecret,
       fail: (statusCode, statusMessage) => {
         throw createError({ statusCode, statusMessage })
@@ -635,6 +793,8 @@ function adoptionHarness({
         const pending = []
         const key = (owner, id) => `${owner.collectionPath}/${id}`
         const result = await run({
+          query: async (owner, input) =>
+            queryRecords(records, owner.collectionPath, input),
           read: async (owner, id) => ({
             exists: records.has(key(owner, id)),
             data: records.get(key(owner, id)),
@@ -701,6 +861,27 @@ test('same UID upgrade still grants access and retains the linked Team member', 
     h.records.get('kitchen_access/guest').apps['misebox-app'].ids,
     ['guest']
   )
+})
+
+test('guest adoption reuses the linked roster ID and rejects a conflicting UID slot', async () => {
+  const h = adoptionHarness()
+  h.records.set('kitchens/guest/team/roster-uuid', {
+    user_id: 'account',
+    role_ids: ['cook'],
+  })
+  assert.equal((await h.adopt()).adopted, true)
+  assert.equal((await h.adopt()).adopted, false)
+  assert.equal(h.records.has('kitchens/guest/team/account'), false)
+  assert.deepEqual(h.records.get('kitchens/guest/team/roster-uuid').role_ids, [
+    'cook',
+  ])
+  const conflicted = adoptionHarness()
+  conflicted.records.set('kitchens/guest/team/account', {
+    user_id: 'someone-else',
+  })
+  const before = structuredClone([...conflicted.records])
+  await assert.rejects(conflicted.adopt(), { statusCode: 409 })
+  assert.deepEqual([...conflicted.records], before)
 })
 
 test('guest start creates one unpublished Kitchen with default menus, resumes it, and cannot overwrite a foreign root', async () => {

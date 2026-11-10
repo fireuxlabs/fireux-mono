@@ -46,7 +46,6 @@ export type MenuUpdateInput = Partial<
     | 'internal_name'
     | 'description'
     | 'sort_order'
-    | 'doc'
     | 'audience'
     | 'serving_hours'
   >

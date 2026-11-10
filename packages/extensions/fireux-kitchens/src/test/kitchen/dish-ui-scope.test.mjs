@@ -12,6 +12,13 @@ function evaluate(relative, deps, result, vue = false) {
     ...deps,
   })
   if (vue) deps = { ...specification, dishCategories, ...deps }
+  if (relative === component('FoodAndDrink/Menus/Items/Add/ByName')) {
+    deps.useMenuSectionDishCreation = evaluate(
+      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+      deps,
+      'useMenuSectionDishCreation'
+    )
+  }
   let source = readFileSync(new URL(relative, import.meta.url), 'utf8')
   if (vue)
     source = source.split('<script setup lang="ts">')[1].split('</script>')[0]
@@ -168,8 +175,8 @@ test('Menu name flow stops before placement on destination change; failed placem
           kitchenId: h.kitchenId,
           menuId,
           sectionId,
-          dishes: ref([]),
-          itemRows: ref([]),
+          dishSource: { dishes: ref([]), outcome: ref('empty'), error: ref(null) },
+          activeItemRows: ref([]),
           canWrite: ref(true),
           createItem: async (input) => {
             placements.push(input)
@@ -601,7 +608,7 @@ test('Menu new-name creation asks for each price and preserves an explicit zero'
     ...h.deps,
     useMenuSection: () => ({
       kitchenId: h.kitchenId, menuId: ref('menu'), sectionId: ref('section'),
-      dishes: ref([]), itemRows: ref([]), canWrite: ref(true),
+      dishSource: { dishes: ref([]), outcome: ref('empty'), error: ref(null) }, activeItemRows: ref([]), canWrite: ref(true),
       createItem: async input => placements.push(input),
     }),
     useDishCreate: () => ({ createDish: async draft => { drafts.push(draft); return { id: draft.name } } }),

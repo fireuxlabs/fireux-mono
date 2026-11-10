@@ -7,8 +7,10 @@ import {
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { serverKitchenTeamMembersTarget } from '../mutation-targets'
@@ -18,6 +20,10 @@ import {
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority.ts'
 import { serverKitchenMemberInvitationsTarget } from './mutation-targets.ts'
+import {
+  readKitchenMemberInvitationHistory,
+  type StoredInvitation,
+} from './invitation-history.ts'
 
 const INVITATION_LIFETIME_MS = 7 * 24 * 60 * 60 * 1_000
 
@@ -25,13 +31,6 @@ type InvitationLocator = {
   appId: string
   kitchenId: string
   invitationId: string
-}
-
-type StoredInvitation = {
-  member_id?: unknown
-  token_hash?: unknown
-  status?: unknown
-  expires_at?: { toMillis?: () => number }
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -56,7 +55,6 @@ function parseToken(value: unknown) {
       Buffer.from(encodedLocator, 'base64url').toString('utf8')
     ) as Record<string, unknown>
     return {
-      token,
       secret,
       locator: {
         appId: requireFirestoreDocumentId(source.appId, 'App id'),
@@ -84,27 +82,54 @@ function tokenMatches(stored: unknown, secret: string) {
   )
 }
 
-function requirePendingInvitation(
-  invitation: StoredInvitation,
-  secret: string
+async function readIssuedInvitation(
+  tx: GuardedServerTransaction,
+  parsed: ReturnType<typeof parseToken>,
+  acceptingUid?: string
 ) {
+  const { appId, kitchenId, invitationId } = parsed.locator
+  const invitations = serverKitchenMemberInvitationsTarget(kitchenId)
+  const { data } = await tx.read<StoredInvitation>(invitations, invitationId)
+  if (!data || data.created?.app_id !== appId) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Invitation not found.',
+    })
+  }
+  const alreadyAccepted =
+    data.status === 'accepted' &&
+    !!acceptingUid &&
+    data.accepted_by === acceptingUid
   if (
-    text(invitation.status) !== 'pending' ||
-    !tokenMatches(invitation.token_hash, secret)
+    !tokenMatches(data.token_hash, parsed.secret) ||
+    (data.status !== 'pending' && !alreadyAccepted)
   ) {
     throw createError({
       statusCode: 410,
       statusMessage: 'This invitation is no longer available.',
     })
   }
-  const expiresAt = invitation.expires_at?.toMillis?.() ?? 0
+  const expiresAt = data.expires_at?.toMillis?.() ?? 0
   if (!expiresAt || expiresAt <= Date.now()) {
     throw createError({
       statusCode: 410,
       statusMessage: 'This invitation has expired.',
     })
   }
-  return expiresAt
+  const memberId = requireFirestoreDocumentId(data.member_id, 'Member id')
+  // Older issuers could leave multiple tokens pending for the same person.
+  const { latestId } = await readKitchenMemberInvitationHistory(
+    tx,
+    invitations,
+    memberId
+  )
+  if (latestId !== invitationId) {
+    throw createError({
+      statusCode: 410,
+      statusMessage: 'This invitation has been replaced.',
+    })
+  }
+  return { memberId, expiresAt, alreadyAccepted }
 }
 
 function requireRuntimeApp(event: H3Event, appId: string) {
@@ -158,19 +183,16 @@ export async function createKitchenMemberInvitation(
       })
     }
     memberName = text(member.data?.name) || 'Kitchen member'
-    const pending = await mutations.query<StoredInvitation>(invitations, {
-      field: 'member_id',
-      op: '==',
-      value: memberId,
-      limit: 20,
-    })
-    for (const existing of pending) {
-      if (text(existing.data.status) === 'pending') {
-        mutations.update(invitations, existing.id, {
-          status: 'replaced',
-          updated: serverAuditStamp({ by: actor.uid }),
-        })
-      }
+    const { pendingIds } = await readKitchenMemberInvitationHistory(
+      mutations,
+      invitations,
+      memberId
+    )
+    for (const id of pendingIds) {
+      mutations.update(invitations, id, {
+        status: 'replaced',
+        updated: serverAuditStamp({ by: actor.uid }),
+      })
     }
     mutations.create(invitations, invitationId, {
       member_id: memberId,
@@ -192,38 +214,24 @@ export async function inspectKitchenMemberInvitation(
 ) {
   const parsed = parseToken(value)
   requireRuntimeApp(event, parsed.locator.appId)
-  const db = getRuntimeFirestore()
-  const invitationRef = db
-    .collection(`kitchens/${parsed.locator.kitchenId}/member-invitations`)
-    .doc(parsed.locator.invitationId)
-  const invitationSnapshot = await invitationRef.get()
-  if (!invitationSnapshot.exists) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Invitation not found.',
-    })
-  }
-  const invitation = invitationSnapshot.data() as StoredInvitation
-  const expiresAt = requirePendingInvitation(invitation, parsed.secret)
-  const memberId = requireFirestoreDocumentId(invitation.member_id, 'Member id')
-  const memberSnapshot = await db
-    .collection(`kitchens/${parsed.locator.kitchenId}/team`)
-    .doc(memberId)
-    .get()
-  if (
-    !memberSnapshot.exists ||
-    text(memberSnapshot.data()?.user_id)
-  ) {
-    throw createError({
-      statusCode: 410,
-      statusMessage: 'This invitation is no longer available.',
-    })
-  }
-  return {
-    ok: true as const,
-    memberName: text(memberSnapshot.data()?.name) || 'Kitchen member',
-    expiresAt: new Date(expiresAt).toISOString(),
-  }
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
+    const { memberId, expiresAt } = await readIssuedInvitation(tx, parsed)
+    const member = await tx.read(
+      serverKitchenTeamMembersTarget(parsed.locator.kitchenId),
+      memberId
+    )
+    if (!member.exists || text(member.data?.user_id)) {
+      throw createError({
+        statusCode: 410,
+        statusMessage: 'This invitation is no longer available.',
+      })
+    }
+    return {
+      ok: true as const,
+      memberName: text(member.data?.name) || 'Kitchen member',
+      expiresAt: new Date(expiresAt).toISOString(),
+    }
+  })
 }
 
 export async function acceptKitchenMemberInvitation(
@@ -236,28 +244,15 @@ export async function acceptKitchenMemberInvitation(
     event,
     'Sign in to accept this invitation.'
   )
-  let memberName = ''
-  let acceptedMemberId = ''
-
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const invitations = serverKitchenMemberInvitationsTarget(
       parsed.locator.kitchenId
     )
     const members = serverKitchenTeamMembersTarget(parsed.locator.kitchenId)
-    const invitation = await mutations.read<StoredInvitation>(
-      invitations,
-      parsed.locator.invitationId
-    )
-    if (!invitation.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Invitation not found.',
-      })
-    }
-    requirePendingInvitation(invitation.data || {}, parsed.secret)
-    const memberId = requireFirestoreDocumentId(
-      invitation.data?.member_id,
-      'Member id'
+    const { memberId, alreadyAccepted } = await readIssuedInvitation(
+      mutations,
+      parsed,
+      uid
     )
     const [member, linkedMembers] = await Promise.all([
       mutations.read<Record<string, unknown>>(members, memberId),
@@ -287,8 +282,20 @@ export async function acceptKitchenMemberInvitation(
         statusMessage: 'Your User is already linked to this Kitchen.',
       })
     }
-    memberName = text(member.data?.name) || 'Kitchen member'
-    acceptedMemberId = memberId
+    const result = {
+      ok: true as const,
+      kitchenId: parsed.locator.kitchenId,
+      memberId,
+      memberName: text(member.data?.name) || 'Kitchen member',
+    }
+    if (alreadyAccepted) {
+      if (linkedUserId !== uid)
+        throw createError({
+          statusCode: 410,
+          statusMessage: 'This invitation is no longer available.',
+        })
+      return result
+    }
     mutations.update(members, memberId, {
       user_id: uid,
     })
@@ -298,7 +305,6 @@ export async function acceptKitchenMemberInvitation(
       accepted_at: FieldValue.serverTimestamp(),
       updated: serverAuditStamp({ by: uid }),
     })
+    return result
   })
-
-  return { ok: true as const, memberName, memberId: acceptedMemberId }
 }

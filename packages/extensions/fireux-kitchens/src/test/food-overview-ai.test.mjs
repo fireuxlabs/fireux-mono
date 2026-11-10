@@ -177,12 +177,15 @@ test('the overview publishes the same current facts used by its AI and clears th
     computed,
     watchEffect,
     onScopeDispose,
+    useKitchenWorkspace: () => ({ id: ref('k') }),
     useWorkspacePageState: () => page,
     useFoodCatalogueSummary: () => ref({}),
-    useKitchenOfferings: () => {
+    useKitchenOfferings: (id) => {
+      assert.equal(id.value, 'k')
       acquisitions++
       return {
         kitchenId: ref('k'),
+        storageKitchenId: ref('k'),
         offerings: ref([]),
         menus,
         outcome,

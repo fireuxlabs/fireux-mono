@@ -42,10 +42,7 @@
         title="Customer correction"
         :description="state.request.correction"
       />
-      <MenuExpressPreview
-        v-if="state.request.review"
-        :review="state.request.review"
-      />
+      <MenuExpressPreview v-if="state.request.review" :state="state" />
       <UButton
         v-if="state.request.target && state.request.stage !== 'delivered'"
         :loading="state.busy"

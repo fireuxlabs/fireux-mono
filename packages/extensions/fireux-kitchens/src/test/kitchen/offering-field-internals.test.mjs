@@ -95,7 +95,7 @@ function websiteFixture() {
         ref,
         watch,
         useCommandScope,
-        useKitchenWebsiteOrdering: () => source,
+        useKitchenWorkspaceWebsiteOrdering: () => source,
         normalizeAllowedWebsites,
         source,
       }

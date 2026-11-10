@@ -16,7 +16,6 @@ export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
           'internal_name',
           'description',
           'sort_order',
-          'doc',
           'audience',
           'serving_hours',
         ].includes(key)
@@ -64,7 +63,6 @@ export function normalizeMenuMetadataPatch(input: unknown): MenuUpdateInput {
       )
     result.audience = value.audience as 'public' | 'private_link'
   }
-  if ('doc' in value) result.doc = normalizeMenuDocument(value.doc)
   if ('serving_hours' in value) {
     if (value.serving_hours === null) result.serving_hours = null
     else {

@@ -137,6 +137,43 @@ test('first On creates once and subsequent changes use the returned identity', a
   ])
   h.scope.stop()
 })
+test('shared setup field edits omit activation and mode switches use the focused command', async () => {
+  const h = harness()
+  const shared = {
+    ...h.props.offering,
+    interactions: [
+      { type: 'collection', enabled: false },
+      { type: 'delivery', enabled: true },
+    ],
+  }
+  const commands = []
+  h.props.sharedSetup = true
+  h.props.offering = shared
+  h.props.save = async (input, current) => {
+    assert.equal(current(), true)
+    commands.push(input)
+    return { offering: shared }
+  }
+  h.props.updateInteraction = async (id, type, changes, current) => {
+    assert.equal(current(), true)
+    commands.push({ id, type, changes })
+    return { offering: shared }
+  }
+  await vue.nextTick()
+  assert.equal(h.state.enabled.value, true)
+  await h.state.setMenus(['drinks'])
+  assert.equal('enabled' in commands[0], false)
+  assert.equal(commands[0].offeringId, shared.id)
+  await h.state.setInteractionEnabled('collection', true)
+  assert.deepEqual(commands[1], {
+    id: shared.id,
+    type: 'collection',
+    changes: { enabled: true },
+  })
+  await h.state.setEnabled(false)
+  assert.equal(commands[2].enabled, false)
+  h.scope.stop()
+})
 test('hours edits coalesce and incomplete ranges never reach the command', async () => {
   const h = harness()
   h.state.setHours(hoursAt('13:00'))

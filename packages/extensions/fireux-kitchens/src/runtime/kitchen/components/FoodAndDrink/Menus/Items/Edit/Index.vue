@@ -90,11 +90,12 @@
 </template>
 
 <script setup lang="ts">
-import '../../../../../../menu/assets/styles/menu-editor.css'
 import { reactive } from 'vue'
 import { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
 const editor = reactive(useMenuSectionItemsEditor())
 </script>
+
+<style src="../../../../../../menu/assets/styles/menu-editor.css"></style>
 
 <style scoped>
 .menu-item-value {

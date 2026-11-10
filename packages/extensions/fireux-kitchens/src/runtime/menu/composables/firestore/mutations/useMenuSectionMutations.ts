@@ -3,12 +3,15 @@ import { useMenuMutation } from './useMenuMutation'
 
 export function useMenuSectionMutations() {
   const { mutate } = useMenuMutation()
-  const createSection = async (input: {
-    kitchenId: string
-    menuId: string
-    label: string
-    description?: string
-  }) => (await mutate<{ id: string }>('section', 'POST', input)).id
+  const createSection = async (
+    input: {
+      kitchenId: string
+      menuId: string
+      label: string
+      description?: string
+    },
+    isCurrent?: () => boolean
+  ) => (await mutate<{ id: string }>('section', 'POST', input, isCurrent)).id
   const updateSection = (
     kitchenId: string,
     menuId: string,

@@ -15,7 +15,8 @@
         "
         disabled-message="This menu is read-only."
         :validation-function="editor.validateSectionLabel"
-        :update="(value) => editor.saveSectionLabel(section.id, value)"
+        :capture-intent="editor.captureScope"
+        :update="saveLabel"
       />
       <p v-if="section.description" class="fx-type-caption">
         {{ section.description }}
@@ -55,6 +56,9 @@ const props = defineProps<{
   section: MenuSection
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionsEditor>>
 }>()
+function saveLabel(value: string, isCurrent?: () => boolean) {
+  return props.editor.saveSectionLabel(props.section.id, value, isCurrent)
+}
 const actions = computed(() =>
   props.section.status === 'archived'
     ? [

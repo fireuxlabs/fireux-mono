@@ -3,6 +3,16 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { menuDocumentFilePath } from '../runtime/menu/utils/navigation/route.ts'
+import {
+  readRecord,
+  readRecordString,
+} from 'fireux-core/runtime/server/utils/records/read'
+import { loadOfferingSource } from './offering-test-helpers.mjs'
+import {
+  isKitchenMenuDocumentPath,
+  menuDocumentContentTypes,
+} from '../runtime/menu/server/document/file.ts'
 
 function load(path, symbol, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -63,17 +73,18 @@ test('new Menu is catalogue-only without duplicated relationship or unused setti
   }
 })
 
-test('document metadata is one complete optional object', () => {
+test('only the document commands accept complete attachment metadata', () => {
   const doc = {
     url: 'https://example.com/menu.pdf',
     name: 'Menu',
     type: 'application/pdf',
     storage_path: 'menus/file.pdf',
   }
-  assert.deepEqual(build({ name: 'Lunch', doc }, 'Lunch').doc, doc)
-  assert.throws(() => build({ name: 'Lunch', doc: {} }, 'Lunch'), /incomplete/)
+  assert.throws(() => build({ name: 'Lunch', doc }, 'Lunch'), /Unsupported/)
+  assert.deepEqual(metadata.normalizeMenuDocument(doc), doc)
+  assert.throws(() => metadata.normalizeMenuDocument({}), /incomplete/)
   assert.throws(
-    () => build({ name: 'Lunch', doc: { url: doc.url } }, 'Lunch'),
+    () => metadata.normalizeMenuDocument({ url: doc.url }),
     /incomplete/
   )
 })
@@ -122,6 +133,60 @@ test('one Menu format chooses interactive content or its document', async () => 
     { kitchenId: 'k' }
   )
   assert.equal(interactive.kind, 'manifest')
+  const daily = await routePayload('today', { ...menu, schedule: 'daily' }, {})
+  assert.equal(daily.kind, 'manifest')
+})
+
+test('published file projections expose only a scoped route while URL-only records keep their web link', () => {
+  const fileReaders = loadOfferingSource(
+    'menu/server/payload/file',
+    'readMenuFile,hasMenuFile,readMenuDocumentKind',
+    { readRecord, readRecordString, menuDocumentFilePath }
+  )
+  const { buildMenuDocumentPayload } = loadOfferingSource(
+    'menu/server/payload/document',
+    'buildMenuDocumentPayload',
+    {
+      ...fileReaders,
+      readRecordString,
+      readKitchenPublicOfferings: () => [],
+      menuFileKind: () => 'pdf',
+      menuPayloadPresentation: () => ({}),
+      compactMenuFile: (file) => file,
+    }
+  )
+  const doc = {
+    name: 'Lunch.pdf',
+    type: 'application/pdf',
+    url: 'https://files.example/lunch?token=secret-token',
+    storage_path: 'kitchens/k/menu-uploads/revision/source/Lunch.pdf',
+  }
+  for (const [routeKind, url] of [
+    ['directory-menu', '/api/menus/lunch/file?kitchenSlug=caf%C3%A9'],
+    ['tenant-menu', '/api/menus/lunch/file'],
+  ]) {
+    const payload = buildMenuDocumentPayload(
+      'lunch',
+      { doc },
+      { kitchenId: 'k', kitchenSlug: 'café', routeKind }
+    )
+    assert.deepEqual(payload.document.file, {
+      url,
+      name: 'Lunch.pdf',
+      type: 'application/pdf',
+    })
+    assert.doesNotMatch(JSON.stringify(payload), /secret-token|menu-uploads/)
+  }
+  for (const url of [
+    'https://venue.example/menu.pdf',
+    'http://venue.example/menu.pdf',
+    'javascript:alert(1)',
+  ]) {
+    const payload = buildMenuDocumentPayload('lunch', {
+      doc: { name: 'Lunch', url },
+    })
+    assert.equal(payload.document.file.url, url.startsWith('http') ? url : '')
+  }
 })
 
 const fileEndpointSource = readFileSync(
@@ -130,8 +195,8 @@ const fileEndpointSource = readFileSync(
 )
   .replace(/import[\s\S]*?from ['"][^'"]+['"]\n/g, '')
   .replace('export default ', 'const handler = ')
-async function downloadFor(target) {
-  let objectPath
+async function downloadFor(target, downloads = []) {
+  let headers
   const handler = compileFunction(
     `${stripTypeScriptTypes(fileEndpointSource)}; return handler`,
     [
@@ -145,40 +210,86 @@ async function downloadFor(target) {
       'downloadStorageFile',
       'runtimeStorageBucketName',
       'resolveMenuTarget',
+      'isKitchenMenuDocumentPath',
+      'menuDocumentContentTypes',
     ]
   )(
     (input) => Object.assign(new Error(input.statusMessage), input),
     (value) => value,
     () => ({}),
     () => 'menu',
-    () => {},
+    (_, value) => {
+      headers = value
+    },
     (value) => value || {},
     (data, key) => String(data[key] || ''),
     async (input) => {
-      objectPath = input.objectPath
+      downloads.push(input.objectPath)
       return { buffer: 'file' }
     },
     () => 'bucket',
-    async () => target
+    async () => target,
+    isKitchenMenuDocumentPath,
+    menuDocumentContentTypes
   )
   await handler({})
-  return objectPath
+  return headers
 }
-test('file endpoint reads only the canonical Menu document with a publication gate', async () => {
-  const menuData = {
+
+const fileTarget = (path, changes = {}) => ({
+  kind: 'directory-menu',
+  appId: 'directory',
+  kitchenId: 'k',
+  rootKitchenData: {
+    created: { app_id: 'origin' },
+    management: { mode: 'app', app_id: 'tenant' },
+  },
+  menuData: {
     status: 'published',
-    doc: { storage_path: 'owned.pdf' },
+    doc: { storage_path: path, type: 'application/pdf', name: 'menu.pdf' },
     file: { storage_path: 'wrong.pdf' },
+    ...changes,
+  },
+})
+
+test('public file reads only the owning Kitchen’s published Menu uploads, including prior App scopes', async () => {
+  const path = 'kitchens/k/menu-uploads/revision/source/menu.pdf'
+  for (const owned of [path, 'apps/origin/' + path, 'apps/tenant/' + path]) {
+    const downloads = []
+    const headers = await downloadFor(fileTarget(owned), downloads)
+    assert.deepEqual(downloads, [owned])
+    assert.equal(headers['Cache-Control'], 'no-store')
+    assert.equal(headers['Content-Type'], 'application/pdf')
+    assert.equal(headers['X-Content-Type-Options'], 'nosniff')
   }
-  assert.equal(
-    await downloadFor({ kind: 'directory-menu', menuData }),
-    'owned.pdf'
-  )
-  await assert.rejects(
-    downloadFor({
-      kind: 'tenant-menu',
-      menuData: { ...menuData, status: 'draft' },
-    }),
-    { statusCode: 404 }
-  )
+  const unsafeType = fileTarget(path, {
+    doc: { storage_path: path, type: 'text/html' },
+  })
+  const headers = await downloadFor(unsafeType)
+  assert.equal(headers['Content-Type'], 'application/octet-stream')
+  assert.match(headers['Content-Disposition'], /^attachment;/)
+})
+
+test('foreign, malformed, unpublished and Daily attachments are rejected before Storage', async () => {
+  const path = 'kitchens/k/menu-uploads/u/source/menu.pdf'
+  const forbidden = [
+    'kitchens/other/menu-uploads/u/source/menu.pdf',
+    'kitchens/k/claims/guest',
+    'menus/lunch/source/menu.pdf',
+    'apps/directory/' + path,
+    'apps/other/' + path,
+    'kitchens/k/menu-uploads/u/source/../secret',
+    'kitchens/k/menu-uploads/u/source/..',
+    'kitchens/k/menu-uploads/u/source/',
+  ]
+  const downloads = []
+  for (const target of [
+    ...forbidden.map((foreign) => fileTarget(foreign)),
+    fileTarget(path, { status: 'draft' }),
+    fileTarget(path, { status: 'archived' }),
+    fileTarget(path, { schedule: 'daily' }),
+  ]) {
+    await assert.rejects(downloadFor(target, downloads), { statusCode: 404 })
+  }
+  assert.deepEqual(downloads, [])
 })

@@ -6,8 +6,9 @@ import {
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 import { recipeFields, recipeTarget } from './record-input'
+import { requireUnusedKitchenRecipe } from '../core/preparation-references'
 
-/** Delete exactly the selected Recipe document; related records remain independent. */
+/** Delete only an unused Recipe. Retrying after deletion is a successful no-op. */
 export async function deleteRecipe(event: H3Event, input: unknown) {
   const value = recipeFields(input, ['kitchenId', 'recipeId'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
@@ -17,7 +18,11 @@ export async function deleteRecipe(event: H3Event, input: unknown) {
     { kind: 'runtime' },
     async (transaction) => {
       await requireKitchenRecordMutationAuthority(transaction, actor, kitchenId)
-      transaction.delete(recipeTarget(kitchenId), recipeId)
+      const target = recipeTarget(kitchenId)
+      if ((await transaction.read(target, recipeId)).exists) {
+        await requireUnusedKitchenRecipe(transaction, kitchenId, recipeId)
+        transaction.delete(target, recipeId)
+      }
       return { id: recipeId }
     }
   )

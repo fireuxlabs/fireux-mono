@@ -62,7 +62,7 @@ const {
   sectionId,
   section,
   dishes,
-  itemRows,
+  activeItemRows,
   canWrite,
   createItem,
 } = useMenuSection()
@@ -74,7 +74,7 @@ const availableDishes = computed(() =>
   dishes.value
     .filter(
       (dish) =>
-        !itemRows.value.some((item) => item.dishId === dish.id) &&
+        !activeItemRows.value.some((item) => item.dishId === dish.id) &&
         (category.value === 'all' || dish.category === category.value) &&
         dish.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
     )
@@ -85,12 +85,15 @@ watch(availableDishes, (rows) => {
   if (!rows.some((dish) => dish.id === dishId.value)) dishId.value = ''
 })
 const saving = ref(false)
-const captureScope = useMenuEditorScope([kitchenId, menuId, sectionId], () => {
-  saving.value = false
-  dishId.value = ''
-  query.value = ''
-  category.value = 'all'
-})
+const captureScope = useMenuEditorScope(
+  [kitchenId, menuId, sectionId, canWrite],
+  () => {
+    saving.value = false
+    dishId.value = ''
+    query.value = ''
+    category.value = 'all'
+  }
+)
 
 const canAdd = computed(
   () =>
@@ -106,12 +109,15 @@ async function add() {
   const isCurrent = captureScope()
   saving.value = true
   try {
-    await createItem({
-      kitchenId: kitchenId.value,
-      menuId: menuId.value,
-      sectionId: sectionId.value,
-      dishId: dishId.value,
-    })
+    await createItem(
+      {
+        kitchenId: kitchenId.value,
+        menuId: menuId.value,
+        sectionId: sectionId.value,
+        dishId: dishId.value,
+      },
+      isCurrent
+    )
     if (!isCurrent()) return
     dishId.value = ''
     toast.add({

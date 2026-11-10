@@ -4,7 +4,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, toValue } from 'vue'
 function load(path, deps, result, vue = false) {
   deps = commandScopeDeps(deps)
   let source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -45,7 +45,13 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
     'item-update',
   ])
     for (const stage of ['auth', 'token', 'response'])
-      for (const change of ['stable', 'account', 'logout', 'dispose']) {
+      for (const change of [
+        'stable',
+        'account',
+        'logout',
+        'dispose',
+        ...(adapter === 'item-update' ? [] : ['owner']),
+      ]) {
         const auth = deferred(),
           token = deferred(),
           response = deferred(),
@@ -53,20 +59,13 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
           disposed = []
         const user = { uid: 'u', getIdToken: () => token.promise },
           currentUser = ref(user),
-          selectedId = ref('k'),
-          routePath = ref('/menus/m')
+          selectedSection = ref('s')
+        const ownerCurrent = scope(currentUser)([selectedSection])()
         const useMenuMutation = load(
           '../../runtime/menu/composables/firestore/mutations/useMenuMutation.ts',
           {
-            useRoute: () => ({
-              get fullPath() {
-                return routePath.value
-              },
-            }),
             useAuth: () => ({ currentUser }),
             useRequireUser: () => auth.promise,
-            useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
-            useWorkspace: () => ({ selectedId }),
             useMenuEditorScope: scope(currentUser, disposed),
             $fetch: (...args) => {
               calls.push(args)
@@ -115,10 +114,10 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
               }
         const pending = isCreate
           ? isSection
-            ? api.createSection(input)
-            : api.createItem(input)
+            ? api.createSection(input, ownerCurrent)
+            : api.createItem(input, ownerCurrent)
           : isSection
-            ? api.updateSection('k', 'm', 's', patch)
+            ? api.updateSection('k', 'm', 's', patch, ownerCurrent)
             : api.updateItem('k', 'm', 's', 'i', patch)
         const done =
           change === 'stable' || stage === 'response'
@@ -135,12 +134,9 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
         input.menuId = 'other'
         if (isSection) patch.label = 'Changed'
         else patch.price_options[0].price = 99
-        if (change === 'kitchen') {
-          selectedId.value = 'b'
-          selectedId.value = 'k'
-        } else if (change === 'route') {
-          routePath.value = '/menus/b'
-          routePath.value = '/menus/m'
+        if (change === 'owner') {
+          selectedSection.value = 'another'
+          selectedSection.value = 's'
         } else if (change === 'dispose') disposed.forEach((fn) => fn())
         else if (change === 'account' || change === 'logout') {
           currentUser.value = change === 'logout' ? null : { uid: 'b' }
@@ -170,6 +166,11 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
           kitchenId = ref('k'),
           menuId = ref('m'),
           selectedDate = ref('2026-10-01')
+        let editorCurrent
+        function save(...args) {
+          editorCurrent = args.at(-1)
+          return pending.promise
+        }
         const api = load(
           '../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',
           {
@@ -198,8 +199,8 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
               sectionsPending: ref(false),
               sectionsError: ref(null),
               canWrite: ref(true),
-              createSection: () => pending.promise,
-              updateSection: () => pending.promise,
+              createSection: save,
+              updateSection: save,
             }),
           },
           'useMenuSectionsEditor()'
@@ -223,6 +224,7 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
           selectedDate.value = '2026-10-02'
           selectedDate.value = '2026-10-01'
         }
+        assert.equal(editorCurrent(), change === 'stable')
         if (change !== 'stable') api.savingSection.value = true
         failed ? pending.reject(Error('Failure')) : pending.resolve('new')
         await done
@@ -240,6 +242,7 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
         kitchenId = ref('k'),
         menuId = ref('m'),
         sectionId = ref('s')
+      let editorCurrent
       const api = load(
         '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/Repertoire.vue',
         {
@@ -259,9 +262,10 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
             sectionId,
             section: ref({}),
             dishes: ref([]),
-            itemRows: ref([]),
+            activeItemRows: ref([]),
             canWrite: ref(true),
-            createItem: (x) => {
+            createItem: (x, isCurrent) => {
+              editorCurrent = isCurrent
               calls.push(x)
               return pending.promise
             },
@@ -280,6 +284,7 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
         currentUser.value = null
         currentUser.value = { uid: 'u' }
       }
+      assert.equal(editorCurrent(), change === 'stable')
       if (change !== 'stable') api.saving.value = true
       failed ? pending.reject(Error('Failure')) : pending.resolve('new')
       await result
@@ -448,8 +453,12 @@ test('new Dish placement reuses catalogue owners and never attaches an obsolete 
       kitchenId: ref('kitchen'),
       menuId: ref('menu'),
       sectionId,
-      dishes: ref([{ id: 'known', name: 'Soup' }]),
-      itemRows: ref([]),
+      dishSource: {
+        dishes: ref([{ id: 'known', name: 'Soup' }]),
+        outcome: ref('ready'),
+        error: ref(null),
+      },
+      activeItemRows: ref([]),
       canWrite: ref(true),
       createItem: async (input) => placements.push(input),
     }
@@ -458,6 +467,7 @@ test('new Dish placement reuses catalogue owners and never attaches an obsolete 
       {
         computed,
         ref,
+        watch,
         useDishEditorScope: scope(currentUser),
         useDishCreate: () => ({
           createDish: async (...args) => {
@@ -485,4 +495,181 @@ test('new Dish placement reuses catalogue owners and never attaches an obsolete 
     assert.equal(placements[0].dishId, 'known')
     if (!changed) assert.equal(placements[1].dishId, 'new-dish')
   }
+})
+
+test('all Add workflows can restore retained placements and exclude already active references', async () => {
+  const currentUser = ref({ uid: 'operator' })
+  const dishes = ref([
+    { id: 'soup', name: 'Soup' },
+    { id: 'salad', name: 'Salad' },
+  ])
+  const promotions = ref([
+    { id: 'lunch', name: 'Lunch deal', groups: [] },
+    { id: 'dinner', name: 'Dinner deal', groups: [] },
+  ])
+  const placements = ref([
+    { id: 'p1', dish_id: 'soup', status: 'archived' },
+    { id: 'p2', dish_id: 'salad' },
+    { id: 'p3', dish_id: 'salad', status: 'archived' },
+    { id: 'p4', promotion_id: 'lunch', status: 'archived' },
+    { id: 'p5', promotion_id: 'dinner', status: 'active' },
+  ])
+  const commands = []
+  const context = load(
+    '../../runtime/menu/composables/useMenuSection.ts',
+    {
+      computed,
+      toValue,
+      useMenuItemMutations: () => ({
+        createItem: (input, isCurrent) => {
+          assert.equal(isCurrent(), true)
+          commands.push(input)
+        },
+      }),
+      useDishUpdate: () => ({}),
+      useKitchenDishCollection: () => ({
+        dishes,
+        outcome: ref('ready'),
+        error: ref(null),
+      }),
+      useKitchenChildCollection: () => ({ items: promotions }),
+      useMenuSectionItemCollection: () => ({ items: placements }),
+      normalizeDishAddOns: () => [],
+      normalizeDishPriceOptions: () => [],
+    },
+    'createMenuSectionState'
+  )(
+    {
+      kitchenId: ref('k'),
+      storageKitchenId: ref('k'),
+      menuId: ref('m'),
+      menu: ref({ id: 'm' }),
+      allSections: ref([{ id: 's' }]),
+      canWrite: ref(true),
+    },
+    ref('s')
+  )
+  const deps = {
+    computed,
+    ref,
+    watch,
+    useMenuSection: () => context,
+    useMenuEditorScope: scope(currentUser),
+    useDishEditorScope: scope(currentUser),
+    useToastify: () => ({ add() {} }),
+    useDishCreate: () => ({ createDish: assert.fail }),
+  }
+  const dish = load(
+    '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/Repertoire.vue',
+    deps,
+    '({availableDishes,dishId,add})',
+    true
+  )
+  const deal = load(
+    '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/MealDeal.vue',
+    deps,
+    '({available,promotionId,add})',
+    true
+  )
+  const names = load(
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+    deps,
+    'useMenuSectionDishCreation'
+  )(context, () => '/menus/m/s')
+
+  assert.equal(context.itemRows.value.length, 5)
+  assert.deepEqual(
+    dish.availableDishes.value.map((row) => row.id),
+    ['soup']
+  )
+  assert.deepEqual(
+    deal.available.value.map((row) => row.id),
+    ['lunch']
+  )
+  dish.dishId.value = 'soup'
+  await dish.add()
+  deal.promotionId.value = 'lunch'
+  await deal.add()
+  names.names.value = 'Soup\nSalad'
+  await names.addNames()
+  assert.equal(names.error.value, '')
+  assert.deepEqual(commands, [
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', dishId: 'soup' },
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', promotionId: 'lunch' },
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', dishId: 'soup' },
+  ])
+})
+
+test('a Menu placement retry reuses its saved Dish before the catalogue listener catches up', async () => {
+  const currentUser = ref({ uid: 'u' })
+  const dishes = ref([])
+  const catalogueOutcome = ref('pending')
+  const sectionId = ref('s')
+  const created = []
+  const placed = []
+  let failPlacement = true
+  const api = load(
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
+    {
+      ref,
+      computed,
+      watch,
+      useDishEditorScope: scope(currentUser),
+      useDishCreate: () => ({
+        createDish: async (draft) => {
+          created.push(draft)
+          return { id: 'dish-' + created.length }
+        },
+      }),
+    },
+    'useMenuSectionDishCreation'
+  )(
+    {
+      kitchenId: ref('k'),
+      menuId: ref('m'),
+      sectionId,
+      canWrite: ref(true),
+      activeItemRows: ref([]),
+      dishSource: { dishes, outcome: catalogueOutcome, error: ref(null) },
+      createItem: async (input) => {
+        placed.push(input.dishId)
+        if (failPlacement) throw new Error('Placement failed')
+      },
+    },
+    () => '/menus/m/s'
+  )
+
+  api.names.value = ' Soup \nsoup'
+  for (const unresolved of ['idle', 'pending', 'error']) {
+    catalogueOutcome.value = unresolved
+    assert.deepEqual(api.newNames.value, [])
+    await api.addNames()
+  }
+  assert.deepEqual(created, [])
+  assert.deepEqual(placed, [])
+  catalogueOutcome.value = 'empty'
+  assert.deepEqual(api.newNames.value, ['Soup'])
+  api.prices.value = { Soup: 0 }
+  await api.addNames()
+  assert.match(api.error.value, /exists, but adding it to this Menu failed/)
+  assert.deepEqual(api.newNames.value, [])
+  failPlacement = false
+  await api.addNames()
+  assert.deepEqual(created, [{ name: 'Soup', price: 0 }])
+  assert.deepEqual(placed, ['dish-1', 'dish-1'])
+  assert.equal(api.names.value, '')
+  assert.equal(api.error.value, '')
+
+  // Once the catalogue acknowledges a Dish, subsequent renames are authoritative.
+  dishes.value = [{ id: 'dish-1', name: 'Soup' }]
+  dishes.value = [{ id: 'dish-1', name: 'Gazpacho' }]
+  api.names.value = 'Soup'
+  assert.deepEqual(api.newNames.value, ['Soup'])
+  // A partial success in a departed scope cannot select a Dish for the next one.
+  failPlacement = true
+  api.prices.value = { Soup: 4 }
+  await api.addNames()
+  sectionId.value = 'other'
+  api.names.value = 'Soup'
+  assert.deepEqual(api.newNames.value, ['Soup'])
 })

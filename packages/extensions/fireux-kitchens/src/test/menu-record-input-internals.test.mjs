@@ -70,7 +70,7 @@ const requireFirestoreDocumentId = (value) => {
   return value
 }
 
-test('Menu creation and editing share complete typed document and description validation', () => {
+test('ordinary creation and metadata reject attachment pointers; the document owner validates files', () => {
   for (const invalidDoc of [
     null,
     {},
@@ -81,6 +81,7 @@ test('Menu creation and editing share complete typed document and description va
     { ...doc, url: 'javascript:alert(1)' },
     { ...doc, url: 'relative.pdf' },
   ]) {
+    assert.throws(() => metadata.normalizeMenuDocument(invalidDoc))
     assert.throws(() =>
       creation.normalizeMenuCreateInput({ name: 'Lunch', doc: invalidDoc })
     )
@@ -99,11 +100,48 @@ test('Menu creation and editing share complete typed document and description va
     ''
   )
   assert.deepEqual(
-    creation.normalizeMenuCreateInput({
-      name: ' Lunch ',
-      doc: { ...doc, name: ' Menu ' },
-    }).doc,
+    metadata.normalizeMenuDocument({ ...doc, name: ' Menu ' }),
     doc
+  )
+  assert.throws(() => creation.normalizeMenuCreateInput({ name: 'Lunch', doc }))
+  assert.throws(() =>
+    creation.normalizeMenuCreateInput({ name: 'Daily', schedule: 'daily', doc })
+  )
+  assert.throws(() =>
+    metadata.normalizeMenuMetadataPatch({ description: 'OK', doc })
+  )
+})
+
+test('an operator cannot supply a Storage pointer through either Menu record command', async () => {
+  const dependencies = {
+    ...creation,
+    ...metadata,
+    createError,
+    requireFirestoreDocumentId,
+    runGuardedServerTransaction: () => assert.fail('unexpected transaction'),
+    readKitchenMutationActor: () => assert.fail('unexpected credential read'),
+  }
+  const { createKitchenMenu } = load(
+    'runtime/menu/server/records/create.ts',
+    dependencies,
+    'createKitchenMenu'
+  )
+  const { updateKitchenMenu } = load(
+    'runtime/menu/server/records/update.ts',
+    dependencies,
+    'updateKitchenMenu'
+  )
+  const forged = { ...doc, storage_path: 'kitchens/other/private/file.pdf' }
+  await assert.rejects(
+    createKitchenMenu({}, { kitchenId: 'k', name: 'Lunch', doc: forged }),
+    { statusCode: 400 }
+  )
+  await assert.rejects(
+    updateKitchenMenu(
+      {},
+      { kitchenId: 'k', menuId: 'lunch', changes: { doc: forged } }
+    ),
+    { statusCode: 400 }
   )
 })
 
@@ -115,6 +153,7 @@ test('creation accepts only draft catalogue inputs and rejects caller-owned or m
     { name: 'Lunch', status: null },
     { name: 'Lunch', status: 'published' },
     { name: 'Lunch', schedule: null },
+    { name: 'Lunch', format: ['document'] },
     { name: 'Lunch', kitchenId: {} },
     { name: 'Lunch', ordering: {} },
     { name: 'Lunch', created: {} },
@@ -122,10 +161,6 @@ test('creation accepts only draft catalogue inputs and rejects caller-owned or m
     { name: 'Lunch', slug: 'lunch' },
   ])
     assert.throws(() => creation.normalizeMenuCreateInput(input))
-  const input = { kitchenId: 'k', name: 'Lunch', doc: { ...doc } }
-  const value = creation.normalizeMenuCreateInput(input)
-  input.doc.name = 'changed'
-  assert.equal(value.doc.name, 'Menu')
 })
 
 test('explicit add-on and variant writes reject coercion into zero or incomplete terms', () => {
@@ -204,7 +239,6 @@ test('trusted Menu create snapshots all metadata before actor credentials', asyn
     name: 'Lunch',
     description: 'Original',
     schedule: 'regular',
-    doc: { ...doc },
   }
   const request = createKitchenMenu({}, input)
   Object.assign(input, {
@@ -212,12 +246,12 @@ test('trusted Menu create snapshots all metadata before actor credentials', asyn
     description: 'Changed',
     schedule: 'daily',
   })
-  input.doc.name = 'Changed'
+  input.doc = { ...doc }
   wait.resolve({ uid: 'u', runtimeAppId: 'a' })
   await request
   assert.equal(writes[0][0], 'kitchens/k/menus')
   assert.equal(writes[0][2].description, 'Original')
-  assert.equal(writes[0][2].doc.name, 'Menu')
+  assert.equal(Object.hasOwn(writes[0][2], 'doc'), false)
   assert.equal(Object.hasOwn(writes[0][2], 'schedule'), false)
 })
 

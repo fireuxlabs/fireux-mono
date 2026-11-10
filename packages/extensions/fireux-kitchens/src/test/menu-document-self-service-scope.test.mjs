@@ -11,6 +11,7 @@ import {
 } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
 import { loadOfferingSource as load } from './offering-test-helpers.mjs'
+import { menuFilePreviewDependencies } from './menu-file-preview-test-helpers.mjs'
 
 const deferred = () => {
   let resolve
@@ -27,10 +28,8 @@ const menu = (document) => ({
   name: 'Main',
   status: document ? 'published' : 'draft',
   revision: document ? 'saved' : '',
-  previewUrl: '/api/menus/main/file?kitchenSlug=guest',
   document: document
     ? {
-        url: 'https://files.example/menu.pdf',
         name: 'menu.pdf',
         type: 'application/pdf',
       }
@@ -39,7 +38,7 @@ const menu = (document) => ({
   qrPath: '/kitchens/guest/menus/main/qr',
   menus: [{ value: 'main-id', label: 'Main' }],
 })
-function fixture({ guest = false, claimLock } = {}) {
+function fixture({ guest = false, claimLock, fileRead } = {}) {
   const credential = deferred(),
     read = deferred(),
     write = deferred()
@@ -47,6 +46,7 @@ function fixture({ guest = false, claimLock } = {}) {
     writeCalled = deferred(),
     scope = effectScope()
   const calls = [],
+    fileCalls = [],
     starts = [],
     revoked = [],
     storage = new Map()
@@ -110,6 +110,12 @@ function fixture({ guest = false, claimLock } = {}) {
     },
     crypto,
     $fetch: async (path, options) => {
+      if (path === '/api/kitchens/menus/document/file') {
+        fileCalls.push({ path, options })
+        return fileRead
+          ? fileRead.promise
+          : new Blob(['%PDF-protected'], { type: 'application/pdf' })
+      }
       if (path === '/api/kitchens/onboarding/guest') {
         starts.push({ path, options })
         return { kitchen_id: currentUser.value.uid }
@@ -129,6 +135,7 @@ function fixture({ guest = false, claimLock } = {}) {
       (source) => source.replaceAll('import.meta.client', 'true')
     )
   )
+  Object.assign(deps, menuFilePreviewDependencies(deps))
   const flow = scope.run(() =>
     load(
       'menu/composables/useMenuDocument',
@@ -150,6 +157,7 @@ function fixture({ guest = false, claimLock } = {}) {
     config,
     scope,
     calls,
+    fileCalls,
     revoked,
     credential,
     read,
@@ -176,11 +184,16 @@ test(
     assert.equal(body.get('file').name, 'menu.pdf')
     h.write.resolve(menu(true))
     await pending
+    await settle()
     assert.equal(h.flow.data.value.menuId, 'main-id')
-    assert.equal(
-      h.flow.preview.value.file.url,
-      '/api/menus/main/file?kitchenSlug=guest'
-    )
+    assert.equal(h.flow.preview.value.file.url, 'blob:fixture')
+    assert.equal(h.fileCalls.length, 1)
+    assert.deepEqual(h.fileCalls[0].options.body, {
+      kitchenId: 'guest',
+      menuId: 'main-id',
+      expectedRevision: 'saved',
+      claimSecret: undefined,
+    })
     assert.equal(h.flow.file.value, null)
     assert.equal(h.flow.busy.value, false)
     assert.equal(h.flow.message.value, 'Your Menu is online.')
@@ -360,5 +373,56 @@ test('an invalid recovery link stays an explicit error and cannot replace retain
   assert.equal(h.flow.kitchenId.value, 'guest')
   assert.equal(h.flow.recoveryLink.value, previous)
   assert.equal(h.route.hash, '')
+  h.scope.stop()
+})
+
+test('saved guest document waits for protected bytes and keeps recovery proof in the body', async () => {
+  const fileRead = deferred()
+  const h = fixture({ guest: true, fileRead })
+  await nextTick()
+  assert.equal(
+    h.flow.preview.value.file.url,
+    'blob:fixture',
+    'local File preview remains available'
+  )
+  await publishGuest(h)
+  await settle()
+  assert.equal(
+    h.flow.preview.value,
+    null,
+    'saved metadata never mounts the Viewer without bytes'
+  )
+  assert.equal(h.flow.previewPending.value, true)
+  assert.equal(h.fileCalls.length, 1)
+  assert.equal(h.fileCalls[0].path, '/api/kitchens/menus/document/file')
+  assert.match(h.fileCalls[0].options.body.claimSecret, /^[a-f0-9]{64}$/)
+  assert.equal(h.fileCalls[0].options.body.expectedRevision, 'saved')
+  fileRead.resolve(new Blob(['%PDF-private']))
+  await settle()
+  assert.equal(h.flow.preview.value.file.url, 'blob:fixture')
+  h.scope.stop()
+})
+
+test('a failed saved preview never uses a legacy token URL or the public endpoint', async () => {
+  const fileRead = deferred()
+  const h = fixture({ fileRead })
+  await publishGuest(h)
+  await settle()
+  h.flow.data.value = {
+    ...h.flow.data.value,
+    previewUrl: '/api/menus/main/file',
+    document: {
+      ...h.flow.data.value.document,
+      url: 'https://storage.invalid/token-secret',
+    },
+  }
+  fileRead.resolve({ unexpected: 'not a Blob' })
+  await settle()
+  assert.equal(h.flow.preview.value, null)
+  assert.equal(
+    h.flow.previewError.value,
+    'The file could not be opened. Try again.'
+  )
+  assert.equal(h.fileCalls.length, 1)
   h.scope.stop()
 })

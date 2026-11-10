@@ -18,7 +18,11 @@ export function buildMenuDocumentPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
-  const file = readMenuFile(data)
+  const file = readMenuFile(
+    data,
+    menuId,
+    scope.routeKind === 'directory-menu' ? scope.kitchenSlug : undefined
+  )
   const fileKind = menuFileKind({
     file,
     storedKind: readMenuDocumentKind(data),

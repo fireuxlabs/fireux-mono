@@ -26,7 +26,6 @@ export default defineEventHandler(async (event) => {
   return {
     ok: true,
     id: saved.menuId,
-    url: saved.document!.url,
     file_name: saved.document!.name,
     file_type: saved.document!.type,
   }

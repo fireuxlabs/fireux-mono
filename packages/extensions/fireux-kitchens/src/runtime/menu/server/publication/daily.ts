@@ -48,8 +48,7 @@ export async function publishDailyMenu(event: H3Event, input: unknown) {
     if (
       !menu.exists ||
       menu.data?.schedule !== 'daily' ||
-      menu.data.status === 'archived' ||
-      menu.data.doc?.url
+      menu.data.status === 'archived'
     )
       throw createError({
         statusCode: 409,

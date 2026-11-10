@@ -37,6 +37,7 @@ function harness() {
   ])
   let before = () => {}
   const dependencies = {
+    requireUnusedKitchenRecipe: async () => {},
     createError, requireFirestoreDocumentId, requireKitchenRecordMutationAuthority, readRecipeUpdate, mergeRecipeUpdate, ...input, requireRecipePreparationReferences: async () => {}, normalizeTranslatedText, ...preparation,
     normalizeSlug: value => value.toLowerCase().replace(/[^a-z0-9]+/g, '-'), defineFirestoreMutationTarget: value => value.collectionPath,
     readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }), serverAuditStamp: x => x,

@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/workspace/composables/useWorkspaceDraftHandoff'
+import { teamIntentRecords } from 'fireux-core/runtime/workspace/utils/team-intent-records'
 import type { useProjectWorkspaceTeam } from '../../composables/workspace/useProjectWorkspaceTeam'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import { useProjectIntent } from '../../composables/workspace/ai/useProjectIntent'
@@ -49,13 +50,14 @@ const suggestions = computed(() =>
 )
 function requestAI(prompt: string) {
   const context = props.team.context.value
+  const selectedId = context.selected?.id ?? ''
   return request<TeamAIIntent>({
     capability: 'team',
     prompt,
-    selectedId: context.selected?.id ?? '',
-    records: context.collection.records
-      .slice(0, 100)
-      .map(({ id, name }) => ({ id, name })),
+    selectedId,
+    records: teamIntentRecords(context.collection.records, selectedId).map(
+      ({ id, name }) => ({ id, name })
+    ),
     availableActions: context.derived.capability.availableActions,
   })
 }

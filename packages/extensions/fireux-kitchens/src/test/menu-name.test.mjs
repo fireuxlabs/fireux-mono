@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { computed, ref } from 'vue'
 const source = readFileSync(
   new URL('../runtime/menu/server/records/update.ts', import.meta.url),
   'utf8'
@@ -96,17 +97,18 @@ test('Workspace rename passes stable target to the surviving Record owner', asyn
     ),
     'utf8'
   )
-  const renameSource = component.match(
-    /async function rename\(name: string\)[\s\S]*?(?=\n\s*async function updateDescription)/
-  )[0]
+  const metadataSource = component
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+    .replace(/^export /gm, '')
   const calls = [],
     destinations = []
   const context = {
-    captureScope: () => () => true,
-    canRename: { value: true },
-    menuId: { value: 'stable-id' },
-    kitchenId: { value: 'kitchen' },
-    menuSlug: { value: 'old-slug' },
+    menu: ref({ name: 'Old Menu' }),
+    canWrite: ref(true),
+    subscription: ref('pro'),
+    menuId: ref('stable-id'),
+    kitchenId: ref('kitchen'),
+    menuSlug: ref('old-slug'),
     renameMenu: async (...args) => {
       calls.push(args)
       return { id: 'stable-id', slug: 'new-menu-slug' }
@@ -114,12 +116,13 @@ test('Workspace rename passes stable target to the surviving Record owner', asyn
     router: { replace: async (path) => destinations.push(path) },
     toast: { add: () => {} },
   }
-  const rename = compileFunction(
-    `${stripTypeScriptTypes(renameSource)}; return rename`,
-    Object.keys(context)
-  )(...Object.values(context))
+  const { rename } = compileFunction(
+    `${stripTypeScriptTypes(metadataSource)}; return useMenuRecordMetadata(context)`,
+    ['computed', 'useMenuEditorScope', 'context']
+  )(computed, () => () => () => true, context)
   await rename('New Menu')
-  assert.deepEqual(calls, [['kitchen', 'stable-id', 'New Menu']])
+  assert.deepEqual(calls[0].slice(0, 3), ['kitchen', 'stable-id', 'New Menu'])
+  assert.equal(calls[0][3](), true)
   assert.deepEqual(destinations, [])
 })
 

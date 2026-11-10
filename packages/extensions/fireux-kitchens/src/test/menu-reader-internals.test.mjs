@@ -68,6 +68,7 @@ async function render(path, state) {
     'KitchenFoodAndDrinkMenusSectionsCreate',
     'KitchenFoodAndDrinkMenusSectionsCollectionRow',
     'KitchenFoodAndDrinkMenusProcess',
+    'KitchenFoodAndDrinkMenusPreparationDocument',
     'KitchenFoodAndDrinkMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',

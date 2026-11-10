@@ -286,6 +286,92 @@ test('a service cannot configure another service record', async () => {
   )
   assert.deepEqual(h.writes, [])
 })
+test('named Collection edits preserve the other setup and every independent mode of a shared record', async () => {
+  const testSetup = {
+    id: 'a-test',
+    name: 'Test',
+    enabled: false,
+    menu_ids: ['food'],
+    hours,
+    interactions: [{ type: 'collection', enabled: false }],
+  }
+  const pickup = {
+    id: 'b-pickup',
+    name: 'Weekend pickup',
+    separate: true,
+    enabled: true,
+    menu_ids: ['food'],
+    hours,
+    interactions: [
+      { type: 'collection', enabled: true },
+      { type: 'delivery', enabled: false, notice_hours: 2 },
+    ],
+  }
+  const h = harness({ services: [testSetup, pickup] })
+  const configure = (changes) =>
+    h.configureKitchenOffering(
+      {},
+      {
+        kitchenId: 'venue',
+        option: 'collection',
+        offeringId: pickup.id,
+        interactions: [{ type: 'collection', changes: {} }],
+        ...changes,
+      }
+    )
+  const off = await configure({ enabled: false })
+  assert.deepEqual(off.offering, { ...pickup, enabled: false })
+  const edited = await configure({ menu_ids: ['drinks'] })
+  assert.deepEqual(edited.offering, {
+    ...pickup,
+    enabled: false,
+    menu_ids: ['drinks'],
+  })
+  const on = await configure({ enabled: true })
+  assert.deepEqual(on.offering, { ...pickup, menu_ids: ['drinks'] })
+  assert.deepEqual(
+    h.offerings().find((row) => row.id === testSetup.id),
+    testSetup
+  )
+})
+
+test('mixed Kiosk choices can narrow the shared menus without changing another service’s selection', async () => {
+  const service = {
+    id: 'shared',
+    name: 'Menu service',
+    enabled: true,
+    hours,
+    menu_ids: ['food', 'drinks'],
+    interactions: [
+      { type: 'collection', enabled: true },
+      { type: 'eat_in', enabled: false, menu_ids: ['food'] },
+      { type: 'takeaway', enabled: true, menu_ids: ['drinks'] },
+    ],
+  }
+  const h = harness({ services: [service] })
+  const configure = (ids) =>
+    h.configureKitchenOffering(
+      {},
+      {
+        kitchenId: 'venue',
+        option: 'counter',
+        offeringId: service.id,
+        interactions: [
+          { type: 'eat_in', changes: { menu_ids: ids } },
+          { type: 'takeaway', changes: {} },
+        ],
+      }
+    )
+  const { offering } = await configure(['drinks'])
+  assert.deepEqual(offering.menu_ids, service.menu_ids)
+  assert.deepEqual(offering.interactions, [
+    service.interactions[0],
+    { ...service.interactions[1], menu_ids: ['drinks'] },
+    service.interactions[2],
+  ])
+  await assert.rejects(configure(['other']), { statusCode: 400 })
+  assert.equal(h.writes.length, 1)
+})
 test('fixed options reflect existing states without changing records', () => {
   const offering = {
     id: 'shared',
@@ -935,4 +1021,35 @@ test('Kiosk can remove an incompatible Menu from one mode while its union stays 
   assert.deepEqual(new Set(clean.offering.menu_ids), new Set(first.offering.menu_ids))
   assert.deepEqual(clean.offering.interactions.find(row => row.type === 'eat_in').menu_ids, ['eat-only'])
   assert.deepEqual(clean.offering.interactions.find(row => row.type === 'takeaway').menu_ids, ['shared'])
+})
+
+test('sparse service edits preserve an independently disabled saved interaction', async () => {
+  const h = harness({
+    services: [
+      {
+        id: 'collection',
+        name: 'Collection',
+        enabled: true,
+        menu_ids: ['food'],
+        hours,
+        interactions: [{ type: 'collection', enabled: false }],
+      },
+    ],
+  })
+  const result = await h.configureKitchenOffering(
+    {},
+    {
+      kitchenId: 'venue',
+      offeringId: 'collection',
+      option: 'collection',
+      name: 'Weekend collection',
+      interactions: [{ type: 'collection', changes: {} }],
+    }
+  )
+  assert.equal(result.offering.enabled, true)
+  assert.equal(
+    result.offering.interactions.find((row) => row.type === 'collection')
+      .enabled,
+    false
+  )
 })

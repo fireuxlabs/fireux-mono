@@ -7,7 +7,6 @@ export type MenuCreateInput = {
   status?: 'draft'
   format?: 'interactive' | 'document'
   schedule?: 'regular' | 'daily'
-  doc?: Menu['doc']
 }
 
 /** Validate and detach caller input before any credentials or transaction waits. */
@@ -25,7 +24,6 @@ export function normalizeMenuCreateInput(input: unknown): MenuCreateInput {
           'status',
           'schedule',
           'format',
-          'doc',
         ].includes(key)
     )
   )
@@ -41,7 +39,8 @@ export function normalizeMenuCreateInput(input: unknown): MenuCreateInput {
     throw new Error('Choose a valid menu schedule.')
   if (
     'format' in value &&
-    !['interactive', 'document'].includes(String(value.format))
+    value.format !== 'interactive' &&
+    value.format !== 'document'
   )
     throw new Error('Choose an interactive or document Menu.')
   if (value.schedule === 'daily' && value.format === 'document')
@@ -49,7 +48,6 @@ export function normalizeMenuCreateInput(input: unknown): MenuCreateInput {
   const metadata = normalizeMenuMetadataPatch({
     name: value.name,
     ...('description' in value ? { description: value.description } : {}),
-    ...('doc' in value ? { doc: value.doc } : {}),
   })
   return {
     ...metadata,
@@ -77,6 +75,5 @@ export function buildMenuPayload(
     sort_order: 0,
     ...(value.schedule === 'daily' ? { schedule: 'daily' as const } : {}),
     ...(value.description ? { description: value.description } : {}),
-    ...(value.doc ? { doc: value.doc } : {}),
   }
 }

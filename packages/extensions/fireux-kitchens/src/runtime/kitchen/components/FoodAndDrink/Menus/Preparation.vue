@@ -26,33 +26,22 @@
       <FireDisclosurePanel title="Original source" :default-open="false">
         <KitchenFoodAndDrinkMenusUploadsDetailFile
           v-if="context.source.value"
+          :kitchen-id="kitchenId"
+          :source-id="sourceId"
           :source="context.source.value"
-          :files="files"
+          :read-available="outcome === 'ready'"
         />
       </FireDisclosurePanel>
     </template>
   </section>
 </template>
 <script setup lang="ts">
-import '../../../../menu/assets/styles/menu-editor.css'
-import { computed } from 'vue'
 import { useKitchenMenuPreparation } from '../../../composables/menu/useKitchenMenuPreparation'
 const props = defineProps<{ kitchenId: string; sourceId: string }>()
 const { context, outcome, menuOutcome, error } = useKitchenMenuPreparation({
   kitchenId: () => props.kitchenId,
   sourceId: () => props.sourceId,
 })
-const files = computed(() =>
-  context.source.value?.files?.length
-    ? context.source.value.files
-    : context.source.value?.file_url
-      ? [
-          {
-            file_url: context.source.value.file_url,
-            file_name: context.source.value.file_name,
-            storage_path: context.source.value.storage_path,
-          },
-        ]
-      : []
-)
 </script>
+
+<style src="../../../../menu/assets/styles/menu-editor.css"></style>

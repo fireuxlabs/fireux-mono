@@ -35,7 +35,10 @@ export type TeamContext = {
       userId?: string
     }): Promise<{ memberId: string; name: string }>
     update(input: { memberId: string; name: string }): Promise<unknown>
-    delete(memberId: string): Promise<{ name: string }>
+    delete(
+      memberId: string,
+      isSurfaceCurrent?: () => boolean
+    ): Promise<{ name: string }>
   }
   natives: {
     select(memberId: string): void

@@ -70,7 +70,7 @@ export function useMenuRecordHours(
     busy.value = true
     error.value = ''
     try {
-      await updateMenu(kitchen, id, { serving_hours: value })
+      await updateMenu(kitchen, id, { serving_hours: value }, current)
     } catch (cause) {
       if (current()) {
         error.value =

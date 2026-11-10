@@ -190,3 +190,24 @@ test('Create disposal stops implicit and explicit Kitchen dispatch during either
       assert.equal(h.calls.length, 0)
     }
 })
+
+test('a closed creation form stops its request while the collection owner stays mounted', async () => {
+  for (const stage of ['auth', 'token']) {
+    const h = harness()
+    const form = effectScope()
+    const predicate = form.run(() => commandScopeDeps({}).useCommandScope([]))()
+    const pending = h.create({ name: 'Food' }, predicate)
+    const rejected = assert.rejects(pending, /changed/)
+    if (stage === 'token') {
+      h.resolveUser(h.user)
+      await Promise.resolve()
+    }
+    form.stop()
+    assert.equal(h.scope.active, true)
+    h.resolveUser(h.user)
+    h.resolveToken('token')
+    await rejected
+    assert.deepEqual(h.calls, [])
+    h.scope.stop()
+  }
+})

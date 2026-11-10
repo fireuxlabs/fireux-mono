@@ -9,20 +9,18 @@
       ref="crud"
       :team="team"
       :member-id="memberId"
-      :single-path="selectedPath"
+      :member-path="memberPath"
     >
       <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
           :member-id="selectedId"
         />
-        <UButton
+        <KitchenTeamInvitation
           v-if="selected && !selected.userId"
-          label="Copy invitation link"
-          icon="i-lucide-link"
-          variant="soft"
-          :loading="invitingMemberId === selected.id"
-          @click="inviteMember(selected)"
+          :key="selected.id"
+          :member-id="selected.id"
+          :create-invitation="natives.invite"
         />
       </template>
     </WorkspaceTeamEditor>
@@ -53,10 +51,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useToast } from '#imports'
 import WorkspaceTeamEditor from 'fireux-core/runtime/workspace/components/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
 import type { useKitchenWorkspaceTeam } from '../../composables/workspace/useKitchenWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
@@ -75,9 +71,8 @@ const collectionTitle = computed(() =>
 const selectedId = computed(
   () => props.memberId || state.value.team.selectedTeamMemberId
 )
-const selectedPath = computed(
-  () => `/workspace/kitchen/team/${encodeURIComponent(selectedId.value)}`
-)
+const memberPath = (id: string) =>
+  `/workspace/kitchen/team/${encodeURIComponent(id)}`
 
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})
@@ -89,25 +84,4 @@ const selected = computed(() =>
 defineExpose({
   openAction: (intent: TeamAIIntent) => crud.value?.openAction(intent),
 })
-const toast = useToast()
-const invitingMemberId = ref('')
-const invitation = ref<{ memberName: string; link: string } | null>(null)
-
-async function inviteMember(member: WorkspaceTeamMember) {
-  if (invitingMemberId.value) return
-  invitingMemberId.value = member.id
-  try {
-    invitation.value = await natives.invite(member.id)
-    await navigator.clipboard.writeText(invitation.value.link)
-    toast.add({ title: 'Invitation link copied', color: 'success' })
-  } catch (error) {
-    toast.add({
-      title: 'Invitation could not be created',
-      description: error instanceof Error ? error.message : 'Try again.',
-      color: 'error',
-    })
-  } finally {
-    invitingMemberId.value = ''
-  }
-}
 </script>

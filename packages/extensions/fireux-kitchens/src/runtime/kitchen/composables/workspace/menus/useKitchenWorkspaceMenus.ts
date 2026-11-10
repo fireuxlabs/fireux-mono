@@ -146,12 +146,12 @@ export function useKitchenWorkspaceMenus() {
       ? ''
       : 'Set the Kitchen currency before creating menus.'
   })
-  async function createMenu(input: Parameters<typeof create.createMenu>[0]) {
+  async function createMenu(...args: Parameters<typeof create.createMenu>) {
     if (!canCreateMenu.value) {
       throw new Error(menuCreateBlockedMessage.value)
     }
 
-    return create.createMenu(input)
+    return create.createMenu(...args)
   }
 
   return {

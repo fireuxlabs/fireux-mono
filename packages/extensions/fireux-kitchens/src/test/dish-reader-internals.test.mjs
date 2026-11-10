@@ -52,9 +52,9 @@ const { dishCategories, dishCategoryLabel } = load(
   '({ dishCategories, dishCategoryLabel })',
   {}
 )
-const { DishStorage, normalizeDish } = load(
+const { DishStorage, normalizeDish, normalizeDishItemKind } = load(
   'kitchen/utils/dish.ts',
-  '({ DishStorage, normalizeDish })',
+  '({ DishStorage, normalizeDish, normalizeDishItemKind })',
   { dishCategories, ...dishPricingHelpers }
 )
 const { resolveKitchenChildCollectionBasePath } = load(
@@ -100,6 +100,26 @@ function bindingFixture() {
   })
   let target
   const read = {
+    firestoreFetchDoc: (p, id) => {
+      target = computed(() =>
+        toValue(p) && toValue(id) ? `${toValue(p)}/${toValue(id)}` : ''
+      )
+      const document = computed(() =>
+        raw.value.find((row) => row.id === toValue(id))
+      )
+      Object.assign(document, {
+        data: document,
+        pending: raw.pending,
+        error: raw.error,
+        promise: raw.promise,
+        stop: raw.stop,
+      })
+      return enhanceFirestoreRead(document, {
+        active: computed(() => Boolean(toValue(target))),
+        source: target,
+        kind: 'document',
+      })
+    },
     firestoreFetchCollection: (p) => {
       target = p
       return enhanceFirestoreRead(raw, {
@@ -330,22 +350,41 @@ test('Food and Drinks partition one live Dish collection; failures disable Creat
   assert.deepEqual(drinks.context.dishes.value, [])
   f.scope.stop()
 })
-test('Dish record route stays reactive, rejects wrong-kind records and preserves owner/source failure outcomes', () => {
+test('Dish record route stays reactive across both kinds while catalogues retain kind filtering and read outcomes', () => {
   const f = workspaceFixture(),
     { context } = kindContext(f, 'food'),
-    id = ref('soup')
+    id = ref('soup'),
+    access = { ...f.access, outcome: ref('ready') }
   const use = load(
-    'kitchen/composables/workspace/dishes/useKitchenWorkspaceDish.ts',
-    'useKitchenWorkspaceDish',
+    'kitchen/composables/dish/useKitchenDishDetail.ts',
+    'useKitchenDishDetail',
     {
       computed,
-      useRouteParam: () => id,
-      useKitchenDishesContext: () => context,
+      toValue,
+      DishStorage,
+      normalizeDish,
+      useKitchenAccess: () => access,
+      useFirestoreRead: () => f.read,
+      readRuntimeFirestoreDatabaseId: () => 'misebox',
     }
   )
-  const record = use()
+  const record = f.scope.run(() =>
+    use(
+      () => (f.workspace.outcome.value === 'ready' ? f.workspace.id.value : ''),
+      id
+    )
+  )
+  assert.equal(f.path, 'kitchens/mine/dishes/soup')
   assert.equal(record.dish.value.name, 'Soup')
+  assert.equal(
+    context.dishes.value.some((dish) => dish.id === 'tea'),
+    false
+  )
   id.value = 'tea'
+  f.settle(f.raw.value)
+  assert.equal(record.dish.value.name, 'Tea')
+  id.value = 'missing'
+  f.settle(f.raw.value)
   assert.equal(record.outcome.value, 'empty')
   assert.equal(record.dish.value, null)
   f.raw.pending.value = true
@@ -685,7 +724,12 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
           section: { id: 'section', label: 'Section' },
         }),
         defineEmits: () => () => {},
-        useKitchenWorkspaceDish: () => owner,
+        useKitchenWorkspace: () => ({
+          id: owner.kitchenId,
+          outcome: ref('ready'),
+        }),
+        useRouteParam: () => owner.dishId,
+        useKitchenDishDetail: () => owner,
         useKitchenPrepItems: reader,
         useKitchenMenuCollection: reader,
         useMenuSectionCollection: reader,
@@ -1015,4 +1059,152 @@ test('item editor links encode record identity without changing catalogue state'
   assert.equal(link.searchParams.get('search'), 'soup & tea')
   assert.equal(link.hash, '')
   f.scope.stop()
+})
+
+function flagshipFixture({ exists = true, rows = [], selectedRows } = {}) {
+  const reads = []
+  const documents = rows.map(({ key, ...data }) => ({
+    id: key,
+    ref: key,
+    data: () => data,
+    get: (field) => data[field],
+  }))
+  const collection = {
+    select(...fields) {
+      reads.push(fields)
+      return { get: async () => ({ docs: documents }) }
+    },
+  }
+  const root = {
+    get: async () => ({
+      exists,
+      data: () => ({}),
+    }),
+    collection: () => collection,
+  }
+  const db = {
+    collection: () => ({ doc: () => root }),
+    getAll: async (id, projection) => {
+      reads.push(projection.fieldMask)
+      return selectedRows === undefined
+        ? documents.filter((doc) => doc.id === id)
+        : selectedRows.map(({ key, ...data }) => ({
+            id: key,
+            data: () => data,
+          }))
+    },
+  }
+  const read = load(
+    'kitchen/server/dishes/flagship-projection.ts',
+    'readKitchenFlagshipDish',
+    {
+      DishStorage,
+      normalizeDishItemKind,
+      normalizeDish,
+      getRuntimeFirestore: () => db,
+      requireFirestoreDocumentId: (value) => {
+        if (typeof value !== 'string' || !value.trim() || value.includes('/'))
+          throw Object.assign(Error('Invalid id'), { statusCode: 400 })
+        return value
+      },
+      createError: (value) => Object.assign(Error(value.statusMessage), value),
+      readRecordString: (data, key) =>
+        typeof data[key] === 'string' ? data[key].trim() : '',
+    }
+  )
+  return { read, reads }
+}
+
+test('the flagship presentation uses the stored Dish image and path ID independently of commercial fields', async () => {
+  const rows = [
+    {
+      key: 'soup',
+      id: 'obsolete-client-id',
+      name: 'Soup',
+      image: 'soup.webp',
+      is_flagship: true,
+    },
+    { key: 'bread', name: 'Bread', price: 'old price' },
+    { key: 'water', name: 'Water', item_kind: 'drink' },
+  ]
+  const { read } = flagshipFixture({ rows })
+  const result = await read('venue', 'k')
+  assert.equal(result.ready, true)
+  assert.deepEqual(result.dish, {
+    id: 'soup',
+    name: 'Soup',
+    slug: '',
+    description: '',
+    image: 'soup.webp',
+    item_kind: 'food',
+    is_flagship: true,
+  })
+  assert.equal(result.contentReadiness.eligibleDishCount, 2)
+})
+
+test('flagship reads validate paths and require the Kitchen root without historical management data', async () => {
+  for (const [options, app, kitchen, code] of [
+    [{}, 'venue', 'k/sub/entity', 400],
+    [{}, 'invalid/app', 'k', 400],
+    [{ exists: false }, 'venue', 'k', 404],
+  ]) {
+    const { read, reads } = flagshipFixture(options)
+    await assert.rejects(read(app, kitchen), { statusCode: code })
+    assert.deepEqual(reads, [])
+  }
+  for (const app of ['venue', 'misebox-app']) {
+    const result = await flagshipFixture().read(app, 'k')
+    assert.equal(result.issue, 'missing')
+  }
+  const empty = flagshipFixture()
+  assert.equal((await empty.read('', 'k')).issue, 'missing')
+  assert.equal((await empty.read('venue', '')).issue, 'missing')
+  assert.deepEqual(empty.reads, [])
+})
+
+test('flagship readiness follows stored flags and stops before presentation reads for ambiguous choices', async () => {
+  const archived = {
+    key: 'old',
+    name: 'Old flagship',
+    is_flagship: false,
+    status: 'archived',
+  }
+  const selected = {
+    key: 'soup',
+    name: 'Soup',
+    is_flagship: true,
+    image: 'soup.webp',
+  }
+  const current = flagshipFixture({ rows: [archived, selected] })
+  const result = await current.read('venue', 'k')
+  assert.equal(result.ready, true)
+  assert.equal(result.contentReadiness.eligibleDishCount, 2)
+  assert.deepEqual(current.reads, [
+    ['name', 'item_kind', 'is_flagship'],
+    ['name', 'slug', 'description', 'item_kind', 'image', 'is_flagship'],
+  ])
+  const ambiguous = flagshipFixture({
+    rows: [selected, { ...selected, key: 'bread' }],
+  })
+  assert.equal((await ambiguous.read('venue', 'k')).issue, 'multiple')
+  assert.equal(ambiguous.reads.length, 1)
+  const imageMissing = flagshipFixture({ rows: [{ ...selected, image: '' }] })
+  assert.equal((await imageMissing.read('venue', 'k')).issue, 'missing-image')
+})
+
+test('flagship presentation rechecks a selected record removed or unflagged during the read', async () => {
+  const selected = {
+    key: 'soup',
+    name: 'Soup',
+    is_flagship: true,
+    image: 'soup.webp',
+  }
+  for (const selectedRows of [[], [{ ...selected, is_flagship: false }]]) {
+    const { read } = flagshipFixture({ rows: [selected], selectedRows })
+    const result = await read('venue', 'k')
+    assert.equal(result.ready, false)
+    assert.equal(result.issue, 'missing')
+    assert.equal(result.dish, null)
+    assert.equal(result.contentReadiness.uniqueFlagship, false)
+  }
 })

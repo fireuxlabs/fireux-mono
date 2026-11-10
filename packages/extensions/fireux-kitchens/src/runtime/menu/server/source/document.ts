@@ -18,7 +18,7 @@ import {
   serverKitchenMenusTarget,
   serverKitchenMenuUploadsTarget,
 } from '../../../kitchen/server/mutation-targets'
-import { normalizeMenuCreateInput } from '../../utils/records/create-input'
+import { normalizeMenuDocument } from '../../utils/records/metadata'
 import { stageCreateKitchenMenu } from '../records/create'
 import { menuNameAndSlug } from '../name'
 import { saveKitchenMenuUploadFiles } from './uploads'
@@ -153,15 +153,12 @@ export async function createKitchenMenuDocumentFromSource(
           menuId: sourceId,
           name,
           slug,
-          value: normalizeMenuCreateInput({
-            name,
-            format: 'document',
-            doc: {
-              url: file.fileUrl,
-              name: file.fileName,
-              type: file.contentType,
-              storage_path: file.objectPath,
-            },
+          value: { name, format: 'document' },
+          document: normalizeMenuDocument({
+            url: file.fileUrl,
+            name: file.fileName,
+            type: file.contentType,
+            storage_path: file.objectPath,
           }),
         })
         tx.update(sources, sourceId, {

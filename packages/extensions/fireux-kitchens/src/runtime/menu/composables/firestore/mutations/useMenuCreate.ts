@@ -35,7 +35,8 @@ export function useMenuCreate(
   const captureKitchen = useCommandScope([defaultKitchenId])
 
   async function createMenu(
-    input: MenuCreateInput
+    input: MenuCreateInput,
+    intentCurrent: () => boolean = () => true
   ): Promise<{ created: boolean; id: string; slug: string }> {
     const kitchenId = input.kitchenId || defaultKitchenId.value
     const explicitKitchen = Boolean(input.kitchenId)
@@ -48,6 +49,7 @@ export function useMenuCreate(
         !uid ||
         currentUser.value?.uid !== uid ||
         !isActorCurrent() ||
+        !intentCurrent() ||
         (!explicitKitchen && !isKitchenCurrent())
       ) {
         throw new Error(

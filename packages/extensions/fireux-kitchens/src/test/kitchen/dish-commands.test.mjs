@@ -8,6 +8,10 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
+import {
+  readRecord,
+  readRecordString,
+} from 'fireux-core/runtime/server/utils/records/read'
 function load(path, dependencies, name) {
   dependencies = { ...dishPricingHelpers, ...dependencies }
 
@@ -37,7 +41,7 @@ const usageTargets = {
 }
 const readDishUsage = load(
   '../../runtime/kitchen/server/dishes/usage.ts',
-  { ...usageTargets, createError },
+  { ...usageTargets, createError, readRecordString },
   'readDishUsage'
 )
 
@@ -166,15 +170,17 @@ function harness({ wait, retry } = {}) {
               data: records.get(`${target}/${id}`),
             }
           },
-          readAll: async (target, limit) => {
+          readAll: async (target, limit, afterId) => {
             assert.equal(writing, false)
             reads.push(target)
             return [...records]
               .filter(
                 ([path]) =>
                   path.startsWith(target + '/') &&
-                  !path.slice(target.length + 1).includes('/')
+                  !path.slice(target.length + 1).includes('/') &&
+                  (!afterId || path.split('/').at(-1) > afterId)
               )
+              .sort(([left], [right]) => left.localeCompare(right))
               .slice(0, limit)
               .map(([path, data]) => ({ id: path.split('/').at(-1), data }))
           },
@@ -732,6 +738,86 @@ test('Dish deletion refuses an incomplete usage scan', async () => {
   assert.deepEqual(h.writes, [])
 })
 
+test('Dish deletion protects every reference that Menu rendering resolves, including later pages', async () => {
+  const readKitchenMenuSections = load(
+    '../../runtime/menu/server/manifest/sections.ts',
+    { readRecord, readRecordString, readDishItemKind: () => 'food' },
+    'readKitchenMenuSections'
+  )
+  for (const [reference, offset] of [
+    ['existing', 0],
+    ['existing', 1000],
+    [' existing ', 0],
+    ['\texisting\u00a0', 100],
+    [' existing ', 1000],
+  ]) {
+    const h = harness()
+    h.records.get('dishes/k/existing').price = 8
+    h.records.set('kitchens/k/menus/m', { name: 'Lunch', slug: 'lunch' })
+    h.records.set('kitchens/k/menus/m/sections/s', { label: 'Main' })
+    const items = 'kitchens/k/menus/m/sections/s/items'
+    for (let index = 0; index < offset; index++)
+      h.records.set(items + '/' + String(index).padStart(4, '0'), {
+        dish_id: 'unrelated',
+      })
+    h.records.set(items + '/target', { dish_id: reference })
+    const db = {
+      collection(path) {
+        const target = path === 'kitchens/k/dishes' ? 'dishes/k' : path
+        return {
+          get: async () => ({
+            docs: [...h.records]
+              .filter(
+                ([path]) =>
+                  path.startsWith(target + '/') &&
+                  !path.slice(target.length + 1).includes('/')
+              )
+              .map(([path, data]) => ({
+                id: path.split('/').at(-1),
+                data: () => data,
+              })),
+          }),
+        }
+      },
+    }
+    const before = await readKitchenMenuSections(db, {
+      appId: 'app',
+      kitchenId: 'k',
+      menuId: 'm',
+    })
+    assert.deepEqual(
+      before[0].items.map((item) => item.name),
+      ['Existing']
+    )
+    await assert.rejects(
+      h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }),
+      {
+        statusCode: 409,
+      }
+    )
+    assert.deepEqual(h.writes, [])
+    assert.equal(h.records.has('dishes/k/existing'), true)
+    assert.equal(
+      h.reads.filter((target) => target === items).length,
+      reference === 'existing' ? 1 : 2 + Math.floor(offset / 100)
+    )
+  }
+})
+
+test('Dish deletion completes all item pages before deciding a Menu has no reference', async () => {
+  const h = harness()
+  h.records.set('kitchens/k/menus/m', { name: 'Lunch', slug: 'lunch' })
+  h.records.set('kitchens/k/menus/m/sections/s', { label: 'Main' })
+  const items = 'kitchens/k/menus/m/sections/s/items'
+  for (let index = 0; index < 1001; index++)
+    h.records.set(items + '/' + String(index).padStart(4, '0'), {
+      dish_id: 'unrelated',
+    })
+  await h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' })
+  assert.deepEqual(h.writes, [['delete', 'dishes/k', 'existing']])
+  assert.equal(h.reads.filter((target) => target === items).length, 12)
+})
+
 test('Dish creation preserves unset, explicit zero and normal prices without changing existing records', async () => {
   for (const price of [undefined, 0, 13]) {
     const h = harness()
@@ -749,7 +835,8 @@ test('Dish creation preserves unset, explicit zero and normal prices without cha
   for (const price of [null, '', -1, NaN]) {
     const h = harness()
     await assert.rejects(
-      h.createDish({}, { kitchenId: 'k', draft: { name: 'Bad price', price } })
+      h.createDish({}, { kitchenId: 'k', draft: { name: 'Bad price', price } }),
+      { statusCode: 400 }
     )
     assert.equal(h.writes.length, 0)
   }

@@ -5,7 +5,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref, watch } from 'vue'
+import { ref, watch, effectScope, onScopeDispose } from 'vue'
 function load(path, deps, result) {
   deps = commandScopeDeps({
     isFirestoreDocumentId,
@@ -28,18 +28,19 @@ function deferred() {
   })
   return { promise, resolve, reject }
 }
-function harness() {
+function harness(t) {
+  const scope = effectScope()
+  t.after(() => scope.stop())
   const token = deferred(),
     response = deferred(),
-    calls = [],
-    disposals = []
+    calls = []
   const user = { uid: 'a', getIdToken: () => token.promise },
     currentUser = ref(user),
     selectedId = ref('k')
   const useAuth = () => ({ currentUser })
   const useDishEditorScope = load(
     '../../runtime/kitchen/composables/dish/useDishEditorScope.ts',
-    { watch, useAuth, onBeforeUnmount: (fn) => disposals.push(fn) },
+    { watch, useAuth, onScopeDispose },
     'useDishEditorScope'
   )
   const useDishImageUpload = load(
@@ -48,8 +49,6 @@ function harness() {
       ref,
       useAuth,
       useDishEditorScope,
-      useWorkspace: () => ({ selectedId }),
-      useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
       File,
       FormData,
       $fetch: (...args) => {
@@ -60,14 +59,15 @@ function harness() {
     'useDishImageUpload'
   )
   return {
-    ...useDishImageUpload(),
+    // Create and Edit pass their Kitchen/record/form lifetime explicitly.
+    ...scope.run(() => useDishImageUpload([selectedId])),
     currentUser,
     selectedId,
     user,
     token,
     response,
     calls,
-    dispose: () => disposals.forEach((fn) => fn()),
+    dispose: () => scope.stop(),
   }
 }
 const input = () => ({
@@ -75,9 +75,9 @@ const input = () => ({
   dishId: 'dish',
   file: new File(['image'], 'original.png'),
 })
-test('image blocks Kitchen/account round trips, logout/login and disposal during credentials', async () => {
+test('image blocks Kitchen/account round trips, logout/login and disposal during credentials', async (t) => {
   for (const scope of ['kitchen', 'account', 'logout', 'dispose']) {
-    const h = harness(),
+    const h = harness(t),
       pending = h.uploadDishImage(input()),
       rejected = assert.rejects(pending, /changed/)
     assert.equal(h.pending.value, true)
@@ -95,8 +95,8 @@ test('image blocks Kitchen/account round trips, logout/login and disposal during
     assert.equal(h.pending.value, false)
   }
 })
-test('image captures file/target and prevents a second upload during token wait', async () => {
-  const h = harness(),
+test('image captures file/target and prevents a second upload during token wait', async (t) => {
+  const h = harness(t),
     draft = input(),
     pending = h.uploadDishImage(draft)
   await assert.rejects(h.uploadDishImage(input()), /already uploading/)
@@ -117,9 +117,9 @@ test('image captures file/target and prevents a second upload during token wait'
   await pending
   assert.equal(h.pending.value, false)
 })
-test('obsolete credentials cannot dispatch; committed upload stays truthful without clearing newer pending', async () => {
+test('obsolete credentials cannot dispatch; committed upload stays truthful without clearing newer pending', async (t) => {
   for (const stage of ['token', 'response']) {
-    const h = harness(),
+    const h = harness(t),
       first = h.uploadDishImage(input()),
       settled = stage === 'token' ? assert.rejects(first, /changed/) : first
     if (stage === 'response') {

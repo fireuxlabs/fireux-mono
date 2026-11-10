@@ -172,18 +172,23 @@ test('trusted Recipe patch validation rejects injected scope before persisting',
     'useRecipeUpdate',
     {
       // The current controller invokes a trusted command; validation belongs there.
-      useRecipeMutation: () => ({ mutate: async (method, input) => {
-        assert.equal(method, 'PATCH')
-        const changes = readRecipeUpdate(input.changes)
-        writes.push({ id: input.recipeId, changes })
-        return { id: input.recipeId }
-      } }),
+      useRecipeMutation: () => ({
+        mutate: async (method, input, kitchenId) => {
+          assert.equal(method, 'PATCH')
+          assert.equal(kitchenId, 'k')
+          const changes = readRecipeUpdate(input.changes)
+          writes.push({ id: input.recipeId, changes })
+          return { id: input.recipeId }
+        },
+      }),
     }
   )
   const api = useRecipeUpdate()
-  await assert.rejects(api.updateRecipe('soup', { name: 'Soup', kitchen_id: 'other' }))
+  await assert.rejects(
+    api.updateRecipe('soup', { name: 'Soup', kitchen_id: 'other' }, { kitchenId: 'k' })
+  )
   assert.equal(writes.length, 0)
-  await api.updateRecipe('soup', { name: ' Soup ' })
+  await api.updateRecipe('soup', { name: ' Soup ' }, { kitchenId: 'k' })
   assert.deepEqual(writes, [{ id: 'soup', changes: { name: 'Soup' } }])
 })
 

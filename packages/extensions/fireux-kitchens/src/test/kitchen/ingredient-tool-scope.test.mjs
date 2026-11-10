@@ -79,12 +79,12 @@ function context() {
     }),
     navigateTo: async (path) => effects.push(['navigate', path]),
   }
-  const useKitchenIngredientSelection = load(
-    '../../runtime/kitchen/composables/workspace/ingredients/useKitchenIngredientSelection.ts',
-    'useKitchenIngredientSelection',
+  const useKitchenIngredientUpdate = load(
+    '../../runtime/kitchen/composables/ingredients/useKitchenIngredientUpdate.ts',
+    'useKitchenIngredientUpdate',
     deps
   )
-  deps.useKitchenIngredientSelection = useKitchenIngredientSelection
+  deps.useKitchenIngredientUpdate = useKitchenIngredientUpdate
   const change = (kind) => {
     if (kind === 'account') {
       currentUser.value = { uid: 'other' }
@@ -159,7 +159,11 @@ test('Ingredient selection keeps exact actor/App/member/Kitchen/local/disposal i
       const h = context(),
         open = vue.ref(true)
       const api = h.lifetime.run(() =>
-        h.deps.useKitchenIngredientSelection([open])
+        h.deps.useKitchenIngredientUpdate([
+          open,
+          h.kitchenId,
+          () => h.deps.useRoute().fullPath,
+        ])
       )
       const flight = api[action]('kitchen', 'carrot', {
         kitchenCollectionPath: 'kitchens',
@@ -199,7 +203,7 @@ test('Ingredient selection preserves truthful dispatched results and rejects mis
       'dispose',
     ]) {
       const h = context(),
-        api = h.lifetime.run(() => h.deps.useKitchenIngredientSelection())
+        api = h.lifetime.run(() => h.deps.useKitchenIngredientUpdate())
       const flight = api[action]('kitchen', 'carrot', {
         kitchenCollectionPath: 'kitchens',
       })
@@ -218,7 +222,7 @@ test('Ingredient selection preserves truthful dispatched results and rejects mis
       { ...exactResponse, ingredientId: 'other' },
     ]) {
       const h = context(),
-        api = h.lifetime.run(() => h.deps.useKitchenIngredientSelection())
+        api = h.lifetime.run(() => h.deps.useKitchenIngredientUpdate())
       const flight = api[action]('kitchen', 'carrot', {
         kitchenCollectionPath: 'kitchens',
       })
@@ -261,6 +265,7 @@ test('closing Ingredient removal before credentials cancels dispatch and lets th
   const h = context(),
     api = detail(h)
   api.deleteOpen.value = true
+  assert.equal(api.deleteOpen.value, true)
   const flight = api.removeIngredient()
   assert.equal(api.deleting.value, true)
   api.deleteOpen.value = false
@@ -279,6 +284,7 @@ test('successful Ingredient removal closes and navigates with settled busy state
   const h = context(),
     api = detail(h)
   api.deleteOpen.value = true
+  assert.equal(api.deleteOpen.value, true)
   const flight = api.removeIngredient()
   h.token.resolve('token')
   h.response.resolve(exactResponse)
@@ -642,6 +648,7 @@ test('Ingredient removal hands off to the collection after its own live record d
   const h = context(),
     api = detail(h)
   api.deleteOpen.value = true
+  assert.equal(api.deleteOpen.value, true)
   const flight = api.removeIngredient()
   h.token.resolve('token')
   await drain()
@@ -660,7 +667,7 @@ test('Ingredient removal hands off to the collection after its own live record d
 })
 
 test('Ingredient add resets on authority changes and an old completion cannot clear a newer selection', async () => {
-  for (const changed of ['account', 'app', 'membership', 'route']) {
+  for (const changed of ['account', 'app', 'membership', 'kitchen']) {
     const h = context(),
       second = deferred()
     let requests = 0
@@ -668,9 +675,9 @@ test('Ingredient add resets on authority changes and an old completion cannot cl
       h.calls.push({ url, options })
       return requests++ ? second.promise : h.response.promise
     }
-    h.deps.useKitchenIngredientSelection = load(
-      '../../runtime/kitchen/composables/workspace/ingredients/useKitchenIngredientSelection.ts',
-      'useKitchenIngredientSelection',
+    h.deps.useKitchenIngredientUpdate = load(
+      '../../runtime/kitchen/composables/ingredients/useKitchenIngredientUpdate.ts',
+      'useKitchenIngredientUpdate',
       h.deps
     )
     const api = h.lifetime.run(() =>

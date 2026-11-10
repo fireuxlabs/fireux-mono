@@ -3,7 +3,25 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref } from 'vue'
+import { computed, effectScope, ref, watch } from 'vue'
+import { isMenuDate } from '../runtime/menu/utils/calendar/date.ts'
+import { commandScopeDeps } from './command-scope-fixture.mjs'
+
+function load(path, result, deps) {
+  let source = readFileSync(
+    new URL(`../runtime/${path}`, import.meta.url),
+    'utf8'
+  )
+  if (path.endsWith('.vue'))
+    source = source.split('<script setup lang="ts">')[1].split('</script>')[0]
+  source = source
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  return compileFunction(
+    `${stripTypeScriptTypes(source)};return ${result}`,
+    Object.keys(deps)
+  )(...Object.values(deps))
+}
 
 function harness() {
   let resolveToken
@@ -13,72 +31,90 @@ function harness() {
   const user = { uid: 'operator', getIdToken: () => token }
   const calls = [],
     currentUser = ref(user),
-    selectedId = ref('k')
-  let current = true
-  const deps = {
-    useRoute: () => ({ fullPath: '/workspace/kitchen/food-and-drink/menus/specials' }),
+    date = ref('2026-10-15'),
+    life = effectScope()
+  const deps = commandScopeDeps({
+    computed,
+    ref,
+    watch,
+    isMenuDate,
+    useState: () => date,
+    useRequestURL: () => new URL('https://misebox.test'),
+    menuWebsiteOrigin: (origin) => origin,
+    useMenuRecordView: () => ({ select() {} }),
+    useKitchenMenuRecordContext: () => ({
+      kitchenId: ref('k'),
+      menuId: ref('m'),
+      timezone: ref('Europe/Zurich'),
+      canWrite: ref(true),
+      canManage: ref(true),
+    }),
     useAuth: () => ({ currentUser }),
     useRequireUser: async () => user,
-    useWorkspaceWriteGuard: () => ({ requireWritableData: () => {} }),
-    useWorkspace: () => ({ selectedId }),
-    useMenuEditorScope: () => () => () => true,
     $fetch: async (url, options) => {
       calls.push({ url, ...options })
       return { ok: true, kitchenId: 'k', menuId: 'm' }
     },
-  }
-  const source = readFileSync(
-    new URL(
-      '../runtime/menu/composables/firestore/mutations/useMenuMutation.ts',
-      import.meta.url
-    ),
-    'utf8'
+  })
+  deps.useMenuEditorScope = load(
+    'menu/composables/useMenuEditorScope.ts',
+    'useMenuEditorScope',
+    deps
   )
-    .replace(/^import[^\n]*\n/gm, '')
-    .replace(/^export /gm, '')
-  const { mutate } = compileFunction(
-    `${stripTypeScriptTypes(source)}; return useMenuMutation()`,
-    Object.keys(deps)
-  )(...Object.values(deps))
-  return {
-    mutate,
-    calls,
-    resolveToken,
-    current: () => current,
-    invalidate: () => {
-      current = false
-    },
-  }
+  deps.useMenuMutation = load(
+    'menu/composables/firestore/mutations/useMenuMutation.ts',
+    'useMenuMutation',
+    deps
+  )
+  const view = life.run(() =>
+    load(
+      'kitchen/components/FoodAndDrink/Menus/Publication/Daily.vue',
+      '({save,error,message})',
+      deps
+    )
+  )
+  return { ...view, date, calls, life, resolveToken }
 }
 
-test('changing the selected date or disposing its control during credentials prevents dispatch', async () => {
-  const h = harness()
-  const pending = h.mutate(
-    'daily-publication',
-    'POST',
-    { kitchenId: 'k', menuId: 'm', date: '2026-10-15', published: true },
-    h.current
-  )
-  await Promise.resolve()
-  h.invalidate()
-  h.resolveToken('token')
-  await assert.rejects(pending, /changed/)
-  assert.equal(h.calls.length, 0)
+test('changing the selected date or disposing its control during credentials prevents publication', async () => {
+  for (const change of ['date', 'dispose']) {
+    const h = harness()
+    const pending = h.save(true)
+    await Promise.resolve()
+    if (change === 'date') {
+      h.date.value = '2026-10-16'
+      h.date.value = '2026-10-15'
+    } else h.life.stop()
+    h.resolveToken('token')
+    await pending
+    assert.deepEqual(h.calls, [])
+    assert.equal(h.error.value, '')
+    assert.equal(h.message.value, '')
+    h.life.stop()
+  }
 })
 
-test('daily publication captures one detached date/action before credentials', async () => {
-  const h = harness()
-  const body = {
-    kitchenId: 'k',
-    menuId: 'm',
-    date: '2026-10-15',
-    published: true,
+test('daily publication submits and acknowledges the selected date and action', async () => {
+  for (const published of [true, false]) {
+    const h = harness()
+    const pending = h.save(published)
+    h.resolveToken('token')
+    await pending
+    assert.equal(h.calls.length, 1)
+    assert.equal(
+      h.calls[0].url,
+      '/api/workspace/kitchen/menus/daily-publication'
+    )
+    assert.deepEqual(h.calls[0].body, {
+      kitchenId: 'k',
+      menuId: 'm',
+      date: '2026-10-15',
+      published,
+    })
+    assert.equal(
+      h.message.value,
+      published ? 'Published 2026-10-15.' : 'Unpublished 2026-10-15.'
+    )
+    h.life.stop()
   }
-  const pending = h.mutate('daily-publication', 'POST', body, h.current)
-  body.date = '2026-10-16'
-  body.published = false
-  h.resolveToken('token')
-  await pending
-  assert.equal(h.calls[0].body.date, '2026-10-15')
-  assert.equal(h.calls[0].body.published, true)
 })

@@ -83,7 +83,8 @@ test('published Services state is available to the shared Copy page JSON action'
   const { readFileSync } = await import('node:fs')
   const { stripTypeScriptTypes } = await import('node:module')
   const { compileFunction } = await import('node:vm')
-  const { ref, computed } = await import('vue')
+  const { ref, computed, watch, toRaw, onScopeDispose, effectScope } =
+    await import('vue')
   const source = readFileSync(
     new URL(
       '../../../../core/fireux-core/src/runtime/workspace/composables/useWorkspacePageState.ts',
@@ -97,7 +98,19 @@ test('published Services state is available to the shared Copy page JSON action'
   const shared = ref(null)
   const usePage = compileFunction(
     stripTypeScriptTypes(source) + ';return useWorkspacePageState',
-    ['useRoute', 'useState', 'computed', 'normalizeWorkspace', 'navigator']
+    [
+      'useRoute',
+      'useState',
+      'computed',
+      'normalizeWorkspace',
+      'navigator',
+      'useFireUXConfig',
+      'useAuth',
+      'useWorkspace',
+      'watch',
+      'toRaw',
+      'onScopeDispose',
+    ]
   )(
     () => ({ path: '/workspace/kitchen/food-and-drink/services' }),
     () => shared,
@@ -109,9 +122,16 @@ test('published Services state is available to the shared Copy page JSON action'
           copied = value
         },
       },
-    }
+    },
+    () => ({ appId: 'app' }),
+    () => ({ currentUser: ref({ uid: 'operator' }) }),
+    () => ({ selectedId: ref('k') }),
+    watch,
+    toRaw,
+    onScopeDispose
   )
-  const page = usePage('kitchen')
+  const scope = effectScope()
+  const page = scope.run(() => usePage('kitchen'))
   page.publish(serviceOverviewSnapshot({ ...base, offerings: [configured()] }))
   await page.copy()
   const payload = JSON.parse(copied)
@@ -119,4 +139,5 @@ test('published Services state is available to the shared Copy page JSON action'
   assert.equal(payload.state.services.length, 7)
   assert.equal(payload.state.services[0].status, 'Enabled')
   assert.deepEqual(payload.state.derived.enabledServices, ['collection'])
+  scope.stop()
 })

@@ -39,7 +39,7 @@
         :color="archived ? 'neutral' : 'warning'"
         variant="outline"
         :disabled="busy || !servicesReady"
-        @click="confirm = 'archive'"
+        @click="confirm = archived ? 'restore' : 'archive'"
       />
       <UButton
         v-if="canDelete"
@@ -56,14 +56,14 @@
       :title="
         confirm === 'delete'
           ? `Delete ${menu.name} permanently?`
-          : archived
+          : confirm === 'restore'
             ? `Restore ${menu.name} to draft?`
             : `Archive ${menu.name}?`
       "
       :description="
         confirm === 'delete'
           ? 'This empty Menu will be permanently removed. This cannot be undone.'
-          : archived
+          : confirm === 'restore'
             ? 'The Menu will stay unpublished until you publish it again.'
             : 'Its public and QR links will stop showing the Menu. Your content and service links stay saved.'
       "
@@ -86,7 +86,7 @@
             :label="
               confirm === 'delete'
                 ? 'Delete permanently'
-                : archived
+                : confirm === 'restore'
                   ? 'Restore to draft'
                   : 'Archive Menu'
             "
@@ -99,7 +99,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 const {
@@ -118,10 +118,17 @@ const {
   sectionsPending,
   sectionsError,
 } = useKitchenMenuRecordContext()
-const confirm = ref<'archive' | 'delete' | ''>(''),
+const confirm = ref<'archive' | 'restore' | 'delete' | ''>(''),
   busy = ref(false),
   error = ref('')
 const archived = computed(() => menu.value?.status === 'archived')
+watch(
+  () => menu.value?.status,
+  () => {
+    confirm.value = ''
+  },
+  { flush: 'sync' }
+)
 const servicesReady = computed(
   () =>
     !offeringsError.value && ['ready', 'empty'].includes(offeringsOutcome.value)
@@ -159,8 +166,14 @@ async function apply() {
   busy.value = true
   error.value = ''
   try {
-    if (action === 'delete') await deleteMenu(kitchenId.value, menuId.value)
-    else if (archived.value) await restoreMenu(kitchenId.value, menuId.value)
+    if (action === 'delete')
+      await deleteMenu(
+        kitchenId.value,
+        menuId.value,
+        () => isCurrent() && confirm.value === 'delete' && canDelete.value
+      )
+    else if (action === 'restore')
+      await restoreMenu(kitchenId.value, menuId.value)
     else await archiveMenu(kitchenId.value, menuId.value)
     if (!isCurrent()) return
     confirm.value = ''

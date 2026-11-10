@@ -2,10 +2,17 @@ import { timingSafeEqual } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { KITCHEN_MUTATION_TARGETS, serverKitchenTeamMembersTarget } from '../../mutation-targets'
+import {
+  KITCHEN_MUTATION_TARGETS,
+  serverKitchenTeamMembersTarget,
+} from '../../mutation-targets'
 import { USER_MUTATION_TARGETS } from 'fireux-core/runtime/user/server/mutation-targets'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
+import {
+  readKitchenTeamAccountLinkInTransaction,
+  requireUnambiguousKitchenTeamLink,
+} from '../../team/account-link'
 import { readKitchenOnboardingActor as actor } from './onboarding-actor'
 import {
   onboardingText as text,
@@ -51,7 +58,7 @@ export async function connectGuestKitchen(event: H3Event, input: unknown) {
     const [
       root,
       anonymousMember,
-      currentMember,
+      accountLink,
       user,
       membership,
       access,
@@ -59,7 +66,11 @@ export async function connectGuestKitchen(event: H3Event, input: unknown) {
     ] = await Promise.all([
       mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
       mutations.read(teamMembers, anonymousUid),
-      mutations.read(teamMembers, current.uid),
+      readKitchenTeamAccountLinkInTransaction(
+        mutations,
+        teamMembers,
+        current.uid
+      ),
       mutations.read(USER_MUTATION_TARGETS.runtimeUsers, current.uid),
       mutations.read(memberships, current.uid),
       mutations.read(accessTarget, current.uid),
@@ -93,11 +104,7 @@ export async function connectGuestKitchen(event: H3Event, input: unknown) {
     if (claim.data?.claimed_by) {
       if (claim.data.claimed_by !== current.uid)
         fail(409, 'This Kitchen has already been connected to another account.')
-      if (
-        !ids.includes(kitchenId) ||
-        !currentMember.exists ||
-        currentMember.data?.user_id !== current.uid
-      )
+      if (!ids.includes(kitchenId) || accountLink.state !== 'linked')
         fail(403, 'This account no longer has access to the Kitchen.')
       return { ok: true as const, kitchen_id: kitchenId, adopted: false }
     }
@@ -117,11 +124,9 @@ export async function connectGuestKitchen(event: H3Event, input: unknown) {
         membership.data
       )
     )
-    if (currentMember.exists) {
-      mutations.update(teamMembers, current.uid, {
-        user_id: current.uid,
-        name,
-      })
+    const currentMember = requireUnambiguousKitchenTeamLink(accountLink)
+    if (currentMember) {
+      mutations.update(teamMembers, currentMember.id, { name })
     } else {
       mutations.create(
         teamMembers,

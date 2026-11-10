@@ -8,7 +8,7 @@ export async function buildMenuPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): Promise<MenuDetailPayload> {
-  return data.format === 'document'
+  return data.schedule !== 'daily' && data.format === 'document'
     ? buildMenuDocumentPayload(menuId, data, scope)
     : await buildMenuManifestPayload(menuId, data, scope)
 }

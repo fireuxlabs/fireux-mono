@@ -10,7 +10,7 @@
       ref="crud"
       :team="team"
       :member-id="memberId"
-      :single-path="selectedPath"
+      :member-path="memberPath"
     >
       <template #single>
         <WorkspaceTeamAssignment
@@ -60,9 +60,8 @@ const collectionTitle = computed(() =>
 const selectedId = computed(
   () => props.memberId || state.value.team.selectedTeamMemberId
 )
-const selectedPath = computed(
-  () => `/workspace/project/team/${encodeURIComponent(selectedId.value)}`
-)
+const memberPath = (id: string) =>
+  `/workspace/project/team/${encodeURIComponent(id)}`
 
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})

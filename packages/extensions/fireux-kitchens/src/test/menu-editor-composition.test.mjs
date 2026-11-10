@@ -22,7 +22,7 @@ async function render(relative, props) {
     render: () =>
       h(
         {
-          props: ['editor', 'row', 'section', 'actions'],
+          props: ['editor', 'row', 'section', 'actions', 'saveLabel'],
           render: compile(template),
         },
         props
@@ -70,6 +70,16 @@ async function render(relative, props) {
   assert.deepEqual(warnings, [])
   return { html, seen }
 }
+function rowSetup(path, props, result) {
+  const script = readFileSync(new URL(path, base), 'utf8')
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  return compileFunction(`${stripTypeScriptTypes(script)};return ${result}`, [
+    'computed',
+    'defineProps',
+  ])(computed, () => props)
+}
 test('section creation control edits the shared draft and calls its coordinator', async () => {
   let submitted = 0
   const editor = reactive({
@@ -104,20 +114,25 @@ test('section row preserves scoped save promises, disabled state and record navi
     daily: false,
     displaySectionLabel: (s) => s.label,
     validateSectionLabel: () => ({ isValid: true }),
+    captureScope: () => () => true,
     saveSectionLabel: (...args) => {
       calls.push(args)
       return saved
     },
   }
-  const { seen, html } = await render('Sections/Collection/Row.vue', {
-    section,
-    editor,
+  const path = 'Sections/Collection/Row.vue'
+  const props = { section, editor }
+  const { seen, html } = await render(path, {
+    ...props,
+    saveLabel: rowSetup(path, props, 'saveLabel'),
   })
   assert.match(html, /Small plates/)
   const field = seen.FireFormsEditableSimpleField[0]
   assert.equal(field.disabled, true)
-  assert.equal(field.update('Mains'), saved)
-  assert.deepEqual(calls, [['section one', 'Mains']])
+  const fieldCurrent = () => false
+  assert.equal(field['capture-intent'], editor.captureScope)
+  assert.equal(field.update('Mains', fieldCurrent), saved)
+  assert.deepEqual(calls, [['section one', 'Mains', fieldCurrent]])
   assert.equal(
     seen.UButton[0].to,
     '/workspace/kitchen/food-and-drink/menus/food%20menu/section%20one'
@@ -146,14 +161,11 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
     move: () => {},
     removeFromMenu: (...args) => calls.push(args),
   }
-  const script = readFileSync(new URL('Items/Edit/Row.vue', base), 'utf8')
-    .split('<script setup lang="ts">')[1]
-    .split('</script>')[0]
-    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-  const actions = compileFunction(
-    `${stripTypeScriptTypes(script)};return actions.value`,
-    ['computed', 'defineProps']
-  )(computed, () => ({ row, editor }))
+  const actions = rowSetup(
+    'Items/Edit/Row.vue',
+    { row, editor },
+    'actions.value'
+  )
   const { seen, html } = await render('Items/Edit/Row.vue', {
     row,
     editor,

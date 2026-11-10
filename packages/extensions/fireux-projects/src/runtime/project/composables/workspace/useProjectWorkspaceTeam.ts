@@ -3,6 +3,7 @@ import { refreshNuxtData, useAsyncData } from 'nuxt/app'
 import { computed, watchEffect } from 'vue'
 
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
@@ -182,17 +183,39 @@ export function useProjectWorkspaceTeam() {
     )
   }
 
-  async function removeTeamMember(memberId: string) {
+  const captureRemoval = useCommandScope([
+    currentUser,
+    membership,
+    projectId,
+    canWrite,
+  ])
+  async function removeTeamMember(
+    memberId: string,
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
     const targetId = state.value.project.id
     if (!targetId)
       throw new Error('Select a Project before changing Team members.')
     const user = currentUser.value
     if (!user || user.isAnonymous)
       throw new Error('Sign in before changing Team members.')
+    const inScope = captureRemoval()
     const token = await user.getIdToken()
-    if (user.uid !== currentUser.value?.uid)
-      throw new Error('The signed-in account changed. Try again.')
-    const result = await $fetch<{ name: string }>(
+    if (
+      !inScope() ||
+      !isSurfaceCurrent() ||
+      !canWrite.value ||
+      !members.value.some((member) => member.id === memberId)
+    )
+      throw new Error(
+        'The selected workspace or member changed. Review the removal again.'
+      )
+    const result = await $fetch<{
+      ok: true
+      project_id: string
+      member_id: string
+      name: string
+    }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(memberId)}`,
       {
         onResponse: async ({ response }) => {
@@ -203,7 +226,14 @@ export function useProjectWorkspaceTeam() {
       }
     )
     if (
-      targetId === projectId.value &&
+      result?.ok !== true ||
+      result.project_id !== targetId ||
+      result.member_id !== memberId
+    )
+      throw new Error('Remove team member response was invalid.')
+    if (
+      inScope() &&
+      isSurfaceCurrent() &&
       team.selectedTeamMemberId.value === memberId
     )
       team.selectedTeamMemberId.value = ''

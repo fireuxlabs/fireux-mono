@@ -47,16 +47,6 @@ export function readMenuKitchenFulfilment(kitchenId: string) {
   return readKitchenFulfilment(getRuntimeFirestore(), kitchenId)
 }
 
-export async function readMenuKitchenBySlug(kitchenSlug: string) {
-  const kitchen = await readKitchenByRouteSlug(
-    getRuntimeFirestore(),
-    kitchenSlug
-  )
-  if (!kitchen) return null
-
-  return {
-    id: kitchen.id,
-    data: kitchen.data,
-    snapshot: kitchen.snapshot,
-  }
+export function readMenuKitchenBySlug(kitchenSlug: string) {
+  return readKitchenByRouteSlug(getRuntimeFirestore(), kitchenSlug)
 }

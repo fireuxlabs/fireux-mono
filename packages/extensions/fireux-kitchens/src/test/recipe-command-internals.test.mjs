@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestore-document-id'
+import { normalizeKitchenPrepItem } from '../runtime/kitchen/utils/prep-item.ts'
 
 function load(path, names, dependencies = {}) {
   const source = stripTypeScriptTypes(
@@ -62,7 +63,7 @@ const authority = load(
     serverAppUsersTarget: (app) => `apps/${app}/users`,
     serverKitchenAccessTarget: () => 'kitchen_access',
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-PLACE_MUTATION_TARGETS: { places: 'places' },
+    PLACE_MUTATION_TARGETS: { places: 'places' },
     readAppUserSubscription,
   }
 )
@@ -89,12 +90,15 @@ const references = load(
     'requireRecipePreparationReferences',
     'requireKitchenIngredientReferences',
     'requireKitchenRecipeReference',
+    'requireUnusedKitchenRecipe',
   ],
   {
     ...catalogue,
     createError,
     defineFirestoreMutationTarget: (x) => x.collectionPath,
     INGREDIENT_MUTATION_TARGETS: { ingredients: 'ingredients' },
+    serverKitchenDishesTarget: (kitchen) => `kitchens/${kitchen}/dishes`,
+    normalizeKitchenPrepItem,
   }
 )
 const prepTranslation = load('../runtime/kitchen/utils/prep-item.ts', [
@@ -108,7 +112,8 @@ function deferred() {
 function fixture({ wait, retry } = {}) {
   const at = { seconds: 1, nanoseconds: 0 },
     writes = [],
-    reads = []
+    reads = [],
+    pages = []
   const records = new Map([
     ['kitchens/k', {}],
     [
@@ -161,6 +166,21 @@ function fixture({ wait, retry } = {}) {
               data: records.get(`${target}/${id}`),
             }
           },
+          readAll: async (target, limit, afterId) => {
+            assert.equal(writing, false, 'query follows write')
+            pages.push({ target, limit, afterId })
+            return [...records]
+              .filter(([path]) => path.startsWith(target + '/'))
+              .map(([path, data]) => ({
+                id: path.slice(target.length + 1),
+                data,
+              }))
+              .filter(
+                ({ id }) => !id.includes('/') && (!afterId || id > afterId)
+              )
+              .sort((a, b) => a.id.localeCompare(b.id))
+              .slice(0, limit)
+          },
           create: (...args) => {
             writing = true
             staged.push(['create', ...args])
@@ -207,7 +227,7 @@ function fixture({ wait, retry } = {}) {
       dependencies
     )
   )
-  return { ...commands, records, writes, reads }
+  return { ...commands, records, writes, reads, pages }
 }
 const ready = () => ({
   status: 'ready',
@@ -416,6 +436,136 @@ test('Identity-only Recipe update does not revalidate untouched preparation; del
   )
   assert.deepEqual(h.writes[1], ['delete', 'kitchens/k/recipes', 'existing'])
 })
+test('Recipe deletion reports exact-Kitchen Dish and Prep Item references without changing them', async () => {
+  const dish = { name: 'Poulet rôti', spec: { recipe_ids: ['existing'] } }
+  const prep = { name: 'Sauce fraîche', recipe_id: 'existing' }
+  const command = { kitchenId: 'k', recipeId: 'existing' }
+  for (const [path, record, label] of [
+    ['dishes/roast', dish, 'Poulet rôti'],
+    ['prep-items/sauce', prep, 'Sauce fraîche'],
+  ]) {
+    const h = fixture()
+    h.records.set('kitchens/k/' + path, record)
+    const before = structuredClone(h.records)
+    await assert.rejects(
+      h.deleteRecipe({}, command),
+      (error) => error.statusCode === 409 && error.data.message.includes(label)
+    )
+    assert.deepEqual(h.records, before)
+    assert.deepEqual(h.writes, [])
+    assert.ok(h.pages.every((page) => page.limit === 100))
+  }
+  const h = fixture()
+  h.records.set('kitchens/other/dishes/roast', dish)
+  h.records.set('kitchens/other/prep-items/sauce', prep)
+  h.records.set('kitchens/k/dishes/elsewhere', {
+    spec: { recipe_ids: ['other'] },
+  })
+  await h.deleteRecipe({}, command)
+  assert.deepEqual(h.writes, [['delete', 'kitchens/k/recipes', 'existing']])
+  h.records.delete('kitchens/k/recipes/existing')
+  assert.equal((await h.deleteRecipe({}, command)).id, 'existing')
+  assert.equal(h.writes.length, 1)
+  assert.equal(h.pages.length, 2)
+})
+
+test('Recipe usage reads later pages and the reference identities displayed by existing records', async () => {
+  for (const [collection, recipeId, record] of [
+    [
+      'dishes',
+      'existing',
+      { name: 'Later Dish', spec: { recipe_ids: [' existing '] } },
+    ],
+    ['prep-items', 'existing', { name: 'Later Prep', recipe_id: ' existing ' }],
+    ['prep-items', '123', { name: 'Numbered Prep', recipe_id: 123 }],
+  ]) {
+    const h = fixture()
+    h.records.set(`kitchens/k/recipes/${recipeId}`, { kitchen_id: 'k' })
+    for (let index = 0; index < 100; index++)
+      h.records.set(
+        `kitchens/k/${collection}/filler-${String(index).padStart(3, '0')}`,
+        {}
+      )
+    h.records.set(`kitchens/k/${collection}/z-linked`, record)
+    await assert.rejects(h.deleteRecipe({}, { kitchenId: 'k', recipeId }), {
+      statusCode: 409,
+    })
+    assert.deepEqual(h.writes, [])
+    assert.ok(
+      h.pages.some((page) => page.target.endsWith(collection) && page.afterId)
+    )
+  }
+})
+
+test('a Prep Item linked during a transaction retry keeps its Recipe', async () => {
+  const h = fixture({
+    retry: (records) =>
+      records.set('kitchens/k/prep-items/stock', {
+        name: 'Fond',
+        recipe_id: 'existing',
+      }),
+  })
+  await assert.rejects(
+    h.deleteRecipe({}, { kitchenId: 'k', recipeId: 'existing' }),
+    { statusCode: 409 }
+  )
+  assert.deepEqual(h.writes, [])
+  assert.equal(h.pages.length, 4)
+})
+
+test('the routed Recipe detail shows the blocking label and retains its selection', async () => {
+  const component = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/PrepAndProduction/Recipes/Detail/Index.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const handler = component.slice(
+    component.indexOf('const deleteSelectedRecipe ='),
+    component.indexOf('</script>')
+  )
+  const notices = [],
+    destinations = [],
+    calls = [],
+    deleting = { value: false }
+  const deps = {
+    captureScope: () => () => true,
+    canWrite: { value: true },
+    recipe: { value: { name: 'Sauce' } },
+    recipeId: { value: 'existing' },
+    kitchenId: { value: 'k' },
+    deleting,
+    normalizeString: (value) => value,
+    window: { confirm: () => true },
+    toast: { add: (value) => notices.push(value) },
+    navigateTo: (value) => destinations.push(value),
+    deleteRecipe: async (...input) => {
+      calls.push(input)
+      throw {
+        data: {
+          statusMessage: 'Recipe is still in use.',
+          data: {
+            message: 'This recipe is used by Prep Item “Sauce fraîche”.',
+          },
+        },
+      }
+    },
+  }
+  const remove = compileFunction(
+    stripTypeScriptTypes(handler) + ';return deleteSelectedRecipe',
+    Object.keys(deps)
+  )(...Object.values(deps))
+  await remove()
+  assert.deepEqual(calls, [['existing', { kitchenId: 'k' }]])
+  assert.equal(
+    notices[0].description,
+    'This recipe is used by Prep Item “Sauce fraîche”.'
+  )
+  assert.deepEqual(destinations, [])
+  assert.equal(deleting.value, false)
+})
+
 test('Prep creation snapshots inputs and rejects foreign Recipes or missing Ingredient associations', async () => {
   const wait = deferred(),
     h = fixture({ wait }),

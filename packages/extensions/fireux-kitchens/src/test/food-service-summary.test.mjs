@@ -56,7 +56,7 @@ test('overview lists enabled services, next opening and current serving state', 
   assert.equal(closed.open, false)
   assert.equal(
     closed.to,
-    '/workspace/kitchen/food-and-drink/services#service-collection'
+    '/workspace/kitchen/food-and-drink/services#service-collection/main'
   )
   assert.match(closed.label, /16:00/)
   assert.equal(
@@ -96,6 +96,10 @@ test('separate services retain their own summary and next-day collection is not 
   const rows = foodServiceSummary([service, separate], [menu], at('17:00'))
   assert.equal(rows.length, 2)
   assert.equal(rows[1].name, 'Collection · Picnic')
+  assert.equal(
+    rows[1].to,
+    '/workspace/kitchen/food-and-drink/services#service-collection/concept'
+  )
   assert.equal(rows[1].label, 'Next-day collection')
   assert.equal(rows[1].open, false)
 })

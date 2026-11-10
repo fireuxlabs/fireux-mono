@@ -3,6 +3,11 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import {
+  readKitchenTeamAccountLinkInTransaction,
+  requireUnambiguousKitchenTeamLink,
+} from '../../runtime/kitchen/server/team/account-link.ts'
+import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
 const load = (path, names, deps = {}) =>
   compileFunction(
     `${stripTypeScriptTypes(
@@ -14,6 +19,11 @@ const load = (path, names, deps = {}) =>
     Object.keys(deps)
   )(...Object.values(deps))
 const base = '../../runtime/kitchen/server/'
+const { kitchenOnboardingAccessDecision } = load(
+  `${base}index/onboarding/onboarding-policy.ts`,
+  'kitchenOnboardingAccessDecision',
+  { resolveKitchenAllowance }
+)
 const defaults = load(
   `${base}index/onboarding/system-menus.ts`,
   'readKitchenManagementMenus, createKitchenSystemMenus',
@@ -36,7 +46,9 @@ function harness({
   exists = true,
   menus = [],
   pass = false,
-  allowed = true,
+  grants = ['venue'],
+  role = 'user',
+  team = exists ? [{ id: 'actor', data: { user_id: 'actor' } }] : [],
 } = {}) {
   const writes = []
   let writing = false
@@ -44,7 +56,10 @@ function harness({
     read: async (target, id) => {
       assert.equal(writing, false, 'all reads precede writes')
       if (target === 'kitchens') return { exists, data: { slug: 'venue' } }
-      if (target === 'team') return { exists, data: { user_id: 'actor' } }
+      if (target === 'team') {
+        const row = team.find((member) => member.id === id)
+        return { exists: Boolean(row), data: row?.data }
+      }
       if (target === 'menus') throw Error('query expected')
       if (target.endsWith('/stations'))
         return { exists: pass, data: { name: 'Custom Pass' } }
@@ -53,10 +68,21 @@ function harness({
         return { exists: true, data: { display_name: 'Operator' } }
       return {
         exists: true,
-        data: { role: 'user', created: { at: 1 }, user_id: 'actor' },
+        data: {
+          role,
+          subscription: 'free',
+          created: { at: 1 },
+          user_id: 'actor',
+        },
       }
     },
     readAll: async () => menus,
+    query: async (target, { field, op, value, limit }) => {
+      assert.equal(target, 'team')
+      assert.equal(writing, false)
+      assert.equal(op, '==')
+      return team.filter((row) => row.data[field] === value).slice(0, limit)
+    },
     create: (target, id, data) => {
       writing = true
       writes.push({ target, id, data })
@@ -69,6 +95,8 @@ function harness({
   const dependencies = {
     ...defaults,
     ...station,
+    readKitchenTeamAccountLinkInTransaction,
+    requireUnambiguousKitchenTeamLink,
     runGuardedServerTransaction: async (_, fn) => fn(tx),
     actor: async () => ({ uid: 'actor', appId: 'app', canCreate: true }),
     request: (x) => x,
@@ -85,17 +113,14 @@ function harness({
     USER_MUTATION_TARGETS: { runtimeUsers: 'users' },
     PLACE_MUTATION_TARGETS: { places: 'places' },
     KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
-    requireOnboardingMemberRole: () => 'user',
+    requireOnboardingMemberRole: () => role,
     assertKitchenOnboardingBeneficiaryAuthority: () => {},
     assertKitchenOnboardingPlaceDefaults: () => {},
-    readKitchenAccessIds: () => ['venue'],
+    readKitchenAccessIds: () => grants,
     createMembershipAccess: (x) => x,
     withKitchenAppAccess: (_, appId, grant) => ({ apps: { [appId]: grant } }),
     resolveKitchenGrantIds: () => ['venue'],
-    kitchenOnboardingAccessDecision: () => ({
-      can_complete: allowed,
-      action: allowed ? 'open' : 'request_access',
-    }),
+    kitchenOnboardingAccessDecision,
     text: (x) => String(x || ''),
     normalizeSlug: (x) => x,
     serverAuditStamp: ({ by, appId }) => ({
@@ -182,8 +207,45 @@ test('repeated management completion adds no duplicate defaults', async () => {
   )
 })
 test('denied association writes no defaults or authority', async () => {
-  const h = harness({ allowed: false })
+  const h = harness({ grants: [], team: [] })
   await assert.rejects(h.run())
+  assert.deepEqual(h.writes, [])
+})
+
+test('explicit Add reuses a uniquely linked roster member under either ID', async () => {
+  for (const id of ['actor', 'existing-roster-uuid']) {
+    const team = [{ id, data: { user_id: 'actor', role_ids: ['cook'] } }]
+    for (const grants of [[], ['venue']]) {
+      const h = harness({ team, grants, pass: true })
+      const result = await h.run()
+      assert.equal(result.action, grants.length ? 'open' : 'connect')
+      assert.equal(result.created_team_member, false)
+      assert.deepEqual(
+        h.writes.map((write) => write.target),
+        ['access']
+      )
+    }
+  }
+})
+
+test('an ambiguous or mismatched link cannot create a roster record or grant', async () => {
+  const linked = { user_id: 'actor' }
+  for (const team of [
+    [{ id: 'actor', data: { user_id: 'someone-else' } }],
+    [
+      { id: 'actor', data: linked },
+      { id: 'duplicate', data: linked },
+    ],
+  ]) {
+    const h = harness({ grants: [], team })
+    await assert.rejects(h.run(), { statusCode: 409 })
+    assert.deepEqual(h.writes, [])
+  }
+  const h = harness({
+    grants: ['other-kitchen'],
+    team: [{ id: 'uuid', data: linked }],
+  })
+  await assert.rejects(h.run(), /plan includes one kitchen/)
   assert.deepEqual(h.writes, [])
 })
 

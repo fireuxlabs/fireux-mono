@@ -150,8 +150,9 @@
 </template>
 
 <script setup lang="ts">
-import '../../../../../../menu/assets/styles/menu-editor.css'
 import { reactive } from 'vue'
 import { useMenuSectionsEditor } from '../../../../../composables/workspace/menus/useMenuSectionsEditor'
 const editor = reactive(useMenuSectionsEditor())
 </script>
+
+<style src="../../../../../../menu/assets/styles/menu-editor.css"></style>

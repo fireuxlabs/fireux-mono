@@ -119,7 +119,7 @@ const candidates = computed<Ingredient[]>(() => {
 })
 
 const { selectIngredient, captureIntent, authorityEpoch } =
-  useKitchenIngredientUpdate([rootCollection, canWrite, query])
+  useKitchenIngredientUpdate([kitchenId, rootCollection, canWrite, query])
 watch(
   [authorityEpoch, kitchenId, rootCollection, canWrite, query],
   () => {

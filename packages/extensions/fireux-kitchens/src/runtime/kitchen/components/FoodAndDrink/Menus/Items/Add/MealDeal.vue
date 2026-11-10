@@ -53,7 +53,7 @@ const {
   section,
   menu,
   promotions,
-  itemRows,
+  activeItemRows,
   canWrite,
   createItem,
 } = useMenuSection()
@@ -64,28 +64,34 @@ const available = computed(() =>
   promotions.items.value.filter(
     (deal) =>
       'groups' in deal &&
-      !itemRows.value.some((row) => row.promotionId === deal.id)
+      !activeItemRows.value.some((row) => row.promotionId === deal.id)
   )
 )
 watch(available, (deals) => {
   if (!deals.some((deal) => deal.id === promotionId.value))
     promotionId.value = ''
 })
-const captureScope = useMenuEditorScope([kitchenId, menuId, sectionId], () => {
-  saving.value = false
-  promotionId.value = ''
-})
+const captureScope = useMenuEditorScope(
+  [kitchenId, menuId, sectionId, canWrite],
+  () => {
+    saving.value = false
+    promotionId.value = ''
+  }
+)
 async function add() {
   if (!canWrite.value || !promotionId.value || saving.value) return
   const current = captureScope()
   saving.value = true
   try {
-    await createItem({
-      kitchenId: kitchenId.value,
-      menuId: menuId.value,
-      sectionId: sectionId.value,
-      promotionId: promotionId.value,
-    })
+    await createItem(
+      {
+        kitchenId: kitchenId.value,
+        menuId: menuId.value,
+        sectionId: sectionId.value,
+        promotionId: promotionId.value,
+      },
+      current
+    )
     if (!current()) return
     promotionId.value = ''
     toast.add({ title: 'Meal deal added to Menu', color: 'success' })

@@ -75,7 +75,21 @@ export function dto(id: string, data: Record<string, any>): MenuExpressRequest {
     stage: data.stage,
     payment: data.payment,
     target: data.target,
-    review: data.review,
+    review:
+      data.review?.format === 'document'
+        ? {
+            revision: data.review.revision,
+            name: data.review.name,
+            description: data.review.description,
+            kitchenSlug: data.review.kitchenSlug,
+            menuSlug: data.review.menuSlug,
+            format: 'document',
+            document: {
+              name: data.review.document?.name,
+              type: data.review.document?.type,
+            },
+          }
+        : data.review,
     approval: data.approval,
     correction: data.correction,
     delivery: data.delivery,

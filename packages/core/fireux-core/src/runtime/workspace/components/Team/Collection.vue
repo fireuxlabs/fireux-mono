@@ -13,6 +13,7 @@
   >
     <template #actions>
       <UButton
+        v-if="!readOnly"
         icon="i-lucide-plus"
         label="Add person"
         :disabled="!available"
@@ -30,7 +31,8 @@
         v-for="member in visibleItems"
         :key="member.id"
         :selected="member.id === state.team.selectedTeamMemberId"
-        @select="team.natives.select(member.id)"
+        :to="memberPath?.(member.id)"
+        @select="select(member.id)"
       >
         <UAvatar
           :src="member.avatar || undefined"
@@ -45,6 +47,7 @@
     </p>
   </WorkspaceEntityCollection>
   <WorkspaceTeamCrudCreate
+    v-if="!readOnly"
     v-model:open="createOpen"
     :initial-name="createName"
     :create="primitives.create"
@@ -57,11 +60,18 @@ import { useCollectionSearch } from '../../../composables/shared/useCollectionSe
 import type { TeamContext } from '../../composables/useWorkspaceTeam'
 import type { WorkspaceOutcome } from '../../models/outcome'
 const props = defineProps<{
+  readOnly?: boolean
+  memberPath?: (memberId: string) => string
   title?: string
   error?: string
   roleLabels?: Record<string, string[]>
   team: TeamContext
 }>()
+const emit = defineEmits<{ select: [memberId: string] }>()
+function select(memberId: string) {
+  props.team.natives.select(memberId)
+  emit('select', memberId)
+}
 const { state, derived, primitives } = props.team
 const members = computed(() =>
   [...state.value.team.members].sort((a, b) => a.name.localeCompare(b.name))

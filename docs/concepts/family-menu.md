@@ -85,7 +85,7 @@ does not advertise ordering entrances for other Menus in the Kitchen.
 
 ## Regular Menu publication tools
 
-The routed Menu Publishing view consumes Kitchen-owned `Workspace/Menus/Publication/Actions.vue`.
+The routed Menu Publishing view consumes Kitchen-owned `FoodAndDrink/Menus/Publication/Actions.vue`.
 Its Menu-owned `composables/publication/useMenuPublication.ts` captures the current
 account, App membership, selected Kitchen and route before awaiting credentials;
 obsolete intent does not dispatch. The component separately discards obsolete
@@ -117,11 +117,42 @@ render the result. Structured content cannot be overwritten by this tool.
 Account adoption consumes guest proof; ordinary Kitchen authority then applies.
 See `menu-document-self-service.test.mjs` and `menu-document-self-service-scope.test.mjs`.
 
+`menu/server/document/file.ts` validates Kitchen-owned upload paths before a
+privileged Storage read. Historical App-scoped paths require the Kitchen's
+creating or managing App. Public payloads project the scoped file endpoint for
+Storage-backed documents, keeping download tokens and bucket paths inside the
+stored attachment. URL-only historical public documents retain their external
+HTTP(S) destination. Daily Menus resolve dated selections even when a historical
+record contains an attachment. Dedicated file writers accept regular Menus.
+Verify public and private projections, rejected foreign paths, retained uploads
+and withdrawal in `menu-record-shape.test.mjs` and the document suites.
+
+Protected editor previews use `menu/server/document/protected-file.ts` through
+exact document and source-file adapters. The adapters resolve current Kitchen
+authority and saved record/file IDs; callers cannot select a bucket, path or URL.
+The Menu owner validates path provenance and the expected revision, downloads
+bounded generation-pinned bytes through Core, then resolves authority and identity
+again before responding with private, non-cacheable bytes. Guest document access
+is limited to the active claim-pinned Menu; Workspace readers may inspect retained
+archived attachments. External source URLs remain their explicit link workflow.
+
+`useMenuFilePreview` composes native client-only `useAsyncData` with
+`useMenuEditorScope`. Existing Menu/source readers supply record identity; the
+preview owner holds only temporary Blob URLs and releases them on record, authority
+or lifecycle changes. Protected parents render the existing document viewer only
+after a Blob is ready, avoiding its public/legacy URL fallback. Misebox's request
+adapter supplies exact review proof without granting general Kitchen access.
+Verify `menu-protected-file.test.mjs`, `menu-file-preview.test.mjs` and the App's
+`menu-express-review-file.test.mjs`. Existing upload tokens and stored URLs remain;
+this delivery path alone does not make those historical capabilities private.
+
 Regular Menu Settings expose Archive as the normal removal action and list the
 services that reference the Menu, including disabled services. Archiving updates
 only Menu status/audit, withdraws public/QR reads and keeps content/service links.
 Restoring returns to draft; publishing requires that explicit restoration first.
 Archived Menus remain reachable through the collection's Archived control.
+Confirmation retains its requested Archive or Restore action. A changed live
+status closes an obsolete dialog before it can dispatch the opposite action.
 Permanent deletion is available only for unpublished regular Menus with no
 sections, document attachment or service references; the server repeats these
 checks in its writing transaction. There is no child cascade or price mutation.
@@ -286,9 +317,10 @@ The HTTP adapters call those owners directly; there is no mixed command barrel
 or forwarding compatibility entrypoint.
 
 Pure `menu/utils/records/metadata.ts` validates and copies editable catalogue
-metadata. Creation and metadata editing share complete document metadata and
-description limits, while route-name validation stays with the trusted Menu
-name owner. Placement writes reject commercial terms; Dish commands validate
+metadata. Generic creation and metadata updates accept authored catalogue fields.
+Document attachment belongs to the file/source commands. Creation validates the
+public slug through the trusted name owner. Rename validates display text and
+retains that slug, including for names written in non-Latin scripts. Placement writes reject commercial terms; Dish commands validate
 normal prices, options and extras. Command
 inputs are detached before awaiting actor credentials. Publication, source
 review and Dish pricing retain their separate owners.
@@ -400,7 +432,7 @@ this organisation.
 ## Daily Menu publication
 
 Daily Menus retain dated MenuSections and ordinary dish-backed items. The focused
-`Workspace/Menus/Publication/Daily.vue` control reviews the chosen date through
+`FoodAndDrink/Menus/Publication/Daily.vue` control reviews the chosen date through
 Dates & selections and calls `menu/server/publication/daily.ts` through the existing scoped
 Menu mutation adapter. The command requires current membership, Kitchen authority
 and Plus, validates every active selection/item for that date, and updates
@@ -561,7 +593,7 @@ Dish and meal-deal definitions. The trusted regular publication validator uses
 that report to reject empty content and unavailable entries, with section/name
 reasons. It reads only Menu content, Dishes and Promotions and writes no terms.
 Document and per-date Daily validation remain separate.
-`Workspace/Menus/Publication/Readiness.vue` owns the live content warning and its
+`FoodAndDrink/Menus/Publication/Readiness.vue` owns the live content warning and its
 focused section diagnostic children. The record reuses its section list; section
 editing passes its existing catalogue, promotion and current-item readers rather
 than acquiring duplicates. Other active sections use the existing scoped item
@@ -582,6 +614,14 @@ use the same reference independently. No Dish, Promotion or Order data is writte
 Verify repeat requests, optimistic transaction conflicts, archived matches and
 scope separation in `menu-item-idempotency.test.mjs`; this simulated conflict
 coverage is not a claim of a live concurrent Firestore test.
+
+`useMenuSection` derives active placements from its already acquired rows.
+The three Add workflows use that projection so a retained archived placement
+can return through the same idempotent command. New-Dish entry waits for the
+catalogue's settled read, matches repeated names case-insensitively, and retains
+a confirmed created Dish ID until the catalogue acknowledges it. A placement
+retry therefore reuses that Dish. Kitchen, actor and section changes clear this
+local recovery state. Verify these flows in `kitchen/menu-content-scope.test.mjs`.
 
 Section item editing aligns a single currency label with the amount column and
 the item count beside the section name; the action-menu column stays unlabelled.
@@ -683,11 +723,18 @@ name. Times stay on the destination, not on secondary portal links. No new
 Offering identity, price or Order command is introduced. Verify
 `menu-other-offerings.test.mjs` and the offering-browse pagination regression.
 
-Kitchen service configuration is a separate visible Workspace capability at
-`/workspace/kitchen/food-and-drink/services` (and `/services/<offering>` for an existing record).
-`Workspace/Offerings/Index.vue` composes the unchanged scoped reader and setup
-controls; navigation and Menu/hour/integration links use this entrance. Orders
-keeps its board. No redirects, duplicate setup owners or record migration are added.
+Kitchen service configuration lives at
+`/workspace/kitchen/food-and-drink/services`.
+`FoodAndDrink/Services/Index.vue` provides one scoped reader. `Service.vue`
+groups each supplied type and `Record.vue` binds the existing setup controls
+to each saved Offering ID. Type hashes remain valid. Summary links use
+`#service-<type>/<encodedOfferingId>` for named saved records.
+Historical mixed records expose their whole-setup availability and individual
+interaction switches through the existing configure and interaction commands.
+Menu and hours edits preserve concurrently changed availability. The creation
+command retains its one-new-setup-per-type/channel policy.
+Verify `services-workspace.test.mjs`, `offering-configuration.test.mjs` and
+`service-section-navigation.test.mjs`.
 
 The visible Workspace capability is Services. The Menus navigation group and
 `/menu-setup` overview exclude Recipes and Ingredients, which are children of
@@ -735,6 +782,10 @@ The hours owner retains debounce, scope cancellation and failure restoration.
 Record context owns the shared update/rename/publication/lifecycle command
 instances and post-delete navigation. The removal panel owns confirmation and
 readiness presentation, without creating a second command or navigation owner.
+Core field predicates and local form lifetime reach the Menu command before
+credentials complete. Parent record/collection owners can survive a closed child
+while its obsolete intent is cancelled. A committed deletion retains its result
+and the surviving record owner handles collection navigation.
 Management authority governs archive/restore/delete; the existing content
 entitlement separately governs editing daily content. Trusted commands remain
 the final authority.

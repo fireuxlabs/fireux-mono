@@ -118,6 +118,7 @@ function fixture() {
     ...keys,
     ...guest,
     ...metadata,
+    ...load('menu/utils/records/file-identity', 'menuDocumentFileIdentity'),
     ...load('menu/utils/navigation/route', 'menuDocumentFilePath', {
       MenuRouteContexts: ['generic'],
     }),
@@ -329,10 +330,13 @@ test('free guest upload → publish → public file → reload → replace retai
   await h.start()
   await assert.rejects(h.publicMenu(), /Menu not found/)
   const first = await h.save('%PDF-first-menu')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   assert.equal(first.status, 'published')
-  assert.equal(first.previewUrl, '/api/menus/main/file?kitchenSlug=guest-123')
+  assert.equal('previewUrl' in first, false)
+  assert.equal('url' in first.document, false)
   assert.equal(first.venue, 'TEST Café')
-  assert.equal((await h.publicMenu()).menuData.doc.url, first.document.url)
+  assert.equal((await h.publicMenu()).menuData.doc.url, firstUrl)
   assert.equal(
     h.children('kitchens/guest-123/menus').length,
     2,
@@ -349,16 +353,19 @@ test('free guest upload → publish → public file → reload → replace retai
   const qr = await QRCode.toString(url, { type: 'svg' })
   assert.equal(
     h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc.url,
-    first.document.url
+    firstUrl
   )
   const reloaded = await h.read()
-  assert.equal(reloaded.document.url, first.document.url)
+  assert.equal(reloaded.revision, first.revision)
+  assert.deepEqual(reloaded.document, first.document)
   const second = await h.save('%PDF-replacement-menu')
+  const secondUrl = h.records.get(`kitchens/guest-123/menus/${second.menuId}`)
+    .doc.url
   assert.equal(second.menuId, first.menuId)
   assert.equal(second.menuPath, first.menuPath)
   assert.equal(second.qrPath, first.qrPath)
-  assert.notEqual(second.document.url, first.document.url)
-  assert.equal((await h.publicMenu()).menuData.doc.url, second.document.url)
+  assert.notEqual(secondUrl, firstUrl)
+  assert.equal((await h.publicMenu()).menuData.doc.url, secondUrl)
   assert.equal(
     await QRCode.toString(
       new URL(second.menuPath, 'https://misebox.app').toString(),
@@ -383,6 +390,8 @@ test('the private recovery proof works in a new browser identity without changin
   const h = fixture()
   await h.start()
   const first = await h.save('%PDF-first')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   h.state.uid = 'another-browser'
   assert.equal((await h.read()).menuId, first.menuId)
   assert.equal((await h.save('%PDF-updated')).qrPath, first.qrPath)
@@ -432,6 +441,8 @@ test('revocation during upload removes only the unattached revision and retains 
   const h = fixture()
   await h.start()
   const first = await h.save('%PDF-first')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   h.state.onUpload = () => {
     h.records.get('kitchens/guest-123/claims/guest').claimed_by = 'someone-else'
   }
@@ -440,7 +451,7 @@ test('revocation during upload removes only the unattached revision and retains 
   assert.equal(h.removed.length, 1)
   assert.equal(
     h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc.url,
-    first.document.url
+    firstUrl
   )
 })
 
@@ -448,6 +459,8 @@ test('stale revisions, invalid files and structured Menu content fail without ch
   const h = fixture()
   await h.start()
   const first = await h.save('%PDF-first')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   await h.save('%PDF-second')
   const snapshot = structuredClone(h.records)
   await assert.rejects(
@@ -463,6 +476,16 @@ test('stale revisions, invalid files and structured Menu content fail without ch
   })
   assert.equal((await h.read()).acceptsDocument, false)
   await assert.rejects(h.save('%PDF-do-not-overwrite'), /structured content/)
+})
+
+test('an empty Daily Menu cannot become a hosted document', async () => {
+  const h = fixture()
+  await h.start()
+  const menu = await h.read()
+  h.records.get(`kitchens/guest-123/menus/${menu.menuId}`).schedule = 'daily'
+  assert.equal((await h.read()).acceptsDocument, false)
+  await assert.rejects(h.save('%PDF-daily'), /Daily Menus/)
+  assert.equal(h.assets.size, 0)
 })
 
 test('failed and uncertain commits preserve a recoverable, truthful document state', async () => {
@@ -483,6 +506,8 @@ test('a replacement completed in another browser wins over an older upload still
   const h = fixture()
   await h.start()
   const first = await h.save('%PDF-original')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   let release, started
   const held = new Promise((resolve) => {
     release = resolve
@@ -500,9 +525,11 @@ test('a replacement completed in another browser wins over an older upload still
   const older = h.save('%PDF-older-attempt')
   await uploading
   const winner = await h.save('%PDF-latest-accepted')
+  const winnerUrl = h.records.get(`kitchens/guest-123/menus/${winner.menuId}`)
+    .doc.url
   release()
   await assert.rejects(older, /Menu changed during upload/)
-  assert.equal((await h.publicMenu()).menuData.doc.url, winner.document.url)
+  assert.equal((await h.publicMenu()).menuData.doc.url, winnerUrl)
   assert.equal(winner.menuPath, first.menuPath)
   assert.equal(winner.qrPath, first.qrPath)
   assert.equal(h.removed.length, 1)
@@ -513,13 +540,17 @@ test('repeated document replacements retain one Menu identity and never create r
   const h = fixture()
   await h.start()
   const first = await h.save('%PDF-original')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   for (let revision = 1; revision <= 30; revision++) {
     const result = await h.save(`%PDF-replacement-${revision}`)
+    const resultUrl = h.records.get(`kitchens/guest-123/menus/${result.menuId}`)
+      .doc.url
     assert.equal(result.menuId, first.menuId)
     assert.equal(result.menuPath, first.menuPath)
     assert.equal(result.qrPath, first.qrPath)
     assert.equal((await h.read()).revision, result.revision)
-    assert.equal((await h.publicMenu()).menuData.doc.url, result.document.url)
+    assert.equal((await h.publicMenu()).menuData.doc.url, resultUrl)
   }
   assert.equal(h.children('kitchens/guest-123/menus').length, 2)
   assert.equal(
@@ -532,6 +563,8 @@ test('unsupported, empty, multiple and oversized uploads leave the published fil
   const h = fixture()
   await h.start()
   const first = await h.save('%PDF-original')
+  const firstUrl = h.records.get(`kitchens/guest-123/menus/${first.menuId}`).doc
+    .url
   const file = (data, contentType = 'application/pdf') => ({
     data: Buffer.from(data),
     contentType,
@@ -549,7 +582,7 @@ test('unsupported, empty, multiple and oversized uploads leave the published fil
     [file(oversized)],
   ]) {
     await assert.rejects(h.save('', { files }), /Choose/)
-    assert.equal((await h.publicMenu()).menuData.doc.url, first.document.url)
+    assert.equal((await h.publicMenu()).menuData.doc.url, firstUrl)
     assert.equal(h.assets.size, 1)
     assert.equal(h.removed.length, 0)
   }
@@ -586,6 +619,10 @@ test('Workspace uses the same file command on Free and its ordinary publication 
     }
   )
   assert.equal(draft.status, 'draft')
+  assert.equal('previewUrl' in draft, false)
+  assert.equal('url' in draft.document, false)
+  const draftUrl = h.records.get(`kitchens/guest-123/menus/${draft.menuId}`).doc
+    .url
   await h.deps.runGuardedServerTransaction({}, (tx) =>
     h.deps.stagePublishKitchenMenu(tx, {
       appId: 'app',
@@ -594,7 +631,7 @@ test('Workspace uses the same file command on Free and its ordinary publication 
       uid: 'owner',
     })
   )
-  assert.equal((await h.publicMenu()).menuData.doc.url, draft.document.url)
+  assert.equal((await h.publicMenu()).menuData.doc.url, draftUrl)
   assert.equal(h.records.get('apps/app/users/owner').subscription, 'free')
   assert.equal(h.children('kitchens/guest-123/menus').length, 2)
 })

@@ -11,7 +11,6 @@ import { normalizeMenuMetadataPatch } from '../../utils/records/metadata'
 import type { MenuUpdateInput } from '../../models/menu-storage.model'
 import { resolveKitchenOperationHours } from '../../../kitchen/utils/kitchen-readers'
 import { hoursWithinParent } from '../../../kitchen/utils/service-hours'
-import { menuNameAndSlug } from '../name'
 
 export async function updateKitchenMenu(event: H3Event, input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
@@ -28,7 +27,7 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
     })
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
-  let changes: MenuUpdateInput & { slug?: string }
+  let changes: MenuUpdateInput
   try {
     changes = normalizeMenuMetadataPatch(value.changes)
   } catch (error) {
@@ -38,14 +37,13 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
         error instanceof Error ? error.message : 'Invalid Menu changes.',
     })
   }
-  const renamed = Object.hasOwn(changes, 'name')
-    ? menuNameAndSlug(event, changes.name)
-    : undefined
-  if (renamed) changes.name = renamed.name
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
-    if (renamed && !['pro', 'business'].includes(access.subscription))
+    if (
+      changes.name !== undefined &&
+      !['pro', 'business'].includes(access.subscription)
+    )
       throw createError({
         statusCode: 403,
         statusMessage: 'Editing Menu names requires Pro.',
@@ -61,12 +59,6 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Audience settings are for ordinary Menus.',
-      })
-    if (menu.data?.schedule === 'daily' && changes.doc?.url)
-      throw createError({
-        statusCode: 400,
-        statusMessage:
-          'Daily Menus use dated selections, not a document attachment.',
       })
     if (changes.serving_hours !== undefined) {
       if (
@@ -91,13 +83,13 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
         })
     }
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
-    const next: Record<string, unknown> = {
-      ...menu.data,
-      ...changes,
-      updated: stamp,
-    }
     tx.update(target, menuId, { ...changes, updated: stamp })
-    return { id: menuId, slug: String(next.slug || ''), kitchenId, menuId }
+    return {
+      id: menuId,
+      slug: String(menu.data?.slug || ''),
+      kitchenId,
+      menuId,
+    }
   })
 }
 

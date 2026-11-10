@@ -1,314 +1,359 @@
-import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
-import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
+import test from 'node:test'
 import { compileFunction } from 'node:vm'
-import { ref, computed, watch } from 'vue'
-function load(path, deps, result, vue = false) {
-  deps = commandScopeDeps(deps)
-  let source = readFileSync(new URL(path, import.meta.url), 'utf8')
-  if (vue)
-    source = source.split('<script setup lang="ts">')[1].split('</script>')[0]
-  source = source
+import {
+  computed,
+  effectScope,
+  getCurrentInstance,
+  reactive,
+  ref,
+  toRef,
+  toValue,
+  watch,
+} from 'vue'
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
+
+function load(path, deps, name) {
+  const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
+  const bindings = commandScopeDeps(deps)
   return compileFunction(
-    `${stripTypeScriptTypes(source)};return ${result}`,
-    Object.keys(deps)
-  )(...Object.values(deps))
+    `${stripTypeScriptTypes(source)};return ${name}`,
+    Object.keys(bindings)
+  )(...Object.values(bindings))
 }
+
 function deferred() {
   let resolve, reject
-  const promise = new Promise((a, b) => {
-    resolve = a
-    reject = b
+  const promise = new Promise((yes, no) => {
+    resolve = yes
+    reject = no
   })
   return { promise, resolve, reject }
 }
-function scope(currentUser, disposed = []) {
-  return load(
-    '../../runtime/menu/composables/useMenuEditorScope.ts',
-    {
-      watch,
-      onBeforeUnmount: (fn) => disposed.push(fn),
-      useAuth: () => ({ currentUser }),
+
+function fixture() {
+  const lifetime = effectScope()
+  const auth = deferred(),
+    token = deferred(),
+    response = deferred()
+  const calls = [],
+    notices = [],
+    destinations = []
+  const user = { uid: 'u', getIdToken: () => token.promise }
+  const currentUser = ref(user)
+  const appUser = ref({
+    role: 'user',
+    subscription: 'pro',
+    created: { at: 'one' },
+  })
+  const config = reactive({ appId: 'app' })
+  const kitchenId = ref('k'),
+    menuSlug = ref('food')
+  const route = ref({
+    fullPath: '/workspace/kitchen/food-and-drink/menus/food',
+  })
+  const menu = ref({
+    id: 'm',
+    name: 'Food',
+    slug: 'food',
+    status: 'draft',
+    description: 'Original',
+  })
+  const menuOutcome = computed(() => (menu.value ? 'ready' : 'empty'))
+  const grants = ref(['k'])
+  const source = Object.assign(ref(null), {
+    pending: ref(false),
+    error: ref(null),
+  })
+  const deps = {
+    computed,
+    ref,
+    watch,
+    toValue,
+    getCurrentInstance,
+    useAuth: () => ({ currentUser }),
+    useRequireUser: () => auth.promise,
+    useAppSession: () => ({
+      uid: computed(() => currentUser.value?.uid || ''),
+      appUser,
+      pending: ref(false),
+      error: ref(null),
+    }),
+    useUserSession: () => ({ appUser }),
+    useFireUXConfig: () => config,
+    useWorkspace: () => ({ selectedId: kitchenId }),
+    useRouteParam: () => menuSlug,
+    useRouter: () => ({
+      currentRoute: route,
+      replace: (path) => destinations.push(path),
+    }),
+    useToastify: () => ({ add: (notice) => notices.push(notice) }),
+    useKitchenAccess: () => ({
+      ids: grants,
+      pending: ref(false),
+      error: ref(null),
+    }),
+    useKitchenRead: () => ({
+      kitchen: ref({}),
+      place: ref(null),
+      outcome: ref('ready'),
+      error: ref(null),
+    }),
+    useKitchenInterface: () => ({ surface: () => ({}) }),
+    readRuntimeFirestoreDatabaseId: () => 'db',
+    useKitchenMenuRead: () => ({
+      menu,
+      outcome: menuOutcome,
+      error: ref(null),
+    }),
+    useFirestoreRead: () => ({ firestoreFetchDoc: () => source }),
+    MenuSourceUploadStorage: { collection: 'menu-uploads' },
+    useKitchenOfferingCollection: () => ({
+      offerings: ref([]),
+      outcome: ref('empty'),
+      error: ref(null),
+    }),
+    useMenuSectionCollection: () => ({
+      sections: ref([]),
+      pending: ref(false),
+      error: ref(null),
+      collectionPath: ref(''),
+    }),
+    useMenuSectionMutations: () => ({}),
+    useMenuPublication: () => ({}),
+    $fetch: (url, options) => {
+      calls.push({ url, options })
+      return response.promise
     },
+  }
+  deps.useMenuEditorScope = load(
+    '../../runtime/menu/composables/useMenuEditorScope.ts',
+    deps,
     'useMenuEditorScope'
   )
+  for (const name of ['useMenuMutation', 'useMenuUpdate', 'useMenuDelete'])
+    deps[name] = load(
+      `../../runtime/menu/composables/firestore/mutations/${name}.ts`,
+      deps,
+      name
+    )
+  const record = lifetime.run(
+    load(
+      '../../runtime/kitchen/composables/workspace/menus/useKitchenMenuRecordContext.ts',
+      deps,
+      'createKitchenMenuRecordContext'
+    )
+  )
+  const field = (method) =>
+    lifetime.run(() => {
+      const metadata = load(
+        '../../runtime/kitchen/composables/workspace/menus/useMenuRecordMetadata.ts',
+        deps,
+        'useMenuRecordMetadata'
+      )(record)
+      const useEditableStringField = load(
+        '../../../../../core/fireux-core/src/runtime/composables/forms/useEditableStringField.ts',
+        deps,
+        'useEditableStringField'
+      )
+      return useEditableStringField({
+        value: '',
+        captureIntent: metadata.captureIntent,
+        update: metadata[method],
+      })
+    })
+  function change(kind) {
+    const targets = {
+      account: [currentUser, { uid: 'other' }],
+      logout: [currentUser, null],
+      app: [toRef(config, 'appId'), 'other'],
+      membership: [appUser, { ...appUser.value, created: { at: 'two' } }],
+      kitchen: [kitchenId, 'other'],
+      slug: [menuSlug, 'other'],
+      route: [route, { fullPath: '/other' }],
+      grant: [grants, []],
+      record: [menu, null],
+    }
+    if (kind === 'dispose') return lifetime.stop()
+    if (kind === 'stable') return
+    const [target, temporary] = targets[kind]
+    const original = target.value
+    target.value = temporary
+    target.value = original
+  }
+  const receipt = {
+    ok: true,
+    kitchenId: 'k',
+    menuId: 'm',
+    id: 'm',
+    slug: 'food',
+  }
+  return {
+    lifetime,
+    auth,
+    token,
+    response,
+    receipt,
+    user,
+    calls,
+    notices,
+    destinations,
+    menu,
+    record,
+    field,
+    change,
+  }
 }
 
-test('Menu metadata/rename/Delete preserve target across waits and reject scope roundtrips', async () => {
+test('routed Menu update, rename and delete reject obsolete destination or authority before dispatch', async () => {
   for (const action of ['update', 'rename', 'delete'])
     for (const stage of ['auth', 'token', 'response'])
       for (const change of [
         'stable',
         'account',
-        'kitchen',
-        'route',
         'logout',
+        'app',
+        'membership',
+        'kitchen',
+        'slug',
+        'route',
+        'grant',
+        'record',
         'dispose',
       ]) {
-        const auth = deferred(),
-          token = deferred(),
-          response = deferred(),
-          calls = [],
-          disposed = []
-        const user = { uid: 'u', getIdToken: () => token.promise },
-          currentUser = ref(user),
-          selectedId = ref('k'),
-          routePath = ref('/menus/m')
-        const useMenuMutation = load(
-          '../../runtime/menu/composables/firestore/mutations/useMenuMutation.ts',
-          {
-            useRoute: () => ({
-              get fullPath() {
-                return routePath.value
-              },
-            }),
-            useAuth: () => ({ currentUser }),
-            useRequireUser: () => auth.promise,
-            useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
-            useWorkspace: () => ({ selectedId }),
-            useMenuEditorScope: scope(currentUser, disposed),
-            $fetch: (...args) => {
-              calls.push(args)
-              return response.promise
-            },
-          },
-          'useMenuMutation'
-        )
-        const name = action === 'delete' ? 'useMenuDelete' : 'useMenuUpdate',
-          api = load(
-            `../../runtime/menu/composables/firestore/mutations/${name}.ts`,
-            { useMenuMutation },
-            name
-          )()
+        const f = fixture()
         const changes = {
           description: 'Original',
           doc: { url: 'u', name: 'n', type: 't', storage_path: 'p' },
         }
-        const expected =
+        const input =
           action === 'update'
-            ? { kitchenId: 'k', menuId: 'm', changes: structuredClone(changes) }
+            ? { changes: structuredClone(changes) }
             : action === 'rename'
-              ? { kitchenId: 'k', menuId: 'm', name: 'Dinner' }
-              : { kitchenId: 'k', menuId: 'm' }
-        const pending =
-            action === 'update'
-              ? api.updateMenu('k', 'm', changes)
-              : action === 'rename'
-                ? api.renameMenu('k', 'm', 'Dinner')
-                : api.deleteMenu('k', 'm'),
-          done =
-            change === 'stable' || stage === 'response'
-              ? pending
-              : assert.rejects(pending, /changed/)
+              ? { name: 'Dinner' }
+              : {}
+        const result =
+          action === 'update'
+            ? f.record.updateMenu('k', 'm', changes)
+            : action === 'rename'
+              ? f.record.renameMenu('k', 'm', 'Dinner')
+              : f.record.deleteMenu('k', 'm')
+        const shouldDispatch = change === 'stable' || stage === 'response'
+        const done = shouldDispatch
+          ? result
+          : assert.rejects(result, /changed/, `${action}/${stage}/${change}`)
         if (stage !== 'auth') {
-          auth.resolve(user)
+          f.auth.resolve(f.user)
           await Promise.resolve()
         }
         if (stage === 'response') {
-          token.resolve('token')
+          f.token.resolve('token')
           await Promise.resolve()
+          assert.equal(f.calls.length, 1)
         }
-        changes.doc.url = 'Changed'
-        if (change === 'kitchen') {
-          selectedId.value = 'b'
-          selectedId.value = 'k'
-        } else if (change === 'route') {
-          routePath.value = '/menus/b'
-          routePath.value = '/menus/m'
-        } else if (change === 'dispose') disposed.forEach((fn) => fn())
-        else if (change === 'account' || change === 'logout') {
-          currentUser.value = change === 'logout' ? null : { uid: 'b' }
-          currentUser.value = user
-        }
-        auth.resolve(user)
-        token.resolve('token')
-        response.resolve({
-          id: 'm',
-          slug: 'dinner',
-          kitchenId: 'k',
-          menuId: 'm',
-        })
+        changes.doc.url = 'changed'
+        f.change(change)
+        f.auth.resolve(f.user)
+        f.token.resolve('token')
+        f.response.resolve(f.receipt)
         await done
-        assert.equal(
-          calls.length,
-          change === 'stable' || stage === 'response' ? 1 : 0
-        )
-        if (calls.length) assert.deepEqual(calls[0][1].body, expected)
+        assert.equal(f.calls.length, shouldDispatch ? 1 : 0)
+        if (shouldDispatch)
+          assert.deepEqual(f.calls[0].options.body, {
+            kitchenId: 'k',
+            menuId: 'm',
+            ...input,
+          })
+        f.lifetime.stop()
       }
 })
-test('Details and Delete ignore stale error/success before navigation or notification', async () => {
-  for (const action of ['rename', 'updateDescription', 'updateOrder'])
-    for (const changed of [false, true])
-      for (const failed of [false, true]) {
-        const pending = deferred(),
-          notices = [],
-          destinations = [],
-          currentUser = ref({ uid: 'u' }),
-          kitchenId = ref('k'),
-          menuId = ref('m'),
-          menuSlug = ref('food')
-        const deps = {
-          ref,
-          computed,
-          useMenuEditorScope: scope(currentUser),
-          useKitchenMenuRecordContext: () => ({
-            menu: ref({ id: 'm', name: 'Food' }),
-            menuId,
-            menuSlug,
-            kitchenId,
-            canWrite: ref(true),
-            deleteMenu: () => pending.promise,
-            subscription: ref('pro'),
-            updateMenu: () => pending.promise,
-            renameMenu: () => pending.promise,
-          }),
-          useMenuDelete: () => ({ deleteMenu: () => pending.promise }),
-          useToastify: () => ({ add: (x) => notices.push(x) }),
-          useRouter: () => ({ replace: async (x) => destinations.push(x) }),
-          navigateTo: async (x) => destinations.push(x),
-          window: { confirm: () => true },
-        }
-        const isDelete = action === 'deleteSelectedMenu',
-          api = load(
-            `../../runtime/kitchen/components/FoodAndDrink/Menus/${isDelete ? 'Delete' : 'Edit/Details'}.vue`,
-            deps,
-            isDelete
-              ? '({deleteSelectedMenu,deleting})'
-              : '({rename,updateDescription,updateOrder})',
-            true
-          )
-        const result = api[action](action === 'updateOrder' ? '2' : 'Dinner'),
-          done =
-            failed && !changed && !isDelete
-              ? assert.rejects(result, /Failure/)
-              : result
-        if (changed) {
-          menuId.value = 'other'
-          menuId.value = 'm'
-        }
-        if (isDelete && changed) api.deleting.value = true
-        failed
-          ? pending.reject(Error('Failure'))
-          : pending.resolve({ id: 'm', slug: 'dinner' })
-        await done
-        assert.equal(destinations.length, 0)
-        assert.equal(notices.length, !changed && failed && isDelete ? 1 : 0)
-        if (isDelete && changed) assert.equal(api.deleting.value, true)
+
+test('the shared field cancels stale Menu metadata submissions and reports a current command failure', async () => {
+  for (const method of [
+    'rename',
+    'updateInternalName',
+    'updateDescription',
+    'updateOrder',
+  ])
+    for (const scenario of [
+      'saved',
+      'changed-draft',
+      'changed-after-dispatch',
+      'failed',
+    ]) {
+      const f = fixture(),
+        field = f.field(method)
+      const draft = method === 'updateOrder' ? '2' : 'Dinner'
+      field.startEditing()
+      field.draft.value = draft
+      const result = field.save()
+      f.auth.resolve(f.user)
+      await Promise.resolve()
+      if (scenario === 'changed-draft') {
+        field.draft.value = 'another'
+        field.draft.value = draft
       }
+      f.token.resolve('token')
+      await Promise.resolve()
+      if (scenario === 'changed-after-dispatch') {
+        field.draft.value = 'another'
+        field.draft.value = draft
+      }
+      if (scenario === 'failed') f.response.reject(new Error('Failure'))
+      else f.response.resolve(f.receipt)
+      await result
+      assert.equal(f.calls.length, scenario === 'changed-draft' ? 0 : 1, method)
+      assert.equal(
+        field.errorMessage.value,
+        scenario === 'failed' ? 'Failure' : ''
+      )
+      assert.equal(field.isEditing.value, scenario !== 'saved')
+      assert.equal(
+        f.notices.length,
+        method === 'rename' && scenario === 'saved' ? 1 : 0
+      )
+      assert.equal(f.destinations.length, f.notices.length)
+      f.lifetime.stop()
+    }
 })
 
 test('Surviving Record context completes own live rename/delete but rejects external routed intent', async () => {
   for (const action of ['rename', 'delete'])
     for (const change of [
-      'own-live',
+      'stable',
+      'slug',
       'route',
       'account',
       'kitchen',
+      'grant',
       'dispose',
     ]) {
-      const pending = deferred(),
-        currentUser = ref({ uid: 'u' }),
-        kitchenId = ref('k'),
-        menuSlug = ref('food'),
-        recordMenu = ref({ id: 'm', name: 'Food' }),
-        recordOutcome = ref('ready'),
-        disposed = [],
-        destinations = [],
-        notices = []
-      const sourceRead = Object.assign(ref(null), {
-        pending: ref(false),
-        error: ref(null),
-      })
-      const api = load(
-        '../../runtime/kitchen/composables/workspace/menus/useKitchenMenuRecordContext.ts',
-        {
-          computed,
-          useRouter: () => ({ replace: async (x) => destinations.push(x) }),
-          useToastify: () => ({ add: (x) => notices.push(x) }),
-          useMenuEditorScope: scope(currentUser, disposed),
-          useMenuDelete: () => ({ deleteMenu: () => pending.promise }),
-          useMenuUpdate: () => ({ renameMenu: () => pending.promise }),
-          useAppSession: () => ({
-            uid: ref('u'),
-            appUser: ref({ role: 'user' }),
-            pending: ref(false),
-            error: ref(null),
-          }),
-          useFireUXConfig: () => ({ appId: 'app' }),
-          useWorkspace: () => ({ selectedId: kitchenId }),
-          useKitchenAccess: () => ({
-            ids: ref(['k']),
-            pending: ref(false),
-            error: ref(null),
-          }),
-          useRouteParam: () => menuSlug,
-          useKitchenRead: () => ({
-            kitchen: ref({}),
-            place: ref({}),
-            outcome: ref('ready'),
-            error: ref(null),
-          }),
-          useKitchenInterface: () => ({ surface: () => ({}) }),
-          readRuntimeFirestoreDatabaseId: () => 'db',
-          useKitchenMenuRead: () => ({
-            menu: recordMenu,
-            outcome: recordOutcome,
-            error: ref(null),
-          }),
-          useFirestoreRead: () => ({ firestoreFetchDoc: () => sourceRead }),
-          useMenuSectionCollection: () => ({
-            sections: ref([]),
-            pending: ref(false),
-            error: ref(null),
-            collectionPath: ref(''),
-          }),
-          useMenuSectionMutations: () => ({}),
-          useMenuPublication: () => ({}),
-          MenuSourceUploadStorage: { collection: 'sources' },
-          readPlaceCurrencyCode: () => 'CHF',
-          kitchenMenuOrdering: () => ({}),
-          useKitchenOfferingCollection: () => ({
-            offerings: ref([]),
-            outcome: ref('empty'),
-            error: ref(null),
-          }),
-        },
-        'createKitchenMenuRecordContext'
-      )()
+      const f = fixture()
       const result =
         action === 'rename'
-          ? api.renameMenu('k', 'm', 'Dinner')
-          : api.deleteMenu('k', 'm')
-      recordMenu.value = null
-      recordOutcome.value = 'empty'
-      assert.equal(api.menu.value, null)
-      assert.equal(api.menuId.value, '')
-      if (change === 'route') {
-        menuSlug.value = 'other'
-        menuSlug.value = 'food'
-      } else if (change === 'kitchen') {
-        kitchenId.value = 'other'
-        kitchenId.value = 'k'
-      } else if (change === 'account') {
-        currentUser.value = null
-        currentUser.value = { uid: 'u' }
-      } else if (change === 'dispose') disposed.forEach((fn) => fn())
-      pending.resolve({ id: 'm', slug: 'dinner' })
-      await result
+          ? f.record.renameMenu('k', 'm', 'Dinner')
+          : f.record.deleteMenu('k', 'm')
+      f.auth.resolve(f.user)
+      await Promise.resolve()
+      f.token.resolve('token')
+      await Promise.resolve()
+      assert.equal(f.calls.length, 1)
+      f.menu.value = null
+      assert.equal(f.record.menu.value, null)
+      assert.equal(f.record.menuId.value, '')
+      f.change(change)
+      f.response.resolve(f.receipt)
+      assert.deepEqual(await result, f.receipt)
+      const path = '/workspace/kitchen/food-and-drink/menus'
       assert.deepEqual(
-        destinations,
-        change === 'own-live'
-          ? [
-              action === 'rename'
-                ? '/workspace/kitchen/food-and-drink/menus/dinner'
-                : '/workspace/kitchen/food-and-drink/menus',
-            ]
-          : []
+        f.destinations,
+        change === 'stable' ? [action === 'rename' ? path + '/food' : path] : []
       )
-      assert.equal(notices.length, change === 'own-live' ? 1 : 0)
+      assert.equal(f.notices.length, change === 'stable' ? 1 : 0)
+      f.lifetime.stop()
     }
 })

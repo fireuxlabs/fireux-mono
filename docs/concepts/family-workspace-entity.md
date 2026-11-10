@@ -314,7 +314,7 @@ and the reader changes the UI. The reader implementation is replaceable: an
 existing listener, API reader, cache, or consumer is not architectural
 authority and may be rebuilt after the contract is fixed.
 Project Team and Kitchen Team prove one Core-owned Team interaction for stable
-member-id selection, collection Read, Update, and Deactivate mechanics. Their
+member-id selection, collection Read, Update, and roster removal. Their
 thin Entity adapters retain Create workflow, detail-route prefix, copy, and
 trusted commands; Core does not acquire either Entity's Team authority.
 Project and Kitchen Test are disposable string pipelines: a live reader, direct
@@ -341,9 +341,11 @@ Kitchen-owned Workspace and resolves available Kitchens through runtime
 authority rather than configured target ids. The shared component does not
 receive Entity names, subscription rules, or capability configuration.
 
-Canonical storage follows the Entity boundary. Project owns
-`projects/{projectId}/team/{uid}`. Kitchen owns
-`kitchens/{kitchenId}/team/{uid}` while its root model contains
+Project owns `projects/{projectId}/team/{memberId}` and Kitchen owns
+`kitchens/{kitchenId}/team/{memberId}`. A roster document keeps its own ID.
+Its optional `user_id` links an account. Onboarding can use the UID as the
+initial member's document ID, and ordinary Team creation generates a member ID.
+Kitchen's root model contains
 `id` and nested `identity.{slug,status,visibility,source?}`. Shared venue
 profile and currency remain on the linked same-id Place.
 Core's `workspace/server/team/roles.ts` receives a required `TeamRolePolicy`
@@ -610,7 +612,7 @@ when its account allowance or authority disallows creation; other capability
 CRUD presentations require their own bounded verification.
 
 Within these proving capabilities, Read is a two-stage CRUD primitive.
-The Read toolbar action opens a domain-owned modal containing that capability's
+The Read action opens a modal containing that capability's
 collection; selecting a record in the modal opens its individual detail route.
 The toolbar action must not navigate directly, and refresh alone is not Read
 evidence. Project Team and Kitchen Team keep
@@ -633,8 +635,16 @@ edits its own name, description and image; Kitchen composes Kitchen identity wit
 its same-id Place. Address, contact, business hours, currency and timezone stay
 Place-owned. No shared Identity-field model is required by these consumers.
 
-The shared `Workspace/Team/Crud.vue` editor manages name. Roles are
-assigned beside the selected person; Dev and Operator are fixed labels and each
+Core’s [Team Editor](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Editor.vue)
+opens the existing searchable roster in read-only mode for an AI Read. Kitchen
+and Project supply the detail link for each member ID. The AI request includes
+a bounded set of records with the selected member. The review uses the full
+roster available to the page. The selected member’s
+settings own name editing. Manual Remove and AI Delete open the same
+[confirmation](../../packages/core/fireux-core/src/runtime/workspace/components/Team/Crud/Remove.vue),
+which names the person. Only confirmation calls the domain removal command.
+Changing Workspace, member or removal availability cancels the review.
+Roles are assigned beside the selected person. Dev and Operator are fixed labels and each
 workspace offers authored industry suggestions. Roles do not affect access.
 Current App membership, domain-owned access and subscription are the development
 boundary. Every person counts toward subscription capacity. The focused form proof is
@@ -928,7 +938,7 @@ this Workspace map owns only their application to active-Entity surfaces.
 
 ### Project and Kitchen Team profiles
 
-Both surfaces consume `models/workspace-team-member.model.ts` and `TeamAIIntent`
+Both surfaces consume the `workspace/models/team-member.model.ts` contract and `TeamAIIntent`
 directly. Core owns Team Selector, Create and Editor; domain Index components
 compose those surfaces with their routes, headings, role controls and invitations.
 Domain-named type re-exports and forwarding UI copies are retired. Their data adapters compose Core

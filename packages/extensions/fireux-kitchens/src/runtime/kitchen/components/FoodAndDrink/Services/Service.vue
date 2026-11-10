@@ -1,55 +1,61 @@
 <template>
   <section
-    :id="`service-${option.key}`"
+    :id="sectionId"
     ref="section"
     :aria-label="option.label"
     tabindex="-1"
-    class="service-section"
+    class="workspace-surface service-section"
   >
     <div>
-      <div>
-        <UIcon :name="option.icon" aria-hidden="true" />
-        <h2>{{ option.label }}</h2>
-      </div>
-      <USwitch
-        :model-value="editor.enabled"
-        :label="editor.enabled ? 'On' : 'Off'"
-        :aria-label="option.label + ' availability'"
-        :disabled="disabled"
-        @update:model-value="editor.setEnabled"
-      />
-      <span v-if="editor.enabled && !readiness.canEnable">{{
-        !editor.menuIds.length
-          ? 'Needs menus'
-          : !readiness.validSelection
-            ? 'Replace unavailable menus'
-            : 'Publish a selected menu'
-      }}</span>
-      <span v-if="editor.busy" role="status">Updating…</span>
+      <UIcon :name="option.icon" aria-hidden="true" />
+      <h2>{{ option.label }}</h2>
     </div>
-    <FireCopyError v-if="editor.error" :message="editor.error" />
-    <KitchenFoodAndDrinkServicesSetup v-if="editor.enabled" />
+    <KitchenFoodAndDrinkServicesRecord
+      v-for="offering in offerings"
+      :key="offering.id"
+      :option="option"
+      :offering="offering"
+      :anchor="sectionId + '/' + offering.id"
+    />
+    <KitchenFoodAndDrinkServicesRecord
+      v-if="!offerings.length"
+      :option="option"
+    />
   </section>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
-import type { KitchenOfferingOption } from '../../../utils/offering-options'
-import { provideKitchenServiceEditor } from '../../../composables/offerings/useKitchenServiceEditor'
+import { useKitchenServicesContext } from '../../../composables/offerings/useKitchenServicesContext'
+import {
+  offeringsForOption,
+  type KitchenOfferingOption,
+} from '../../../utils/offering-options'
 const props = defineProps<{ option: KitchenOfferingOption }>()
-const { editor, readiness, disabled } = provideKitchenServiceEditor(
-  props.option
+const { retained } = useKitchenServicesContext()
+const offerings = computed(() =>
+  offeringsForOption(retained.value?.offerings || [], props.option)
 )
+const sectionId = 'service-' + props.option.key
 const section = ref<HTMLElement | null>(null)
 const route = useRoute()
-// The configuration arrives asynchronously; scroll once its section exists.
 watch(
-  [section, () => route.hash],
+  [
+    section,
+    () => route.hash,
+    () => JSON.stringify(offerings.value.map((row) => row.id)),
+  ],
   ([element, hash]) => {
-    if (element && hash === `#service-${props.option.key}`) {
-      element.scrollIntoView({ block: 'start' })
-      element.focus({ preventScroll: true })
-    }
+    if (!element) return
+    const target =
+      hash === '#' + sectionId
+        ? element
+        : hash.startsWith('#' + sectionId + '/')
+          ? element.ownerDocument.getElementById(hash.slice(1))
+          : null
+    if (!target || !element.contains(target)) return
+    target.scrollIntoView({ block: 'start' })
+    target.focus({ preventScroll: true })
   },
   { flush: 'post' }
 )

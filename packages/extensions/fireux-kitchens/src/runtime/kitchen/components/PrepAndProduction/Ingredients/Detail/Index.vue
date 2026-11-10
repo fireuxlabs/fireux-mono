@@ -123,7 +123,7 @@ const deleteOpen = ref(false)
 const deleting = ref(false)
 const deleteError = ref('')
 const { unselectIngredient, captureIntent, authorityEpoch } =
-  useKitchenIngredientUpdate([ingredientId, deleteOpen])
+  useKitchenIngredientUpdate([kitchenId, ingredientId, deleteOpen])
 watch(
   deleteOpen,
   () => {
@@ -133,7 +133,7 @@ watch(
   { flush: 'sync' }
 )
 watch(
-  [authorityEpoch, ingredientId],
+  [authorityEpoch, kitchenId, ingredientId],
   () => {
     deleting.value = false
     deleteOpen.value = false

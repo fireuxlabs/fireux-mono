@@ -4,6 +4,11 @@ import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import * as Vue from 'vue'
+import { readPlaceCurrencyCode } from '../../../fireux-places/src/runtime/place/utils/place-spine.ts'
+import {
+  normalizeKitchenPromotion,
+  promotionDays,
+} from '../runtime/kitchen/utils/promotions/pricing.ts'
 
 const runtime = new URL('../runtime/kitchen/', import.meta.url)
 function load(path, result, deps) {
@@ -51,7 +56,7 @@ function fixture() {
         computed: Vue.computed,
         shallowRef: Vue.shallowRef,
         watch: Vue.watch,
-        useKitchenPromotions: () => state,
+        useKitchenWorkspacePromotions: () => state,
       }
     )
   )
@@ -181,6 +186,7 @@ test('readiness changes do not change the promotion editor owner or acquire extr
     outcome: Vue.ref('ready'),
     canWrite: Vue.ref(true),
     selectedKitchen: Vue.ref({}),
+    currencyCode: Vue.ref('CHF'),
   }
   const session = {
     uid: Vue.ref('account-a'),
@@ -188,8 +194,8 @@ test('readiness changes do not change the promotion editor owner or acquire extr
   }
   const reads = []
   const state = load(
-    'composables/promotions/useKitchenPromotions.ts',
-    'useKitchenPromotions()',
+    'composables/workspace/promotions/useKitchenWorkspacePromotions.ts',
+    'useKitchenWorkspacePromotions()',
     {
       computed: Vue.computed,
       useKitchenWorkspaceIdentity: () => identity,
@@ -203,9 +209,7 @@ test('readiness changes do not change the promotion editor owner or acquire extr
           error: Vue.ref(null),
         }
       },
-      readPlaceCurrencyCode: () => 'CHF',
       useCommandScope: () => () => () => true,
-      useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
     }
   )
   const owner = state.editorOwnerKey.value
@@ -225,4 +229,80 @@ test('readiness changes do not change the promotion editor owner or acquire extr
   identity.kitchenId.value = 'kitchen-a'
   session.uid.value = 'account-b'
   assert.notEqual(state.editorOwnerKey.value, owner)
+})
+
+test('Promotion save uses the linked Place currency supplied by Kitchen Identity', async () => {
+  const place = Vue.ref({ id: 'k', default_currency_code: 'CHF' })
+  const identity = load(
+    'composables/useKitchenIdentity.ts',
+    'useKitchenIdentityProjection(input)',
+    {
+      computed: Vue.computed,
+      readPlaceCurrencyCode,
+      input: {
+        id: Vue.ref('k'),
+        data: Vue.ref({
+          id: 'k',
+          identity: { slug: 'venue', status: 'active', visibility: true },
+        }),
+        outcome: Vue.ref('ready'),
+        place,
+        placeOutcome: Vue.ref('ready'),
+      },
+    }
+  )
+  identity.canWrite = Vue.ref(true)
+  const state = load(
+    'composables/workspace/promotions/useKitchenWorkspacePromotions.ts',
+    'useKitchenWorkspacePromotions()',
+    {
+      computed: Vue.computed,
+      useKitchenWorkspaceIdentity: () => identity,
+      useAppSession: () => ({
+        uid: Vue.ref('operator'),
+        appUser: Vue.ref({ role: 'user' }),
+      }),
+      useFireUXConfig: () => ({ appId: 'misebox' }),
+      useKitchenChildCollection: () => ({
+        items: Vue.ref([]),
+        outcome: Vue.ref('empty'),
+      }),
+      useCommandScope: () => () => () => true,
+    }
+  )
+  const saves = []
+  state.save = async (...args) => saves.push(args)
+  const editor = load(
+    'composables/promotions/usePromotionEditor.ts',
+    'usePromotionEditor()',
+    {
+      computed: Vue.computed,
+      ref: Vue.ref,
+      normalizeKitchenPromotion,
+      promotionDays,
+      useKitchenPromotionsContext: () => ({
+        state,
+        editor: Vue.ref({
+          promotion: {
+            id: 'sunday',
+            name: 'Sunday pizzas',
+            status: 'active',
+            currency: 'CHF',
+            days: ['sunday'],
+            dishes: [{ dishId: 'pizza', price: 11 }],
+          },
+        }),
+        canSave: Vue.ref(true),
+        closeEditor() {},
+      }),
+    }
+  )
+  assert.equal(state.currency.value, 'CHF')
+  await editor.save()
+  assert.equal(editor.error.value, '')
+  assert.equal(saves[0][0].currency, 'CHF')
+  assert.equal(saves[0][1], 'sunday')
+  place.value = { id: 'k', default_currency_code: 'EUR' }
+  await editor.save()
+  assert.equal(saves[1][0].currency, 'EUR')
 })

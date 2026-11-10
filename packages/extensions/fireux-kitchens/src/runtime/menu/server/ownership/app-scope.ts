@@ -27,36 +27,26 @@ export const requireMenuAppId = () => {
 export async function resolveTenantMenuScope(): Promise<TenantMenuScope | null> {
   if (!isTenantMenuApp()) return null
 
-  const appId = currentMenuAppId()
+  const appId = requireMenuAppId()
   const targetSnapshot = await getRuntimeFirestore()
     .collection('kitchens')
     .where('management.mode', '==', 'app')
     .where('management.app_id', '==', appId)
     .limit(2)
     .get()
-  const targetIds = targetSnapshot.docs.map((document) => document.id)
-  if (targetIds.length !== 1) {
+  const [kitchen] = targetSnapshot.docs
+  if (targetSnapshot.size !== 1 || !kitchen) {
     throw configurationError(
       'Tenant menu scope requires exactly one Kitchen target.'
     )
   }
 
-  const kitchenId = targetIds[0] || ''
-
-  const rootKitchenSnap = await getRuntimeFirestore()
-    .collection('kitchens')
-    .doc(kitchenId)
-    .get()
-  if (!rootKitchenSnap.exists) {
-    throw configurationError('Tenant menu Kitchen target was not found.')
-  }
-
-  const rootKitchenData = rootKitchenSnap.data() || {}
+  const rootKitchenData = kitchen.data()
 
   return {
-    appId: requireMenuAppId(),
-    kitchenId,
-    kitchenSlug: readRecordString(rootKitchenData, 'slug'),
+    appId,
+    kitchenId: kitchen.id,
+    kitchenSlug: readRecordString(record(rootKitchenData.identity), 'slug'),
     rootKitchenData,
   }
 }
@@ -83,7 +73,7 @@ export async function resolveDirectoryMenuScope(
   return {
     appId: requireMenuAppId(),
     kitchenId: kitchen.id,
-    kitchenSlug: readRecordString(kitchen.data, 'slug') || kitchenSlug,
+    kitchenSlug: kitchen.slug,
     rootKitchenData: kitchen.data,
   }
 }

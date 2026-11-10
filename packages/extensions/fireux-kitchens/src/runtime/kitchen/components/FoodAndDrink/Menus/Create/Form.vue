@@ -66,7 +66,7 @@ const busy = ref(false)
 const error = ref('')
 const route = useRoute()
 const captureScope = useMenuEditorScope(
-  [kitchenId, name, description, () => route.fullPath],
+  [kitchenId, name, description, canCreateMenu, () => route.fullPath],
   () => {
     busy.value = false
     error.value = ''
@@ -78,11 +78,14 @@ async function save() {
   busy.value = true
   error.value = ''
   try {
-    const menu = await createMenu({
-      name: name.value.trim(),
-      description: description.value.trim(),
-      format: 'interactive',
-    })
+    const menu = await createMenu(
+      {
+        name: name.value.trim(),
+        description: description.value.trim(),
+        format: 'interactive',
+      },
+      isCurrent
+    )
     if (!isCurrent()) return
     await openView(menu.slug, 'content')
   } catch (caught) {

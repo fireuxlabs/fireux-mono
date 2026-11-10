@@ -35,7 +35,8 @@ export async function requireMenuDocumentAuthority(
     kitchenId: string
     menuId?: string
     claimSecret?: string
-  }
+  },
+  options: { allowArchived?: boolean; exactMenu?: boolean } = {}
 ) {
   const kitchenId = requireFirestoreDocumentId(input.kitchenId, 'Kitchen id')
   const [kitchen, place, claim] = await Promise.all([
@@ -62,7 +63,16 @@ export async function requireMenuDocumentAuthority(
         statusMessage: 'This Menu recovery key is invalid.',
       })
   } else await requireKitchenWriterAccount(input, input.uid, tx)
-  const menus = await tx.readAll(serverKitchenMenusTarget(kitchenId), 1000)
+  const menuTarget = serverKitchenMenusTarget(kitchenId)
+  const exactId = options.exactMenu
+    ? requireFirestoreDocumentId(input.menuId, 'Menu id')
+    : ''
+  const exact = exactId ? await tx.read(menuTarget, exactId) : null
+  const menus = exactId
+    ? exact?.exists
+      ? [{ id: exactId, data: exact.data! }]
+      : []
+    : await tx.readAll(menuTarget, 1000)
   const pinned = guest ? String(claim?.data?.document_menu_id || '') : ''
   const activeMenus = menus.filter((menu) => menu.data.status !== 'archived')
   const defaultMenu = guest
@@ -72,7 +82,10 @@ export async function requireMenuDocumentAuthority(
     ? requireFirestoreDocumentId(input.menuId, 'Menu id')
     : pinned || defaultMenu?.id
   const menu = menus.find((menu) => menu.id === id)
-  if (!menu || menu.data.status === 'archived')
+  if (
+    !menu ||
+    (menu.data.status === 'archived' && (guest || !options.allowArchived))
+  )
     throw createError({
       statusCode: 409,
       statusMessage: 'Choose an active document Menu.',
@@ -99,8 +112,14 @@ export async function requireMenuDocumentAuthority(
 }
 
 export function assertMenuAcceptsDocument(target: {
+  menu: { data: { schedule?: unknown } }
   hasStructuredContent: boolean
 }) {
+  if (target.menu.data.schedule === 'daily')
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Daily Menus use dated selections instead of a document.',
+    })
   if (target.hasStructuredContent)
     throw createError({
       statusCode: 409,

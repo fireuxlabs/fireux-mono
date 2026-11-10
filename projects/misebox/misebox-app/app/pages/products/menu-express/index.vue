@@ -25,6 +25,23 @@
             :menu-id="menu.data?.menuId || 'preview'"
           />
         </div>
+        <p v-else-if="menu.previewPending" role="status">
+          Opening saved document…
+        </p>
+        <UAlert
+          v-else-if="menu.previewError"
+          color="neutral"
+          title="Document preview unavailable"
+          :description="menu.previewError"
+        >
+          <template #actions>
+            <UButton
+              label="Try again"
+              variant="soft"
+              @click="menu.retryPreview"
+            />
+          </template>
+        </UAlert>
         <p v-else class="fx-type-caption">
           Preview your document, then publish it. No payment or Workspace setup.
         </p>

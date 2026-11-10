@@ -24,6 +24,10 @@ import {
 } from './onboarding-actor'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
 import {
+  readKitchenTeamAccountLinkInTransaction,
+  requireUnambiguousKitchenTeamLink,
+} from '../../team/account-link'
+import {
   serverKitchenAccessTarget,
   resolveKitchenGrantIds,
 } from '../../core/access'
@@ -68,7 +72,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       user,
       place,
       root,
-      teamMember,
+      teamLink,
       actorMembership,
       systemMenus,
       access,
@@ -77,7 +81,11 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
       mutations.read(PLACE_MUTATION_TARGETS.places, kitchenId),
       mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, kitchenId),
-      mutations.read(teamMembers, ownerUserId),
+      readKitchenTeamAccountLinkInTransaction(
+        mutations,
+        teamMembers,
+        ownerUserId
+      ),
       ownerUserId === current.uid
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
@@ -100,7 +108,8 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       fail(409, 'The Kitchen owner must finish their User name first.')
     }
 
-    const anyShellRecord = place.exists || root.exists || teamMember.exists
+    const teamMember = requireUnambiguousKitchenTeamLink(teamLink)
+    const anyShellRecord = Boolean(place.exists || root.exists || teamMember)
     const kitchenIds = readKitchenAccessIds(
       access.data,
       membership.data,
@@ -115,12 +124,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       )
     )
     if (anyShellRecord) {
-      if (
-        !place.exists ||
-        !root.exists ||
-        !teamMember.exists ||
-        text(teamMember.data?.user_id) !== ownerUserId
-      ) {
+      if (!place.exists || !root.exists || !teamMember) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
     } else {

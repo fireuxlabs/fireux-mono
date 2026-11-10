@@ -237,8 +237,8 @@ function mount(h, component, exposed, extra = {}) {
       ...identity,
       menuId: vue.ref('menu'),
       sectionId: vue.ref('section'),
-      dishes: vue.ref([]),
-      itemRows: vue.ref([]),
+      dishSource: { dishes: vue.ref([]), outcome: vue.ref('empty'), error: vue.ref(null) },
+      activeItemRows: vue.ref([]),
       createItem: async (input) => {
         h.calls.push({ placement: input })
       },
@@ -334,6 +334,7 @@ function mount(h, component, exposed, extra = {}) {
   for (const name of [
     'UFormField',
     'FireStateCard',
+    'FireState',
     'UCard',
     'FireCopyError',
     'KitchenFoodAndDrinkItemsDescriptionAssistant',

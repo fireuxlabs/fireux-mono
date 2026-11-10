@@ -143,6 +143,7 @@ const changes = [
 test('Menu creation suppresses obsolete navigation, errors and busy-state completion', async () => {
   for (const changed of changes)
     for (const failed of [false, true]) {
+      let intentCurrent
       const h = context(),
         api = h.run(
           'kitchen/components/FoodAndDrink/Menus/Create/Form.vue',
@@ -157,7 +158,8 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
               canCreateMenu: ref(true),
               menuCreateBlockedMessage: ref(''),
               subscription: ref('pro'),
-              createMenu: (input) => {
+              createMenu: (input, isCurrent) => {
+                intentCurrent = isCurrent
                 h.calls.push(structuredClone(input))
                 return h.response.promise
               },
@@ -168,6 +170,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
       api.description.value = 'Original'
       const pending = api.save()
       h.change(changed)
+      assert.equal(intentCurrent(), changed === 'stable')
       if (changed !== 'stable') api.busy.value = true
       failed
         ? h.response.reject(Error('Failure'))
@@ -200,7 +203,6 @@ test('URL source captures its body and blocks stale credentials and obsolete com
           {
             crypto: { randomUUID: () => 'test-source' },
             navigateTo: (path) => h.effects.push(path),
-            useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
             useKitchenMenusContextSource: () => ({
               activeKitchenAppId: h.activeKitchenAppId,
               canWrite: h.canWrite,
@@ -219,7 +221,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       h.change(changed)
       if (changed !== 'stable') api.pending.value = true
       h.token.resolve('token')
-      h.response.resolve({ ok: true })
+      h.response.resolve({ ok: true, id: 'source-test-source' })
       await pending
       assert.equal(
         h.calls.length,
@@ -245,44 +247,44 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       h.lifetime.stop()
     }
 })
-test('Menu removal returns to the collection after live data removes the record', async () => {
+test('Menu removal submits its exact target to the record owner before live data unmounts the confirmation', async () => {
   const h = context()
-  const menuId = ref('menu'),
-    menuSlug = ref('main'),
-    canManage = ref(true)
+  const menu = ref({ id: 'menu', name: 'Main', status: 'draft' })
   const api = h.run(
     'kitchen/components/FoodAndDrink/Menus/Detail/Remove.vue',
-    '({apply,confirm,busy,error})',
+    '({apply,confirm,busy})',
     {
       useKitchenMenuRecordContext: () => ({
-        menu: ref({ id: 'menu', name: 'Main', status: 'draft' }),
+        menu,
         offerings: ref([]),
         offeringsOutcome: ref('empty'),
         offeringsError: ref(null),
         allSections: ref([]),
         sectionsPending: ref(false),
         sectionsError: ref(null),
-        menuId,
-        menuSlug,
+        menuId: computed(() => menu.value?.id || ''),
+        menuSlug: ref('main'),
         kitchenId: h.kitchenId,
-        canManage,
+        canManage: computed(() => Boolean(menu.value)),
+        deleteMenu: (kitchenId, menuId, isCurrent) => {
+          h.calls.push({ kitchenId, menuId, isCurrent })
+          return h.response.promise
+        },
       }),
-      useMenuDelete: () => ({ deleteMenu: () => h.response.promise }),
-      useMenuPublication: () => ({
-        archiveMenu: () => h.response.promise,
-        restoreMenu: () => h.response.promise,
-      }),
-      navigateTo: (path) => h.effects.push(path),
     }
   )
   api.confirm.value = 'delete'
   const request = api.apply()
-  menuId.value = ''
-  canManage.value = false
+  assert.equal(h.calls.length, 1)
+  const [{ kitchenId, menuId, isCurrent }] = h.calls
+  assert.deepEqual([kitchenId, menuId], ['kitchen', 'menu'])
+  assert.equal(isCurrent(), true)
+  assert.equal(api.busy.value, true)
+  menu.value = null
+  h.lifetime.stop()
   h.response.resolve({ ok: true })
   await request
-  assert.deepEqual(h.effects, ['/workspace/kitchen/food-and-drink/menus'])
-  assert.equal(api.busy.value, false)
+  assert.equal(isCurrent(), false)
 })
 
 test('Menu suggestions stay locked for Free and create ordinary interactive drafts for Pro', async () => {
@@ -347,30 +349,38 @@ test('Menu archive UI shows affected services and restores only to draft', async
           allSections: ref([]),
           sectionsPending: ref(false),
           sectionsError: ref(null),
-        }),
-        useMenuDelete: () => ({
           deleteMenu: () => {
             throw Error('Must not delete')
           },
-        }),
-        useMenuPublication: () => ({
           archiveMenu: (...args) => {
-            calls.push([...args, true])
+            calls.push(['archive', ...args])
             return h.response.promise
           },
           restoreMenu: (...args) => {
-            calls.push([...args, false])
+            calls.push(['restore', ...args])
             return h.response.promise
           },
         }),
-        navigateTo: (path) => h.effects.push(path),
       }
     )
     assert.equal(api.canDelete.value, false)
     assert.equal(api.affectedServices.value[0].name, 'Lunch')
-    api.confirm.value = 'archive'
+    const action = archived ? 'restore' : 'archive'
+    api.confirm.value = action
+    menu.value.status = archived ? 'draft' : 'archived'
+    const obsoleteRequest = api.apply()
+    assert.deepEqual(
+      calls,
+      [],
+      'another operator already completed this action'
+    )
+    assert.equal(api.confirm.value, '')
+    await obsoleteRequest
+
+    menu.value.status = archived ? 'archived' : 'published'
+    api.confirm.value = action
     const request = api.apply()
-    assert.deepEqual(calls[0], ['kitchen', 'menu', !archived])
+    assert.deepEqual(calls, [[action, 'kitchen', 'menu']])
     h.route.fullPath = '/elsewhere'
     h.response.resolve({ ok: true })
     await request

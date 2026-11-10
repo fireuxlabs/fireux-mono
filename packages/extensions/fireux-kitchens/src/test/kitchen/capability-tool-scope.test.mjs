@@ -97,52 +97,58 @@ test('Kitchen/account changes clear active tools, including away-and-back and re
 test('Station draft clears and a previous save cannot replace the new context state', async () => {
   for (const change of ['kitchen', 'account']) {
     const scope = effectScope()
-    const kitchenId = ref('a'),
-      currentUser = ref({ uid: 'one' })
+    const kitchenId = ref('a')
+    const user = (uid) => ({ uid, getIdToken: async () => 'token' })
+    const currentUser = ref(user('one'))
     const saves = []
-    let unmount
+    const deps = {
+      computed,
+      ref,
+      watch,
+      useAuth: () => ({ currentUser }),
+      useRequireUser: async () => currentUser.value,
+      useKitchenWorkspaceStations: () => ({
+        kitchenId,
+        rootCollection: ref('kitchens'),
+        canWrite: ref(true),
+        stations: ref([]),
+      }),
+      $fetch: (_, options) =>
+        new Promise((resolve) => saves.push({ input: options.body, resolve })),
+    }
+    deps.useKitchenStationCreate = load(
+      'kitchen/composables/stations/useKitchenStationCreate.ts',
+      deps,
+      'useKitchenStationCreate'
+    )
     const state = scope.run(() =>
       load(
         'kitchen/components/PrepAndProduction/Stations/Create/Index.vue',
-        {
-          computed,
-          ref,
-          watch,
-          onBeforeUnmount: (fn) => {
-            unmount = fn
-          },
-          useAuth: () => ({ currentUser }),
-          useKitchenWorkspaceStations: () => ({
-            kitchenId,
-            rootCollection: ref('kitchens'),
-            canWrite: ref(true),
-            stations: ref([]),
-          }),
-          useKitchenStationCreate: () => ({
-            createKitchenStation: (input) =>
-              new Promise((resolve) => saves.push({ input, resolve })),
-          }),
-        },
+        deps,
         '{ name, message, saving, addStation }',
         true
       )
     )
     state.name.value = 'Grill'
     const old = state.addStation()
+    await Promise.resolve()
+    await Promise.resolve()
+    assert.equal(saves.length, 1)
     if (change === 'kitchen') kitchenId.value = 'b'
-    else currentUser.value = { uid: 'two' }
+    else currentUser.value = user('two')
     assert.equal(state.name.value, '')
     assert.equal(state.message.value, '')
     state.name.value = 'Cold kitchen'
     const next = state.addStation()
-    saves[0].resolve('grill')
+    await Promise.resolve()
+    await Promise.resolve()
+    saves[0].resolve({ id: 'grill' })
     await old
     assert.equal(state.name.value, 'Cold kitchen')
     assert.equal(state.saving.value, true)
-    saves[1].resolve('cold-kitchen')
+    saves[1].resolve({ id: 'cold-kitchen' })
     await next
     assert.equal(state.message.value, 'Added cold-kitchen.')
-    unmount()
     scope.stop()
   }
 })

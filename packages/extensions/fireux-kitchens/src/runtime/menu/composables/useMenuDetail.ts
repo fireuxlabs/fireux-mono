@@ -14,7 +14,6 @@ import { useMenuThemeSurface } from './useMenuThemeSurface'
 import { resolveMenuBrowseSurfaceCopy } from '../utils/catalogue/surface-copy'
 import {
   menuCanonicalPath,
-  menuDocumentFilePath,
   type MenuRouteScope,
 } from '../utils/navigation/route'
 import { guestMenuSurfaceOptions } from '../utils/navigation/context'
@@ -34,7 +33,6 @@ export function useMenuDetail(props: {
   const {
     pending,
     offeringId,
-    kitchenSlug,
     indexPath: menuIndexPath,
     menuPath,
     renderKind,
@@ -176,15 +174,7 @@ export function useMenuDetail(props: {
         to: preserveSproochliQuery(option.to),
       }))
   )
-  const documentUrl = computed(() => {
-    const file = documentMenu.value?.file
-    if (!file?.storage_path || !menuId.value) return file?.url || ''
-
-    return menuDocumentFilePath({
-      menuId: menuId.value,
-      kitchenSlug: kitchenSlug.value,
-    })
-  })
+  const documentUrl = computed(() => documentMenu.value?.file?.url || '')
   const { className: themeClassName, styleVars: themeStyleVars } =
     useMenuThemeSurface({
       theme,

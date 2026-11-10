@@ -69,6 +69,12 @@ injected owner data.
   order is never a fallback. Dish owns food imagery. Optional App Brand Asset
   roles such as marks and patterns remain unapproved until their owner records
   canonical role and usage metadata.
+  `kitchen/server/dishes/flagship-projection.ts` reads only identity and
+  presentation fields, so unrelated price validation stays with commercial
+  consumers. It validates the explicit Kitchen path and reads the canonical
+  root before projecting the saved flagship choice. App inputs remain request
+  context. Main App previews can read a tenant Kitchen by its explicit ID.
+  `dish-reader-internals.test.mjs` verifies these boundaries.
 - The `/templates` catalogue selects one Kitchen, displays its effective
   presentation inputs, checks Kitchen-level template readiness, and lists
   compatible presentations. The readiness check reports supplied values and

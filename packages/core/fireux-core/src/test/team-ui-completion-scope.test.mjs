@@ -4,6 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { test } from 'node:test'
 import {
+  markRaw,
   computed,
   ref,
   reactive,
@@ -45,8 +46,19 @@ async function fixture(file, names, controllerFixture) {
     create: controllerFixture?.controller.primitives.create ?? (() => pending),
     updateMember:
       controllerFixture?.controller.primitives.update ?? (() => pending),
-    removeMember:
-      controllerFixture?.controller.primitives.delete ?? (() => pending),
+    team: markRaw({
+      workspaceId: ref('first'),
+      state: ref({
+        team: {
+          selectedTeamMemberId: 'a',
+          members: [{ id: 'a', name: 'Before' }],
+        },
+      }),
+      derived: ref({
+        capability: { primitives: { delete: { available: true } } },
+      }),
+      primitives: { delete: () => pending },
+    }),
   })
   const source = readFileSync(
     new URL('../runtime/workspace/components/Team/' + file, import.meta.url),
@@ -108,12 +120,16 @@ for (const outcome of ['success', 'failure']) {
     assert.deepEqual(f.events, [])
     assert.equal(f.state.message.value, '')
   })
-  for (const file of ['UpdateForm.vue', 'Settings.vue'])
+  for (const file of ['UpdateForm.vue', 'Crud/Remove.vue'])
     test(`Disposed ${file} ${outcome} has no obsolete feedback`, async () => {
       const update = file === 'UpdateForm.vue',
-        f = await fixture(file, update ? 'save,name,error' : 'remove,error')
+        f = await fixture(
+          file,
+          update ? 'save,name,error' : 'prepare,confirm,error'
+        )
       if (update) f.props.available = true
-      const run = update ? f.state.save() : f.state.remove()
+      else f.state.prepare('a')
+      const run = update ? f.state.save() : f.state.confirm()
       f.scope.stop()
       outcome === 'success'
         ? f.resolve({ name: 'Before' })

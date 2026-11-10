@@ -135,7 +135,6 @@ export type MenuDocumentPayload = MenuKitchenPresentation & {
     url?: string
     name?: string
     type?: string
-    storage_path?: string
   }
 }
 
@@ -158,8 +157,7 @@ export type MenuDocumentRead = {
   status: MenuStatus
   revision: string
   acceptsDocument: boolean
-  document: Pick<MenuDocument, 'url' | 'name' | 'type'> | null
-  previewUrl: string
+  document: Pick<MenuDocument, 'name' | 'type'> | null
   menuPath: string
   qrPath: string
   menus: Array<{ value: string; label: string }>

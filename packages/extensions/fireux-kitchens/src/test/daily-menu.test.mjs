@@ -26,8 +26,8 @@ function harness(tier = 'pro') {
         createError: (data) =>
           Object.assign(new Error(data.statusMessage), data),
       }
-    if (id.includes('menu-date')) return dates.exports
-    if (id.endsWith('/targets'))
+    if (id.endsWith('/calendar/date')) return dates.exports
+    if (id.endsWith('/mutation-targets'))
       return {
         serverKitchenMenusTarget: (k) => target(k),
         serverKitchenMenuSectionsTarget: (k, m) => target(k, m),

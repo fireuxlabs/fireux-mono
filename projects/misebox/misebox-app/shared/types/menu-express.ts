@@ -1,5 +1,9 @@
 import type { KitchenMenuReview } from 'fireux-kitchens/runtime/menu/models/menu-review.model'
-export type MenuExpressReview = KitchenMenuReview
+export type MenuExpressReview =
+  | Extract<KitchenMenuReview, { format: 'interactive' }>
+  | (Omit<Extract<KitchenMenuReview, { format: 'document' }>, 'document'> & {
+      document: { name: string; type: string }
+    })
 export type MenuExpressStage =
   | 'received'
   | 'preparing'

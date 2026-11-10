@@ -7,6 +7,8 @@ import {
   normalizeIngredient,
 } from '../../../ingredient/server/normalize'
 import type { RecipePreparation } from '../../models/recipe-preparation'
+import { serverKitchenDishesTarget } from '../mutation-targets'
+import { normalizeKitchenPrepItem } from '../../utils/prep-item'
 
 function childTarget(
   kitchenId: string,
@@ -101,4 +103,41 @@ export async function requireKitchenRecipeReference(
       statusCode: 409,
       statusMessage: 'The recipe is unavailable in this Kitchen.',
     })
+}
+
+/** Existing Dish specifications and recipe-backed Prep Items retain the Recipe id. */
+export async function requireUnusedKitchenRecipe(
+  transaction: GuardedServerTransaction,
+  kitchenId: string,
+  recipeId: string
+) {
+  for (const kind of ['Dish', 'Prep Item'] as const) {
+    const target =
+      kind === 'Dish'
+        ? serverKitchenDishesTarget(kitchenId)
+        : childTarget(kitchenId, 'prep-items')
+    let afterId: string | undefined
+    for (;;) {
+      // Stored references remain readable after trimming, so exact queries can miss them.
+      const rows = await transaction.readAll(target, 100, afterId)
+      const usage = rows.find(({ data }) =>
+        kind === 'Dish'
+          ? Array.isArray(data.spec?.recipe_ids) &&
+            data.spec.recipe_ids.some(
+              (id: unknown) => String(id ?? '').trim() === recipeId
+            )
+          : normalizeKitchenPrepItem(data).recipe_id === recipeId
+      )
+      if (usage)
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Recipe is still in use.',
+          data: {
+            message: `This recipe is used by ${kind} “${String(usage.data.name || usage.id)}”.`,
+          },
+        })
+      if (rows.length < 100) break
+      afterId = rows.at(-1)!.id
+    }
+  }
 }

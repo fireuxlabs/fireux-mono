@@ -3,6 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
+import { menuCanonicalPath } from '../runtime/menu/utils/navigation/route.ts'
 
 const load = (path, name, dependencies) => {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -15,6 +16,90 @@ const load = (path, name, dependencies) => {
 }
 
 const text = (data, key) => String(data[key] || '')
+test('public directory and tenant Menu links follow the owning Kitchen identity', async () => {
+  const kitchens = [
+    {
+      id: 'a',
+      data: {
+        identity: { slug: 'new-name' },
+        slug: 'old-name',
+        management: { mode: 'app', app_id: 'tenant' },
+      },
+    },
+    { id: 'b', data: { identity: { slug: 'old-name' } } },
+  ]
+  const query = (rows) => ({
+    where: (key, operator, value) => {
+      assert.equal(operator, '==')
+      return query(
+        rows.filter(
+          ({ data }) =>
+            key.split('.').reduce((current, part) => current?.[part], data) ===
+            value
+        )
+      )
+    },
+    limit: (count) => query(rows.slice(0, count)),
+    get: async () => ({
+      size: rows.length,
+      docs: rows.map(({ id, data }) => ({ id, data: () => data })),
+    }),
+  })
+  const getRuntimeFirestore = () => ({
+    collection: (name) => {
+      assert.equal(name, 'kitchens')
+      return query(kitchens)
+    },
+  })
+  const readKitchenByRouteSlug = load(
+    '../runtime/kitchen/server/identity/route-identity.ts',
+    'readKitchenByRouteSlug',
+    {}
+  )
+  const readMenuKitchenBySlug = load(
+    '../runtime/menu/server/ownership/kitchen-scope.ts',
+    'readMenuKitchenBySlug',
+    { getRuntimeFirestore, readKitchenByRouteSlug }
+  )
+  const { resolveDirectoryMenuScope, resolveTenantMenuScope } = load(
+    '../runtime/menu/server/ownership/app-scope.ts',
+    '({ resolveDirectoryMenuScope, resolveTenantMenuScope })',
+    {
+      getRuntimeFirestore,
+      readMenuKitchenBySlug,
+      readRecordString: text,
+      useRuntimeConfig: () => ({
+        public: { fireux: { id: 'tenant', role: 'tenant' } },
+      }),
+      createError: (input) =>
+        Object.assign(new Error(input.statusMessage), input),
+    }
+  )
+  const directory = await resolveDirectoryMenuScope('NEW-NAME')
+  const canonical = (scope, source) =>
+    menuCanonicalPath({
+      scope,
+      menuId: 'lunch',
+      sourceMenuSlug: 'lunch',
+      sourceKitchenSlug: source.kitchenSlug,
+    })
+  assert.equal(directory.kitchenId, 'a')
+  assert.equal(
+    canonical({ kind: 'directory', kitchenSlug: 'new-name' }, directory),
+    '/kitchens/new-name/menus/lunch'
+  )
+  assert.equal((await resolveDirectoryMenuScope('old-name')).kitchenId, 'b')
+
+  delete kitchens[0].data.slug
+  const tenant = await resolveTenantMenuScope()
+  assert.equal(tenant.kitchenId, 'a')
+  assert.equal(tenant.kitchenSlug, 'new-name')
+  assert.equal(canonical({ kind: 'tenant' }, tenant), '/lunch')
+
+  kitchens[1].data.management = kitchens[0].data.management
+  await assert.rejects(resolveTenantMenuScope(), { statusCode: 500 })
+})
+
 test('public scoped Menu resolves slug to stable ID without an ID alias', async () => {
   let lookup
   let docs = [
@@ -62,6 +147,7 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
   assert.equal(target.sourceMenuId, 'stable-123')
   assert.equal(target.scope.kitchenMenuId, 'stable-123')
   assert.equal(target.scope.kitchenMenuSlug, 'food')
+  assert.equal(target.scope.kitchenSlug, 'venue')
   assert.equal('fulfilment' in target.scope, false)
   docs = []
   await assert.rejects(scopedTarget('directory-menu', 'stable-123', scope), {

@@ -10,6 +10,7 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { MenuExpressRequest } from '../../shared/types/menu-express'
+import type { MenuFilePreviewRead } from 'fireux-kitchens/runtime/menu/composables/useMenuFilePreview'
 
 export function useMenuExpressRequest(
   requestId: MaybeRefOrGetter<string>,
@@ -66,9 +67,13 @@ export function useMenuExpressRequest(
   async function call<T>(
     path: string,
     body: Record<string, unknown>,
-    responseType?: 'blob'
+    responseType?: 'blob',
+    preview?: MenuFilePreviewRead
   ) {
-    const isCurrent = captureIntent(),
+    const currentIntent = captureIntent(),
+      isCurrent = () =>
+        currentIntent() &&
+        (!preview || (!preview.signal.aborted && preview.isCurrent())),
       input = { ...body }
     const auth = await headers()
     if (!isCurrent())
@@ -77,6 +82,7 @@ export function useMenuExpressRequest(
       method: 'POST',
       body: input,
       headers: auth,
+      ...(preview ? { signal: preview.signal } : {}),
       ...(responseType ? { responseType } : {}),
     } as any)
     if (!isCurrent())
@@ -193,6 +199,16 @@ export function useMenuExpressRequest(
       anchor.click()
       setTimeout(() => URL.revokeObjectURL(url), 1000)
     })
+  const readReviewFile = (
+    expectedRevision: string,
+    preview: MenuFilePreviewRead
+  ) =>
+    call<Blob>(
+      `/api/menu-express/${id.value}/review-file`,
+      { token: token.value, operator, expectedRevision },
+      'blob',
+      preview
+    )
   return {
     request,
     messages,
@@ -206,6 +222,7 @@ export function useMenuExpressRequest(
     send,
     upload,
     download,
+    readReviewFile,
   }
 }
 

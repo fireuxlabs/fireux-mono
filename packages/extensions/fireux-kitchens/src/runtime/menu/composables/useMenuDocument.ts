@@ -11,6 +11,7 @@ import {
   type GuestKitchenClaim,
 } from '../../kitchen/utils/guest-kitchen-claim'
 import { useMenuEditorScope } from './useMenuEditorScope'
+import { useMenuFilePreview } from './useMenuFilePreview'
 import type { MenuDocumentRead } from '../models/menu-detail.model'
 
 /** Select a Kitchen, preview one file, then publish or replace its document Menu. */
@@ -93,6 +94,40 @@ export function useMenuDocument() {
       ? new URL(data.value.menuPath, location.origin).toString()
       : ''
   )
+  const savedPreview = useMenuFilePreview({
+    enabled: () =>
+      Boolean(
+        mounted.value &&
+          auth.currentUser.value &&
+          data.value?.document &&
+          !file.value &&
+          !loading.value &&
+          !recoveryError.value
+      ),
+    sources: [
+      kitchenId,
+      () => data.value?.menuId,
+      () => data.value?.revision,
+      secret,
+      recoveryVersion,
+    ],
+    async read({ signal, isCurrent }) {
+      const body = {
+        kitchenId: kitchenId.value,
+        menuId: data.value!.menuId,
+        expectedRevision: data.value!.revision,
+        claimSecret: secret.value || undefined,
+      }
+      const token = await getToken(isCurrent)
+      return $fetch<Blob>('/api/kitchens/menus/document/file', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+        responseType: 'blob',
+        signal,
+      })
+    },
+  })
   const preview = computed(() =>
     file.value && localPreview.value
       ? {
@@ -103,10 +138,10 @@ export function useMenuDocument() {
             type: file.value.type,
           },
         }
-      : data.value?.document
+      : data.value?.document && savedPreview.url.value
         ? {
             name: data.value.name,
-            file: { ...data.value.document, url: data.value.previewUrl },
+            file: { ...data.value.document, url: savedPreview.url.value },
           }
         : null
   )
@@ -354,6 +389,9 @@ export function useMenuDocument() {
     error,
     message,
     preview,
+    previewPending: savedPreview.pending,
+    previewError: savedPreview.error,
+    retryPreview: savedPreview.retry,
     canPublish,
     recoveryLink,
     publicUrl,

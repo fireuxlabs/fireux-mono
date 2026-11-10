@@ -130,6 +130,48 @@ test('request/account/token changes before credentials prevent obsolete dispatch
   }
 })
 
+test('review preview cancellation or replacement while acquiring credentials prevents dispatch', async () => {
+  for (const cancel of ['abort', 'replace']) {
+    const f = fixture({ holdCredentials: true })
+    const controller = new AbortController()
+    let current = true
+    const read = f.state.readReviewFile('a'.repeat(64), {
+      signal: controller.signal,
+      isCurrent: () => current,
+    })
+    await f.credentialStarted.promise
+    if (cancel === 'abort') controller.abort()
+    else current = false
+    f.credential.resolve('fixture-token')
+    await assert.rejects(read, /context changed/)
+    assert.equal(f.calls.length, 0)
+    f.scope.stop()
+  }
+})
+
+test('review preview binds request proof and revision and rejects bytes after its scope changes', async () => {
+  const f = fixture()
+  const controller = new AbortController()
+  let current = true
+  const read = f.state.readReviewFile('a'.repeat(64), {
+    signal: controller.signal,
+    isCurrent: () => current,
+  })
+  await f.requestStarted.promise
+  assert.equal(f.calls[0].path, `/api/menu-express/${f.id.value}/review-file`)
+  assert.deepEqual(f.calls[0].options.body, {
+    token: 'a'.repeat(64),
+    operator: false,
+    expectedRevision: 'a'.repeat(64),
+  })
+  assert.equal(f.calls[0].options.signal, controller.signal)
+  current = false
+  f.response.resolve(new Blob(['old review']))
+  await assert.rejects(read, /context changed/)
+  assert.equal(f.state.error.value, '')
+  f.scope.stop()
+})
+
 test('an obsolete response cannot populate the next account view or release its pending read', async () => {
   const f = fixture()
   const oldRead = f.state.recover()

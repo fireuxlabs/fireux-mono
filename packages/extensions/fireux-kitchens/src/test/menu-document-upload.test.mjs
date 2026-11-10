@@ -36,7 +36,6 @@ function harness({ files = [{}], denied = false, saveFails = false } = {}) {
       return {
         menuId: 'menu',
         document: {
-          url: 'https://files/menu.pdf',
           name: 'menu.pdf',
           type: 'application/pdf',
         },
@@ -51,7 +50,7 @@ function harness({ files = [{}], denied = false, saveFails = false } = {}) {
     )(...Object.values(dependencies)),
   }
 }
-test('Workspace document upload delegates once to the shared Menu file command and preserves its response', async () => {
+test('Workspace document upload delegates once to the shared Menu file command and returns file metadata without a token URL', async () => {
   const h = harness()
   const result = await h.run({})
   assert.deepEqual(h.calls, [
@@ -67,7 +66,6 @@ test('Workspace document upload delegates once to the shared Menu file command a
   assert.deepEqual(result, {
     ok: true,
     id: 'menu',
-    url: 'https://files/menu.pdf',
     file_name: 'menu.pdf',
     file_type: 'application/pdf',
   })

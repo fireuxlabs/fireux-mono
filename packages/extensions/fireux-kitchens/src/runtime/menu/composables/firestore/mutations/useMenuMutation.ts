@@ -1,14 +1,15 @@
 import { refreshNuxtData, useNuxtApp } from 'nuxt/app'
+import type { WatchSource } from 'vue'
 import { $fetch } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useMenuEditorScope } from '../../useMenuEditorScope'
 
 /** Capture one Menu command before credentials; never retarget pending intent. */
-export function useMenuMutation() {
+export function useMenuMutation(sources: WatchSource[] = []) {
   const nuxtApp = useNuxtApp()
   const { currentUser } = useAuth()
-  const captureScope = useMenuEditorScope([])
+  const captureScope = useMenuEditorScope(sources)
   async function mutate<T>(
     endpoint: string,
     method: 'POST' | 'PATCH' | 'DELETE',

@@ -258,19 +258,21 @@ Friiites and Deano's, so switching the Kitchen changes only those two inputs.
 Template One Scene One has a bounded requirements contract. Its core ready
 state requires the canonical wordmark role, effective App palette, both App
 typography families and exactly one Kitchen flagship Dish with `Dish.image`.
-The Kitchen-owned flagship projection queries `is_flagship == true`, limits
-read-back to two and rejects missing, multiple or image-less results; it never
-selects `dishes[0]`. The same scene DOM renders an explicit not-ready state for
+The Kitchen-owned flagship projection checks narrow catalogue identity fields
+for one explicit choice, then reads that Dish's presentation fields.
+Missing, multiple or image-less results retain their explicit readiness outcome.
+Commercial pricing is validated by its own consumers. Canonical document paths
+supply Dish IDs. The public projection uses the explicit Kitchen target and
+its stored flagship selection. The same scene DOM renders an explicit not-ready state for
 an incomplete injection. Food photography remains Dish-owned. Standalone mark
 and pattern candidates remain outside the scene contract until approved as App
 Brand Asset roles; Template One does not select arbitrary library alternates.
 
 Scene render readiness is intentionally narrower than complete Template One
 content readiness. The complete template requires at least six eligible Dishes
-and exactly one explicit flagship. The bounded Kitchen/Dish projection now
-confirms Friiites at 6/6 with Classic as its unique flagship. Its draft Menu,
-zero placeholder prices and disabled ordering remain separate publication and
-ordering gates.
+and exactly one explicit flagship. The bounded Kitchen/Dish projection
+computes those counts from current records. Menu publication, commercial pricing
+and ordering configuration retain their own checks.
 
 Scene One's calibrated composition is Template-owned: a viewport-height canvas,
 oversized injected wordmark, lower-left four-line copy/action lockup, and a

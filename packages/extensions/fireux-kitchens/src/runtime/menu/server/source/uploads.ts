@@ -18,15 +18,10 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validate-public-slug'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../models/menu-source-upload.model.ts'
+import { menuDocumentContentTypes } from '../document/file'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection
 const maxFileSizeMb = 10
-const allowedTypes = [
-  'application/pdf',
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-]
 const extensionTypes: Record<string, string> = {
   '.pdf': 'application/pdf',
   '.jpg': 'image/jpeg',
@@ -93,7 +88,7 @@ function readMenuFiles(parts: MultipartParts): KitchenMenuUploadFile[] {
     label: 'Menu file',
     defaultFileName: 'menu-file',
     maxFileSizeMb,
-    allowedTypes,
+    allowedTypes: menuDocumentContentTypes,
     extensionTypes,
     invalidTypeMessage: 'Upload a PDF or image menu file.',
   })

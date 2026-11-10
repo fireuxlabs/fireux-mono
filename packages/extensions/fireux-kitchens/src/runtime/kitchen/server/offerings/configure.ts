@@ -53,11 +53,14 @@ export function readOfferingConfiguration(input: unknown) {
   const option = kitchenOfferingOptions.find(
     (option) => option.key === body.option
   )
-  if (!option || typeof body.enabled !== 'boolean')
+  const isNew = body.offeringId === undefined
+  if (
+    !option ||
+    ((isNew || body.enabled !== undefined) && typeof body.enabled !== 'boolean')
+  )
     return fail('Choose a offering and its availability.')
   if (option.key === 'counter' && body.menu_ids !== undefined)
     fail('Choose menus separately for Eat in and Takeaway.')
-  const isNew = body.offeringId === undefined
   if (body.collection_timing !== undefined && option.key !== 'collection')
     fail('Collection timing requires Collection.')
   const base = readOfferingUpdate({
@@ -101,7 +104,7 @@ export function readOfferingConfiguration(input: unknown) {
     ...base,
     isNew,
     option,
-    enabled: body.enabled,
+    enabled: body.enabled as boolean | undefined,
     interactions,
   }
 }
@@ -149,13 +152,24 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
         statusMessage: 'Offering not found.',
       })
     const requestedChannel = tableServiceChannel(config.option.key)
+    const types: readonly string[] = config.option.types
+    const otherTypes = current?.interactions.some(
+      (row) => row.type !== 'browse' && !types.includes(row.type)
+    )
+    const bothTableChannels = Boolean(
+      requestedChannel &&
+        current?.interactions.some(
+          (row) =>
+            row.type === 'dine_in' &&
+            row.table_channels?.staff_pos &&
+            row.table_channels.table_qr
+        )
+    )
+    const shared = Boolean(otherTypes || bothTableChannels)
     if (
       current &&
-      (current.interactions.some(
-        (row) =>
-          row.type !== 'browse' &&
-          !(config.option.types as readonly string[]).includes(row.type)
-      ) ||
+      ((otherTypes &&
+        !current.interactions.some((row) => types.includes(row.type))) ||
         (requestedChannel &&
           !current.interactions.some(
             (row) =>
@@ -170,53 +184,67 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
     const browse = current?.interactions.filter(
       (row) => row.type === 'browse'
     ) || [{ type: 'browse' as const, enabled: true }]
+    const enabled = config.enabled ?? current?.enabled ?? false
+    const configured = config.interactions.flatMap(({ type, changes }) => {
+      const previous = current?.interactions.find((row) => row.type === type)
+      if (shared) {
+        if (!previous) return []
+        if (changes.table_channels)
+          fail('A table setup cannot change to another service.')
+        // The master switch and the individual service switches are independent.
+        return Object.keys(changes).length
+          ? [patchKitchenOfferingInteraction(type, previous, changes)]
+          : [previous]
+      }
+      return [
+        patchKitchenOfferingInteraction(type, previous, {
+          ...changes,
+          enabled:
+            config.option.key === 'counter'
+              ? true
+              : config.enabled === undefined
+                ? (changes.enabled ?? previous?.enabled ?? false)
+                : enabled && (changes.enabled ?? true),
+          ...(requestedChannel
+            ? configureTableChannel(requestedChannel, enabled)
+            : {}),
+        }),
+      ]
+    })
+    const hoursSource =
+      config.changes.hours_source ||
+      (config.changes.hours ? 'custom' : current?.hours_source) ||
+      (shared ? undefined : 'kitchen')
+    const clearHours =
+      config.changes.hours === null ||
+      config.changes.hours_source === 'kitchen' ||
+      (!shared && hoursSource === 'kitchen')
+    const hours = clearHours
+      ? undefined
+      : (config.changes.hours ?? current?.hours)
     const offering: KitchenOffering = {
       id,
       name: config.changes.name || current?.name || config.option.label,
       ...(current?.separate ? { separate: true } : {}),
       menu_ids: config.changes.menu_ids ?? current?.menu_ids ?? [],
-      ...((
-        config.changes.hours === undefined
-          ? current?.hours
-          : config.changes.hours
-      )
-        ? {
-            hours: (config.changes.hours === undefined
-              ? current?.hours
-              : config.changes.hours)!,
-          }
-        : {}),
+      ...(hours ? { hours } : {}),
       ...(config.changes.collection_timing || current?.collection_timing
         ? {
             collection_timing:
               config.changes.collection_timing || current?.collection_timing,
           }
         : {}),
-      hours_source:
-        config.changes.hours_source ||
-        (config.changes.hours ? 'custom' : current?.hours_source) ||
-        'kitchen',
-      enabled: config.enabled,
-      interactions: [
-        ...browse,
-        ...config.interactions.map((row) => {
-          const previous = current?.interactions.find(
-            (item) => item.type === row.type
-          )
-          const channel = tableServiceChannel(config.option.key)
-          return patchKitchenOfferingInteraction(row.type, previous, {
-            ...row.changes,
-            enabled:
-              config.option.key === 'counter'
-                ? true
-                : config.enabled && (row.changes.enabled ?? true),
-            ...(channel ? configureTableChannel(channel, config.enabled) : {}),
-          })
-        }),
-      ],
+      ...(hoursSource ? { hours_source: hoursSource } : {}),
+      enabled,
+      interactions:
+        shared && current
+          ? current.interactions.map(
+              (row) => configured.find((item) => item.type === row.type) || row
+            )
+          : [...browse, ...configured],
     }
     if (config.option.key === 'counter') {
-      offering.menu_ids = [
+      const kioskMenus = [
         ...new Set(
           offering.interactions.flatMap((row) =>
             row.type === 'eat_in' || row.type === 'takeaway'
@@ -225,10 +253,16 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
           )
         ),
       ]
+      if (!shared) offering.menu_ids = kioskMenus
+      else if (
+        config.interactions.some(({ changes }) =>
+          changes.menu_ids?.some((id) => !offering.menu_ids.includes(id))
+        )
+      )
+        fail('Choose Kiosk menus from this setup’s shared menus.')
     }
     if (offering.menu_ids.length > 100)
       fail('Select up to 100 menus per service.')
-    if (offering.hours_source === 'kitchen') delete offering.hours
     if (
       config.changes.hours &&
       offering.hours_source === 'custom' &&
@@ -244,13 +278,18 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
       config.changes.menu_ids !== undefined ||
       config.interactions.some((row) => row.changes.menu_ids !== undefined)
     // Removing saved choices must remain possible even when other old choices are incompatible.
-    const removesModeSelection = config.interactions.some(({ type, changes }) => {
-      const previous = current?.interactions.find((row) => row.type === type)
-      return changes.menu_ids !== undefined &&
-        changes.menu_ids.length < (previous && 'menu_ids' in previous
-          ? previous.menu_ids?.length || 0
-          : 0)
-    })
+    const removesModeSelection = config.interactions.some(
+      ({ type, changes }) => {
+        const previous = current?.interactions.find((row) => row.type === type)
+        return (
+          changes.menu_ids !== undefined &&
+          changes.menu_ids.length <
+            (previous && 'menu_ids' in previous
+              ? previous.menu_ids?.length || 0
+              : 0)
+        )
+      }
+    )
     const removingOnly = Boolean(
       current &&
         (offering.menu_ids.length < current.menu_ids.length ||
@@ -290,9 +329,7 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
     if (current)
       tx.update(target, id, {
         ...kitchenOfferingData(offering),
-        ...(config.changes.hours === null || offering.hours_source === 'kitchen'
-          ? { hours: FieldValue.delete() }
-          : {}),
+        ...(clearHours ? { hours: FieldValue.delete() } : {}),
       })
     else tx.create(target, id, kitchenOfferingData(offering))
     return { ok: true, kitchen_id: config.kitchenId, offering }

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
+import { TEAM_INTENT_RECORD_LIMIT } from '../../../../core/fireux-core/src/runtime/workspace/utils/team-intent-records.ts'
 const source = readFileSync(
   new URL('../runtime/project/server/intent.ts', import.meta.url),
   'utf8'
@@ -16,6 +17,7 @@ function harness(intent, auth = async () => {}) {
     `${stripTypeScriptTypes(source)}; return interpretProject`,
     [
       'createError',
+      'TEAM_INTENT_RECORD_LIMIT',
       'useFireuxAi',
       'useFireUXConfig',
       'requireFirebaseBearerUser',
@@ -23,6 +25,7 @@ function harness(intent, auth = async () => {}) {
     ]
   )(
     (e) => Object.assign(new Error(e.statusMessage), e),
+    TEAM_INTENT_RECORD_LIMIT,
     (_, opts) => {
       options = opts
       return {
@@ -87,6 +90,18 @@ test('Team prepares name-only dialogs and rejects unavailable or unselected acti
     (await h.run({}, { ...team, availableActions: ['read'] })).action,
     'none'
   )
+})
+test('Team Read directs the user to the live roster without reporting a model total', async () => {
+  const h = harness({
+    action: 'read',
+    name: '',
+    message: 'There are exactly 100 people.',
+  })
+  assert.deepEqual(await h.run({}, team), {
+    action: 'read',
+    name: '',
+    message: 'Review the current Team roster.',
+  })
 })
 test('invalid model fields and unsafe identity image URLs fail closed', async () => {
   await assert.rejects(

@@ -12,6 +12,12 @@
         Matching kitchen dishes are reused. New names create dishes in your
         catalogue.
       </p>
+      <FireState
+        v-if="!catalogueReady"
+        :outcome="catalogueOutcome"
+        entity="Dish catalogue"
+        :error="catalogueError"
+      />
       <UFormField
         v-for="name in newNames"
         :key="name"
@@ -31,7 +37,7 @@
       <UButton
         label="Add listed dishes"
         :loading="busy"
-        :disabled="busy || !names.trim() || !canWrite"
+        :disabled="busy || !names.trim() || !canWrite || !catalogueReady"
         @click="addNames"
       />
     </div>
@@ -43,6 +49,16 @@ import { useRoute } from '#imports'
 import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
 import { useMenuSectionDishCreation } from '../../../../../composables/workspace/menus/useMenuSectionDishCreation'
 const route = useRoute()
-const { names, prices, newNames, error, busy, canWrite, addNames } =
-  useMenuSectionDishCreation(useMenuSection(), () => route.fullPath)
+const {
+  names,
+  prices,
+  newNames,
+  error,
+  busy,
+  canWrite,
+  catalogueReady,
+  catalogueOutcome,
+  catalogueError,
+  addNames,
+} = useMenuSectionDishCreation(useMenuSection(), () => route.fullPath)
 </script>

@@ -63,7 +63,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import '../../../../../menu/assets/styles/menu-editor.css'
 import { computed } from 'vue'
 import { provideKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
@@ -101,3 +100,5 @@ const viewLabel = computed(
     })[view.value]
 )
 </script>
+
+<style src="../../../../../menu/assets/styles/menu-editor.css"></style>

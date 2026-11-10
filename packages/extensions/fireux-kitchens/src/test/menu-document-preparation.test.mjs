@@ -84,6 +84,7 @@ function server() {
   }
   const deps = {
     createError,
+    ...metadata,
     ...createInput,
     requireFirestoreDocumentId: (value) => {
       if (typeof value !== 'string' || !value || value.includes('/'))

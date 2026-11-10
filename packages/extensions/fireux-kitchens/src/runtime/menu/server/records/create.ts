@@ -16,6 +16,7 @@ import {
 } from '../../utils/records/create-input'
 import { menuNameAndSlug, requireAvailableMenuSlug } from '../name'
 import { requireMenuCreationCapacity } from '../creation-capacity'
+import type { MenuDocument } from '../../models/menu.model'
 
 export async function createKitchenMenu(event: H3Event, input: unknown) {
   let value: MenuCreateInput
@@ -47,6 +48,7 @@ export async function stageCreateKitchenMenu(
     name: string
     slug: string
     value: MenuCreateInput
+    document?: MenuDocument
   }
 ) {
   const { kitchenId, menuId, name, slug, value } = input
@@ -84,6 +86,7 @@ export async function stageCreateKitchenMenu(
   const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
   tx.create(serverKitchenMenusTarget(kitchenId), menuId, {
     ...buildMenuPayload(value, canonicalName),
+    ...(input.document ? { doc: input.document } : {}),
     slug,
     created: stamp,
     updated: stamp,

@@ -207,9 +207,15 @@ const deleteSelectedRecipe = async () => {
     await navigateTo('/workspace/kitchen/prep/recipes')
   } catch (error) {
     if (!isCurrent()) return
-    const message = String(
-      (error as any)?.message || error || 'Failed to delete recipe'
-    )
+    const failure = error as {
+      data?: { data?: { message?: string }; statusMessage?: string }
+      message?: string
+    } | null
+    const message =
+      failure?.data?.data?.message ||
+      failure?.data?.statusMessage ||
+      failure?.message ||
+      'Failed to delete recipe.'
     toast.add({
       title: 'Recipe delete failed',
       description: message,

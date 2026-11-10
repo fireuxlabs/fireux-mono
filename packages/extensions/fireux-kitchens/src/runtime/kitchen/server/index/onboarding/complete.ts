@@ -29,6 +29,10 @@ import {
 import { resolveKitchenOnboardingTransactionLocator } from './locator'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
 import {
+  readKitchenTeamAccountLinkInTransaction,
+  requireUnambiguousKitchenTeamLink,
+} from '../../team/account-link'
+import {
   serverKitchenAccessTarget,
   resolveKitchenGrantIds,
 } from '../../core/access'
@@ -65,7 +69,7 @@ export async function completeKitchenOnboarding(
       user,
       place,
       root,
-      teamMember,
+      teamLink,
       actorMembership,
       systemMenus,
       access,
@@ -75,7 +79,11 @@ export async function completeKitchenOnboarding(
       mutations.read(USER_MUTATION_TARGETS.runtimeUsers, ownerUserId),
       mutations.read(PLACE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(KITCHEN_MUTATION_TARGETS.kitchens, locator.kitchenId),
-      mutations.read(teamMembers, ownerUserId),
+      readKitchenTeamAccountLinkInTransaction(
+        mutations,
+        teamMembers,
+        ownerUserId
+      ),
       ownerUserId === current.uid
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
@@ -105,7 +113,8 @@ export async function completeKitchenOnboarding(
       fail(403, 'Kitchen creation is disabled for this App.')
     }
 
-    if (!rootData && teamMember.exists) {
+    const teamMember = requireUnambiguousKitchenTeamLink(teamLink)
+    if (!rootData && teamMember) {
       fail(409, 'Kitchen Team membership exists without its Kitchen.')
     }
     const kitchenIds = readKitchenAccessIds(
@@ -123,7 +132,7 @@ export async function completeKitchenOnboarding(
     )
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
-      teamMember: teamMember.exists ? teamMember.data || {} : null,
+      teamMember: teamMember?.data ?? null,
       uid: ownerUserId,
       role: ownerUserId === current.uid ? role : actorRole,
       canCreate: current.canCreate,
@@ -136,7 +145,7 @@ export async function completeKitchenOnboarding(
     }
 
     const createdRoot = !root.exists
-    const createdTeamMember = !teamMember.exists
+    const createdTeamMember = !teamMember
     const placeName = text(place.data?.name)
     const slug =
       text((rootData?.identity as Record<string, unknown> | undefined)?.slug) ||

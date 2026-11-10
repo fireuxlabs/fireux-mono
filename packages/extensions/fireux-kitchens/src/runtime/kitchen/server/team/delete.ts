@@ -9,8 +9,7 @@ import {
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority.ts'
 import { serverKitchenMemberInvitationsTarget } from './mutation-targets.ts'
-
-const text = (value: unknown) => String(value ?? '').trim()
+import { readKitchenMemberInvitationHistory } from './invitation-history.ts'
 
 export async function deleteKitchenTeamMember(
   event: H3Event,
@@ -24,23 +23,17 @@ export async function deleteKitchenTeamMember(
     await requireKitchenMutationAuthority(mutations, actor, kitchenId)
     const members = serverKitchenTeamMembersTarget(kitchenId)
     const invitations = serverKitchenMemberInvitationsTarget(kitchenId)
-    const pending = await mutations.query<Record<string, unknown>>(
+    const { pendingIds } = await readKitchenMemberInvitationHistory(
+      mutations,
       invitations,
-      {
-        field: 'member_id',
-        op: '==',
-        value: memberId,
-        limit: 20,
-      }
+      memberId
     )
     name = (await deleteTeamMember(mutations, members, memberId)).name
-    for (const invitation of pending) {
-      if (text(invitation.data.status) === 'pending') {
-        mutations.update(invitations, invitation.id, {
-          status: 'revoked',
-          updated: serverAuditStamp({ by: actor.uid }),
-        })
-      }
+    for (const id of pendingIds) {
+      mutations.update(invitations, id, {
+        status: 'revoked',
+        updated: serverAuditStamp({ by: actor.uid }),
+      })
     }
   })
   return { ok: true as const, memberId, name }

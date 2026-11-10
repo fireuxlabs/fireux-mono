@@ -90,6 +90,26 @@ function bindingFixture() {
   })
   let target
   const read = {
+    firestoreFetchDoc: (p, id) => {
+      target = computed(() =>
+        toValue(p) && toValue(id) ? `${toValue(p)}/${toValue(id)}` : ''
+      )
+      const document = computed(() =>
+        raw.value.find((row) => row.id === toValue(id))
+      )
+      Object.assign(document, {
+        data: document,
+        pending: raw.pending,
+        error: raw.error,
+        promise: raw.promise,
+        stop: raw.stop,
+      })
+      return enhanceFirestoreRead(document, {
+        active: computed(() => Boolean(toValue(target))),
+        source: target,
+        kind: 'document',
+      })
+    },
     firestoreFetchCollection: (p) => {
       target = p
       return enhanceFirestoreRead(raw, {
@@ -235,28 +255,35 @@ test('Recipe reader respects explicitly disabled parent path', () => {
   f.scope.stop()
 })
 test('Recipe record distinguishes unavailable owner, unavailable source and missing route', () => {
-  const f = workspaceFixture(),
-    id = ref('dough')
+  const f = bindingFixture(),
+    id = ref('dough'),
+    kitchenId = ref('mine'),
+    access = { ids: ref(['mine']), outcome: ref('ready'), error: ref(null) }
   const use = load(
-    'kitchen/composables/workspace/recipes/useKitchenWorkspaceRecipe.ts',
-    'useKitchenWorkspaceRecipe',
+    'kitchen/composables/recipe/useKitchenRecipeDetail.ts',
+    'useKitchenRecipeDetail',
     {
       computed,
-      useRouteParam: () => id,
-      useKitchenWorkspaceRecipes: () => f.state,
+      toValue,
+      RecipeStorage,
+      normalizeRecipe,
+      useKitchenAccess: () => access,
+      useFirestoreRead: () => f.read,
+      readRuntimeFirestoreDatabaseId: () => 'misebox',
     }
   )
-  const record = use()
+  const record = f.scope.run(() => use(kitchenId, id))
+  assert.equal(f.path, 'kitchens/mine/recipes/dough')
   assert.equal(record.outcome.value, 'ready')
   id.value = 'empty'
+  f.settle(f.raw.value)
   assert.equal(record.outcome.value, 'empty')
   f.raw.pending.value = true
   assert.equal(record.outcome.value, 'pending')
   assert.equal(record.recipe.value, null)
   f.raw.error.value = new Error('No read')
   assert.equal(record.outcome.value, 'error')
-  f.workspace.id.value = ''
-  f.workspace.outcome.value = 'idle'
+  kitchenId.value = ''
   assert.equal(record.outcome.value, 'idle')
   f.scope.stop()
 })
@@ -525,7 +552,9 @@ test('Dish Prep consumer receives additive lifecycle states without losing saved
       '({rows, groups, pending, error})',
       {
         computed,
-        useKitchenWorkspaceDish: () => ({
+        useKitchenWorkspace: () => ({ id: f.kitchenId, outcome: ref('ready') }),
+        useRouteParam: () => ref('dish'),
+        useKitchenDishDetail: () => ({
           dish,
           kitchenId: f.kitchenId,
           storageKitchenId: f.kitchenId,
@@ -569,7 +598,9 @@ test('Dish Spec options consume masked Prep data while preserving their existing
         ...specification,
         useRoute: () => ({ query: {} }),
         useDishEditorScope,
-        useKitchenWorkspaceDish: () => ({
+        useKitchenWorkspace: () => ({ id: f.kitchenId, outcome: ref('ready') }),
+        useRouteParam: () => ref('dish'),
+        useKitchenDishDetail: () => ({
           dish: ref({}),
           dishId: ref('dish'),
           kitchenId: f.kitchenId,
@@ -631,7 +662,12 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
           invalidate = reset
           return () => () => true
         },
-        useKitchenWorkspaceRecipe: () => record,
+        useKitchenWorkspace: () => ({
+          id: record.kitchenId,
+          outcome: ref('ready'),
+        }),
+        useRouteParam: () => record.recipeId,
+        useKitchenRecipeDetail: () => record,
         useRecipeDelete: () => ({}),
         useKitchenIngredients: () => ({
           ingredients: ref([]),

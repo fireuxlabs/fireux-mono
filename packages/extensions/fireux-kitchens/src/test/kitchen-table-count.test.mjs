@@ -50,7 +50,9 @@ test('table count uses the existing exact Kitchen authority and root update', as
         assert.equal(actor.uid, 'operator')
         assert.equal(id, 'venue')
         if (!authorized) throw new Error('Denied')
+        return { ownerAppId: 'owner-app' }
       },
+      serverAuditStamp: ({ by, appId }) => ({ at: 'now', by, app_id: appId }),
       KITCHEN_MUTATION_TARGETS: { kitchens: 'kitchens' },
       runGuardedServerTransaction: async (_, command) =>
         command({ update: (...args) => writes.push(args) }),
@@ -61,7 +63,16 @@ test('table count uses the existing exact Kitchen authority and root update', as
     )
     if (authorized) {
       assert.deepEqual(await operation, { ok: true, kitchen_id: 'venue' })
-      assert.deepEqual(writes, [['kitchens', 'venue', { 'tables.count': 20 }]])
+      assert.deepEqual(writes, [
+        [
+          'kitchens',
+          'venue',
+          {
+            'tables.count': 20,
+            updated: { at: 'now', by: 'operator', app_id: 'owner-app' },
+          },
+        ],
+      ])
     } else {
       await assert.rejects(operation, /Denied/)
       assert.deepEqual(writes, [])

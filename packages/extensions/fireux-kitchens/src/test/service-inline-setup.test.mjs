@@ -12,7 +12,7 @@ import {
 } from './offering-test-helpers.mjs'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/components/FoodAndDrink/Services/Service.vue',
+    '../runtime/kitchen/components/FoodAndDrink/Services/Record.vue',
     import.meta.url
   ),
   'utf8'
@@ -43,6 +43,8 @@ async function render(option, enabled) {
     editor,
     disabled: false,
     menus: [],
+    kioskMenus: [],
+    kioskPath: '',
     kitchenHours: undefined,
     workspace: { source: { menusOutcome: vue.ref('ready') } },
     kitchenOrderTypeLabel: (type) =>
@@ -51,6 +53,10 @@ async function render(option, enabled) {
   const app = vue.createSSRApp({
     setup: () => ({
       option,
+      offering: undefined,
+      anchor: undefined,
+      name: option.label,
+      services: [],
       editor,
       disabled: false,
       readiness: { canEnable: true },

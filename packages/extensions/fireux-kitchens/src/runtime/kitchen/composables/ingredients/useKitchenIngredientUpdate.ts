@@ -23,10 +23,9 @@ export function useKitchenIngredientUpdate(ownerSources: WatchSource[] = []) {
     () => access.outcome.value,
   ]
   const captureIntent = useCommandScope([...authoritySources, ...ownerSources])
-  const captureCommand = useCommandScope(authoritySources)
   const authorityEpoch = ref(0)
   watch(
-    [...authoritySources, ...ownerSources],
+    authoritySources,
     () => {
       authorityEpoch.value += 1
     },
@@ -38,7 +37,7 @@ export function useKitchenIngredientUpdate(ownerSources: WatchSource[] = []) {
     ingredientId: string,
     options: { kitchenCollectionPath: string }
   ) {
-    const isCurrent = captureCommand()
+    const isCurrent = captureIntent()
     const kitchenCollectionPath = options.kitchenCollectionPath
     const uid = currentUser.value?.uid
     const allowed = () =>

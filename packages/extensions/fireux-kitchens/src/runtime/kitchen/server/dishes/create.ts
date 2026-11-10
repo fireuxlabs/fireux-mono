@@ -9,7 +9,7 @@ import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
-import { dishFields, dishText } from './record-input'
+import { dishFields, dishText, validateDishInput } from './record-input'
 
 export async function createDish(event: H3Event, input: unknown) {
   const value = dishFields(input, ['kitchenId', 'draft'])
@@ -41,14 +41,16 @@ export async function createDish(event: H3Event, input: unknown) {
   const description = dishText(
     draft.description === undefined ? '' : draft.description
   )
-  const pricing = normalizeDishPricingPatch({
-    ...(Object.hasOwn(draft, 'price') ? { price: draft.price } : {}),
-    price_options: draft.price_options ?? [],
-    add_ons: draft.add_ons ?? [],
-    ...(draft.bottle_deposit !== undefined
-      ? { bottle_deposit: draft.bottle_deposit }
-      : {}),
-  })
+  const pricing = validateDishInput(() =>
+    normalizeDishPricingPatch({
+      ...(Object.hasOwn(draft, 'price') ? { price: draft.price } : {}),
+      price_options: draft.price_options ?? [],
+      add_ons: draft.add_ons ?? [],
+      ...(draft.bottle_deposit !== undefined
+        ? { bottle_deposit: draft.bottle_deposit }
+        : {}),
+    })
+  )
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(

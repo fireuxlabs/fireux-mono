@@ -22,9 +22,14 @@ export type SaveStorageFileOptions = {
 export type DownloadStorageFileOptions = {
   objectPath: string
   bucketName?: string
+  maxBytes?: number
+  generation?: string
 }
 
-export type DeleteStorageFileOptions = DownloadStorageFileOptions
+export type DeleteStorageFileOptions = Pick<
+  DownloadStorageFileOptions,
+  'objectPath' | 'bucketName'
+>
 
 export type FirebaseStorageDownloadTarget = {
   bucketName: string
@@ -148,19 +153,66 @@ export async function saveStorageFileWithDownloadToken(
   }
 }
 
-export async function downloadStorageFile(
-  options: DownloadStorageFileOptions
-) {
+export async function downloadStorageFile(options: DownloadStorageFileOptions) {
   const bucketName = options.bucketName || runtimeStorageBucketName()
-  const [buffer] = await getStorage(getAdminApp())
-    .bucket(bucketName)
-    .file(options.objectPath)
-    .download()
+  const bucket = getStorage(getAdminApp()).bucket(bucketName)
+  let generation = options.generation
+  let file = bucket.file(
+    options.objectPath,
+    generation ? { generation } : undefined
+  )
+  let buffer: Buffer
+  if (options.maxBytes !== undefined) {
+    const maxBytes = options.maxBytes
+    if (!Number.isSafeInteger(maxBytes) || maxBytes < 1)
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid download size limit.',
+      })
+    const [metadata] = await file.getMetadata()
+    const size = Number(metadata.size)
+    if (!Number.isSafeInteger(size) || size < 0 || size > maxBytes)
+      throw createError({
+        statusCode: 413,
+        statusMessage: 'File exceeds the download size limit.',
+      })
+    generation = String(metadata.generation || '')
+    if (
+      !/^\d+$/.test(generation) ||
+      (options.generation && generation !== options.generation)
+    )
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'File version is unavailable.',
+      })
+    file = bucket.file(options.objectPath, { generation })
+    const stream = file.createReadStream({ decompress: false })
+    const chunks: Buffer[] = []
+    let bytes = 0
+    try {
+      for await (const chunk of stream) {
+        const part = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+        bytes += part.length
+        if (bytes > maxBytes)
+          throw createError({
+            statusCode: 413,
+            statusMessage: 'File exceeds the download size limit.',
+          })
+        chunks.push(part)
+      }
+      buffer = Buffer.concat(chunks, bytes)
+    } finally {
+      stream.destroy()
+    }
+  } else {
+    ;[buffer] = await file.download()
+  }
 
   return {
     buffer,
     bucketName,
     objectPath: options.objectPath,
+    ...(generation ? { generation } : {}),
   }
 }
 

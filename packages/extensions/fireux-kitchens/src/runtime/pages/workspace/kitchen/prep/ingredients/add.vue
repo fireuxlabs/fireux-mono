@@ -5,18 +5,6 @@
 </template>
 
 <script setup lang="ts">
-const breadcrumbItems = [
-  {
-    label: 'Ingredients',
-    icon: 'i-lucide-carrot',
-    to: '/workspace/kitchen/prep/ingredients',
-  },
-  {
-    label: 'Create Ingredient',
-    icon: 'i-lucide-plus',
-  },
-]
-
 definePageMeta({
   layout: false,
   workspacePage: true,

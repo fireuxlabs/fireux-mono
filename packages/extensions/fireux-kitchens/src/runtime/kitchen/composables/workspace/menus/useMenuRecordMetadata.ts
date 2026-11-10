@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import type { MenuUpdateInput } from '../../../../menu/models/menu-storage.model'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import type { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 
@@ -25,7 +26,12 @@ export function useMenuRecordMetadata(
     updateMenu,
     renameMenu,
   } = context
-  const captureScope = useMenuEditorScope([kitchenId, menuId, menuSlug])
+  const captureIntent = useMenuEditorScope([
+    kitchenId,
+    menuId,
+    menuSlug,
+    canWrite,
+  ])
   const canRename = computed(
     () => canWrite.value && ['pro', 'business'].includes(subscription.value)
   )
@@ -37,65 +43,43 @@ export function useMenuRecordMetadata(
     isValid: Boolean(value.trim()) && Number.isSafeInteger(Number(value)),
     message: 'Enter a whole number.',
   })
-  async function rename(name: string) {
+  async function rename(name: string, isCurrent = captureIntent()) {
     if (!canRename.value || !menuId.value)
       throw new Error(
         'Pro and Kitchen write access are required to rename a Menu.'
       )
-    const targetKitchen = kitchenId.value
-    const targetId = menuId.value
-    const isCurrent = captureScope()
     try {
-      await renameMenu(targetKitchen, targetId, name.trim())
+      await renameMenu(kitchenId.value, menuId.value, name.trim(), isCurrent)
     } catch (error) {
       if (!isCurrent()) return
       throw error
     }
   }
-  async function updateInternalName(value: string) {
+  async function update(changes: MenuUpdateInput, isCurrent = captureIntent()) {
     if (!canWrite.value || !menuId.value)
       throw new Error('This Menu is read-only.')
-    const isCurrent = captureScope()
     try {
-      await updateMenu(kitchenId.value, menuId.value, {
-        internal_name: value.trim(),
-      })
+      await updateMenu(kitchenId.value, menuId.value, changes, isCurrent)
     } catch (error) {
       if (!isCurrent()) return
       throw error
     }
   }
-  async function updateDescription(value: string) {
-    if (!canWrite.value || !menuId.value)
-      throw new Error('This Menu is read-only.')
-    const isCurrent = captureScope()
-    try {
-      await updateMenu(kitchenId.value, menuId.value, {
-        description: value.trim(),
-      })
-    } catch (error) {
-      if (!isCurrent()) return
-      throw error
-    }
+  function updateInternalName(value: string, isCurrent?: () => boolean) {
+    return update({ internal_name: value.trim() }, isCurrent)
   }
-  async function updateOrder(value: string) {
-    if (!canWrite.value || !menuId.value)
-      throw new Error('This Menu is read-only.')
+  function updateDescription(value: string, isCurrent?: () => boolean) {
+    return update({ description: value.trim() }, isCurrent)
+  }
+  async function updateOrder(value: string, isCurrent?: () => boolean) {
     if (!validateOrder(value).isValid) throw new Error('Enter a whole number.')
-    const isCurrent = captureScope()
-    try {
-      await updateMenu(kitchenId.value, menuId.value, {
-        sort_order: Number(value),
-      })
-    } catch (error) {
-      if (!isCurrent()) return
-      throw error
-    }
+    await update({ sort_order: Number(value) }, isCurrent)
   }
   return {
     menu,
     canWrite,
     canRename,
+    captureIntent,
     validateName,
     validateOrder,
     rename,

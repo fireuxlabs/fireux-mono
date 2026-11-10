@@ -1,4 +1,5 @@
 import { resolveHttpDocumentOutcome } from '../../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
+import { resolveReadOutcome } from '../../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -50,13 +51,6 @@ function deferred() {
 const tick = async () => {
   for (let i = 0; i < 5; i++) await Promise.resolve()
 }
-function resolveReadOutcome({ active, current, error, pending, present }) {
-  if (!active) return 'idle'
-  if (current === false) return 'pending'
-  if (error) return 'error'
-  if (pending) return 'pending'
-  return present ? 'ready' : 'empty'
-}
 function finance() {
   const scope = effectScope(),
     tokens = []
@@ -89,7 +83,7 @@ function finance() {
   let handler, key
   const state = scope.run(() =>
     load(
-      'composables/workspace/overview/useKitchenWorkspaceFinance.ts',
+      'composables/workspace/finance/useKitchenWorkspaceFinance.ts',
       {
         computed,
         ref,
@@ -197,12 +191,17 @@ test('Sales exposes pending, error, empty, ready and unavailable separately and 
     transactions: [],
   }
   assert.equal(x.state.outcome.value, 'empty')
+  assert.equal(x.state.report.value.sale_count, 0)
   x.workspace.outcome.value = 'pending'
   assert.equal(x.state.report.value, null)
   assert.equal(x.state.canLoad.value, false)
-  for (const outcome of ['error', 'empty', 'idle']) {
+  for (const [outcome, expected] of [
+    ['error', 'error'],
+    ['empty', 'idle'],
+    ['idle', 'idle'],
+  ]) {
     x.workspace.outcome.value = outcome
-    assert.equal(x.state.outcome.value, outcome)
+    assert.equal(x.state.outcome.value, expected)
     assert.equal(x.state.report.value, null)
   }
   x.workspace.outcome.value = 'ready'
@@ -212,6 +211,20 @@ test('Sales exposes pending, error, empty, ready and unavailable separately and 
   x.session.error.value = null
   x.session.pending.value = true
   assert.equal(x.state.outcome.value, 'pending')
+  x.scope.stop()
+})
+test('Sales clears a settled report when the selected Kitchen becomes empty', async () => {
+  const x = finance()
+  const run = await x.start()
+  await x.accept(run)
+  assert.equal(x.state.report.value.sale_count, 1)
+  x.workspace.outcome.value = 'empty'
+  assert.equal(x.state.canLoad.value, false)
+  assert.equal(x.state.outcome.value, 'idle')
+  assert.equal(x.state.report.value, null)
+  x.workspace.outcome.value = 'ready'
+  assert.equal(x.state.outcome.value, 'pending')
+  assert.equal(x.state.report.value, null)
   x.scope.stop()
 })
 test('Sales never dispatches after obsolete credential waits, including away-and-back scope changes', async () => {
@@ -284,7 +297,7 @@ test('Sales closes inspected details synchronously when its source becomes unava
     outcome = ref('ready')
   const state = scope.run(() =>
     load(
-      'composables/workspace/overview/useKitchenFinanceOverview.ts',
+      'composables/workspace/finance/useKitchenWorkspaceFinanceOverview.ts',
       {
         computed,
         ref,
@@ -299,7 +312,7 @@ test('Sales closes inspected details synchronously when its source becomes unava
           outcome,
         }),
       },
-      "useKitchenFinanceOverview({ fromDate: '2026-10-06', toDate: '2026-10-06' })"
+      "useKitchenWorkspaceFinanceOverview({ fromDate: '2026-10-06', toDate: '2026-10-06' })"
     )
   )
   state.inspectTransaction(state.transactions.value[0])
@@ -352,7 +365,6 @@ test('Both Sales surfaces hide metrics, charts, transactions and empty claims un
       ['pending', 'Loading sales'],
       ['error', 'Sales could not be loaded'],
       ['idle', 'Select an available Kitchen'],
-      ['empty', 'Select an available Kitchen'],
     ]) {
       const html = await render(path, {
         outcome,

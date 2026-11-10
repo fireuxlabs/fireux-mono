@@ -4,7 +4,7 @@
     class="fx-page-stack"
     aria-label="Customer review"
   >
-    <MenuExpressPreview :review="state.request.review" />
+    <MenuExpressPreview :state="state" />
     <template v-if="state.request.stage === 'review'">
       <UFormField label="Corrections"
         ><UTextarea v-model="note" maxlength="2000"
@@ -26,7 +26,10 @@
 import { ref } from 'vue'
 import type { MenuExpressRequestView } from '../../composables/useMenuExpressRequest'
 defineProps<{
-  state: Pick<MenuExpressRequestView, 'request' | 'busy' | 'act'>
+  state: Pick<
+    MenuExpressRequestView,
+    'request' | 'busy' | 'act' | 'token' | 'readReviewFile'
+  >
 }>()
 const note = ref('')
 </script>

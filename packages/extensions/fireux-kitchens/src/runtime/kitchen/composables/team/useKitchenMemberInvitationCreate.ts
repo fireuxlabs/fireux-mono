@@ -1,4 +1,3 @@
-import { refreshNuxtData } from 'nuxt/app'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
@@ -32,15 +31,6 @@ export function useKitchenMemberInvitationCreate() {
     const result = await $fetch<CreateMemberInvitationResult>(
       '/api/workspace/kitchen/team/member-invitations',
       {
-        onResponse: async ({ options, response }) => {
-          if (
-            response.ok &&
-            !['GET', 'HEAD'].includes(
-              String(options.method || 'GET').toUpperCase()
-            )
-          )
-            await refreshNuxtData()
-        },
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body,

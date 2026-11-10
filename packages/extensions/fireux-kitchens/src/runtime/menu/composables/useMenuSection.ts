@@ -214,6 +214,9 @@ function createMenuSectionState(
     section,
     items,
     itemRows,
+    activeItemRows: computed(() =>
+      itemRows.value.filter((row) => row.item.status !== 'archived')
+    ),
     itemsPending,
     itemsError: itemState.error,
     itemsOutcome: itemState.outcome,

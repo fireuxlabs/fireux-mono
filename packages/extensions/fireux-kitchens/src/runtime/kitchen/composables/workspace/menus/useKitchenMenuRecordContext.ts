@@ -153,16 +153,19 @@ function createKitchenMenuRecordContext() {
   })
   const sections = sectionState.sections
   const sectionMutations = useMenuSectionMutations()
-  const update = useMenuUpdate()
-  const removal = useMenuDelete()
   const router = useRouter()
   const toast = useToastify()
-  const captureIntent = useMenuEditorScope([kitchenId, menuSlug])
-  const publication = useMenuPublication([
+  const routeSources = [
     kitchenId,
-    menuId,
+    menuSlug,
+    hasAccess,
     () => router.currentRoute.value.fullPath,
-  ])
+  ]
+  const recordSources = [...routeSources, menuId]
+  const update = useMenuUpdate([...recordSources, canWrite])
+  const removal = useMenuDelete([...recordSources, canManage])
+  const captureIntent = useMenuEditorScope(routeSources)
+  const publication = useMenuPublication(recordSources)
   function assertCanWrite() {
     if (!canWrite.value) throw new Error('This menu is read-only.')
   }
@@ -170,11 +173,16 @@ function createKitchenMenuRecordContext() {
     assertCanWrite()
     return update.updateMenu(...args)
   }
-  async function renameMenu(...args: Parameters<typeof update.renameMenu>) {
+  async function renameMenu(
+    kitchen: string,
+    id: string,
+    name: string,
+    isFieldCurrent?: () => boolean
+  ) {
     assertCanWrite()
     const isCurrent = captureIntent()
-    const result = await update.renameMenu(...args)
-    if (!isCurrent()) return result
+    const result = await update.renameMenu(kitchen, id, name, isFieldCurrent)
+    if (!isCurrent() || (isFieldCurrent && !isFieldCurrent())) return result
     toast.add({
       title: 'Menu renamed',
       description: 'The Menu name has been updated. Its address is unchanged.',

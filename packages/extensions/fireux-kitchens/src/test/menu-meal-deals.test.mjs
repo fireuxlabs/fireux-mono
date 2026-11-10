@@ -292,7 +292,8 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
   const { ref, computed, watch, effectScope } = await import('vue')
   const owner = effectScope()
   let current = true,
-    finish
+    finish,
+    editorCurrent
   const calls = [],
     notices = []
   const context = {
@@ -302,9 +303,10 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
     section: ref({ id: 's' }),
     menu: ref({ schedule: 'regular' }),
     promotions: { items: ref([{ id: 'meal', ...meal() }]) },
-    itemRows: ref([]),
+    activeItemRows: ref([]),
     canWrite: ref(true),
-    createItem: (input) => {
+    createItem: (input, isCurrent) => {
+      editorCurrent = isCurrent
       calls.push(input)
       return new Promise((resolve) => {
         finish = resolve
@@ -350,6 +352,7 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
     },
   ])
   current = false
+  assert.equal(editorCurrent(), false)
   finish()
   await pending
   assert.equal(notices.length, 0)

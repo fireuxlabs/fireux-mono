@@ -87,6 +87,7 @@ test('Collection and Delivery overview include all matching services and publish
       'createKitchenServicesContext',
       {
         ...vue,
+        useKitchenWorkspace: () => ({ id: vue.ref('k') }),
         useWorkspacePageState: () => ({
           publish: (value) => published.push(value),
         }),

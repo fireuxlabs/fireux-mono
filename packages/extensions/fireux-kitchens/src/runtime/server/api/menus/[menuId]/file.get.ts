@@ -14,6 +14,10 @@ import {
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { resolveMenuTarget } from '../../../../menu/server/ownership/target.ts'
+import {
+  isKitchenMenuDocumentPath,
+  menuDocumentContentTypes,
+} from '../../../../menu/server/document/file'
 
 export default defineEventHandler(async (event) => {
   const menuId = String(getRouterParam(event, 'menuId') || '').trim()
@@ -26,7 +30,10 @@ export default defineEventHandler(async (event) => {
 
   const target = await resolveMenuTarget(menuId, getQuery(event).kitchenSlug)
   const data = target.menuData
-  if (readRecordString(data, 'status') !== 'published') {
+  if (
+    readRecordString(data, 'status') !== 'published' ||
+    data.schedule === 'daily'
+  ) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu not found.',
@@ -34,16 +41,22 @@ export default defineEventHandler(async (event) => {
   }
   const file = readRecord(data.doc)
   const objectPath = readRecordString(file, 'storage_path')
-  const contentType =
-    readRecordString(file, 'type') || 'application/octet-stream'
+  const contentType = readRecordString(file, 'type')
+  const inline = menuDocumentContentTypes.includes(contentType)
   const fileName = readRecordString(file, 'name') || menuId
   const safeFileName =
     fileName
-      .replace(/[\r\n"]/g, '')
+      .replace(/[\r\n"\\]/g, '')
       .trim()
       .replace(/[^\x20-\x7E]/g, '_') || menuId
 
-  if (!objectPath) {
+  if (
+    !isKitchenMenuDocumentPath(
+      objectPath,
+      target.kitchenId,
+      target.rootKitchenData
+    )
+  ) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu file not found.',
@@ -58,8 +71,9 @@ export default defineEventHandler(async (event) => {
   })
 
   setResponseHeaders(event, {
-    'Content-Type': contentType,
-    'Content-Disposition': `inline; filename="${safeFileName}"`,
+    'Content-Type': inline ? contentType : 'application/octet-stream',
+    'Content-Disposition': `${inline ? 'inline' : 'attachment'}; filename="${safeFileName}"`,
+    'X-Content-Type-Options': 'nosniff',
     'Cache-Control': 'no-store',
   })
 

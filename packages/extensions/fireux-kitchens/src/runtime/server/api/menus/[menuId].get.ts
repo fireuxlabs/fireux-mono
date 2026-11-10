@@ -95,6 +95,7 @@ async function readKitchenMenu(
 
   return await buildMenuPayload(target.routeMenuId, data, {
     ...target.scope,
+    routeKind: target.kind,
     daily,
     menuContext,
     kitchenOfferingId,

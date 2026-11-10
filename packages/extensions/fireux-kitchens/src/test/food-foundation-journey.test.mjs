@@ -334,7 +334,11 @@ test('one fixture carries Item terms through Menu publication, Promotions and pu
   }
   Object.assign(
     deps,
-    load('kitchen/server/dishes/record-input', 'dishFields,dishText', deps)
+    load(
+      'kitchen/server/dishes/record-input',
+      'dishFields,dishText,validateDishInput',
+      deps
+    )
   )
   Object.assign(
     deps,

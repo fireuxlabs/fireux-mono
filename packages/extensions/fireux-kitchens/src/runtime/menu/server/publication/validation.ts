@@ -7,7 +7,11 @@ import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, serverKitchenDishesTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+  serverKitchenDishesTarget,
+} from '../../../kitchen/server/mutation-targets'
 const text = (value: unknown) => String(value ?? '').trim()
 
 async function activeRecords(
@@ -50,12 +54,14 @@ export async function assertKitchenMenuCanPublish(
       statusMessage:
         'Publish a specific date from the daily Menu Publishing view.',
     })
-  if (text(input.menuData.doc?.url)) return
-  if (input.menuData.format === 'document')
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Upload a Menu document before publishing.',
-    })
+  if (input.menuData.schedule !== 'daily') {
+    if (text(input.menuData.doc?.url)) return
+    if (input.menuData.format === 'document')
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Upload a Menu document before publishing.',
+      })
+  }
   const sections = (
     await activeRecords(
       tx,

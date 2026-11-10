@@ -1,4 +1,5 @@
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
+import { menuDocumentFilePath } from '../../utils/navigation/route'
 import {
   readRecord,
   readRecordString,
@@ -13,20 +14,24 @@ export const readMenuDocumentKind = (data: Record<string, unknown>) =>
   readRecordString(readRecord(data.doc), 'type')
 
 export const readMenuFile = (
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  menuId: string,
+  directoryKitchenSlug?: string
 ): MenuPayloadFile => {
   const file = readRecord(data.doc)
-
+  let url = readRecordString(file, 'url')
+  if (readRecordString(file, 'storage_path'))
+    url = menuDocumentFilePath({ menuId, kitchenSlug: directoryKitchenSlug })
+  else if (!/^https?:\/\//i.test(url)) url = ''
   return {
-    url: readRecordString(file, 'url'),
+    url,
     name: readRecordString(file, 'name'),
     type: readRecordString(file, 'type'),
-    storage_path: readRecordString(file, 'storage_path'),
   }
 }
 
 export const hasMenuFile = (file: MenuPayloadFile) =>
-  Boolean(file.url || file.name || file.type || file.storage_path)
+  Boolean(file.url || file.name || file.type)
 
 export const compactMenuFile = (file: MenuPayloadFile) =>
   compactMenuPayloadRecord(file) as MenuPayloadFile

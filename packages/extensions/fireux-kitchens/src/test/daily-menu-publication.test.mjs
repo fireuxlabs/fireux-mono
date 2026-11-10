@@ -18,6 +18,20 @@ function dailyHarness() {
   return h
 }
 
+test('a stored document on a Daily Menu cannot release an empty date or hide valid selections', async () => {
+  for (const format of ['interactive', 'document']) {
+    const h = dailyHarness()
+    Object.assign(h.records.get(menuPath), {
+      format,
+      doc: { url: 'https://files.test/legacy.pdf' },
+    })
+    await assert.rejects(h.daily('2026-10-16'), /section/)
+    assert.equal(h.records.get(menuPath).status, 'draft')
+    await h.daily('2026-10-15')
+    assert.deepEqual(h.records.get(menuPath).published_dates, ['2026-10-15'])
+  }
+})
+
 test('publishes one date atomically and preserves the stable doorway when withdrawing', async () => {
   const h = dailyHarness()
   await h.daily('2026-10-15')

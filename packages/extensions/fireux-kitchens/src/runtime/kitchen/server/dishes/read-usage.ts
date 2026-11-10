@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { FieldPath } from 'firebase-admin/firestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
@@ -31,11 +32,13 @@ export async function readKitchenDishUsage(
   )
   const usages = await readDishUsage(
     {
-      async readAll(target, limit) {
-        const snapshot = await db
+      async readAll(target, limit, afterId) {
+        let query = db
           .collection(target.collectionPath)
+          .orderBy(FieldPath.documentId())
           .limit(limit)
-          .get()
+        if (afterId) query = query.startAfter(afterId)
+        const snapshot = await query.get()
         return snapshot.docs.map((doc) => ({
           id: doc.id,
           data: doc.data() as any,

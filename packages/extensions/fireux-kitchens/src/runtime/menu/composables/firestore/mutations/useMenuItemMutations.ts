@@ -4,13 +4,16 @@ import { useMenuMutation } from './useMenuMutation'
 
 export function useMenuItemMutations() {
   const { mutate } = useMenuMutation()
-  const createItem = async (input: {
-    kitchenId: string
-    menuId: string
-    sectionId: string
-    dishId?: string
-    promotionId?: string
-  }) => (await mutate<{ id: string }>('item', 'POST', input)).id
+  const createItem = async (
+    input: {
+      kitchenId: string
+      menuId: string
+      sectionId: string
+      dishId?: string
+      promotionId?: string
+    },
+    isCurrent?: () => boolean
+  ) => (await mutate<{ id: string }>('item', 'POST', input, isCurrent)).id
   const updateItem = (
     kitchenId: string,
     menuId: string,

@@ -44,8 +44,9 @@
 </template>
 
 <script setup lang="ts">
-import '../../../../../menu/assets/styles/menu-editor.css'
 import { reactive } from 'vue'
 import { useMenuQrTargets } from '../../../../composables/workspace/menus/useMenuQrTargets'
 const qr = reactive(useMenuQrTargets())
 </script>
+
+<style src="../../../../../menu/assets/styles/menu-editor.css"></style>

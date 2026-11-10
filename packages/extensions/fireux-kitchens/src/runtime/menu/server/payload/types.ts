@@ -1,4 +1,5 @@
 import type { MenuRouteContext } from '../../models/menu-context.model.ts'
+import type { ScopedTargetKind } from '../ownership/target-types'
 import type { KitchenImageShade } from '../../../kitchen/models/kitchen-configuration.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
@@ -8,6 +9,7 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 
 export type MenuPayloadScope = {
+  routeKind?: ScopedTargetKind
   daily?: {
     date: string
     timezone: string
@@ -48,7 +50,6 @@ export type MenuPayloadFile = {
   url?: string
   name?: string
   type?: string
-  storage_path?: string
 }
 
 export type MenuPayloadSource = {

@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-06
-Ref: 614700fd9
+Updated: 2026-11-09
+Ref: e21e1aeb8
 Role: map, not canon
 
 ## Purpose
@@ -37,12 +37,13 @@ with registration; do not retain old-name aliases.
 
 ## Shared HTTP reads
 
-Core's live HTTP lifecycle and aggregation helpers live under
-`runtime/composables/http`; they are independent of Firestore storage. The shared
-SSE byte decoder stays with this HTTP owner because incremental decoding retains
-a connection-local buffer. It owns no connection or reactive lifecycle. See
-[the live read contract](composables.md#live-http-read-ownership) for current owners,
-supported inputs and source-owned checks.
+Core's
+[`runtime/composables/http/readPages.ts`](../../packages/core/fireux-core/src/runtime/composables/http/readPages.ts)
+aggregates requested cursor pages through a supplied fetcher. API acquisition,
+cancellation, hydration and refresh stay with native Nuxt `useAsyncData` and
+`useFetch`; Entity readers retain domain scope and normalization. See
+[native API read ownership](composables.md#native-api-read-ownership) for the
+current lifecycle contract and source-owned checks.
 
 ## Ownership invariant
 

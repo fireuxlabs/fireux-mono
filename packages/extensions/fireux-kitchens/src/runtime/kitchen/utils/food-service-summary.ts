@@ -15,8 +15,9 @@ export function foodServiceSummary(
   menus: Menu[],
   now: Date
 ) {
-  return kitchenOfferingOptions.flatMap((option) =>
-    offeringsForOption(offerings, option).flatMap((offering) => {
+  return kitchenOfferingOptions.flatMap((option) => {
+    const records = offeringsForOption(offerings, option)
+    return records.flatMap((offering) => {
       const status = offeringOptionStatus(offering, option)
       if (status === 'Off') return []
       const ids =
@@ -92,10 +93,12 @@ export function foodServiceSummary(
       return [
         {
           key: `${option.key}:${offering.id}`,
-          to: `/workspace/kitchen/food-and-drink/services#service-${option.key}`,
-          name: offering.separate
-            ? `${option.label} · ${offering.name}`
-            : option.label,
+          to: `/workspace/kitchen/food-and-drink/services#service-${option.key}/${encodeURIComponent(offering.id)}`,
+          name:
+            (offering.separate || records.length > 1) &&
+            offering.name !== option.label
+              ? `${option.label} · ${offering.name}`
+              : option.label,
           label,
           open,
           needsSetup: issues.length > 0,
@@ -103,5 +106,5 @@ export function foodServiceSummary(
         },
       ]
     })
-  )
+  })
 }

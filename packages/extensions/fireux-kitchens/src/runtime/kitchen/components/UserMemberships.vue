@@ -28,7 +28,7 @@
       color="warning"
       variant="subtle"
       icon="i-lucide-triangle-alert"
-      title="Kitchen access needs attention"
+      title="Team roster needs attention"
       :description="teamIssueDescription"
     />
 
@@ -79,23 +79,20 @@ const summary = computed(() => {
 })
 const teamIssues = computed(() =>
   (response.value?.items || []).filter(
-    (item: KitchenUserMembershipItem) => item.team_state !== 'linked'
+    (item: KitchenUserMembershipItem) => item.team_state === 'invalid'
   )
 )
 const teamIssueDescription = computed(() =>
   teamIssues.value
-    .map((item: KitchenUserMembershipItem) => {
-      const name = item.place?.name || item.kitchen_id
-      if (item.team_state === 'invalid')
-        return `${name}: Team access does not match this User.`
-      return `${name}: no matching Kitchen Team record.`
-    })
+    .map(
+      (item: KitchenUserMembershipItem) =>
+        `Check the Team record for this account at ${item.place?.name || item.kitchen_id}.`
+    )
     .join(' ')
 )
 const cells = computed<CollectionCellData[]>(() =>
   (response.value?.items || []).flatMap((item: KitchenUserMembershipItem) => {
     if (!item.kitchen || !item.place) return []
-    const teamBadge = item.team ? 'Team member' : 'Team access missing'
     return [
       {
         title: item.place.name,
@@ -107,7 +104,10 @@ const cells = computed<CollectionCellData[]>(() =>
         imageStyle: 'cover' as const,
         fallbackIcon: 'i-lucide-utensils',
         meta: item.place.short_address || item.place.formatted_address,
-        badges: [titleCase(item.kitchen.identity.status), teamBadge],
+        badges: [
+          titleCase(item.kitchen.identity.status),
+          ...(item.team ? ['Team member'] : []),
+        ],
         actionLabel: 'View Kitchen',
         to: `/kitchens/${encodeURIComponent(item.kitchen.identity.slug)}`,
       },

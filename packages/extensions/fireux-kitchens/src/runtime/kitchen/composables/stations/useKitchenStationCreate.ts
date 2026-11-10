@@ -1,4 +1,5 @@
 import { refreshNuxtData } from 'nuxt/app'
+import { watch, type WatchSource } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -11,21 +12,35 @@ type CreateKitchenStationInput = {
   sortOrder?: number
 }
 
-export function useKitchenStationCreate() {
+export function useKitchenStationCreate(
+  ownerSources: WatchSource[] = [],
+  reset: () => void = () => {}
+) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
   const { appUser } = useUserSession()
-  const captureIntent = useCommandScope([
+  const sources = [
     () => currentUser.value?.uid,
     () => config.appId,
     () => JSON.stringify(appUser.value),
-  ])
-  const createKitchenStation = async (input: CreateKitchenStationInput) => {
+    ...ownerSources,
+  ]
+  const captureIntent = useCommandScope(sources)
+  watch(sources, reset, { flush: 'sync' })
+  const createKitchenStation = async (
+    input: CreateKitchenStationInput,
+    isOwnerCurrent: () => boolean = () => true
+  ) => {
     const body = { ...input }
     const isCurrent = captureIntent()
     const uid = currentUser.value?.uid
     const assertScope = () => {
-      if (!uid || currentUser.value?.uid !== uid || !isCurrent())
+      if (
+        !uid ||
+        currentUser.value?.uid !== uid ||
+        !isCurrent() ||
+        !isOwnerCurrent()
+      )
         throw new Error(
           'The account or Kitchen changed. Try adding the Station again.'
         )
@@ -63,9 +78,12 @@ export function useKitchenStationCreate() {
       throw new Error(
         'Sign in and choose a Kitchen before adding the Pass station.'
       )
+    const isCurrent = captureIntent()
     const token = await user.getIdToken()
-    if (currentUser.value?.uid !== user.uid)
-      throw new Error('The signed-in account changed.')
+    if (currentUser.value?.uid !== user.uid || !isCurrent())
+      throw new Error(
+        'The account or Kitchen changed. Reopen the Stations page.'
+      )
     await $fetch('/api/workspace/kitchen/stations/ensure-default', {
       onResponse: async ({ response }) => {
         if (response.ok) await refreshNuxtData()
@@ -76,5 +94,5 @@ export function useKitchenStationCreate() {
       retry: 0,
     })
   }
-  return { createKitchenStation, ensureDefaultStation }
+  return { createKitchenStation, ensureDefaultStation, captureIntent }
 }

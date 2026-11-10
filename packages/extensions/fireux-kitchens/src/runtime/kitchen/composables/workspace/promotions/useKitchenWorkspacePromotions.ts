@@ -6,7 +6,6 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type {
   KitchenPromotion,
   KitchenPromotionInput,
@@ -34,9 +33,7 @@ export function useKitchenWorkspacePromotions() {
     kitchenId,
     { kitchenCollectionPath: 'kitchens' }
   )
-  const currency = computed(() =>
-    readPlaceCurrencyCode(identity.selectedKitchen.value)
-  )
+  const currency = identity.currencyCode
   const scopeKey = computed(
     () =>
       `${kitchenId.value}:${session.uid.value}:${config.appId}:${JSON.stringify(session.appUser.value)}:${canWrite.value}`

@@ -383,9 +383,10 @@ test('Menu creation stores a generated stable identity with its separate slug an
 test('trusted rename preserves public slug and record identity', async () => {
   for (const subscription of ['pro', 'business']) {
     const h = harness({ subscription })
+    const name = subscription === 'pro' ? '本日のおすすめ' : 'Dinner Menu'
     const result = await h.renameKitchenMenu(
       {},
-      { kitchenId: 'pizza', menuId: 'food', name: 'Dinner Menu' }
+      { kitchenId: 'pizza', menuId: 'food', name }
     )
     assert.deepEqual(result, {
       id: 'food',
@@ -399,7 +400,7 @@ test('trusted rename preserves public slug and record identity', async () => {
         'update',
         'pizza/menus',
         'food',
-        { name: 'Dinner Menu', updated: { by: 'cook' } },
+        { name, updated: { by: 'cook' } },
       ]
     )
     assert.equal(h.calls.filter((call) => call[0] === 'create').length, 0)

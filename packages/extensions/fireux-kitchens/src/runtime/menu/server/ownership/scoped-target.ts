@@ -65,8 +65,7 @@ export const scopedTarget = async (
     sourceMenuId,
     appId: input.appId,
     kitchenId: input.kitchenId,
-    kitchenSlug:
-      input.kitchenSlug || readRecordString(input.rootKitchenData, 'slug'),
+    kitchenSlug: input.kitchenSlug,
     rootKitchenData: input.rootKitchenData,
     kitchenData: input.rootKitchenData,
     menuData,
@@ -85,13 +84,7 @@ export const scopedTarget = async (
       ...(identity.logoImageUrl
         ? { kitchenLogoImageUrl: identity.logoImageUrl }
         : {}),
-      ...(input.kitchenSlug || readRecordString(input.rootKitchenData, 'slug')
-        ? {
-            kitchenSlug:
-              input.kitchenSlug ||
-              readRecordString(input.rootKitchenData, 'slug'),
-          }
-        : {}),
+      ...(input.kitchenSlug ? { kitchenSlug: input.kitchenSlug } : {}),
       ...(identity.name ? { kitchenName: identity.name } : {}),
       ...(identity.tagline ? { kitchenTagline: identity.tagline } : {}),
       ...(identity.wordmarkImageUrl

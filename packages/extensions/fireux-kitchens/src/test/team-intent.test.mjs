@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
+import { TEAM_INTENT_RECORD_LIMIT } from '../../../../core/fireux-core/src/runtime/workspace/utils/team-intent-records.ts'
 const source = readFileSync(
   new URL('../runtime/kitchen/server/team/intent.ts', import.meta.url),
   'utf8'
@@ -16,6 +17,7 @@ function harness(intent, authenticate = async () => {}) {
     `${stripTypeScriptTypes(source)}\nreturn interpretKitchenTeam`,
     [
       'createError',
+      'TEAM_INTENT_RECORD_LIMIT',
       'requireFirebaseBearerUser',
       'useFireUXConfig',
       'useFireuxAi',
@@ -24,6 +26,7 @@ function harness(intent, authenticate = async () => {}) {
     ]
   )(
     (error) => Object.assign(new Error(error.statusMessage), error),
+    TEAM_INTENT_RECORD_LIMIT,
     authenticate,
     () => ({ appId: 'test' }),
     (_, value) => {
@@ -58,7 +61,9 @@ test('Team intent sends bounded context and uses the development Codex transport
     message: 'Review this name.',
   })
   assert.equal((await h.interpret({}, context)).name, 'Alex')
-  assert.deepEqual(h.request().context.records, [{ id: 'a', name: 'Before', linked: false }])
+  assert.deepEqual(h.request().context.records, [
+    { id: 'a', name: 'Before', linked: false },
+  ])
   assert.equal(h.options().developmentTransport, 'codex')
   assert.equal(h.request().model, undefined)
 })
@@ -74,6 +79,19 @@ test('Team intent rejects unavailable mutations and missing selection', async ()
     ).action,
     'none'
   )
+})
+test('Team Read refers to the live roster instead of displaying a model total', async () => {
+  const h = harness({
+    action: 'read',
+    name: '',
+    message: 'There are exactly 100 people.',
+  })
+  const result = await h.interpret({}, context)
+  assert.deepEqual(result, {
+    action: 'read',
+    name: '',
+    message: 'Review the current Team roster.',
+  })
 })
 test('Team intent rejects malformed output and authentication failure', async () => {
   await assert.rejects(
@@ -91,7 +109,19 @@ test('Team intent rejects malformed output and authentication failure', async ()
 })
 
 test('retired onboarding actions are rejected and legacy AI fields do not enter the person editor', async () => {
-  await assert.rejects(harness({action: 'onboard', name: 'Alex', message: ''}).interpret({}, context), {statusCode: 502})
-  const result = await harness({action: 'update', name: 'Alex', role: 'operator', jobTitle: 'Chef', message: ''}).interpret({}, context)
+  await assert.rejects(
+    harness({ action: 'onboard', name: 'Alex', message: '' }).interpret(
+      {},
+      context
+    ),
+    { statusCode: 502 }
+  )
+  const result = await harness({
+    action: 'update',
+    name: 'Alex',
+    role: 'operator',
+    jobTitle: 'Chef',
+    message: '',
+  }).interpret({}, context)
   assert.deepEqual(Object.keys(result).sort(), ['action', 'message', 'name'])
 })

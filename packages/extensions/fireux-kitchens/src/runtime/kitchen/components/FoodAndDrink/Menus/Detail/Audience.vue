@@ -82,9 +82,14 @@ async function save() {
   error.value = ''
   message.value = ''
   try {
-    await updateMenu(kitchenId.value, menuId.value, {
-      audience: audience.value,
-    })
+    await updateMenu(
+      kitchenId.value,
+      menuId.value,
+      {
+        audience: audience.value,
+      },
+      isCurrent
+    )
     if (isCurrent()) message.value = 'Audience saved.'
   } catch (cause) {
     if (isCurrent())

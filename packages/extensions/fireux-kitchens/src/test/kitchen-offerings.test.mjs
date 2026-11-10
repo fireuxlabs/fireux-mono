@@ -284,6 +284,7 @@ function commands({
   const dependencies = {
     ...ids,
     ...validation,
+    resolveKitchenOperationHours: () => hours,
     readInteractionChanges,
     normalizeKitchenOfferings,
     ...offeringContract,
@@ -330,6 +331,54 @@ function commands({
     offerings: child.values,
   }
 }
+
+test('a shared setup can switch one service on and off using inherited hours', async () => {
+  const other = {
+    ...interaction,
+    type: 'delivery',
+    enabled: true,
+    notice_hours: 3,
+  }
+  const shared = {
+    ...active,
+    id: 'shared',
+    hours: undefined,
+    hours_source: 'kitchen',
+    interactions: [
+      other,
+      { ...interaction, type: 'collection', enabled: false },
+    ],
+  }
+  const api = commands({ stored: [shared] })
+  const change = (enabled) =>
+    api.updateKitchenOfferingInteraction(
+      {},
+      {
+        kitchenId: 'k',
+        offeringId: 'shared',
+        type: 'collection',
+        changes: { enabled },
+      }
+    )
+  const on = (await change(true)).offering
+  assert.equal(on.enabled, true)
+  assert.deepEqual(on.interactions[0], other)
+  assert.equal(on.interactions[1].enabled, true)
+  assert.equal(
+    kitchenMenuOrdering([{ ...on, hours }], 'food').order_types.length,
+    2
+  )
+  const off = (await change(false)).offering
+  assert.equal(off.enabled, true)
+  assert.deepEqual(off.interactions[0], other)
+  assert.deepEqual(
+    kitchenMenuOrdering([{ ...off, hours }], 'food').order_types.map(
+      (row) => row.type
+    ),
+    ['delivery']
+  )
+  assert.equal(off.hours, undefined)
+})
 
 test('rename preserves offering identity, sibling services and explicit schedule', async () => {
   const api = commands()

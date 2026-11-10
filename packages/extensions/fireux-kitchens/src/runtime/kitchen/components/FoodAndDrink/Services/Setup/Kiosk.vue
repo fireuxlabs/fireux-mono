@@ -7,7 +7,7 @@
       :config="config"
       :mode-menus="true"
       :disabled="disabled"
-      :menus="menus"
+      :menus="kioskMenus"
       :menus-outcome="workspace.source.menusOutcome.value"
       :update-function="
         (changes) => editor.updateInteraction(config.type, changes)
@@ -32,7 +32,13 @@
 import { useKitchenServiceEditor } from '../../../../composables/offerings/useKitchenServiceEditor'
 import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
 import { computed } from 'vue'
-const { editor, disabled, menus, workspace } = useKitchenServiceEditor()
+const { editor, services, disabled, menus, workspace } =
+  useKitchenServiceEditor()
+const kioskMenus = computed(() =>
+  services.value.length > 1
+    ? menus.value.filter((menu) => editor.menuIds.includes(menu.id))
+    : menus.value
+)
 const kioskPath = computed(() => {
   const slug = workspace.source.selectedKitchen.value?.identity?.slug
   return slug ? `/kitchens/${encodeURIComponent(slug)}/menu.kiosk` : ''

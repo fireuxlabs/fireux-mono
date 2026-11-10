@@ -19,7 +19,6 @@ for (const domain of ['Kitchen', 'Project']) {
         exists: true,
         data: { name: 'Alex', user_id: 'account', role_ids: [] },
       }),
-      query: async () => [{ id: 'invite', data: { status: 'pending' } }],
       update: (...args) => writes.push(['update', ...args]),
       delete: (...args) => writes.push(['delete', ...args]),
     }
@@ -28,6 +27,9 @@ for (const domain of ['Kitchen', 'Project']) {
       collectionPath: 'workspace/team',
     }
     const deps = {
+      readKitchenMemberInvitationHistory: async () => ({
+        pendingIds: ['invite'],
+      }),
       createError: (input) =>
         Object.assign(new Error(input.statusMessage), input),
       runGuardedServerTransaction: async (_db, run) => run(tx),
@@ -42,10 +44,7 @@ for (const domain of ['Kitchen', 'Project']) {
       serverAuditStamp: () => ({ by: 'actor' }),
     }
     const memberSource = readFileSync(
-      new URL(
-        '../runtime/workspace/server/team/members.ts',
-        import.meta.url
-      ),
+      new URL('../runtime/workspace/server/team/members.ts', import.meta.url),
       'utf8'
     )
       .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')

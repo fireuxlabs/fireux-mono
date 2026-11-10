@@ -5,10 +5,7 @@
       color="error"
       :title="defaultStationError"
     />
-    <FireCopyError
-      v-if="defaultStationError"
-      :message="defaultStationError"
-    />
+    <FireCopyError v-if="defaultStationError" :message="defaultStationError" />
     <UButton
       v-if="outcome === 'empty' && canWrite"
       label="Add Pass station"
@@ -33,24 +30,31 @@ import { useKitchenStationCreate } from '../../../composables/stations/useKitche
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
 const { readOnly, canWrite, outcome, kitchenId } = useKitchenWorkspaceStations()
-const { ensureDefaultStation } = useKitchenStationCreate()
 const defaultStationError = ref('')
 const creating = ref(false)
+const { ensureDefaultStation, captureIntent } = useKitchenStationCreate(
+  [kitchenId, canWrite],
+  () => {
+    defaultStationError.value = ''
+    creating.value = false
+  }
+)
 async function addPass() {
   if (creating.value || !canWrite.value) return
   const targetId = kitchenId.value
+  const isCurrent = captureIntent()
   creating.value = true
   defaultStationError.value = ''
   try {
     await ensureDefaultStation(targetId)
   } catch (error) {
-    if (kitchenId.value === targetId)
+    if (isCurrent())
       defaultStationError.value =
         error instanceof Error
           ? error.message
           : 'Could not add the Pass station.'
   } finally {
-    creating.value = false
+    if (isCurrent()) creating.value = false
   }
 }
 </script>

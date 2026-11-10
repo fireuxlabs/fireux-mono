@@ -8,7 +8,7 @@
       :active="editing || editOpen"
       :available="available"
       :update-member="updateMember"
-      :remove-member="removeMember"
+      @request-remove="requestRemove"
     >
       <slot />
     </WorkspaceTeamSettings>
@@ -52,8 +52,7 @@
           :active="editing || editOpen"
           :available="available"
           :update-member="updateMember"
-          :remove-member="removeMember"
-          @removed="editOpen = false"
+          @request-remove="requestRemove"
           ><slot
         /></WorkspaceTeamSettings>
       </template>
@@ -64,10 +63,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import WorkspaceTeamSettings from './Settings.vue'
-import type {
-  TeamAIIntent,
-  WorkspaceTeamMember,
-} from '../../composables/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from '../../composables/useWorkspaceTeam'
 import type { WorkspaceCrudPrimitiveId } from '../../models/capability-context'
 const props = defineProps<{
   roles?: string[]
@@ -77,8 +73,8 @@ const props = defineProps<{
   selectedMemberId: string
   available: WorkspaceCrudPrimitiveId[]
   updateMember: (input: { memberId: string; name: string }) => Promise<unknown>
-  removeMember: (memberId: string) => Promise<{ name: string }>
 }>()
+const emit = defineEmits<{ 'request-remove': [memberId: string] }>()
 const selectedMember = computed(() =>
   props.members.find((member) => member.id === props.selectedMemberId)
 )
@@ -95,13 +91,15 @@ watch(
   },
   { flush: 'post' }
 )
-defineExpose({
-  openAction: (intent: TeamAIIntent) => {
-    if (intent.action === 'update' && props.available.includes('update')) {
-      editOpen.value = true
-      if (form.value) form.value.prepare(intent.name)
-      else preparedName.value = intent.name
-    }
-  },
-})
+function requestRemove(memberId: string) {
+  editOpen.value = false
+  emit('request-remove', memberId)
+}
+function prepareUpdate(name: string) {
+  if (!selectedMember.value || !props.available.includes('update')) return
+  editOpen.value = true
+  if (form.value) form.value.prepare(name)
+  else preparedName.value = name
+}
+defineExpose({ prepareUpdate })
 </script>

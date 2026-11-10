@@ -2,6 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { TEAM_INTENT_RECORD_LIMIT } from 'fireux-core/runtime/workspace/utils/team-intent-records'
 
 const object = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -50,7 +51,10 @@ export async function interpretProject(event: H3Event, body: unknown) {
       imageUrl: text(source.imageUrl, 2048),
     }
   } else {
-    if (!Array.isArray(input.records) || input.records.length > 100)
+    if (
+      !Array.isArray(input.records) ||
+      input.records.length > TEAM_INTENT_RECORD_LIMIT
+    )
       throw createError({
         statusCode: 400,
         statusMessage: 'Invalid record context.',
@@ -122,7 +126,10 @@ export async function interpretProject(event: H3Event, body: unknown) {
     throw invalid()
   const output: Record<string, unknown> = {
     action: intent.action,
-    message: intent.message,
+    message:
+      !identity && intent.action === 'read'
+        ? 'Review the current Team roster.'
+        : intent.message,
   }
   try {
     if (identity) {

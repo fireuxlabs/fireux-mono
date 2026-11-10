@@ -1,17 +1,18 @@
 <template>
   <UButton
     type="button"
+    :to="to"
     color="neutral"
     :variant="selected ? 'soft' : 'ghost'"
     class="workspace-selection-row"
-    :aria-pressed="selected"
+    :aria-pressed="to ? undefined : selected"
     @click="$emit('select')"
   >
     <slot />
   </UButton>
 </template>
 <script setup lang="ts">
-defineProps<{ selected: boolean }>()
+defineProps<{ selected: boolean; to?: string }>()
 defineEmits<{ select: [] }>()
 </script>
 <style scoped>

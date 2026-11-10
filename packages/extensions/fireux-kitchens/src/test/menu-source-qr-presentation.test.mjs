@@ -69,49 +69,6 @@ async function render(Card, props) {
   })
   return renderToString(app)
 }
-const File = component(
-  'kitchen/components/FoodAndDrink/Menus/Uploads/Detail/File.vue'
-)
-test('upload detail preserves URL, photo, document and missing-file presentation', async () => {
-  const base = {
-    id: 'source',
-    status: 'uploaded',
-    file_name: 'Menu',
-    files: [],
-  }
-  const url = await render(File, {
-    source: { ...base, source_url: 'https://example.test/menu' },
-    files: [],
-  })
-  assert.match(url, /Menu URL source/)
-  assert.match(url, /href="https:\/\/example.test\/menu"/)
-  assert.doesNotMatch(url, /<iframe|<img/)
-  for (const [kind, tag] of [
-    ['photo', 'img'],
-    ['pdf', 'iframe'],
-  ]) {
-    const html = await render(File, {
-      source: {
-        ...base,
-        file_kind: kind,
-        file_url: 'https://example.test/file',
-      },
-      files: [
-        { file_url: 'https://example.test/file' },
-        { file_url: 'https://example.test/second' },
-      ],
-    })
-    assert.match(
-      html,
-      new RegExp(`<${tag}[^>]*src="https://example.test/file"`)
-    )
-    assert.match(html, /href="https:\/\/example.test\/second"/)
-  }
-  assert.match(
-    await render(File, { source: base, files: [] }),
-    /Source file unavailable/
-  )
-})
 test('QR targets retain publication and service eligibility boundaries', () => {
   const source = readFileSync(
     new URL('kitchen/composables/workspace/menus/useMenuQrTargets.ts', runtime),

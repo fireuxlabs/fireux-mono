@@ -1,4 +1,5 @@
 import { readAppUserSubscription } from '../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
+import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestore-document-id.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/utils/read-outcome.ts'
@@ -101,6 +102,7 @@ function liveHarness(loadDocs) {
     {
       computed,
       toValue,
+      resolveAppUserAccess,
       ...contract,
       useFirestoreRead: () => ({
         firestoreFetchDoc: (path, id) => {

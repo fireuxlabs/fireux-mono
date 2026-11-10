@@ -1,6 +1,11 @@
 import { createError } from 'h3'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../mutation-targets'
+import {
+  serverKitchenMenusTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+} from '../mutation-targets'
 import { kitchenPromotionsTarget } from '../promotions/target'
 import type { DishUsage } from '../../models/dish-usage.model'
 
@@ -22,6 +27,26 @@ export async function readDishUsage(
       })
     return rows
   }
+  async function usesDish(target: Parameters<UsageReader['readAll']>[0]) {
+    const matches = await reader.query(target, {
+      field: 'dish_id',
+      op: '==',
+      value: dishId,
+      limit: 1,
+    })
+    if (matches.length) return true
+    // Menu rendering trims stored Dish references, including historical values.
+    let afterId: string | undefined
+    for (;;) {
+      const items = await reader.readAll(target, 100, afterId)
+      if (
+        items.some(({ data }) => readRecordString(data, 'dish_id') === dishId)
+      )
+        return true
+      if (items.length < 100) return false
+      afterId = items.at(-1)!.id
+    }
+  }
   const usages: DishUsage[] = []
   const menus = await all(serverKitchenMenusTarget(kitchenId))
   for (const menu of menus) {
@@ -29,11 +54,11 @@ export async function readDishUsage(
       serverKitchenMenuSectionsTarget(kitchenId, menu.id)
     )
     for (const section of sections) {
-      const items = await reader.query(
-        serverKitchenMenuItemsTarget(kitchenId, menu.id, section.id),
-        { field: 'dish_id', op: '==', value: dishId, limit: 1 }
+      if (
+        await usesDish(
+          serverKitchenMenuItemsTarget(kitchenId, menu.id, section.id)
+        )
       )
-      if (items.length)
         usages.push({
           kind: 'menu',
           id: menu.id,

@@ -17,10 +17,17 @@ type ServiceSetup = {
   offering?: KitchenOffering
   timezone: string
   disabled?: boolean
+  sharedSetup?: boolean
   captureIntent?: () => () => boolean
   save: (
     input: Record<string, unknown>,
     current?: () => boolean
+  ) => Promise<unknown>
+  updateInteraction?: (
+    id: string,
+    type: KitchenOrderType,
+    changes: KitchenOfferingInteractionChanges,
+    current: () => boolean
   ) => Promise<unknown>
 }
 
@@ -48,7 +55,7 @@ export function useServiceSetup(props: ServiceSetup) {
   function hydrate(offering = record.value) {
     enabled.value = Boolean(
       offering &&
-        (props.option.key === 'counter'
+        (props.sharedSetup || props.option.key === 'counter'
           ? offering.enabled
           : offeringOptionEnabled(offering, props.option))
     )
@@ -69,11 +76,12 @@ export function useServiceSetup(props: ServiceSetup) {
 
   async function commit(
     changes: Record<string, unknown>,
-    available = enabled.value,
+    available?: boolean,
     patches: Partial<
       Record<KitchenOrderType, KitchenOfferingInteractionChanges>
     > = {},
-    intentCurrent: () => boolean = () => true
+    intentCurrent: () => boolean = () => true,
+    write?: (current: () => boolean) => Promise<unknown>
   ) {
     if (busy.value || props.disabled) return false
     const local = capture()
@@ -83,19 +91,23 @@ export function useServiceSetup(props: ServiceSetup) {
     busy.value = true
     error.value = ''
     try {
-      const result = (await props.save(
-        {
-          ...(record.value ? { offeringId: record.value.id } : {}),
-          option: props.option.key,
-          enabled: available,
-          interactions: props.option.types.map((type) => ({
-            type,
-            changes: patches[type] || {},
-          })),
-          ...changes,
-        },
-        current
-      )) as { offering: KitchenOffering }
+      const result = (await (write
+        ? write(current)
+        : props.save(
+            {
+              ...(record.value ? { offeringId: record.value.id } : {}),
+              option: props.option.key,
+              ...(available !== undefined || !record.value || !props.sharedSetup
+                ? { enabled: available ?? enabled.value }
+                : {}),
+              interactions: props.option.types.map((type) => ({
+                type,
+                changes: patches[type] || {},
+              })),
+              ...changes,
+            },
+            current
+          ))) as { offering: KitchenOffering }
       if (!current()) return false
       record.value = result.offering
       menuIds.value = [...result.offering.menu_ids]
@@ -197,25 +209,42 @@ export function useServiceSetup(props: ServiceSetup) {
   )
   const interactions = computed(() => {
     const types: readonly KitchenOrderType[] = props.option.types
-    return types.map((type) => {
-      const saved = record.value?.interactions.find((row) => row.type === type)
-      return saved && saved.type !== 'browse'
-        ? saved
-        : { ...newKitchenOfferingInteraction(type), enabled: true }
-    })
+    return types
+      .filter(
+        (type) =>
+          !props.sharedSetup ||
+          record.value?.interactions.some((row) => row.type === type)
+      )
+      .map((type) => {
+        const saved = record.value?.interactions.find(
+          (row) => row.type === type
+        )
+        return saved && saved.type !== 'browse'
+          ? saved
+          : { ...newKitchenOfferingInteraction(type), enabled: true }
+      })
   })
   async function updateInteraction(
     type: KitchenOrderType,
     changes: KitchenOfferingInteractionChanges,
     current?: () => boolean
   ) {
-    if (!(await commit({}, enabled.value, { [type]: changes }, current)))
+    if (!(await commit({}, undefined, { [type]: changes }, current)))
       throw new Error(error.value || 'The service changed. Please try again.')
+  }
+  async function setInteractionEnabled(type: KitchenOrderType, value: boolean) {
+    const id = record.value?.id
+    const update = props.updateInteraction
+    if (!id || !update || !props.sharedSetup) return
+    await commit({}, enabled.value, {}, undefined, (current) =>
+      update(id, type, { enabled: value }, current)
+    )
   }
   return {
     record,
     interactions,
     updateInteraction,
+    setInteractionEnabled,
     enabled,
     menuIds,
     hours,

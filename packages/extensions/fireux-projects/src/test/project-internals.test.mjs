@@ -14,6 +14,7 @@ import {
   watch,
 } from 'vue'
 import { useCommandScope } from '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts'
+import { teamIntentRecords } from '../../../../core/fireux-core/src/runtime/workspace/utils/team-intent-records.ts'
 import { useIdentityEditor } from '../../../../core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts'
 import { normalizeString } from '../../../../core/fireux-core/src/runtime/utils/normalize-string.ts'
 
@@ -127,9 +128,13 @@ function intentFixture() {
     useRoute: () => fixture.route,
     useCommandScope,
     useRequireUser: async () => fixture.currentUser.value,
-    $fetch: (url, options) => {
+    refreshNuxtData: () =>
+      assert.fail('Interpreting a prompt must not refresh the roster'),
+    $fetch: async (url, options) => {
       calls.push({ url, options })
-      return response.promise
+      const result = await response.promise
+      await options.onResponse?.({ options, response: { ok: true } })
+      return result
     },
   }
   const owner = effectScope()
@@ -221,6 +226,136 @@ test('Project AI captures nested input before credentials and preserves the huma
     ['action', { action: 'update', name: 'Review me', message: '' }],
   ])
   fixture.owner.stop()
+})
+
+test('Project Team includes the selected person even beyond the interpretation limit', async () => {
+  const records = Array.from({ length: 105 }, (_, i) => ({
+    id: String(i),
+    name: 'Person ' + i,
+  }))
+  const context = {
+    collection: { records },
+    selected: records[104],
+    derived: { capability: { availableActions: ['delete'] } },
+  }
+  const request = load(
+    '../runtime/project/components/Team/AI.vue',
+    'requestAI',
+    {
+      ref,
+      computed,
+      watch: () => {},
+      teamIntentRecords,
+      useWorkspaceDraftHandoff: () => ({}),
+      useProjectIntent: () => ({ request: (payload) => payload }),
+      defineProps: () => ({ team: { context: ref(context) } }),
+      defineEmits: () => () => {},
+    },
+    true
+  )
+  const payload = await request('Remove selected')
+  assert.equal(payload.selectedId, '104')
+  assert.deepEqual(payload.records, [...records.slice(0, 99), records[104]])
+  assert.equal(context.collection.records.length, 105)
+})
+
+function removalFixture(t) {
+  const fixture = contextSources()
+  const selection = ref('another-person')
+  const calls = []
+  const response = deferred()
+  const data = ref({
+    ok: true,
+    project_id: 'misebox',
+    members: [{ id: 'reviewed', name: 'Alex' }],
+  })
+  const owner = effectScope()
+  t.after(() => owner.stop())
+  const team = owner.run(() =>
+    load(
+      '../runtime/project/composables/workspace/useProjectWorkspaceTeam.ts',
+      'useProjectWorkspaceTeam()',
+      {
+        computed,
+        normalizeString,
+        useCommandScope,
+        useAuth: () => ({
+          currentUser: fixture.currentUser,
+          hasAuthState: ref(true),
+        }),
+        useAppSession: () => ({
+          ...fixture.session,
+          pending: ref(false),
+          error: ref(null),
+        }),
+        useFireUXConfig: () => fixture.config,
+        useProjectWorkspace: () => ({
+          data: computed(() => ({
+            id: fixture.selectedId.value,
+            identity: { name: 'Misebox' },
+          })),
+          outcome: ref('ready'),
+        }),
+        useAsyncData: () => ({ data, pending: ref(false), error: ref(null) }),
+        useWorkspaceTeam: ({ members }) => ({
+          members,
+          selectedTeamMemberId: selection,
+          derived: ref({}),
+        }),
+        useWorkspacePageState: () => ({ publish() {} }),
+        watchEffect: () => {},
+        $fetch: (url, options) => {
+          calls.push({ url, options })
+          return response.promise
+        },
+      }
+    )
+  )
+  return {
+    ...fixture,
+    owner,
+    selection,
+    calls,
+    response,
+    remove: team.primitives.delete,
+  }
+}
+for (const changed of [
+  'account',
+  'membership',
+  'selection',
+  'disposed',
+  'confirmation',
+]) {
+  test(`Project removal rechecks its reviewed target after ${changed} changes during authentication`, async (t) => {
+    const h = removalFixture(t)
+    let current = true
+    const flight = h.remove('reviewed', () => current)
+    if (changed === 'confirmation') current = false
+    else roundTrip(h, changed)
+    h.credentials.resolve('token')
+    await assert.rejects(flight, /changed/)
+    assert.equal(h.calls.length, 0)
+  })
+}
+test('Project removal targets the reviewed detail member and validates its response', async (t) => {
+  const h = removalFixture(t)
+  h.credentials.resolve('token')
+  const flight = h.remove('reviewed')
+  await Promise.resolve()
+  assert.equal(
+    h.calls[0].url,
+    '/api/internal/control/projects/misebox/team/reviewed'
+  )
+  assert.equal(h.calls[0].options.method, 'DELETE')
+  h.response.resolve({
+    ok: true,
+    project_id: 'different',
+    member_id: 'reviewed',
+    name: 'Alex',
+  })
+  await assert.rejects(flight, /response was invalid/)
+  assert.equal(h.selection.value, 'another-person')
 })
 
 function editorFixture() {

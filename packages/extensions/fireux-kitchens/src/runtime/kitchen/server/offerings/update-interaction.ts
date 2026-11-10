@@ -11,6 +11,7 @@ import { readKitchenOfferingsInTransaction } from './read'
 import { patchKitchenOfferingInteraction } from '../../utils/offering-interaction'
 import { requireConfiguredOffering, requireServiceMenus } from './validation'
 import { readInteractionChanges } from './interaction-validation'
+import { resolveKitchenOperationHours } from '../../utils/kitchen-readers'
 
 const missing = () =>
   createError({ statusCode: 404, statusMessage: 'Offering not found.' })
@@ -32,7 +33,11 @@ export async function updateKitchenOfferingInteraction(
     })
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    await requireKitchenMutationAuthority(tx, actor, kitchenId)
+    const authority = await requireKitchenMutationAuthority(
+      tx,
+      actor,
+      kitchenId
+    )
     const offerings = await readKitchenOfferingsInTransaction(tx, kitchenId)
     const current = offerings.find((row) => row.id === offeringId)
     if (!current) throw missing()
@@ -48,12 +53,25 @@ export async function updateKitchenOfferingInteraction(
     )
     const offering = {
       ...current,
-      interactions: [
-        ...current.interactions.filter((row) => row.type !== type),
-        interaction,
-      ],
+      interactions: current.interactions.map((row) =>
+        row.type === type ? interaction : row
+      ),
     }
-    requireConfiguredOffering(offering)
+    const inheritsHours =
+      offering.hours_source === 'kitchen' ||
+      (!offering.hours && offering.hours_source !== 'custom')
+    requireConfiguredOffering(
+      offering.enabled && interaction.enabled && inheritsHours
+        ? {
+            ...offering,
+            hours: resolveKitchenOperationHours(
+              authority.rootData,
+              authority.placeData
+            ),
+          }
+        : offering,
+      changes.enabled === false
+    )
     if (offering.enabled && interaction.enabled) {
       const selectedMenus = []
       for (const id of offering.menu_ids) {

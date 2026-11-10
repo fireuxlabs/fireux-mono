@@ -1,3 +1,4 @@
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -8,34 +9,13 @@ import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-plac
 import type {
   KitchenUserMembershipItem,
   KitchenUserMembershipsResponse,
-  KitchenUserTeamAccess,
-  KitchenUserTeamState,
 } from '../../models/user-memberships.model.ts'
+import { readKitchenTeamAccountLink } from '../team/account-link'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import {
   KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAccessIds,
 } from '../../utils/kitchen-access'
-
-type StoredRecord = Record<string, unknown>
-
-const text = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): StoredRecord =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as StoredRecord)
-    : {}
-
-function projectTeamAccess(
-  exists: boolean,
-  value: unknown,
-  userId: string
-): { team: KitchenUserTeamAccess | null; state: KitchenUserTeamState } {
-  if (!exists) return { team: null, state: 'missing' }
-
-  const source = record(value)
-  if (text(source.user_id) !== userId) return { team: null, state: 'invalid' }
-  return { team: { user_id: userId }, state: 'linked' }
-}
 
 export async function readKitchenUserMemberships(
   event: H3Event,
@@ -93,37 +73,39 @@ export async function readKitchenUserMemberships(
   const references = kitchenIds.flatMap((kitchenId) => [
     db.doc(`kitchens/${kitchenId}`),
     db.doc(`places/${kitchenId}`),
-    db.doc(`kitchens/${kitchenId}/team/${userId}`),
   ])
-  const snapshots = references.length ? await db.getAll(...references) : []
+  const roots: Promise<DocumentSnapshot[]> = references.length
+    ? db.getAll(...references)
+    : Promise.resolve([])
+  const [snapshots, teamLinks] = await Promise.all([
+    roots,
+    Promise.all(
+      kitchenIds.map((id) => readKitchenTeamAccountLink(db, id, userId))
+    ),
+  ])
   const snapshotsByPath = new Map(
     snapshots.map((snapshot) => [snapshot.ref.path, snapshot])
   )
-  const items: KitchenUserMembershipItem[] = kitchenIds.map((kitchenId) => {
-    const kitchenSnapshot = snapshotsByPath.get(`kitchens/${kitchenId}`)
-    const placeSnapshot = snapshotsByPath.get(`places/${kitchenId}`)
-    const teamSnapshot = snapshotsByPath.get(
-      `kitchens/${kitchenId}/team/${userId}`
-    )
-    const place = placeSnapshot?.exists
-      ? normalizePlace(kitchenId, placeSnapshot.data())
-      : null
-    const kitchen = kitchenSnapshot?.exists
-      ? normalizeKitchen(kitchenId, kitchenSnapshot.data(), place)
-      : null
-    const teamAccess = projectTeamAccess(
-      Boolean(teamSnapshot?.exists),
-      teamSnapshot?.data(),
-      userId
-    )
-    return {
-      kitchen_id: kitchenId,
-      kitchen,
-      place,
-      team: teamAccess.team,
-      team_state: teamAccess.state,
+  const items: KitchenUserMembershipItem[] = kitchenIds.map(
+    (kitchenId, index) => {
+      const kitchenSnapshot = snapshotsByPath.get(`kitchens/${kitchenId}`)
+      const placeSnapshot = snapshotsByPath.get(`places/${kitchenId}`)
+      const place = placeSnapshot?.exists
+        ? normalizePlace(kitchenId, placeSnapshot.data())
+        : null
+      const kitchen = kitchenSnapshot?.exists
+        ? normalizeKitchen(kitchenId, kitchenSnapshot.data(), place)
+        : null
+      const teamState = teamLinks[index]!.state
+      return {
+        kitchen_id: kitchenId,
+        kitchen,
+        place,
+        team: teamState === 'linked' ? { user_id: userId } : null,
+        team_state: teamState,
+      }
     }
-  })
+  )
 
   return {
     ok: true,

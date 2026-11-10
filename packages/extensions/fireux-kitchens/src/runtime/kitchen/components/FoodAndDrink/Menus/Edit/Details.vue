@@ -17,6 +17,7 @@
             : 'This Menu is read-only.'
         "
         :validation-function="validateName"
+        :capture-intent="captureIntent"
         :update="rename"
       />
       <UButton
@@ -33,6 +34,7 @@
         :maxlength="160"
         :disabled="!canWrite"
         disabled-message="This Menu is read-only."
+        :capture-intent="captureIntent"
         :update="updateInternalName"
       />
       <p class="fx-type-caption">Only shown in Workspace.</p>
@@ -44,6 +46,7 @@
         :maxlength="500"
         :disabled="!canWrite"
         disabled-message="This Menu is read-only."
+        :capture-intent="captureIntent"
         :update="updateDescription"
       />
       <FireFormsEditableSimpleField
@@ -53,6 +56,7 @@
         :disabled="!canWrite"
         disabled-message="This Menu is read-only."
         :validation-function="validateOrder"
+        :capture-intent="captureIntent"
         :update="updateOrder"
       />
       <p class="fx-type-caption">Lower numbers appear first.</p>
@@ -66,6 +70,7 @@ const {
   menu,
   canWrite,
   canRename,
+  captureIntent,
   validateName,
   validateOrder,
   rename,

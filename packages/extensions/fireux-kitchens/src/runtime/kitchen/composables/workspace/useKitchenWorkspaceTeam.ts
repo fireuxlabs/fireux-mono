@@ -4,6 +4,7 @@ import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/workspace/
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useWorkspaceTeam } from 'fireux-core/runtime/workspace/composables/useWorkspaceTeam'
@@ -50,46 +51,57 @@ export function useKitchenWorkspaceTeam() {
       databaseId,
     }
   )
-  const requestKey = computed(
-    () =>
-      `kitchen-team-${currentUser.value?.uid || 'anonymous'}-${fetchKitchenId.value || 'none'}`
-  )
-  const { data: teamResponse, error: teamError } =
-    useAsyncData<KitchenTeamResponse>(
-      requestKey,
-      async (_nuxtApp, { signal }) => {
-        const fetchRead = $fetch.create({ signal, cache: 'no-store' })
-
-        const user = currentUser.value
-        const kitchenId = fetchKitchenId.value
-        if (!user || !kitchenId)
-          return { ok: true, kitchenId: '', canManageTeam: false, members: [] }
-        return fetchRead<KitchenTeamResponse>(
-          '/api/workspace/kitchen/team/members',
-          {
-            query: { kitchenId },
-            headers: { authorization: `Bearer ${await user.getIdToken()}` },
-          }
-        )
-      },
-      {
-        server: false,
-        watch: [currentUser, hasAuthState, fetchKitchenId],
-      }
+  const projectionScope = computed(() => {
+    const uid = currentUser.value?.uid
+    if (
+      !hasAuthState.value ||
+      !uid ||
+      !kitchenId.value ||
+      liveTeam.pending.value ||
+      liveTeam.error.value
     )
-  const canWrite = computed(
-    () =>
-      !teamError.value &&
-      teamResponse.value?.kitchenId === kitchenId.value &&
-      teamResponse.value?.canManageTeam === true
+      return ''
+    const accountLinks = liveTeam.items.value
+      .filter((member) => member.user_id)
+      .map((member) => [member.id, member.user_id])
+    return JSON.stringify([uid, kitchenId.value, accountLinks])
+  })
+  const { data: teamRead, error: teamError } = useAsyncData(
+    computed(() => `kitchen-team:${projectionScope.value}`),
+    async (_nuxtApp, { signal }) => {
+      const scope = projectionScope.value
+      const user = currentUser.value
+      const id = kitchenId.value
+      if (!scope || !user) return { scope, response: null }
+      const response = await $fetch<KitchenTeamResponse>(
+        '/api/workspace/kitchen/team/members',
+        {
+          signal,
+          cache: 'no-store',
+          query: { kitchenId: id },
+          headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        }
+      )
+      if (!response.ok || response.kitchenId !== id)
+        throw new Error(
+          'Kitchen Team response did not match the selected Kitchen.'
+        )
+      return { scope, response }
+    },
+    { server: false }
   )
+  // Nuxt can retain the previous key's data while it fetches the new key.
+  const projection = computed(() =>
+    teamRead.value?.scope === projectionScope.value &&
+    teamRead.value?.response?.kitchenId === kitchenId.value
+      ? teamRead.value.response
+      : null
+  )
+  const canWrite = computed(() => projection.value?.canManageTeam === true)
   const projectedMembersById = computed(
     () =>
-      new Map<string, KitchenTeamResponse['members'][number]>(
-        (teamResponse.value?.kitchenId === kitchenId.value
-          ? teamResponse.value.members
-          : []
-        ).map((member: KitchenTeamResponse['members'][number]) => [
+      new Map(
+        (projection.value?.members || []).map((member) => [
           member.memberId,
           member,
         ])
@@ -98,19 +110,23 @@ export function useKitchenWorkspaceTeam() {
   const teamMembers = computed<
     Array<WorkspaceTeamMemberDocument & { avatar: string }>
   >(() =>
-    (pending.value || error.value ? [] : liveTeam.items.value).map((member) => {
+    (pending.value || error.value || !projection.value
+      ? []
+      : liveTeam.items.value
+    ).map((member) => {
       const projected = projectedMembersById.value.get(member.id)
+      const account =
+        member.user_id && projected?.userId === member.user_id
+          ? projected
+          : null
       return {
         ...member,
-        id: member.id,
-        user_id: projected?.userId || member.user_id,
-        name: projected?.name || member.name,
-        avatar: projected?.avatar || '',
+        name: member.user_id
+          ? account?.name || 'Linked account unavailable'
+          : member.name,
+        avatar: account?.avatar || '',
       }
     })
-  )
-  const memberAvatarById = computed(
-    () => new Map(teamMembers.value.map((member) => [member.id, member.avatar]))
   )
   const selectableTeamMembers = teamMembers
   const subscription = computed(() => membership.value?.subscription || 'free')
@@ -121,7 +137,8 @@ export function useKitchenWorkspaceTeam() {
     () =>
       !hasAuthState.value ||
       (!workspace.data.value && workspace.outcome.value === 'pending') ||
-      liveTeam.pending.value
+      liveTeam.pending.value ||
+      Boolean(projectionScope.value && !projection.value && !teamError.value)
   )
   const error = computed(
     () =>
@@ -149,7 +166,7 @@ export function useKitchenWorkspaceTeam() {
       id: member.id,
       userId: member.user_id || '',
       name: member.name || 'Unnamed team member',
-      avatar: memberAvatarById.value.get(member.id) || '',
+      avatar: member.avatar,
       roleIds: member.role_ids,
     }))
   )
@@ -238,16 +255,33 @@ export function useKitchenWorkspaceTeam() {
     return result
   }
 
-  async function removeTeamMember(memberId: string) {
+  const captureRemoval = useCommandScope([
+    currentUser,
+    membership,
+    kitchenId,
+    canWrite,
+  ])
+  async function removeTeamMember(
+    memberId: string,
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
     const targetId = kitchenId.value
     if (!targetId)
       throw new Error('Select a record before changing Team members.')
     const user = currentUser.value
     if (!user || user.isAnonymous)
       throw new Error('Sign in before changing Team members.')
+    const inScope = captureRemoval()
     const token = await user.getIdToken()
-    if (user.uid !== currentUser.value?.uid)
-      throw new Error('The signed-in account changed. Try again.')
+    if (
+      !inScope() ||
+      !isSurfaceCurrent() ||
+      !canWrite.value ||
+      !members.value.some((member) => member.id === memberId)
+    )
+      throw new Error(
+        'The selected workspace or member changed. Review the removal again.'
+      )
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`,
       {
@@ -259,8 +293,11 @@ export function useKitchenWorkspaceTeam() {
         query: { kitchenId: targetId },
       }
     )
+    if (result?.ok !== true || result.memberId !== memberId)
+      throw new Error('Remove team member response was invalid.')
     if (
-      kitchenId.value === targetId &&
+      inScope() &&
+      isSurfaceCurrent() &&
       team.selectedTeamMemberId.value === memberId
     )
       team.selectedTeamMemberId.value = ''

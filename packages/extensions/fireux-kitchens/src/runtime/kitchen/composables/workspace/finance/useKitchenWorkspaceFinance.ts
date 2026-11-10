@@ -149,7 +149,7 @@ export function useKitchenWorkspaceFinance() {
       return 'error' as const
     if (session.pending.value || workspace.outcome.value === 'pending')
       return 'pending' as const
-    if (workspace.outcome.value !== 'ready') return workspace.outcome.value
+    if (workspace.outcome.value !== 'ready') return 'idle' as const
     if (validationError.value) return 'error' as const
     if (!canLoad.value) return 'idle'
     if (settledEpoch.value !== epoch.value) return 'pending'
@@ -161,7 +161,9 @@ export function useKitchenWorkspaceFinance() {
     })
   })
   const report = computed(() =>
-    ['ready', 'empty'].includes(outcome.value) ? state.data.value : null
+    canLoad.value && ['ready', 'empty'].includes(outcome.value)
+      ? state.data.value
+      : null
   )
   const error = computed(
     () =>
