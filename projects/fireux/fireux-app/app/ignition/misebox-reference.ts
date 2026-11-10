@@ -59,7 +59,9 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['venue', 'fulfil'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/Workspace/Navigation/Index.vue'],
+      sourcePaths: [
+        source + 'kitchen/components/Workspace/Navigation/Index.vue',
+      ],
     },
     {
       id: 'identity',
@@ -67,9 +69,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens → fireux-places',
       requirements: ['venue'],
       uses: ['kitchen'],
-      sourcePaths: [
-        source + 'kitchen/components/Identity/Profile.vue',
-      ],
+      sourcePaths: [source + 'kitchen/components/Identity/Profile.vue'],
     },
     {
       id: 'menus',
@@ -77,7 +77,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['menu'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/FoodAndDrink/Menus/Index.vue'],
+      sourcePaths: [source + 'kitchen/components/Menu/Menus/Index.vue'],
     },
     {
       id: 'offerings',
@@ -86,7 +86,7 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['configuration'],
       uses: ['kitchen', 'menus'],
       sourcePaths: [
-        source + 'kitchen/components/FoodAndDrink/Services/Index.vue',
+        source + 'kitchen/components/Menu/Services/Index.vue',
         source + 'kitchen/components/Identity/Payments/Index.vue',
       ],
     },
@@ -120,10 +120,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['fulfil'],
       uses: ['kitchen'],
-      sourcePaths: [
-        source +
-          'kitchen/components/Orders/Board.vue',
-      ],
+      sourcePaths: [source + 'kitchen/components/Orders/Board.vue'],
     },
     {
       id: 'order-actions',
@@ -131,9 +128,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['fulfil'],
       uses: ['orders'],
-      sourcePaths: [
-        source + 'kitchen/server/orders/exchange-request.ts',
-      ],
+      sourcePaths: [source + 'kitchen/server/orders/exchange-request.ts'],
     },
     {
       id: 'order-board',
@@ -167,7 +162,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'Domain presentation',
       references: [
         source + 'pages/workspace/kitchen/orders/index.vue',
-        source + 'kitchen/components/FoodAndDrink/Services/Index.vue',
+        source + 'kitchen/components/Menu/Services/Index.vue',
       ],
     },
     {

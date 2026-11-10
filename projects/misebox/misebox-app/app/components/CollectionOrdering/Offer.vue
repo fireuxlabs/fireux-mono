@@ -28,7 +28,7 @@
     :links="[
       {
         label: 'Set up Collection',
-        to: '/workspace/kitchen/food-and-drink/services',
+        to: '/workspace/kitchen/menu/services',
       },
       {
         label: 'Open the order board',

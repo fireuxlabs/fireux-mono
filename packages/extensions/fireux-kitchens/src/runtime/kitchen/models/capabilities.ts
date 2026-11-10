@@ -132,7 +132,7 @@ export const kitchenCapabilities = [
     title: 'Menus',
     headline: 'Restaurant Menu Management',
     description: 'Create, structure, publish, and manage Kitchen menus.',
-    to: '/workspace/kitchen/food-and-drink/menus',
+    to: '/workspace/kitchen/menu/menus',
     group: 'Food & Drink',
     landingQuestion:
       'Which Menus need to be structured, reviewed, or published?',
@@ -162,7 +162,7 @@ export const kitchenCapabilities = [
     headline: 'Restaurant Dish Management',
     description:
       'Create and manage dishes used across Kitchen menus and recipes.',
-    to: '/workspace/kitchen/food-and-drink/items',
+    to: '/workspace/kitchen/menu/items',
     group: 'Food & Drink',
     landingQuestion: 'Which Dishes need their specification or price reviewed?',
     icon: 'i-lucide-utensils',
@@ -189,7 +189,7 @@ export const kitchenCapabilities = [
     title: 'Drinks',
     headline: 'Beverage Management',
     description: 'Create and manage drinks used across Kitchen menus.',
-    to: '/workspace/kitchen/food-and-drink/items',
+    to: '/workspace/kitchen/menu/items',
     group: 'Food & Drink',
     landingQuestion:
       'Which Drinks need their recipe, price, or availability reviewed?',

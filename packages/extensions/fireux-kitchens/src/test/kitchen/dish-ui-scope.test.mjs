@@ -12,7 +12,7 @@ function evaluate(relative, deps, result, vue = false) {
     ...deps,
   })
   if (vue) deps = { ...specification, dishCategories, ...deps }
-  if (relative === component('FoodAndDrink/Menus/Items/Add/ByName')) {
+  if (relative === component('Menu/Menus/Items/Add/ByName')) {
     deps.useMenuSectionDishCreation = evaluate(
       '../../runtime/kitchen/composables/workspace/menus/useMenuSectionDishCreation.ts',
       deps,
@@ -50,9 +50,15 @@ function setup() {
     computed,
     watch,
     useDishEditorScope,
-    useKitchenWorkspace: () => ({ id: kitchenId, outcome: ref('ready'), data: ref({ id: 'k' }) }),
+    useKitchenWorkspace: () => ({
+      id: kitchenId,
+      outcome: ref('ready'),
+      data: ref({ id: 'k' }),
+    }),
     useRouteParam: () => dishId,
-    useKitchenDishesContext: () => ({ catalogue: { singular: 'dish', path: '/dishes' } }),
+    useKitchenDishesContext: () => ({
+      catalogue: { singular: 'dish', path: '/dishes' },
+    }),
     onBeforeUnmount: (fn) => unmount.push(fn),
     useToastify: () => ({ add: (value) => notices.push(value) }),
     URL: { revokeObjectURL() {}, createObjectURL: () => 'blob' },
@@ -67,8 +73,7 @@ function deferred() {
   })
   return { promise, resolve, reject }
 }
-const component = (name) =>
-  `../../runtime/kitchen/components/${name}.vue`
+const component = (name) => `../../runtime/kitchen/components/${name}.vue`
 const specification = evaluate(
   '../../runtime/kitchen/utils/dish-specification.ts',
   { isFirestoreDocumentId },
@@ -86,12 +91,12 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
         pending = deferred(),
         uploads = []
       const api = evaluate(
-        component('FoodAndDrink/Items/Create/Index'),
+        component('Menu/Items/Create/Index'),
         {
           ...h.deps,
           defineProps: () => ({}),
-      defineEmits: () => () => {},
-      useKitchenDishesContext: () => ({
+          defineEmits: () => () => {},
+          useKitchenDishesContext: () => ({
             kitchenId: h.kitchenId,
             readOnly: ref(false),
             catalogue: { itemKind: 'food' },
@@ -130,7 +135,7 @@ test('create captures original upload and reports saved Dish with failed image h
     uploads = [],
     original = { name: 'original' }
   const api = evaluate(
-    component('FoodAndDrink/Items/Create/Index'),
+    component('Menu/Items/Create/Index'),
     {
       ...h.deps,
       defineProps: () => ({}),
@@ -152,7 +157,7 @@ test('create captures original upload and reports saved Dish with failed image h
     true
   )
   api.price.value = 13
-      api.name.value = 'Pizza'
+  api.name.value = 'Pizza'
   api.imageFile.value = original
   const result = api.addDish()
   pending.resolve({ id: 'pizza' })
@@ -168,14 +173,18 @@ test('Menu name flow stops before placement on destination change; failed placem
       sectionId = ref('section'),
       placements = []
     const api = evaluate(
-      component('FoodAndDrink/Menus/Items/Add/ByName'),
+      component('Menu/Menus/Items/Add/ByName'),
       {
         ...h.deps,
         useMenuSection: () => ({
           kitchenId: h.kitchenId,
           menuId,
           sectionId,
-          dishSource: { dishes: ref([]), outcome: ref('empty'), error: ref(null) },
+          dishSource: {
+            dishes: ref([]),
+            outcome: ref('empty'),
+            error: ref(null),
+          },
           activeItemRows: ref([]),
           canWrite: ref(true),
           createItem: async (input) => {
@@ -210,7 +219,7 @@ test('delete does not navigate or toast after record changes, including same-tic
     pending = deferred(),
     navigations = []
   const api = evaluate(
-    component('FoodAndDrink/Items/Delete'),
+    component('Menu/Items/Delete'),
     {
       ...h.deps,
       navigateTo: (x) => navigations.push(x),
@@ -249,7 +258,7 @@ test('description proposal snapshots its body and never dispatches after focus c
       calls = []
     h.currentUser.value = { uid: 'u', getIdToken: () => pending.promise }
     const api = evaluate(
-      component('FoodAndDrink/Items/DescriptionAssistant'),
+      component('Menu/Items/DescriptionAssistant'),
       {
         ...h.deps,
         useAuth: () => ({ currentUser: h.currentUser }),
@@ -288,7 +297,7 @@ test('category update ignores stale rejection and releases busy state on Kitchen
   const h = setup(),
     pending = deferred()
   const api = evaluate(
-    component('FoodAndDrink/Items/Categories'),
+    component('Menu/Items/Categories'),
     {
       ...h.deps,
       dishCategories: [{ value: 'main' }],
@@ -329,7 +338,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     catalogue: { singular: 'dish' },
   }
   const edit = evaluate(
-    component('FoodAndDrink/Items/Edit/Index'),
+    component('Menu/Items/Edit/Index'),
     {
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
@@ -349,7 +358,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
   const second = deferred(),
     calls = []
   const spec = evaluate(
-    component('FoodAndDrink/Items/Spec'),
+    component('Menu/Items/Spec'),
     {
       ...h.deps,
       useRoute: () => ({ query: {} }),
@@ -402,7 +411,7 @@ test('Surviving Dish route completes its live removal but rejects external inten
       'useDishEditorScope'
     )
     const api = evaluate(
-      component('FoodAndDrink/Items/Detail/Index'),
+      component('Menu/Items/Detail/Index'),
       {
         ...h.deps,
         useDishEditorScope,
@@ -451,7 +460,7 @@ for (const state of ['loading', 'error', 'referenced']) {
     let removed = 0
     let confirmed = 0
     const api = evaluate(
-      component('FoodAndDrink/Items/Delete'),
+      component('Menu/Items/Delete'),
       {
         ...h.deps,
         window: {
@@ -579,17 +588,32 @@ test('item moves disable list boundaries and discard obsolete completion', async
   assert.equal(api.moving.value, '')
 })
 
-
 test('item creation requires a price and submits explicit zero for food and drinks', async () => {
   for (const itemKind of ['food', 'drink']) {
-    const h = setup(), drafts = []
-    const api = evaluate(component('FoodAndDrink/Items/Create/Index'), {
-      ...h.deps,
-      defineProps: () => ({ itemKind }), defineEmits: () => () => {},
-      useKitchenDishesContext: () => ({ kitchenId: h.kitchenId, readOnly: ref(false), catalogue: { itemKind } }),
-      useDishCreate: () => ({ createDish: async draft => { drafts.push(draft); return { id: 'item' } } }),
-      useDishImageUpload: () => ({ uploadDishImage() {} }),
-    }, '({addDish,name,price,validPrice})', true)
+    const h = setup(),
+      drafts = []
+    const api = evaluate(
+      component('Menu/Items/Create/Index'),
+      {
+        ...h.deps,
+        defineProps: () => ({ itemKind }),
+        defineEmits: () => () => {},
+        useKitchenDishesContext: () => ({
+          kitchenId: h.kitchenId,
+          readOnly: ref(false),
+          catalogue: { itemKind },
+        }),
+        useDishCreate: () => ({
+          createDish: async (draft) => {
+            drafts.push(draft)
+            return { id: 'item' }
+          },
+        }),
+        useDishImageUpload: () => ({ uploadDishImage() {} }),
+      },
+      '({addDish,name,price,validPrice})',
+      true
+    )
     api.name.value = 'Item'
     assert.equal(api.validPrice.value, false)
     await api.addDish()
@@ -603,16 +627,36 @@ test('item creation requires a price and submits explicit zero for food and drin
 })
 
 test('Menu new-name creation asks for each price and preserves an explicit zero', async () => {
-  const h = setup(), drafts = [], placements = []
-  const api = evaluate(component('FoodAndDrink/Menus/Items/Add/ByName'), {
-    ...h.deps,
-    useMenuSection: () => ({
-      kitchenId: h.kitchenId, menuId: ref('menu'), sectionId: ref('section'),
-      dishSource: { dishes: ref([]), outcome: ref('empty'), error: ref(null) }, activeItemRows: ref([]), canWrite: ref(true),
-      createItem: async input => placements.push(input),
-    }),
-    useDishCreate: () => ({ createDish: async draft => { drafts.push(draft); return { id: draft.name } } }),
-  }, '({addNames,names,prices,error})', true)
+  const h = setup(),
+    drafts = [],
+    placements = []
+  const api = evaluate(
+    component('Menu/Menus/Items/Add/ByName'),
+    {
+      ...h.deps,
+      useMenuSection: () => ({
+        kitchenId: h.kitchenId,
+        menuId: ref('menu'),
+        sectionId: ref('section'),
+        dishSource: {
+          dishes: ref([]),
+          outcome: ref('empty'),
+          error: ref(null),
+        },
+        activeItemRows: ref([]),
+        canWrite: ref(true),
+        createItem: async (input) => placements.push(input),
+      }),
+      useDishCreate: () => ({
+        createDish: async (draft) => {
+          drafts.push(draft)
+          return { id: draft.name }
+        },
+      }),
+    },
+    '({addNames,names,prices,error})',
+    true
+  )
   api.names.value = 'Bread\nSoup'
   api.prices.value = { Bread: 0 }
   await api.addNames()
@@ -620,6 +664,9 @@ test('Menu new-name creation asks for each price and preserves an explicit zero'
   assert.equal(drafts.length, 0)
   api.prices.value.Soup = 8
   await api.addNames()
-  assert.deepEqual(drafts, [{ name: 'Bread', price: 0 }, { name: 'Soup', price: 8 }])
+  assert.deepEqual(drafts, [
+    { name: 'Bread', price: 0 },
+    { name: 'Soup', price: 8 },
+  ])
   assert.equal(placements.length, 2)
 })

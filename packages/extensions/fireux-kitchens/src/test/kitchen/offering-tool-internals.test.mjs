@@ -180,10 +180,10 @@ test('Configure and service editor use the same menu choices and readiness', () 
     false
   )
   const source = readFileSync(
-    new URL(base + 'FoodAndDrink/Services/Index.vue', import.meta.url),
+    new URL(base + 'Menu/Services/Index.vue', import.meta.url),
     'utf8'
   )
-  assert.match(source, /KitchenFoodAndDrinkServicesService/)
+  assert.match(source, /KitchenMenuServicesService/)
   assert.doesNotMatch(source, /updateOffering|saveInteraction|interactionType/)
 })
 

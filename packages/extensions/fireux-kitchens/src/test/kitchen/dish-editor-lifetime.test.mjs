@@ -67,7 +67,7 @@ function context() {
     appOutcome = vue.ref('ready')
   const selectedId = vue.ref('kitchen'),
     route = vue.reactive({
-      fullPath: '/workspace/kitchen/food-and-drink/items/dish',
+      fullPath: '/workspace/kitchen/menu/items/dish',
     })
   const access = { ids: vue.ref(['kitchen']), outcome: vue.ref('ready') },
     calls = [],
@@ -139,7 +139,7 @@ function context() {
     }
     if (kind === 'route') {
       route.fullPath = '/other'
-      route.fullPath = '/workspace/kitchen/food-and-drink/items/dish'
+      route.fullPath = '/workspace/kitchen/menu/items/dish'
     }
     if (kind === 'dispose') scope.stop()
   }
@@ -237,7 +237,11 @@ function mount(h, component, exposed, extra = {}) {
       ...identity,
       menuId: vue.ref('menu'),
       sectionId: vue.ref('section'),
-      dishSource: { dishes: vue.ref([]), outcome: vue.ref('empty'), error: vue.ref(null) },
+      dishSource: {
+        dishes: vue.ref([]),
+        outcome: vue.ref('empty'),
+        error: vue.ref(null),
+      },
       activeItemRows: vue.ref([]),
       createItem: async (input) => {
         h.calls.push({ placement: input })
@@ -337,7 +341,7 @@ function mount(h, component, exposed, extra = {}) {
     'FireState',
     'UCard',
     'FireCopyError',
-    'KitchenFoodAndDrinkItemsDescriptionAssistant',
+    'KitchenMenuItemsDescriptionAssistant',
   ])
     app.component(name, {
       render() {
@@ -543,7 +547,7 @@ test('Native creation locks food/drink inputs and invalidates changed text/image
       const h = context(),
         f = mount(
           h,
-          'FoodAndDrink/Items/Create/Index',
+          'Menu/Items/Create/Index',
           '{addDish,price,name,description,imageFile,saving,message}'
         )
       f.identity.catalogue.itemKind = kind
@@ -583,7 +587,7 @@ test('Creation reports saved Dish with failed image and suppresses obsolete foll
       uploads = [],
       f = mount(
         h,
-        'FoodAndDrink/Items/Create/Index',
+        'Menu/Items/Create/Index',
         '{addDish,price,name,imageFile,message}',
         {
           useDishImageUpload: () => ({
@@ -620,7 +624,7 @@ test('Specification Save and nested Prep cannot overlap and explicitly convert U
     const h = context(),
       f = mount(
         h,
-        'FoodAndDrink/Items/Spec',
+        'Menu/Items/Spec',
         '{toggle,save,createPrep,draft,assembly,editing,saving,creating,newPrep,error}'
       )
     f.api.toggle()
@@ -661,7 +665,7 @@ test('Specification changed draft or closed/reopened editor cancels credentials 
       const h = context(),
         f = mount(
           h,
-          'FoodAndDrink/Items/Spec',
+          'Menu/Items/Spec',
           '{toggle,save,createPrep,draft,assembly,editing,saving,creating,newPrep,error}'
         )
       f.api.toggle()
@@ -697,7 +701,7 @@ test('Specification clean same-ID live updates hydrate while dirty drafts and ow
   const h = context(),
     f = mount(
       h,
-      'FoodAndDrink/Items/Spec',
+      'Menu/Items/Spec',
       '{toggle,save,draft,assembly,editing,error}'
     )
   f.api.toggle()
@@ -730,7 +734,7 @@ test('Specification clean same-ID live updates hydrate while dirty drafts and ow
 test('Specification rejects blank/non-finite quantities before a command and suppresses disposed completion', async () => {
   for (const quantity of ['', Infinity, 0]) {
     const h = context(),
-      f = mount(h, 'FoodAndDrink/Items/Spec', '{toggle,save,draft,error}')
+      f = mount(h, 'Menu/Items/Spec', '{toggle,save,draft,error}')
     f.api.toggle()
     f.api.draft.value.portion = quantity
     await f.api.save()
@@ -740,7 +744,7 @@ test('Specification rejects blank/non-finite quantities before a command and sup
     h.scope.stop()
   }
   const h = context(),
-    f = mount(h, 'FoodAndDrink/Items/Spec', '{toggle,save}')
+    f = mount(h, 'Menu/Items/Spec', '{toggle,save}')
   f.api.toggle()
   const flight = f.api.save()
   await finish(h)
@@ -753,7 +757,7 @@ test('Identity fields pass real local completion predicates through credentials 
   const h = context(),
     f = mount(
       h,
-      'FoodAndDrink/Items/Edit/Index',
+      'Menu/Items/Edit/Index',
       '{handleName,handleImageUpload,fieldSaving}'
     )
   const draft = vue.ref('Submitted'),
@@ -776,18 +780,18 @@ test('Identity fields pass real local completion predicates through credentials 
 })
 test('Drink description assistance and Menu add-by-name retain changed local drafts and stop obsolete follow-on effects', async () => {
   for (const component of [
-    'FoodAndDrink/Items/DescriptionAssistant',
-    'FoodAndDrink/Menus/Items/Add/ByName',
+    'Menu/Items/DescriptionAssistant',
+    'Menu/Menus/Items/Add/ByName',
   ]) {
     const h = context(),
       f = mount(
         h,
         component,
-        component.startsWith('FoodAndDrink/Items')
+        component.startsWith('Menu/Items')
           ? '{notes,proposal,proposeDescription,approveDescription}'
           : '{names,prices,addNames,error}'
       )
-    if (component.startsWith('FoodAndDrink/Items')) {
+    if (component.startsWith('Menu/Items')) {
       f.identity.catalogue.itemKind = 'drink'
       f.api.notes.value = 'Original'
       const flight = f.api.proposeDescription()
@@ -826,11 +830,7 @@ test('Identity replacement field action keeps its busy state when an older token
       ++tokens === 1 ? firstToken.promise : secondToken.promise,
   })
   h.factories()
-  const f = mount(
-      h,
-      'FoodAndDrink/Items/Edit/Index',
-      '{handleName,fieldSaving}'
-    ),
+  const f = mount(h, 'Menu/Items/Edit/Index', '{handleName,fieldSaving}'),
     draft = vue.ref('First'),
     capture = h.scope.run(() => useCommandScope([draft]))
   const first = f.api.handleName('First', capture())
@@ -856,11 +856,7 @@ test('Identity replacement field action keeps its busy state when an older token
 test('Categories validate their chosen field and ignore changed search intent during credentials', async () => {
   for (const changed of ['invalid', 'query']) {
     const h = context(),
-      f = mount(
-        h,
-        'FoodAndDrink/Items/Categories',
-        '{save,query,error,busy,saved}'
-      ),
+      f = mount(h, 'Menu/Items/Categories', '{save,query,error,busy,saved}'),
       flight = f.api.save('dish', changed === 'invalid' ? 'unknown' : 'main')
     if (changed === 'query') f.api.query.value = 'Another row'
     await finish(h)
@@ -881,7 +877,7 @@ test('Drink approval keeps replacement proposal and blocks its obsolete token di
   const h = context(),
     f = mount(
       h,
-      'FoodAndDrink/Items/DescriptionAssistant',
+      'Menu/Items/DescriptionAssistant',
       '{notes,proposal,approveDescription,saving}'
     )
   f.identity.catalogue.itemKind = 'drink'

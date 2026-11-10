@@ -281,14 +281,11 @@ test('No selected Kitchen preserves pending or failed account/access outcomes be
     assert.equal(f.state.pending.value, parentOutcome === 'pending')
     assert.equal(f.path, '')
     assert.deepEqual(f.state.dishes.value, [])
-    const html = await render(
-      'kitchen/components/FoodAndDrink/Items/Index.vue',
-      {
-        storageKitchenId: f.state.storageKitchenId,
-        outcome: f.state.outcome,
-        catalogue,
-      }
-    )
+    const html = await render('kitchen/components/Menu/Items/Index.vue', {
+      storageKitchenId: f.state.storageKitchenId,
+      outcome: f.state.outcome,
+      catalogue,
+    })
     assert.match(
       html,
       parentOutcome === 'error' ? /Kitchen unavailable/ : /Loading Kitchen/
@@ -421,21 +418,21 @@ function components(app, spec) {
     'UIcon',
     'UAvatar',
     'UBadge',
-    'KitchenFoodAndDrinkItemsCollection',
-    'KitchenFoodAndDrinkItemsCardsCell',
+    'KitchenMenuItemsCollection',
+    'KitchenMenuItemsCardsCell',
     'UPagination',
-    'KitchenFoodAndDrinkItemsCategories',
+    'KitchenMenuItemsCategories',
     'WorkspaceKitchenAICapability',
-    'KitchenFoodAndDrinkItemsEdit',
-    'KitchenFoodAndDrinkItemsPricing',
-    'KitchenFoodAndDrinkItemsDelete',
+    'KitchenMenuItemsEdit',
+    'KitchenMenuItemsPricing',
+    'KitchenMenuItemsDelete',
     'DishPreparation',
     'DishMenus',
     'DishMenu',
     'DishMenuSection',
     'FireCopyError',
     'FireContextRecord',
-    'KitchenFoodAndDrinkItemsCreate',
+    'KitchenMenuItemsCreate',
   ]
   for (const name of empty)
     app.component(name, {
@@ -501,8 +498,8 @@ const catalogue = {
   title: 'Dishes',
   singular: 'dish',
   plural: 'dishes',
-  path: '/workspace/kitchen/food-and-drink/items',
-  createPath: '/workspace/kitchen/food-and-drink/items?create=food',
+  path: '/workspace/kitchen/menu/items',
+  createPath: '/workspace/kitchen/menu/items?create=food',
   icon: 'i-lucide-utensils',
 }
 function readView(overrides = {}) {
@@ -566,7 +563,7 @@ test('actual Dish index distinguishes Kitchen loading, failure, missing and inac
     ['idle', 'Select a kitchen'],
   ])
     assert.match(
-      await render('kitchen/components/FoodAndDrink/Items/Index.vue', {
+      await render('kitchen/components/Menu/Items/Index.vue', {
         storageKitchenId: '',
         outcome,
         catalogue,
@@ -578,10 +575,7 @@ async function renderCatalogue(state) {
   return (
     await Promise.all(
       ['Controls', 'Results'].map((child) =>
-        render(
-          `kitchen/components/FoodAndDrink/Items/Collection/${child}.vue`,
-          state
-        )
+        render(`kitchen/components/Menu/Items/Collection/${child}.vue`, state)
       )
     )
   ).join('')
@@ -608,13 +602,13 @@ test('actual Dish collection hides premature counts, categories, filters and Cre
 })
 test('actual Dish record error does not render not-found, old read header or editable management', async () => {
   const html = await render(
-    'kitchen/components/FoodAndDrink/Items/Detail/Index.vue',
+    'kitchen/components/Menu/Items/Detail/Index.vue',
     recordView({ dish: null, outcome: 'error', error: new Error('Failed') })
   )
   assert.match(html, /dish unavailable/)
   assert.doesNotMatch(html, /not found|Item actions|Soup/)
   const empty = await render(
-    'kitchen/components/FoodAndDrink/Items/Detail/Index.vue',
+    'kitchen/components/Menu/Items/Detail/Index.vue',
     recordView({ dish: null, outcome: 'empty' })
   )
   assert.match(empty, /dish not found/)
@@ -656,9 +650,7 @@ test('actual Dish owner retains mounted Spec through child refresh/failure and r
     warnings = [],
     app = renderer.createApp({
       setup: () => state,
-      render: template(
-        'kitchen/components/FoodAndDrink/Items/Detail/Index.vue'
-      ),
+      render: template('kitchen/components/Menu/Items/Detail/Index.vue'),
     })
   app.config.warnHandler = (warning) => warnings.push(warning)
   components(app, {
@@ -715,7 +707,7 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
     }
     const scope = effectScope()
     scope.run(() =>
-      load(`kitchen/components/FoodAndDrink/Items/${view}.vue`, '({})', {
+      load(`kitchen/components/Menu/Items/${view}.vue`, '({})', {
         computed,
         reactive,
         watch,
@@ -745,27 +737,21 @@ test('Dish linked read perspectives bind exact ready storage owner instead of re
   }
 })
 test('actual Dish Preparation and Menu perspectives render failed linked reads without false empty states', async () => {
-  const prep = await render(
-    'kitchen/components/FoodAndDrink/Items/Preparation.vue',
-    {
-      dish: { spec: { portion: 1 } },
-      error: new Error('Denied'),
-      pending: true,
-      rows: [],
-      groups: [],
-    }
-  )
+  const prep = await render('kitchen/components/Menu/Items/Preparation.vue', {
+    dish: { spec: { portion: 1 } },
+    error: new Error('Denied'),
+    pending: true,
+    rows: [],
+    groups: [],
+  })
   assert.match(prep, /Prep items unavailable/)
   assert.doesNotMatch(prep, /No mise en place linked|Loading preparations/)
-  const menus = await render(
-    'kitchen/components/FoodAndDrink/Items/Menus.vue',
-    {
-      error: new Error('Denied'),
-      pending: true,
-      activeMenus: [],
-      kitchenId: 'mine',
-    }
-  )
+  const menus = await render('kitchen/components/Menu/Items/Menus.vue', {
+    error: new Error('Denied'),
+    pending: true,
+    activeMenus: [],
+    kitchenId: 'mine',
+  })
   assert.match(menus, /Menus unavailable/)
   assert.doesNotMatch(menus, /No menus in this kitchen|Loading menus/)
 })
@@ -845,7 +831,7 @@ test('combined catalogue filters food and drinks and opens each in its correct e
   )
   assert.match(
     view.dishLink('tea'),
-    /^\/workspace\/kitchen\/food-and-drink\/items\/tea\?/
+    /^\/workspace\/kitchen\/menu\/items\/tea\?/
   )
   view.kind.value = 'food'
   await nextTick()
@@ -855,7 +841,7 @@ test('combined catalogue filters food and drinks and opens each in its correct e
   )
   assert.match(
     view.dishLink('soup'),
-    /^\/workspace\/kitchen\/food-and-drink\/items\/soup\?/
+    /^\/workspace\/kitchen\/menu\/items\/soup\?/
   )
   view.clearFilters()
   view.query.value = 'tea'
@@ -873,7 +859,7 @@ test('combined catalogue filters food and drinks and opens each in its correct e
 function catalogueView(f, query = {}) {
   const { context } = kindContext(f, 'all')
   const route = reactive({
-    path: '/workspace/kitchen/food-and-drink/items',
+    path: '/workspace/kitchen/menu/items',
     query,
   })
   const destinations = []
@@ -935,7 +921,7 @@ test('Food & drinks item round trip restores kind, search, filters, layout and p
     `${dishCataloguePath}/${view.pageDishes.value[0].id}`
   )
   const returnTo = dishCatalogueReturn(Object.fromEntries(link.searchParams))
-  assert.equal(returnTo.path, '/workspace/kitchen/food-and-drink/items')
+  assert.equal(returnTo.path, '/workspace/kitchen/menu/items')
   assert.deepEqual(returnTo.query, route.query)
   const restored = catalogueView(f, returnTo.query).view
   assert.equal(restored.kind.value, 'drink')
@@ -1013,7 +999,7 @@ test('Items dialogs honour create authority, consume create links and close when
   const route = reactive({ query: { create: 'drink', search: 'cola' } })
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/FoodAndDrink/Items/Collection/Dialogs.vue',
+      'kitchen/components/Menu/Items/Collection/Dialogs.vue',
       '({ createKind, organise, aiOpen, openCreate, openCategories, openAI, closeCreate })',
       {
         computed,

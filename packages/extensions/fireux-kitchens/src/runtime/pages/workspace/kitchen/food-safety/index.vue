@@ -15,7 +15,7 @@ definePageMeta({
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    key: 'workspace-kitchen-food-safety',
+    key: 'workspace-kitchen-menu-group-safety',
     label: 'Food Safety',
     description: 'Organise checks, evidence, follow-up and working procedures.',
     groupIndex: true,

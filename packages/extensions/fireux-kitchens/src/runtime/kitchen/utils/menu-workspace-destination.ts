@@ -3,5 +3,5 @@ export function menuWorkspaceDestination(menu: {
   slug?: string
   schedule?: string
 }) {
-  return `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(menu.slug || '')}`
+  return `/workspace/kitchen/menu/menus/${encodeURIComponent(menu.slug || '')}`
 }

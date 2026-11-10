@@ -7,7 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { renderToString } from 'vue/server-renderer'
 
 const base = new URL(
-  '../runtime/kitchen/components/FoodAndDrink/Menus/',
+  '../runtime/kitchen/components/Menu/Menus/',
   import.meta.url
 )
 async function render(relative, props) {
@@ -38,10 +38,10 @@ async function render(relative, props) {
     'UDropdownMenu',
     'FireFormsEditableSimpleField',
     'FireDisclosurePanel',
-    'KitchenFoodAndDrinkMenusItemsSharedTerms',
-    'KitchenFoodAndDrinkMenusItemsAdoptSharedTerms',
-    'KitchenFoodAndDrinkMenusItemsOptions',
-    'KitchenFoodAndDrinkMenusSectionsDishes',
+    'KitchenMenuMenusItemsSharedTerms',
+    'KitchenMenuMenusItemsAdoptSharedTerms',
+    'KitchenMenuMenusItemsOptions',
+    'KitchenMenuMenusSectionsDishes',
   ]) {
     app.component(name, {
       inheritAttrs: false,
@@ -135,7 +135,7 @@ test('section row preserves scoped save promises, disabled state and record navi
   assert.deepEqual(calls, [['section one', 'Mains', fieldCurrent]])
   assert.equal(
     seen.UButton[0].to,
-    '/workspace/kitchen/food-and-drink/menus/food%20menu/section%20one'
+    '/workspace/kitchen/menu/menus/food%20menu/section%20one'
   )
 })
 test('Menu item row shows prices and confirmed removal inside its vertical actions menu', async () => {
@@ -190,6 +190,6 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   assert.equal(seen.USwitch, undefined)
   assert.doesNotMatch(html, /rounded-lg|On menu/)
   assert.equal(seen.FireFormsEditableSimpleField, undefined)
-  assert.equal(seen.KitchenFoodAndDrinkMenusItemsSharedTerms, undefined)
-  assert.equal(seen.KitchenFoodAndDrinkMenusItemsOptions, undefined)
+  assert.equal(seen.KitchenMenuMenusItemsSharedTerms, undefined)
+  assert.equal(seen.KitchenMenuMenusItemsOptions, undefined)
 })

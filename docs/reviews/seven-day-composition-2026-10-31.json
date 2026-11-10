@@ -140,8 +140,8 @@
       "packages/core/fireux-core/src/runtime/workspace/components/Page.vue",
       "packages/core/fireux-core/src/runtime/workspace/components/PageLinks.vue",
       "packages/core/fireux-core/src/runtime/workspace/components/Sidebar.vue",
-      "packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Preparation.vue",
-      "packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Prepare.vue",
+      "packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Preparation.vue",
+      "packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Prepare.vue",
       "projects/fireux/fireux-app/app/components/Framework/Capabilities.vue",
       "projects/fireux/fireux-app/app/components/Framework/Comparison.vue",
       "projects/fireux/fireux-app/app/components/Framework/IgnitionPrompt.vue",
@@ -227,7 +227,7 @@
       "packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-review.model.ts"
     ],
     "Nuxt route composition": [
-      "packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/menus/prepare.vue",
+      "packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/menus/prepare.vue",
       "projects/fireux/fireux-app/app/pages/capabilities.vue",
       "projects/fireux/fireux-app/app/pages/components/page.vue",
       "projects/fireux/fireux-app/app/pages/ignite-preview.vue",

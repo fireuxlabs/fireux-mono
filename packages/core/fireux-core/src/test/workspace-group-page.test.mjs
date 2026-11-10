@@ -38,7 +38,7 @@ test('Kitchen group framing resolves its own Home, Overview and navigation child
     {
       key: 'items',
       label: 'Items',
-      to: '/workspace/kitchen/food-and-drink/items',
+      to: '/workspace/kitchen/menu/items',
     },
   ]
   const state = group(
@@ -51,13 +51,13 @@ test('Kitchen group framing resolves its own Home, Overview and navigation child
         to: '/workspace/kitchen/overview',
       },
       {
-        key: 'workspace-kitchen-food',
+        key: 'workspace-kitchen-menu-group',
         label: 'Food & drink',
-        to: '/workspace/kitchen/food-and-drink',
+        to: '/workspace/kitchen/menu',
         children,
       },
     ],
-    'workspace-kitchen-food'
+    'workspace-kitchen-menu-group'
   )
   assert.deepEqual(state.breadcrumbs.value, [
     { label: 'Home', to: '/' },

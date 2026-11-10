@@ -11,9 +11,8 @@ import { useCommandScope } from '../../../../core/fireux-core/src/runtime/compos
 import { loadOfferingSource as load } from './offering-test-helpers.mjs'
 import { menuFilePreviewDependencies } from './menu-file-preview-test-helpers.mjs'
 const runtime = new URL('../runtime/', import.meta.url)
-const sourcePath =
-  'kitchen/components/FoodAndDrink/Menus/Uploads/Detail/File.vue'
-const documentPath = 'kitchen/components/FoodAndDrink/Menus/Detail/Document.vue'
+const sourcePath = 'kitchen/components/Menu/Menus/Uploads/Detail/File.vue'
+const documentPath = 'kitchen/components/Menu/Menus/Detail/Document.vue'
 const identity = load(
   'menu/utils/records/file-identity',
   'menuSourceFileEntries,menuSourceFileIdentity,menuDocumentFileIdentity'
@@ -128,7 +127,7 @@ async function rendered(path, props, url) {
       () =>
         Vue.h('a', { href: p.to }, p.label || slots.default?.()),
   })
-  app.component('KitchenFoodAndDrinkMenusCreateUpload', { render: () => null })
+  app.component('KitchenMenuMenusCreateUpload', { render: () => null })
   app.component('MenuDetailDocumentViewer', {
     props: ['menu', 'documentUrl'],
     setup: (p) => () => {

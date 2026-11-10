@@ -93,7 +93,7 @@ export function foodServiceSummary(
       return [
         {
           key: `${option.key}:${offering.id}`,
-          to: `/workspace/kitchen/food-and-drink/services#service-${option.key}/${encodeURIComponent(offering.id)}`,
+          to: `/workspace/kitchen/menu/services#service-${option.key}/${encodeURIComponent(offering.id)}`,
           name:
             (offering.separate || records.length > 1) &&
             offering.name !== option.label

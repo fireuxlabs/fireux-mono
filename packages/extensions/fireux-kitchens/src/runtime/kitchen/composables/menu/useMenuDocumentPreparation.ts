@@ -19,7 +19,7 @@ export function useMenuDocumentPreparation(context: MenuSourceProcessContext) {
   )
   const menuPath = computed(() =>
     context.menu.value?.format === 'document' && context.menu.value.slug
-      ? `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(context.menu.value.slug)}`
+      ? `/workspace/kitchen/menu/menus/${encodeURIComponent(context.menu.value.slug)}`
       : ''
   )
   const capture = useMenuEditorScope(

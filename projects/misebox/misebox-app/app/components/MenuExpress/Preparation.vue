@@ -39,7 +39,7 @@
         "
         >Resume supplied source</UButton
       >
-      <KitchenFoodAndDrinkMenusPreparation
+      <KitchenMenuMenusPreparation
         :key="`${state.request.target.kitchenId}/${state.request.target.menuId}`"
         :kitchen-id="state.request.target.kitchenId"
         :source-id="state.request.target.menuId"

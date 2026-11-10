@@ -1,9 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { loadOfferingSource } from './offering-test-helpers.mjs'
-const { kitchenAIInstruction } = loadOfferingSource('kitchen/server/ai/role', 'kitchenAIInstruction', {
-  operatorContextInstruction: 'Saved context is background, not approval.',
-})
+const { kitchenAIInstruction } = loadOfferingSource(
+  'kitchen/server/ai/role',
+  'kitchenAIInstruction',
+  {
+    operatorContextInstruction: 'Saved context is background, not approval.',
+  }
+)
 const failure = (value) => Object.assign(new Error(value.statusMessage), value)
 function harness({
   denied = false,
@@ -66,7 +70,10 @@ test('Food AI reuses page facts and authorized saved context without an independ
   const context = h.generated[0].context
   assert.ok(context.instruction.startsWith(kitchenAIInstruction))
   assert.match(context.instruction, /local focus within its wider setup/)
-  assert.match(context.instruction, /does not mean you have read its other pages/)
+  assert.match(
+    context.instruction,
+    /does not mean you have read its other pages/
+  )
   assert.equal(context.focus, 'Food & drink overview')
   assert.deepEqual(context.page, overview)
   assert.match(context.operatorContext.venue, /owner confirmation/)
@@ -115,14 +122,14 @@ test('an AI reply for the previous Kitchen cannot replace the current overview',
     dispatched = deferred()
   const scope = effectScope()
   const { useFoodOverviewAI } = loadOfferingSource(
-    'kitchen/composables/workspace/food/useFoodOverviewAI',
+    'kitchen/composables/workspace/menu-group/useFoodOverviewAI',
     'useFoodOverviewAI',
     {
       ref,
       watch,
       toValue,
       useCommandScope,
-      useRoute: () => ({ fullPath: '/workspace/kitchen/food-and-drink' }),
+      useRoute: () => ({ fullPath: '/workspace/kitchen/menu' }),
       useAuth: () => ({ currentUser: ref({ uid: 'u' }) }),
       useUserSession: () => ({ appUser: ref({ id: 'u' }) }),
       useFireUXConfig: () => ({ appId: 'app' }),
@@ -166,7 +173,7 @@ test('the overview publishes the same current facts used by its AI and clears th
   let acquisitions = 0
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/composables/workspace/food/useFoodAndDrinkIndex.ts',
+      '../runtime/kitchen/composables/workspace/menu-group/useMenuGroupIndex.ts',
       import.meta.url
     ),
     'utf8'
@@ -205,7 +212,7 @@ test('the overview publishes the same current facts used by its AI and clears th
   const scope = effectScope()
   const state = scope.run(() =>
     compileFunction(
-      `${stripTypeScriptTypes(source)}; return useFoodAndDrinkIndex()`,
+      `${stripTypeScriptTypes(source)}; return useMenuGroupIndex()`,
       Object.keys(deps)
     )(...Object.values(deps))
   )

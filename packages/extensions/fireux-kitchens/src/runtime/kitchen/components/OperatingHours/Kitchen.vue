@@ -89,7 +89,7 @@
       </UAlert>
       <footer>
         <UButton
-          to="/workspace/kitchen/food-and-drink/services"
+          to="/workspace/kitchen/menu/services"
           label="Services"
           trailing-icon="i-lucide-arrow-up-right"
           color="neutral"

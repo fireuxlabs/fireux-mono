@@ -23,7 +23,7 @@ function harness(options = {}) {
     currencyCode = ref('CHF'),
     selection = ref([])
   const route = reactive({
-      fullPath: '/workspace/kitchen/food-and-drink/menus',
+      fullPath: '/workspace/kitchen/menu/menus',
     }),
     config = reactive({ appId: 'app' }),
     appUser = ref({ role: 'user' })
@@ -144,7 +144,7 @@ test('native source upload sends multipart to the owning Kitchen and opens revie
   assert.equal(h.calls[0][1].body.get('slug'), 'source-unique-source')
   assert.equal(h.calls[0][1].body.getAll('file')[0].name, 'menu.pdf')
   assert.deepEqual(h.destinations, [
-    '/workspace/kitchen/food-and-drink/menus/uploads/source-unique-source',
+    '/workspace/kitchen/menu/menus/uploads/source-unique-source',
   ])
   assert.equal(h.upload.error.value, '')
   h.scope.stop()
@@ -234,7 +234,7 @@ test('URL intake retries its same source after a lost response', async () => {
   const { stripTypeScriptTypes } = await import('node:module')
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/FoodAndDrink/Menus/Create/Url.vue',
+      '../runtime/kitchen/components/Menu/Menus/Create/Url.vue',
       import.meta.url
     ),
     'utf8'

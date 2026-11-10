@@ -196,7 +196,7 @@ not need a separate Menu Overview card. Core's `useCollectionSearch` supports
 the `preview` mode while retaining its default Pill/Cell cycle.
 
 Dish supplies Cell under
-[`kitchen/components/FoodAndDrink/Items/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Cards).
+[`kitchen/components/Menu/Items/Cards` in Kitchens](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Cards).
 The Kitchen catalogue and Misebox Workspace preview reuse the card with
 supplied props. It retains grid/list presentation and Core's
 `FireActionSurface` for link, action or static behavior. Collection parents retain
@@ -231,7 +231,7 @@ KitchenPrepItem currently has no standalone Cards family. Its
 [`Create.vue`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/PrepAndProduction/PrepItems/Create.vue)
 control belongs to the Recipe form; Dish specification retains its own creation
 workflow. Recipe Preparation presents supplied definitions, while
-[`Dish Preparation`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Preparation.vue)
+[`Dish Preparation`](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Preparation.vue)
 presents Dish-specific requirements and linked batch methods. These controls
 retain their existing readers, draft state and protected commands. Current
 consumers need no separate Pill, Cell, Preview or Overview component.

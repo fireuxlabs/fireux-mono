@@ -82,7 +82,7 @@ test('a public landing keeps Workspace return links on the explicit App entry ro
 })
 
 test('auth return preserves workspace query and hash through User setup', () => {
-  const destination = '/workspace/kitchen/food-and-drink/menus?menu=food#editor'
+  const destination = '/workspace/kitchen/menu/menus?menu=food#editor'
   assert.equal(resolvePostAuthDestination(destination), destination)
   const setup = userOnboardingPath(destination)
   assert.equal(resolvePostAuthDestination(setup), destination)
@@ -170,8 +170,8 @@ test('server and client resolve the same workspace entrance for tenant and globa
 
 test('guest workspace access retains the full destination and authenticated access proceeds', async () => {
   const target = {
-    path: '/workspace/kitchen/food-and-drink/menus',
-    fullPath: '/workspace/kitchen/food-and-drink/menus?menu=food',
+    path: '/workspace/kitchen/menu/menus',
+    fullPath: '/workspace/kitchen/menu/menus?menu=food',
     query: {},
     meta: { requiresAuth: true },
   }

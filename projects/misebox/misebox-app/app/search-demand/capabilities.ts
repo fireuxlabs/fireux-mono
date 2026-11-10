@@ -284,7 +284,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Menus connect dishes, prices, availability and publication. Deeper research must distinguish menu management, publishing and menu engineering rather than treating them as one generic page.',
-    research_route: '/workspace/kitchen/food-and-drink/menus/search-demand',
+    research_route: '/workspace/kitchen/menu/menus/search-demand',
   },
   {
     id: 'ingredients',
@@ -364,7 +364,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Dishes are the sellable Kitchen composition connecting recipes, menu placement, availability and operational evidence.',
-    research_route: '/workspace/kitchen/food-and-drink/items/search-demand',
+    research_route: '/workspace/kitchen/menu/items/search-demand',
   },
   {
     id: 'drinks',
@@ -402,7 +402,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Drinks share menu and costing concerns while retaining their own preparation, ingredient and service conventions.',
-    research_route: '/workspace/kitchen/food-and-drink/items/search-demand',
+    research_route: '/workspace/kitchen/menu/items/search-demand',
   },
   {
     id: 'stations',

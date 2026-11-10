@@ -112,7 +112,7 @@ test('published Services state is available to the shared Copy page JSON action'
       'onScopeDispose',
     ]
   )(
-    () => ({ path: '/workspace/kitchen/food-and-drink/services' }),
+    () => ({ path: '/workspace/kitchen/menu/services' }),
     () => shared,
     computed,
     (value) => value,
@@ -135,7 +135,7 @@ test('published Services state is available to the shared Copy page JSON action'
   page.publish(serviceOverviewSnapshot({ ...base, offerings: [configured()] }))
   await page.copy()
   const payload = JSON.parse(copied)
-  assert.equal(payload.page.path, '/workspace/kitchen/food-and-drink/services')
+  assert.equal(payload.page.path, '/workspace/kitchen/menu/services')
   assert.equal(payload.state.services.length, 7)
   assert.equal(payload.state.services[0].status, 'Enabled')
   assert.deepEqual(payload.state.derived.enabledServices, ['collection'])

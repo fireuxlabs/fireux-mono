@@ -5,7 +5,7 @@ export type KitchenLandingIntent = {
 }
 
 export const kitchenLandingDestinations = {
-  menus: '/workspace/kitchen/food-and-drink/menus',
+  menus: '/workspace/kitchen/menu/menus',
   orders: '/workspace/kitchen/orders',
   recipes: '/workspace/kitchen/prep/recipes',
   team: '/workspace/kitchen/team',

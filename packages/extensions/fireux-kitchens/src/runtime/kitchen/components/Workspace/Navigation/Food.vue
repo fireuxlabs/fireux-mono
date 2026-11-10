@@ -1,7 +1,7 @@
 <template>
   <nav aria-label="Food workspace">
     <UButton
-      to="/workspace/kitchen/food-and-drink/menus"
+      to="/workspace/kitchen/menu/menus"
       icon="i-lucide-book-open"
       color="neutral"
       variant="soft"
@@ -9,7 +9,7 @@
       >Menus</UButton
     >
     <UButton
-      to="/workspace/kitchen/food-and-drink/items"
+      to="/workspace/kitchen/menu/items"
       icon="i-lucide-utensils"
       color="neutral"
       variant="soft"

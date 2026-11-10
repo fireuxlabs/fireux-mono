@@ -27,7 +27,7 @@ export function menuOfferingSummaries(input: {
       state: offering.enabled ? 'Enabled' : 'Off',
       hours: offering.hours,
       sharedMenuCount: new Set(offering.menu_ids).size,
-      configurePath: '/workspace/kitchen/food-and-drink/services',
+      configurePath: '/workspace/kitchen/menu/services',
       interactions: offering.interactions.map((interaction) => {
         const context =
           interaction.type === 'browse'

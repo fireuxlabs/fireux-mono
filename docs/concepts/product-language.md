@@ -340,12 +340,12 @@ changing published offers. Product owners may then accept or round each price.
 - `projects/fireux/fireux-app/shared/platform-context.ts`
 - `packages/core/fireux-core/src/runtime/workspace/components/Capability.vue`
 - `packages/extensions/fireux-projects/src/runtime/project/components/Team/Index.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/menus/index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/menus/index.vue`
 - `packages/core/fireux-core/src/runtime/app/utils/define-app-meta.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Detail/Index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Detail/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Landing/Index.vue`
 - `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`

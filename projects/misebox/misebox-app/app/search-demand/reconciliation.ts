@@ -27,7 +27,7 @@ export const kitchenReconciliation = {
         ],
         tool: 'Edit and publish a Menu',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Index.vue',
           'packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts',
         ],
       },
@@ -77,7 +77,7 @@ export const kitchenReconciliation = {
     pages: [
       {
         label: 'Menus',
-        path: '/workspace/kitchen/food-and-drink/menus',
+        path: '/workspace/kitchen/menu/menus',
         availability: 'enabled',
       },
       {
@@ -97,7 +97,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen / Menu',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Publication/Actions.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Publication/Actions.vue',
         ],
       },
       {
@@ -105,7 +105,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Services/Index.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Services/Index.vue',
         ],
       },
       {
@@ -180,7 +180,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep editing and publication; prove the operator-to-customer ordering handoff and accurate food information.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts',
       ],
       source_capability_ids: ['menus'],
@@ -194,7 +194,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep menu-ready food records; do not equate a Dish with a costed Recipe.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Items/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Index.vue',
       ],
       source_capability_ids: ['dishes'],
       source_observation_ids: ['swiss-chef-work'],
@@ -207,7 +207,7 @@ export const kitchenReconciliation = {
       rationale:
         'Keep the owned drinks presentation and commands while sharing supported Dish mechanics.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/items/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/items/index.vue',
       ],
       source_capability_ids: ['drinks'],
       source_observation_ids: ['swiss-chef-work'],
@@ -247,7 +247,7 @@ export const kitchenReconciliation = {
         'Prove one client order through operator confirmation, fulfilment and saved sales evidence; a service session is not the architectural service layer.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/services/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/services/index.vue',
       ],
       source_capability_ids: ['orders-service'],
       source_observation_ids: ['independent-operators-2026'],
@@ -397,7 +397,7 @@ export const kitchenReconciliation = {
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-options.ts',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/integrations.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/payments.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-and-drink/services/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menu/services/index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/qr.vue',
       ],
       source_capability_ids: ['menus', 'orders-service'],

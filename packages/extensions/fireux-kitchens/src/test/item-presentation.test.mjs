@@ -220,7 +220,7 @@ test('failed customer images collapse safely and a changed URL can recover', asy
 })
 
 test('operator Item cells delegate imagery and fallback to native Avatar', async () => {
-  const Cell = component('kitchen/components/FoodAndDrink/Items/Cards/Cell.vue')
+  const Cell = component('kitchen/components/Menu/Items/Cards/Cell.vue')
   const props = Vue.reactive({
     id: 'dish',
     title: 'Free item',

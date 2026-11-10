@@ -1,3 +1,4 @@
+import { commandScopeDeps } from './command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -59,7 +60,7 @@ test('extraction carries a printed title into the merged draft without using the
 test('review proposes the extracted name, requires confirmation and sends the edited name', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue',
+      '../runtime/kitchen/components/Menu/Menus/Process/Review/Apply.vue',
       import.meta.url
     ),
     'utf8'
@@ -79,6 +80,10 @@ test('review proposes the extracted name, requires confirmation and sends the ed
   const bodies = [],
     scope = effectScope()
   const deps = {
+    useMenuEditorScope: (sources, reset) => {
+      watch(sources, reset, { flush: 'sync' })
+      return commandScopeDeps({}).useCommandScope(sources)
+    },
     computed,
     ref,
     watch,

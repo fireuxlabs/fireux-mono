@@ -19,7 +19,7 @@ const catalogueByKind = {
     singular: 'item',
     plural: 'items',
     title: 'Food & drinks',
-    path: '/workspace/kitchen/food-and-drink/items',
+    path: '/workspace/kitchen/menu/items',
     icon: 'i-lucide-utensils',
   },
   food: {
@@ -27,7 +27,7 @@ const catalogueByKind = {
     singular: 'dish',
     plural: 'dishes',
     title: 'Dishes',
-    path: '/workspace/kitchen/food-and-drink/items',
+    path: '/workspace/kitchen/menu/items',
     icon: 'i-lucide-cooking-pot',
   },
   drink: {
@@ -35,7 +35,7 @@ const catalogueByKind = {
     singular: 'drink',
     plural: 'drinks',
     title: 'Drinks',
-    path: '/workspace/kitchen/food-and-drink/items',
+    path: '/workspace/kitchen/menu/items',
     icon: 'i-lucide-glass-water',
   },
 } as const

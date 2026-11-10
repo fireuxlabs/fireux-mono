@@ -12,7 +12,7 @@ import {
 } from './offering-test-helpers.mjs'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/components/FoodAndDrink/Services/Record.vue',
+    '../runtime/kitchen/components/Menu/Services/Record.vue',
     import.meta.url
   ),
   'utf8'
@@ -65,14 +65,14 @@ async function render(option, enabled) {
     render: vue.compile(template),
   })
   for (const [name, file] of [
-    ['KitchenFoodAndDrinkServicesSetup', 'Setup.vue'],
-    ['KitchenFoodAndDrinkServicesSetupKiosk', 'Setup/Kiosk.vue'],
-    ['KitchenFoodAndDrinkServicesSetupPreOrder', 'Setup/PreOrder.vue'],
+    ['KitchenMenuServicesSetup', 'Setup.vue'],
+    ['KitchenMenuServicesSetupKiosk', 'Setup/Kiosk.vue'],
+    ['KitchenMenuServicesSetupPreOrder', 'Setup/PreOrder.vue'],
   ]) {
     const child = parse(
       readFileSync(
         new URL(
-          `../runtime/kitchen/components/FoodAndDrink/Services/${file}`,
+          `../runtime/kitchen/components/Menu/Services/${file}`,
           import.meta.url
         ),
         'utf8'
@@ -88,20 +88,20 @@ async function render(option, enabled) {
       vue.h('button', { role: 'switch', 'aria-checked': props.modelValue }),
   })
   for (const [name, label] of [
-    ['KitchenFoodAndDrinkServicesSetupMenus', 'Selected menus'],
-    ['KitchenFoodAndDrinkServicesSetupServiceHours', 'Serving hours'],
+    ['KitchenMenuServicesSetupMenus', 'Selected menus'],
+    ['KitchenMenuServicesSetupServiceHours', 'Serving hours'],
   ])
     app.component(name, { setup: () => () => vue.h('div', label) })
   const interaction = parse(
     readFileSync(
       new URL(
-        '../runtime/kitchen/components/FoodAndDrink/Services/Setup/Interaction.vue',
+        '../runtime/kitchen/components/Menu/Services/Setup/Interaction.vue',
         import.meta.url
       ),
       'utf8'
     )
   ).descriptor.template.content
-  app.component('KitchenFoodAndDrinkServicesSetupInteraction', {
+  app.component('KitchenMenuServicesSetupInteraction', {
     props: [
       'config',
       'label',
@@ -113,7 +113,7 @@ async function render(option, enabled) {
     setup: () => ({ update() {}, updateMenus() {} }),
     render: vue.compile(interaction),
   })
-  app.component('KitchenFoodAndDrinkServicesTiming', {
+  app.component('KitchenMenuServicesTiming', {
     props: ['config'],
     setup: (props) => () =>
       vue.h(
@@ -148,7 +148,7 @@ test('all services show a switch, hide configuration while off and reveal it whi
 test('saved incompatible menus show visible replacement warnings and remain selectable for removal', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/FoodAndDrink/Services/Setup/Menus.vue',
+      '../runtime/kitchen/components/Menu/Services/Setup/Menus.vue',
       import.meta.url
     ),
     'utf8'

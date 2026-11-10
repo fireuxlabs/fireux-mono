@@ -91,7 +91,7 @@ Mixed and unproved capabilities remain unclassified; Surface is not a catch-all.
 Kitchen Menus proves Collection / Focus through its collection and canonical record
 with local perspectives. Kitchen Identity proves Surface orientation through a
 Kitchen breadcrumb, title and public destination above existing domain editors.
-Source: `fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue`
+Source: `fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Index.vue`
 and `Workspace/Identity/Index.vue` with its `Profile.vue` and `Listing.vue` children. This is a bounded presentation proof, not a
 classification rollout. No runtime descriptor, registry, shared renderer or new
 Core contract is established by these two compositions.
@@ -159,7 +159,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/runtime`.
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Kitchen Payments  | `kitchen/components/Identity/Payments/Index.vue`, `Methods.vue`                                                          | Reuses `useKitchenFulfilment`; payment applicability controls own their focused command intent. Identity placement does not move Kitchen storage. |
 | Kitchen Delivery  | `kitchen/components/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue`                                                 | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection.                 |
-| Services setup    | `kitchen/components/FoodAndDrink/Services/Index.vue`                                                                     | Reuses Offering readers/setup and the named Delivery composition outside the Orders capability. No new configuration store.                       |
+| Services setup    | `kitchen/components/Menu/Services/Index.vue`                                                                             | Reuses Offering readers/setup and the named Delivery composition outside the Orders capability. No new configuration store.                       |
 | Ordering library  | `kitchen/components/Orders/Examples/Index.vue`, `Orders/Preview.vue`, `Orders/Success.vue`                               | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority.                          |
 | Customer ordering | `menu/components/Order/Index.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks.        |
 | Order board       | `kitchen/components/Orders/Board.vue`                                                                                    | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |
@@ -309,7 +309,7 @@ Source paths below are relative to `fireux-kitchens/src/runtime`.
 
 | Boundary              | Menu publication                                                       | Customer ordering                                                                                                                                           |
 | --------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Surface               | `kitchen/components/FoodAndDrink/Menus/Publication/Actions.vue`        | `menu/components/Order/Index.vue` and named checkout/response children                                                                                      |
+| Surface               | `kitchen/components/Menu/Menus/Publication/Actions.vue`                | `menu/components/Order/Index.vue` and named checkout/response children                                                                                      |
 | Domain rules          | `menu/server/publication/validation.ts`                                | `menu/server/ordering.ts` resolves canonical items, prices, fulfilment and serving hours; Kitchen submission validation owns order completeness/transitions |
 | Use-case coordination | `publishKitchenMenu` in `menu/server/publication/publish.ts`           | `submitKitchenOrder` in `kitchen/server/orders/submission.ts`                                                                                               |
 | Transaction invariant | Validate publication and update the same scoped Menu record            | Validate authority and canonical Menu selections; number and persist one submission together                                                                |

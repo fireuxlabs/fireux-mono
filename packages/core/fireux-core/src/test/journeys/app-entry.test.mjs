@@ -121,7 +121,7 @@ test('a declared Workspace origin installs at root, without accepting the retire
   )
   for (const start_url of [
     '/workspace/kitchen',
-    '/workspace/kitchen/food-and-drink/menus',
+    '/workspace/kitchen/menu/menus',
     '/?kitchenId=private',
   ]) {
     const refused = manifest(

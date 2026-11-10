@@ -53,7 +53,7 @@ function context() {
     appUser = ref({ created: { at: 1 }, role: 'user' })
   const config = reactive({ appId: 'app' }),
     route = reactive({
-      fullPath: '/workspace/kitchen/food-and-drink/menus?create=1',
+      fullPath: '/workspace/kitchen/menu/menus?create=1',
     }),
     kitchenId = ref('kitchen'),
     canWrite = ref(true),
@@ -104,7 +104,7 @@ function context() {
     }
     if (kind === 'route') {
       route.fullPath = '/other'
-      route.fullPath = '/workspace/kitchen/food-and-drink/menus?create=1'
+      route.fullPath = '/workspace/kitchen/menu/menus?create=1'
     }
     if (kind === 'dispose') lifetime.stop()
   }
@@ -146,7 +146,7 @@ test('Menu creation suppresses obsolete navigation, errors and busy-state comple
       let intentCurrent
       const h = context(),
         api = h.run(
-          'kitchen/components/FoodAndDrink/Menus/Create/Form.vue',
+          'kitchen/components/Menu/Menus/Create/Form.vue',
           '({save,name,description,busy,error})',
           {
             defineModel: () => ref(''),
@@ -198,7 +198,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
     for (const changed of changes) {
       const h = context(),
         api = h.run(
-          'kitchen/components/FoodAndDrink/Menus/Create/Url.vue',
+          'kitchen/components/Menu/Menus/Create/Url.vue',
           '({save,sourceUrl,pending,error})',
           {
             crypto: { randomUUID: () => 'test-source' },
@@ -238,9 +238,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
       assert.deepEqual(
         h.effects,
         changed === 'stable'
-          ? [
-              '/workspace/kitchen/food-and-drink/menus/uploads/source-test-source',
-            ]
+          ? ['/workspace/kitchen/menu/menus/uploads/source-test-source']
           : []
       )
       assert.equal(api.pending.value, changed !== 'stable')
@@ -251,7 +249,7 @@ test('Menu removal submits its exact target to the record owner before live data
   const h = context()
   const menu = ref({ id: 'menu', name: 'Main', status: 'draft' })
   const api = h.run(
-    'kitchen/components/FoodAndDrink/Menus/Detail/Remove.vue',
+    'kitchen/components/Menu/Menus/Detail/Remove.vue',
     '({apply,confirm,busy})',
     {
       useKitchenMenuRecordContext: () => ({
@@ -291,7 +289,7 @@ test('Menu suggestions stay locked for Free and create ordinary interactive draf
   for (const tier of ['free', 'pro', 'business']) {
     const h = context()
     const api = h.run(
-      'kitchen/components/FoodAndDrink/Menus/Collection/Suggestions.vue',
+      'kitchen/components/Menu/Menus/Collection/Suggestions.vue',
       '({create,hasPro,suggestions})',
       {
         useKitchenMenusContext: () => ({
@@ -332,7 +330,7 @@ test('Menu archive UI shows affected services and restores only to draft', async
       status: archived ? 'archived' : 'published',
     })
     const api = h.run(
-      'kitchen/components/FoodAndDrink/Menus/Detail/Remove.vue',
+      'kitchen/components/Menu/Menus/Detail/Remove.vue',
       '({apply,confirm,canDelete,affectedServices,busy})',
       {
         useKitchenMenuRecordContext: () => ({

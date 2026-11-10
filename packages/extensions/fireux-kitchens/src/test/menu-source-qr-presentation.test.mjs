@@ -1,3 +1,4 @@
+import { commandScopeDeps } from './command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -25,6 +26,13 @@ function component(relative, dependencies = {}) {
   compileFunction(code, ['require', 'exports'])((id) => {
     if (dependencies[id]) return dependencies[id]
     if (id.endsWith('.css')) return {}
+    if (id.endsWith('/useMenuEditorScope'))
+      return {
+        useMenuEditorScope: (sources, reset) => {
+          Vue.watch(sources, reset, { flush: 'sync' })
+          return commandScopeDeps({}).useCommandScope(sources)
+        },
+      }
     assert.equal(id, 'vue')
     return Vue
   }, exports)
@@ -55,7 +63,7 @@ async function render(Card, props) {
       () =>
         Vue.h('a', { href: p.to }, slots.default?.()),
   })
-  app.component('KitchenFoodAndDrinkMenusCreate', {
+  app.component('KitchenMenuMenusCreate', {
     render: () => Vue.h('div', 'Existing Kitchen creation controls'),
   })
   app.component('UPageLinks', {
@@ -156,7 +164,7 @@ test('QR targets retain publication and service eligibility boundaries', () => {
 
 test('an applied source retains its Menu destination after reload', async () => {
   const Apply = component(
-    'kitchen/components/FoodAndDrink/Menus/Process/Review/Apply.vue'
+    'kitchen/components/Menu/Menus/Process/Review/Apply.vue'
   )
   const html = await render(Apply, {
     appId: 'misebox-app',
@@ -174,32 +182,29 @@ test('an applied source retains its Menu destination after reload', async () => 
   })
   assert.match(
     html,
-    /href="\/workspace\/kitchen\/food-and-drink\/menus\/reviewed-menu\?kitchenId=kitchen-a"/
+    /href="\/workspace\/kitchen\/menu\/menus\/reviewed-menu\?kitchenId=kitchen-a"/
   )
   assert.match(html, /This menu draft has already been applied/)
 })
 
 test('Kitchen Menu preparation is usable without a Product, purchase or service request', async () => {
-  const Express = component(
-    'kitchen/components/FoodAndDrink/Menus/Prepare.vue',
-    {
-      '../../../composables/workspace/menus/useKitchenMenusContext': {
-        useKitchenMenusContext: () => ({
-          outcome: Vue.ref('ready'),
-          error: Vue.ref(null),
-        }),
-      },
-      '../../../composables/workspace/menus/useKitchenWorkspaceMenuSources': {
-        useKitchenWorkspaceMenuSources: () => ({
-          menuSources: Vue.ref([
-            { id: 'saved-source', file_name: 'TEST-menu.pdf' },
-          ]),
-          menuSourcesError: Vue.ref(null),
-          outcome: Vue.ref('ready'),
-        }),
-      },
-    }
-  )
+  const Express = component('kitchen/components/Menu/Menus/Prepare.vue', {
+    '../../../composables/workspace/menus/useKitchenMenusContext': {
+      useKitchenMenusContext: () => ({
+        outcome: Vue.ref('ready'),
+        error: Vue.ref(null),
+      }),
+    },
+    '../../../composables/workspace/menus/useKitchenWorkspaceMenuSources': {
+      useKitchenWorkspaceMenuSources: () => ({
+        menuSources: Vue.ref([
+          { id: 'saved-source', file_name: 'TEST-menu.pdf' },
+        ]),
+        menuSourcesError: Vue.ref(null),
+        outcome: Vue.ref('ready'),
+      }),
+    },
+  })
   const html = await render(Express, {})
   assert.match(html, /Existing Kitchen creation controls/)
   assert.match(html, /menus\/uploads\/saved-source/)

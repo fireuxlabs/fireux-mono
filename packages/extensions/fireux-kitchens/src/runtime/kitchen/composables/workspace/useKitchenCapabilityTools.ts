@@ -37,35 +37,35 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
 
   'kitchen.menus.create-menu': {
     kind: 'route',
-    to: '/workspace/kitchen/food-and-drink/menus?create=1',
+    to: '/workspace/kitchen/menu/menus?create=1',
   },
   'kitchen.dishes.create-dish': {
     kind: 'route',
-    to: '/workspace/kitchen/food-and-drink/items?create=food',
+    to: '/workspace/kitchen/menu/items?create=food',
   },
   'kitchen.dishes.update-dish': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/menu/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.dishes.delete-dish': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/menu/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.create-drink': {
     kind: 'route',
-    to: '/workspace/kitchen/food-and-drink/items?create=drink',
+    to: '/workspace/kitchen/menu/items?create=drink',
   },
   'kitchen.drinks.update-drink': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/menu/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.delete-drink': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food-and-drink/items/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/menu/items/${encodeURIComponent(targetId)}`,
   },
   'kitchen.ingredients.add-ingredient': {
     kind: 'route',
@@ -93,7 +93,7 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   'kitchen.menus.update-menu': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/menu/menus/${encodeURIComponent(targetId)}`,
   },
   'kitchen.stations.create-station': {
     kind: 'modal',

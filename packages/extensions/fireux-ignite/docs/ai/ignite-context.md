@@ -72,7 +72,7 @@ A FireUX App assembled through Ignition uses the actual framework: `defineFireux
 
 The runtime composition references are the native Apps index routes using
 `useAppCollectionPage`, Core `workspace/components/Index.vue` and `Page.vue`,
-and Kitchen `components/FoodAndDrink/Index.vue`. Public collections visibly
+and Kitchen `components/Menu/Index.vue`. Public collections visibly
 compose native page structure and shared feedback; Workspace capabilities use
 the existing persistent Core frame. Domain contexts own reads and commands.
 Do not generate FirePage/FireCollectionPage wrappers or clone a domain's page

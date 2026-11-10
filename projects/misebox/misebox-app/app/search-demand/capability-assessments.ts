@@ -43,7 +43,7 @@ export const capabilityAssessments: Record<
       scope:
         'Menu editing and publication have source-connected UI and commands. Complete operator/customer acceptance and food-information handling remain separate proofs. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FoodAndDrink/Menus/Index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Menus/Index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/menu/server/publication/publish.ts',
       ],
     },

@@ -1,4 +1,4 @@
-export const dishCataloguePath = '/workspace/kitchen/food-and-drink/items'
+export const dishCataloguePath = '/workspace/kitchen/menu/items'
 
 export type DishCatalogueState = {
   kind: 'all' | 'food' | 'drink'

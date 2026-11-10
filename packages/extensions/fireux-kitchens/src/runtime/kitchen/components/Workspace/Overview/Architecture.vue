@@ -63,7 +63,7 @@ const notes: Record<
         'Create or import a menu, edit its content and publish it. Publishing a menu and enabling orders are separate steps. Menu deletion has no connected supported flow.',
     },
     references: {
-      Component: 'FoodAndDrink/Menus/Index.vue',
+      Component: 'Menu/Menus/Index.vue',
       Reader: 'useKitchenMenuCollection — live menus for the selected Kitchen.',
       Ownership:
         'Kitchen composes the workspace; Menu owns menu records and publication.',
@@ -81,7 +81,7 @@ const notes: Record<
         'Summaries showing which menus use an item and its pricing are not connected.',
     },
     references: {
-      Component: 'FoodAndDrink/Items/Index.vue — food or drink context.',
+      Component: 'Menu/Items/Index.vue — food or drink context.',
       Reader:
         'useKitchenDishCollection — live dishes for the selected Kitchen.',
       Classification: 'item_kind separates food and drink records.',

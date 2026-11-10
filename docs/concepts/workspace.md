@@ -96,7 +96,7 @@ shell around each page. See the
 [layouts map](layouts.md#workspace-composition) and
 [component map](components.md#workspace-composition).
 
-Kitchen's `FoodAndDrink/Index.vue` demonstrates the composed form: group AI,
+Kitchen's `Menu/Index.vue` demonstrates the composed form: group AI,
 Items, Menus, Promotions and Services overview components. Children own local
 imports and state; one page-provided overview supports genuinely shared AI and
 page JSON. Status and missing-data flags come from records and policy, not AI.
@@ -155,7 +155,7 @@ Kitchen's inspected arrangement is:
 kitchen/components/
   Identity/
   Team/
-  FoodAndDrink/
+  Menu/
     Index.vue
     Items/
     Menus/

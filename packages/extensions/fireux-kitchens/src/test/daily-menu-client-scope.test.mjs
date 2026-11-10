@@ -68,7 +68,7 @@ function harness() {
   )
   const view = life.run(() =>
     load(
-      'kitchen/components/FoodAndDrink/Menus/Publication/Daily.vue',
+      'kitchen/components/Menu/Menus/Publication/Daily.vue',
       '({save,error,message})',
       deps
     )

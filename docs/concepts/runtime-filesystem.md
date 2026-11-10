@@ -209,7 +209,7 @@ or capability:
 
 ```text
 src/runtime/kitchen/
-├── components/FoodAndDrink/Menus/
+├── components/Menu/Menus/
 ├── composables/workspace/Menus/
 ├── models/menu/
 └── server/operations/menus/

@@ -81,7 +81,7 @@ function fixture(kind, holdToken = false) {
   const path = kind === 'Apply' ? 'Review/Apply.vue' : 'Cost.vue'
   const script = readFileSync(
     new URL(
-      `../runtime/kitchen/components/FoodAndDrink/Menus/Process/${path}`,
+      `../runtime/kitchen/components/Menu/Menus/Process/${path}`,
       import.meta.url
     ),
     'utf8'

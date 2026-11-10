@@ -548,7 +548,7 @@ test('Dish Prep consumer receives additive lifecycle states without losing saved
     })
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/FoodAndDrink/Items/Preparation.vue',
+      'kitchen/components/Menu/Items/Preparation.vue',
       '({rows, groups, pending, error})',
       {
         computed,
@@ -589,7 +589,7 @@ test('Dish Spec options consume masked Prep data while preserving their existing
   )
   const state = f.scope.run(() =>
     load(
-      'kitchen/components/FoodAndDrink/Items/Spec.vue',
+      'kitchen/components/Menu/Items/Spec.vue',
       '({prepOptions, readError})',
       {
         computed,

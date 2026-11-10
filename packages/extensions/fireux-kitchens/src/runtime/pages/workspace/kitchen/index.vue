@@ -14,7 +14,7 @@
   />
   <nav v-if="fireux.isTenant && ready" aria-label="Kitchen actions">
     <UButton
-      to="/workspace/kitchen/food-and-drink/menus"
+      to="/workspace/kitchen/menu/menus"
       label="Menus"
       icon="i-lucide-notebook-text"
     />
@@ -26,7 +26,7 @@
       variant="soft"
     />
     <UButton
-      to="/workspace/kitchen/food-and-drink/services"
+      to="/workspace/kitchen/menu/services"
       label="Services"
       icon="i-lucide-layout-dashboard"
       color="neutral"

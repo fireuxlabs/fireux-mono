@@ -54,7 +54,7 @@ function fixture() {
   const kitchenId = ref('k'),
     menuSlug = ref('food')
   const route = ref({
-    fullPath: '/workspace/kitchen/food-and-drink/menus/food',
+    fullPath: '/workspace/kitchen/menu/menus/food',
   })
   const menu = ref({
     id: 'm',
@@ -348,7 +348,7 @@ test('Surviving Record context completes own live rename/delete but rejects exte
       f.change(change)
       f.response.resolve(f.receipt)
       assert.deepEqual(await result, f.receipt)
-      const path = '/workspace/kitchen/food-and-drink/menus'
+      const path = '/workspace/kitchen/menu/menus'
       assert.deepEqual(
         f.destinations,
         change === 'stable' ? [action === 'rename' ? path + '/food' : path] : []

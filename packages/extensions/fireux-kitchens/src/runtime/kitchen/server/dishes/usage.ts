@@ -64,7 +64,7 @@ export async function readDishUsage(
           id: menu.id,
           name: text(menu.data.name) || menu.id,
           section: text(section.data.label) || section.id,
-          to: `/workspace/kitchen/food-and-drink/menus/${encodeURIComponent(text(menu.data.slug) || menu.id)}/${encodeURIComponent(section.id)}`,
+          to: `/workspace/kitchen/menu/menus/${encodeURIComponent(text(menu.data.slug) || menu.id)}/${encodeURIComponent(section.id)}`,
         })
     }
   }
@@ -83,7 +83,7 @@ export async function readDishUsage(
         kind: 'promotion',
         id: promotion.id,
         name: text(data.name) || promotion.id,
-        to: '/workspace/kitchen/food-and-drink/promotions',
+        to: '/workspace/kitchen/menu/promotions',
       })
   }
   return usages

@@ -244,7 +244,7 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
         sectionId = ref('s')
       let editorCurrent
       const api = load(
-        '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/Repertoire.vue',
+        '../../runtime/kitchen/components/Menu/Menus/Items/Add/Repertoire.vue',
         {
           ref,
           computed,
@@ -560,13 +560,13 @@ test('all Add workflows can restore retained placements and exclude already acti
     useDishCreate: () => ({ createDish: assert.fail }),
   }
   const dish = load(
-    '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/Repertoire.vue',
+    '../../runtime/kitchen/components/Menu/Menus/Items/Add/Repertoire.vue',
     deps,
     '({availableDishes,dishId,add})',
     true
   )
   const deal = load(
-    '../../runtime/kitchen/components/FoodAndDrink/Menus/Items/Add/MealDeal.vue',
+    '../../runtime/kitchen/components/Menu/Menus/Items/Add/MealDeal.vue',
     deps,
     '({available,promotionId,add})',
     true

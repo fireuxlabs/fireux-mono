@@ -44,7 +44,7 @@ export const workspaceSurfaceCopy = {
       'Set each dish’s specification and selling price, and connect its recipes and prep items.',
     items: ['Specification', 'Selling price', 'Prep items', 'Recipes'],
     action: 'Open Dishes',
-    to: '/workspace/kitchen/food-and-drink/items',
+    to: '/workspace/kitchen/menu/items',
   },
   'kitchen.ingredients': {
     eyebrow: 'Kitchen Workspace · Ingredients',
@@ -67,7 +67,7 @@ export const workspaceSurfaceCopy = {
       'Arrange dishes into ordering sections, choose how each menu is used, and publish QR codes for guests.',
     items: ['Ordering sections', 'Dishes', 'Ordering formats', 'QR codes'],
     action: 'Open Menus',
-    to: '/workspace/kitchen/food-and-drink/menus',
+    to: '/workspace/kitchen/menu/menus',
   },
   'kitchen.orders': {
     eyebrow: 'Kitchen Workspace · Orders',

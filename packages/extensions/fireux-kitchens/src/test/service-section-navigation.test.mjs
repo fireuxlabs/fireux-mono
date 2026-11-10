@@ -8,7 +8,7 @@ import { computed, ref, reactive, watch, effectScope, nextTick } from 'vue'
 test('a service deep link waits for its mounted section and focuses only the matching service', async () => {
   const raw = readFileSync(
     new URL(
-      '../runtime/kitchen/components/FoodAndDrink/Services/Service.vue',
+      '../runtime/kitchen/components/Menu/Services/Service.vue',
       import.meta.url
     ),
     'utf8'

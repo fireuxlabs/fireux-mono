@@ -35,17 +35,17 @@ was run as part of this audit.
 
 ## How it works
 
-| Stage | Current input and process | Result |
-| --- | --- | --- |
-| Select | Active Kitchen supplies a live parent-scoped Menu collection; choose a Menu | Focused Menu and available actions |
-| Create | Name and optional description; actor membership, allowance and currency checked | New unpublished Menu |
-| Import | URL or uploaded document enters a separate source/processing flow | Material to turn into a Menu; not proof that import completed |
-| Structure | Add and edit sections | Ordered presentation groups |
-| Content | Select an existing Kitchen dish and enter a price; edit availability | Menu item referring to the dish with Menu-specific selling information |
-| Appearance | Four palette values, with Kitchen/default fallback | Menu presentation override |
-| Publish | Named publication command and public directory synchronization | Public Menu address |
-| Share | QR capability and website-ordering snippet are separate surfaces | Customer entry points |
-| AI | Visible Menu names, selection, allowance and permitted actions | Opens ordinary controls; does not change prices or extract a document through this chat |
+| Stage      | Current input and process                                                       | Result                                                                                  |
+| ---------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Select     | Active Kitchen supplies a live parent-scoped Menu collection; choose a Menu     | Focused Menu and available actions                                                      |
+| Create     | Name and optional description; actor membership, allowance and currency checked | New unpublished Menu                                                                    |
+| Import     | URL or uploaded document enters a separate source/processing flow               | Material to turn into a Menu; not proof that import completed                           |
+| Structure  | Add and edit sections                                                           | Ordered presentation groups                                                             |
+| Content    | Select an existing Kitchen dish and enter a price; edit availability            | Menu item referring to the dish with Menu-specific selling information                  |
+| Appearance | Four palette values, with Kitchen/default fallback                              | Menu presentation override                                                              |
+| Publish    | Named publication command and public directory synchronization                  | Public Menu address                                                                     |
+| Share      | QR capability and website-ordering snippet are separate surfaces                | Customer entry points                                                                   |
+| AI         | Visible Menu names, selection, allowance and permitted actions                  | Opens ordinary controls; does not change prices or extract a document through this chat |
 
 Kitchen remains the operational context; Menu owns its presentation and
 publication. Reusing dishes should be convenient without requiring the operator
@@ -122,17 +122,17 @@ Bären later, but its presence is not evidence that that client flow is ready.
 
 ## Proposed offer
 
-| Behaviour | Policy |
-| --- | --- |
-| Food and Drinks starting menus | Existing two-menu Free allowance; display names remain editable independently of stable identity |
+| Behaviour                                              | Policy                                                                                             |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Food and Drinks starting menus                         | Existing two-menu Free allowance; display names remain editable independently of stable identity   |
 | Names, descriptions, sections, prices and availability | Essential menu maintenance; do not make ordinary corrections dependent on paid appearance controls |
-| Publish, unpublish and public browsing | Core menu usefulness; unpublish remains available after downgrade |
-| QR and shareable URL | Recommend including in the basic QR-menu offering |
-| Additional custom menus | Existing paid unlimited allowance; Free counts two retained records |
-| Theme editing | Agreed paid feature; current gates need implementation |
-| Saved theme after downgrade | Nothing rewrites or removes it; future theme edits require the appropriate current subscription |
-| Import and AI usage | Cost and allowance policy still to decide after proving the import workflow |
-| Ordering, kiosk and website checkout | Separate client journeys, composed with the same menu content |
+| Publish, unpublish and public browsing                 | Core menu usefulness; unpublish remains available after downgrade                                  |
+| QR and shareable URL                                   | Recommend including in the basic QR-menu offering                                                  |
+| Additional custom menus                                | Existing paid unlimited allowance; Free counts two retained records                                |
+| Theme editing                                          | Agreed paid feature; current gates need implementation                                             |
+| Saved theme after downgrade                            | Nothing rewrites or removes it; future theme edits require the appropriate current subscription    |
+| Import and AI usage                                    | Cost and allowance policy still to decide after proving the import workflow                        |
+| Ordering, kiosk and website checkout                   | Separate client journeys, composed with the same menu content                                      |
 
 Current allowance uses the acting AppUser's subscription. Whether a paying
 Kitchen should confer paid editing on every team member is a separate product
@@ -216,8 +216,8 @@ All paths below are relative to `packages/extensions/fireux-kitchens/src`:
 
 - `runtime/pages/workspace/kitchen/menus/index.vue`: route composition.
 - `runtime/kitchen/composables/workspace/menus/useKitchenWorkspaceMenus.ts`: workflow.
-- `runtime/kitchen/components/FoodAndDrink/Menus/`: index, creation and editing UI.
-- `runtime/kitchen/components/FoodAndDrink/Menus/Edit/Theme.vue`: remaining palette drift.
+- `runtime/kitchen/components/Menu/Menus/`: index, creation and editing UI.
+- `runtime/kitchen/components/Menu/Menus/Edit/Theme.vue`: remaining palette drift.
 - `runtime/menu/composables/useKitchenMenuCollection.ts`: live collection.
 - `runtime/menu/composables/firestore/mutations/useMenuUpdate.ts`: mixed update paths.
 - `runtime/menu/server/workspace-commands.ts`: trusted commands.

@@ -205,7 +205,7 @@ test('Dish Prep button ignores stale failure after focus round trip', async () =
     'useDishEditorScope'
   )
   const api = load(
-    '../../runtime/kitchen/components/FoodAndDrink/Items/Spec.vue',
+    '../../runtime/kitchen/components/Menu/Items/Spec.vue',
     {
       ref,
       computed,

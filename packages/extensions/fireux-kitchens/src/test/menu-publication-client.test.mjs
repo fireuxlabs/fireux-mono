@@ -34,7 +34,7 @@ function harness({
       : null
   )
   const selectedId = ref('k'),
-    route = ref('/workspace/kitchen/food-and-drink/menus/lunch')
+    route = ref('/workspace/kitchen/menu/menus/lunch')
   const membership = ref({ role: 'user' })
   const scope = effectScope()
   const useMenuEditorScope = load(
@@ -161,7 +161,7 @@ for (const action of ['publishMenu', 'unpublishMenu', 'archiveMenu']) {
       }
       if (change === 'route') {
         h.route.value = '/other'
-        h.route.value = '/workspace/kitchen/food-and-drink/menus/lunch'
+        h.route.value = '/workspace/kitchen/menu/menus/lunch'
       }
       if (change === 'dispose') h.stop()
       token.resolve('token')
@@ -193,7 +193,7 @@ test('publication UI suppresses obsolete completion, errors and busy resets', as
       for (const failed of [false, true]) {
         const source = readFileSync(
           new URL(
-            '../runtime/kitchen/components/FoodAndDrink/Menus/Publication/Actions.vue',
+            '../runtime/kitchen/components/Menu/Menus/Publication/Actions.vue',
             import.meta.url
           ),
           'utf8'

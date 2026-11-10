@@ -26,7 +26,7 @@ const cards = computed(() => [
     title: 'Menus',
     description: 'Dishes, prices and what your guests see.',
     icon: 'i-lucide-notebook-text',
-    capability: 'food-and-drink/menus',
+    capability: 'menu/menus',
     to: '/operations/menus',
   },
   {

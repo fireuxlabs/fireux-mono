@@ -63,30 +63,30 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'KitchenFoodAndDrinkMenusItemsEditRow',
-    'KitchenFoodAndDrinkMenusItemsAdd',
-    'KitchenFoodAndDrinkMenusSectionsCreate',
-    'KitchenFoodAndDrinkMenusSectionsCollectionRow',
-    'KitchenFoodAndDrinkMenusProcess',
-    'KitchenFoodAndDrinkMenusPreparationDocument',
-    'KitchenFoodAndDrinkMenusUploadsDetailFile',
+    'KitchenMenuMenusItemsEditRow',
+    'KitchenMenuMenusItemsAdd',
+    'KitchenMenuMenusSectionsCreate',
+    'KitchenMenuMenusSectionsCollectionRow',
+    'KitchenMenuMenusProcess',
+    'KitchenMenuMenusPreparationDocument',
+    'KitchenMenuMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',
     'FireDiagnosticsDebugPanel',
     'UFormField',
-    'KitchenFoodAndDrinkMenusSectionsDishes',
-    'KitchenFoodAndDrinkMenusSectionsCollectionSchedule',
+    'KitchenMenuMenusSectionsDishes',
+    'KitchenMenuMenusSectionsCollectionSchedule',
     'UButton',
     'UModal',
     'NuxtLink',
     'USwitch',
-    'KitchenFoodAndDrinkMenusItemsSharedTerms',
-    'KitchenFoodAndDrinkMenusItemsAdoptSharedTerms',
+    'KitchenMenuMenusItemsSharedTerms',
+    'KitchenMenuMenusItemsAdoptSharedTerms',
     'FireFormsEditableSimpleField',
     'FireDisclosurePanel',
-    'KitchenFoodAndDrinkMenusItemsOptions',
-    'KitchenFoodAndDrinkMenusCollection',
-    'KitchenFoodAndDrinkMenusAi',
+    'KitchenMenuMenusItemsOptions',
+    'KitchenMenuMenusCollection',
+    'KitchenMenuMenusAi',
   ])
     app.component(name, { render: () => null })
   app.component('UButton', {
@@ -144,7 +144,7 @@ async function render(path, state) {
   return html
 }
 const sectionsPath =
-  'kitchen/components/FoodAndDrink/Menus/Sections/Collection/Index.vue'
+  'kitchen/components/Menu/Menus/Sections/Collection/Index.vue'
 function sectionView(overrides = {}) {
   return {
     menu: { description: 'Current menu' },
@@ -187,7 +187,7 @@ test('Menu sections show empty copy only after the child read settles', async ()
     (await render(sectionsPath, sectionView())).includes('No sections yet.')
   )
 })
-const itemsPath = 'kitchen/components/FoodAndDrink/Menus/Items/Edit/Index.vue'
+const itemsPath = 'kitchen/components/Menu/Menus/Items/Edit/Index.vue'
 function itemView(overrides = {}) {
   return {
     menuSlug: 'food',
@@ -458,15 +458,12 @@ test('an independent source-upload failure does not hide a loaded Menu', () => {
 })
 for (const outcome of ['pending', 'error', 'empty'])
   test(`Menus entry shows the owning Kitchen ${outcome} before collection tools`, async () => {
-    const html = await render(
-      'kitchen/components/FoodAndDrink/Menus/Index.vue',
-      {
-        storageKitchenId: '',
-        outcome,
-        error: outcome === 'error' ? new Error('Kitchen failed') : null,
-        workspaceEntryPath: '/workspace/kitchen',
-      }
-    )
+    const html = await render('kitchen/components/Menu/Menus/Index.vue', {
+      storageKitchenId: '',
+      outcome,
+      error: outcome === 'error' ? new Error('Kitchen failed') : null,
+      workspaceEntryPath: '/workspace/kitchen',
+    })
     assert.ok(
       outcome === 'pending'
         ? /loading|pending/i.test(html)
@@ -480,13 +477,10 @@ for (const outcome of ['pending', 'error', 'empty'])
 
 for (const outcome of ['pending', 'error', 'empty'])
   test(`uploaded Menu source ${outcome} has truthful shared preparation feedback`, async () => {
-    const html = await render(
-      'kitchen/components/FoodAndDrink/Menus/Preparation.vue',
-      {
-        outcome,
-        error: outcome === 'error' ? new Error('Sources failed') : null,
-      }
-    )
+    const html = await render('kitchen/components/Menu/Menus/Preparation.vue', {
+      outcome,
+      error: outcome === 'error' ? new Error('Sources failed') : null,
+    })
     assert.ok(
       html.includes(outcome === 'error' ? 'Sources failed' : outcome),
       html

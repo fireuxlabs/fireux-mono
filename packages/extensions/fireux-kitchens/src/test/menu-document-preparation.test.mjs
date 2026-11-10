@@ -408,6 +408,6 @@ test('opening the created Menu explicitly selects its actual Kitchen before navi
   h.context.menu.value = { format: 'document', slug: 'food' }
   h.document.openMenu()
   assert.deepEqual(h.selected, ['k'])
-  assert.deepEqual(h.opened, ['/workspace/kitchen/food-and-drink/menus/food'])
+  assert.deepEqual(h.opened, ['/workspace/kitchen/menu/menus/food'])
   h.scope.stop()
 })

@@ -1,7 +1,7 @@
 <template>
   <div>
     <UButton
-      to="/workspace/kitchen/food-and-drink/menus?create=1"
+      to="/workspace/kitchen/menu/menus?create=1"
       color="neutral"
       variant="ghost"
       size="sm"
@@ -9,7 +9,7 @@
       >Publish a menu</UButton
     >
     <UButton
-      to="/workspace/kitchen/food-and-drink/menus?create=1"
+      to="/workspace/kitchen/menu/menus?create=1"
       color="neutral"
       variant="ghost"
       size="sm"

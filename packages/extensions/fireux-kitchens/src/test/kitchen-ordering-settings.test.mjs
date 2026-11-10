@@ -98,7 +98,7 @@ function commands(records) {
 test('Pre-order edits hours and trusted interaction settings preserve valid notice values and reject limits', async () => {
   const source = readFileSync(
     new URL(
-      '../runtime/kitchen/components/FoodAndDrink/Services/Timing.vue',
+      '../runtime/kitchen/components/Menu/Services/Timing.vue',
       import.meta.url
     ),
     'utf8'

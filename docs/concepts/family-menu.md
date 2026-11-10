@@ -87,7 +87,7 @@ does not advertise ordering entrances for other Menus in the Kitchen.
 
 ## Regular Menu publication tools
 
-The routed Menu Publishing view consumes Kitchen-owned `FoodAndDrink/Menus/Publication/Actions.vue`.
+The routed Menu Publishing view consumes Kitchen-owned `Menu/Menus/Publication/Actions.vue`.
 Its Menu-owned `composables/publication/useMenuPublication.ts` captures the current
 account, App membership, selected Kitchen and route before awaiting credentials;
 obsolete intent does not dispatch. The component separately discards obsolete
@@ -298,7 +298,7 @@ map.
   current root Directory entry.
 - `runtime/menu/components/Detail` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
-- `runtime/kitchen/components/FoodAndDrink/Menus` owns upload,
+- `runtime/kitchen/components/Menu/Menus` owns upload,
   processing, editing, publishing, sections, items, QR management, and
   links to Kitchen service configuration.
 - `runtime/menu/components/Json` is temporary diagnostic rendering for
@@ -440,7 +440,7 @@ this organisation.
 ## Daily Menu publication
 
 Daily Menus retain dated MenuSections and ordinary dish-backed items. The focused
-`FoodAndDrink/Menus/Publication/Daily.vue` control reviews the chosen date through
+`Menu/Menus/Publication/Daily.vue` control reviews the chosen date through
 Dates & selections and calls `menu/server/publication/daily.ts` through the existing scoped
 Menu mutation adapter. The command requires current membership, Kitchen authority
 and Plus, validates every active selection/item for that date, and updates
@@ -601,7 +601,7 @@ Dish and meal-deal definitions. The trusted regular publication validator uses
 that report to reject empty content and unavailable entries, with section/name
 reasons. It reads only Menu content, Dishes and Promotions and writes no terms.
 Document and per-date Daily validation remain separate.
-`FoodAndDrink/Menus/Publication/Readiness.vue` owns the live content warning and its
+`Menu/Menus/Publication/Readiness.vue` owns the live content warning and its
 focused section diagnostic children. The record reuses its section list; section
 editing passes its existing catalogue, promotion and current-item readers rather
 than acquiring duplicates. Other active sections use the existing scoped item
@@ -732,8 +732,8 @@ Offering identity, price or Order command is introduced. Verify
 `menu-other-offerings.test.mjs` and the offering-browse pagination regression.
 
 Kitchen service configuration lives at
-`/workspace/kitchen/food-and-drink/services`.
-`FoodAndDrink/Services/Index.vue` provides one scoped reader. `Service.vue`
+`/workspace/kitchen/menu/services`.
+`Menu/Services/Index.vue` provides one scoped reader. `Service.vue`
 groups each supplied type and `Record.vue` binds the existing setup controls
 to each saved Offering ID. Type hashes remain valid. Summary links use
 `#service-<type>/<encodedOfferingId>` for named saved records.
@@ -751,7 +751,7 @@ and ingredient routes keep their domain readers and commands.
 
 ## Shared Menu preparation
 
-Kitchen’s `FoodAndDrink/Menus/Prepare.vue` composes existing upload/URL controls,
+Kitchen’s `Menu/Menus/Prepare.vue` composes existing upload/URL controls,
 source collection and Menu/QR destinations. The `menus/prepare.vue` route supplies
 ordinary Workspace context, without a Product or purchase prerequisite.
 

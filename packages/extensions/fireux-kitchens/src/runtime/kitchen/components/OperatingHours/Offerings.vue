@@ -3,7 +3,7 @@
     <header>
       <h2 id="serving-hours-title">Service hours</h2>
       <UButton
-        to="/workspace/kitchen/food-and-drink/services"
+        to="/workspace/kitchen/menu/services"
         label="Manage services"
         color="neutral"
         variant="link"
@@ -26,7 +26,7 @@
               >
             </div>
             <UButton
-              :to="'/workspace/kitchen/food-and-drink/services'"
+              :to="'/workspace/kitchen/menu/services'"
               :aria-label="'Edit ' + offering.name + ' serving hours'"
               label="Edit"
               color="neutral"
@@ -49,7 +49,7 @@
         <p v-else-if="menusOutcome === 'error'">
           Linked Menus could not be loaded.
         </p>
-        <KitchenFoodAndDrinkServicesSetupMenuWindows
+        <KitchenMenuServicesSetupMenuWindows
           v-else-if="offering.menu_ids.length"
           :menus="linkedMenus(offering)"
           :service-hours="offering.hours"
