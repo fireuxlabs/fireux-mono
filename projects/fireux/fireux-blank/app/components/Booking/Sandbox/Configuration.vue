@@ -1,91 +1,98 @@
 <template>
-  <UCard>
-    <div class="booking-sandbox-configuration">
-      <UFormField label="Booking title" name="bookingTitle">
+  <div class="booking-configuration">
+    <UFormField label="Booking title" name="bookingTitle">
+      <UInput
+        :model-value="modelValue.title"
+        maxlength="100"
+        placeholder="Enter a booking title"
+        @update:model-value="updateTitle"
+      />
+    </UFormField>
+    <fieldset
+      v-for="(slot, index) in modelValue.slots"
+      :key="slot.id"
+      class="booking-configuration__slot"
+    >
+      <legend>Time {{ index + 1 }}</legend>
+      <UFormField label="Start date and time" :name="`start-${slot.id}`">
         <UInput
-          class="booking-sandbox-configuration__input"
-          :model-value="modelValue.serviceName"
-          autocomplete="off"
-          maxlength="100"
-          required
-          @update:model-value="updateText('serviceName', $event)"
+          :model-value="slot.startAt"
+          type="datetime-local"
+          @update:model-value="updateTime(slot.id, 'startAt', $event)"
         />
       </UFormField>
-      <UFormField label="Description" name="description">
+      <UFormField label="End date and time" :name="`end-${slot.id}`">
         <UInput
-          class="booking-sandbox-configuration__input"
-          :model-value="modelValue.description"
-          maxlength="200"
-          @update:model-value="updateText('description', $event)"
+          :model-value="slot.endAt"
+          type="datetime-local"
+          @update:model-value="updateTime(slot.id, 'endAt', $event)"
         />
       </UFormField>
-      <UFormField label="Confirm button" name="confirmLabel">
-        <UInput
-          class="booking-sandbox-configuration__input"
-          :model-value="modelValue.confirmLabel"
-          maxlength="60"
-          @update:model-value="updateText('confirmLabel', $event)"
-        />
-      </UFormField>
-      <UFormField label="Maximum group size" name="maxGroupSize">
-        <UInput
-          class="booking-sandbox-configuration__input"
-          :model-value="modelValue.maxGroupSize"
-          type="number"
-          min="1"
-          max="50"
-          step="1"
-          @update:model-value="updateMaxGroupSize"
-        />
-      </UFormField>
-    </div>
-  </UCard>
+      <p
+        v-if="slot.startAt && slot.endAt && !isValidBookingSlot(slot)"
+        role="status"
+      >
+        Enter a valid period with the end after the start.
+      </p>
+      <UButton
+        color="neutral"
+        variant="ghost"
+        :aria-label="`Remove time ${index + 1}`"
+        @click="remove(slot.id)"
+        >Remove time</UButton
+      >
+    </fieldset>
+    <UButton color="neutral" variant="outline" @click="add">Add time</UButton>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { SandboxBookingConfiguration } from '~/models/booking-sandbox'
-
-const props = defineProps<{ modelValue: SandboxBookingConfiguration }>()
-
+import type {
+  BookingConfiguration,
+  BookingSlot,
+} from 'fireux-bookings/runtime/types/booking-surface'
+import { isValidBookingSlot } from 'fireux-bookings/runtime/utils/booking-slot'
+const props = defineProps<{ modelValue: BookingConfiguration }>()
 const emit = defineEmits<{
-  'update:modelValue': [value: SandboxBookingConfiguration]
+  'update:modelValue': [configuration: BookingConfiguration]
 }>()
-
-function updateText(
-  field: 'serviceName' | 'description' | 'confirmLabel',
-  value: unknown
-) {
+function updateTitle(value: unknown) {
+  emit('update:modelValue', { ...props.modelValue, title: String(value ?? '') })
+}
+function updateTime(id: string, field: 'startAt' | 'endAt', value: unknown) {
   emit('update:modelValue', {
     ...props.modelValue,
-    [field]: typeof value === 'string' ? value : '',
+    slots: props.modelValue.slots.map((slot) =>
+      slot.id === id ? { ...slot, [field]: String(value ?? '') } : slot
+    ),
   })
 }
-
-function updateMaxGroupSize(value: unknown) {
-  const next = Number(value)
-  if (!Number.isInteger(next)) return
-
+function add() {
+  const slot: BookingSlot = { id: crypto.randomUUID(), startAt: '', endAt: '' }
   emit('update:modelValue', {
     ...props.modelValue,
-    maxGroupSize: Math.min(50, Math.max(1, next)),
+    slots: [...props.modelValue.slots, slot],
+  })
+}
+function remove(id: string) {
+  emit('update:modelValue', {
+    ...props.modelValue,
+    slots: props.modelValue.slots.filter((slot) => slot.id !== id),
   })
 }
 </script>
 
 <style scoped>
-.booking-sandbox-configuration {
+.booking-configuration {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 5);
+}
+.booking-configuration__slot {
+  display: grid;
   gap: calc(var(--spacing) * 4);
-}
-
-.booking-sandbox-configuration__input {
-  width: 100%;
-}
-
-@media (max-width: 38rem) {
-  .booking-sandbox-configuration {
-    grid-template-columns: 1fr;
-  }
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: calc(var(--spacing) * 4);
+  min-width: 0;
 }
 </style>

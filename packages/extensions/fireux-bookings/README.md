@@ -1,8 +1,35 @@
 # FireUX Bookings
 
-`fireux-bookings` provides a reusable customer booking surface, a provider-independent booking lifecycle, and server-side Google Calendar transport that domain packages and Apps can compose.
+Reusable booking presentation, provider-independent lifecycle coordination and
+server-side Google Calendar transport for consuming domains and Apps.
 
 ## Customer booking surface
+
+`runtime/components/Surface.vue` composes time selection, contact details,
+review and confirmation. Supply a `BookingConfiguration` and a
+`BookingConfirmationHandler` from `runtime/types/booking-surface`:
+
+```vue
+<BookingsSurface :configuration="offer" :confirm="confirmBooking" />
+```
+
+The configuration is `{ title, slots: [{ id, startAt, endAt }] }`; time values
+are local `YYYY-MM-DDTHH:mm` strings whose timezone meaning belongs to the host.
+The handler receives `{ requestId, slotId, contact: { name, email } }` and
+returns `{ reference }` after authoritative confirmation. It must validate the
+offer, availability, authority, allocation and persistence for its domain.
+Use `requestId` for idempotency, including retries after uncertain results.
+A rejected promise keeps the customer on review and presents the handler's
+user-facing error message. Obsolete completions are ignored in the interface;
+host-side reconciliation remains with the handler.
+
+The surface requires Vue and Nuxt UI, with no page shell or Workspace selection.
+The Bookings Nuxt module registers `BookingsSurface`; hosts without that module
+can import the component directly. Blank demonstrates configurable inputs and
+local receipts at `/sandbox/bookings`. Docs supplies a neutral interactive
+preview at `/docs/components/bookings`. Neither preview writes durable records.
+
+## Existing customer form
 
 The module registers `BookingsCustomerForm` from
 `fireux-bookings/runtime/components/Customer/Form.vue`. It presents customer
@@ -17,9 +44,9 @@ The form accepts `BookingCustomerDetails`, `BookingAvailabilityView` and
 `fireux-bookings/runtime/types/customer-booking-form`. It emits customer edits
 and a submit event; it does not fetch availability or submit a booking. The
 consuming App owns service choices, schedules, prices, calendar policy, records,
-and booking commands. The FireUX Docs preview and Blank simulator use generic
-placeholder or user-entered configuration; the package component contains no
-business-specific service data.
+and booking commands. Interlaken Bike Tours currently consumes this form.
+Blank and Docs consume `BookingsSurface` described above; the existing form
+remains a separate contract for its maintained App consumer.
 
 The current shared API exposes `queryGoogleCalendarBusy` and
 `createGoogleCalendarEvent` from `fireux-bookings/runtime/server/google-calendar`.

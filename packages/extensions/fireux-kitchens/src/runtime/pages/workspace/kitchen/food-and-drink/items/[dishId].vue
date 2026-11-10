@@ -19,7 +19,7 @@ definePageMeta({
   requiresSelection: true,
   nav: {
     key: 'workspace-kitchen-dish-detail',
-    label: 'Dish Detail',
+    label: 'Item details',
     icon: 'i-lucide-utensils',
     position: 'top',
     hidden: true,

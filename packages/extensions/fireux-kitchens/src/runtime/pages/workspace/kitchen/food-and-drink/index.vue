@@ -17,7 +17,7 @@ definePageMeta({
     key: 'workspace-kitchen-food',
     label: 'Food & drink',
     description:
-      'Manage what you sell, how it is presented and where it is available.',
+      'Manage items, menus, promotions and services and some collective stuff.',
     group: '',
     groupIndex: true,
     icon: 'i-lucide-utensils',
@@ -31,7 +31,7 @@ definePageMeta({
         key: 'items',
         label: 'Items',
         to: '/workspace/kitchen/food-and-drink/items',
-        icon: 'i-lucide-carrot',
+        icon: 'i-lucide-hamburger',
       },
       {
         key: 'menus',

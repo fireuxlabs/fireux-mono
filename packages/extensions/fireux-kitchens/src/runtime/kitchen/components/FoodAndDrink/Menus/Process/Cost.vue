@@ -101,7 +101,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRef, watch } from 'vue'
+import { computed, onScopeDispose, ref, toRef, watch } from 'vue'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const props = defineProps<{
@@ -175,13 +176,29 @@ const canSelect = computed(() =>
   Boolean(props.canProcess && estimate.value && !pending.value)
 )
 
-watch(
-  [currentUser, source, activeKitchenAppId, kitchenId, menuId, canWrite],
-  refreshEstimate,
-  { immediate: true }
-)
+const scopeSources = [source, activeKitchenAppId, kitchenId, menuId, canWrite]
+let estimateRun = 0
+const captureScope = useMenuEditorScope(scopeSources, () => {
+  estimateRun++
+  pending.value = false
+  estimate.value = null
+  selectedMode.value = ''
+  error.value = ''
+})
+onScopeDispose(() => {
+  estimateRun++
+})
+
+watch([currentUser, ...scopeSources], refreshEstimate, {
+  immediate: true,
+  flush: 'sync',
+})
 
 async function refreshEstimate() {
+  const run = ++estimateRun
+  const currentScope = captureScope()
+  const isCurrent = () => run === estimateRun && currentScope()
+  pending.value = false
   error.value = ''
   estimate.value = null
   selectedMode.value = ''
@@ -206,15 +223,7 @@ async function refreshEstimate() {
     const selectedMenuId = menuId.value
     const selectedUploadId = uploadId.value
     const token = await currentUser.value.getIdToken()
-    if (
-      !canWrite.value ||
-      activeKitchenAppId.value !== appId ||
-      kitchenId.value !== selectedKitchenId ||
-      menuId.value !== selectedMenuId ||
-      uploadId.value !== selectedUploadId
-    ) {
-      return
-    }
+    if (!isCurrent()) return
     const response = await fetch(
       '/api/workspace/kitchen/menus/process-estimate',
       {
@@ -241,12 +250,14 @@ async function refreshEstimate() {
       )
     }
 
+    if (!isCurrent()) return
     estimate.value = payload as Record<string, unknown>
   } catch (cause) {
+    if (!isCurrent()) return
     error.value =
       cause instanceof Error ? cause.message : 'Could not estimate AI cost.'
   } finally {
-    pending.value = false
+    if (isCurrent()) pending.value = false
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <section class="dish-workspace">
     <NuxtLink :to="catalogueReturn"
-      ><UIcon name="i-lucide-arrow-left" />Food &amp; drinks</NuxtLink
+      ><UIcon name="i-lucide-arrow-left" />Items</NuxtLink
     >
     <NuxtLink v-if="menuReturn" :to="menuReturn"
       >← Back to menu selection</NuxtLink
@@ -58,13 +58,13 @@
         <UButton
           v-if="canWrite"
           icon="i-lucide-settings-2"
-          label="Manage dish"
+          label="Item actions"
           color="neutral"
           variant="outline"
           @click="manage = true"
         />
       </header>
-      <nav aria-label="Dish perspectives" class="dish-tabs">
+      <nav aria-label="Item views" class="dish-tabs">
         <UButton
           v-for="item in views"
           :key="item.id"
@@ -76,19 +76,19 @@
           :aria-current="view === item.id ? 'page' : undefined"
         />
       </nav>
+      <KitchenFoodAndDrinkItemsEdit v-if="view === 'details'" />
       <KitchenFoodAndDrinkItemsPricing v-if="view === 'pricing'" />
       <DishPreparation v-if="view === 'preparation'" />
       <DishMenus v-else-if="view === 'menus'" />
       <UModal
         v-model:open="manage"
-        title="Manage dish"
-        description="Identity and record settings."
+        title="Item actions"
+        description="Manage this item record."
       >
         <template #body
           ><div>
-            <KitchenFoodAndDrinkItemsEdit />
             <details>
-              <summary>Remove dish</summary>
+              <summary>Remove item</summary>
               <div>
                 <KitchenFoodAndDrinkItemsDelete :remove="removeDish" />
               </div>
@@ -104,7 +104,7 @@
     <FireContextRecord
       v-if="dish && canWrite"
       :key="`${kitchenId}/${dishId}`"
-      title="Dish AI context"
+      title="Item AI context"
       endpoint="/api/workspace/kitchen/context"
       :scope="{ kitchenId, subject: 'dish', recordId: dishId }"
     />
@@ -176,15 +176,16 @@ const menuReturn = computed(() =>
     : ''
 )
 const views = [
+  { id: 'details', label: 'Details', icon: 'i-lucide-info' },
   { id: 'pricing', label: 'Pricing', icon: 'i-lucide-tag' },
-  { id: 'spec', label: 'Spec', icon: 'i-lucide-book-open' },
+  { id: 'spec', label: 'Preparation details', icon: 'i-lucide-book-open' },
   { id: 'preparation', label: 'Preparation', icon: 'i-lucide-list-checks' },
   { id: 'menus', label: 'Menus', icon: 'i-lucide-calendar-days' },
 ]
 const view = computed(() =>
   views.some((item) => item.id === route.query.view)
     ? String(route.query.view)
-    : 'spec'
+    : 'details'
 )
 </script>
 <style scoped>

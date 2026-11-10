@@ -144,7 +144,7 @@ keep their existing names. Nuxt UI keeps `U`.
   responsibility. Its module supplies the package prefix; each App keeps its
   own service choices, policies, reads and commands. It does not join Core's
   component library. See the
-  [Bookings customer form](../../packages/extensions/fireux-bookings/src/runtime/components/Customer/Form.vue).
+  [Bookings customer surface](../../packages/extensions/fireux-bookings/src/runtime/components/Surface.vue).
 - App-only UI belongs in app/components. Use responsibility-first names such as
   Landing and Workspace; do not repeat the App name beneath its own boundary.
 - A leaf can be Detail.vue. A composition with real children can be
@@ -301,7 +301,7 @@ Extension previews live separately
 and may render a package-owned component with generic placeholder data; this
 does not make that component part of Core. The
 [Bookings preview](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue)
-shows the shared customer form separately from the Core inventory. The FireUX App
+shows the shared customer surface separately from the Core inventory. The FireUX App
 [playground](../../projects/fireux/fireux-app/app/pages/components/index.vue)
 links to that reference. Nuxt UI documents its own controls.
 

@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-09
-Ref: e21e1aeb8
+Updated: 2026-11-10
+Ref: 176bb5b27
 Role: map, not canon
 
 ## Purpose
@@ -340,11 +340,12 @@ remaining concept earns an explicit model decision:
    label the old placement `migration` rather than documenting the destination
    as already implemented.
 
-Confirmed records such as Company, Chef, Driver, and Customer, and confirmed
-operations such as Compliance, Documents, Tasks, and Reservations, use their
-Place, User, Portfolio, or Property parent scope. To-confirm concepts such as
-Agent, Professional, and Blog remain on their owning package spine. Do not turn
-a record or unresolved concept into a filesystem Entity by guessing. A new
+Business has its independent `business` scope in `fireux-businesses`. User
+profiles, including Agent and Professional in `fireux-jobs`, remain beneath
+`user`; Blogs owns its `blog` scope. Compliance, Documents and Tasks contribute
+Portfolio-scoped capabilities, while Reservations contributes Property-scoped
+capabilities. Follow current models, authority and consumers when classifying
+other records; do not infer a new Entity from a folder name. A new
 entity-owned capability lands coherently in its scoped runtime with
 registration and relevant verification changes; it never starts a parallel
 target tree.

@@ -3,10 +3,8 @@
     <template #header>
       <div class="card__header">
         <div>
-          <h2>{{ singularTitle }} details</h2>
-          <p>
-            Update the {{ catalogue.singular }} image, name, and description.
-          </p>
+          <h2>Item details</h2>
+          <p>Manage the item image, name and description.</p>
         </div>
       </div>
     </template>
@@ -33,8 +31,7 @@
           />
           <p v-if="imageUploading">Uploading image...</p>
           <p v-else-if="canWrite">
-            Use a transparent-background source. Storage keeps a 1200 × 1200
-            WebP.
+            Choose an image with a transparent background.
           </p>
         </div>
       </UFormField>
@@ -50,15 +47,13 @@
             @update:model-value="handleCategory"
           />
         </UFormField>
-        <UFormField label="Flagship dish">
+        <UFormField label="Featured item">
           <USwitch
             :model-value="dishFlagship"
             :disabled="!canWrite || busy"
             @update:model-value="handleFlagship"
           />
-          <p>
-            Templates feature the one flagship Dish selected for this Kitchen.
-          </p>
+          <p>Choose the item highlighted by your Kitchen’s templates.</p>
         </UFormField>
 
         <FireFormsEditableSimpleField

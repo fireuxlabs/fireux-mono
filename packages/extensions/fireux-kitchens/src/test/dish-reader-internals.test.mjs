@@ -612,7 +612,7 @@ test('actual Dish record error does not render not-found, old read header or edi
     recordView({ dish: null, outcome: 'error', error: new Error('Failed') })
   )
   assert.match(html, /dish unavailable/)
-  assert.doesNotMatch(html, /not found|Manage dish|Soup/)
+  assert.doesNotMatch(html, /not found|Item actions|Soup/)
   const empty = await render(
     'kitchen/components/FoodAndDrink/Items/Detail/Index.vue',
     recordView({ dish: null, outcome: 'empty' })

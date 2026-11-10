@@ -44,7 +44,9 @@ category, completeness filter, layout and page. Food and drink editors return to
 that combined catalogue through `kitchen/utils/dish-catalogue-route.ts`; loading
 does not reset a restored page, and settled results clamp an obsolete page.
 `dish-reader-internals.test.mjs` covers the round trip and delayed Kitchen/data
-resolution. Kind-specific editors retain their existing authority. Named services reference stable
+resolution. Item detail opens its Details view over the existing identity editor; Pricing,
+Preparation details, Preparation and Menus retain their own views and commands.
+Removal stays under Item actions. Kind-specific editors retain their existing authority. Named services reference stable
 Menu IDs and own eligibility and serving schedules.
 
 ## Shared spine
@@ -228,6 +230,12 @@ its source route for the existing FireUX AI process/review controls. Passed sour
 context reuses that route's acquired data; Go QR is not part of this workflow.
 New source ids are internal; the reviewed Menu name supplies the public slug at
 confirmed creation. See `menu-source-upload.test.mjs` and `menu-import-name.test.mjs`.
+
+Process cost estimates and draft confirmation reuse `useMenuEditorScope` for
+account, App membership, Kitchen/source and disposal lifetime. Obsolete responses
+cannot update the visible estimate, confirmation, errors or newer pending state.
+Cost acquisition also fences overlapping runs. Verify
+`menu-process-lifecycle.test.mjs`; server commands retain write authority.
 
 AI extraction produces reviewable candidate content. It does not become
 Menu, Dish media, or published Menu truth until the owning Kitchen flow

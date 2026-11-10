@@ -1,5 +1,7 @@
 <template>
   <WorkspaceKitchenNavigationChild
+    orientation="horizontal"
+    variant="soft"
     nav-key="workspace-kitchen-food"
     child-key="services"
   >

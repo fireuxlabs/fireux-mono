@@ -2,10 +2,10 @@
   <UCard v-if="dish || editing">
     <template #header
       ><div class="card__header">
-        <h2>Dish specification</h2>
+        <h2>Preparation details</h2>
         <UButton
           v-if="canWrite"
-          :label="editing ? 'Cancel' : 'Edit specification'"
+          :label="editing ? 'Cancel' : 'Edit preparation details'"
           color="neutral"
           variant="ghost"
           @click="toggle"
@@ -176,7 +176,7 @@
         /></UFormField>
         <UButton
           type="submit"
-          label="Save specification"
+          label="Save preparation details"
           :loading="saving"
           :disabled="saving || creating || !canWrite"
         />
@@ -257,7 +257,7 @@
         </details>
       </div>
     </div>
-    <p v-else>No specification yet.</p>
+    <p v-else>No preparation details yet.</p>
     <FireStateCard
       v-if="error || readError"
       state="error"

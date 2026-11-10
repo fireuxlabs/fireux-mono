@@ -1,6 +1,6 @@
 # FireUX Bookings context
 
-Updated: 2026-11-07
+Updated: 2026-11-10
 Ref: 614700fd9
 Role: living context
 Scope: reusable booking lifecycle and calendar integrations
@@ -13,7 +13,35 @@ authority, and documentation rules in those sources remain authoritative.
 
 ## Purpose and ownership
 
-`fireux-bookings` is an optional Extension owning a provider-independent customer booking presentation, reservation-to-confirmation lifecycle, and provider integrations. `BookingsCustomerForm` owns shared customer fields and the presentation of availability, errors and confirmation; Apps provide reservation inputs through slots and own the service catalogue, schedules, prices, booking commands, and confirmation content. The component and its Docs placeholder must remain ignorant of any named business. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. Its optional Business Workspace owns Business-scoped availability settings, booking records and exclusive allocation locks. These are Business-owned child records, not a universal Booking Entity. Timezone, allocation-key policy, payments, cancellation and notification remain with their named consumers.
+`BookingsSurface` owns the customer interaction for a host-supplied set of time
+options: selection, contact details, review and confirmation. It composes focused
+`TimeSelection`, `Contact`, `Review`, `Confirmation` and `Period` components under
+`src/runtime/components`; `src/runtime/composables/useBookingFlow.ts` owns its
+local state and stale-completion boundary. The explicit contract lives in
+`src/runtime/types/booking-surface.ts`. It needs no route, Workspace or named
+business context and can render as a standalone page's content or inside another
+surface. Local date/time strings are displayed without timezone conversion;
+the host owns their timezone meaning.
+
+The host supplies configuration and an asynchronous confirmation handler. That
+handler must validate the selected slot against its authoritative offer,
+revalidate availability, enforce permissions, allocate inventory and persist its
+own record where applicable. The surface sends a request id, selected slot id
+and contact details; it does not treat displayed availability as a reservation.
+Retries of the same intent retain the request id. A configuration or handler
+change invalidates local state; an obsolete response cannot confirm the new
+intent. This UI boundary does not cancel or roll back host-side effects. The
+host remains responsible for idempotency and uncertain-completion recovery.
+
+Blank is an ignorant host: its configuration editor supplies a title and time
+options, and its preview adapter returns local receipts. It contains no bike,
+tour, table or accommodation scenario. Docs supplies neutral placeholder offers
+and a separate local receipt adapter. Neither is a durable booking provider.
+The existing customer form and server integrations below are current consumers,
+not a settled target contract for the new surface. Compare actual consumers
+before broadening shared behavior or moving domain policy into the surface.
+
+`fireux-bookings` is an optional Extension owning a provider-independent customer booking presentation, reservation-to-confirmation lifecycle, and provider integrations. `BookingsCustomerForm` owns shared customer fields and the presentation of availability, errors and confirmation; Apps provide reservation inputs through slots and own the service catalogue, schedules, prices, booking commands, and confirmation content. Shared presentation must remain ignorant of any named business. Its provider-independent `confirmBooking` command coordinates atomic reservation, availability revalidation, external effects, confirmation and safe cleanup through consumer-owned adapters. It also owns Google Calendar OAuth refresh transport, provider requests and response validation. Its optional Business Workspace owns Business-scoped availability settings, booking records and exclusive allocation locks. These are Business-owned child records, not a universal Booking Entity. Timezone, allocation-key policy, payments, cancellation and notification remain with their named consumers.
 
 Outside the optional Business integration, the consuming domain or App owns its records and authority. All consumers retain service-specific time-slot rules,
 calendar connection lifecycle, confirmation policy, durable reconciliation and storage adapters. The shared lifecycle retains capacity after an external effect starts if completion is uncertain; consumers must resolve that held state before retrying. A FreeBusy response is a
@@ -28,9 +56,10 @@ verify how external conflicts and failed event writes affect their own workflow.
   `docs/concepts/entities.md`. Firestore write authority is governed by
   `docs/ai/firestore-mutations-context.md` when a consumer persists records.
 - Package identity, exports, and commands: `package.json`.
-- Nuxt registration of `BookingsCustomerForm`, server imports, and optional `businessWorkspace` module option: `src/module.ts`; explicit native layer `src/runtime/nuxt.config.ts`.
+- Nuxt registration of `BookingsSurface`, `BookingsCustomerForm`, server imports, and optional `businessWorkspace` module option: `src/module.ts`; explicit native layer `src/runtime/nuxt.config.ts`.
 - Shared customer form and display contracts: `src/runtime/components/Customer/Form.vue` and `src/runtime/types/customer-booking-form.ts`. The form presents customer fields and supplied view state; consumer pages own domain inputs, availability queries and booking submissions.
-- Generic library preview: `packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue`; its sample data must remain business-neutral. Blank composes the customer surface in `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue`. Its simulator state and requests live in `projects/fireux/fireux-blank/app/composables/useBookingSandbox.ts`, with inputs in `projects/fireux/fireux-blank/app/components/Booking/Sandbox/Configuration.vue` and history in `projects/fireux/fireux-blank/app/components/Booking/Sandbox/RecentBookings.vue`.
+- Generic library preview: `packages/extensions/fireux-docs/src/runtime/pages/docs/components/bookings.vue` supplies neutral configuration and a local confirmation handler. Blank's `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue` composes `app/components/Booking/Sandbox/Configuration.vue` with the shared surface; `app/composables/useBookingPreview.ts` owns its fixture state and local handler.
+- Shared interaction behavior: `src/test/composables/booking-flow.test.mjs` covers progression, duplicate submits, retry identity, configuration invalidation and stale completion.
 - Business management: `src/runtime/server/business/management.ts`, `store.ts` and `targets.ts`. Settings, records and locks live beneath `businesses/{id}` and protected management reuses Business membership-bound authority.
 - Schedule validation: `src/runtime/utils/availability.ts`. Revision checks reject stale operator saves and schedule changes during reservation. Existing reservations are preserved when closing days.
 - Business Workspace route and focused UI: `src/runtime/pages/workspace/business/bookings.vue` and `business/components/Workspace`. Private list reads use bounded cursor pages with explicit refresh.
@@ -44,9 +73,10 @@ verify how external conflicts and failed event writes affect their own workflow.
 - First App booking workflow and Business-scoped storage adapter:
   `projects/slap/interlaken-bike-tours/server/utils/tour-booking.ts`,
   `tour-booking-store.ts`, and `server/api/bookings/`.
-- Local provider and lifecycle sandbox: `projects/fireux/fireux-blank/app/pages/sandbox/bookings.vue`,
-  `server/utils/booking-sandbox.ts`, `server/utils/booking-sandbox-calendar.ts`,
-  and `test/booking-sandbox.test.mjs`. It is development-only and uses an
+- Separate local provider and lifecycle fixtures (not invoked by the Blank customer preview):
+  `projects/fireux/fireux-blank/server/utils/booking-sandbox.ts`,
+  `projects/fireux/fireux-blank/server/utils/booking-sandbox-calendar.ts`,
+  and `projects/fireux/fireux-blank/test/booking-sandbox.test.mjs`. It is development-only and uses an
   in-memory fake Calendar; it is not an App domain or persistence example.
 - App registration and direct dependency:
   `projects/slap/interlaken-bike-tours/app/ignition/brief.ts`,
@@ -87,7 +117,7 @@ status, and speculative integration plans out of this file.
   changes.
 - Run the consuming App's typecheck and source-owned tests when its adapter or
   registration changes.
-- For shared-form changes, verify the generic Docs preview, Blank sandbox, and
+- For shared surface or form changes, verify the generic Docs preview, Blank sandbox, and
   Interlaken Bike Tours customer flow compile and retain their distinct
   App-owned rules.
 - Verify registration and the route-to-command path for any future UI/API

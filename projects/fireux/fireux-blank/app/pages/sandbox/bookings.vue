@@ -1,116 +1,42 @@
 <template>
   <UPage>
-    <UPageHeader
-      title="Booking simulator"
-      description="Configure the input, then try the shared booking surface."
-    />
-
+    <UPageHeader title="Bookings" />
     <UPageBody>
-      <UPageSection title="Input">
-        <BookingSandboxConfiguration v-model="configuration" />
-      </UPageSection>
-
-      <UPageSection title="Surface">
-        <BookingsCustomerForm
-          :title="configuration.serviceName.trim() || 'Your booking'"
-          :description="configuration.description"
-          :customer="customer"
-          :availability="availabilityView"
-          :confirmation="confirmation"
-          :error="bookingError"
-          :pending="bookingPending"
-          :can-confirm="canConfirm"
-          :confirm-label="configuration.confirmLabel || 'Confirm booking'"
-          :max-group-size="configuration.maxGroupSize"
-          @update:customer="updateCustomer"
-          @submit="submitBooking"
-        >
-          <template #reservation>
-            <div class="booking-sandbox__time-fields">
-              <UFormField label="Start time (your local time)" name="startAt">
-                <UInput
-                  class="booking-sandbox__input"
-                  v-model="startAt"
-                  type="datetime-local"
-                  required
-                />
-              </UFormField>
-              <UFormField label="End time (your local time)" name="endAt">
-                <UInput
-                  class="booking-sandbox__input"
-                  v-model="endAt"
-                  type="datetime-local"
-                  required
-                />
-              </UFormField>
-            </div>
-          </template>
-
-          <template #availability-actions>
-            <UButton
-              type="button"
-              color="neutral"
-              variant="outline"
-              :loading="checking"
-              :disabled="checking || bookingPending"
-              @click="checkAvailability"
-            >
-              Check availability
-            </UButton>
-          </template>
-        </BookingsCustomerForm>
-      </UPageSection>
-
-      <UPageSection title="Recent bookings">
-        <BookingSandboxRecentBookings
-          :bookings="bookings"
-          :error="historyError"
-        />
-      </UPageSection>
+      <div class="booking-playground">
+        <section aria-labelledby="booking-input-title">
+          <h2 id="booking-input-title">Input</h2>
+          <BookingSandboxConfiguration v-model="configuration" />
+        </section>
+        <section aria-labelledby="booking-surface-title">
+          <h2 id="booking-surface-title">Surface</h2>
+          <BookingsSurface :configuration="configuration" :confirm="confirm" />
+        </section>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-const {
-  startAt,
-  endAt,
-  configuration,
-  customer,
-  availabilityView,
-  confirmation,
-  canConfirm,
-  bookings,
-  bookingError,
-  historyError,
-  checking,
-  bookingPending,
-  checkAvailability,
-  updateCustomer,
-  submitBooking,
-} = useBookingSandbox()
-
+const { configuration, confirm } = useBookingPreview()
 definePageMeta({ layout: false })
-useSeoMeta({
-  title: 'Booking simulator — FireUX Blank',
-  robots: 'noindex, nofollow',
-})
+useSeoMeta({ title: 'Bookings — FireUX Blank', robots: 'noindex, nofollow' })
 </script>
 
 <style scoped>
-.booking-sandbox__time-fields {
+.booking-playground {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: calc(var(--spacing) * 4);
+  grid-template-columns: minmax(15rem, 1fr) minmax(0, 2fr);
+  gap: calc(var(--spacing) * 8);
 }
-
-.booking-sandbox__input {
-  width: 100%;
+.booking-playground section {
+  display: grid;
+  align-content: start;
+  gap: calc(var(--spacing) * 5);
+  min-width: 0;
 }
-
-@media (max-width: 38rem) {
-  .booking-sandbox__time-fields {
-    grid-template-columns: 1fr;
+@media (max-width: 48rem) {
+  .booking-playground {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

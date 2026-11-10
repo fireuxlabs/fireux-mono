@@ -50,6 +50,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 
 const props = defineProps<{
   existingMenuName?: string
@@ -140,7 +141,29 @@ const message = computed(
     (alreadyApplied.value ? 'This menu draft has already been applied.' : '')
 )
 
+const captureScope = useMenuEditorScope(
+  [
+    () => props.appId,
+    () => props.kitchenId,
+    () => props.menuId,
+    uploadId,
+    () => props.source,
+    () => props.result,
+    () => props.authToken,
+    () => props.blocked,
+    () => props.existingMenuName,
+    reviewedName,
+  ],
+  () => {
+    pending.value = false
+    error.value = ''
+    confirmResult.value = null
+  }
+)
+
 async function confirmDraft() {
+  if (pending.value) return
+  const isCurrent = captureScope()
   error.value = ''
   confirmResult.value = null
 
@@ -180,13 +203,15 @@ async function confirmDraft() {
       )
     }
 
+    if (!isCurrent()) return
     confirmResult.value = payload as Record<string, unknown>
     emit('confirmed', confirmResult.value)
   } catch (cause) {
+    if (!isCurrent()) return
     error.value =
       cause instanceof Error ? cause.message : 'Menu confirmation failed.'
   } finally {
-    pending.value = false
+    if (isCurrent()) pending.value = false
   }
 }
 </script>

@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-11-06
-Ref: b8e3b2348
+Updated: 2026-11-10
+Ref: 176bb5b27
 Role: map, not canon
 
 ## Package root spine
@@ -205,6 +205,12 @@ add only their selected capabilities. AI exposes a native layer for conventional
 pages and server discovery; component/provider-only Go QR and Sproochli remain
 module-only. FireUX Main App selects its own Docs layer for the developer
 reference. That FireUX-specific content is not a shared Main App default.
+
+Marketplace retains explicit API registration through its
+[`configureServer`](../../packages/extensions/fireux-marketplace/src/config/module/server-config.ts)
+hook, called by its module. It has no native runtime layer; its HTTP adapters
+delegate to `marketplace-store/server`. Preserve this single registration owner
+when changing its composition.
 
 All maintained hosts declare their runtime layers at config time. The shared
 `requireNativeRuntimeLayer` assertion checks normalized roots through Nuxt Kit's
