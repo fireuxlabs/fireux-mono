@@ -33,6 +33,8 @@ export function useWorkspacePageNavigation() {
   const description = computed(
     () => metadata.value?.description || current.value?.description || ''
   )
+  // Explicit content ownership avoids duplicate introductions without child-to-parent state.
+  const contentHeader = computed(() => route.meta.workspaceHeader === 'content')
   const children = computed(() => current.value?.children || [])
   const breadcrumbs = computed(() => {
     const items: { label: string; to?: string }[] = []
@@ -60,5 +62,5 @@ export function useWorkspacePageNavigation() {
     items.push({ label: title.value })
     return items
   })
-  return { title, description, children, breadcrumbs }
+  return { title, description, contentHeader, children, breadcrumbs }
 }

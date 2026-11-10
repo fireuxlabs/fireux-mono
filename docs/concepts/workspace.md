@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-11-09
-Ref: ac88daacf
+Updated: 2026-11-10
+Ref: 83b341600
 Role: map, not canon
 
 Business is an additional Workspace Entity owned by `fireux-businesses`. Its first tools are business profile/contact editing, optional Place links and the organisational Team roster. Current source and authority are routed through `packages/extensions/fireux-businesses/docs/ai/businesses-context.md`.
@@ -102,6 +102,46 @@ imports and state; one page-provided overview supports genuinely shared AI and
 page JSON. Status and missing-data flags come from records and policy, not AI.
 Do not mount editing controllers merely to calculate overview counts.
 
+## Page introductions
+
+Core's [WorkspacePageHeader](../../packages/core/fireux-core/src/runtime/workspace/components/PageHeader.vue)
+is the shared Workspace introduction presentation, built on native `UPageHeader`.
+It accepts reactive `title` and `description` props, an optional `actions` slot,
+and `variant="primary"` (default) or `variant="child"`. Primary suits a group or
+working entrance; child gives a capability page a quieter visual title. Choose
+by responsibility, never URL depth or the presence of an index filename.
+Both variants retain native `h1` semantics for a separate page. Sections within
+that page use their own `h2` headings, not another page header.
+
+The frame retains Navbar, breadcrumbs, document-title fallback and route outlet.
+By default it renders only the static navigation description through this shared
+component, preserving existing pages that already own their title and actions.
+A page with its own introduction declares `workspaceHeader: 'content'` in
+`definePageMeta` and renders exactly one `WorkspacePageHeader` in its domain
+composition. This suppresses the frame description; it does not replace the
+Navbar or breadcrumbs. Keep `nav.label` as the stable navigation label. Dynamic
+record wording is passed directly from the existing domain reader/context;
+there is no shared header reader, global registration or child-to-parent state.
+
+```vue
+<WorkspacePageHeader
+  title="Food & drink"
+  :description="description"
+  variant="primary"
+/>
+```
+
+The corresponding route declares `workspaceHeader: 'content'`. Replace the
+existing page introduction when adopting this API; do not stack it alongside
+another `h1`, local collection header or frame description. Domain commands and
+action controls keep their existing owners. Existing specialised record headers
+are not automatically replaced by this bounded introduction pattern.
+
+Group descriptions name their actual child capabilities. Useful spanning status
+or actions may accompany their entrances; detailed workflows remain child-owned.
+Optional AI supports these responsibilities rather than defining page anatomy.
+Simple navigation groups do not require dashboards or extra reads.
+
 ## Component organisation
 
 Entity implementation lives under `src/runtime/<entity>/<technical-role>`.
@@ -193,8 +233,8 @@ frame; pages provide domain content and may use nested Nuxt outlets only for a
 real parent/child route. Named components, typed props and events define the
 composition. Native Nuxt UI slots remain supported; custom route-shell slots
 do not become another rendering owner. Shared page geometry belongs to native Nuxt UI and the
-semantic Workspace styles, not authored utility overrides. Workspace introductions directly
-use UPageHeader; the persistent frame still owns Navbar and breadcrumbs. Inspect the
+semantic Workspace styles, not authored utility overrides. Workspace introductions use
+WorkspacePageHeader over native UPageHeader; the persistent frame still owns Navbar and breadcrumbs. Inspect the
 registered route and generated App output rather than inferring behaviour from
 a filename. See [layout ownership](layouts.md) for the renderer boundary.
 

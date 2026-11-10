@@ -7,6 +7,7 @@ import KitchenFoodAndDrink from '../../../../kitchen/components/FoodAndDrink/Ind
 definePageMeta({
   layout: false,
   workspacePage: true,
+  workspaceHeader: 'content',
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
@@ -15,12 +16,10 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-food',
-    label: 'Food & drink',
-    description:
-      'Manage items, menus, promotions and services and some collective stuff.',
+    label: 'Menus',
     group: '',
     groupIndex: true,
-    icon: 'i-lucide-utensils',
+    icon: 'i-lucide-book-open',
     position: 'top',
     order: 5,
     desktop: true,
@@ -32,12 +31,6 @@ definePageMeta({
         label: 'Items',
         to: '/workspace/kitchen/food-and-drink/items',
         icon: 'i-lucide-hamburger',
-      },
-      {
-        key: 'menus',
-        label: 'Menus',
-        to: '/workspace/kitchen/food-and-drink/menus',
-        icon: 'i-lucide-book-open',
       },
       {
         key: 'promotions',

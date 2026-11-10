@@ -10,6 +10,8 @@ import { foodServiceSummary } from '../../../utils/food-service-summary'
 
 /** One read-only overview shared by child surfaces, KitchenAI and page JSON. */
 export function useFoodAndDrinkIndex() {
+  const workspace = useKitchenWorkspace()
+  const kitchenName = computed(() => workspace.data.value?.name || '')
   const {
     kitchenId,
     storageKitchenId,
@@ -20,7 +22,7 @@ export function useFoodAndDrinkIndex() {
     placeOutcome,
     kitchenHours,
     canWrite,
-  } = useKitchenOfferings(useKitchenWorkspace().id)
+  } = useKitchenOfferings(workspace.id)
   const catalogue = useFoodCatalogueSummary(
     storageKitchenId,
     menus,
@@ -97,5 +99,14 @@ export function useFoodAndDrinkIndex() {
   )
   onScopeDispose(() => page.publish({ derived: { outcome: 'idle' } }))
 
-  return { kitchenId, catalogue, rows, pending, failed, ready, overview }
+  return {
+    kitchenId,
+    kitchenName,
+    catalogue,
+    rows,
+    pending,
+    failed,
+    ready,
+    overview,
+  }
 }

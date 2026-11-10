@@ -145,6 +145,7 @@ for (const layout of [
         route: { path: '/workspace/example' },
         title: 'Workspace',
         description: '',
+        contentHeader: false,
         workspace: 'example',
         selectedId: '',
       })
@@ -159,6 +160,7 @@ for (const layout of [
     app.component('WorkspaceSidebar', wrapper('nav'))
     app.component('WorkspaceNavbar', wrapper('header'))
     app.component('WorkspaceBreadcrumbs', wrapper('nav'))
+    app.component('WorkspacePageHeader', wrapper('header'))
     app.component('NuxtErrorBoundary', wrapper('div'))
     for (const name of [
       'FirePwaStatus',
@@ -199,6 +201,7 @@ test('reviewed shared foundation templates compile with their named slots', () =
     'components/layouts/shared/PlatformFooter.vue',
     'components/molecules/DisclosurePanel.vue',
     'components/molecules/DisclosureCard.vue',
+    'workspace/components/PageHeader.vue',
   ]) {
     const { descriptor } = parse(readFileSync(join(runtime, file), 'utf8'))
     assert.deepEqual(
@@ -379,3 +382,51 @@ test('App theme validates the same complete palette and typography contract', ()
     })
   )
 })
+
+for (const contentHeader of [false, true]) {
+  test(`Workspace introduction has one owner with contentHeader=${contentHeader}`, async () => {
+    const page = surface(join(runtime, 'workspace/components/Page.vue'), {
+      route: { path: '/workspace/example' },
+      title: 'Example',
+      description: 'Static description',
+      contentHeader,
+      workspace: 'example',
+      selectedId: '',
+    })
+    const app = createSSRApp(page)
+    app.component('UDashboardPanel', {
+      setup:
+        (_, { slots }) =>
+        () =>
+          h('div', [slots.header?.(), slots.body?.()]),
+    })
+    app.component('WorkspaceNavbar', { render: () => h('nav', 'Context') })
+    app.component('WorkspaceBreadcrumbs', {
+      render: () => h('nav', 'Breadcrumbs'),
+    })
+    app.component('WorkspacePageHeader', {
+      props: ['description'],
+      setup: (props) => () => h('header', props.description),
+    })
+    app.component('NuxtErrorBoundary', {
+      setup:
+        (_, { slots }) =>
+        () =>
+          slots.default?.(),
+    })
+    app.component('NuxtPage', {
+      render: () =>
+        contentHeader
+          ? h('header', [h('h1', 'Dynamic title'), 'Dynamic description'])
+          : h('article', 'Page content'),
+    })
+    app.component('UAlert', { render: () => null })
+    app.component('UButton', { render: () => null })
+    const html = await renderToString(app)
+    assert.equal((html.match(/<header/g) || []).length, 1)
+    assert.equal(html.includes('Static description'), !contentHeader)
+    assert.equal(html.includes('Dynamic description'), contentHeader)
+    assert.match(html, /Breadcrumbs/)
+    assert.match(html, /Context/)
+  })
+}

@@ -569,10 +569,10 @@ summaries. Group labels open their indexes. Orders, Prep & Production, Stock &
 Purchasing, Food Safety, Team, Reports and Settings use the same
 Core named Workspace composition with route-owned content and one NuxtPage outlet.
 Their indexes are mini overviews; the child pages remain the working surfaces.
-Food & drink has its own group index at `/workspace/kitchen/food-and-drink`,
-composing the existing Group component. Items, Menus, Promotions and Services
-are sibling children under that route; Menus is not the group
-index and Promotions is not nested beneath it. Route order puts Identity & brand
+Menus is the group index at the retained `/workspace/kitchen/food-and-drink`
+route. Its shared page header and Menu status precede KitchenAI; Items, Promotions
+and Services are the lower-level child entrances below AI. The existing
+`/food-and-drink/menus` route still supplies Menu collection management. Route order puts Identity & brand
 and Team before the Kitchen working groups, with Settings last. Identity & brand is also a top-level entrance,
 with the Kitchen listing and its venue/brand editors; it is not nested in Settings.
 Settings retains Payments, Integrations and Access. Overview adds no collection readers or mutations.
@@ -1462,7 +1462,7 @@ The Food & drink overview composes `FoodAndDrink/Index.vue` with one shared
 Service/Menu acquisition for its summary, page JSON and slim KitchenAI composer.
 `useFoodAndDrinkIndex` owns that shared read coordination and safe page publication;
 the parent provides it once through `useFoodAndDrinkIndexContext` and assembles
-Items, Menus, Promotions, Services and AI children without threading state props.
+Menu status, AI and the Items, Promotions and Services children without threading state props.
 Consumers require that mounted provider and never create another overview.
 Children own their presentation and
 local interaction state, while the shared overview avoids duplicate readers.

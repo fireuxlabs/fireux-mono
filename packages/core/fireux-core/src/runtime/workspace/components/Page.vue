@@ -6,7 +6,10 @@
     <template #body>
       <main class="workspace-page workspace-surface">
         <WorkspaceBreadcrumbs />
-        <p v-if="description" class="fx-type-caption">{{ description }}</p>
+        <WorkspacePageHeader
+          v-if="!contentHeader && description"
+          :description="description"
+        />
         <NuxtErrorBoundary
           :key="workspace + ':' + selectedId + ':' + route.path"
         >
@@ -46,7 +49,7 @@ import { useWorkspaceNav } from '../composables/useWorkspaceNav'
 import { useWorkspace } from '../composables/useWorkspace'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 const route = useRoute()
-const { title, description } = useWorkspacePageNavigation()
+const { title, description, contentHeader } = useWorkspacePageNavigation()
 useHead({ title })
 const { currentWorkspace: workspace } = useWorkspaceNav()
 const selections = new Map(

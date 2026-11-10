@@ -7,6 +7,7 @@ const indexKey: InjectionKey<FoodAndDrinkIndex> = Symbol('FoodAndDrinkIndex')
 export function provideFoodAndDrinkIndex() {
   const index = useFoodAndDrinkIndex()
   provide(indexKey, index)
+  return index
 }
 
 /** Children share the mounted index; they never acquire another overview. */

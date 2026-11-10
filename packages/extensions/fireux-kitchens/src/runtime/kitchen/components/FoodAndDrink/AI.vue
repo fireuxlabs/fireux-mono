@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceAI aria-label="KitchenAI · Food & drink" compact>
+  <WorkspaceAI aria-label="KitchenAI · Menus" compact>
     <p v-if="message" role="status">
       {{ message }}
     </p>
@@ -9,7 +9,7 @@
       :can-submit="Boolean(ready && prompt.trim() && !submitting)"
       :submitting="submitting"
       placeholder="Help me finish setting up food and services…"
-      aria-label="Ask KitchenAI about Food & drink"
+      aria-label="Ask KitchenAI about Menus"
       :suggestions="suggestions"
       :model-label="developmentModelLabel"
       @submit="ask"

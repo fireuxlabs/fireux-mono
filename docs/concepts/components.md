@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-11-09
-Ref: a801fb79f
+Updated: 2026-11-10
+Ref: 83b341600
 Role: map, not canon
 
 ## Purpose and navigation
@@ -261,8 +261,10 @@ route does. Never nest a second implicit container.
 
 Workspace keeps its existing Core frame and route outlet. Capability pages
 compose named domain controls beneath it; they do not use a public index shell.
-Workspace introductions consume native `UPageHeader` directly; the forwarding
-WorkspaceHero wrapper is retired.
+Workspace introductions use `WorkspacePageHeader`, which owns the shared primary/child
+presentation over native `UPageHeader`. Its explicit content-ownership contract
+avoids duplicate frame descriptions and adds no reader or route outlet; see
+[page introductions](workspace.md#page-introductions). The old WorkspaceHero wrapper is retired.
 Info, selection, AI and availability sections are included for real domain
 responsibilities rather than a mandatory universal page scaffold. Their domain
 controllers retain lifecycle, scope and trusted commands.
