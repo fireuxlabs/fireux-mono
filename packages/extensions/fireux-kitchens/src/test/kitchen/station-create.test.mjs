@@ -259,6 +259,7 @@ test('Station form preserves its target and cancels obsolete credential-stage wr
           kitchenId: 'k',
           name: 'Grill',
           sortOrder: 1,
+          role: 'preparation',
         })
       assert.equal(
         form.message.value,

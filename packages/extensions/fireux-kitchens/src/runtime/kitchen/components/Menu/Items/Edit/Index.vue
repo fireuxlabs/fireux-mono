@@ -4,7 +4,10 @@
       <div class="card__header">
         <div>
           <h2>Item details</h2>
-          <p>Manage the item image, name and description.</p>
+          <p>
+            Changes to this Item’s image, name and description appear everywhere
+            it is used.
+          </p>
         </div>
       </div>
     </template>
@@ -30,19 +33,21 @@
             size="3xl"
           />
           <p v-if="imageUploading">Uploading image...</p>
-          <p v-else-if="canWrite">
-            Choose an image with a transparent background.
-          </p>
+          <p v-else-if="canWrite">Choose a clear photo of this Item.</p>
         </div>
       </UFormField>
 
       <div class="fx-card-body-stack">
-        <UFormField v-if="catalogue.itemKind === 'food'" label="Category">
+        <UFormField
+          v-if="dish.item_kind === 'food'"
+          label="Food category"
+          description="Optional food description. Use Item groups to organise the collection."
+        >
           <USelect
             :model-value="dish.category"
             :items="[...dishCategories]"
             placeholder="Choose category"
-            aria-label="Dish category"
+            aria-label="Item category"
             :disabled="!canWrite || busy"
             @update:model-value="handleCategory"
           />

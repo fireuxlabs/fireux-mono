@@ -1,3 +1,5 @@
+import { validateItemReferenceIds } from '../../utils/item-organisation'
+import { requireItemOrganisationReferences } from '../item-groups/references'
 import { normalizeDishPricingPatch } from '../../utils/dish-pricing'
 import { createError, type H3Event } from 'h3'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalize-slug'
@@ -18,6 +20,8 @@ export async function createDish(event: H3Event, input: unknown) {
     'name',
     'description',
     'item_kind',
+    'group_ids',
+    'preparation_station_ids',
     'is_flagship',
     'price',
     'price_options',
@@ -26,8 +30,8 @@ export async function createDish(event: H3Event, input: unknown) {
   ])
   const name = dishText(draft.name, true)
   const id = requireFirestoreDocumentId(normalizeSlug(name), 'Dish id')
-  const itemKind = draft.item_kind === undefined ? 'food' : draft.item_kind
-  if (itemKind !== 'food' && itemKind !== 'drink')
+  const itemKind = draft.item_kind
+  if (itemKind !== undefined && itemKind !== 'food' && itemKind !== 'drink')
     throw createError({
       statusCode: 400,
       statusMessage: 'Choose food or drink.',
@@ -51,6 +55,19 @@ export async function createDish(event: H3Event, input: unknown) {
         : {}),
     })
   )
+  const organisation = {
+    group_ids:
+      draft.group_ids === undefined
+        ? []
+        : validateDishInput(() => validateItemReferenceIds(draft.group_ids)),
+    ...(draft.preparation_station_ids !== undefined
+      ? {
+          preparation_station_ids: validateDishInput(() =>
+            validateItemReferenceIds(draft.preparation_station_ids)
+          ),
+        }
+      : {}),
+  }
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(
@@ -67,6 +84,15 @@ export async function createDish(event: H3Event, input: unknown) {
           statusCode: 409,
           statusMessage: 'Dish already exists.',
         })
+      if (
+        organisation.group_ids.length ||
+        organisation.preparation_station_ids?.length
+      )
+        await requireItemOrganisationReferences(
+          transaction,
+          kitchenId,
+          organisation
+        )
       const stamp = serverAuditStamp({
         by: actor.uid,
         appId: authority.ownerAppId,
@@ -76,7 +102,8 @@ export async function createDish(event: H3Event, input: unknown) {
         ...pricing,
         slug: id,
         description,
-        item_kind: itemKind,
+        item_kind: itemKind ?? null,
+        ...organisation,
         // Flagship selection remains a separate trusted action.
         is_flagship: false,
         image: '',

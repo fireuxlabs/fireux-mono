@@ -800,6 +800,30 @@ the final authority.
 
 ### Section and Item editing
 
+Kitchen-owned Item groups organise the catalogue independently from Menu
+sections and historical Food/Drink classification. Groups can supply default
+preparation Station IDs; Item overrides distinguish inheritance from an explicit
+empty assignment. Coordination Stations such as Pass are excluded from
+preparation assignments. The Items route provides one organisation reader to
+its collection and detail controls; trusted Item and group commands validate
+exact Kitchen references. New Kitchen creation seeds ordinary editable Food and
+Drinks group records, without backfilling existing Kitchens. This is assignment
+structure, not live ticket routing. See `kitchen/utils/item-organisation.ts`,
+`kitchen/server/item-groups` and `item-organisation.test.mjs`.
+
+Menu section rows link directly to the shared Kitchen Item editor, retaining the
+Menu slug and section for return navigation. The Item's Appears on view retains
+its existing Menu/section readers and links back to placements. Shared Item
+identity, image and description edits apply wherever that Item is used; removal
+from a section is distinct from deleting the Item record.
+
+`useMenuSectionItemSelection` consumes the existing Section context and catalogue
+for multi-selection. It owns search, selection and sequential placement intent,
+not another reader or command. Successful placements are retained while awaiting
+the listener, partial failure keeps unprocessed choices, and scope invalidation
+stops subsequent commands and feedback. Verify `menu-item-selection.test.mjs`,
+`menu-editor-composition.test.mjs` and `kitchen/menu-content-scope.test.mjs`.
+
 The Section route provides one Menu record state and one `useMenuSection` state.
 The lower Section capability accepts the explicit `MenuSectionSource` contract;
 it imports no Workspace owner. It owns the Dish/promotion/item readers and

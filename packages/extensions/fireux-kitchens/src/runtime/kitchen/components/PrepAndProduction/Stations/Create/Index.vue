@@ -4,7 +4,8 @@
       <div class="workspace-card-header">
         <div class="workspace-card-header__title">Add station</div>
         <p class="workspace-card-header__description">
-          Create a simple station for this kitchen.
+          Create a preparation Station such as Kitchen or Bar, or a coordination
+          Station such as the Pass.
         </p>
       </div>
     </template>
@@ -18,6 +19,16 @@
         />
       </UFormField>
 
+      <UFormField label="Responsibility">
+        <USelect
+          v-model="role"
+          :items="[
+            { value: 'preparation', label: 'Prepare assigned Items' },
+            { value: 'coordination', label: 'Coordinate whole Orders' },
+          ]"
+          :disabled="saving || !canCreateStation"
+        />
+      </UFormField>
       <div class="fx-card__actions">
         <UButton
           type="submit"
@@ -44,12 +55,14 @@ const { kitchenId, rootCollection, canWrite, stations } =
   useKitchenWorkspaceStations()
 
 const name = ref('')
+const role = ref<'preparation' | 'coordination'>('preparation')
 const saving = ref(false)
 const message = ref('')
 const { createKitchenStation, captureIntent } = useKitchenStationCreate(
   [kitchenId, rootCollection, canWrite],
   () => {
     name.value = ''
+    role.value = 'preparation'
     message.value = ''
     saving.value = false
   }
@@ -77,11 +90,13 @@ const addStation = async () => {
         kitchenId: kitchenId.value,
         name: name.value,
         sortOrder: nextSortOrder.value,
+        role: role.value,
       },
       isCurrent
     )
     if (!isCurrent()) return
     name.value = ''
+    role.value = 'preparation'
     message.value = `Added ${stationId}.`
   } catch (error) {
     if (!isCurrent()) return

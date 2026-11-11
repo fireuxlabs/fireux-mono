@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-11-09
-Ref: 470b97114
+Updated: 2026-11-10
+Ref: 0cf23bb13
 Role: map, not canon
 
 ## Purpose
@@ -489,6 +489,12 @@ service remains opaque to Vue reactivity (`markRaw`): state
 watchers must not traverse SDK internals such as Google's cross-origin popup.
 The [SDK boundary regression](../../packages/core/fireux-core/src/test/auth-sdk-boundary.test.mjs)
 checks that the native service remains unproxied through the Auth binding.
+The VueFire-to-Core session mirror belongs to the Nuxt App scope, survives
+consumer disposal and binds once per App. Later `useAuth` consumers reuse that
+binding instead of resetting resolved session state. Middleware can resolve the
+already initialized Firebase Auth instance without component injection; this
+does not create a second Firebase App or change persistence policy. The same
+regression covers consumer disposal, later calls and real sign-out propagation.
 Core `UserCreateSystem` also captures its account, App and route intent around
 setup completion. A committed result remains real, but obsolete completion does
 not navigate a different account or overwrite its setup feedback/consent. Its

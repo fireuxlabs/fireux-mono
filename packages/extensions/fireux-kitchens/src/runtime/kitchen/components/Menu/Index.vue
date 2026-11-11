@@ -4,13 +4,7 @@
     :description="description"
     variant="primary"
   />
-  <NuxtLink
-    to="/workspace/kitchen/menu/menus"
-    aria-label="Manage menus"
-    class="workspace-surface workspace-surface--compact"
-  >
-    <KitchenMenuSummary :summary="catalogue.menus" />
-  </NuxtLink>
+  <KitchenMenuMenusOverview />
   <KitchenMenuAI />
   <section
     class="menu-summary"
@@ -24,7 +18,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { provideMenuGroupIndex } from '../../composables/workspace/menu-group/useMenuGroupIndexContext'
-const { kitchenName, catalogue } = provideMenuGroupIndex()
+const { kitchenName } = provideMenuGroupIndex()
 const description = computed(
   () =>
     `Manage ${kitchenName.value ? `${kitchenName.value}'s` : "your Kitchen's"} menus, items, promotions and services and some collective stuff.`

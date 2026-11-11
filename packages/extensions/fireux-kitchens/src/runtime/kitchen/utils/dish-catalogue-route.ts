@@ -42,6 +42,9 @@ export function dishCatalogueQuery(
 export function dishCatalogueReturn(query: Record<string, unknown>) {
   return {
     path: dishCataloguePath,
-    query: dishCatalogueQuery(readDishCatalogueQuery(query)),
+    query: {
+      ...dishCatalogueQuery(readDishCatalogueQuery(query)),
+      ...(typeof query.group === 'string' ? { group: query.group } : {}),
+    },
   }
 }

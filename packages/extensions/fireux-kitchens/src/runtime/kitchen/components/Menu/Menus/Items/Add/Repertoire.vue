@@ -1,140 +1,100 @@
 <template>
-  <UCard v-if="section">
-    <template #header>
-      <div>
-        <h2 class="fx-type-card-heading">Choose food &amp; drinks</h2>
-      </div>
-    </template>
-
-    <div class="menu-editor-actions">
+  <div v-if="section" class="workspace-surface workspace-surface--compact">
+    <p class="fx-type-caption">
+      Choose existing Items to add to this section. Their details and prices
+      stay shared.
+    </p>
+    <div class="menu-editor-controls">
       <UInput
         v-model="query"
-        aria-label="Search repertoire"
-        placeholder="Search repertoire"
+        aria-label="Search Items"
+        placeholder="Search Items"
         icon="i-lucide-search"
-      />
-      <USelect
-        v-model="category"
-        :items="[{ value: 'all', label: 'All categories' }, ...dishCategories]"
-        aria-label="Repertoire category"
+        :disabled="busy"
       />
     </div>
-    <div class="menu-editor-form">
-      <UFormField label="Dish">
-        <USelect
-          v-model="dishId"
-          aria-label="Choose dish from repertoire"
-          placeholder="Select a dish"
-          :items="[
-            ...availableDishes.map((dish) => ({
-              value: dish.id,
-              label: dish.name || dish.id,
-            })),
-          ]"
-          :disabled="saving || !canWrite"
-        />
-      </UFormField>
-
-      <div class="menu-editor-controls">
-        <UButton
-          icon="i-lucide-plus"
-          :loading="saving"
-          :disabled="!canAdd"
-          @click="add"
-        >
-          Add item
-        </UButton>
-      </div>
-    </div>
-  </UCard>
+    <FireState
+      v-if="!catalogueReady"
+      :outcome="catalogueOutcome"
+      entity="Items"
+      :error="catalogueError"
+    />
+    <FireState
+      v-else-if="!['ready', 'empty'].includes(itemsOutcome)"
+      :outcome="itemsOutcome"
+      entity="Section Items"
+      :error="itemsError"
+    />
+    <template v-else>
+      <UCheckboxGroup
+        v-if="visible.length"
+        v-model="selected"
+        :items="
+          visible.map((item) => ({
+            value: item.id,
+            label: item.name,
+            description: item.description || undefined,
+          }))
+        "
+        legend="Items to add"
+        :disabled="busy || !canWrite"
+        class="menu-item-picker"
+      />
+      <p v-else>
+        No matching Items available to add. Try another search or create a new
+        Item.
+      </p>
+      <UButton
+        :label="
+          selectedIds.length
+            ? `Add ${selectedIds.length} ${selectedIds.length === 1 ? 'Item' : 'Items'}`
+            : 'Select Items to add'
+        "
+        icon="i-lucide-plus"
+        :loading="busy"
+        :disabled="!canAdd"
+        @click="addSelected"
+      />
+    </template>
+    <FireCopyError v-if="error" :message="error" />
+  </div>
 </template>
-
 <script setup lang="ts">
-import { dishCategories } from '../../../../../models/dish.model'
-import { computed, ref, watch } from 'vue'
-import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
-import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useMenuSection } from '../../../../../../menu/composables/useMenuSection'
-
+import { useMenuSectionItemSelection } from '../../../../../composables/workspace/menus/useMenuSectionItemSelection'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+const context = useMenuSection()
+const { section, canWrite } = context
 const {
-  kitchenId,
-  menuId,
-  sectionId,
-  section,
-  dishes,
-  activeItemRows,
-  canWrite,
-  createItem,
-} = useMenuSection()
+  query,
+  selected,
+  busy,
+  error,
+  visible,
+  selectedIds,
+  canAdd,
+  catalogueReady,
+  catalogueOutcome,
+  catalogueError,
+  itemsOutcome,
+  itemsError,
+  add,
+} = useMenuSectionItemSelection(context)
 const toast = useToastify()
-const dishId = ref('')
-const query = ref('')
-const category = ref('all')
-const availableDishes = computed(() =>
-  dishes.value
-    .filter(
-      (dish) =>
-        !activeItemRows.value.some((item) => item.dishId === dish.id) &&
-        (category.value === 'all' || dish.category === category.value) &&
-        dish.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
-    )
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name))
-)
-watch(availableDishes, (rows) => {
-  if (!rows.some((dish) => dish.id === dishId.value)) dishId.value = ''
-})
-const saving = ref(false)
-const captureScope = useMenuEditorScope(
-  [kitchenId, menuId, sectionId, canWrite],
-  () => {
-    saving.value = false
-    dishId.value = ''
-    query.value = ''
-    category.value = 'all'
-  }
-)
-
-const canAdd = computed(
-  () =>
-    canWrite.value &&
-    Boolean(
-      kitchenId.value && menuId.value && sectionId.value && dishId.value
-    ) &&
-    !saving.value
-)
-
-async function add() {
-  if (!canAdd.value) return
-  const isCurrent = captureScope()
-  saving.value = true
-  try {
-    await createItem(
-      {
-        kitchenId: kitchenId.value,
-        menuId: menuId.value,
-        sectionId: sectionId.value,
-        dishId: dishId.value,
-      },
-      isCurrent
-    )
-    if (!isCurrent()) return
-    dishId.value = ''
+async function addSelected() {
+  const count = await add()
+  if (count)
     toast.add({
-      title: 'Dish added to menu',
+      title: `${count} ${count === 1 ? 'Item' : 'Items'} added to section`,
       color: 'success',
       icon: 'i-lucide-check',
     })
-  } catch (error) {
-    if (!isCurrent()) return
-    toast.add({
-      title: 'Could not add item',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-lucide-alert-triangle',
-    })
-  } finally {
-    if (isCurrent()) saving.value = false
-  }
 }
 </script>
+<style scoped>
+.menu-item-picker {
+  max-block-size: 22rem;
+  overflow-y: auto;
+  padding: calc(var(--spacing) * 2);
+}
+</style>

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: keep browser-only VueFire auth binding out of server rendering and Nuxt payload state.
-import { useState } from '#imports'
+import { useNuxtApp, useState } from '#imports'
 import { getApps } from 'firebase/app'
 import {
   createUserWithEmailAndPassword,
@@ -31,12 +31,14 @@ export type AuthUser = {
 function tryBindVueFire() {
   // These can throw if VueFire Auth hasn't been installed yet.
   // (In FireUX apps, Core’s Firebase integration should ensure this is ready.)
-  const auth = useFirebaseAuth()
+  const auth = useFirebaseAuth() || (getApps().length ? getAuth() : null)
+  if (!auth) throw new Error('Firebase Auth is not initialized.')
   const currentUser = useCurrentUser() as Ref<User | null>
   return { auth, currentUser }
 }
 
 export function useAuth() {
+  const nuxtApp = useNuxtApp()
   const router = (() => {
     if (!import.meta.client) return null
     try {
@@ -115,15 +117,21 @@ export function useAuth() {
       return false
     }
 
+    // The session belongs to the App, not each component that reads it.
+    // A later consumer must not reset a settled session or rebind its mirror.
+    if (isReady.value) return true
+
     try {
       const bound = tryBindVueFire()
       // Firebase owns this service, including Google's cross-origin popup.
       auth.value = bound.auth ? markRaw(bound.auth) : null
       currentUser.value = bound.currentUser.value
       // keep it live
-      watch(bound.currentUser, (v: User | null) => (currentUser.value = v), {
-        immediate: true,
-      })
+      nuxtApp._scope.run(() =>
+        watch(bound.currentUser, (v: User | null) => (currentUser.value = v), {
+          immediate: true,
+        })
+      )
       isReady.value = true
       armAuthStateResolution()
       lastBindError.value = null

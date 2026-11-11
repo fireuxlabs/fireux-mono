@@ -27,8 +27,8 @@ const { section, menu, canWrite, kitchenId, menuId, sectionId } =
 const open = ref(false),
   mode = ref('catalogue')
 const modes = computed(() => [
-  { label: 'Food & drinks', value: 'catalogue' },
-  { label: 'New dishes', value: 'new' },
+  { label: 'Existing items', value: 'catalogue' },
+  { label: 'New items', value: 'new' },
   ...(menu.value?.schedule !== 'daily'
     ? [{ label: 'Meal deals', value: 'deal' }]
     : []),

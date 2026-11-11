@@ -7,9 +7,11 @@
           @click="rememberView(menu.slug, 'content', $event)"
           >{{ menu.name }}</NuxtLink
         >
-        <UBadge color="neutral" variant="soft">{{
-          menu.status === 'published' ? 'Published' : 'Unpublished'
-        }}</UBadge>
+        <UBadge
+          :color="menu.status === 'published' ? 'success' : 'neutral'"
+          variant="subtle"
+          >{{ menu.status === 'published' ? 'Published' : 'Draft' }}</UBadge
+        >
       </div>
     </template>
     <FireCopyError v-if="error" :message="String(error)" />

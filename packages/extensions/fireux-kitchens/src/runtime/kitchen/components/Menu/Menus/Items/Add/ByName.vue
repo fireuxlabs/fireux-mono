@@ -1,21 +1,21 @@
 <template>
   <div class="workspace-surface workspace-surface--compact">
-    <h2 class="fx-type-card-heading">New dishes</h2>
+    <h2 class="fx-type-card-heading">New items</h2>
     <div class="workspace-surface workspace-surface--compact">
       <UTextarea
         v-model="names"
-        aria-label="Dish names"
+        aria-label="Item names"
         :disabled="busy || !canWrite"
-        placeholder="One dish per line"
+        placeholder="One Item per line"
       />
       <p class="fx-type-caption">
-        Matching kitchen dishes are reused. New names create dishes in your
-        catalogue.
+        Matching Kitchen Items are reused. New names create shared Items and add
+        them to this section.
       </p>
       <FireState
         v-if="!catalogueReady"
         :outcome="catalogueOutcome"
-        entity="Dish catalogue"
+        entity="Items"
         :error="catalogueError"
       />
       <UFormField
@@ -35,7 +35,7 @@
         />
       </UFormField>
       <UButton
-        label="Add listed dishes"
+        label="Add listed items"
         :loading="busy"
         :disabled="busy || !names.trim() || !canWrite || !catalogueReady"
         @click="addNames"

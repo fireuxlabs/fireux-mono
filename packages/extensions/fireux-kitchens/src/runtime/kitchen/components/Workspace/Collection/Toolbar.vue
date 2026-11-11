@@ -1,6 +1,6 @@
 <template>
   <div class="workspace-surface__grid">
-    <div>
+    <div class="kitchen-collection-controls">
       <UInput
         v-model="query"
         icon="i-lucide-search"
@@ -21,3 +21,12 @@
 const query = defineModel<string>({ required: true })
 defineProps<{ label: string; singular: string; count: number }>()
 </script>
+
+<style scoped>
+.kitchen-collection-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+</style>

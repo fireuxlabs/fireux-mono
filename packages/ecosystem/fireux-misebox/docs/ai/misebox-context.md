@@ -577,7 +577,29 @@ and Team before the Kitchen working groups, with Settings last. Identity & brand
 with the Kitchen listing and its venue/brand editors; it is not nested in Settings.
 Settings retains Payments, Integrations and Access. Overview adds no collection readers or mutations.
 Item and Menu creation open dialogs from their indexes; no separate create routes
-are retained. The Items catalogue includes food and drinks with kind filters.
+are retained. The Items catalogue presents one Items collection, a single Add item entrance
+and Kitchen-owned group filtering. Groups live at
+`kitchens/{kitchenId}/item-groups`; names and stable IDs are independent from
+historical `item_kind` and Menu sections. New Kitchen roots receive ordinary
+Food and Drinks groups; existing roots are never seeded on read or resume.
+New Item creation does not require a Food/Drink classification. Historical
+classification and free-text preparation notes remain readable without guessed
+group or Station relationships. Public Menu projections preserve an explicit
+untyped value for new Items through serialization; only historical records use
+the old missing-kind Food fallback.
+
+Items store `group_ids` and an optional `preparation_station_ids` override.
+An absent override inherits active group defaults; an empty list means no
+preparation. The update command accepts null to return to inheritance. The
+shared Item organisation provider owns one group and Station read per Items
+route. Group and Item commands recheck Kitchen authority and exact active local
+references in their writing transactions. Preparation Stations and coordination
+Stations are distinct; the historical canonical Pass reads as coordination.
+This assignment structure does not implement printer delivery, Station task
+subscriptions or order-time routing snapshots. See Kitchen's
+`models/item-group.model.ts`, `utils/item-organisation.ts`,
+`server/item-groups`, `components/Menu/Items/Organisation.vue` and
+`src/test/item-organisation.test.mjs`.
 Existing Item and Menu detail/import/research pages remain for their consumed
 editing workflows. Recipes and Ingredients live under Prep & Production.
 Verify these distinctions with `workspace-navigation.test.mjs`.

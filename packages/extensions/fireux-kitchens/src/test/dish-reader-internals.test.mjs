@@ -1,3 +1,4 @@
+import { readItemReferenceIds } from '../runtime/kitchen/utils/item-organisation.ts'
 import { resolveHttpDocumentOutcome } from '../../../../core/fireux-core/src/runtime/utils/http-document-outcome.ts'
 import {
   dishCataloguePath,
@@ -55,7 +56,7 @@ const { dishCategories, dishCategoryLabel } = load(
 const { DishStorage, normalizeDish, normalizeDishItemKind } = load(
   'kitchen/utils/dish.ts',
   '({ DishStorage, normalizeDish, normalizeDishItemKind })',
-  { dishCategories, ...dishPricingHelpers }
+  { dishCategories, readItemReferenceIds, ...dishPricingHelpers }
 )
 const { resolveKitchenChildCollectionBasePath } = load(
   'kitchen/utils/kitchen-collection-path.ts',
@@ -421,9 +422,12 @@ function components(app, spec) {
     'KitchenMenuItemsCollection',
     'KitchenMenuItemsCardsCell',
     'UPagination',
+    'USelect',
     'KitchenMenuItemsCategories',
     'WorkspaceKitchenAICapability',
     'KitchenMenuItemsEdit',
+    'KitchenMenuItemsOrganisation',
+    'KitchenMenuItemsGroups',
     'KitchenMenuItemsPricing',
     'KitchenMenuItemsDelete',
     'DishPreparation',
@@ -456,6 +460,7 @@ function components(app, spec) {
     'WorkspaceKitchenCollectionHeader',
     'UCard',
     'UPageGrid',
+    'UDropdownMenu',
     'NuxtLink',
   ])
     app.component(name, {
@@ -780,7 +785,7 @@ test('combined Food & drinks catalogue retains both kinds and responds to live r
     context.dishes.value.map((item) => item.id),
     ['soup', 'tea']
   )
-  assert.equal(context.catalogue.title, 'Food & drinks')
+  assert.equal(context.catalogue.title, 'Items')
   assert.equal(context.derived.value.capability.primitives.read.count, 2)
   f.settle([{ id: 'tea', name: 'Tea', item_kind: 'drink' }])
   await nextTick()
@@ -1193,4 +1198,31 @@ test('flagship presentation rechecks a selected record removed or unflagged duri
     assert.equal(result.dish, null)
     assert.equal(result.contentReadiness.uniqueFlagship, false)
   }
+})
+
+test('organisation fields keep historical Items readable without inventing group or Station links', () => {
+  const old = normalizeDish({
+    id: 'old',
+    name: 'Old Item',
+    spec: { station: 'Bar' },
+  })
+  assert.equal(old.item_kind, 'food')
+  assert.deepEqual(old.group_ids, [])
+  assert.equal(old.preparation_station_ids, undefined)
+  assert.equal(old.spec.station, 'Bar')
+  assert.equal(normalizeDish({ id: 'old', group_ids: ['renamed-group'] }).item_kind, 'food')
+  const current = normalizeDish({
+    id: 'new',
+    item_kind: null,
+    group_ids: ['merch'],
+    preparation_station_ids: [],
+  })
+  assert.equal(current.item_kind, undefined)
+  assert.deepEqual(current.group_ids, ['merch'])
+  assert.deepEqual(current.preparation_station_ids, [])
+  assert.equal(
+    normalizeDish({ id: 'new', group_ids: [], preparation_station_ids: null })
+      .preparation_station_ids,
+    undefined
+  )
 })

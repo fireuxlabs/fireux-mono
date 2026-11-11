@@ -4,7 +4,7 @@
       ><UIcon name="i-lucide-arrow-left" />Items</NuxtLink
     >
     <NuxtLink v-if="menuReturn" :to="menuReturn"
-      >← Back to menu selection</NuxtLink
+      >← Back to Menu section</NuxtLink
     >
     <UAlert
       v-if="outcome === 'idle'"
@@ -76,7 +76,14 @@
           :aria-current="view === item.id ? 'page' : undefined"
         />
       </nav>
-      <KitchenMenuItemsEdit v-if="view === 'details'" />
+      <template v-if="view === 'details'">
+        <KitchenMenuItemsEdit />
+        <KitchenMenuItemsOrganisation
+          :dish="dish"
+          :kitchen-id="kitchenId"
+          :can-write="canWrite"
+        />
+      </template>
       <KitchenMenuItemsPricing v-if="view === 'pricing'" />
       <DishPreparation v-if="view === 'preparation'" />
       <DishMenus v-else-if="view === 'menus'" />
@@ -88,7 +95,7 @@
         <template #body
           ><div>
             <details>
-              <summary>Remove item</summary>
+              <summary>Delete item</summary>
               <div>
                 <KitchenMenuItemsDelete :remove="removeDish" />
               </div>
@@ -180,7 +187,7 @@ const views = [
   { id: 'pricing', label: 'Pricing', icon: 'i-lucide-tag' },
   { id: 'spec', label: 'Preparation details', icon: 'i-lucide-book-open' },
   { id: 'preparation', label: 'Preparation', icon: 'i-lucide-list-checks' },
-  { id: 'menus', label: 'Menus', icon: 'i-lucide-calendar-days' },
+  { id: 'menus', label: 'Appears on', icon: 'i-lucide-calendar-days' },
 ]
 const view = computed(() =>
   views.some((item) => item.id === route.query.view)

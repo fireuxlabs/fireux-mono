@@ -1,3 +1,5 @@
+import { validateItemReferenceIds } from '../../utils/item-organisation'
+import { requireItemOrganisationReferences } from '../item-groups/references'
 import { normalizeDishPricingPatch } from '../../utils/dish-pricing'
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -26,6 +28,8 @@ export async function updateDish(event: H3Event, input: unknown) {
     'slug',
     'description',
     'category',
+    'group_ids',
+    'preparation_station_ids',
     'spec',
     'price',
     'price_options',
@@ -38,6 +42,13 @@ export async function updateDish(event: H3Event, input: unknown) {
       statusMessage: 'Provide a Dish change.',
     })
   const patch: Record<string, unknown> & { spec?: DishSpec } = {}
+  for (const key of ['group_ids', 'preparation_station_ids']) {
+    if (key in changes)
+      patch[key] =
+        key === 'preparation_station_ids' && changes[key] === null
+          ? null
+          : validateDishInput(() => validateItemReferenceIds(changes[key]))
+  }
   if ('name' in changes) patch.name = dishText(changes.name, true)
   if ('slug' in changes) patch.slug = dishText(changes.slug)
   if ('description' in changes)
@@ -79,6 +90,15 @@ export async function updateDish(event: H3Event, input: unknown) {
           statusCode: 409,
           statusMessage: 'The stored Dish identity is invalid.',
         })
+      if (
+        (patch.group_ids as string[] | undefined)?.length ||
+        (patch.preparation_station_ids as string[] | undefined)?.length
+      )
+        await requireItemOrganisationReferences(
+          transaction,
+          kitchenId,
+          patch as { group_ids?: string[]; preparation_station_ids?: string[] }
+        )
       if (patch.spec) {
         await requireKitchenIngredientReferences(
           transaction,

@@ -7,7 +7,9 @@
 
 <script setup lang="ts">
 import { provideKitchenDishesContext } from '../../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
-provideKitchenDishesContext('all')
+import { provideKitchenItemOrganisation } from '../../../../../kitchen/composables/workspace/dishes/useKitchenItemOrganisation'
+const context = provideKitchenDishesContext('all')
+provideKitchenItemOrganisation(context)
 
 definePageMeta({
   layout: false,
@@ -20,8 +22,8 @@ definePageMeta({
     key: 'workspace-kitchen-dishes',
     label: 'Items',
     group: 'Menus',
-    description: 'Manage the food and drinks used in your menus.',
-    icon: 'i-lucide-utensils',
+    description: 'Manage the Items used across your Menus.',
+    icon: 'i-lucide-sandwich',
     position: 'top',
     order: 10,
     desktop: true,

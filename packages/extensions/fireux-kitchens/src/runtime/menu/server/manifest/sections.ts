@@ -16,7 +16,11 @@ type MenuReadObserver = {
     records: Array<{ id: string; data: Record<string, unknown> }>
   ) => void
 }
-import { serverKitchenDishesTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget } from '../../../kitchen/server/mutation-targets'
+import {
+  serverKitchenDishesTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+} from '../../../kitchen/server/mutation-targets'
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
 import type { Firestore } from 'firebase-admin/firestore'
 import { readDishItemKind } from '../../../kitchen/utils/dish.ts'
@@ -177,7 +181,9 @@ export async function readKitchenMenuSections(
               return {
                 id: text(item.id),
                 dish_id: dishId,
-                item_kind: readDishItemKind(dish?.item_kind) || 'food',
+                item_kind:
+                  readDishItemKind(dish?.item_kind) ||
+                  (dish.item_kind === null ? null : 'food'),
                 name: readRecordString(dish || {}, 'name') || dishId,
                 description: readRecordString(dish || {}, 'description'),
                 image_url: readRecordString(dish || {}, 'image'),

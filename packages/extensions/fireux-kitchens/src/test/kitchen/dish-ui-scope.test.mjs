@@ -588,7 +588,7 @@ test('item moves disable list boundaries and discard obsolete completion', async
   assert.equal(api.moving.value, '')
 })
 
-test('item creation requires a price and submits explicit zero for food and drinks', async () => {
+test('item creation requires a price and submits explicit zero without a fixed type', async () => {
   for (const itemKind of ['food', 'drink']) {
     const h = setup(),
       drafts = []
@@ -622,7 +622,8 @@ test('item creation requires a price and submits explicit zero for food and drin
     assert.equal(api.validPrice.value, true)
     await api.addDish()
     assert.equal(drafts[0].price, 0)
-    assert.equal(drafts[0].item_kind, itemKind)
+    assert.equal(drafts[0].item_kind, undefined)
+    assert.deepEqual(drafts[0].group_ids, [])
   }
 })
 

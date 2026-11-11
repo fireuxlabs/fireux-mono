@@ -42,7 +42,7 @@ export type MenuManifestItem = {
   promotionLabel?: string
   id: string
   dishId: string
-  itemKind: DishItemKind
+  itemKind?: DishItemKind | null
   name: string
   description: string
   imageUrl: string

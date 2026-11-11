@@ -34,7 +34,7 @@ test('Food index children require and reuse one mounted overview', () => {
 test('the parent assembles named children without forwarding index props', () => {
   const root = new URL('../runtime/kitchen/components/Menu/', import.meta.url)
   const parent = readFileSync(new URL('Index.vue', root), 'utf8')
-  assert.match(parent, /:summary="catalogue.menus"/)
+  assert.match(parent, /<KitchenMenuMenusOverview \/>/)
   assert.ok(!parent.includes(':overview='))
   for (const name of ['Items', 'Promotions', 'Services', 'AI']) {
     assert.ok(

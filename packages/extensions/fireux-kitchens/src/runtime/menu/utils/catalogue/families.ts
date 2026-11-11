@@ -1,6 +1,6 @@
 import type { MenuSectionLink } from './section-links'
 
-export type MenuCatalogueFamilyId = 'food' | 'drinks'
+export type MenuCatalogueFamilyId = 'food' | 'drinks' | 'items'
 
 export type MenuCatalogueFamily = {
   id: MenuCatalogueFamilyId
@@ -14,11 +14,21 @@ export function menuCatalogueFamilies(
 ): MenuCatalogueFamily[] {
   return [
     {
+      id: 'items',
+      label: 'Items',
+      icon: 'i-lucide-book-open',
+      sections: sections.filter((section) =>
+        section.items.some((item) => !item.itemKind)
+      ),
+    },
+    {
       id: 'food',
       label: 'Food',
       icon: 'i-lucide-utensils',
-      sections: sections.filter((section) =>
-        section.items.some((item) => item.itemKind !== 'drink')
+      sections: sections.filter(
+        (section) =>
+          section.items.every((item) => Boolean(item.itemKind)) &&
+          section.items.some((item) => item.itemKind === 'food')
       ),
     },
     {

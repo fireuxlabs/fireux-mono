@@ -7,8 +7,10 @@
 
 <script setup lang="ts">
 import { provideKitchenDishesContext } from '../../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
+import { provideKitchenItemOrganisation } from '../../../../../kitchen/composables/workspace/dishes/useKitchenItemOrganisation'
 
-provideKitchenDishesContext('all')
+const context = provideKitchenDishesContext('all')
+provideKitchenItemOrganisation(context)
 
 definePageMeta({
   layout: false,

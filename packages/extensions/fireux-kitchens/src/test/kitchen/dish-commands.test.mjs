@@ -1,3 +1,4 @@
+import { validateItemReferenceIds } from '../../runtime/kitchen/utils/item-organisation.ts'
 import { readAppUserSubscription } from '../../../../../core/fireux-core/src/runtime/app/models/app-user.model.ts'
 import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
@@ -112,6 +113,15 @@ const references = load(
   },
   '({requireKitchenIngredientReferences,requireKitchenPrepItemReferences,requireKitchenRecipeReference})'
 )
+const requireItemOrganisationReferences = load(
+  '../../runtime/kitchen/server/item-groups/references.ts',
+  {
+    createError,
+    kitchenItemGroupsTarget: (k) => `kitchens/${k}/item-groups`,
+    kitchenStationsTarget: (k) => `kitchens/${k}/stations`,
+  },
+  'requireItemOrganisationReferences'
+)
 function deferred() {
   let resolve
   const promise = new Promise((done) => {
@@ -142,6 +152,8 @@ function harness({ wait, retry } = {}) {
   let before = () => {}
   const dependencies = {
     readDishUsage,
+    validateItemReferenceIds,
+    requireItemOrganisationReferences,
     ...recordInput,
     ...specification,
     ...references,
@@ -880,4 +892,63 @@ test('Dish completion refreshes Menu projections without invalidating the editor
   )
   assert.equal(result.id, 'test-dish')
   assert.deepEqual(refreshed, ['menu|id=food', 'menu-collection|app=misebox'])
+})
+
+test('new Items need no Food/Drink type; group and Station references are checked before writes', async () => {
+  const h = harness()
+  h.records.set('kitchens/k/item-groups/merch', {
+    kitchen_id: 'k',
+    active: true,
+  })
+  h.records.set('kitchens/k/stations/bar', {
+    kitchen_id: 'k',
+    active: true,
+    role: 'preparation',
+  })
+  await h.createDish(
+    {},
+    {
+      kitchenId: 'k',
+      draft: {
+        name: 'Umbrella',
+        group_ids: ['merch'],
+        preparation_station_ids: [],
+      },
+    }
+  )
+  const created = h.writes.at(-1)[3]
+  assert.equal(created.item_kind, null)
+  assert.deepEqual(created.group_ids, ['merch'])
+  assert.deepEqual(created.preparation_station_ids, [])
+  await h.updateDish(
+    {},
+    {
+      kitchenId: 'k',
+      dishId: 'existing',
+      changes: { group_ids: ['merch'], preparation_station_ids: ['bar'] },
+    }
+  )
+  assert.deepEqual(h.writes.at(-1)[3].preparation_station_ids, ['bar'])
+  await h.updateDish(
+    {},
+    {
+      kitchenId: 'k',
+      dishId: 'existing',
+      changes: { preparation_station_ids: null },
+    }
+  )
+  assert.equal(h.writes.at(-1)[3].preparation_station_ids, null)
+  const count = h.writes.length
+  await assert.rejects(
+    h.updateDish(
+      {},
+      {
+        kitchenId: 'k',
+        dishId: 'existing',
+        changes: { group_ids: ['foreign'] },
+      }
+    ),
+    /group is unavailable/
+  )
+  assert.equal(h.writes.length, count)
 })

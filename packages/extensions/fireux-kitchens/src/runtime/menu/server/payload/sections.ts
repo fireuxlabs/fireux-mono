@@ -111,9 +111,11 @@ export const readMenuManifestSections = (
               }
             : {}),
           itemKind:
-            readDishItemKind(itemRecord.itemKind) ||
-            readDishItemKind(itemRecord.item_kind) ||
-            'food',
+            itemRecord.item_kind === null || itemRecord.itemKind === null
+              ? null
+              : readDishItemKind(itemRecord.itemKind) ||
+                readDishItemKind(itemRecord.item_kind) ||
+                'food',
           name,
           description: itemDescription(itemRecord),
           imageUrl: itemImageUrl(itemRecord),

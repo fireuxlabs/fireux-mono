@@ -1,6 +1,10 @@
 <template>
   <div>
-    <h2>Menu placements</h2>
+    <h2>Appears on</h2>
+    <p>
+      Open a section below to manage this Item’s placement. Item details are
+      shared across these Menus.
+    </p>
     <FireStateCard
       v-if="error"
       state="error"

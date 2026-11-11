@@ -1,3 +1,4 @@
+import { createDefaultKitchenItemGroups } from '../../item-groups/defaults'
 import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
 import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
@@ -93,6 +94,7 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
         created,
       })
       createDefaultKitchenStation(tx, id, created)
+      createDefaultKitchenItemGroups(tx, id, created)
     }
     if (!claim.exists)
       tx.create(claimTarget, 'guest', { secret_hash: secretHash })

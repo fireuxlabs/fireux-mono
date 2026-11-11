@@ -1,3 +1,4 @@
+import { createDefaultKitchenItemGroups } from '../../item-groups/defaults'
 import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -153,6 +154,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         created,
       })
       createDefaultKitchenStation(mutations, kitchenId, created)
+      createDefaultKitchenItemGroups(mutations, kitchenId, created)
       mutations.create(
         teamMembers,
         ownerUserId,

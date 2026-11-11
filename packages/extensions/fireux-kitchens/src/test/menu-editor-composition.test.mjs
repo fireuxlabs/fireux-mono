@@ -22,7 +22,14 @@ async function render(relative, props) {
     render: () =>
       h(
         {
-          props: ['editor', 'row', 'section', 'actions', 'saveLabel'],
+          props: [
+            'editor',
+            'row',
+            'section',
+            'actions',
+            'saveLabel',
+            'itemDestination',
+          ],
           render: compile(template),
         },
         props
@@ -30,6 +37,7 @@ async function render(relative, props) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
+    'NuxtLink',
     'UFormField',
     'UInput',
     'UButton',
@@ -164,12 +172,16 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   const actions = rowSetup(
     'Items/Edit/Row.vue',
     { row, editor },
-    'actions.value'
+    '({ actions: actions.value, itemDestination: itemDestination.value })'
   )
   const { seen, html } = await render('Items/Edit/Row.vue', {
     row,
     editor,
-    actions,
+    ...actions,
+  })
+  assert.deepEqual(seen.NuxtLink[0].to, {
+    path: '/workspace/kitchen/menu/items/dish',
+    query: { menu: 'food', section: 's' },
   })
   assert.match(html, /Soup/)
   assert.match(html, /12\.00/)
@@ -177,14 +189,14 @@ test('Menu item row shows prices and confirmed removal inside its vertical actio
   assert.ok(
     seen.UDropdownMenu[0].items
       .flat()
-      .some((action) => action.label === 'Edit dish')
+      .some((action) => action.label === 'Edit item')
   )
   assert.equal(seen.UButton[0]['aria-label'], 'Actions for Soup')
   assert.equal(seen.UButton[0].icon, 'i-lucide-ellipsis-vertical')
   assert.equal(seen.UButton.length, 1)
   seen.UDropdownMenu[0].items
     .flat()
-    .find((action) => action.label === 'Remove from section')
+    .find((action) => action.label === 'Remove from this section')
     .onSelect()
   assert.deepEqual(calls, [[row]])
   assert.equal(seen.USwitch, undefined)

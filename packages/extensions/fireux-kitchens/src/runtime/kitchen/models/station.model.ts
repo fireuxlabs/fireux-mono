@@ -5,6 +5,7 @@ export type KitchenStation = FireuxStamped & {
   kitchen_id: string
   name: string
   description: string
+  role?: 'preparation' | 'coordination'
   active: boolean
   sort_order: number
 }

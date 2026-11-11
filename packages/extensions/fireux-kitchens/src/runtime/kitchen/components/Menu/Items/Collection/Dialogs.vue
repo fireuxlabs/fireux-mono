@@ -1,7 +1,7 @@
 <template>
   <UModal
     :open="Boolean(createKind)"
-    :title="createKind === 'drink' ? 'Add drink' : 'Add dish'"
+    title="Add item"
     @update:open="closeCreate"
   >
     <template #body>
@@ -13,8 +13,8 @@
       />
     </template>
   </UModal>
-  <UModal v-model:open="organise" title="Organise categories">
-    <template #body><KitchenMenuItemsCategories /></template>
+  <UModal v-model:open="organise" title="Manage Item groups">
+    <template #body><KitchenMenuItemsGroups /></template>
   </UModal>
   <USlideover
     v-model:open="aiOpen"

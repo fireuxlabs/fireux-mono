@@ -18,7 +18,7 @@ const catalogueByKind = {
     itemKind: 'all',
     singular: 'item',
     plural: 'items',
-    title: 'Food & drinks',
+    title: 'Items',
     path: '/workspace/kitchen/menu/items',
     icon: 'i-lucide-utensils',
   },
@@ -55,9 +55,7 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   const selectedDishId = ref('')
   const dishes = computed(() =>
     source.dishes.value.filter((dish) =>
-      itemKind === 'all'
-        ? dish.item_kind === 'food' || dish.item_kind === 'drink'
-        : dish.item_kind === itemKind
+      itemKind === 'all' ? true : dish.item_kind === itemKind
     )
   )
   const outcome = computed(() =>

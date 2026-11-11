@@ -134,9 +134,15 @@ export function orderItemReader(
       throw new Error('A selected item is unavailable.')
     const data = await dish(entry.dish_id)
     const terms = readDishPricing(data)
-    const canonical = {
+    const canonical: MenuManifestItem = {
       ...item,
       dishId: entry.dish_id,
+      itemKind:
+        data.item_kind === 'food' || data.item_kind === 'drink'
+          ? data.item_kind
+          : data.item_kind === null
+            ? null
+            : 'food',
       name: String(data.name).trim(),
       price: terms.price,
       ...(terms.bottle_deposit ? { bottleDeposit: terms.bottle_deposit } : {}),

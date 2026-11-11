@@ -541,7 +541,7 @@ test('Image transport snapshots its file, rejects obsolete credentials, and reta
       h.scope.stop()
     }
 })
-test('Native creation locks food/drink inputs and invalidates changed text/image intent during token waits', async () => {
+test('Native creation is group-neutral and locks inputs and invalidates changed text/image intent during token waits', async () => {
   for (const kind of ['food', 'drink'])
     for (const changed of ['stable', 'name', 'image']) {
       const h = context(),
@@ -567,7 +567,8 @@ test('Native creation locks food/drink inputs and invalidates changed text/image
       await flight
       assert.equal(h.calls.length, changed === 'stable' ? 1 : 0)
       if (changed === 'stable') {
-        assert.equal(h.calls[0].options.body.draft.item_kind, kind)
+        assert.equal(h.calls[0].options.body.draft.item_kind, undefined)
+        assert.deepEqual(h.calls[0].options.body.draft.group_ids, [])
         assert.equal(f.api.name.value, '')
         assert.match(f.api.message.value, /Created Submitted/)
       } else {

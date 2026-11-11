@@ -23,8 +23,10 @@
               aria-label="Dish portions"
               type="number"
               min="1" /></UFormField
-          ><UFormField label="Stations"
-            ><UInput v-model="draft.station" aria-label="Dish stations"
+          ><UFormField
+            label="Preparation station"
+            description="Record where this Item is prepared. Printer and order routing are not configured here."
+            ><UInput v-model="draft.station" aria-label="Preparation station"
           /></UFormField>
         </div>
         <section class="fx-card-body-stack">

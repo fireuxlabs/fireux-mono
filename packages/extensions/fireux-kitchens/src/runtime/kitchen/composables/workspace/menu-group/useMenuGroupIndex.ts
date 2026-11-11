@@ -103,6 +103,8 @@ export function useMenuGroupIndex() {
     kitchenId,
     kitchenName,
     catalogue,
+    menus,
+    menusOutcome,
     rows,
     pending,
     failed,

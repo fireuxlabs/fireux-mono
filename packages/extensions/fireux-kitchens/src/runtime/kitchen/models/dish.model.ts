@@ -61,7 +61,11 @@ export type Dish = FireuxStamped &
     name: string
     slug: string
     description: string
-    item_kind: DishItemKind
+    /** Historical classification only; never an Item group or preparation destination. */
+    item_kind?: DishItemKind
+    group_ids?: string[]
+    /** Undefined inherits group defaults; [] explicitly requires no preparation. */
+    preparation_station_ids?: string[]
     is_flagship: boolean
     image: string
     kitchen_id: string

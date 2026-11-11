@@ -10,6 +10,7 @@ type CreateKitchenStationInput = {
   kitchenId: string
   name: string
   sortOrder?: number
+  role?: 'preparation' | 'coordination'
 }
 
 export function useKitchenStationCreate(

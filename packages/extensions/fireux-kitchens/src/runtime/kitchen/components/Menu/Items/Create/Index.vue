@@ -10,10 +10,7 @@
           :disabled="saving || !canCreateDish"
           :update="stageImage"
         />
-        <p>
-          Use a transparent-background source. It will be stored as a 1200 ×
-          1200 WebP when the Dish is created.
-        </p>
+        <p>Choose a clear photo of the Item. You can add or change it later.</p>
       </div>
     </UFormField>
 
@@ -81,7 +78,7 @@ const emit = defineEmits<{ created: [] }>()
 const itemKind = computed(
   () => props.itemKind || (catalogue.itemKind === 'drink' ? 'drink' : 'food')
 )
-const singular = computed(() => (itemKind.value === 'drink' ? 'drink' : 'dish'))
+const singular = 'item'
 const toast = useToastify()
 const route = useRoute()
 
@@ -151,7 +148,7 @@ const addDish = async () => {
   const dishName = normalizeString(name.value)
   if (!dishName) {
     toast.add({
-      title: 'Dish name is required',
+      title: 'Item name is required',
       color: 'error',
       icon: 'i-heroicons-exclamation-triangle',
     })
@@ -168,7 +165,7 @@ const addDish = async () => {
         name: dishName,
         price: Number(price.value),
         description: normalizeString(description.value),
-        item_kind: itemKind.value,
+        group_ids: [],
       },
       { kitchenId: resolvedKitchenId }
     )
@@ -192,8 +189,8 @@ const addDish = async () => {
         )
         const partialMessage = `Created ${dishName}, but its image was not saved: ${imageError}`
         toast.add({
-          title: 'Dish created without its image',
-          description: 'Open the Dish to retry the image upload.',
+          title: 'Item created without its image',
+          description: 'Open the Item to retry the image upload.',
           color: 'warning',
           icon: 'i-lucide-image-off',
         })
@@ -217,11 +214,11 @@ const addDish = async () => {
   } catch (error) {
     if (!isCurrent()) return
     const errorMessage = String(
-      (error as any)?.message || error || 'Create dish failed.'
+      (error as any)?.message || error || 'Create Item failed.'
     )
     message.value = errorMessage
     toast.add({
-      title: 'Dish create failed',
+      title: 'Item create failed',
       description: errorMessage,
       color: 'error',
       icon: 'i-heroicons-exclamation-triangle',

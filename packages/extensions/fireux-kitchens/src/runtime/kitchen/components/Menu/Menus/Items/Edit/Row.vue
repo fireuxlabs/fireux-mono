@@ -1,7 +1,12 @@
 <template>
   <FireCollectionRow>
     <div class="workspace-surface__primary">
-      <h3 class="fx-type-card-heading">{{ row.label }}</h3>
+      <h3 class="fx-type-card-heading">
+        <NuxtLink v-if="row.dishId" :to="itemDestination">{{
+          row.label
+        }}</NuxtLink>
+        <span v-else>{{ row.label }}</span>
+      </h3>
       <span v-if="row.item.status === 'archived'" class="fx-type-caption"
         >Off menu</span
       >
@@ -36,6 +41,10 @@ const props = defineProps<{
   row: MenuSectionItemRow
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionItemsEditor>>
 }>()
+const itemDestination = computed(() => ({
+  path: `/workspace/kitchen/menu/items/${encodeURIComponent(props.row.dishId)}`,
+  query: { menu: props.editor.menuSlug, section: props.editor.sectionId },
+}))
 const actions = computed(() => [
   [
     ...(props.editor.canWrite
@@ -56,14 +65,8 @@ const actions = computed(() => [
       : []),
     props.row.dishId
       ? {
-          label: 'Edit dish',
-          to: {
-            path: `/workspace/kitchen/menu/items/${encodeURIComponent(props.row.dishId)}`,
-            query: {
-              menu: props.editor.menuSlug,
-              section: props.editor.sectionId,
-            },
-          },
+          label: 'Edit item',
+          to: itemDestination.value,
         }
       : {
           label: 'Edit meal deal',
@@ -74,7 +77,7 @@ const actions = computed(() => [
     ? [
         [
           {
-            label: 'Remove from section',
+            label: 'Remove from this section',
             icon: 'i-lucide-list-minus',
             color: 'error' as const,
             disabled: Boolean(props.editor.removing || props.editor.moving),

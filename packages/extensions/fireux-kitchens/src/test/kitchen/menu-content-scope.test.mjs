@@ -232,66 +232,62 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
         if (change !== 'stable') assert.equal(api.savingSection.value, true)
       }
 })
-test('Item Create snapshots selected Dish and drops stale completion', async () => {
+test('Item selection snapshots targets and drops stale account or section completion', async () => {
   for (const change of ['stable', 'section', 'account'])
     for (const failed of [false, true]) {
       const pending = deferred(),
-        toasts = [],
         calls = [],
         currentUser = ref({ uid: 'u' }),
         kitchenId = ref('k'),
         menuId = ref('m'),
         sectionId = ref('s')
       let editorCurrent
-      const api = load(
-        '../../runtime/kitchen/components/Menu/Menus/Items/Add/Repertoire.vue',
-        {
-          ref,
-          computed,
-          watch,
-          useKitchenDishCollection: () => ({
-            dishes: ref([]),
-            pending: ref(false),
-            error: ref(null),
-          }),
-          useMenuEditorScope: scope(currentUser),
-          useToastify: () => ({ add: (x) => toasts.push(x) }),
-          useMenuSection: () => ({
-            kitchenId,
-            menuId,
-            sectionId,
-            section: ref({}),
-            dishes: ref([]),
-            activeItemRows: ref([]),
-            canWrite: ref(true),
-            createItem: (x, isCurrent) => {
-              editorCurrent = isCurrent
-              calls.push(x)
-              return pending.promise
-            },
-          }),
-        },
-        '({add,dishId,saving})',
-        true
+      const useSelection = load(
+        '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemSelection.ts',
+        { ref, computed, watch, useMenuEditorScope: scope(currentUser) },
+        'useMenuSectionItemSelection'
       )
-      api.dishId.value = 'd'
+      const api = useSelection({
+        kitchenId,
+        menuId,
+        sectionId,
+        canWrite: ref(true),
+        activeItemRows: ref([]),
+        itemsOutcome: ref('ready'),
+        dishSource: {
+          dishes: ref([{ id: 'd', name: 'Dish' }]),
+          outcome: ref('ready'),
+          error: ref(null),
+        },
+        createItem: (input, isCurrent) => {
+          editorCurrent = isCurrent
+          calls.push(input)
+          return pending.promise
+        },
+      })
+      api.selected.value = ['d']
       const result = api.add()
-      api.dishId.value = 'other'
       if (change === 'section') {
         sectionId.value = 'b'
         sectionId.value = 's'
-      } else if (change === 'account') {
+      }
+      if (change === 'account') {
         currentUser.value = null
         currentUser.value = { uid: 'u' }
       }
       assert.equal(editorCurrent(), change === 'stable')
-      if (change !== 'stable') api.saving.value = true
+      if (change !== 'stable') api.busy.value = true
       failed ? pending.reject(Error('Failure')) : pending.resolve('new')
-      await result
-      assert.equal(calls[0].dishId, 'd')
-      assert.equal(calls[0].price, undefined)
-      assert.equal(toasts.length, change === 'stable' ? 1 : 0)
-      if (change !== 'stable') assert.equal(api.saving.value, true)
+      const count = await result
+      assert.deepEqual(calls[0], {
+        kitchenId: 'k',
+        menuId: 'm',
+        sectionId: 's',
+        dishId: 'd',
+      })
+      assert.equal(count, change === 'stable' && !failed ? 1 : undefined)
+      assert.equal(Boolean(api.error.value), change === 'stable' && failed)
+      if (change !== 'stable') assert.equal(api.busy.value, true)
     }
 })
 
@@ -533,7 +529,10 @@ test('all Add workflows can restore retained placements and exclude already acti
         error: ref(null),
       }),
       useKitchenChildCollection: () => ({ items: promotions }),
-      useMenuSectionItemCollection: () => ({ items: placements }),
+      useMenuSectionItemCollection: () => ({
+        items: placements,
+        outcome: ref('ready'),
+      }),
       normalizeDishAddOns: () => [],
       normalizeDishPriceOptions: () => [],
     },
@@ -560,11 +559,10 @@ test('all Add workflows can restore retained placements and exclude already acti
     useDishCreate: () => ({ createDish: assert.fail }),
   }
   const dish = load(
-    '../../runtime/kitchen/components/Menu/Menus/Items/Add/Repertoire.vue',
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemSelection.ts',
     deps,
-    '({availableDishes,dishId,add})',
-    true
-  )
+    'useMenuSectionItemSelection'
+  )(context)
   const deal = load(
     '../../runtime/kitchen/components/Menu/Menus/Items/Add/MealDeal.vue',
     deps,
@@ -579,14 +577,14 @@ test('all Add workflows can restore retained placements and exclude already acti
 
   assert.equal(context.itemRows.value.length, 5)
   assert.deepEqual(
-    dish.availableDishes.value.map((row) => row.id),
+    dish.visible.value.map((row) => row.id),
     ['soup']
   )
   assert.deepEqual(
     deal.available.value.map((row) => row.id),
     ['lunch']
   )
-  dish.dishId.value = 'soup'
+  dish.selected.value = ['soup']
   await dish.add()
   deal.promotionId.value = 'lunch'
   await deal.add()
