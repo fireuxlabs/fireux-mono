@@ -98,7 +98,7 @@
       </div>
     </UPageCard>
 
-    <FireStateCard v-else entity="hiring profile" kind="document" loading />
+    <FireState v-else entity="hiring profile" outcome="pending" />
   </ClientOnly>
 </template>
 

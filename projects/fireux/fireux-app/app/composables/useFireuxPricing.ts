@@ -1,7 +1,7 @@
 import {
   usePricing,
   type PricingProfile,
-} from 'fireux-core/runtime/app/composables/pricing/usePricing'
+} from 'fireux-app/runtime/app/composables/pricing/usePricing'
 
 // Future editable pricing starts from the Professional Entity unit. A unit
 // change must preview its cascade into Business, Managed-capable generated

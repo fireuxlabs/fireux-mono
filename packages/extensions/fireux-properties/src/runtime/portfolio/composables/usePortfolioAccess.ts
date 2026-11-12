@@ -1,8 +1,8 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { portfolioAccessCollection } from '../utils/access'
 
 /** Live Portfolio access is independent of the organisational Team. */
@@ -17,7 +17,7 @@ export function usePortfolioAccess() {
   const ids = computed(() =>
     app.pending.value || app.error.value ? [] : access.ids.value
   )
-  const outcome = computed<WorkspaceTargetOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (app.error.value || access.error.value) return 'error'
     if (app.pending.value || access.pending.value) return 'pending'
     return ids.value.length ? 'ready' : 'empty'

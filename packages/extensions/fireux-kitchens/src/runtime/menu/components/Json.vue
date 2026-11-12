@@ -4,15 +4,29 @@
     :data-menu-context="query?.context || undefined"
     :data-kitchen-slug="query?.kitchenSlug || undefined"
   >
-    <FireStateCard v-if="pending" entity="Menu" kind="document" loading />
-    <FireStateCard
+    <FireState v-if="pending" entity="Menu" outcome="pending" />
+    <UAlert
       v-else-if="error"
-      entity="Menu"
-      kind="document"
-      state="error"
       title="Menu JSON unavailable"
       :description="error.message || 'The Menu projection could not be loaded.'"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            [
+              'Menu JSON unavailable',
+              error.message || 'The Menu projection could not be loaded.',
+            ]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <FireDiagnosticsDebugPanel
       v-else
       title="Menu projection"

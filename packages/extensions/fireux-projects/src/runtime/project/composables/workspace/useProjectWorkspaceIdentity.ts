@@ -32,13 +32,12 @@ export function useProjectWorkspaceIdentity() {
     imageUrl: imageUrl.value,
     status: projectStatus.value,
   }))
-  const { canWrite, availableActions, scopeKey, readState } =
-    useWorkspaceIdentity({
-      id: workspace.id,
-      fields,
-      status: workspace.outcome,
-      canWrite: authorized,
-    })
+  const { canWrite, availableActions, scopeKey } = useWorkspaceIdentity({
+    id: workspace.id,
+    fields,
+    status: workspace.outcome,
+    canWrite: authorized,
+  })
   async function update(
     input: {
       projectId: string
@@ -110,7 +109,6 @@ export function useProjectWorkspaceIdentity() {
   }))
   return {
     availableActions,
-    readState,
     scopeKey,
     canWrite,
     update,

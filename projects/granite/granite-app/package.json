@@ -25,6 +25,7 @@
     "@nuxt/icon": "2.5.1",
     "@nuxt/ui": "4.12.0",
     "fireux-core": "workspace:*",
+    "fireux-ai": "workspace:*",
     "fireux-ecosystem": "workspace:*",
     "fireux-granite": "workspace:*",
     "fireux-properties": "workspace:*",
@@ -34,7 +35,8 @@
     "fireux-compliance": "workspace:*",
     "fireux-documents": "workspace:*",
     "fireux-tasks": "workspace:*",
-    "@google-cloud/functions-framework": "5.0.5"
+    "@google-cloud/functions-framework": "5.0.5",
+    "fireux-app": "workspace:*"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "1.1.1",

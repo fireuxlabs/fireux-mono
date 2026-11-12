@@ -6,7 +6,6 @@ import type {
 } from 'fireux-core/runtime/models/utils/style.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import type { EntityAssetSourceMap } from 'fireux-core/runtime/models/operations/entity-asset-onboarding'
 import type { AppTypography } from 'fireux-core/types/theme'
 import type {
   MenuManifestContent,
@@ -22,6 +21,21 @@ export type {
 }
 
 export type TemplateOneKitchenTier = FireuxEntityManagement['mode']
+
+type TemplateOneAssetSources = Partial<
+  Record<
+    | 'logo'
+    | 'wordmark'
+    | 'wordmarkLight'
+    | 'wordmarkDark'
+    | 'cover'
+    | 'thumbnail'
+    | 'favicon'
+    | 'pwaIcon192'
+    | 'pwaIcon512',
+    string
+  >
+>
 
 export const templateOneOrderingCopy = {
   navigationLabel: 'Ordering',
@@ -140,7 +154,7 @@ export type TemplateOneKitchenSpecimen = {
   name: string
   tier: TemplateOneKitchenTier
   demo: boolean
-  assetSources: EntityAssetSourceMap
+  assetSources: TemplateOneAssetSources
   rootProps: {
     placePrimaryColor: string
     wordmarkSrc: string

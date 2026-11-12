@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import type { LandingProductCatalogueContent } from 'fireux-core/runtime/models/landing/product'
+import type { LandingProductCatalogueContent } from 'fireux-app/runtime/models/landing/product'
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,

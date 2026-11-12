@@ -1,3 +1,4 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import {
   computed,
   toValue,
@@ -5,7 +6,6 @@ import {
   type ComputedRef,
   type Ref,
 } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import type { PropertySurface } from './firestore/utils/view/usePropertyInterface'
 import { usePropertyFetch } from './firestore/fetch/usePropertyFetch'
 import { usePropertyAccess } from './usePropertyAccess'
@@ -18,7 +18,7 @@ export type PropertyScope = {
   id: ComputedRef<string>
   entity: ComputedRef<PropertySurface | null>
   rootCollection: ComputedRef<string>
-  targetOutcome: Readonly<Ref<WorkspaceTargetOutcome>>
+  targetOutcome: Readonly<Ref<ReadOutcome>>
   canRead: ComputedRef<boolean>
   canWrite: ComputedRef<boolean>
   propertyPath: ComputedRef<string>
@@ -60,7 +60,7 @@ export function usePropertyScope(
   const workspace = {
     id: requested,
     data: source.property,
-    outcome: computed<WorkspaceTargetOutcome>(() =>
+    outcome: computed<ReadOutcome>(() =>
       access.outcome.value !== 'ready'
         ? access.outcome.value
         : !requested.value

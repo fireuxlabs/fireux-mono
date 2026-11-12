@@ -1,14 +1,8 @@
 import { useAsyncData } from 'nuxt/app'
 
 import { computed } from 'vue'
-import type {
-  DirectoryOutcome,
-  EcosystemDirectoryController,
-} from 'fireux-core/runtime/types/directory-controller.types'
-import type {
-  EcosystemDirectoryEntry,
-  PlatformDirectoryResponse,
-} from 'fireux-core/runtime/models/utils/directory'
+import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/models/ecosystem-directory'
+import type { PlatformDirectoryResponse } from '../../shared/platform-directory'
 
 export function usePlatformDirectory() {
   return useAsyncData<PlatformDirectoryResponse>(
@@ -21,7 +15,7 @@ export function usePlatformDirectory() {
   )
 }
 
-export function usePublishedPlatformEcosystemDirectory(): EcosystemDirectoryController {
+export function usePublishedPlatformEcosystemDirectory() {
   const { data, pending, error, refresh } = usePlatformDirectory()
   const ecosystems = computed(() =>
     (data.value?.ecosystems ?? []).filter(
@@ -29,7 +23,7 @@ export function usePublishedPlatformEcosystemDirectory(): EcosystemDirectoryCont
     )
   )
   const count = computed(() => ecosystems.value.length)
-  const outcome = computed<DirectoryOutcome>(() => {
+  const outcome = computed(() => {
     if (pending.value) return 'pending'
     if (error.value) return 'error'
     return count.value ? 'ready' : 'empty'
@@ -41,7 +35,7 @@ export function usePublishedPlatformEcosystemDirectory(): EcosystemDirectoryCont
     pending,
     error,
     outcome,
-    source: 'platform',
+    source: 'platform' as const,
     refresh,
   }
 }

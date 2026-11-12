@@ -14,7 +14,11 @@
       :suggestions="suggestions"
       @submit="submit"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <WorkspaceAIModelLabel />
+      </template>
+    </WorkspaceAIComposer>
   </WorkspaceAI>
 </template>
 <script setup lang="ts">

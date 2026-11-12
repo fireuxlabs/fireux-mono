@@ -2,12 +2,21 @@
   <p v-if="state.identity.outcome.value === 'pending'" role="status">
     Loading Kitchen…
   </p>
-  <FireStateCard
+  <UAlert
     v-else-if="state.identity.outcome.value === 'error'"
-    state="error"
     title="Kitchen unavailable"
     description="Kitchen could not be loaded."
-  />
+    color="error"
+    variant="soft"
+    role="alert"
+    aria-live="assertive"
+  >
+    <template #actions>
+      <FireCopyError
+        message="Kitchen unavailable&#10;Kitchen could not be loaded."
+      />
+    </template>
+  </UAlert>
   <p v-else-if="!state.kitchenId.value">
     Choose a Kitchen to view its promotions.
   </p>
@@ -19,16 +28,35 @@
     <p v-else-if="state.dishes.pending.value" role="status">
       Loading food and drinks…
     </p>
-    <FireStateCard
+    <UAlert
       v-if="state.collection.outcome.value === 'error'"
-      state="error"
       title="Promotions unavailable"
       :description="
         String(
           state.collection.error.value || 'Promotions could not be loaded.'
         )
       "
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            [
+              'Promotions unavailable',
+              String(
+                state.collection.error.value ||
+                  'Promotions could not be loaded.'
+              ),
+            ]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <p v-else-if="state.collection.pending.value" role="status">
       Loading promotions…
     </p>

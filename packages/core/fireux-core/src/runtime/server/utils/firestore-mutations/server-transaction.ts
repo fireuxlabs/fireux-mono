@@ -10,37 +10,10 @@ import type {
   FirestoreMutationTarget,
 } from '../../../types/firestore-mutations'
 import { assertFirestoreMutationVerb } from '../../../utils/firestore-mutations/target-definition'
-import { assertFirestoreMutationSegment } from '../../../utils/firestore-mutations/target-definition'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
 } from '../getRuntimeFirestore'
-
-export type GuardedServerCollectionGroupTarget = Readonly<{
-  key: string
-  database: FirestoreDatabasePlacement
-  parentCollection: string
-  collectionId: string
-}>
-
-export function defineGuardedServerCollectionGroupTarget(input: {
-  key: string
-  database: FirestoreDatabasePlacement
-  parentCollection: string
-  collectionId: string
-}): GuardedServerCollectionGroupTarget {
-  return Object.freeze({
-    ...input,
-    parentCollection: assertFirestoreMutationSegment(
-      input.parentCollection,
-      'parentCollection'
-    ),
-    collectionId: assertFirestoreMutationSegment(
-      input.collectionId,
-      'collectionId'
-    ),
-  })
-}
 
 export type GuardedServerTransaction = Readonly<{
   read<T extends DocumentData>(
@@ -66,14 +39,6 @@ export type GuardedServerTransaction = Readonly<{
       afterId?: string
     }
   ): Promise<Array<{ id: string; data: T }>>
-  queryCollectionGroup<T extends DocumentData>(
-    target: GuardedServerCollectionGroupTarget,
-    input: {
-      field: string
-      value: unknown
-      limit: number
-    }
-  ): Promise<Array<{ id: string; parentId: string; data: T }>>
   create<T extends DocumentData>(
     target: FirestoreMutationTarget<string, 'server'>,
     id: string,
@@ -96,8 +61,8 @@ function samePlacement(
     (left.kind === 'default' ||
       left.kind === 'runtime' ||
       left.kind === 'identity' ||
-      ((left.kind === 'named' || left.kind === 'local-sproochli') &&
-        (right.kind === 'named' || right.kind === 'local-sproochli') &&
+      (left.kind === 'named' &&
+        right.kind === 'named' &&
         left.databaseId === right.databaseId))
   )
 }
@@ -110,9 +75,7 @@ export function runGuardedServerTransaction<T>(
     placement.kind === 'identity'
       ? getRuntimeIdentityFirestore()
       : getRuntimeFirestore(
-          placement.kind === 'named' || placement.kind === 'local-sproochli'
-            ? placement.databaseId
-            : undefined
+          placement.kind === 'named' ? placement.databaseId : undefined
         )
   const ref = (
     target: FirestoreReadTarget,
@@ -121,8 +84,14 @@ export function runGuardedServerTransaction<T>(
   ) => {
     if (verb) {
       if (!('verbs' in target) || !('lane' in target))
-        throw new Error(`Read target ${target.key} does not authorize mutations.`)
-      assertFirestoreMutationVerb(target as FirestoreMutationTarget, 'server', verb)
+        throw new Error(
+          `Read target ${target.key} does not authorize mutations.`
+        )
+      assertFirestoreMutationVerb(
+        target as FirestoreMutationTarget,
+        'server',
+        verb
+      )
     }
     if (!samePlacement(placement, target.database))
       throw new Error(
@@ -202,44 +171,6 @@ export function runGuardedServerTransaction<T>(
           id: document.id,
           data: document.data() as T,
         }))
-      },
-      async queryCollectionGroup<T extends DocumentData>(
-        target: GuardedServerCollectionGroupTarget,
-        input: { field: string; value: unknown; limit: number }
-      ) {
-        if (!samePlacement(placement, target.database)) {
-          throw new Error(
-            `Transaction placement does not own collection group ${target.key}.`
-          )
-        }
-        if (!input.field.trim() || input.limit < 1 || input.limit > 100) {
-          throw new Error(
-            'Guarded Server transaction collection-group read is invalid.'
-          )
-        }
-        const snapshot = await raw.get(
-          database
-            .collectionGroup(target.collectionId)
-            .where(input.field, '==', input.value)
-            .limit(input.limit)
-        )
-        return snapshot.docs.flatMap((document) => {
-          const parts = document.ref.path.split('/')
-          if (
-            parts.length !== 4 ||
-            parts[0] !== target.parentCollection ||
-            parts[2] !== target.collectionId
-          ) {
-            return []
-          }
-          return [
-            {
-              id: document.id,
-              parentId: parts[1]!,
-              data: document.data() as T,
-            },
-          ]
-        })
       },
       create(target, id, data) {
         const payload = { ...data }

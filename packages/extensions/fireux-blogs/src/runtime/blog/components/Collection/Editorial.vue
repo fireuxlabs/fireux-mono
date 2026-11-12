@@ -34,32 +34,34 @@
     <FireState v-if="outcome === 'pending'" outcome="pending" />
 
     <div v-else-if="outcome === 'error'" class="blog-editorial__state">
-      <FireStateCard
-        entity="stories"
-        state="error"
-        surface="bare"
+      <UAlert
         title="The journal could not be loaded"
         description="The published stories are temporarily unavailable."
+        color="error"
+        variant="soft"
+        role="alert"
+        aria-live="assertive"
       >
-        <UButton
-          label="Try again"
-          icon="i-lucide-refresh-cw"
-          color="neutral"
-          variant="soft"
-          @click="emit('retry')"
-        />
-      </FireStateCard>
+        <template #actions>
+          <FireCopyError
+            message="The journal could not be loaded&#10;The published stories are temporarily unavailable."
+          />
+          <UButton
+            label="Try again"
+            icon="i-lucide-refresh-cw"
+            color="neutral"
+            variant="soft"
+            @click="emit('retry')"
+          />
+        </template>
+      </UAlert>
     </div>
 
     <div
       v-else-if="totalCount === 0"
       class="blog-editorial__state blog-editorial__state--empty"
     >
-      <FireStateCard
-        entity="stories"
-        state="empty"
-        surface="bare"
-        :icon="hasMore ? 'i-lucide-book-down' : 'i-lucide-notebook-pen'"
+      <UAlert
         :title="
           hasMore
             ? 'Continue through the journal'
@@ -70,38 +72,48 @@
             ? 'More published stories are available in the catalogue.'
             : 'There are no published stories in this ecosystem yet. Check back soon.'
         "
+        :icon="hasMore ? 'i-lucide-book-down' : 'i-lucide-notebook-pen'"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       >
-        <UButton
-          v-if="hasMore"
-          label="Load more stories"
-          icon="i-lucide-plus"
-          color="neutral"
-          variant="soft"
-          :loading="loadingMore"
-          @click="emit('load-more')"
-        />
-      </FireStateCard>
+        <template #actions>
+          <UButton
+            v-if="hasMore"
+            label="Load more stories"
+            icon="i-lucide-plus"
+            color="neutral"
+            variant="soft"
+            :loading="loadingMore"
+            @click="emit('load-more')"
+          />
+        </template>
+      </UAlert>
     </div>
 
     <div
       v-else-if="isSearching && cards.length === 0"
       class="blog-editorial__state"
     >
-      <FireStateCard
-        entity="stories"
-        state="empty"
-        surface="bare"
+      <UAlert
         title="No stories match your search"
         description="Try another phrase or clear the search to browse every story."
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       >
-        <UButton
-          label="Clear search"
-          icon="i-lucide-x"
-          color="neutral"
-          variant="soft"
-          @click="searchQuery = ''"
-        />
-      </FireStateCard>
+        <template #actions>
+          <UButton
+            label="Clear search"
+            icon="i-lucide-x"
+            color="neutral"
+            variant="soft"
+            @click="searchQuery = ''"
+          />
+        </template>
+      </UAlert>
     </div>
 
     <div v-else class="blog-editorial__content">

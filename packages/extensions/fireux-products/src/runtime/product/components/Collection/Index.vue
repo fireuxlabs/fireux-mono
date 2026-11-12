@@ -48,16 +48,19 @@
       </template>
     </ProductCollectionList>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-box"
       :title="query ? 'No products match your search' : 'No products yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Once product records are added, they will display here.'
       "
+      icon="i-lucide-box"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>
@@ -65,7 +68,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Products (JSON)'"
+        title="Products (JSON)"
         :context="devJsonContext"
         :objects="devJsonData"
         :derived="devJsonDerived"

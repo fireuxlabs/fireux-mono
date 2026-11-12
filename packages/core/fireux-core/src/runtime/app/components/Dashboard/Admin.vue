@@ -1,24 +1,24 @@
 <!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: shape the shared app control room around real App and AppUser authority. -->
 <template>
-  <FireStateCard
+  <FireState
     v-if="appOutcome === 'pending'"
     entity="app administration"
-    kind="document"
-    loading
+    outcome="pending"
   />
 
-  <FireStateCard
+  <FireState
     v-else-if="appOutcome === 'error'"
     entity="app administration"
-    kind="document"
-    state="error"
+    outcome="error"
   />
 
-  <FireStateCard
+  <UAlert
     v-else-if="appOutcome === 'empty' || !appSnapshot"
-    entity="app"
-    kind="document"
-    state="empty"
+    title="App not found"
+    color="neutral"
+    variant="soft"
+    role="status"
+    aria-live="polite"
   />
 
   <div v-else class="pagebody">

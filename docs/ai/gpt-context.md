@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-11-09
+Updated: 2026-11-12
 Ref: ac88daacf
 Role: living context
 Scope: repository-wide
@@ -41,13 +41,21 @@ Implementation follows this dependency direction:
 initialization and browser Auth persistence. The public reference is the
 App-selected `fireux-docs` extension and is not a Core dependency.
 
-`fireux-app` composes the standard App: Core, Blogs, Products and AI. Tenant and
+`fireux-app` composes the standard App: its public presentation layer, Core,
+Blogs, Products and AI. It owns reusable commercial offers and pricing UI,
+public landing composition, styles and motion, legal documents and public catalogue
+pages. The Ecosystem layer owns Main App discovery and child-App composition.
+Core retains neutral controls and layouts, account consent, membership,
+subscription access and capacity checks. Tenant and
 standalone Apps use `defineFireuxApp` from `fireux-app/config`; Ecosystem Main
 Apps use `defineFireuxEcosystem` from `fireux-ecosystem/config`. The Ecosystem
 bundle includes the App bundle and shared Main App surfaces. Core can be used
 independently and never imports either bundle or a product package.
 AI is available through the App bundle; execution remains explicitly enabled
 by the consuming feature and its provider configuration.
+Provider/model presentation belongs to `fireux-ai`. Core Workspace prompts
+remain passive controls and expose a slot for optional model information;
+they do not read AI configuration or choose a provider/model label.
 
 Each ecosystem owns Firebase SSR region and execution identity in its `ssr`
 configuration. Core applies those values without a named-ecosystem region map.
@@ -219,6 +227,8 @@ authorize utility classes in current work.
 Core owns the explicit public component catalogue in
 `src/catalogue/public-components.mjs`; Docs publishes those supported building
 blocks with safe previews. Nuxt registration does not publish a component.
+Example-only components and fixture data belong with their consuming reference,
+outside Core runtime.
 The complete source inventory is development-only at `/dev/core-components`.
 
 Core shared UI uses the `Fire` library prefix. Atomic Design folders such as
@@ -269,6 +279,24 @@ build-time TypeScript/Markdown loading for this literature.
 
 ## Shared utility boundary
 
+`models/`, `types/` and `utils/` are not dumping grounds. A technical label does
+not establish shared ownership. Before adding a file, identify its owner, real
+consumers and responsibility; place it beneath that owner. Root-level shared
+directories require demonstrated cross-owner reuse, not hypothetical future use.
+
+- `models/` holds consumed data contracts. Keep stored records, command inputs
+  and derived or composed projections distinguishable; do not add another
+  source of truth for another owner's fields.
+- `types/` holds genuine runtime or integration coordination contracts. It is
+  not an alternative location for domain models or unused speculative types.
+- `utils/` holds focused stateless behavior. It must not hide canonical record
+  definitions, workflows, reactive state, readers or commands.
+
+Keep supporting types beside their implementation when they have no independent
+consumer. Remove unused contracts rather than relocating them. Do not create
+barrels, aliases, generic bags or symmetric folders merely to tidy the tree.
+Review ownership and consumers when changing these directories, not just names.
+
 Core `runtime/utils` owns small stateless transformations and validators for
 shared FireUX value contracts. It does not own reactive/browser lifecycle,
 fetching, authentication coordination, onboarding workflow, product literature
@@ -295,6 +323,11 @@ User setup belongs to `runtime/user/composables/account/useUserSetup.ts`;
 setup state. Setup derives missing identity, consent and App membership from
 current readers and writes only after an explicit action. Existing Users join
 another App without repeating current consent. See [identity and membership](../concepts/entities.md#identity-plus-membership).
+
+Core User owns the shared profile contracts in `runtime/user/models`, profile
+read/create/update composables in `runtime/user/composables/profile`, and trusted
+provisioning in `runtime/user/server/profile`. Domain extensions retain their
+exact profile models, seeds and fixed endpoints; App membership remains App-owned.
 
 User is the person; AppUser is membership in one App. A tenant App remains an
 App role and uses the same Entity contracts. Every App declares its canonical
@@ -347,6 +380,12 @@ boolean facts without document/collection kind. HTTP absence and reader identity
 checks remain at their adapter/reader owners. There is no missing compatibility
 status or adapter. See [composables](../concepts/composables.md).
 
+`FireState` is the small shared read-feedback surface. It consumes `ReadOutcome`,
+owns accessible pending/error/empty messages, error copying and an optional retry
+event, and renders nothing for idle/ready. Domains compose native `UAlert` or
+`UCard` for their own copy, links and actions; do not add a parallel state-card
+contract or translate pending into a presentation-specific loading status.
+
 Collection-page presentation preserves its reader’s outcome unchanged. A reader
 owns whether retained rows remain valid after pagination fails; an old paging
 error must not turn a later idle, pending, empty or error read into ready.
@@ -383,7 +422,8 @@ commands and pages as evidence; a proposal or connected source is not a shipped
 capability. Feature entitlement belongs to the acting User, separately from
 permission to edit the selected Entity.
 SaaS plan offers belong to Ecosystem main Apps, not tenant Apps. Core supplies
-the shared Free, Pro and Business presentation and capacity mechanics. Canonical
+the shared Free, Pro and Business access and capacity mechanics; `fireux-app`
+owns their commercial presentation. Canonical
 subscription IDs are `free`, `pro` and `business`. The App-owned subscription
 reader maps legacy stored `premium` to `pro` during the explicitly staged
 migration in [App membership](../concepts/entities.md#subscription-naming-migration).
@@ -400,11 +440,13 @@ provider usage or an automatic grant of editing authority. See
 [product language](../concepts/product-language.md) and the routed product
 contexts.
 
-Core App research uses `runtime/app/models/search-demand.ts` for its data
-contract, `runtime/app/utils/search-demand.ts` for pure reference validation and
-`runtime/app/server/research/load-search-demand.ts` for server-only file loading.
-Apps own the research records; FireUX AI owns the reusable method. Research data
-is not Nuxt assembly configuration or runtime capability authority.
+`fireux-ai` owns the complete optional App research feature: data contract,
+pure reference validation, server-only App-file loading, API and static review
+pages. Apps own their authored `app/search-demand.ts` data. The standard App
+bundle supplies the AI module and native layer; static research remains available
+when AI execution is disabled and makes no provider request. Research data is not
+Nuxt assembly configuration or runtime capability authority. See the owning
+[research context](../../packages/extensions/fireux-ai/docs/ai/research-context.md).
 
 ## Working and verification rules
 

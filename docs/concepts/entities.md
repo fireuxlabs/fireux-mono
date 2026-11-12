@@ -261,7 +261,8 @@ Entity as a privacy mechanism.
 - `KitchenSale`: Kitchen-owned Record derived from a completed KitchenOrder.
 - `AppUser`, `UserAccount`, and App access rows: support Records.
 - `EcosystemDirectoryEntry`: directory Shape built from an Ecosystem, its App
-  count, and its detail link. See the
+  count, and its detail link. Its contract lives with
+  [Ecosystem models](../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem-directory.ts). See the
   [directory projection](../../packages/core/fireux-core/src/runtime/ecosystem/server/directory/projection.ts).
 - Menu choice, fulfilment policy, and presentation objects: Shapes unless a
   separate lifecycle is later proved.

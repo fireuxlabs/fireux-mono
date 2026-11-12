@@ -122,7 +122,7 @@
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDiagnosticsUi } from '../../composables/diagnostics/useDiagnosticsUi'
-import { syncAppMediaToStorage } from '../utils/sync-app-media'
+import { syncAppMediaToStorage } from '../composables/media/sync-app-media'
 
 const router = useRouter()
 const isDev = import.meta.dev

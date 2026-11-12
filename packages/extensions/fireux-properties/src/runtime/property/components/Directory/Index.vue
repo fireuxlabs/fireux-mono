@@ -1,33 +1,39 @@
 <template>
-  <FireStateCard
+  <FireState
     v-if="outcome === 'pending'"
-    state="loading"
     entity="properties"
-    surface="collection"
+    outcome="pending"
   />
-  <FireStateCard
+  <UAlert
     v-else-if="outcome === 'error'"
-    state="error"
     title="Properties could not be loaded"
     description="Try again to see the latest published properties."
-    surface="collection"
+    color="error"
+    variant="soft"
+    role="alert"
+    aria-live="assertive"
   >
-    <template #actions
-      ><UButton label="Try again" variant="soft" @click="refresh()"
-    /></template>
-  </FireStateCard>
+    <template #actions>
+      <FireCopyError
+        message="Properties could not be loaded&#10;Try again to see the latest published properties."
+      />
+      <UButton label="Try again" variant="soft" @click="refresh()" />
+    </template>
+  </UAlert>
   <template v-else>
     <PropertyCollection v-if="properties.length" :properties="properties" />
-    <FireStateCard
+    <UAlert
       v-else
-      state="empty"
       title="No published properties here yet"
       :description="
         hasMore
           ? 'More results are available to check.'
           : 'Published properties will appear here.'
       "
-      surface="collection"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <div v-if="hasMore">
       <UButton
@@ -38,13 +44,21 @@
         @click="loadMore()"
       />
     </div>
-    <FireStateCard
+    <UAlert
       v-if="loadMoreError"
-      state="error"
       title="More properties could not be loaded"
       description="Try again to continue browsing."
-      surface="bare"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="More properties could not be loaded&#10;Try again to continue browsing."
+        />
+      </template>
+    </UAlert>
   </template>
 </template>
 <script setup lang="ts">

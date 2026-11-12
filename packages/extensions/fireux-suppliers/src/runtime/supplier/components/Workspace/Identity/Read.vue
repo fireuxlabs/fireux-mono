@@ -1,16 +1,18 @@
 <template>
   <div>
-    <FireStateCard
-      v-if="readState"
-      :state="readState"
+    <FireState
+      v-if="status === 'pending' || status === 'error'"
+      :outcome="status"
       entity="Supplier identity"
-      kind="document"
-      :title="readState === 'empty' ? 'Choose a Supplier' : undefined"
-      :description="
-        readState === 'empty'
-          ? 'Select a Supplier to view its identity.'
-          : undefined
-      "
+    />
+    <UAlert
+      v-else-if="status !== 'ready'"
+      title="Choose a Supplier"
+      description="Select a Supplier to view its identity."
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <template v-else>
       <UCard>
@@ -108,8 +110,7 @@ import type { SupplierWorkspaceIdentityState } from '../../../composables/worksp
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
 const props = defineProps<{ identity: SupplierWorkspaceIdentityState }>()
 const emit = defineEmits<{ edit: [section: PlaceIdentitySection] }>()
-const { readState, businessId, name, tagline, summary, imageUrl } =
-  props.identity
+const { status, businessId, name, tagline, summary, imageUrl } = props.identity
 const media = computed(() => placeIdentityMedia(props.identity.place.value))
 const sections = computed(() => {
   const place = props.identity.place.value

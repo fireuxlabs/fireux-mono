@@ -70,7 +70,7 @@ test('public Project detail rejects old identities and exposes recoverable read 
     ),
     'utf8'
   )
-    .replace(/^import[^\n]*\n/gm, '')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
   const useDetail = compileFunction(
     `${stripTypeScriptTypes(source)}; return useProjectDetail`,
@@ -120,7 +120,7 @@ test('Ecosystem detail reads one canonical record without loading the directory'
     ),
     'utf8'
   )
-    .replace(/^import[^\n]*\n/gm, '')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
   const useDetail = compileFunction(
     `${stripTypeScriptTypes(source)}; return useEcosystemDetail`,
@@ -172,7 +172,7 @@ for (const [name, path, key] of [
       error = ref(new Error('unavailable'))
     const data = ref(key ? { [key]: [] } : [])
     const source = readFileSync(new URL(path, import.meta.url), 'utf8')
-      .replace(/^import[^\n]*\n/gm, '')
+      .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
       .replace(/^export /gm, '')
     const factory = compileFunction(
       `${stripTypeScriptTypes(source)}; return use${name}`,

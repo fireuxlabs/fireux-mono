@@ -126,10 +126,6 @@ async function render(path, state) {
     setup: (props) => () =>
       h('p', String(props.error?.message || props.outcome)),
   })
-  app.component('FireStateCard', {
-    props: ['title'],
-    setup: (props) => () => h('p', props.title),
-  })
   const rowSource = readFileSync(
     new URL(
       '../../../../core/fireux-core/src/runtime/components/Collection/Row.vue',

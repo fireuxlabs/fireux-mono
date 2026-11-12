@@ -6,4 +6,9 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
   })
+  registerComponentsDir(resolver, './runtime/app/components', {
+    global: false,
+    pathPrefix: true,
+    prefix: 'App',
+  })
 }

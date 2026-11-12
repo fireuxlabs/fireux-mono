@@ -1,6 +1,6 @@
 # BuenoHost GPT Context
 
-Updated: 2026-11-06
+Updated: 2026-11-12
 Ref: 864d6c09b
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
@@ -130,12 +130,12 @@ Use current source and available tests above this document:
 ## Industry research
 
 The global App owns `projects/buenohost/buenohost-app/app/search-demand.ts`.
-It consumes Core's research contract for sourced operator jobs, ranked proposals,
+It consumes FireUX AI's research contract for sourced operator jobs, ranked proposals,
 Tool hypotheses and independent need/readiness assessments. Research does not
 change Property or Reservation authority, Workspace navigation or tenant-App
 policy. Refresh source findings and bounded implementation assessments when their
-inputs change. Verify shared rendering and evidence references with Core's
-`src/test/app-research.test.mjs`; operator acceptance remains a separate proof.
+inputs change. Verify shared rendering and evidence references with FireUX AI's
+`src/test/research/review.test.mjs`; operator acceptance remains a separate proof.
 
 ## Refresh and verification
 

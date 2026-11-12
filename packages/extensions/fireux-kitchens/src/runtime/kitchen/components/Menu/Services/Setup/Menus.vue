@@ -1,15 +1,11 @@
 <template>
   <UFormField label="Menus">
-    <FireStateCard
+    <FireState
       v-if="outcome === 'idle' || outcome === 'pending'"
       entity="Menus"
-      loading
+      outcome="pending"
     />
-    <FireStateCard
-      v-else-if="outcome === 'error'"
-      entity="Menus"
-      state="error"
-    />
+    <FireState v-else-if="outcome === 'error'" entity="Menus" outcome="error" />
     <FireMultiSelect
       v-else-if="options.length"
       label="Menus"

@@ -1,3 +1,4 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed, watch } from 'vue'
 import {
   useWorkspace,
@@ -5,7 +6,6 @@ import {
 } from 'fireux-core/runtime/workspace/composables/useWorkspace'
 import { usePortfolioCollection } from '../usePortfolioCollection'
 import { usePortfolioAccess } from '../usePortfolioAccess'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { usePortfolioFetch } from '../firestore/fetch/usePortfolioFetch'
 
 export const usePortfolioWorkspace = defineWorkspace(() => {
@@ -38,7 +38,7 @@ export const usePortfolioWorkspace = defineWorkspace(() => {
       : ''
   )
   const source = usePortfolioFetch(readId)
-  const outcome = computed<WorkspaceTargetOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (access.outcome.value !== 'ready') return access.outcome.value
     if (!id.value) return 'idle'
     if (!readId.value) return 'empty'

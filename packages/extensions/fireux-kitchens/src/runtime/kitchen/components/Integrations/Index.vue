@@ -4,15 +4,15 @@
       title="Integrations"
       description="Connect your kitchen to the places customers find you."
     />
-    <FireStateCard
+    <FireState
       v-if="outcome === 'pending' || outcome === 'idle'"
       entity="Kitchen"
-      loading
+      outcome="pending"
     />
-    <FireStateCard
+    <FireState
       v-else-if="outcome === 'error'"
       entity="Kitchen"
-      state="error"
+      outcome="error"
     />
     <template v-else-if="selectedKitchen">
       <KitchenIntegrationsWebsiteOrdering

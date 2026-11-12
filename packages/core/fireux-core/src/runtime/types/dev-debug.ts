@@ -19,16 +19,6 @@ export type DevDebugContractFinding = {
 
 export type DevDebugDependencies = Record<string, string | string[]>
 
-export type DevDebugState = {
-  __debugState: 'loading' | 'not-fetched' | 'redacted'
-}
-
-export const devDebugState = (
-  state: DevDebugState['__debugState']
-): DevDebugState => ({
-  __debugState: state,
-})
-
 export type DevDebugPayload<
   TObjects extends Record<string, unknown> = Record<string, unknown>,
   TDerived extends Record<string, unknown> = Record<string, unknown>,

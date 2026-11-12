@@ -1,42 +1,50 @@
 <template>
-  <FireStateCard
+  <FireState
     v-if="outcome === 'pending' || outcome === 'idle'"
     entity="place"
-    kind="document"
-    loading
+    outcome="pending"
   />
-  <FireStateCard
+  <UAlert
     v-else-if="outcome === 'error'"
-    entity="place"
-    kind="document"
-    state="error"
     title="We couldn’t load this place"
     description="There was a problem fetching the information. Please try again."
+    color="error"
+    variant="soft"
+    role="alert"
+    aria-live="assertive"
   >
-    <UButton
-      label="Retry"
-      icon="i-lucide-refresh-cw"
-      color="primary"
-      size="sm"
-      @click="emit('refresh')"
-    />
-  </FireStateCard>
-  <FireStateCard
+    <template #actions>
+      <FireCopyError
+        message="We couldn’t load this place&#10;There was a problem fetching the information. Please try again."
+      />
+      <UButton
+        label="Retry"
+        icon="i-lucide-refresh-cw"
+        color="primary"
+        size="sm"
+        @click="emit('refresh')"
+      />
+    </template>
+  </UAlert>
+  <UAlert
     v-else-if="!hasPlace"
-    entity="place"
-    kind="document"
-    state="empty"
     title="Place not found"
     description="We couldn’t find the place you’re looking for. It may have been removed or the link is incorrect."
+    color="neutral"
+    variant="soft"
+    role="status"
+    aria-live="polite"
   >
-    <UButton
-      label="Back to all Places"
-      icon="i-lucide-arrow-left"
-      to="/places"
-      color="primary"
-      size="sm"
-    />
-  </FireStateCard>
+    <template #actions>
+      <UButton
+        label="Back to all Places"
+        icon="i-lucide-arrow-left"
+        to="/places"
+        color="primary"
+        size="sm"
+      />
+    </template>
+  </UAlert>
 </template>
 
 <script setup lang="ts">

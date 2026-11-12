@@ -16,7 +16,7 @@
           </div>
           <div v-show="openSections.model">
             <FireDiagnosticsModel
-              :title="'Blogs · Model'"
+              title="Blogs · Model"
               :model="blogPostModelRuntime"
             />
           </div>
@@ -55,17 +55,15 @@
               </template>
             </UCard>
 
-            <FireStateCard
+            <FireState
               v-if="blogCollection.outcome === 'pending'"
               entity="Blog"
-              kind="collection"
-              loading
+              outcome="pending"
             />
-            <FireStateCard
+            <FireState
               v-else-if="blogCollection.outcome === 'error'"
               entity="Blog"
-              kind="collection"
-              state="error"
+              outcome="error"
             />
             <BlogCollection v-else :posts="blogCollection.collection" />
           </div>

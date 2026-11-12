@@ -15,8 +15,8 @@
     />
     <p>{{ message }}</p>
     <FireCopyError
-      v-if="outcome === 'error' && error"
-      :message="String(error)"
+      v-if="outcome === 'error'"
+      :message="error ? String(error) : message"
     />
     <UButton
       v-if="outcome === 'error' && retryable"

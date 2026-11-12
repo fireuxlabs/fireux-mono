@@ -50,17 +50,18 @@
       </template>
     </BlogCollectionList>
 
-    <FireStateCard
+    <UAlert
       v-else
-      entity="posts"
-      state="empty"
-      surface="bare"
       :title="query ? 'No posts match your search' : 'No posts yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Once posts are published, they will display here.'
       "
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>
@@ -68,7 +69,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Blog (JSON)'"
+        title="Blog (JSON)"
         :context="devJsonContext"
         :objects="devJsonData"
         :derived="{}"

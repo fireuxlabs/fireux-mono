@@ -202,7 +202,7 @@ test('saved incompatible menus show visible replacement warnings and remain sele
         return () => vue.h('div')
       },
     })
-    app.component('FireStateCard', { render: () => null })
+    app.component('FireState', { render: () => null })
     const html = await renderToString(app)
     assert.match(html, /role="status"/)
     assert.match(html, /remove from selection/)

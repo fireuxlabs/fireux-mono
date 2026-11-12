@@ -1,4 +1,4 @@
-import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
+import type { AppSearchDemand } from 'fireux-ai/runtime/app/models/search-demand'
 
 const observedAt = '2026-08-28'
 const geography = 'Switzerland'

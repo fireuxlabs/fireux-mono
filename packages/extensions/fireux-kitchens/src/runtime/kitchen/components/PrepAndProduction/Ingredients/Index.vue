@@ -4,12 +4,21 @@
       <KitchenPrepAndProductionIngredientsCollection />
     </div>
 
-    <FireStateCard
+    <UAlert
       v-else-if="outcome === 'error'"
-      state="error"
       title="Kitchen unavailable"
       description="Your Kitchen could not be loaded. Please try again."
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Kitchen unavailable&#10;Your Kitchen could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
     <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
     <UAlert
       v-else-if="outcome === 'empty'"

@@ -1,3 +1,4 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -11,7 +12,6 @@ import {
 import { useKitchenCollection } from '../useKitchenCollection'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
 import { kitchenWorkspaceSwitchPath } from '../../utils/workspace-switch-route'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../useKitchenRead'
 
@@ -97,7 +97,7 @@ export const useKitchenWorkspace = defineWorkspace(() => {
   )
   const source = useKitchenRead(readId)
   const { kitchen, place } = source
-  const outcome = computed<WorkspaceTargetOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (access.outcome.value !== 'ready') return access.outcome.value
     if (!id.value) return 'idle'
     if (!readId.value) return 'empty'

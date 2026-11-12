@@ -2,19 +2,24 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'pending' || outcome === 'idle'"
         entity="User"
-        kind="document"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'error'"
         entity="User"
-        kind="document"
-        state="error"
+        outcome="error"
       />
-      <FireStateCard v-else entity="User" kind="document" state="empty" />
+      <UAlert
+        v-else
+        title="User not found"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
+      />
       <FireDiagnosticsDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the Misebox detail route."

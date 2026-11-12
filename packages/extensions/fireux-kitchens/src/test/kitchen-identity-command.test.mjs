@@ -122,6 +122,7 @@ function harness() {
     }),
   }
   const update = load('kitchen/server/identity/update.ts', 'updateKitchen', {
+    useRuntimeConfig: () => ({ public: {} }),
     createError,
     parseKitchenUpdate,
     serverAuditStamp,

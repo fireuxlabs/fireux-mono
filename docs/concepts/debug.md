@@ -1,6 +1,6 @@
 # Debug surface map
 
-Updated: 2026-10-14
+Updated: 2026-11-12
 Ref: 1813a2f9e
 Role: map, not canon
 
@@ -34,10 +34,11 @@ Map how debug information should appear without becoming page noise.
 - Diagnostics pages and raw diagnostic APIs require the configured developer identity;
   build-time exclusion is not an authentication boundary. Dev pages render
   client-only so unauthenticated SSR cannot disclose diagnostic state.
-- Component and state examples belong to the owning package’s `components/Library`
-  and are exposed through the App’s `/packages/<package>` library. They reuse real
-  models and components without live submission. Diagnostics inspect runtime data
-  and remain separate from Workspace Demo Data.
+- Public component examples and safe previews belong to `fireux-docs` at
+  `/docs/components`; the development inventory lives at `/dev/core-components`.
+  `/packages/<package>` lists registered components and may link to maintained
+  App-owned domain examples. Diagnostics inspect runtime data and remain separate
+  from Workspace Demo Data.
 - Every component-level debug payload separates source objects from derived
   values. The shared panel presents those concerns in that order and retains
   raw JSON as a secondary view.
@@ -132,7 +133,7 @@ Copy page JSON action remains separate from source diagnostics.
 
 | Surface                     | State      | Reason                                                                                                                                    |
 | --------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `FireDiagnosticsDebugPanel`             | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
+| `FireDiagnosticsDebugPanel` | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
 | Another generic debug panel | `drift`    | Extend the one proven surface instead of creating a competing system                                                                      |
 
 ## Alignment roadmap

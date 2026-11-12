@@ -336,6 +336,7 @@ test('closing an editor during credentials cannot dispatch its prepared Kitchen 
         useAppSession: () => ({ appUser: Vue.ref({ id: 'operator' }) }),
         useFireUXConfig: () => ({ appId: 'app' }),
         useRoute: () => ({ path: '/appearance' }),
+        useRuntimeConfig: () => ({ public: {} }),
         useCommandScope: () => () => () => true,
         useRequireUser: () => (stage === 'account' ? waiting : user),
         $fetch: (...input) => {

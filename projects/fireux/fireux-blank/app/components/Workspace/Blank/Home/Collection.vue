@@ -26,14 +26,14 @@
 </template>
 
 <script setup lang="ts">
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import type { Blank } from '../../../../models/blank.model'
 
 const props = withDefaults(
   defineProps<{
     collection?: Blank[]
-    outcome: WorkspaceTargetOutcome
+    outcome: ReadOutcome
   }>(),
   {
     collection: () => [],

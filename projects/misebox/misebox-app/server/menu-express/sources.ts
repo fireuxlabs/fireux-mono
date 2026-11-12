@@ -1,4 +1,4 @@
-import { requireChatSessionAccess } from 'fireux-core/runtime/server/utils/chat/session'
+import { requireChatSessionAccess } from 'fireux-core/runtime/app/server/chat/session'
 import { createHash } from 'node:crypto'
 import { getStorage } from 'firebase-admin/storage'
 import { readMultipartFormData, setResponseHeaders, type H3Event } from 'h3'

@@ -1,4 +1,4 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ProfileRefs } from 'fireux-core/runtime/user/composables/profile/useProfileFetch'
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: map stored, detail, and exact directory Professional shapes without compatibility fields.
 import {
   resolveProfileBadges,
@@ -90,9 +90,7 @@ export function useProfessionalInterface(
 
     return {
       id,
-      to:
-        explicitTo ||
-        `/professionals/${encodeURIComponent(routeKey)}`,
+      to: explicitTo || `/professionals/${encodeURIComponent(routeKey)}`,
       imageUrl: image || avatar,
       avatarUrl: avatar,
       secondaryAvatarUrl,

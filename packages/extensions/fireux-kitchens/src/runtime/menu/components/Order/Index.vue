@@ -1,26 +1,29 @@
 <template>
   <UContainer>
-    <FireStateCard
-      v-if="flow.menu.pending"
-      entity="Menu"
-      kind="document"
-      loading
-    />
-    <FireStateCard
+    <FireState v-if="flow.menu.pending" entity="Menu" outcome="pending" />
+    <UAlert
       v-else-if="flow.menu.failure"
-      entity="Menu"
-      kind="document"
-      state="error"
       title="Menu unavailable"
       description="This menu could not be loaded. Please try again."
-    />
-    <FireStateCard
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Menu unavailable&#10;This menu could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
+    <UAlert
       v-else-if="!flow.manifest"
-      entity="Menu"
-      kind="document"
-      state="empty"
       title="Menu unavailable"
       description="This menu is unavailable for ordering."
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <UAlert
       v-else-if="!flow.submission && !flow.serviceAvailable"

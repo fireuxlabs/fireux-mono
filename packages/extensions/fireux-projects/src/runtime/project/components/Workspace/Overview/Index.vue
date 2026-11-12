@@ -1,16 +1,28 @@
 <template>
   <FireState v-if="outcome === 'pending'" outcome="pending" />
-  <FireStateCard
+  <UAlert
     v-else-if="outcome === 'error'"
-    state="error"
     title="Project unavailable"
     description="The selected Project could not be loaded."
-  />
-  <FireStateCard
+    color="error"
+    variant="soft"
+    role="alert"
+    aria-live="assertive"
+  >
+    <template #actions>
+      <FireCopyError
+        message="Project unavailable&#10;The selected Project could not be loaded."
+      />
+    </template>
+  </UAlert>
+  <UAlert
     v-else-if="!data"
-    state="empty"
     title="No Project selected"
     description="Choose a workspace to see its overview."
+    color="neutral"
+    variant="soft"
+    role="status"
+    aria-live="polite"
   />
   <WorkspaceOverview
     v-else

@@ -304,7 +304,7 @@ test('Local uploads and external provisioning photos share the authenticated ava
   for (const source of [image, 'https://example.com/photo.png']) {
     const requests = []
     const provision = load(
-      '../runtime/user/utils/provision-user-avatar.ts',
+      '../runtime/user/composables/identity/provision-user-avatar.ts',
       'provisionSignedInUserAvatar',
       {
         USER_ECOSYSTEM_AVATAR_SRC: '/img/ecosystem/avatar.png',
@@ -335,7 +335,7 @@ test('Provisioning establishes User before an optional avatar and never replaces
   for (const created of [true, false]) {
     const calls = []
     const create = load(
-      '../runtime/user/utils/provision-user.ts',
+      '../runtime/user/composables/identity/provision-user.ts',
       'provisionUserIdentity',
       {
         USER_ECOSYSTEM_AVATAR_SRC: '/img/ecosystem/avatar.png',
@@ -414,7 +414,7 @@ function handleCommandHarness(
     }
   )
   const client = load(
-    '../runtime/user/utils/update-user-handle.ts',
+    '../runtime/user/composables/identity/update-user-handle.ts',
     'updateUserHandle',
     {
       useAuth: () => ({ currentUser: { value: actor } }),

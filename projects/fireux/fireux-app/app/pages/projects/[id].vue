@@ -2,23 +2,23 @@
   <UPage>
     <UPageBody>
       <ProjectDetail v-if="project" :project="project" />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'pending'"
         entity="project"
-        kind="document"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'error'"
         entity="project"
-        kind="document"
-        state="error"
+        outcome="error"
       />
-      <FireStateCard
+      <UAlert
         v-else-if="outcome === 'empty'"
-        entity="project"
-        kind="document"
-        state="empty"
+        title="Project not found"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
       <FireDiagnosticsDebugPanel
         title="Project detail acquisition"

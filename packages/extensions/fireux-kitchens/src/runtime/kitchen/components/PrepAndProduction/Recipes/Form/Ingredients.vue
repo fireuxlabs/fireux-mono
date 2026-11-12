@@ -13,12 +13,25 @@
         "
       />
     </div>
-    <FireStateCard
+    <UAlert
       v-if="error"
-      state="error"
       title="Ingredients unavailable"
       :description="String(error)"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Ingredients unavailable', String(error)]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <p v-else-if="!pending && !options.length">
       Add ingredients to this kitchen first.
       <NuxtLink to="/workspace/kitchen/prep/ingredients"

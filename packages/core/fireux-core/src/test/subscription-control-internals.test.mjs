@@ -57,6 +57,26 @@ test('legacy premium retains Pro access and capacity while canonical writes acce
   }
 })
 
+test('legacy capacity config normalizes to Pro and an explicit Pro limit wins', () => {
+  const normalize = load(
+    '../runtime/app/composables/config/FireUXConfig.ts',
+    'toSubscriptionCapacity',
+    {}
+  )
+  assert.deepEqual(
+    normalize({ project: { free: 1, premium: 7, business: null } }),
+    {
+      project: { free: 1, pro: 7, business: null },
+    }
+  )
+  assert.deepEqual(
+    normalize({ project: { free: 1, pro: 3, premium: 7, business: null } }),
+    {
+      project: { free: 1, pro: 3, business: null },
+    }
+  )
+})
+
 function load(path, name, dependencies, development = false) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^[\s\S]*<script setup[^>]*>([\s\S]*?)<\/script>[\s\S]*$/, '$1')
@@ -109,7 +129,7 @@ function fixture({ role = 'dev', subscription = 'free', guest = false } = {}) {
   const notices = [],
     calls = []
   const runAppUserCommand = load(
-    '../runtime/app/utils/runAppUserCommand.ts',
+    '../runtime/app/composables/membership/run-app-user-command.ts',
     'runAppUserCommand',
     {
       useAuth: () => auth,

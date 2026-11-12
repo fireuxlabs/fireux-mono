@@ -31,25 +31,36 @@
       </template>
     </FireCollectionHeader>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-if="outcome === 'pending'"
+      aria-atomic="true"
       title="Loading hiring profiles"
       description="Finding hiring profiles…"
       icon="i-lucide-loader-circle"
-      loading
-      aria-atomic="true"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else-if="outcome === 'error'"
+      aria-atomic="true"
       title="Hiring profiles unavailable"
       description="Hiring profiles could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      state="error"
-      aria-atomic="true"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Hiring profiles unavailable&#10;Hiring profiles could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
 
     <AgentCollectionList
       v-else-if="cardsFiltered.length"
@@ -64,16 +75,19 @@
       </template>
     </AgentCollectionList>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-handshake"
       :title="query ? 'No matching hiring profiles' : 'No hiring profiles yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Hiring profiles will appear here once they are available.'
       "
+      icon="i-lucide-handshake"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>
@@ -81,7 +95,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Agents (JSON)'"
+        title="Agents (JSON)"
         context="collection manager · agents"
         :objects="{ profiles: devJsonData, users: profileUsers }"
         :derived="{}"

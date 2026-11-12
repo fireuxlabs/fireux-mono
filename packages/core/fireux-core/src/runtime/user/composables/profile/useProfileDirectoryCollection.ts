@@ -1,3 +1,4 @@
+import type { ReadOutcome } from '../../../utils/read-outcome'
 import { useAsyncData } from 'nuxt/app'
 
 import type { AsyncData, NuxtError } from 'nuxt/app'
@@ -16,8 +17,6 @@ export type ProfileDirectoryRecord<
   TProfilePayload extends Record<string, unknown>,
 > = TProfilePayload & { id: string }
 
-export type ProfileDirectoryOutcome = 'pending' | 'error' | 'ready' | 'empty'
-
 type ProfileDirectoryControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
   'pending' | 'error' | 'refresh'
@@ -31,7 +30,7 @@ export type UseProfileDirectoryCollectionReturn<
   usersById: ComputedRef<Map<string, ProfileUser>>
   userById: (id: string | null | undefined) => ProfileUser | undefined
   count: ComputedRef<number>
-  outcome: ComputedRef<ProfileDirectoryOutcome>
+  outcome: ComputedRef<ReadOutcome>
 }
 
 export function useProfileDirectoryCollection<

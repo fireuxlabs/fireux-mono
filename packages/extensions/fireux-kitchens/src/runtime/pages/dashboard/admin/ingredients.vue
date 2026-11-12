@@ -12,26 +12,28 @@
     </UPageHeader>
 
     <UPageBody>
-      <FireStateCard
+      <FireState
         v-if="ingredientCollection.outcome === 'pending'"
         entity="Ingredient"
-        kind="collection"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
+      <UAlert
         v-else-if="ingredientCollection.outcome === 'error'"
-        entity="Ingredient"
-        kind="collection"
-        state="error"
+        title="Unable to load ingredient"
+        color="error"
+        variant="soft"
+        role="alert"
+        aria-live="assertive"
       >
         <template #actions>
+          <FireCopyError message="Unable to load ingredient" />
           <UButton
             label="Try again"
             variant="soft"
             @click="ingredientCollection.refresh()"
           />
         </template>
-      </FireStateCard>
+      </UAlert>
       <IngredientCollection
         v-else
         :ingredients="ingredientCollection.ingredients"

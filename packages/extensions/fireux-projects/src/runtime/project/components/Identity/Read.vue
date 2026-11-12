@@ -1,17 +1,19 @@
 <template>
-  <FireStateCard
-    v-if="identity.readState.value"
-    :state="identity.readState.value"
+  <FireState
+    v-if="
+      identity.outcome.value === 'pending' || identity.outcome.value === 'error'
+    "
+    :outcome="identity.outcome.value"
     entity="Project identity"
-    kind="document"
-    :title="
-      identity.readState.value === 'empty' ? 'Choose a Project' : undefined
-    "
-    :description="
-      identity.readState.value === 'empty'
-        ? 'Select a Project to view its identity.'
-        : undefined
-    "
+  />
+  <UAlert
+    v-else-if="identity.outcome.value !== 'ready'"
+    title="Choose a Project"
+    description="Select a Project to view its identity."
+    color="neutral"
+    variant="soft"
+    role="status"
+    aria-live="polite"
   />
   <div v-else class="workspace-profile__overview">
     <UCard class="workspace-profile__identity-card">

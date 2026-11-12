@@ -37,6 +37,14 @@ test('one deterministic source result retains reviewed purpose, framework owners
   assert.ok(!artifact.files['nuxt.config.ts'].includes('fireux-products/layer'))
   assert.match(artifact.files['app/pages/pricing/index.vue'], /usePricing/)
   assert.match(
+    artifact.files['app/pages/pricing/index.vue'],
+    /fireux-app\/runtime\/app\/composables\/pricing\/usePricing/
+  )
+  assert.equal(
+    JSON.parse(artifact.files['package.json']).dependencies['fireux-app'],
+    'workspace:*'
+  )
+  assert.match(
     artifact.ecosystem.files['src/module.ts'],
     /configureFireuxEcosystemModule/
   )

@@ -36,7 +36,10 @@ function boundedString(value: unknown, label: string, max: number) {
   return result
 }
 
-export function parseKitchenUpdate(value: unknown) {
+export function parseKitchenUpdate(
+  value: unknown,
+  runtimeReservedRouteKeys: readonly unknown[] = []
+) {
   const source = record(value)
   if (!source) fail('Kitchen update must be an object.')
   const patch = flatten(source)
@@ -45,7 +48,8 @@ export function parseKitchenUpdate(value: unknown) {
 
   for (const [key, raw] of Object.entries(patch)) {
     if (key === 'services.item_images') {
-      if (typeof raw !== 'boolean') fail('Item image preference must be boolean.')
+      if (typeof raw !== 'boolean')
+        fail('Item image preference must be boolean.')
       out[key] = raw
       continue
     }
@@ -71,6 +75,7 @@ export function parseKitchenUpdate(value: unknown) {
         label: 'Kitchen slug',
         namespace: 'kitchens',
         reservedScope: 'root',
+        runtimeReservedRouteKeys,
         maxLength: 80,
       })
       if (!validation.isValid)

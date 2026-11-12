@@ -1,22 +1,4 @@
-import type { Ecosystem } from '../../ecosystem/models/ecosystem.model.ts'
-
-/**
- * Directory entries carry the fields needed to discover canonical entities.
- */
-export type EcosystemDirectoryEntry = Pick<
-  Ecosystem,
-  'id' | 'project_id' | 'status' | 'name' | 'description' | 'image_url' | 'website_url'
-> & {
-  detail_url: string
-  app_count: number
-}
-
-export type PlatformDirectoryResponse = {
-  ok: true
-  generatedAt: string
-  ecosystems: EcosystemDirectoryEntry[]
-}
-
+/** Shared transport envelopes; domains own the records and projections inside them. */
 export type CollectionResponse<T> = {
   ok: true
   count: number

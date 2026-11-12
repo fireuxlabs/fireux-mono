@@ -11,13 +11,24 @@
       </template>
     </WorkspaceKitchenCollectionHeader>
 
-    <FireStateCard
+    <UAlert
       v-if="loadError"
-      state="error"
       title="Ingredients unavailable"
       :description="errorMessage"
       icon="i-lucide-triangle-alert"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Ingredients unavailable', errorMessage].filter(Boolean).join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <FireState v-else-if="pending" outcome="pending" entity="ingredients" />
     <template v-else>
       <WorkspaceKitchenCollectionToolbar
@@ -156,8 +167,8 @@
       description="Choose from the shared ingredient catalogue."
     >
       <template #body
-        ><KitchenPrepAndProductionIngredientsAdd v-if="addOpen && canWrite"
-      /></template>
+        ><KitchenPrepAndProductionIngredientsAdd v-if="addOpen && canWrite" />
+      </template>
     </USlideover>
     <FireDiagnosticsDebugPanel
       title="Kitchen ingredients"

@@ -12,12 +12,21 @@
         icon="i-lucide-check"
       />
     </div>
-    <FireStateCard
+    <UAlert
       v-if="message"
-      state="error"
       title="Recipe not saved"
       :description="message"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="['Recipe not saved', message].filter(Boolean).join('\n')"
+        />
+      </template>
+    </UAlert>
     <fieldset :disabled="saving || creatingPrep || !canWrite">
       <KitchenPrepAndProductionRecipesFormIdentity
         v-model:name="name"

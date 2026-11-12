@@ -71,7 +71,12 @@ export function prepareIgnitionPreview(value: unknown) {
     '@nuxt/icon',
   ] as const)
     dependencies[key] = manifest.dependencies[key]
-  for (const key of ['fireux-core', 'fireux-ecosystem', 'fireux-ignite'])
+  for (const key of [
+    'fireux-core',
+    'fireux-app',
+    'fireux-ecosystem',
+    'fireux-ignite',
+  ])
     dependencies[key] = 'workspace:*'
   dependencies[packageName] = 'workspace:*'
   dependencies['@vite-pwa/nuxt'] = manifest.devDependencies['@vite-pwa/nuxt']
@@ -124,7 +129,7 @@ import { brief, name } from '../ignition/brief'
 `,
     'app/pages/pricing/index.vue': `<template><AppPricingCatalogue :tiers="tiers" /></template>
 <script setup lang="ts">
-import { usePricing } from 'fireux-core/runtime/app/composables/pricing/usePricing'
+import { usePricing } from 'fireux-app/runtime/app/composables/pricing/usePricing'
 import { computed } from 'vue'
 import { name } from '../../ignition/brief'
 const pricing = usePricing({

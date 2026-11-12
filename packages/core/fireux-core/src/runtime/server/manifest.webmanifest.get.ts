@@ -1,9 +1,9 @@
 import { useAppConfig } from '#imports'
-import { resolveAppTheme } from '../utils/app-theme'
+import { resolveAppTheme } from '../app/utils/app-theme'
 import { defineEventHandler, getQuery, getRequestURL, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../utils/brandAssets'
-import { withBuildVersion } from '../utils/build-version-url'
+import { withBuildVersion } from '../app/utils/build-version-url'
 
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'

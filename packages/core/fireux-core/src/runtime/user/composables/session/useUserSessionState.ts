@@ -1,3 +1,4 @@
+import type { ReadOutcome } from '../../../utils/read-outcome'
 import { computed } from '#imports'
 import { resolveUserAvatarSource } from '../../utils/user-avatar'
 import type { User } from '../../models/user.model.ts'
@@ -18,11 +19,11 @@ export function useUserSessionState(
   source: {
     user: Ref<User | null | undefined>
     appUser: Ref<AppUserWithId | null | undefined>
-    userOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
+    userOutcome: Ref<ReadOutcome>
     userError: Ref<unknown>
     appUserError: Ref<unknown>
     appUserPending: Ref<boolean>
-    appUserOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
+    appUserOutcome: Ref<ReadOutcome>
   },
   auth: Pick<
     ReturnType<typeof useAuth>,

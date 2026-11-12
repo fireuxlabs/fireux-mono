@@ -75,7 +75,7 @@ function workflow(name, { pause, bootstrapError } = {}) {
     useRoute: () => ({ fullPath: '/profile' }),
   }
   const useProfileCreate = load(
-    '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate.ts',
+    '../../../../core/fireux-core/src/runtime/user/composables/profile/useProfileCreate.ts',
     'useProfileCreate',
     {
       ...profileDeps,

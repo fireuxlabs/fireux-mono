@@ -8,6 +8,7 @@ import { configureComponents } from './config/module/components-config'
 import type { FireuxAiMode, FireuxAiProvider } from './runtime/types/ai'
 
 export interface ModuleOptions {
+  /** Controls AI execution; static App research remains available. */
   enabled?: boolean
   provider?: FireuxAiProvider
   model?: string

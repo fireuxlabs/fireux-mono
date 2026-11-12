@@ -159,10 +159,9 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
   permission, and other read failures must not collapse into empty copy.
 - Counts are shown only for settled `ready` or `empty` outcomes. Search-empty
   copy is local presentation and remains distinct from an empty source.
-- Use `FireStateCard` for conventional manager states. Ordinary Entity
-  Collection managers select its `collection` surface for the established
-  dashed directory treatment. Domain-branded presentation may choose another
-  surface while keeping the same ordering and live-region semantics.
+- Use `FireState` for plain read feedback. Keep contextual empty-result copy and
+  retry or navigation actions with the domain, using native `UAlert` or `UCard`.
+  Preserve the ordering and status/alert live-region semantics.
 - Do not expose raw backend errors on directory surfaces. A retained valid page may
   show a non-fatal pagination error without replacing the existing list.
 
@@ -182,7 +181,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 
 - The Kitchen directory established the warmer, clearer root-manager
   hierarchy now shared with Menu and User through core
-  `FireCollectionHeader`, `FireStateCard`, and the small
+  `FireCollectionHeader`, `FireState`, native alerts, and the small
   `entity-collection*` layout contract.
 - Root/global discovery pages may share Core `FireCollectionPage`; this is page
   presentation only and does not move domain collection ownership into core.
@@ -257,20 +256,20 @@ Root Simple Collection Managers
 
 Root Projected Collection Managers
 
-| Manager        | Projection source                      | Direction                 | Current note                                                                                                                                      |
-| -------------- | -------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Kitchen`      | `/api/kitchens`                        | Server Place join         | Bounded Kitchen pages return canonical Kitchen roots enriched with same-ID Place; Workspace Team authority remains outside the public response.   |
-| `Ingredient`   | `/api/ingredients`                     | Server projection         | Active roots power browse; bounded exact-id requests resolve Kitchen and Supplier links without exposing raw root documents.                      |
-| `App`          | `/api/apps` or FireUX `/api/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                           |
-| `Ecosystem`    | FireUX `/api/directory`                | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                          |
-| `User`         | `/api/users`                           | Server projection         | Users index gets a bounded response, then maps canonical Users through `useUserView()`.                                                      |
-| `Blog`         | `/api/blogs`                           | Server projection         | The editorial manager uses a content-free index shape and endpoint-owned cursor pagination; admin/dev retain their scoped root manager.           |
-| `Chef`         | `/api/chefs`                           | Server profile/User join  | Kitchen-owned allowlist joins canonical User by matching uid.                                                                                     |
-| `Driver`       | `/api/drivers`                         | Server profile/User join  | Kitchen-owned allowlist excludes App-specific contact, tender, and Kitchen grant state.                                                           |
-| `Agent`        | `/api/agents`                          | Server profile/User join  | Jobs-owned allowlist includes deliberately published business contacts only.                                                                      |
-| `Professional` | `/api/professionals`                   | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                                      |
+| Manager        | Projection source                      | Direction                  | Current note                                                                                                                                      |
+| -------------- | -------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Kitchen`      | `/api/kitchens`                        | Server Place join          | Bounded Kitchen pages return canonical Kitchen roots enriched with same-ID Place; Workspace Team authority remains outside the public response.   |
+| `Ingredient`   | `/api/ingredients`                     | Server projection          | Active roots power browse; bounded exact-id requests resolve Kitchen and Supplier links without exposing raw root documents.                      |
+| `App`          | `/api/apps` or FireUX `/api/directory` | Owner/platform projection  | Same cards and manager; page chooses the authority-explicit controller.                                                                           |
+| `Ecosystem`    | FireUX `/api/directory`                | Platform projection        | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                          |
+| `User`         | `/api/users`                           | Server projection          | Users index gets a bounded response, then maps canonical Users through `useUserView()`.                                                           |
+| `Blog`         | `/api/blogs`                           | Server projection          | The editorial manager uses a content-free index shape and endpoint-owned cursor pagination; admin/dev retain their scoped root manager.           |
+| `Chef`         | `/api/chefs`                           | Server profile/User join   | Kitchen-owned allowlist joins canonical User by matching uid.                                                                                     |
+| `Driver`       | `/api/drivers`                         | Server profile/User join   | Kitchen-owned allowlist excludes App-specific contact, tender, and Kitchen grant state.                                                           |
+| `Agent`        | `/api/agents`                          | Server profile/User join   | Jobs-owned allowlist includes deliberately published business contacts only.                                                                      |
+| `Professional` | `/api/professionals`                   | Server profile/User join   | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                                      |
 | `Job`          | `/api/jobs`                            | Server Business/Place join | The paginated Directory joins bounded employer and work-location display truth; exact detail returns the canonical Job and named related records. |
-| `Business`      | `/api/businesses`                       | Server Place join         | Independent Business roots own organisation identity and link optional Place locations.                             |
+| `Business`     | `/api/businesses`                      | Server Place join          | Independent Business roots own organisation identity and link optional Place locations.                                                           |
 
 Scoped/provided collection surfaces
 

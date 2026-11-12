@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-11-10
+Updated: 2026-11-12
 Ref: 0cf23bb13
 Role: map, not canon
 
@@ -105,6 +105,19 @@ disposal; it does not supply injection context. See the [loader](../../packages/
 and [native VueFire regression](../../packages/core/fireux-core/src/test/reactive-exact-documents.test.mjs).
 The Firestore operation outcome types derive from that contract. The former
 `composables/fireux/firestore/operations/read-outcome.ts` path is retired.
+
+Workspace selection, creation and presentation consume `ReadOutcome` directly,
+as do profile, Job, Property and Project directory read contracts. They do not
+publish separate Workspace or directory status unions. An always-active reader
+may emit only four of the five shared values; that subset does not need another
+vocabulary owner. This shared type does not change a reader's acquisition,
+error precedence, retained-page policy or refresh lifetime.
+
+Workspace's `workspace/utils/landing-state.ts` composes account/read facts and
+selection into the landing presentation. Menu's separate directory decision
+includes list/redirect behavior and remains a domain presentation contract,
+rather than a read-state replacement. Authentication and command lifecycles
+likewise retain their distinct meanings.
 
 ### Decisions supported by the outcome contract
 
@@ -265,6 +278,7 @@ Consumed responsibilities use meaningful groups:
 | `featured`       | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                     |
 | `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists and current-App filtering             |
 | `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow                                         |
+| `media`          | Explicit client command for synchronizing App-owned media through the trusted media endpoint                                     |
 | `brand`          | Reactive browser checks for required local App artwork                                                                           |
 | `config`         | Request-aware runtime configuration normalization through `useFireUXConfig`                                                      |
 | `pricing`        | Reactive presentation of the App's declared pricing profiles and tiers                                                           |
@@ -274,15 +288,19 @@ are part of the AppUser relationship, but their command and presentation
 responsibility is separate from membership administration and access projection.
 Grouping does not require one umbrella controller or a fixed number of files.
 
-Keep nonreactive work outside `composables`:
+Keep pure data and value work outside `composables`; scope-aware client commands
+stay beside their owning capability:
 
 - `app/models/app-media.ts`, `app-media-requirements.ts` and
   `app-environment-check.ts` own shared contracts and catalogues. Client and
   server use the same environment-check response shape.
 - `app/utils/app-media.ts` owns pure validation and image-source resolution.
-- `app/utils/initialize-configured-app.ts`, `sync-app-media.ts` and
-  `runAppUserCommand.ts` are explicit client command functions. Trusted
-  implementations remain under `app/server`.
+- `app/composables/initialization/initialize-configured-app.ts`,
+  `app/composables/media/sync-app-media.ts` and
+  `app/composables/membership/run-app-user-command.ts` are explicit client
+  commands. They capture Auth/App scope, credentials and response identity;
+  their watchers are released after each command. Trusted implementations
+  remain under `app/server`.
 - Fixed asset paths use Core's immutable `GLOBAL_BRAND_ASSETS` in
   `src/utils/brandAssets.ts`; they need no `useAssets` wrapper. Brand image
   components own actual load-failure fallback. The obsolete placeholder flag
@@ -299,8 +317,10 @@ checks are client-only, keyed by App/account, pass cancellation to the request,
 and hide pending, failed or unauthorized diagnostics. Capture credentials and
 reject obsolete responses, including change-away-and-back.
 
-Core explicitly registers the root and these seven composable directories in
-`src/module.ts`. Models and ordinary command functions are not auto-imported.
+Core explicitly registers the root and its named composable directories in
+`src/module.ts`. Capability-local command helpers keep explicit imports; the
+media command requires no additional auto-import registration. Existing scans
+may expose collocated exports, without creating another command owner.
 Verify generated consumer imports alongside App reader, settings, media,
 membership and `src/test/app-initialization-scope.test.mjs` lifecycle tests.
 This is App's actual responsibility map, not a required capability list for
@@ -521,12 +541,14 @@ the domain from email hints, and supplies a bounded anonymous fallback. It is
 a pure User policy, not an Auth controller or another validation authority.
 `src/test/user-display-name-seed.test.mjs` protects this seed boundary.
 
-Nonreactive functions use explicit imports from `user/utils`: public handle
-normalization/validation, immutable consumed field-formatting contracts,
-`updateUserHandle`, `provisionUserIdentity`, `provisionSignedInUserAvatar` and
-`provisionSignedInUserAccount`. Provisioning input/result contracts live in
-`user/models/user-provisioning.ts`; they are not another User Entity. Handle,
-avatar and identity provisioning accept the originating owner's current-intent
+Pure User value helpers use explicit imports from `user/utils`: public handle
+normalization/validation and immutable consumed field-formatting contracts.
+`updateUserHandle`, `provisionUserIdentity` and `provisionSignedInUserAvatar`
+live with User identity commands in `user/composables/identity`;
+`provisionSignedInUserAccount` lives in `user/composables/account`.
+Provisioning's private input/result types stay beside `provisionUserIdentity`;
+they do not need a separate model file. Handle, avatar and identity provisioning
+accept the originating owner's current-intent
 predicate. This checks client continuation only; trusted server commands retain
 their existing self-only authority and committed results remain truthful.
 Confirmed handle and avatar changes refresh native Nuxt API projections only

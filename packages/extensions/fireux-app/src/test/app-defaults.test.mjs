@@ -3,13 +3,14 @@ import test from 'node:test'
 import { withDefaultAppLayers, withDefaultAppModules } from '../defaults.ts'
 
 const defaults = [
+  'fireux-app/layer',
   'fireux-core/layer',
   'fireux-blogs/layer',
   'fireux-products/layer',
   'fireux-ai/layer',
 ]
 
-test('App layers include Core, Blogs, Products and AI without changing explicit precedence', () => {
+test('App layers include public presentation, Core, Blogs, Products and AI without changing explicit precedence', () => {
   assert.deepEqual(withDefaultAppLayers([]), defaults)
   assert.deepEqual(withDefaultAppLayers(['one', 'two']), [
     'one',
@@ -20,6 +21,7 @@ test('App layers include Core, Blogs, Products and AI without changing explicit 
     'one',
     'fireux-core/layer',
     'two',
+    'fireux-app/layer',
     'fireux-blogs/layer',
     'fireux-products/layer',
     'fireux-ai/layer',
@@ -27,6 +29,7 @@ test('App layers include Core, Blogs, Products and AI without changing explicit 
   assert.deepEqual(withDefaultAppLayers(['fireux-products/layer', 'one']), [
     'fireux-products/layer',
     'one',
+    'fireux-app/layer',
     'fireux-core/layer',
     'fireux-blogs/layer',
     'fireux-ai/layer',
@@ -35,7 +38,11 @@ test('App layers include Core, Blogs, Products and AI without changing explicit 
 
 test('App layers deduplicate explicit declarations and leave the caller array unchanged', () => {
   const layers = ['one', 'fireux-core/layer', 'one', 'fireux-core/layer']
-  assert.deepEqual(withDefaultAppLayers(layers), ['one', ...defaults])
+  assert.deepEqual(withDefaultAppLayers(layers), [
+    'one',
+    'fireux-core/layer',
+    ...defaults.filter((layer) => layer !== 'fireux-core/layer'),
+  ])
   assert.deepEqual(layers, [
     'one',
     'fireux-core/layer',

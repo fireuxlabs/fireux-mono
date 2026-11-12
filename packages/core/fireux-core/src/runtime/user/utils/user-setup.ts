@@ -1,9 +1,8 @@
+import type { ReadOutcome } from '../../utils/read-outcome'
 import type { UserAccount } from '../models/user-account.model'
 import type { User } from '../models/user.model'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../models/user-account-provisioning.ts'
 import { isUserIdentityComplete } from './normalize-user'
-
-type ReadOutcome = 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 
 /** Setup is derived from current records, never stored as an onboarding flag. */
 export function resolveUserSetup(input: {

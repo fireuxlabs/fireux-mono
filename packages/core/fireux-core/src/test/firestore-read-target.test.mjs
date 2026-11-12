@@ -15,7 +15,7 @@ function load(file, result, dependencies = {}) {
 }
 const definitions = load(
   '../runtime/utils/firestore-mutations/target-definition.ts',
-  '({defineFirestoreReadTarget,defineFirestoreMutationTarget,assertFirestoreMutationVerb,assertFirestoreMutationSegment,assertFirestoreMutationDocumentId})',
+  '({defineFirestoreReadTarget,defineFirestoreMutationTarget,assertFirestoreMutationVerb,assertFirestoreMutationSegment,assertFirestoreMutationDocumentId,resolveFirestoreMutationDatabaseId})',
   {
     isFirestoreDocumentId: load(
       '../runtime/utils/firestore-document-id.ts',
@@ -25,12 +25,15 @@ const definitions = load(
 )
 function transaction() {
   const writes = []
+  const opened = []
   const db = {
     collection: (collection) => ({ doc: (id) => ({ collection, id }) }),
     runTransaction: (work) =>
       work({
         get: async (ref) => ({ exists: true, data: () => ref }),
+        create: (...args) => writes.push(args),
         update: (...args) => writes.push(args),
+        delete: (...args) => writes.push(args),
       }),
   }
   const run = load(
@@ -38,17 +41,103 @@ function transaction() {
     'runGuardedServerTransaction',
     {
       ...definitions,
-      getRuntimeFirestore: () => db,
-      getRuntimeIdentityFirestore: () => db,
+      getRuntimeFirestore: (id) => {
+        opened.push(id)
+        return db
+      },
+      getRuntimeIdentityFirestore: () => {
+        opened.push('identity')
+        return db
+      },
       FieldPath: {},
     }
   )
-  return { run, writes }
+  return { run, writes, opened }
 }
 const reference = definitions.defineFirestoreReadTarget({
   key: 'reference',
   database: { kind: 'runtime' },
   collectionPath: 'kitchens',
+})
+
+test('named database transactions select the exact database and retain lane/verb guards', async () => {
+  const { run, writes, opened } = transaction()
+  const database = { kind: 'named', databaseId: 'alpha' }
+  const target = definitions.defineFirestoreMutationTarget({
+    key: 'alpha-records',
+    database,
+    collectionPath: 'records',
+    lane: 'server',
+    verbs: ['update'],
+  })
+  assert.equal(definitions.resolveFirestoreMutationDatabaseId(target), 'alpha')
+  await run({ ...database }, async (tx) => {
+    assert.deepEqual((await tx.read(target, 'record')).data, {
+      collection: 'records',
+      id: 'record',
+    })
+    tx.update(target, 'record', { name: 'Allowed' })
+    assert.throws(() => tx.delete(target, 'record'), /does not authorize/)
+    assert.throws(
+      () => tx.update({ ...target, lane: 'client' }, 'record', {}),
+      /does not authorize/
+    )
+  })
+  assert.deepEqual(opened, ['alpha'])
+  assert.equal(writes.length, 1)
+})
+
+test('every transaction operation rejects another database or placement kind', async () => {
+  const database = { kind: 'named', databaseId: 'alpha' }
+  const placements = [
+    { kind: 'named', databaseId: 'beta' },
+    { kind: 'runtime' },
+    { kind: 'identity' },
+    { kind: 'default' },
+  ]
+  for (const other of placements) {
+    for (const [placement, targetDatabase] of [
+      [database, other],
+      [other, database],
+    ]) {
+      const { run, writes } = transaction()
+      const target = definitions.defineFirestoreMutationTarget({
+        key: 'scoped-records',
+        database: targetDatabase,
+        collectionPath: 'records',
+        lane: 'server',
+        verbs: ['create', 'update', 'delete'],
+      })
+      await run(placement, async (tx) => {
+        await assert.rejects(
+          tx.read(target, 'record'),
+          /placement does not own/
+        )
+        await assert.rejects(
+          tx.readMany(target, ['record']),
+          /placement does not own/
+        )
+        await assert.rejects(tx.readAll(target, 10), /placement does not own/)
+        await assert.rejects(
+          tx.query(target, { field: 'name', op: '==', value: 'one', limit: 1 }),
+          /placement does not own/
+        )
+        assert.throws(
+          () => tx.create(target, 'record', {}),
+          /placement does not own/
+        )
+        assert.throws(
+          () => tx.update(target, 'record', {}),
+          /placement does not own/
+        )
+        assert.throws(
+          () => tx.delete(target, 'record'),
+          /placement does not own/
+        )
+      })
+      assert.equal(writes.length, 0)
+    }
+  }
 })
 test('a scoped reference can be read but carries no write authority', async () => {
   const { run, writes } = transaction()

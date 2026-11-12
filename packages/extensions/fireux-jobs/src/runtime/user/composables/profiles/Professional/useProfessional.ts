@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/useProfessional.ts
 
-import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
+import { useProfile } from 'fireux-core/runtime/user/composables/profile/useProfile'
 import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
 import { computed } from 'vue'
 
@@ -11,7 +11,10 @@ import { useProfessionalComputed } from './utils/view/useProfessionalComputed'
 import { useProfessionalCreate } from './mutations/useProfessionalCreate'
 import { useProfessionalUpdate } from './mutations/useProfessionalUpdate'
 import { useProfessionalSeo } from './utils/useProfessionalSeo'
-import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
+import {
+  useProfessionalInterface,
+  type ProfessionalCard,
+} from './utils/view/useProfessionalInterface'
 
 export type { ProfessionalCard, Professional }
 

@@ -50,13 +50,12 @@ export function useKitchenWorkspaceIdentity() {
       ? 'ready'
       : 'empty'
   })
-  const { canWrite, availableActions, scopeKey, readState } =
-    useWorkspaceIdentity({
-      id: state.kitchenId,
-      fields,
-      status,
-      canWrite: state.canWrite,
-    })
+  const { canWrite, availableActions, scopeKey } = useWorkspaceIdentity({
+    id: state.kitchenId,
+    fields,
+    status,
+    canWrite: state.canWrite,
+  })
   const canWriteKitchen = computed(() =>
     Boolean(currentUser.value && workspace.root.value)
   )
@@ -93,7 +92,6 @@ export function useKitchenWorkspaceIdentity() {
     listing: workspace.root,
     fields,
     status,
-    readState,
     canWrite,
     canWriteKitchen,
     availableActions,

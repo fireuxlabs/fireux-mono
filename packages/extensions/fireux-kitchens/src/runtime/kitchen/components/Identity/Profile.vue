@@ -1,18 +1,20 @@
 <template>
   <div class="workspace-profile">
-    <FireStateCard
-      v-if="identity.readState.value"
-      :state="identity.readState.value"
+    <FireState
+      v-if="
+        identity.status.value === 'pending' || identity.status.value === 'error'
+      "
+      :outcome="identity.status.value"
       entity="Kitchen identity"
-      kind="document"
-      :title="
-        identity.readState.value === 'empty' ? 'Choose a Kitchen' : undefined
-      "
-      :description="
-        identity.readState.value === 'empty'
-          ? 'Select a Kitchen to view its identity.'
-          : undefined
-      "
+    />
+    <UAlert
+      v-else-if="identity.status.value !== 'ready'"
+      title="Choose a Kitchen"
+      description="Select a Kitchen to view its identity."
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <template v-else-if="identity.place.value">
       <section aria-label="Venue profile" class="workspace-profile__aside">

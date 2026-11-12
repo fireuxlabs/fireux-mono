@@ -6,15 +6,13 @@
         entity="records"
         retryable
         @retry="readOutcome = 'empty'"
-      /><UButton
+      />
+      <UButton
         label="Show error"
         color="neutral"
         variant="outline"
         @click="readOutcome = 'error'"
       />
-    </div>
-    <div v-else-if="name === 'FireStateCard'">
-      <FireStateCard state="empty" entity="record" />
     </div>
     <div v-else-if="name === 'FireCopyError'">
       <FireCopyError message="This is a sample error message." />
@@ -57,9 +55,9 @@
       />
     </div>
     <div v-else-if="name === 'FireCollectionHeader'">
-      <FireCollectionHeader title="Records" description="A collection heading"
-        ><template #controls
-          ><UButton label="Add record" @click="count++" /></template
+      <FireCollectionHeader title="Records" description="A collection heading">
+        <template #controls>
+          <UButton label="Add record" @click="count++" /></template
       ></FireCollectionHeader>
     </div>
     <div v-else-if="name === 'FireCollectionPagination'">
@@ -68,9 +66,10 @@
     </div>
     <div v-else-if="name === 'FireCollectionRow'">
       <FireCollectionRow
-        ><span>Example record</span><template #value>CHF 12</template
-        ><template #actions
-          ><UButton label="Edit" variant="ghost" @click="count++" /></template
+        ><span>Example record</span>
+        <template #value>CHF 12</template>
+        <template #actions>
+          <UButton label="Edit" variant="ghost" @click="count++" /></template
       ></FireCollectionRow>
     </div>
     <div v-else-if="name === 'FireContextEditor'">
@@ -86,9 +85,11 @@
         submit-label="Preview action"
         @submit="count++"
         @clear="text = ''"
-        ><template #write
-          ><UTextarea v-model="text" aria-label="Draft" /></template
-        ><template #preview
+      >
+        <template #write
+          ><UTextarea v-model="text" aria-label="Draft"
+        /></template>
+        <template #preview
           ><p>{{ text }}</p></template
         ></FireCreateShell
       >
@@ -183,9 +184,11 @@
           progress: 33,
           error: '',
         }"
-        ><template #intro><p>Set up your workspace</p></template
-        ><UInput v-model="text" aria-label="Workspace name" /><template #footer
-          ><UButton label="Continue" @click="count++" /></template
+      >
+        <template #intro><p>Set up your workspace</p></template
+        ><UInput v-model="text" aria-label="Workspace name" />
+        <template #footer>
+          <UButton label="Continue" @click="count++" /></template
       ></FireOnboardingShell>
     </div>
     <div v-else-if="name === 'FireDiagnosticsDebugPanel'">
@@ -232,181 +235,6 @@
       <p>Shows App details and access for your signed-in account.</p>
       <UButton to="/dashboard" label="Open Dashboard" />
     </div>
-    <div v-else-if="name === 'FireLegalBrowserStorage'">
-      <FireLegalBrowserStorage />
-    </div>
-    <div v-else-if="name === 'FireLegalPrivacyPolicy'">
-      <FireLegalPrivacyPolicy />
-    </div>
-    <div v-else-if="name === 'FireLegalTermsOfService'">
-      <FireLegalTermsOfService />
-    </div>
-    <div v-else-if="name === 'FireLegalDocuments'"><FireLegalDocuments /></div>
-    <div v-else-if="name === 'FireLibraryCTA'"><FireLibraryCTA /></div>
-    <div v-else-if="name === 'FireLibraryDesignColors'">
-      <FireLibraryDesignColors />
-    </div>
-    <div v-else-if="name === 'FireLibraryDesignContracts'">
-      <FireLibraryDesignContracts />
-    </div>
-    <div v-else-if="name === 'FireLibraryDesignTokens'">
-      <FireLibraryDesignTokens />
-    </div>
-    <div v-else-if="name === 'FireLibraryDesignTypography'">
-      <FireLibraryDesignTypography />
-    </div>
-    <div v-else-if="name === 'FireLibraryUI'"><FireLibraryUI /></div>
-    <div v-else-if="name === 'FireLandingCardGrid'">
-      <FireLandingCardGrid
-        title="Explore"
-        :items="[
-          {
-            title: 'Example feature',
-            description: 'A reusable landing card',
-            icon: 'i-lucide-flame',
-            to: '#preview',
-          },
-        ]"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingDirectoryHome'">
-      <FireLandingDirectoryHome
-        eyebrow="Explore"
-        title="Example directory"
-        description="Browse the available records"
-        icon="i-lucide-grid-2x2"
-        workspace-title="Your workspace"
-        workspace-description="Manage your records"
-        workspace-to="#preview"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingOperationRail'">
-      <FireLandingOperationRail
-        :ariaLabel="'Example operations'"
-        :operations="[
-          {
-            id: 'edit',
-            title: 'Edit records',
-            icon: 'i-lucide-pencil',
-            to: '#preview',
-          },
-        ]"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingPricingStrip'">
-      <FireLandingPricingStrip :ariaLabel="'Example plans'" :plans="plans" />
-    </div>
-    <div v-else-if="name === 'FireLandingProductPricingStrip'">
-      <FireLandingProductPricingStrip app-name="Example" :plans="plans" />
-    </div>
-    <div v-else-if="name === 'FireLandingProductCatalogue'">
-      <FireLandingProductCatalogue
-        :content="{
-          sectionId: 'sample-catalogue',
-          eyebrow: 'Explore',
-          title: 'Example catalogue',
-          items: [
-            {
-              id: 'one',
-              title: 'Example product',
-              description: 'A sample product card',
-              to: '#preview',
-            },
-          ],
-        }"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingProductEntryPaths'">
-      <FireLandingProductEntryPaths
-        :content="{
-          sectionId: 'sample-paths',
-          eyebrow: 'Ignight',
-          title: 'Choose a path',
-          paths: [
-            {
-              id: 'start',
-              kind: 'start',
-              title: 'Create',
-              description: 'Create a workspace',
-              action: { label: 'Create', to: '#preview' },
-            },
-            {
-              id: 'join',
-              kind: 'join',
-              title: 'Join',
-              description: 'Join your team',
-              action: { label: 'Join', to: '#preview' },
-            },
-          ],
-        }"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingProductHeroImage'">
-      <FireLandingProductHeroImage :src="sampleImage" alt="Example landscape" />
-    </div>
-    <div v-else-if="name === 'FireLandingProductIndex'">
-      <FireLandingProductIndex
-        :content="{
-          hero: {
-            title: 'Your next idea',
-            accent: 'Ignight',
-            description: 'A product landing composition with sample copy',
-            primaryAction: { label: 'Explore', to: '#preview' },
-            secondaryAction: { label: 'Learn more', to: '#preview' },
-            trustItems: ['Nuxt', 'Nuxt UI', 'FireUX'],
-          },
-        }"
-        :section-dwell="false"
-        ><template #hero-preview
-          ><p>Product preview</p></template
-        ></FireLandingProductIndex
-      >
-    </div>
-    <div v-else-if="name === 'FireLandingProductProofSection'">
-      <FireLandingProductProofSection
-        section-id="sample-proof"
-        eyebrow="Why it helps"
-        title="Useful shared behavior"
-        description="A reusable product section"
-        :items="['Simple inputs', 'Clear ownership']"
-        ><UCard>Preview content</UCard></FireLandingProductProofSection
-      >
-    </div>
-    <div v-else-if="name === 'FireLandingProductSurfaceShowcase'">
-      <FireLandingProductSurfaceShowcase
-        :items="[
-          {
-            id: 'one',
-            title: 'Overview',
-            description: 'An example product surface',
-            icon: 'i-lucide-layout-dashboard',
-            to: '#preview',
-            action: 'Explore',
-          },
-        ]"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingSkillsIcons'">
-      <CoreLandingSkillsIcons
-        :skills="[
-          { icon: 'i-lucide-flame', label: 'FireUX' },
-          { icon: 'i-lucide-code', label: 'Nuxt' },
-        ]"
-      />
-    </div>
-    <div v-else-if="name === 'FireLandingWorkspacePreviewFrame'">
-      <FireLandingWorkspacePreviewFrame
-        v-model="workspaceTab"
-        :items="[
-          { id: 'overview', title: 'Overview', icon: 'i-lucide-home' },
-          { id: 'records', title: 'Records', icon: 'i-lucide-list' },
-        ]"
-        label="Example workspace"
-        navigation-label="Example navigation"
-        workspace-to="#preview"
-        ><p>Selected: {{ workspaceTab }}</p></FireLandingWorkspacePreviewFrame
-      >
-    </div>
     <div v-else-if="name === 'WorkspaceSelectionRow'">
       <WorkspaceSelectionRow :selected="enabled" @select="enabled = !enabled"
         >Example workspace</WorkspaceSelectionRow
@@ -422,7 +250,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import CoreLandingSkillsIcons from 'fireux-core/runtime/components/landing/SkillsIcons.vue'
 
 defineProps<{ name: string }>()
 const count = ref(0)
@@ -434,26 +261,11 @@ const choices = ref(['active'])
 const tags = ref(['Design', 'Development'])
 const records = ref([{ title: 'First record' }])
 const filename = ref('')
-const workspaceTab = ref('overview')
 const readOutcome = ref<'empty' | 'error'>('empty')
 const options = [
   { label: 'Active', value: 'active' },
   { label: 'Draft', value: 'draft' },
 ]
-const plans = [
-  {
-    id: 'free',
-    title: 'Free',
-    description: 'Example plan',
-    price: 'CHF 0',
-    features: ['Explore the basics'],
-  },
-]
-const sampleImage =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect width="800" height="450" fill="#293348"/><path d="M0 450 260 130 480 350 650 180 800 450" fill="#f59e0b"/></svg>'
-  )
 const saveText = (value: string) => {
   text.value = value
 }

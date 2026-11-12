@@ -8,19 +8,11 @@
       color="neutral"
     /> </WorkspaceAI
   ><WorkspacePortfolioTeam :key="team.state.value.portfolio.id" :team="team" />
-  <WorkspaceFreemium
-    family="portfolio"
-    capability="team"
-    :used-count="team.state.value.team.members.length"
-    page-label="Team"
-    placement="bottom"
-  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
 import WorkspacePortfolioTeam from '../../../portfolio/components/Workspace/Team/Index.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import { usePortfolioWorkspaceTeam } from '../../../portfolio/composables/workspace/usePortfolioWorkspaceTeam'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

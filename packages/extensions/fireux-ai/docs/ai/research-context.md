@@ -1,9 +1,9 @@
 # Industry and Capability Research context
 
-Updated: 2026-10-20
+Updated: 2026-11-12
 Ref: a2bd21763
 Role: living context
-Scope: FireUX AI research method and its explicit consumers
+Scope: FireUX AI research feature, method and App consumers
 
 ## Purpose and inheritance
 
@@ -23,8 +23,14 @@ into model requests. Consumers must select and supply the relevant runtime
 context. The current consumer is a public context page and JSON endpoint;
 automated browsing, research generation and saving are separate execution work.
 
-Core owns the research data contract, pure reference validator, server-only
-App-file loader and shared review pages. Research is an App runtime feature, not
+FireUX AI owns the research data contract, pure reference validator, server-only
+App-file loader, public API and shared review pages beneath its App scope.
+Its native runtime layer preserves `/api/app/search-demand` and the four
+`/search-demand` stages; module component registration owns the existing
+`AppSearchDemand*` names. Registration and static reading are independent of
+`fireuxAi.enabled` and provider mode. No provider request is needed to load or
+review authored research. Core owns none of this feature and does not import AI.
+Research is an App runtime feature, not
 Nuxt assembly configuration. The model and validator import no filesystem or
 TypeScript loader. Each App owns its
 industry scope, source observations, interpretations and capability decisions.
@@ -40,7 +46,7 @@ owners, editing tools and source paths. They do not create a configuration store
 remains pending until actual operator/customer acceptance is recorded.
 Related research may concern an entity that is not enabled in that App's runtime.
 A package research guide does not become a central industry catalogue. The
-shared Core review UI separates the summary, capability explorer, current build
+shared review UI separates the summary, capability explorer, current build
 and Workspace concept. Evidence, job and tool stages use progressive disclosure;
 search and selection are local reading state and reset when the research subject
 changes. Full provenance, limitations and technical assessments remain available
@@ -62,10 +68,10 @@ Published context and proposed capabilities grant no execution permission.
 
 ## Current source and proving examples
 
-- [Research data contract](../../../../../packages/core/fireux-core/src/runtime/app/models/search-demand.ts)
-- [Reference validation](../../../../../packages/core/fireux-core/src/runtime/app/utils/search-demand.ts)
-- [Server-only App-file loader](../../../../../packages/core/fireux-core/src/runtime/app/server/research/load-search-demand.ts)
-- [Shared research pages](../../../../../packages/core/fireux-core/src/runtime/pages/search-demand)
+- [Research data contract](../../../../../packages/extensions/fireux-ai/src/runtime/app/models/search-demand.ts)
+- [Reference validation](../../../../../packages/extensions/fireux-ai/src/runtime/app/utils/search-demand.ts)
+- [Server-only App-file loader](../../../../../packages/extensions/fireux-ai/src/runtime/app/server/research/load-search-demand.ts)
+- [Shared research pages](../../../../../packages/extensions/fireux-ai/src/runtime/pages/search-demand)
 - [Project research](../../../../../projects/fireux/fireux-app/app/search-demand.ts)
 - [Kitchen research](../../../../../projects/misebox/misebox-app/app/search-demand.ts)
 - [Supplier research](../../../../../projects/misebox/misebox-app/app/search-demand/supplier.ts)
@@ -83,10 +89,14 @@ implementation. Retain original observation dates; append new observations rathe
 than presenting historical findings as a fresh study. Validate source identities,
 job/tool/capability references, source paths and first-proof acceptance scope.
 
-Use the source-owned [research tests](../../../../../packages/core/fireux-core/src/test/app-research.test.mjs)
+Use the source-owned [research tests](../../../../../packages/extensions/fireux-ai/src/test/research/review.test.mjs)
 and [context tests](../../src/test/research-context.test.mjs), plus appropriate
 consumer typechecks and a visual check when the public presentation changes.
 Do not make live model requests merely to verify static context.
+The static-review regression exercises the real API with AI execution disabled,
+loads an App-owned fixture and renders all four review stages. Keep the loader's
+`jiti` dependency in this package. Apps importing the contract or validator
+declare `fireux-ai` directly; their authored data stays in the Apps.
 
 ## App context preparation
 

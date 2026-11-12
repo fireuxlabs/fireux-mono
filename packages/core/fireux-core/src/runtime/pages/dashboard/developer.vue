@@ -34,25 +34,25 @@
             </template>
           </UPageHeader>
 
-          <FireStateCard
+          <FireState
             v-if="appOutcome === 'idle' || appOutcome === 'pending'"
             entity="developer workspace"
-            kind="document"
-            loading
+            outcome="pending"
           />
 
-          <FireStateCard
+          <FireState
             v-else-if="appOutcome === 'error'"
             entity="developer workspace"
-            kind="document"
-            state="error"
+            outcome="error"
           />
 
-          <FireStateCard
+          <UAlert
             v-else-if="appOutcome === 'empty' || !appSnapshot"
-            entity="app"
-            kind="document"
-            state="empty"
+            title="App not found"
+            color="neutral"
+            variant="soft"
+            role="status"
+            aria-live="polite"
           />
 
           <div v-else>

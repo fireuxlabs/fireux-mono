@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
+import { useProfileCreate } from 'fireux-core/runtime/user/composables/profile/useProfileCreate'
 import { professionalConfig } from '../../../composables/profiles/Professional/config/professionalConfig'
 import { computed, ref, watch } from 'vue'
 import { useProfessional } from '../../../composables/profiles/Professional/useProfessional'

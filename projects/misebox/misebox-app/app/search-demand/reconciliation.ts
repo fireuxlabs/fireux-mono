@@ -1,5 +1,5 @@
 // Current source references identify the rebuilt ordering boundary; provider payment and dispatch remain separate.
-import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
+import type { AppSearchDemand } from 'fireux-ai/runtime/app/models/search-demand'
 
 export const kitchenReconciliation = {
   first_journey: {

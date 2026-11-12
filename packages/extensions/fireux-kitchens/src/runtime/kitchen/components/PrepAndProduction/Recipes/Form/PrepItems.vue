@@ -13,12 +13,23 @@
         "
       />
     </div>
-    <FireStateCard
+    <UAlert
       v-if="error"
-      state="error"
       title="Prep items unavailable"
       :description="String(error)"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Prep items unavailable', String(error)].filter(Boolean).join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <div v-for="(row, index) in rows" :key="index" class="recipe-input-row">
       <div class="recipe-input-name">
         <USelect

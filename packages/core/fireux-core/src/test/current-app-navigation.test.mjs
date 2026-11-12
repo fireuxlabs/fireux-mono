@@ -66,7 +66,8 @@ async function render(file, homePath) {
   app.component('UButton', link)
   app.component('AppCardsCell', link)
   app.component('AppEditAdmin', { render: () => null })
-  app.component('FireStateCard', { render: () => null })
+  app.component('UAlert', { render: () => null })
+  app.component('FireState', { render: () => null })
   app.component('UIcon', { render: () => null })
   return renderToString(app)
 }

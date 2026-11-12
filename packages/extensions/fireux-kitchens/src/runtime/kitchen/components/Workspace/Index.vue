@@ -56,7 +56,7 @@ import type WorkspaceKitchenHomeSingle from './Home/Single.vue'
 import { computed, ref, watchEffect } from 'vue'
 import { navigateTo } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { workspaceLandingState } from 'fireux-core/runtime/workspace/models/outcome'
+import { workspaceLandingState } from 'fireux-core/runtime/workspace/utils/landing-state'
 import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,

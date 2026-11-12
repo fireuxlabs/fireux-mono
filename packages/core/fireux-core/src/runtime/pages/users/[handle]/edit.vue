@@ -17,23 +17,23 @@
     </UPageHeader>
 
     <UPageBody>
-      <FireStateCard
+      <FireState
         v-if="outcome === 'pending' || outcome === 'idle'"
         entity="User"
-        kind="document"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'error'"
         entity="User"
-        kind="document"
-        state="error"
+        outcome="error"
       />
-      <FireStateCard
+      <UAlert
         v-else-if="outcome === 'empty'"
-        entity="User"
-        kind="document"
-        state="empty"
+        title="User not found"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
       <UPageCard
         v-if="user && canManageMembership && membershipVisible"

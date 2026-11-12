@@ -1,3 +1,4 @@
+import type { ReadOutcome } from '../../../utils/read-outcome'
 // Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: derive one highest current-App tier without duplicating stored authority.
 import { computed } from '#imports'
 import { resolveAppUserAccess } from '../../utils/app-user-access'
@@ -9,7 +10,7 @@ import type { Ref } from 'vue'
 
 export function useAppUserAccess(user: {
   appUser: Ref<AppUserWithId | null | undefined>
-  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'empty' | 'error'>
+  appOutcome: Ref<ReadOutcome>
 }) {
   const appAccess = computed(() =>
     resolveAppUserAccess(
@@ -22,9 +23,7 @@ export function useAppUserAccess(user: {
   const subscription = computed<AppUserSubscription>(
     () => appAccess.value.subscription
   )
-  const hasProSubscription = computed(
-    () => appAccess.value.hasProSubscription
-  )
+  const hasProSubscription = computed(() => appAccess.value.hasProSubscription)
   const hasBusinessSubscription = computed(
     () => appAccess.value.hasBusinessSubscription
   )

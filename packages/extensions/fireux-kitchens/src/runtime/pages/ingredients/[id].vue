@@ -14,11 +14,10 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <FireStateCard
+      <FireState
         v-if="outcome === 'error'"
         entity="Ingredient"
-        state="error"
-        surface="bare"
+        outcome="error"
       />
 
       <div v-else-if="outcome === 'pending'" role="status">
@@ -38,7 +37,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Ingredient (Doc)'"
+        title="Ingredient (Doc)"
         context="Ingredient detail page · ingredients/[id] · ingredient doc"
         :objects="{ ingredient }"
         :derived="{ docId, outcome: ingredient ? 'found' : 'not-found' }"

@@ -1,10 +1,23 @@
 <template>
-  <FireStateCard
+  <UAlert
     v-if="error"
-    state="error"
     :title="`${catalogue.title} unavailable`"
     :description="String(error)"
-  />
+    color="error"
+    variant="soft"
+    role="alert"
+    aria-live="assertive"
+  >
+    <template #actions>
+      <FireCopyError
+        :message="
+          [`${catalogue.title} unavailable`, String(error)]
+            .filter(Boolean)
+            .join('\n')
+        "
+      />
+    </template>
+  </UAlert>
   <FireState v-else-if="pending" outcome="pending" :entity="catalogue.plural" />
   <div v-else-if="!visibleItems.length" class="catalogue-empty">
     <UIcon :name="catalogue.icon" />

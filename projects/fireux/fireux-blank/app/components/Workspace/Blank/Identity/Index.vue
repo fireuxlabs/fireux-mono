@@ -1,16 +1,18 @@
 <template>
   <section class="pagebody">
-    <FireStateCard
-      v-if="readState"
-      :state="readState"
+    <FireState
+      v-if="status === 'pending' || status === 'error'"
+      :outcome="status"
       entity="Blank identity"
-      kind="document"
-      :title="readState === 'empty' ? 'Choose a Blank' : undefined"
-      :description="
-        readState === 'empty'
-          ? 'Select a Blank to view its identity.'
-          : undefined
-      "
+    />
+    <UAlert
+      v-else-if="status !== 'ready'"
+      title="Choose a Blank"
+      description="Select a Blank to view its identity."
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <UCard v-else-if="selectedBlank">
       <template #header
@@ -32,5 +34,5 @@
 </template>
 <script setup lang="ts">
 import { useBlankWorkspaceIdentity } from '../../../../composables/workspace/useBlankWorkspaceIdentity'
-const { selectedBlank, readState } = useBlankWorkspaceIdentity()
+const { selectedBlank, status } = useBlankWorkspaceIdentity()
 </script>

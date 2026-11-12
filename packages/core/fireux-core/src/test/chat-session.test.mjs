@@ -18,7 +18,7 @@ function fixture() {
     toMillis: () => millis,
   })
   const source = readFileSync(
-    new URL('../runtime/server/utils/chat/session.ts', import.meta.url),
+    new URL('../runtime/app/server/chat/session.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')

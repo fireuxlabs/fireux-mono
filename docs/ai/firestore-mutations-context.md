@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-11-08
+Updated: 2026-11-12
 Ref: 470b97114
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -46,8 +46,13 @@ it must not replace Delete or be hidden inside a primitive.
 ## Authority
 
 The retained mutation types define three lanes: Client, Server, and MCP/Skill,
-with Create, Update, and Delete verbs. Client primitives and Server touchpoints
-remain implemented. The unused MCP/Skill metadata target declarations and their
+with Create, Update, and Delete verbs. Client primitives remain implemented.
+Server commands use `runGuardedServerTransaction`; the consumed single-record
+`serverUpdate` helper retains its target checks. There are no standalone generic
+Server Create/Delete wrappers, collection-group transaction adapter, or recursive
+document-tree deletion helper. A future need must establish its owning command
+and authority rather than restoring unused parity scaffolding.
+The unused MCP/Skill metadata target declarations and their
 former write adapters are retired; there is no supported repository MCP/Skill
 write entrypoint. The lane type alone grants no target authority. Scripts and CLI do not gain an additional lane or
 permission to bypass target authority because those adapters are absent.
@@ -109,7 +114,14 @@ owning ecosystem identity database while selecting the App's domain database.
 Each additional binding retains its own lifecycle and Rules authority; its
 existence does not authorize a Rules rollout. Sproochli retains a
 bounded provisional exception for `menu_translation_caches` and
-`translation_memory` until its dedicated migration task. Go QR database
+`translation_memory` until its dedicated migration task. Those server-only targets
+use Core's generic `named` placement with the fixed `sproochli` database ID;
+Core carries no product-specific placement kind. Transactions require both the
+placement kind and, for named databases, the exact database ID to match the target.
+Core's `src/test/firestore-read-target.test.mjs` covers placement isolation and
+lane/verb enforcement. Sproochli's `src/test/server/menu/mutation-targets.test.mjs`
+verifies its fixed database and collection targets.
+Go QR database
 authority remains unresolved and must not be broadened incidentally. Demo is
 source-only; Test and simulation storage are retired.
 
@@ -262,17 +274,18 @@ records. Public meal-deal projection remains read-only.
   `packages/core/fireux-core/src/runtime/app/composables/useAppRead.ts`,
   imported directly by consumers; sessions also reuse the owning reader.
   App identity edits use `app/composables/identity/useAppIdentityUpdate.ts`;
-  App media sync uses `app/utils/sync-app-media.ts`, and
+  App media sync uses `app/composables/media/sync-app-media.ts`, and
   AppUser client controls and readers live in `app/composables/membership`;
-  their command transport is `app/utils/runAppUserCommand.ts`.
+  their command transport is `app/composables/membership/run-app-user-command.ts`.
   `app/composables/initialization/useAppInitialization.ts` captures one
   account/App/User intent across initialization, media sync and diagnostics
   refresh; obsolete scope stops follow-on dispatch and local completion.
   `useAppEnvCheck.ts` keys client-only diagnostics by App/account, passes
   request cancellation and rejects obsolete credentials/results. Verify both
   through `src/test/app-initialization-scope.test.mjs`.
-  User private-account and avatar command functions live in `user/utils`,
-  alongside canonical identity provisioning and handle transport. Profile edits
+  User private-account provisioning lives in `user/composables/account`.
+  Identity provisioning, handle transport and avatar commands live beside
+  `user/composables/identity`'s bootstrap and editing controllers. Profile edits
   use `user/composables/identity/useUserProfileUpdate.ts`; bootstrap uses the
   adjacent `useUserBootstrap.ts`. The complete bootstrap captures one originating
   account/App intent before credentials and stops obsolete follow-on stages,
@@ -294,7 +307,15 @@ records. Public meal-deal projection remains read-only.
   conflict checks and stamps.
   Domain profile creators compose `bootstrapUser(actor)` and
   `useProfileCreate().createProfile(actor)`; Core's profile command remains
-  self-only and rejects a changed signed-in account.
+  self-only and rejects a changed signed-in account. The shared client commands
+  live in `user/composables/profile`; `user/server/profile/provision.ts` composes
+  the existing User targets, current App membership and domain-owned seeds.
+  `provision-contract.ts` validates those seeds and supplies trusted stamps.
+  Profile contracts/results live in `user/models`, not the shared model or
+  server-utility roots. Domain endpoint URLs and identity/runtime database
+  placement retain their existing contracts. Verify with Core's
+  `src/test/user/server/profile/provision.test.mjs` and the domain profile-creation
+  tests.
 - Browser command intent is captured before credentials, including original
   payload, account/App/membership and the owner's actual selection or route.
   Core `useCommandScope` rejects change-away-and-back and disposal before
@@ -707,12 +728,13 @@ in Products' `product-create.test.mjs`.
 
 ## Conversation transaction composition
 
-Core `server/utils/chat/session.ts` owns `stageChatSessionCreation`,
+Core App `app/server/chat/session.ts` owns `stageChatSessionCreation`,
 `requireChatSessionAccess` and `stageChatMessage`. Its ordinary Chat entrypoints
 and Misebox Menu Express consume those operations. The calling domain proves
 its App/operator policy and composes its own record changes in the same guarded
-transaction; Core retains Conversation paths, initial records, expiring recovery
-proof, message payloads and stored-session validation. Reads precede staged
+transaction; `app/models/conversation.model.ts` retains Conversation paths and
+App Chat retains initial records, expiring recovery proof, message payloads and
+stored-session validation. Reads precede staged
 writes. A supplied related-Entity label does not grant authority over that Entity.
 Current checks are Core's `chat-session.test.mjs` and the consuming App's
 `menu-express.test.mjs`.

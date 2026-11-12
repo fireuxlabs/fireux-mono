@@ -7,10 +7,13 @@ import {
   ref,
   computed,
   reactive,
+  shallowReactive,
   watch,
   onScopeDispose,
   effectScope,
   nextTick,
+  toRaw,
+  toValue,
 } from 'vue'
 const root = new URL('../../../../', import.meta.url)
 function load(path, name, deps) {
@@ -63,19 +66,19 @@ const specs = [
   ],
   [
     'App membership',
-    'core/fireux-core/src/runtime/app/utils/runAppUserCommand.ts',
+    'core/fireux-core/src/runtime/app/composables/membership/run-app-user-command.ts',
     'runAppUserCommand',
     'membership',
   ],
   [
     'App initialization',
-    'core/fireux-core/src/runtime/app/utils/initialize-configured-app.ts',
+    'core/fireux-core/src/runtime/app/composables/initialization/initialize-configured-app.ts',
     'initializeConfiguredApp',
     'initialization',
   ],
   [
     'App media',
-    'core/fireux-core/src/runtime/app/utils/sync-app-media.ts',
+    'core/fireux-core/src/runtime/app/composables/media/sync-app-media.ts',
     'syncAppMediaToStorage',
     'media',
   ],
@@ -87,13 +90,13 @@ const specs = [
   ],
   [
     'User handle',
-    'core/fireux-core/src/runtime/user/utils/update-user-handle.ts',
+    'core/fireux-core/src/runtime/user/composables/identity/update-user-handle.ts',
     'updateUserHandle',
     'handle',
   ],
   [
     'User avatar',
-    'core/fireux-core/src/runtime/user/utils/provision-user-avatar.ts',
+    'core/fireux-core/src/runtime/user/composables/identity/provision-user-avatar.ts',
     'provisionSignedInUserAvatar',
     'avatar',
   ],
@@ -191,6 +194,7 @@ function harness(spec, waitAt = 'token', invalid = false) {
     useFireUXConfig: () => config,
     useAppSession: () => ({ appUser }),
     useRoute: () => route,
+    useRuntimeConfig: () => ({ public: { fireux: { reservedRouteKeys: [] } } }),
     useRequireUser: async () => {
       if (waitAt === 'require') {
         reached.resolve()
@@ -404,52 +408,67 @@ for (const changed of [
   'disposal',
 ])
   for (const fails of [false, true])
-    test(`Kitchen Home completion respects ${changed} scope on ${fails ? 'failure' : 'success'}`, async () => {
+    test(`Kitchen listing editor completion respects ${changed} scope on ${fails ? 'failure' : 'success'}`, async () => {
       const reply = deferred(),
         scope = effectScope(),
-        props = reactive({ open: false }),
+        props = shallowReactive({ open: false }),
         events = [],
         calls = []
       const currentUser = ref({ uid: 'actor' }),
         id = ref('k1'),
-        outcome = ref('ready')
+        canWriteKitchen = ref(true)
       const data = ref({
         id: 'k1',
         identity: { slug: 'before', status: 'active', visibility: false },
       })
-      const workspace = {
-        id,
-        outcome,
-        data,
-        crud: {
-          update: async (input) => {
-            calls.push(input)
-            await reply.promise
-          },
+      const identity = {
+        kitchenId: id,
+        listing: data,
+        canWriteKitchen,
+        update: async (changes) => {
+          calls.push({ kitchenId: id.value, changes })
+          await reply.promise
         },
       }
+      props.identity = identity
       const deps = {
         ref,
         watch,
+        computed,
         useCommandScope,
         useAuth: () => ({ currentUser }),
-        useKitchenWorkspace: () => workspace,
-        useKitchenUpdate: () => ({ updateKitchen: workspace.crud.update }),
+        normalizeSlug: (value) => value.trim(),
+        useIdentityEditor: load(
+          'core/fireux-core/src/runtime/composables/fireux/useIdentityEditor.ts',
+          'useIdentityEditor',
+          {
+            computed,
+            ref,
+            watch,
+            onScopeDispose,
+            toRaw,
+            toValue,
+            useCommandScope,
+          }
+        ),
         defineProps: () => props,
         defineEmits:
           () =>
-          (...args) =>
-            events.push(args),
+          (...args) => {
+            events.push(args)
+            if (args[0] === 'update:open') props.open = args[1]
+          },
       }
       const state = scope.run(() =>
         load(
           'extensions/fireux-kitchens/src/runtime/kitchen/components/Identity/ListingEdit.vue',
-          '({save, slug, saving, updateError})',
+          '({save, draft, saving, updateError})',
           deps
         )
       )
       props.open = true
       await nextTick()
+      state.draft.value.slug = 'edited'
       const flight = state.save()
       assert.equal(calls.length, 1)
       if (changed === 'account') {
@@ -466,13 +485,14 @@ for (const changed of [
         props.open = true
         await nextTick()
       }
-      if (changed === 'draft') state.slug.value = 'after'
+      if (changed === 'draft') state.draft.value.slug = 'after'
       if (changed === 'disposal') scope.stop()
+      const priorEvents = [...events]
       if (fails) reply.reject(new Error('Old save failed'))
       else reply.resolve()
       await flight
       if (changed !== 'none') {
-        assert.equal(events.length, 0)
+        assert.deepEqual(events, priorEvents)
         assert.equal(state.updateError.value, '')
       } else if (fails) {
         assert.equal(events.length, 0)
@@ -485,7 +505,7 @@ for (const changed of [
       assert.deepEqual(calls[0], {
         kitchenId: 'k1',
         changes: {
-          'identity.slug': 'before',
+          'identity.slug': 'edited',
           'identity.status': 'active',
           'identity.visibility': false,
         },

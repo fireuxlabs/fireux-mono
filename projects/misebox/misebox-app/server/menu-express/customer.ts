@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { stageChatMessage } from 'fireux-core/runtime/server/utils/chat/session'
+import { stageChatMessage } from 'fireux-core/runtime/app/server/chat/session'
 import { readKitchenMenuReview } from 'fireux-kitchens/runtime/menu/server/publication/review'
 import { context, requireCustomer } from './authority'
 import { dto, fail, requestId, requireReview, text } from './contract'

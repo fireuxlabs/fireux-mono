@@ -1,3 +1,4 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { usePortfolioAccess } from './usePortfolioAccess'
 // Concurrent edit — 2026-07-20 16:15 CEST — Workspace Spine pass: centralize Portfolio operation write authorization.
 // Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: expose access-resolved target readiness for related Property reads.
@@ -10,7 +11,6 @@ import {
 } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { Portfolio } from '../models/portfolio.model'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import {
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,
@@ -26,7 +26,7 @@ export type PortfolioScope = {
   rootCollection: ComputedRef<string>
   appId: ComputedRef<string>
   ecosystem: ComputedRef<string>
-  targetOutcome: Readonly<Ref<WorkspaceTargetOutcome>>
+  targetOutcome: Readonly<Ref<ReadOutcome>>
   canRead: ComputedRef<boolean>
   canWrite: ComputedRef<boolean>
   collectionPath: ComputedRef<string>
@@ -67,7 +67,7 @@ export function usePortfolioScope(
   const workspace = {
     id: requested,
     data: source.portfolio,
-    outcome: computed<WorkspaceTargetOutcome>(() =>
+    outcome: computed<ReadOutcome>(() =>
       access.outcome.value !== 'ready'
         ? access.outcome.value
         : !requested.value

@@ -25,12 +25,21 @@
       </div>
     </template>
     <FireState v-else-if="loading" outcome="pending" />
-    <FireStateCard
+    <UAlert
       v-else-if="source.outcome.value === 'error'"
-      state="error"
       title="Project could not be loaded"
       description="Please try again."
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Project could not be loaded&#10;Please try again."
+        />
+      </template>
+    </UAlert>
     <UAlert
       v-else
       color="neutral"

@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-11-10
+Updated: 2026-11-12
 Ref: 83b341600
 Role: map, not canon
 
@@ -286,8 +286,9 @@ error details for the existing copy-error control. It presents pending, empty
 and error messages with accessible status/alert semantics; ready and
 idle render nothing. It emits `retry` when an enabled retry action is chosen. It owns no reader,
 command, card shell or content slot.
-Both Core and FireUX App Apps indexes consume it. Existing `FireStateCard`
-consumers remain separate and are not migrated by this page change.
+Core, domain and App consumers use it for plain feedback. Domains compose native
+`UAlert` or `UCard` when they need contextual copy or actions; there is no second
+shared state-card API. Error copying uses supplied details or the displayed message.
 
 Core [FireCollectionPagination](../../packages/core/fireux-core/src/runtime/components/Collection/Pagination.vue)
 accepts `hasMore`, `loading` and optional `error`, emits `load-more`, and uses
@@ -297,7 +298,8 @@ from initial-load errors, retaining the current records while loading or retryin
 
 The public [component reference](../../packages/extensions/fireux-docs/src/runtime/pages/docs/components/index.vue)
 publishes only Core's explicit `src/catalogue/public-components.mjs` entries,
-each with a safe preview. The complete inventory lives at the development-only
+each with a Docs-owned safe preview. Core contains reusable runtime components;
+example-only fixtures stay with the consuming reference. The complete inventory lives at the development-only
 `/dev/core-components`; internal implementation components are not a public API.
 Extension previews live separately
 and may render a package-owned component with generic placeholder data; this

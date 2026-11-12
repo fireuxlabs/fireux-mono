@@ -1,4 +1,4 @@
-import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { PlatformDirectoryResponse } from '../../shared/platform-directory'
 import { toEcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/server/directory/projection'
 import { readPlatformApps } from './apps'
 import { readPlatformEcosystems } from './ecosystems'

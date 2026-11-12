@@ -7,12 +7,6 @@ export const publicComponents = [
     description: 'Show loading, empty and error states.',
   },
   {
-    name: 'FireStateCard',
-    source: 'components/molecules/StateCard.vue',
-    group: 'Feedback',
-    description: 'Show a read outcome inside a card.',
-  },
-  {
     name: 'FireCopyError',
     source: 'components/molecules/CopyError.vue',
     group: 'Feedback',

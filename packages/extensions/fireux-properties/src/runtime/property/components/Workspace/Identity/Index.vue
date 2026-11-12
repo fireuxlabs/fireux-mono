@@ -1,16 +1,18 @@
 <template>
   <section>
-    <FireStateCard
-      v-if="readState"
-      :state="readState"
+    <FireState
+      v-if="status === 'pending' || status === 'error'"
+      :outcome="status"
       entity="Property identity"
-      kind="document"
-      :title="readState === 'empty' ? 'Choose a Property' : undefined"
-      :description="
-        readState === 'empty'
-          ? 'Select a Property to view its identity.'
-          : undefined
-      "
+    />
+    <UAlert
+      v-else-if="status !== 'ready'"
+      title="Choose a Property"
+      description="Select a Property to view its identity."
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <UCard v-else-if="selectedProperty">
       <template #header>
@@ -60,7 +62,8 @@
           :key="identity.propertyId.value"
           :identity="identity"
           @close="open = false"
-      /></template>
+        />
+      </template>
     </USlideover>
     <FireContextRecord
       v-if="identity.canWrite.value"
@@ -77,7 +80,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { usePropertyWorkspaceIdentity } from '../../../composables/workspace/usePropertyWorkspaceIdentity'
 import PropertyIdentityEdit from './Edit.vue'
 const identity = usePropertyWorkspaceIdentity()
-const { selectedProperty, name, imageUrl, readState } = identity
+const { selectedProperty, name, imageUrl, status } = identity
 const { currentUser } = useAuth()
 const open = ref(false)
 watch(

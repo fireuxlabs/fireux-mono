@@ -40,9 +40,11 @@ export function normalizeGoQrDocSlug(value: unknown) {
 }
 
 export function validateGoQrDocSlug(slug: string) {
+  const keys = useRuntimeConfig().public?.fireux?.reservedRouteKeys
   return validatePublicSlug(slug, {
     label: 'Doc path',
     reservedScope: 'root',
+    runtimeReservedRouteKeys: Array.isArray(keys) ? keys : [],
     reserved: reservedGoQrDocSlugs,
   })
 }

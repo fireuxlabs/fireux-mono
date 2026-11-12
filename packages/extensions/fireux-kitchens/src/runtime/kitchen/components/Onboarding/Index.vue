@@ -18,12 +18,10 @@
         }
       "
     />
-    <FireStateCard
+    <FireState
       v-else-if="initialSelectionPending || selectionPending"
       entity="kitchen"
-      kind="document"
-      surface="bare"
-      loading
+      outcome="pending"
     />
 
     <div v-else-if="!place && existingRootId" class="form-stack-sm">

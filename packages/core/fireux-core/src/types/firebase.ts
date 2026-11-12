@@ -13,11 +13,3 @@ export interface FirestoreTimestamp {
  * Firestore timestamps returned by some SDK paths omit the tag.
  */
 export type FirebaseTimestamp = Omit<FirestoreTimestamp, 'type'>
-
-/**
- * Convenience union for APIs that accept ISO strings or Firestore timestamps.
- */
-export type FirestoreTimestampOrString =
-  | FirestoreTimestamp
-  | FirebaseTimestamp
-  | string

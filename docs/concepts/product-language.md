@@ -1,6 +1,6 @@
 # Product language
 
-Updated: 2026-11-06
+Updated: 2026-11-12
 Ref: 614700fd9
 Role: map, not canon
 
@@ -95,9 +95,9 @@ sourced evidence
 
 App-owned `app/search-demand.ts` records the market-level evidence, analysis,
 Tool hypotheses, and capability decisions for that App domain. A domain package
-keeps deeper capability research beside the capability owner. Core renders the
+keeps deeper capability research beside the capability owner. FireUX AI renders the
 shared stages but does not decide an App's Tools or capabilities. The shared
-contract in `packages/core/fireux-core/src/runtime/app/models/search-demand.ts` also
+contract in `packages/extensions/fireux-ai/src/runtime/app/models/search-demand.ts` also
 supports official statistics, surveys, interviews, discussions, regulatory and
 operational guidance, product documentation and operator cases. Direct observations carry findings and
 limitations, with stable IDs for cluster and assessment references. Capability
@@ -318,10 +318,11 @@ Legacy stored `premium` reads as `pro` through the App-owned subscription reader
 The Business plan and a Business identity have separate lifecycles. A Business
 may use Free. Business-plan intake must collect the accepted business fields
 through the owning Business command before completing an upgrade.
-Core pricing owns the pre-designed amounts and formulas; each Main App owns a
+`fireux-app` pricing owns the pre-designed commercial amounts and formulas; each Main App owns a
 thin `useXPricing` wrapper containing its Entity noun, capabilities, Managed
 availability, and ecosystem-offer policy. Shared pricing components receive
-that result as presentation data. Pricing literature does not belong in
+that result as presentation data. These offers do not grant membership or
+capacity: those checks remain in Core. Pricing literature does not belong in
 `nuxt.config.ts` or public runtime config. Tenant Apps do not own or advertise
 the FireUX ecosystem-creation offer.
 
@@ -348,7 +349,7 @@ changing published offers. Product owners may then accept or round each price.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Menu/Items/Detail/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Landing/Index.vue`
-- `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`
+- `packages/extensions/fireux-app/src/runtime/app/composables/pricing/usePricing.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 
 ## Verification

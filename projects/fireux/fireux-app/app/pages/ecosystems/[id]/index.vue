@@ -2,23 +2,23 @@
   <UPage>
     <UPageBody>
       <EcosystemDetail v-if="ecosystem" :ecosystem="ecosystem" />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'pending'"
         entity="ecosystem"
-        kind="document"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'error'"
         entity="ecosystem"
-        kind="document"
-        state="error"
+        outcome="error"
       />
-      <FireStateCard
+      <UAlert
         v-else-if="outcome === 'empty'"
-        entity="ecosystem"
-        kind="document"
-        state="empty"
+        title="Ecosystem not found"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
       <FireDiagnosticsDebugPanel
         title="Ecosystem detail acquisition"

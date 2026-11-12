@@ -7,7 +7,7 @@ import {
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAppUsersTarget } from 'fireux-core/runtime/app/server/mutation-targets'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { requireChatSessionAccess } from 'fireux-core/runtime/server/utils/chat/session'
+import { requireChatSessionAccess } from 'fireux-core/runtime/app/server/chat/session'
 import { fail } from './contract'
 
 export function context(event: H3Event) {

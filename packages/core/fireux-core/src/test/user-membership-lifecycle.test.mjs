@@ -297,7 +297,7 @@ for (const action of ['ensure-self', 'bootstrap-admin', 'remove-member']) {
     }
     const actor = currentUser
     const run = load(
-      '../runtime/app/utils/runAppUserCommand.ts',
+      '../runtime/app/composables/membership/run-app-user-command.ts',
       'runAppUserCommand',
       {
         useAuth: () => ({

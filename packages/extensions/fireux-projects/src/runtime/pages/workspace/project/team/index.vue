@@ -19,19 +19,11 @@
   ><UPageHeader :title="intro.title" :description="intro.purpose" />
   <ProjectTeamAI :team="team" @action="teamView?.openAction($event)" />
   <ProjectTeam :key="team.state.value.project.id" ref="teamView" :team="team" />
-  <WorkspaceFreemium
-    family="project"
-    capability="team"
-    :used-count="team.state.value.team.members.length"
-    page-label="Team"
-    placement="bottom"
-  />
 </template>
 
 <script setup lang="ts">
 import { computed, useTemplateRef } from 'vue'
 const teamView = useTemplateRef('teamView')
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

@@ -19,20 +19,12 @@
   ><UPageHeader :title="intro.title" :description="intro.purpose" />
   <KitchenTeamAI :team="team" @action="teamView?.openAction($event)" />
   <KitchenTeam :key="team.state.value.kitchen.id" ref="teamView" :team="team" />
-  <WorkspaceFreemium
-    family="kitchen"
-    capability="team"
-    :used-count="team.state.value.team.members.length"
-    page-label="Team"
-    placement="bottom"
-  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import KitchenTeam from '../../../../kitchen/components/Team/Index.vue'
 const teamView = ref<InstanceType<typeof KitchenTeam>>()
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/workspace/components/IntroInfo.vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

@@ -55,12 +55,10 @@
         </div>
       </UPageCard>
 
-      <FireStateCard
+      <FireState
         v-else
         entity="User"
-        kind="document"
-        :loading="outcome === 'pending' || outcome === 'idle'"
-        :state="outcome === 'error' ? 'error' : 'empty'"
+        :outcome="outcome === 'idle' ? 'pending' : outcome"
       />
     </ClientOnly>
   </section>

@@ -8,6 +8,10 @@ const sourceRoot = join(packageRoot, 'src/config')
 const outputRoot = join(packageRoot, 'dist/config')
 const configDependencyFiles = [
   {
+    source: join(packageRoot, 'src/utils/public-slug-policy.ts'),
+    output: join(packageRoot, 'dist/utils/public-slug-policy.mjs'),
+  },
+  {
     source: join(packageRoot, 'src/utils/seo-indexing.ts'),
     output: join(packageRoot, 'dist/utils/seo-indexing.mjs'),
   },

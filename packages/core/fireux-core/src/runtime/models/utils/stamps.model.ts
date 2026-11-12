@@ -17,11 +17,3 @@ export interface FireuxStamps {
 }
 
 export type FireuxStamped = FireuxStamps
-
-/** Transitional shape for stored records that have not migrated to nested stamps. */
-export interface FireuxLegacyStamped {
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-  creator_id?: string
-  app_id?: string
-}

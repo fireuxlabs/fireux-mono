@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed, useTemplateRef } from 'vue'
-import { useLandingMotion } from 'fireux-core/runtime/composables/fireux/motion/useLandingMotion'
+import { useLandingMotion } from 'fireux-app/runtime/composables/landing/useLandingMotion'
 import type { TemplateOneKitchenProjection } from '../../models/template-one'
 import TemplateOneFooterScene from './FooterScene.vue'
 import TemplateOneFranchiseScene from './FranchiseScene.vue'

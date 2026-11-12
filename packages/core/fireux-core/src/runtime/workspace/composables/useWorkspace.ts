@@ -1,3 +1,4 @@
+import type { ReadOutcome } from '../../utils/read-outcome'
 import { useCookie, useState, useNuxtApp } from '#imports'
 import {
   computed,
@@ -8,7 +9,6 @@ import {
 } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { normalizeString } from '../../utils/normalize-string'
-import type { WorkspaceOutcome } from '../models/outcome'
 
 export function normalizeWorkspace(value: unknown) {
   return normalizeString(value).toLowerCase()
@@ -50,10 +50,7 @@ export function useWorkspace(workspace: string) {
     activeId.value = value
     cookie.value = value
   }
-  const reconcile = (
-    availableIds: readonly string[],
-    outcome: WorkspaceOutcome
-  ) => {
+  const reconcile = (availableIds: readonly string[], outcome: ReadOutcome) => {
     if (outcome !== 'ready' && outcome !== 'empty') return
     const ids = availableIds.map(normalizeString).filter(Boolean)
     if (ids.includes(activeId.value)) return

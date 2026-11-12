@@ -294,12 +294,12 @@ test('actual App head retains one reactive registration across normal and Worksp
         }),
         useHead: (callback) => registrations.push(callback),
       },
-      '../../utils/app-theme': { resolveAppTheme: (value) => value },
+      '../utils/app-theme': { resolveAppTheme: (value) => value },
       '../../../utils/seo-indexing': {
         resolveSeoRobots: ({ path }) =>
           path.startsWith('/workspace') ? 'noindex' : 'index',
       },
-      '../../utils/build-version-url': {
+      '../utils/build-version-url': {
         withBuildVersion: (path, build) =>
           `${path}${path.includes('?') ? '&' : '?'}v=${build}`,
       },
@@ -348,8 +348,8 @@ test('App theme validates the same complete palette and typography contract', ()
     {}
   )
   const { resolveAppTheme } = loadScript(
-    readFileSync(join(runtime, 'utils/app-theme.ts'), 'utf8'),
-    { '../../types/theme': types }
+    readFileSync(join(runtime, 'app/utils/app-theme.ts'), 'utf8'),
+    { '../../../types/theme': types }
   )
   const theme = {
     palette: Object.fromEntries(

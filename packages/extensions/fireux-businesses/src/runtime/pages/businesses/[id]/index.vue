@@ -14,23 +14,26 @@
       </template>
     </UPageHeader>
     <UPageBody class="pagebody">
-      <FireStateCard
+      <FireState
         v-if="outcome === 'pending'"
         entity="business"
-        state="loading"
+        outcome="pending"
       />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'error'"
-        entity="business"
-        state="error"
         @retry="refresh"
-      />
-      <FireStateCard
-        v-else-if="outcome === 'empty'"
         entity="business"
-        state="empty"
+        outcome="error"
+        retryable
+      />
+      <UAlert
+        v-else-if="outcome === 'empty'"
         title="Business not found"
         description="This business does not exist or is no longer available."
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
       <div v-else>
         <BusinessCardsOverview

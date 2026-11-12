@@ -1,6 +1,6 @@
 import { refreshNuxtData } from 'nuxt/app'
 import type { WatchSource } from 'vue'
-import { useRoute } from '#imports'
+import { useRoute, useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -17,6 +17,7 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
   const session = useAppSession()
   const config = useFireUXConfig()
   const route = useRoute()
+  const runtime = useRuntimeConfig()
   const capture = useCommandScope([
     () => currentUser.value?.uid,
     session.appUser,
@@ -70,9 +71,11 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
   }
 
   async function publishKitchen(input: { kitchenId: string; slug: string }) {
+    const keys = runtime.public?.fireux?.reservedRouteKeys
     const slug = validatePublicSlug(input.slug, {
       label: 'Kitchen slug',
       reservedScope: 'root',
+      runtimeReservedRouteKeys: Array.isArray(keys) ? keys : [],
     })
     if (!slug.isValid) {
       throw new Error(slug.message || 'Kitchen slug is not valid.')

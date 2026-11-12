@@ -49,11 +49,13 @@
       description="Shared loading, empty, missing and error presentation."
       variant="outline"
     >
-      <FireStateCard
-        state="empty"
-        surface="bare"
+      <UAlert
         title="Ready for your content"
         description="An empty-state example using the Core state pattern."
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
     </UPageCard>
   </UPageGrid>

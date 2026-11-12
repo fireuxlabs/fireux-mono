@@ -1,10 +1,10 @@
 // Profile family canon: docs/concepts/entities.md
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: restrict Driver self-service writes to contact and tender preferences.
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ProfileRefs } from 'fireux-core/runtime/user/composables/profile/useProfileFetch'
 import {
   useProfileAppStateUpdateBase,
   useProfileUpdateBase,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+} from 'fireux-core/runtime/user/composables/profile/useProfileUpdateBase'
 import {
   DriverStorage,
   type DriverAppState,

@@ -1,6 +1,6 @@
 # App config spine map
 
-Updated: 2026-11-07
+Updated: 2026-11-12
 Ref: a38377207
 Role: map, not canon
 
@@ -38,10 +38,12 @@ config through `useAppConfig`; `resolveAppTheme` validates the palette. Theme is
 not an assembly input or a field in `runtimeConfig.public.fireux`.
 
 App-authored research stays in `app/search-demand.ts`, outside Nuxt assembly.
-Core's `runtime/app/models/search-demand.ts` owns its contract,
+`fireux-ai`'s `runtime/app/models/search-demand.ts` owns its contract,
 `runtime/app/utils/search-demand.ts` validates references, and
 `runtime/app/server/research/load-search-demand.ts` loads it only on the server.
-Research proposals do not enable runtime capabilities.
+Its native layer owns `/search-demand` review routes and `/api/app/search-demand`;
+static review does not depend on AI execution being enabled. Research proposals
+do not enable runtime capabilities.
 
 ## Configuration source names
 
@@ -163,7 +165,7 @@ do not patch these runtime fields manually.
   `navigation.overrides`; Core `useNav` reads it directly through `useAppConfig`.
   It is not deployment runtime configuration. Authentication stays Core-owned; entry routes carry
   mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
-  thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
+  thin `useXPricing` wrapper over `fireux-app` `usePricing`; commercial copy does not
   enter the bundle configuration or public runtime config. `RuntimeApp` derives from
   App config and makes normalized
   arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the

@@ -429,7 +429,13 @@ function mountEdit(h) {
   })
   const warnings = []
   app.config.warnHandler = (message) => warnings.push(message)
-  for (const name of ['UCard', 'UFormField', 'FireStateCard'])
+  for (const name of [
+    'UCard',
+    'UFormField',
+    'FireState',
+    'UAlert',
+    'FireCopyError',
+  ])
     app.component(name, {
       render() {
         return vue.h('div', this.$slots.default?.())

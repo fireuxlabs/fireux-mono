@@ -1,5 +1,5 @@
 import type { Ecosystem } from '../models/ecosystem.model.ts'
-import type { EcosystemDirectoryEntry } from '../../models/utils/directory'
+import type { EcosystemDirectoryEntry } from '../models/ecosystem-directory'
 
 export type EcosystemCard = {
   id: string
@@ -37,10 +37,7 @@ function buildCard(source: EcosystemCardFields, to: string): EcosystemCard {
 }
 
 function toCard(ecosystem: Ecosystem): EcosystemCard {
-  return buildCard(
-    ecosystem,
-    `/ecosystems/${encodeURIComponent(ecosystem.id)}`
-  )
+  return buildCard(ecosystem, `/ecosystems/${encodeURIComponent(ecosystem.id)}`)
 }
 
 function toDirectoryCard(

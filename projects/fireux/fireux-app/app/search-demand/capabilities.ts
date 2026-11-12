@@ -1,4 +1,4 @@
-import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
+import type { AppSearchDemand } from 'fireux-ai/runtime/app/models/search-demand'
 
 const capabilityCandidates = {
   summary:

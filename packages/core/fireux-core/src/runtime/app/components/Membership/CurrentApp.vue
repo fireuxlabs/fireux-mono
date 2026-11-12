@@ -1,17 +1,14 @@
 <template>
   <section aria-label="Current app">
-    <FireStateCard v-if="appPending" entity="app" kind="document" loading />
-    <FireStateCard
-      v-else-if="appError"
-      entity="app"
-      kind="document"
-      state="error"
-    />
-    <FireStateCard
+    <FireState v-if="appPending" entity="app" outcome="pending" />
+    <FireState v-else-if="appError" entity="app" outcome="error" />
+    <UAlert
       v-else-if="!appCard"
-      entity="app"
-      kind="document"
-      state="empty"
+      title="App not found"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
     <UPageCard v-else title="Current App" icon="i-lucide-box" variant="subtle">
       <AppCardsCell

@@ -1,11 +1,12 @@
 import { computed, type Ref } from 'vue'
 import { useIdentity } from '../../composables/fireux/useIdentity'
+import type { ReadOutcome } from '../../utils/read-outcome'
 
 /** Management availability for an identity supplied by its domain owner. */
 export function useWorkspaceIdentity<Fields>(options: {
   id: Ref<string>
   fields: Ref<Fields>
-  status: Ref<string>
+  status: Ref<ReadOutcome>
   canWrite: Ref<boolean>
 }) {
   const identity = useIdentity(options)

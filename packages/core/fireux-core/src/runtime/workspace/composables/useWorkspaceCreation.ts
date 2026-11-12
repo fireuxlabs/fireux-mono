@@ -1,14 +1,14 @@
+import type { ReadOutcome } from '../../utils/read-outcome'
 import type { FireuxAppSubscriptionCapacity } from '../../../config/app/types'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from '../../app/utils/app-subscription-capacity'
 import { resolveWorkspaceCanCreate } from '../utils/policy'
-import type { WorkspaceOutcome } from '../models/outcome'
 
 export type WorkspaceCreationUsage = {
   count: number
-  outcome: WorkspaceOutcome
+  outcome: ReadOutcome
 }
 
 export function useWorkspaceCreation(

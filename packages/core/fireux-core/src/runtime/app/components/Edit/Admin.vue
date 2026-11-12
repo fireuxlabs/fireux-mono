@@ -30,18 +30,16 @@
         </div>
       </div>
 
-      <FireStateCard
+      <FireState
         v-if="appUsersOutcome === 'idle' || appUsersOutcome === 'pending'"
         entity="AppUsers"
-        kind="collection"
-        loading
+        outcome="pending"
       />
 
-      <FireStateCard
+      <FireState
         v-else-if="appUsersOutcome === 'error'"
         entity="AppUsers"
-        kind="collection"
-        state="error"
+        outcome="error"
       />
 
       <div v-else>
@@ -75,7 +73,7 @@ import { computed, ref, watch } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useAppSession } from '../../composables/useAppSession'
-import { runAppUserCommand } from '../../utils/runAppUserCommand'
+import { runAppUserCommand } from '../../composables/membership/run-app-user-command'
 import { useAppUsers } from '../../composables/membership/useAppUsers'
 import { useUserView } from '../../../user/composables/useUserView'
 import type { UserPillProps } from '../../../user/components/Cards/Pill.vue'

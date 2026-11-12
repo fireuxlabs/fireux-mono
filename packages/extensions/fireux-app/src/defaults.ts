@@ -7,6 +7,7 @@ export const DEFAULT_APP_MODULES = [
   'fireux-ai',
 ] as const
 export const DEFAULT_APP_LAYERS = [
+  'fireux-app/layer',
   'fireux-core/layer',
   'fireux-blogs/layer',
   'fireux-products/layer',

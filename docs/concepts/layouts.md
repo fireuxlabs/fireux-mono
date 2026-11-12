@@ -135,6 +135,9 @@ relationship.
   consume NuxtLayout's native slot. FireuxApp or the App root supplies NuxtPage.
   Auth and Diagnostics retain their client-only boundary; the other layouts
   retain their existing chrome. This follows [Nuxt's layout composition](https://learn.nuxt.com/en/concepts/layout).
+- The neutral `landing` layout remains in Core for shared public and Chat shells.
+  Commercial/public content and landing styles are registered by `fireux-app/layer`;
+  Main discovery composition is registered by `fireux-ecosystem/layer`.
 - Core's [page policy](../../packages/core/fireux-core/src/config/module/pages-config.ts)
   disables page transitions for Workspace routes and routes using the Dashboard
   layout. Dashboard policy follows inherited layout metadata, including nested

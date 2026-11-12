@@ -1,5 +1,14 @@
 <template>
-  <TestAI :test="test" family="kitchen" label="Kitchen" endpoint="/api/workspace/kitchen/tests/intent" />
+  <TestAI
+    :test="test"
+    family="kitchen"
+    label="Kitchen"
+    endpoint="/api/workspace/kitchen/tests/intent"
+  >
+    <template #model>
+      <WorkspaceAIModelLabel />
+    </template>
+  </TestAI>
 </template>
 <script setup lang="ts">
 import TestAI from 'fireux-core/runtime/workspace/components/Test/AI.vue'

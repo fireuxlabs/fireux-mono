@@ -118,7 +118,7 @@ async function render(path, state) {
     props: {
       entity: String,
       loading: Boolean,
-      state: String,
+      outcome: String,
       message: String,
       title: String,
       description: String,
@@ -130,8 +130,8 @@ async function render(path, state) {
       (props, { slots }) =>
       () =>
         h('div', [
-          name === 'FireStateCard'
-            ? `${props.entity}: ${props.loading ? 'loading' : props.state}`
+          name === 'FireState'
+            ? `${props.entity}: ${props.outcome}`
             : name === 'FireCopyError'
               ? `Copy error: ${props.message}`
               : props.title || '',
@@ -280,7 +280,7 @@ test('website reports only current save failure, and native read states do not c
   f.source.outcome.value = 'pending'
   f.source.origins.value = []
   html = await render(workspace + 'Integrations/AllowedWebsites.vue', f.state)
-  assert.match(html, /Allowed websites: loading/)
+  assert.match(html, /Allowed websites: pending/)
   assert.doesNotMatch(html, /No external websites/)
   f.source.error.value = 'Read failed'
   f.source.outcome.value = 'error'

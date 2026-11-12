@@ -35,24 +35,32 @@
       </template>
     </FireCollectionHeader>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-if="outcome === 'pending'"
       title="Loading businesses"
       description="Finding businesses…"
       icon="i-lucide-loader-circle"
-      loading
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else-if="outcome === 'error'"
       title="Businesses unavailable"
       description="Businesses could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      state="error"
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
     >
       <template #actions>
+        <FireCopyError
+          message="Businesses unavailable&#10;Businesses could not be loaded. Please try again."
+        />
         <UButton
           label="Try again"
           color="neutral"
@@ -61,7 +69,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </FireStateCard>
+    </UAlert>
 
     <div v-else-if="cardsFiltered.length">
       <BusinessCollectionList :cards="cardsFiltered" :variant="variant">
@@ -94,16 +102,19 @@
       </div>
     </div>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-building-2"
       :title="query ? 'No businesses match your search' : 'No businesses yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Once business records are added, they will display here.'
       "
+      icon="i-lucide-building-2"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>
@@ -111,7 +122,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Businesses (JSON)'"
+        title="Businesses (JSON)"
         context="Business collection · canonical Businesses with explicitly linked Places"
         :objects="devJsonData"
         :derived="{ places: collection }"

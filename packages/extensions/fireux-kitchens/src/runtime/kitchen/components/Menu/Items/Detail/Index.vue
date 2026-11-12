@@ -6,12 +6,28 @@
       title="Select a kitchen"
       description="Choose a Kitchen before viewing its Items."
     />
-    <FireStateCard
+    <UAlert
       v-else-if="error"
-      state="error"
       :title="`${catalogue.singular} unavailable`"
       description="This record could not be loaded. Please try again."
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            [
+              `${catalogue.singular} unavailable`,
+              'This record could not be loaded. Please try again.',
+            ]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <p v-else-if="pending" role="status">Loading {{ catalogue.singular }}…</p>
     <UAlert
       v-else-if="!dish"
@@ -67,8 +83,8 @@
       <ItemMenus v-if="view === 'menus'" />
       <UModal v-model:open="manage" title="Item actions">
         <template #body
-          ><KitchenMenuItemsDelete :remove="removeItem"
-        /></template>
+          ><KitchenMenuItemsDelete :remove="removeItem" />
+        </template>
       </UModal>
     </template>
     <ItemSpec

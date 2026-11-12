@@ -1,6 +1,6 @@
 # Translation and reviewed copy
 
-Updated: 2026-11-05
+Updated: 2026-11-12
 Ref: d6240d394
 Role: map, not canon
 
@@ -16,7 +16,9 @@ Map Sproochli's language support, localized fields and reviewed public copy.
   share one package owner.
 - A consuming host owns its runtime Sproochli cache. The shared server package
   resolves the host's Firebase runtime and fixed named database `sproochli`;
-  the standalone Sproochli App generates missing translations but never
+  its server targets use Core's generic `named` placement, with exact database
+  matching retained by the guarded transaction.
+  The standalone Sproochli App generates missing translations but never
   selects or writes the host database. Production generation is a
   fixed-audience Google OIDC server-to-server call authorized against an exact
   service-account and host scope; the browser never calls the billable

@@ -31,25 +31,36 @@
       </template>
     </FireCollectionHeader>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-if="outcome === 'pending'"
+      aria-atomic="true"
       title="Loading drivers"
       description="Finding driver profiles…"
       icon="i-lucide-loader-circle"
-      loading
-      aria-atomic="true"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else-if="outcome === 'error'"
+      aria-atomic="true"
       title="Drivers unavailable"
       description="Driver profiles could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      state="error"
-      aria-atomic="true"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Drivers unavailable&#10;Driver profiles could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
 
     <DriverCollectionList
       v-else-if="cardsFiltered.length"
@@ -64,16 +75,19 @@
       </template>
     </DriverCollectionList>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-truck"
       :title="query ? 'No matching drivers' : 'No drivers yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Driver profiles will appear here once they are available.'
       "
+      icon="i-lucide-truck"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <FireDiagnosticsDebugPanel

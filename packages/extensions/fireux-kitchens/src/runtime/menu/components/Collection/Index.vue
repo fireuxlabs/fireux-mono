@@ -33,26 +33,34 @@
 
     <MenuCollectionPicks v-model="selectedPicks" />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-if="isLoading"
+      aria-atomic="true"
       title="Loading menus"
       description="Fetching the latest published menus…"
       icon="i-lucide-loader-2"
-      loading
-      aria-atomic="true"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else-if="outcome.kind === 'unavailable'"
+      aria-atomic="true"
       title="Menus unavailable"
       description="Published menus could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      state="error"
-      aria-atomic="true"
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
     >
       <template #actions>
+        <FireCopyError
+          message="Menus unavailable&#10;Published menus could not be loaded. Please try again."
+        />
         <UButton
           label="Try again"
           color="neutral"
@@ -61,7 +69,7 @@
           @click="index.refresh()"
         />
       </template>
-    </FireStateCard>
+    </UAlert>
 
     <div
       v-else-if="visibleItems.length"
@@ -89,16 +97,19 @@
       </template>
     </div>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-book-open-check"
       :title="hasActiveFilters ? 'No matching menus' : 'No menus yet'"
       :description="
         hasActiveFilters
           ? 'Try a different menu or kitchen name.'
           : 'Published menus will appear here when they are ready.'
       "
+      icon="i-lucide-book-open-check"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div

@@ -8,36 +8,38 @@
     workspace-description="Manage your Kitchen, Menus and Team in one Workspace."
     :workspace-to="workspaceEntryHref"
   >
-    <FireStateCard
-      v-if="pending"
-      state="loading"
-      entity="kitchens"
-      surface="collection"
-    />
-    <FireStateCard
+    <FireState v-if="pending" entity="kitchens" outcome="pending" />
+    <UAlert
       v-else-if="error"
-      state="error"
       title="Kitchens could not be loaded"
       description="Try again to see the latest Kitchens."
-      surface="collection"
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
     >
-      <template #actions
-        ><UButton label="Try again" variant="soft" @click="refresh()"
-      /></template>
-    </FireStateCard>
+      <template #actions>
+        <FireCopyError
+          message="Kitchens could not be loaded&#10;Try again to see the latest Kitchens."
+        />
+        <UButton label="Try again" variant="soft" @click="refresh()" />
+      </template>
+    </UAlert>
     <KitchenCollection v-else-if="kitchens.length" :kitchens="kitchens" />
-    <FireStateCard
+    <UAlert
       v-else
-      state="empty"
       title="No Kitchens available yet"
       description="Kitchens will appear here when they are available to explore."
-      surface="collection"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
   </DirectoryHome>
 </template>
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/workspace/composables/useWorkspaceEntryCta'
-import DirectoryHome from 'fireux-core/runtime/components/landing/DirectoryHome.vue'
+import DirectoryHome from 'fireux-ecosystem/runtime/components/landing/DirectoryHome.vue'
 import { useKitchens } from 'fireux-kitchens/runtime/kitchen/composables/useKitchens'
 const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 const { collection: kitchens, pending, error, refresh } = useKitchens()

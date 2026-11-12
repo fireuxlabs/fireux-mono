@@ -79,6 +79,7 @@ export const metaContent = defineFireuxMeta({ seo: { description: 'Fixture publi
           assert.ok(app.watch.some(path => path.endsWith('/' + name + '/src/module.ts')))
           assert.ok(app.extends.some(path => path.includes('/' + name + '/src/runtime/')))
         }
+        assert.equal(app.extends.filter(path => path.includes('/fireux-app/src/runtime/')).length, 1)
         assert.equal(app.extends.some(path => path.includes('/fireux-ecosystem/')), false)
         assert.throws(() => defineFireuxEcosystem(input), /Main Apps require role/)
         const main = defineFireuxEcosystem({ ...input, id: 'fireux-app', role: 'global' })

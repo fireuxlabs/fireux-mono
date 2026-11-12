@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
+import { useProfileCreate } from 'fireux-core/runtime/user/composables/profile/useProfileCreate'
 import { agentConfig } from '../../../composables/profiles/Agent/config/agentConfig'
 import { computed, ref, watch } from 'vue'
 import { useAgent } from '../../../composables/profiles/Agent/useAgent'

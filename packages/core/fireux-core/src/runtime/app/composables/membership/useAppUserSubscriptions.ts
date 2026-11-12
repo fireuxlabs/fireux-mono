@@ -2,7 +2,7 @@ import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type { AppUserSubscription } from '../../models/app-user.model'
 import { readAppUserSubscription } from '../../models/app-user.model'
-import { runAppUserCommand } from '../../utils/runAppUserCommand'
+import { runAppUserCommand } from './run-app-user-command'
 
 const subscriptions = [
   {

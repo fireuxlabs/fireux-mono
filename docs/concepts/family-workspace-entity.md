@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-11-09
+Updated: 2026-11-12
 Ref: 426cb858c
 Role: map, not canon
 
@@ -194,9 +194,12 @@ permission denial, stale responses, retry and the reviewed control callbacks.
 Both landing routes retain the real selector in the top toolbar, then Hero and
 visible AI. A settled account with no Entity associations gets a named Getting
 Started child and accessible creation/sign-in path instead of collection/focus.
-The shared `workspaceLandingState` distinguishes pending, error, missing related
-records, empty and ready; existing memberships with missing records are not new
-accounts, and unresolved selection is not empty. Populated accounts keep the
+The shared `workspace/utils/landing-state.ts` consumes Core's `ReadOutcome` and
+supplies `workspaceLandingState` for pending, error, empty and ready presentation.
+It considers record count and resolved selection; association count alone does
+not turn an empty record read into ready. Existing memberships with missing
+records are not another read status, and unresolved selection is not empty.
+Populated accounts keep the
 collection/focus composition. Domain-owned square discovery cards follow in both
 states, using current capability routes when selected and public discovery routes
 otherwise. These cards are presentation, not another capability classification.
@@ -298,6 +301,17 @@ same soft prompt, footer, submit, and suggestion-chip anatomy. Domains supply
 context, connected controls,
 messages, commands, and authority; the neutral frame and prompt anatomy must
 not fork merely because one family has more mature execution.
+Core's wide composer exposes a `model` slot and owns no provider configuration,
+default model or model-label policy. `fireux-ai` owns `WorkspaceAIModelLabel`,
+registered from `runtime/components/Workspace/AI/ModelLabel.vue`. Connected
+domain surfaces supply it through that slot; the shared Test AI forwards the
+same slot from its domain adapter. The badge preserves configured, simulator,
+Codex and explicit development labels. Its `developmentCodex` flag changes
+presentation only; domain execution remains with the existing command.
+Core's `src/test/workspace/components/AIComposer.test.mjs` verifies passive
+rendering and event forwarding; AI's
+`src/test/components/Workspace/AI/ModelLabel.test.mjs` verifies label semantics
+and reactive presentation without changing runtime execution.
 Each page AI receives only the CRUD primitives currently available on that
 page. Composer-only AI surfaces may present those primitives as contextual
 prompts but must not imply execution; a connected agent receives only its
@@ -1145,7 +1159,7 @@ identical Main children; the old `workspace-pages.mjs` guard is retired. Other c
 
 Kitchen and Project Identity use named `useKitchenWorkspaceIdentity` and
 `useProjectWorkspaceIdentity` controllers over Core `useWorkspaceIdentity`. Core owns ready-state
-read/edit availability, explicit `readState` presentation outcomes and a reactive
+read/edit availability, the supplied shared `ReadOutcome` and a reactive
 scope key; it owns no identity fields,
 validation, account association or save endpoint. Kitchen retains Place-owned
 venue fields and commands. Project owns its identity fields. Their named Identity components
@@ -1242,7 +1256,8 @@ media URLs remain supported. No saved object is overwritten or deleted by this
 upload path.
 
 The four older routes omit redundant Hero, selection and unavailable AI framing,
-and reuse `FireStateCard` for non-ready Identity outcomes. Supplier's profile
+and use `FireState` for pending/error Identity outcomes, with native alerts for
+their own selection prompts. Supplier's profile
 does not fabricate categories or repeat its tagline as a second headline.
 Domain sections, linked sources, fields and commands remain local; there is no
 universal Identity document or field registry. Supplier now nests publication
@@ -1374,7 +1389,7 @@ transport-envelope parity. This relationship is local to Landing and Menus.
 ### Shared Test AI capability
 
 Kitchen and Project Test consume Core `workspace/components/Test/AI.vue` and
-`models/test-intent.ts`. Their named adapters supply scope, label and their
+`workspace/models/test-intent.ts`. Their named adapters supply scope, label and their
 registered intent endpoint; the shared presentation owns prompts, review forms,
 stale-context rejection and invoking the supplied `TestController`. Account
 changes also invalidate prepared or in-flight results. Both endpoint adapters

@@ -23,17 +23,15 @@
             </template>
           </UPageHeader>
 
-          <FireStateCard
+          <FireState
             v-if="productCollection.outcome === 'pending'"
             entity="Product"
-            kind="collection"
-            loading
+            outcome="pending"
           />
-          <FireStateCard
+          <FireState
             v-else-if="productCollection.outcome === 'error'"
             entity="Product"
-            kind="collection"
-            state="error"
+            outcome="error"
           />
           <ProductCollection v-else :products="productCollection.products" />
         </UPageBody>

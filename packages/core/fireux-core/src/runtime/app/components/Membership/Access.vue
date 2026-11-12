@@ -1,21 +1,21 @@
 <template>
-  <FireStateCard
+  <FireState
     v-if="appUserOutcome === 'idle' || appUserOutcome === 'pending'"
     entity="app user"
-    kind="document"
-    loading
+    outcome="pending"
   />
-  <FireStateCard
+  <FireState
     v-else-if="appUserOutcome === 'error'"
     entity="app user"
-    kind="document"
-    state="error"
+    outcome="error"
   />
-  <FireStateCard
+  <UAlert
     v-else-if="appUserOutcome === 'empty' || !appUser"
-    entity="app user"
-    kind="document"
-    state="empty"
+    title="App user not found"
+    color="neutral"
+    variant="soft"
+    role="status"
+    aria-live="polite"
   />
   <UPageCard
     v-else

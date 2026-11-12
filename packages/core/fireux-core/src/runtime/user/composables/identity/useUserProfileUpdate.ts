@@ -1,11 +1,11 @@
 import { refreshNuxtData } from 'nuxt/app'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
-import { provisionSignedInUserAvatar } from '../../utils/provision-user-avatar'
+import { provisionSignedInUserAvatar } from './provision-user-avatar'
 import type { User } from '../../models/user.model'
 import type { Ref } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
-import { updateUserHandle } from '../../utils/update-user-handle'
+import { updateUserHandle } from './update-user-handle'
 import {
   readUserProfileChanges,
   type UserProfileChanges,

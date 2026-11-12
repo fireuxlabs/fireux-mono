@@ -1,8 +1,8 @@
 import {
-  getReservedEntityRouteSegmentKeys,
-  getReservedRootRouteKeys,
+  BASE_RESERVED_ROUTE_SEGMENT_KEYS,
+  BASE_RESERVED_ROUTE_KEYS,
   normalizeReservedRouteKey,
-} from '../../../config/module/reserved-route-keys'
+} from '../../../utils/public-slug-policy'
 import { normalizeSlug, type NormalizeSlugOptions } from './normalize-slug'
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/
@@ -63,7 +63,6 @@ export type ValidatePublicSlugOptions = NormalizeSlugOptions &
     namespace?: string
     reservedScope?: PublicSlugReservedScope
     reserved?: readonly unknown[]
-    registeredReserved?: readonly unknown[]
     runtimeReservedRouteKeys?: readonly unknown[]
   }
 
@@ -92,28 +91,22 @@ export type AssertPublicSlugOptions = ValidatePublicSlugOptions & {
 }
 
 const normalizeReservedKeys = (values: readonly unknown[] = []): string[] =>
-  values
-    .map(normalizeReservedRouteKey)
-    .filter(Boolean)
+  values.map(normalizeReservedRouteKey).filter(Boolean)
 
 function buildReservedSet(options: ValidatePublicSlugOptions): Set<string> {
   const reserved = new Set<string>()
   const scope = options.reservedScope ?? 'entity'
 
   if (scope === 'root') {
-    for (const key of getReservedRootRouteKeys()) {
+    for (const key of BASE_RESERVED_ROUTE_KEYS) {
       reserved.add(normalizeReservedRouteKey(key))
     }
   }
 
   if (scope === 'entity') {
-    for (const key of getReservedEntityRouteSegmentKeys()) {
+    for (const key of BASE_RESERVED_ROUTE_SEGMENT_KEYS) {
       reserved.add(normalizeReservedRouteKey(key))
     }
-  }
-
-  for (const key of normalizeReservedKeys(options.registeredReserved)) {
-    reserved.add(key)
   }
 
   for (const key of normalizeReservedKeys(options.runtimeReservedRouteKeys)) {
@@ -190,9 +183,7 @@ export async function assertPublicSlug(
 
   const availability = await options.isAvailable(slug)
   const available =
-    typeof availability === 'boolean'
-      ? availability
-      : availability.available
+    typeof availability === 'boolean' ? availability : availability.available
 
   if (!available) {
     const message =

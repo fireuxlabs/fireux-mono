@@ -64,19 +64,19 @@
 </template>
 
 <script setup lang="ts">
+import type { ReadOutcome } from '../../../utils/read-outcome'
 import { computed } from 'vue'
 import type { WorkspaceTargetCard as WorkspaceTargetCardType } from '../../models/target-card'
-import type { WorkspaceOutcome } from '../../models/outcome'
 
 type WorkspaceOverviewFocusState = {
   id: string
   hasSelection: boolean
-  outcome: WorkspaceOutcome
+  outcome: ReadOutcome
 }
 
 type WorkspaceOverviewMultipleSummary = {
   count: number
-  outcome: WorkspaceOutcome
+  outcome: ReadOutcome
 }
 
 const props = withDefaults(

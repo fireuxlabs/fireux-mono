@@ -7,7 +7,7 @@ import {
 
 // Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: expose bounded private request data to FireUX App admins.
 
-import { ConversationStorage } from 'fireux-core/runtime/models/operations/conversation.model'
+import { ConversationStorage } from 'fireux-core/runtime/app/models/conversation.model'
 import { serializeIgnitionRequest } from '../../../utils/ignition-request'
 import { requireFireuxAppAdmin } from '../../../utils/require-fireux-app-admin'
 

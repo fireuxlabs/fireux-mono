@@ -15,23 +15,23 @@
         trailing-icon="i-lucide-arrow-right"
       />
     </div>
-    <FireStateCard
-      v-if="pending"
-      state="loading"
-      entity="projects"
-      surface="bare"
-    />
-    <FireStateCard
+    <FireState v-if="pending" entity="projects" outcome="pending" />
+    <UAlert
       v-else-if="error"
-      state="error"
       title="Projects could not be loaded"
       description="Your Workspace is still available. Try discovery again."
-      surface="bare"
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
     >
-      <template #actions
-        ><UButton label="Try again" variant="soft" @click="refresh()"
-      /></template>
-    </FireStateCard>
+      <template #actions>
+        <FireCopyError
+          message="Projects could not be loaded&#10;Your Workspace is still available. Try discovery again."
+        />
+        <UButton label="Try again" variant="soft" @click="refresh()" />
+      </template>
+    </UAlert>
     <div v-else-if="projects.length" class="pagebody">
       <ULink
         v-for="project in projects.slice(0, 6)"

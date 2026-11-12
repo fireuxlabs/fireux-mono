@@ -1,5 +1,5 @@
 import { kitchenReconciliation } from './reconciliation'
-import type { AppSearchDemand } from 'fireux-core/runtime/app/models/search-demand'
+import type { AppSearchDemand } from 'fireux-ai/runtime/app/models/search-demand'
 import { workspaceProposal } from './capabilities-workspace'
 import { capabilityAssessments } from './capability-assessments'
 

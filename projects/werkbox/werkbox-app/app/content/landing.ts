@@ -2,7 +2,7 @@ import type {
   LandingProductCatalogueContent,
   LandingProductIndexContent,
   LandingProductSurface,
-} from 'fireux-core/runtime/models/landing/product'
+} from 'fireux-app/runtime/models/landing/product'
 
 export const content = {
   hero: {

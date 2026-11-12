@@ -29,7 +29,7 @@
   </UPageSection>
 </template>
 <script setup lang="ts">
-import type { AppPricingTier } from 'fireux-core/runtime/app/composables/pricing/usePricing'
+import type { AppPricingTier } from 'fireux-app/runtime/app/composables/pricing/usePricing'
 defineProps<{ tiers: readonly AppPricingTier[]; primary?: boolean }>()
 </script>
 

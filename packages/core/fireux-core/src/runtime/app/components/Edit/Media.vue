@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { syncAppMediaToStorage } from '../../utils/sync-app-media'
+import { syncAppMediaToStorage } from '../../composables/media/sync-app-media'
 import {
   appImageLocalPublicPath,
   appImageRequirement,

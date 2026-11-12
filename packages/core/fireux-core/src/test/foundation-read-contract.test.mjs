@@ -1,4 +1,4 @@
-import { readAppUserSubscription } from '../runtime/app/models/app-user.model.ts'
+import { resolveAppUserAccess } from '../runtime/app/utils/app-user-access.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -24,7 +24,7 @@ for (const [name, owner, database, collection] of [
     const dependencies = {
       computed,
       unref,
-      readAppUserSubscription,
+      resolveAppUserAccess,
       readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
       useAuth: () => ({
         uid: ref('viewer'),
@@ -76,7 +76,12 @@ for (const [name, owner, database, collection] of [
     source.pending.value = false
     source.outcome.value = 'empty'
     assert.equal(data.value, null)
-    source.value = { id: 'first', name: 'Example', subscription: 'free' }
+    source.value = {
+      id: 'first',
+      name: 'Example',
+      role: 'user',
+      subscription: 'free',
+    }
     source.outcome.value = 'ready'
     assert.equal(data.value.id, 'first')
     const failure = new Error('denied')

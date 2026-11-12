@@ -5,12 +5,23 @@
       Open a section below to manage this Item’s placement. Item details are
       shared across these Menus.
     </p>
-    <FireStateCard
+    <UAlert
       v-if="error"
-      state="error"
       title="Menus unavailable"
       :description="String(error)"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Menus unavailable', String(error)].filter(Boolean).join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <p v-else-if="pending" role="status">Loading menus…</p>
     <template v-else>
       <ItemMenu

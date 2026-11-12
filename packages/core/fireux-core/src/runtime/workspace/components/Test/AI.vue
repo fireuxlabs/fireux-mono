@@ -11,7 +11,11 @@
       :suggestions="suggestions"
       @submit="prepare"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <slot name="model" />
+      </template>
+    </WorkspaceAIComposer>
     <UModal
       v-model:open="reviewOpen"
       :title="reviewTitle"
@@ -58,7 +62,7 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
-import type { TestIntent } from '../../../models/test-intent'
+import type { TestIntent } from '../../models/test-intent'
 
 const props = defineProps<{
   test: TestController

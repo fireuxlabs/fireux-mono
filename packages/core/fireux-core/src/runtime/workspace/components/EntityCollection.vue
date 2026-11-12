@@ -38,37 +38,43 @@
       </div>
     </header>
 
-    <FireStateCard
+    <FireState
       v-if="outcome === 'pending'"
       class="workspace-entity-collection__state"
       :entity="entity"
-      state="loading"
-      surface="bare"
-      layout="banner"
-      :uppercase="false"
+      outcome="pending"
     />
 
-    <FireStateCard
+    <UAlert
       v-else-if="outcome === 'error'"
       class="workspace-entity-collection__state"
-      :entity="entity"
-      state="error"
-      surface="bare"
-      layout="banner"
-      :uppercase="false"
+      :title="`Unable to load ${entity}`"
       :description="errorDescription"
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
     >
-      <div v-if="retryable" class="workspace-entity-collection__state-action">
-        <UButton
-          size="sm"
-          variant="soft"
-          icon="i-lucide-refresh-cw"
-          @click="emit('retry')"
-        >
-          Retry
-        </UButton>
-      </div>
-    </FireStateCard>
+      <template #actions>
+        <FireCopyError
+          :message="
+            [`Unable to load ${entity}`, errorDescription]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+        <div v-if="retryable" class="workspace-entity-collection__state-action">
+          <UButton
+            size="sm"
+            variant="soft"
+            icon="i-lucide-refresh-cw"
+            @click="emit('retry')"
+          >
+            Retry
+          </UButton>
+        </div></template
+      >
+    </UAlert>
 
     <div
       v-else-if="outcome === 'ready'"
@@ -78,27 +84,26 @@
       <slot />
     </div>
 
-    <FireStateCard
+    <UAlert
       v-else-if="outcome === 'empty'"
       class="workspace-entity-collection__state"
-      :entity="entity"
-      state="empty"
-      surface="bare"
-      layout="banner"
-      :uppercase="false"
       :title="emptyTitle"
       :description="emptyDescription"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
   </section>
 </template>
 
 <script setup lang="ts">
+import type { ReadOutcome } from '../../utils/read-outcome'
 import { computed } from 'vue'
-import type { WorkspaceEntityOutcome } from '../models/outcome'
 
 const props = withDefaults(
   defineProps<{
-    outcome: WorkspaceEntityOutcome
+    outcome: ReadOutcome
     count: number
     entity: string
     errorDescription: string

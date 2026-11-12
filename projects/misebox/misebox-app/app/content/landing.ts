@@ -1,7 +1,7 @@
 import type {
   LandingProductCatalogueContent,
   LandingProductIndexContent,
-} from 'fireux-core/runtime/models/landing/product'
+} from 'fireux-app/runtime/models/landing/product'
 
 export type WorkspaceSurfaceCopy = {
   action: string

@@ -26,12 +26,25 @@
         @click="stopRequested = true"
       />
     </div>
-    <FireStateCard
+    <UAlert
       v-if="error"
-      state="error"
       :title="`Image unavailable: ${currentName}`"
       :description="error"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            [`Image unavailable: ${currentName}`, error]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+      </template>
+    </UAlert>
   </div>
 </template>
 

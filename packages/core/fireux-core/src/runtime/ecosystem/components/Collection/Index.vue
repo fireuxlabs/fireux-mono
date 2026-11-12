@@ -32,7 +32,7 @@ import {
   useEcosystemView,
   type EcosystemDirectoryCard,
 } from '../../composables/useEcosystemView'
-import type { EcosystemDirectoryEntry } from '../../../models/utils/directory.ts'
+import type { EcosystemDirectoryEntry } from '../../models/ecosystem-directory'
 
 const props = defineProps<{
   ecosystems: EcosystemDirectoryEntry[]

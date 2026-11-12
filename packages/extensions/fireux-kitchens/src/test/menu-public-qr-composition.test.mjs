@@ -110,15 +110,17 @@ test('public QR composes truthful states and a printable view with a gated print
       'MenuQRPrintAction',
       load(new URL('menu/components/QR/PrintAction.vue', runtime))
     )
-    app.component(
-      'FireStateCard',
-      load(
-        new URL(
-          '../../../../core/fireux-core/src/runtime/components/molecules/StateCard.vue',
-          runtime
-        )
-      )
-    )
+    app.component('UAlert', {
+      props: ['title', 'description'],
+      setup:
+        (p, { slots }) =>
+        () =>
+          Vue.h('section', [
+            slots.title?.() || p.title,
+            p.description,
+            slots.actions?.(),
+          ]),
+    })
     app.component('UCard', {
       setup:
         (_, { slots }) =>
@@ -150,11 +152,14 @@ test('public QR composes truthful states and a printable view with a gated print
     assert.equal(renderers, ['loading', 'missing'].includes(state) ? 0 : 1)
     if (state === 'loading') {
       assert.match(html, /Loading menu/)
-      assert.doesNotMatch(html, /Print QR|Food/)
+      assert.doesNotMatch(html, /Print QR|Food|Back to menus/)
+      assert.match(html, /id="menu-qr-loading-title"/)
+      assert.match(html, /aria-busy="true"/)
       continue
     }
     if (state === 'missing') {
       assert.match(html, /Unavailable context/)
+      assert.match(html, /id="menu-qr-failure-title"/)
       assert.match(html, /Back to menus/)
       assert.doesNotMatch(html, /Print QR/)
       continue

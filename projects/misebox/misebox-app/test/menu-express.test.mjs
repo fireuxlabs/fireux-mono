@@ -46,7 +46,7 @@ const privateTarget = (appId, id) => ({
   collectionPath: `apps/${appId}/conversations/${id}/private`,
 })
 const chat = load(
-  '../../../../packages/core/fireux-core/src/runtime/server/utils/chat/session.ts',
+  '../../../../packages/core/fireux-core/src/runtime/app/server/chat/session.ts',
   {
     createHash,
     timingSafeEqual,

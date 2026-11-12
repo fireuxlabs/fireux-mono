@@ -157,10 +157,16 @@ export function mountTeamEditor(
     'WorkspaceEntityCollection',
     component(new URL('EntityCollection.vue', runtime))
   )
-  app.component('FireStateCard', {
-    props: ['state', 'title', 'description'],
-    setup: (p) => () =>
-      h('section', { state: p.state }, p.title || p.description),
+  app.component(
+    'FireState',
+    component(new URL('../../components/molecules/State.vue', runtime))
+  )
+  app.component('UAlert', {
+    props: ['title', 'description'],
+    setup:
+      (p, { slots }) =>
+      () =>
+        h('section', [p.title, p.description, slots.actions?.()]),
   })
   app.component('WorkspaceTeamCrudCreate', {
     props: ['open', 'initialName'],

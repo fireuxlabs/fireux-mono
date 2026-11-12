@@ -1,12 +1,23 @@
 <template>
   <details>
     <summary>Create prep item</summary>
-    <FireStateCard
+    <UAlert
       v-if="message"
-      state="error"
       title="Prep item not created"
       :description="message"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Prep item not created', message].filter(Boolean).join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <fieldset :disabled="disabled || creatingPrep">
       <UInput
         v-model="newPrepName"

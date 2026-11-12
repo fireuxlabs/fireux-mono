@@ -4,7 +4,10 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
-import { validatePublicSlug } from '../runtime/utils/slug/validate-public-slug.ts'
+import { createJiti } from 'jiti'
+const { validatePublicSlug } = await createJiti(import.meta.url).import(
+  '../runtime/utils/slug/validate-public-slug.ts'
+)
 import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 
 function load(path, name, dependencies) {
@@ -104,7 +107,7 @@ function harness(options = {}) {
     validateUserHandleForPublicRoute,
   }
   const updateUserHandle = load(
-    'user/utils/update-user-handle.ts',
+    'user/composables/identity/update-user-handle.ts',
     'updateUserHandle',
     {
       ...dependencies,
@@ -137,7 +140,7 @@ function harness(options = {}) {
     }
   )
   const provision = load(
-    'user/utils/provision-user.ts',
+    'user/composables/identity/provision-user.ts',
     'provisionUserIdentity',
     {
       ...dependencies,

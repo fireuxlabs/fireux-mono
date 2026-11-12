@@ -332,8 +332,8 @@ function mount(h, component, exposed, extra = {}) {
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
     'UFormField',
-    'FireStateCard',
     'FireState',
+    'UAlert',
     'UCard',
     'FireCopyError',
     'KitchenMenuItemsDescriptionAssistant',

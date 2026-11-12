@@ -43,21 +43,34 @@
           :can-write="canWrite"
         />
       </div>
-      <FireStateCard
+      <UAlert
         v-if="!['ready', 'empty'].includes(offeringsOutcome)"
-        :state="
-          offeringsOutcome === 'pending'
-            ? 'loading'
-            : offeringsOutcome === 'error'
-              ? 'error'
-              : 'empty'
-        "
         :title="
           offeringsOutcome === 'pending'
             ? 'Loading service schedules'
             : 'Service schedules unavailable'
         "
-      />
+        :color="offeringsOutcome === 'error' ? 'error' : 'neutral'"
+        variant="soft"
+        :role="offeringsOutcome === 'error' ? 'alert' : 'status'"
+        :aria-live="offeringsOutcome === 'error' ? 'assertive' : 'polite'"
+        :aria-busy="offeringsOutcome === 'pending'"
+      >
+        <template #actions>
+          <FireCopyError
+            v-if="offeringsOutcome === 'error'"
+            :message="
+              [
+                offeringsOutcome === 'pending'
+                  ? 'Loading service schedules'
+                  : 'Service schedules unavailable',
+              ]
+                .filter(Boolean)
+                .join('\n')
+            "
+          />
+        </template>
+      </UAlert>
       <KitchenOperatingHoursOfferings
         v-else
         :key="`menus:${kitchenId}`"
@@ -72,12 +85,10 @@
       description="Editing operating hours requires access to this Kitchen."
       color="neutral"
     />
-    <FireStateCard
+    <FireState
       v-else
       entity="Kitchen service hours"
-      kind="document"
-      :loading="placeOutcome === 'pending' || placeOutcome === 'idle'"
-      :state="placeOutcome === 'error' ? 'error' : 'empty'"
+      :outcome="placeOutcome === 'idle' ? 'pending' : placeOutcome"
     />
     <FireDiagnosticsDebugPanel
       v-bind="debug"

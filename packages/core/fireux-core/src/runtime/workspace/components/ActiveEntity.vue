@@ -165,8 +165,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ReadOutcome } from '../../utils/read-outcome'
 import { computed, type CSSProperties } from 'vue'
-import type { WorkspaceEntityOutcome } from '../models/outcome'
 import type { WorkspaceEntityCard } from '../models/target-card'
 
 const props = withDefaults(
@@ -175,7 +175,7 @@ const props = withDefaults(
     activeId?: string
     description?: string
     entity?: WorkspaceEntityCard | null
-    outcome?: WorkspaceEntityOutcome
+    outcome?: ReadOutcome
     icon?: string
     clearLabel?: string
     changeable?: boolean

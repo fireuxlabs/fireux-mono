@@ -91,7 +91,7 @@
       </div>
     </UPageCard>
 
-    <FireStateCard v-else entity="customer profile" kind="document" loading />
+    <FireState v-else entity="customer profile" outcome="pending" />
   </ClientOnly>
 </template>
 

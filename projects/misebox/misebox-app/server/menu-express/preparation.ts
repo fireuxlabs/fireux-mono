@@ -4,7 +4,7 @@ import { downloadStorageFile } from 'fireux-core/runtime/server/utils/uploads/st
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireKitchenWriterAccount } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
 import { saveKitchenMenuSource } from 'fireux-kitchens/runtime/menu/server/source/save'
-import { requireChatSessionAccess } from 'fireux-core/runtime/server/utils/chat/session'
+import { requireChatSessionAccess } from 'fireux-core/runtime/app/server/chat/session'
 import { operator, assertOperator } from './authority'
 import { dto, fail, requestId, requirePaid, text } from './contract'
 

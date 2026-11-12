@@ -12,7 +12,6 @@ export type FirestoreDatabasePlacement =
   | { kind: 'runtime' }
   | { kind: 'identity' }
   | { kind: 'named'; databaseId: string }
-  | { kind: 'local-sproochli'; databaseId: string }
 
 export type FirestoreMutationTarget<
   Key extends string = string,
@@ -24,28 +23,6 @@ export type FirestoreMutationTarget<
   verbs: readonly Verb[]
   database: FirestoreDatabasePlacement
   collectionPath: string
-}>
-
-export type TargetFor<
-  Lane extends FirestoreMutationLane,
-  Verb extends FirestoreMutationVerb,
-> = FirestoreMutationTarget<string, Lane, Verb>
-
-export type FirestoreCreateInput<T> = Readonly<{
-  target: TargetFor<FirestoreMutationLane, 'create'>
-  id?: string
-  data: T
-}>
-
-export type FirestoreUpdateInput<T> = Readonly<{
-  target: TargetFor<FirestoreMutationLane, 'update'>
-  id: string
-  data: Partial<T>
-}>
-
-export type FirestoreDeleteInput = Readonly<{
-  target: TargetFor<FirestoreMutationLane, 'delete'>
-  id: string
 }>
 
 /** Scoped read access carries no mutation lane or allowed write verbs. */

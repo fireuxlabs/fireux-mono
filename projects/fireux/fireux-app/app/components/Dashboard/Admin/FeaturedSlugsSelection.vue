@@ -12,18 +12,16 @@
     </template>
   </UPageHeader>
 
-  <FireStateCard
+  <FireState
     v-if="settingsOutcome === 'idle' || settingsOutcome === 'pending'"
     entity="featured selection"
-    kind="document"
-    loading
+    outcome="pending"
   />
 
-  <FireStateCard
+  <FireState
     v-else-if="settingsOutcome === 'error'"
     entity="featured selection"
-    kind="document"
-    state="error"
+    outcome="error"
   />
 
   <div v-else class="pagebody">

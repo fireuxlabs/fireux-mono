@@ -1,7 +1,7 @@
 <template>
   <UCard v-if="dish || editing">
-    <template #header
-      ><div class="card__header">
+    <template #header>
+      <div class="card__header">
         <h2>Preparation details</h2>
         <UButton
           v-if="canWrite"
@@ -257,12 +257,25 @@
       </div>
     </div>
     <p v-else>No preparation details yet.</p>
-    <FireStateCard
+    <UAlert
       v-if="error || readError"
-      state="error"
       title="Specification unavailable"
       :description="error || String(readError)"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Specification unavailable', error || String(readError)]
+              .filter(Boolean)
+              .join('\n')
+          "
+        />
+      </template>
+    </UAlert>
   </UCard>
 </template>
 <script setup lang="ts">

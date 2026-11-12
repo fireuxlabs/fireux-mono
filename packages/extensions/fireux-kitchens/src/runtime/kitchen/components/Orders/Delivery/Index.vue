@@ -1,20 +1,18 @@
 <template>
   <section class="workspace-surface">
-    <FireStateCard
+    <FireState
       v-if="pending || outcome === 'pending'"
       entity="Kitchen delivery"
-      kind="document"
-      loading
+      outcome="pending"
     />
-    <FireStateCard
+    <FireState
       v-else-if="outcome === 'error'"
       entity="Kitchen"
-      kind="document"
-      state="error"
+      outcome="error"
     />
-    <UAlert v-else-if="error" title="Settings unavailable" color="error"
-      ><template #description
-        ><FireCopyError :message="String(error)" /></template
+    <UAlert v-else-if="error" title="Settings unavailable" color="error">
+      <template #description>
+        <FireCopyError :message="String(error)" /></template
     ></UAlert>
     <UAlert
       v-else-if="!selectedKitchen"

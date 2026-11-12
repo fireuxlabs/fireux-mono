@@ -105,6 +105,9 @@
           @click="fileInput?.click()"
         />
       </template>
+      <template #model>
+        <WorkspaceAIModelLabel />
+      </template>
     </WorkspaceAIComposer>
 
     <p

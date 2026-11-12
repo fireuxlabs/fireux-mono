@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from './fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import type { TestIntent } from 'fireux-core/runtime/models/test-intent'
+import type { TestIntent } from 'fireux-core/runtime/workspace/models/test-intent'
 
 export async function interpretTestIntent(
   event: H3Event,

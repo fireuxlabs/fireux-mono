@@ -111,6 +111,7 @@ async function listingHarness({
       useAppSession: () => session,
       useFireUXConfig: () => ({ appId: 'app' }),
       useRoute: () => ({ path: '/workspace/kitchen/identity' }),
+      useRuntimeConfig: () => ({ public: {} }),
       useCommandScope,
       useRequireUser: async () => currentUser.value,
       refreshNuxtData: async () => {},
@@ -674,6 +675,7 @@ test('Kitchen-only updates use record authority inside their transaction and rej
     checks = []
   let denied = false
   const update = load('kitchen/server/identity/update.ts', 'updateKitchen', {
+    useRuntimeConfig: () => ({ public: {} }),
     createError: (v) => Object.assign(new Error(v.statusMessage), v),
     requireFirestoreDocumentId: (v) => v,
     parseKitchenUpdate: (v) => v,
@@ -781,7 +783,6 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   async function render(status, kitchenReady) {
     const identity = {
       status: ref(status),
-      readState: ref(status === 'pending' ? 'loading' : status),
       outcome: ref(status),
       selectedKitchen: ref(null),
       listing: ref(
@@ -880,9 +881,9 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
         profileSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
       ),
     })
-    app.component('FireStateCard', {
-      props: ['state'],
-      setup: (p) => () => h('p', p.state),
+    app.component('FireState', {
+      props: ['outcome'],
+      setup: (p) => () => h('p', p.outcome),
     })
     app.component('UCard', {
       setup:

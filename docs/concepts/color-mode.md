@@ -1,6 +1,6 @@
 # Color Mode
 
-Updated: 2026-11-04
+Updated: 2026-11-12
 Ref: 7899136bf
 Role: map, not canon
 
@@ -24,14 +24,13 @@ The native module saves its preference automatically, initially System. Selectin
 System stores that preference; clearing site data removes it. See the
 [browser-storage inventory](../../packages/core/fireux-core/src/config/privacy/browser-storage.json)
 and the
-[browser storage section](../../packages/core/fireux-core/src/runtime/components/Legal/BrowserStorage.vue).
+[browser storage section](../../packages/extensions/fireux-app/src/runtime/components/Legal/BrowserStorage.vue).
 No FireUX preference store, DOM observer, media listener, legacy-key migration
 or activation hook sits alongside it.
 
 Core [Logo](../../packages/core/fireux-core/src/runtime/app/components/Brand/Logo.vue),
 [Wordmark](../../packages/core/fireux-core/src/runtime/app/components/Brand/Wordmark.vue),
-FireUX App [Fuel](../../projects/fireux/fireux-app/app/components/Landing/Fuel.vue)
-and the [design specimen](../../packages/core/fireux-core/src/runtime/components/Library/Design/Contracts.vue)
+and FireUX App [Fuel](../../projects/fireux/fireux-app/app/components/Landing/Fuel.vue)
 consume native state. The App Shell does not bootstrap a second engine.
 Brand asset-role selection and failed-image fallback stay with the brand owners;
 native image controls do not replace those product rules by themselves.

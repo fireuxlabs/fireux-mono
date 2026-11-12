@@ -1,4 +1,4 @@
-import { defineAppSearchDemand } from 'fireux-core/runtime/app/utils/search-demand'
+import { defineAppSearchDemand } from 'fireux-ai/runtime/app/utils/search-demand'
 
 export const supplierResearch = defineAppSearchDemand({
   domain: 'Foodservice supply operations',

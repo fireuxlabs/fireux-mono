@@ -1,12 +1,5 @@
 <template>
   <WorkspaceIntroInfo :intro="identity.intro.value" />
-  <WorkspaceFreemium
-    family="kitchen"
-    capability="identity"
-    page-label="Identity"
-    hide-description
-    placement="top"
-  />
   <KitchenIdentity :identity="identity" />
 </template>
 

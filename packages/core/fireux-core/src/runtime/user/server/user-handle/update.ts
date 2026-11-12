@@ -38,7 +38,7 @@ function requireHandle(value: unknown) {
     maxLength: 30,
     label: 'Handle',
     reservedScope: 'root',
-    registeredReserved: runtimeReservedHandleKeys(),
+    runtimeReservedRouteKeys: runtimeReservedHandleKeys(),
   })
   if (!validation.isValid) fail(400, validation.message || 'Invalid handle.')
   return validation.slug

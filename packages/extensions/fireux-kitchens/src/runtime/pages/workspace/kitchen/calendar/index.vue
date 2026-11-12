@@ -5,19 +5,7 @@
     description="A clear view of the days ahead."
   />
   <WorkspaceKitchenSelector />
-  <WorkspaceFreemium
-    family="kitchen"
-    capability="calendar"
-    page-label="Calendar"
-    placement="top"
-  />
   <KitchenCalendar />
-  <WorkspaceFreemium
-    family="kitchen"
-    capability="calendar"
-    page-label="Calendar"
-    placement="bottom"
-  />
 </template>
 
 <script setup lang="ts">
@@ -29,7 +17,6 @@ const intro = {
   boundaries: 'Selecting a date does not create or change events.',
   ai: 'No AI actions are connected to this surface.',
 }
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 import KitchenCalendar from '../../../../kitchen/components/Calendar/Index.vue'
 definePageMeta({
   layout: false,

@@ -15,7 +15,7 @@
       </UCard>
     </div>
 
-    <FireStateCard v-else entity="chef app profile" kind="document" loading />
+    <FireState v-else entity="chef app profile" outcome="pending" />
   </ClientOnly>
 </template>
 

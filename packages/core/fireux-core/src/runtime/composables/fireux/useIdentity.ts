@@ -1,24 +1,17 @@
 import { computed, type Ref } from 'vue'
+import type { ReadOutcome } from '../../utils/read-outcome'
 
 /** Shared identity read state; fields belong to the domain. */
 export function useIdentity<Fields>(options: {
   id: Ref<string>
   fields: Ref<Fields>
-  status: Ref<string>
+  status: Ref<ReadOutcome>
 }) {
-  const readState = computed<'loading' | 'empty' | 'error' | null>(() => {
-    const status = options.status.value
-    if (status === 'ready') return null
-    if (status === 'pending') return 'loading'
-    if (status === 'error') return 'error'
-    return 'empty'
-  })
   const scopeKey = computed(() =>
     JSON.stringify([options.id.value, options.fields.value])
   )
   return {
     status: options.status,
-    readState,
     scopeKey,
   }
 }

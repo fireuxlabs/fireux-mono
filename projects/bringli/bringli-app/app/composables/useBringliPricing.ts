@@ -1,7 +1,7 @@
 import {
   usePricing,
   type PricingProfile,
-} from 'fireux-core/runtime/app/composables/pricing/usePricing'
+} from 'fireux-app/runtime/app/composables/pricing/usePricing'
 
 const bringliPricingProfile = {
   appName: 'Bringli',

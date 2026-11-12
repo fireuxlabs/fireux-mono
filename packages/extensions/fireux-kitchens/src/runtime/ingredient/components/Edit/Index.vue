@@ -31,12 +31,25 @@
             :disabled="imageUploading || saving"
             @click="generate(ingredientId).catch(() => {})"
           />
-          <FireStateCard
+          <UAlert
             v-if="generationError"
-            state="error"
             title="Image unavailable"
             :description="generationError"
-          />
+            color="error"
+            variant="soft"
+            role="alert"
+            aria-live="assertive"
+          >
+            <template #actions>
+              <FireCopyError
+                :message="
+                  ['Image unavailable', generationError]
+                    .filter(Boolean)
+                    .join('\n')
+                "
+              />
+            </template>
+          </UAlert>
         </div>
       </UFormField>
 

@@ -7,6 +7,7 @@ import { loadNuxt, build } from 'nuxt'
 
 const root = fileURLToPath(new URL('../../../../../', import.meta.url))
 const coreRuntime = path.join(root, 'packages/core/fireux-core/src/runtime')
+const appRuntime = path.join(root, 'packages/extensions/fireux-app/src/runtime')
 const hostRuntime = fileURLToPath(new URL('../runtime/', import.meta.url))
 
 test('Only the Ecosystem host layer registers App directory pages and APIs', async (t) => {
@@ -15,7 +16,7 @@ test('Only the Ecosystem host layer registers App directory pages and APIs', asy
   t.after(() => rmSync(directory, { recursive: true, force: true }))
 
   for (const enabled of [false, true]) {
-    const cwd = path.join(directory, enabled ? 'host' : 'core')
+    const cwd = path.join(directory, enabled ? 'host' : 'app')
     mkdirSync(cwd)
     const nuxt = await loadNuxt({
       cwd,
@@ -26,7 +27,7 @@ test('Only the Ecosystem host layer registers App directory pages and APIs', asy
         ssr: false,
         pages: true,
         telemetry: false,
-        extends: [coreRuntime, ...(enabled ? [hostRuntime] : [])],
+        extends: [coreRuntime, appRuntime, ...(enabled ? [hostRuntime] : [])],
       },
     })
 
@@ -74,6 +75,16 @@ test('Only the Ecosystem host layer registers App directory pages and APIs', asy
       )
       for (const entry of handlers) {
         assert.ok(entry.handler.startsWith(hostRuntime))
+      }
+      for (const name of ['DirectoryHome', 'AppCollection']) {
+        const component = nuxt.apps.default.components.filter(
+          (entry) => entry.pascalName === `FireLanding${name}`
+        )
+        assert.equal(component.length, 1, name)
+        assert.equal(
+          component[0].filePath,
+          path.join(hostRuntime, `components/landing/${name}.vue`)
+        )
       }
       assert.equal(home.length, 1)
       assert.equal(

@@ -169,7 +169,7 @@ async function renderDirectory(state) {
     setup: (props) => () =>
       h('div', props.properties.map((p) => p.name).join(',')),
   })
-  app.component('FireStateCard', {
+  app.component('UAlert', {
     props: ['title', 'description'],
     setup:
       (p, { slots }) =>

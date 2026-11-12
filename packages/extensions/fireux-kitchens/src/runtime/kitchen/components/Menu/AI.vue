@@ -12,10 +12,13 @@
       placeholder="Help me finish setting up food and services…"
       aria-label="Ask KitchenAI about Menus"
       :suggestions="suggestions"
-      :model-label="developmentModelLabel"
       @submit="ask"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <WorkspaceAIModelLabel :development-codex="developmentCodex" />
+      </template>
+    </WorkspaceAIComposer>
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
@@ -32,7 +35,5 @@ const suggestions = [
   { label: 'Help me fix Collection hours' },
   { label: 'Help me finish a Menu' },
 ]
-const developmentModelLabel = import.meta.dev
-  ? 'FireUX · Codex development'
-  : undefined
+const developmentCodex = import.meta.dev
 </script>

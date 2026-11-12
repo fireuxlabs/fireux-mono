@@ -1,5 +1,5 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed, watch } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import {
   useWorkspace,
   defineWorkspace,
@@ -32,7 +32,7 @@ export const useProjectWorkspace = defineWorkspace(() => {
       : ''
   )
   const source = useProjectRead(readId)
-  const outcome = computed<WorkspaceTargetOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (access.outcome.value !== 'ready') return access.outcome.value
     if (!id.value) return 'idle'
     if (!readId.value) return 'empty'

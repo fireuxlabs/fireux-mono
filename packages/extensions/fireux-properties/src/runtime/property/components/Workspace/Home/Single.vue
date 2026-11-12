@@ -1,11 +1,9 @@
 <template>
   <h2 class="fx-type-section-title">{{ card?.title || 'Details' }}</h2>
-  <FireStateCard
+  <FireState
     v-if="outcome === 'pending' || outcome === 'error'"
-    :loading="outcome === 'pending'"
-    :state="outcome === 'error' ? 'error' : 'empty'"
     entity="Property"
-    kind="document"
+    :outcome="outcome"
   />
   <template v-else-if="card">
     <WorkspaceTargetCard :card="card" :show-badges="false" />

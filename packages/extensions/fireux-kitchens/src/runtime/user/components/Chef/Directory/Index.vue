@@ -31,25 +31,36 @@
       </template>
     </FireCollectionHeader>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-if="outcome === 'pending'"
+      aria-atomic="true"
       title="Loading chefs"
       description="Finding chef profiles…"
       icon="i-lucide-loader-circle"
-      loading
-      aria-atomic="true"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else-if="outcome === 'error'"
+      aria-atomic="true"
       title="Chefs unavailable"
       description="Chef profiles could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      state="error"
-      aria-atomic="true"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Chefs unavailable&#10;Chef profiles could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
 
     <ChefCollectionList
       v-else-if="cardsFiltered.length"
@@ -64,16 +75,19 @@
       </template>
     </ChefCollectionList>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-chef-hat"
       :title="query ? 'No matching chefs' : 'No chefs yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Chef profiles will appear here once they are available.'
       "
+      icon="i-lucide-chef-hat"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>
@@ -81,7 +95,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Chefs (JSON)'"
+        title="Chefs (JSON)"
         context="collection manager · chefs"
         :objects="{ profiles: devJsonData, users: profileUsers }"
         :derived="{}"

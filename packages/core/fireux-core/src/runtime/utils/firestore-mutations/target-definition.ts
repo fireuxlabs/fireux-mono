@@ -78,10 +78,7 @@ export function defineFirestoreMutationTarget<
       '(default) Firestore mutation targets are never client-writable.'
     )
   }
-  if (
-    input.database.kind === 'named' ||
-    input.database.kind === 'local-sproochli'
-  )
+  if (input.database.kind === 'named')
     assertFirestoreMutationSegment(input.database.databaseId, 'databaseId')
   if (!input.verbs.length)
     throw new Error(
@@ -112,8 +109,7 @@ export function assertFirestoreMutationVerb<
 export function resolveFirestoreMutationDatabaseId(
   target: FirestoreMutationTarget
 ): string | undefined {
-  return target.database.kind === 'named' ||
-    target.database.kind === 'local-sproochli'
+  return target.database.kind === 'named'
     ? target.database.databaseId
     : undefined
 }
@@ -129,10 +125,7 @@ export function defineFirestoreReadTarget(
         : assertFirestoreMutationSegment(part, 'collectionPath')
     )
     .join('/')
-  if (
-    input.database.kind === 'named' ||
-    input.database.kind === 'local-sproochli'
-  )
+  if (input.database.kind === 'named')
     assertFirestoreMutationSegment(input.database.databaseId, 'databaseId')
   return Object.freeze({ ...input, collectionPath })
 }

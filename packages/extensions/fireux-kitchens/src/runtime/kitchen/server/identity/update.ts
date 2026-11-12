@@ -1,5 +1,6 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -15,7 +16,7 @@ const record = (value: unknown): Record<string, unknown> | null =>
     ? (value as Record<string, unknown>)
     : null
 
-function request(value: unknown) {
+function request(value: unknown, runtimeReservedRouteKeys: readonly unknown[]) {
   const source = record(value)
   if (!source)
     throw createError({
@@ -32,12 +33,13 @@ function request(value: unknown) {
     })
   return {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
-    patch: parseKitchenUpdate(source.patch),
+    patch: parseKitchenUpdate(source.patch, runtimeReservedRouteKeys),
   }
 }
 
 export async function updateKitchen(event: H3Event, input: unknown) {
-  const requested = request(input)
+  const keys = useRuntimeConfig(event).public?.fireux?.reservedRouteKeys
+  const requested = request(input, Array.isArray(keys) ? keys : [])
   const actor = await readKitchenMutationActor(event)
   const slug =
     typeof requested.patch['identity.slug'] === 'string'

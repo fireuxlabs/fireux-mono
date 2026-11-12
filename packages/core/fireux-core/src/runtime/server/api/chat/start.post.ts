@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, setResponseHeaders } from 'h3'
-import { startChatSession } from '../../utils/chat/session'
+import { startChatSession } from '../../../app/server/chat/session'
 
 export default defineEventHandler(async (event) => {
   const response = await startChatSession(event, await readBody(event))

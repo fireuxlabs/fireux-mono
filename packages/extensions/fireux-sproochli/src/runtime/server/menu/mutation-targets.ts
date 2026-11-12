@@ -10,14 +10,14 @@ export const SPROOCHLI_MUTATION_TARGETS = Object.freeze({
     key: 'sproochli.menu-translation-caches',
     lane: 'server',
     verbs,
-    database: { kind: 'local-sproochli', databaseId: 'sproochli' },
+    database: { kind: 'named', databaseId: 'sproochli' },
     collectionPath: 'menu_translation_caches',
   }),
   sproochliTranslationMemory: defineFirestoreMutationTarget({
     key: 'sproochli.translation-memory',
     lane: 'server',
     verbs,
-    database: { kind: 'local-sproochli', databaseId: 'sproochli' },
+    database: { kind: 'named', databaseId: 'sproochli' },
     collectionPath: 'translation_memory',
   }),
 })

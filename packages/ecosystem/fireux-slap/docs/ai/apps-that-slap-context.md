@@ -1,6 +1,6 @@
 # Apps That Slap context
 
-Updated: 2026-11-06
+Updated: 2026-11-12
 Ref: 864d6c09b
 Role: living context
 Scope: Apps That Slap ecosystem identity, admission, routing, and reusable presentation boundary
@@ -9,8 +9,8 @@ Scope: Apps That Slap ecosystem identity, admission, routing, and reusable prese
 
 This context inherits `AGENTS.md` and `docs/ai/gpt-context.md`. Product wording
 also follows `docs/concepts/product-language.md`; shared landing and transition
-work follows `docs/ai/identity-literature-context.md` and its current Core
-sources.
+work follows `docs/ai/identity-literature-context.md` and its current App
+presentation sources.
 
 ## Purpose
 
@@ -33,8 +33,8 @@ away from genuine operational domains.
 - FireUX Core owns only generic infrastructure and primitives. Apps That Slap
   owns its ecosystem identity and configuration.
 - Landing scene composition and visual quality remain App-owned. Shared
-  transitions and GSAP/ScrollTrigger infrastructure remain coordinated through
-  the Core transition seam; this ecosystem package does not add motion
+  landing transitions and GSAP/ScrollTrigger behavior remain coordinated through
+  `fireux-app` presentation; this ecosystem package does not add motion
   infrastructure.
 
 ## Runtime composition

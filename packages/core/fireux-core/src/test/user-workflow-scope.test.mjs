@@ -206,12 +206,12 @@ function profileHarness(action) {
     },
   }
   const updateUserHandle = load(
-    '../runtime/user/utils/update-user-handle.ts',
+    '../runtime/user/composables/identity/update-user-handle.ts',
     'updateUserHandle',
     deps
   )
   const provisionSignedInUserAvatar = load(
-    '../runtime/user/utils/provision-user-avatar.ts',
+    '../runtime/user/composables/identity/provision-user-avatar.ts',
     'provisionSignedInUserAvatar',
     deps
   )
@@ -283,12 +283,12 @@ function completedProfileCommand(action, options = {}) {
   const invoke =
     action === 'handle'
       ? load(
-          '../runtime/user/utils/update-user-handle.ts',
+          '../runtime/user/composables/identity/update-user-handle.ts',
           'updateUserHandle',
           deps
         )
       : load(
-          '../runtime/user/utils/provision-user-avatar.ts',
+          '../runtime/user/composables/identity/provision-user-avatar.ts',
           'provisionSignedInUserAvatar',
           deps
         )
@@ -418,7 +418,7 @@ for (const changed of [false, true]) {
     }
     const currentUser = ref(actor)
     const run = load(
-      '../runtime/user/utils/provision-user-account.ts',
+      '../runtime/user/composables/account/provision-user-account.ts',
       'provisionSignedInUserAccount',
       {
         FIREUX_ACCOUNT_TERMS_VERSION: 'terms',
@@ -459,7 +459,7 @@ test('Private account provisioning rejects malformed successful responses', asyn
   const actor = { uid: 'A', getIdToken: async () => 'token' },
     currentUser = ref(actor)
   const run = load(
-    '../runtime/user/utils/provision-user-account.ts',
+    '../runtime/user/composables/account/provision-user-account.ts',
     'provisionSignedInUserAccount',
     {
       FIREUX_ACCOUNT_TERMS_VERSION: 'terms',

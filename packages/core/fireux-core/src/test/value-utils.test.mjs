@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { withBuildVersion } from '../runtime/utils/build-version-url.ts'
+import { withBuildVersion } from '../runtime/app/utils/build-version-url.ts'
 import { formatFirestoreTimestamp } from '../runtime/utils/firestore-timestamp.ts'
 
 test('version URLs encode malformed Unicode without losing existing query or fragment', () => {

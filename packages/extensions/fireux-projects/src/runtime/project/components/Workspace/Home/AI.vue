@@ -10,11 +10,14 @@
       :submitting="submitting"
       placeholder="Ask about your Project or what to do next…"
       aria-label="Ask ProjectAI"
-      :model-label="developmentModelLabel"
       :suggestions="suggestions"
       @submit="ask"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <WorkspaceAIModelLabel :development-codex="developmentCodex" />
+      </template>
+    </WorkspaceAIComposer>
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
@@ -29,9 +32,7 @@ const props = defineProps<{
   performAction: (intent: ProjectLandingIntent) => boolean | Promise<boolean>
   canPrepareApp: boolean
 }>()
-const developmentModelLabel = import.meta.dev
-  ? 'FireUX · Codex development'
-  : undefined
+const developmentCodex = import.meta.dev
 const page = useWorkspacePageState('project')
 const { currentUser } = useAuth()
 const prompt = ref('')

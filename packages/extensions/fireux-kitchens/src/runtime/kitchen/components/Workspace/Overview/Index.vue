@@ -1,16 +1,28 @@
 <template>
   <FireState v-if="outcome === 'pending'" outcome="pending" entity="Kitchen" />
-  <FireStateCard
+  <UAlert
     v-else-if="outcome === 'error'"
-    state="error"
     title="Kitchen unavailable"
     description="The selected kitchen could not be loaded."
-  />
-  <FireStateCard
+    color="error"
+    variant="soft"
+    role="alert"
+    aria-live="assertive"
+  >
+    <template #actions>
+      <FireCopyError
+        message="Kitchen unavailable&#10;The selected kitchen could not be loaded."
+      />
+    </template>
+  </UAlert>
+  <UAlert
     v-else-if="!data"
-    state="empty"
     title="No kitchen selected"
     description="Choose a kitchen to see its overview."
+    color="neutral"
+    variant="soft"
+    role="status"
+    aria-live="polite"
   />
   <section v-else>
     <header>

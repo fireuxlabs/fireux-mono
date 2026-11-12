@@ -7,10 +7,10 @@
         if you use it.
       </p>
     </div>
-    <FireStateCard
+    <FireState
       v-if="outcome === 'idle' || outcome === 'pending'"
       entity="Allowed websites"
-      loading
+      outcome="pending"
     />
     <FireCopyError v-else-if="error" :message="error" />
     <template v-else>

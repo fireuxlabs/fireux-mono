@@ -10,11 +10,14 @@
       :submitting="submitting"
       placeholder="Ask about your Kitchen or what to do next…"
       aria-label="Ask KitchenAI"
-      :model-label="developmentModelLabel"
       :suggestions="suggestions"
       @submit="ask"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <WorkspaceAIModelLabel :development-codex="developmentCodex" />
+      </template>
+    </WorkspaceAIComposer>
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
@@ -29,9 +32,7 @@ import type { KitchenLandingIntent } from '../../../models/landing-intent'
 const props = defineProps<{
   performAction: (intent: KitchenLandingIntent) => boolean | Promise<boolean>
 }>()
-const developmentModelLabel = import.meta.dev
-  ? 'FireUX · Codex development'
-  : undefined
+const developmentCodex = import.meta.dev
 const page = useWorkspacePageState('kitchen')
 const { currentUser } = useAuth()
 const handoff = useKitchenAIHandoff()

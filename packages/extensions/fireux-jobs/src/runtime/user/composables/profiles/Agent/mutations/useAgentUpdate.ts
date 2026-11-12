@@ -1,6 +1,6 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ProfileRefs } from 'fireux-core/runtime/user/composables/profile/useProfileFetch'
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: keep Agent domain writes root-only, bounded, and HTTPS-only.
-import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useProfileUpdateBase } from 'fireux-core/runtime/user/composables/profile/useProfileUpdateBase'
 import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/https-url'
 import {
   AgentStorage,

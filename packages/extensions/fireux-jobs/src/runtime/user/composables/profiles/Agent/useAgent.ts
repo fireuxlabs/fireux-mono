@@ -2,7 +2,7 @@ import { useUserSession } from 'fireux-core/runtime/user/composables/session/use
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/useAgent.ts
 
 import { computed } from 'vue'
-import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
+import { useProfile } from 'fireux-core/runtime/user/composables/profile/useProfile'
 import { agentConfig } from './config/agentConfig'
 import type { Agent } from '../../../utils/profiles/Agent/agent'
 import { useAgentComputed } from './utils/view/useAgentComputed'

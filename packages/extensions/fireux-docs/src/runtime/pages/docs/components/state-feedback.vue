@@ -25,24 +25,8 @@
         <p>
           The shared outcomes are idle, pending, error, empty and ready.
           FireState renders a message for pending, error and empty; idle and
-          ready render nothing. Retry is an emitted event.
-        </p>
-      </UPageSection>
-
-      <UPageSection
-        id="state-card"
-        title="State card"
-        description="Show a read outcome in a card or banner."
-      >
-        <FireStateCard entity="project" kind="document" state="empty" />
-        <UCard variant="subtle">
-          <pre><code>{{ stateCardExample }}</code></pre>
-        </UCard>
-        <UTable :data="stateCardApi" :columns="apiColumns" />
-        <p>
-          StateCard is a separate existing presentation component. Its
-          loading, empty and error contract has not been migrated to
-          FireState's ReadOutcome API.
+          ready render nothing. Retry is an emitted event. Use native UAlert or
+          UCard for domain-specific messages and actions.
         </p>
       </UPageSection>
 
@@ -59,14 +43,13 @@
       </UPageSection>
     </UPageBody>
 
-    <template #right><UPageAnchors :links="sections" /></template>
+    <template #right><UPageAnchors :links="sections" /> </template>
   </UPage>
 </template>
 
 <script setup lang="ts">
 const sections = [
   { label: 'State', to: '#state' },
-  { label: 'State card', to: '#state-card' },
   { label: 'Copy error', to: '#copy-error' },
 ]
 const apiColumns = [
@@ -80,11 +63,6 @@ const stateExample = `<FireState
   retryable
   @retry="page.refresh()"
 />`
-const stateCardExample = `<FireStateCard
-  entity="project"
-  kind="document"
-  state="empty"
-/>`
 const copyErrorExample = `<FireCopyError :message="error.message" />`
 const stateApi = [
   { name: 'outcome', purpose: 'Required shared ReadOutcome.' },
@@ -95,41 +73,10 @@ const stateApi = [
   {
     name: 'error',
     purpose:
-      'Optional error details; enables the copy control on an error outcome.',
+      'Optional error details; otherwise the copy control uses the displayed error message.',
   },
   { name: 'retryable', purpose: 'Show the retry button for an error outcome.' },
   { name: 'retry', purpose: 'Emitted when the retry button is chosen.' },
-]
-const stateCardApi = [
-  {
-    name: 'entity',
-    purpose: 'Optional noun used by the default title and description.',
-  },
-  { name: 'kind', purpose: 'Document or collection; defaults to collection.' },
-  {
-    name: 'state',
-    purpose: 'Optional loading, empty or error state; defaults to empty.',
-  },
-  {
-    name: 'surface',
-    purpose: 'Card, bare or collection presentation; defaults to card.',
-  },
-  {
-    name: 'title / description / icon',
-    purpose: 'Optional overrides for the default content.',
-  },
-  {
-    name: 'loading',
-    purpose: 'Convenience flag that takes precedence over state.',
-  },
-  {
-    name: 'layout / uppercase',
-    purpose: 'Card or banner presentation and optional banner title casing.',
-  },
-  {
-    name: 'title, description, actions slots',
-    purpose: 'Optional content overrides and actions.',
-  },
 ]
 const copyErrorApi = [
   {

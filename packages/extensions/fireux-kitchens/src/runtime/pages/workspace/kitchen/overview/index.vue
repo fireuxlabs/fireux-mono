@@ -1,12 +1,5 @@
 <template>
   <WorkspaceIntroInfo :intro="intro" />
-  <WorkspaceFreemium
-    family="kitchen"
-    capability="overview"
-    page-label="Overview"
-    placement="top"
-    hide-description
-  />
   <section class="workspace-surface workspace-surface--compact">
     <WorkspaceKitchenOverview @state="pageState.publish" />
   </section>
@@ -24,7 +17,6 @@ const intro = {
     'Setup links open their owning capability. This page does not change records.',
   ai: 'No AI actions are connected to this surface.',
 }
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
   layout: false,
   workspacePage: true,

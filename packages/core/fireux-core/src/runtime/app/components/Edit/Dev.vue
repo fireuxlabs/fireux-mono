@@ -73,7 +73,7 @@
     </div>
 
     <template #fallback>
-      <FireStateCard entity="developer workspace" kind="document" loading />
+      <FireState entity="developer workspace" outcome="pending" />
     </template>
   </ClientOnly>
 </template>

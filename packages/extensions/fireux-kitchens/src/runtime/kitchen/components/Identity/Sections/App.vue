@@ -1,11 +1,5 @@
 <template>
-  <FireStateCard
-    v-if="pending"
-    entity="App identity"
-    kind="document"
-    surface="bare"
-    loading
-  />
+  <FireState v-if="pending" entity="App identity" outcome="pending" />
 
   <UAlert
     v-else-if="errorMessage"

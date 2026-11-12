@@ -1,3 +1,4 @@
+import type { ReadOutcome } from '../../../utils/read-outcome'
 import { useAsyncData } from 'nuxt/app'
 
 import type { AsyncData, NuxtError } from 'nuxt/app'
@@ -6,8 +7,6 @@ import type { DetailResponse } from '../../../models/utils/directory.ts'
 import type { ProfileDirectoryEntry } from '../../models/user-directory.model.ts'
 
 export type ProfileCollection = 'agents' | 'chefs' | 'drivers' | 'professionals'
-
-export type ProfileDetailOutcome = 'pending' | 'ready' | 'empty' | 'error'
 
 type ProfileDetailOptions =
   | { collection: 'agents'; kind: 'agent' }
@@ -28,7 +27,7 @@ export type UseProfileDetailReturn<TProfile extends Record<string, unknown>> =
     statusCode: ComputedRef<number>
     empty: ComputedRef<boolean>
     failed: ComputedRef<boolean>
-    outcome: ComputedRef<ProfileDetailOutcome>
+    outcome: ComputedRef<ReadOutcome>
   }
 
 function readStatusCode(error: unknown): number {
@@ -97,7 +96,7 @@ export async function useProfileDetail<
   const failed = computed(
     () => Boolean(error.value) && statusCode.value !== 404
   )
-  const outcome = computed<ProfileDetailOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (pending.value) return 'pending'
     if (failed.value) return 'error'
     if (empty.value) return 'empty'

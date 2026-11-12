@@ -47,6 +47,26 @@ for (const name of ['fireux-app', 'fireux-ecosystem']) {
         ]) {
           assert.equal(manifest.dependencies[dependency], '0.1.0')
         }
+        assert.ok(existsSync(resolve(packed, manifest.exports['./layer'])))
+        for (const file of [
+          'app/composables/pricing/usePricing.ts',
+          'app/components/Pricing/Page.vue',
+          'components/landing/ProductIndex.vue',
+          'composables/landing/useLandingMotion.ts',
+          'composables/landing/landing-sticky-motion.ts',
+          'components/Legal/Documents.vue',
+          'pages/legal/index.vue',
+          'pages/operations/[slug].vue',
+          'pages/solutions/[slug].vue',
+          'pages/tools/index.vue',
+          'server/api/app/operations.get.ts',
+          'server/api/app/solutions.get.ts',
+          'assets/styles/main.scss',
+          'assets/styles/scss/organisms/landing-hero.scss',
+          'assets/styles/scss/organisms/landing-index-sections.scss',
+        ]) {
+          assert.ok(existsSync(join(packed, 'src/runtime', file)), file)
+        }
       } else {
         assert.equal(manifest.dependencies['fireux-app'], '0.1.0')
         assert.ok(existsSync(resolve(packed, manifest.exports['./layer'])))

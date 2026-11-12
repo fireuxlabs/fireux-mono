@@ -34,12 +34,23 @@
         {{ item.label }} <span>{{ item.count }}</span>
       </button>
     </div>
-    <FireStateCard
+    <UAlert
       v-if="error"
-      state="error"
       title="Recipes unavailable"
       :description="String(error)"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Recipes unavailable', String(error)].filter(Boolean).join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <FireState v-else-if="pending" outcome="pending" entity="recipes" />
     <div v-else-if="!visibleRecipes.length" class="recipe-empty">
       <UIcon name="i-lucide-notebook-tabs" />
@@ -50,7 +61,8 @@
         color="neutral"
         variant="soft"
         @click="clearFilters"
-      /><UButton
+      />
+      <UButton
         v-else-if="canCreateRecipe"
         label="Add recipe"
         icon="i-lucide-plus"
@@ -82,29 +94,51 @@
       v-model:open="previewOpen"
       :title="selectedRecipe?.name || 'Recipe'"
       description="Recipe preview"
-      ><template #body>
-        <FireStateCard
+    >
+      <template #body>
+        <UAlert
           v-if="ingredientsError"
-          state="error"
           title="Ingredient details unavailable"
-          description="Ingredient names could not be loaded. Recipe quantities and method remain available." />
+          description="Ingredient names could not be loaded. Recipe quantities and method remain available."
+          color="error"
+          variant="soft"
+          role="alert"
+          aria-live="assertive"
+        >
+          <template #actions>
+            <FireCopyError
+              message="Ingredient details unavailable&#10;Ingredient names could not be loaded. Recipe quantities and method remain available."
+            />
+          </template>
+        </UAlert>
         <p v-else-if="ingredientsPending" role="status">
           Loading ingredient details…
         </p>
-        <FireStateCard
+        <UAlert
           v-if="prepError"
-          state="error"
           title="Prep items unavailable"
-          description="Prep item details could not be loaded. Recipe quantities and method remain available." />
+          description="Prep item details could not be loaded. Recipe quantities and method remain available."
+          color="error"
+          variant="soft"
+          role="alert"
+          aria-live="assertive"
+        >
+          <template #actions>
+            <FireCopyError
+              message="Prep items unavailable&#10;Prep item details could not be loaded. Recipe quantities and method remain available."
+            />
+          </template>
+        </UAlert>
         <p v-else-if="prepPending" role="status">Loading prep items…</p>
         <KitchenPrepAndProductionRecipesPreparation
           v-if="selectedRecipe"
           :recipe="selectedRecipe"
           :ingredient-names="ingredientNames"
           :prep-item-names="prepItemNames"
-          :prep-items="prepItems" /></template
-      ><template #footer
-        ><UButton
+          :prep-items="prepItems"
+      /></template>
+      <template #footer>
+        <UButton
           v-if="selectedRecipe"
           :to="`/workspace/kitchen/prep/recipes/${encodeURIComponent(selectedRecipe.id)}`"
           :label="canWrite ? 'Open recipe & edit' : 'Open recipe'"
@@ -112,8 +146,8 @@
           trailing
           @click="previewOpen = false" /></template
     ></USlideover>
-    <USlideover v-model:open="createOpen" title="Add recipe"
-      ><template #body
+    <USlideover v-model:open="createOpen" title="Add recipe">
+      <template #body
         ><KitchenPrepAndProductionRecipesForm
           v-if="createOpen"
           :key="kitchenId"

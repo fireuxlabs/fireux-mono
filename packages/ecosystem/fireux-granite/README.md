@@ -1,6 +1,6 @@
 # FireUX Granite
 
-Updated: 2026-10-05
+Updated: 2026-11-12
 Ref: 9b1f0851d
 Role: package entrypoint, not canon
 
@@ -14,10 +14,10 @@ Start with root `AGENTS.md` and `docs/ai/gpt-context.md`.
 - `projects/granite/granite-app` owns the concrete App and its industry research
   at `app/search-demand.ts`.
 
-The research uses Core's shared contract for sources, operator jobs, ranked
+The research uses FireUX AI's shared contract for sources, operator jobs, ranked
 proposals and separate need/readiness assessments. Proposals do not change
 runtime ownership, navigation or command authority. Refresh findings and source
-assessments against their current inputs; Core's `src/test/app-research.test.mjs`
+assessments against their current inputs; FireUX AI's `src/test/research/review.test.mjs`
 checks reference integrity and research rendering. Live operator acceptance is
 separate. Follow `docs/concepts/family-workspace-entity.md` for runtime boundaries.
 

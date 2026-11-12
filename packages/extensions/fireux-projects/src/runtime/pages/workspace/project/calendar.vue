@@ -1,18 +1,6 @@
 <template>
   <WorkspaceIntroInfo :intro="intro" />
-  <WorkspaceFreemium
-    family="project"
-    capability="calendar"
-    page-label="Calendar"
-    placement="top"
-  />
   <WorkspaceProjectCalendar />
-  <WorkspaceFreemium
-    family="project"
-    capability="calendar"
-    page-label="Calendar"
-    placement="bottom"
-  />
 </template>
 
 <script setup lang="ts">
@@ -24,7 +12,6 @@ const intro = {
   boundaries: 'Selecting a date does not create or change events.',
   ai: 'No AI actions are connected to this surface.',
 }
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
   layout: false,
   workspacePage: true,

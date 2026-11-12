@@ -11,8 +11,13 @@ import {
   ref,
   watch,
 } from 'vue'
-import { resolveUserSetup } from '../runtime/user/utils/user-setup.ts'
-import { normalizeUser } from '../runtime/user/utils/normalize-user.ts'
+import { createJiti } from 'jiti'
+const { resolveUserSetup } = await createJiti(import.meta.url).import(
+  '../runtime/user/utils/user-setup.ts'
+)
+const { normalizeUser } = await createJiti(import.meta.url).import(
+  '../runtime/user/utils/normalize-user.ts'
+)
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../runtime/user/models/user-account-provisioning.ts'
 
 const ready = {

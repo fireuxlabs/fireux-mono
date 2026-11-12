@@ -11,11 +11,14 @@
       :submitting="submitting"
       placeholder="Ask about your menus…"
       aria-label="Ask KitchenAI about Menus"
-      :model-label="developmentModelLabel"
       :suggestions="suggestions"
       @submit="ask()"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <WorkspaceAIModelLabel :development-codex="developmentCodex" />
+      </template>
+    </WorkspaceAIComposer>
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
@@ -40,9 +43,7 @@ const submitting = ref(false)
 const mounted = ref(false)
 let active = true
 let revision = 0
-const developmentModelLabel = import.meta.dev
-  ? 'FireUX · Codex development'
-  : undefined
+const developmentCodex = import.meta.dev
 const context = computed(() => ({
   kitchenId: workspace.kitchenId.value,
   ...workspace.state.value,

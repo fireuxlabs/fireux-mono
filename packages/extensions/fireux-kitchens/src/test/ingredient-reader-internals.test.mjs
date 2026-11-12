@@ -375,7 +375,7 @@ async function render(path, state) {
         () =>
           h('div', slots.default?.()),
     })
-  for (const name of ['UAlert', 'FireStateCard'])
+  for (const name of ['UAlert', 'FireState', 'FireCopyError'])
     app.component(name, {
       props: ['title', 'state'],
       setup: (props) => () => h('p', props.title || props.state),

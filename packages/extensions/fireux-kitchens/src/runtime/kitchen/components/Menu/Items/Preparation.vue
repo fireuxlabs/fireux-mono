@@ -8,12 +8,23 @@
         }}. These are requirements, not available stock.
       </p>
     </header>
-    <FireStateCard
+    <UAlert
       v-if="error"
-      state="error"
       title="Prep items unavailable"
       :description="String(error)"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          :message="
+            ['Prep items unavailable', String(error)].filter(Boolean).join('\n')
+          "
+        />
+      </template>
+    </UAlert>
     <p v-else-if="pending" role="status">Loading preparations…</p>
     <div v-else>
       <section v-for="group in groups" :key="group.station">
@@ -53,7 +64,8 @@
                 icon="i-lucide-book-open"
                 color="neutral"
                 variant="soft"
-            /></template>
+              />
+            </template>
           </UCard>
         </UPageGrid>
       </section>
@@ -71,7 +83,8 @@
         icon="i-lucide-arrow-up-right"
         color="neutral"
         variant="outline"
-      /><UButton
+      />
+      <UButton
         to="/workspace/kitchen/prep/batches"
         label="Kitchen batches"
         color="neutral"

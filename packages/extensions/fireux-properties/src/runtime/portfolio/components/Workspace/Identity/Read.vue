@@ -1,16 +1,18 @@
 <template>
   <div class="workspace-surface workspace-surface--compact">
-    <FireStateCard
-      v-if="readState"
-      :state="readState"
+    <FireState
+      v-if="status === 'pending' || status === 'error'"
+      :outcome="status"
       entity="Portfolio identity"
-      kind="document"
-      :title="readState === 'empty' ? 'Choose a Portfolio' : undefined"
-      :description="
-        readState === 'empty'
-          ? 'Select a Portfolio to view its identity.'
-          : undefined
-      "
+    />
+    <UAlert
+      v-else-if="status !== 'ready'"
+      title="Choose a Portfolio"
+      description="Select a Portfolio to view its identity."
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <template v-else>
@@ -44,8 +46,8 @@
       </UCard>
 
       <UCard>
-        <template #header
-          ><div class="card__header">
+        <template #header>
+          <div class="card__header">
             <h2 class="fx-type-card-heading">Internal context</h2>
             <slot name="context-actions" /></div
         ></template>
@@ -91,7 +93,7 @@ const props = defineProps<{ identity: PortfolioWorkspaceIdentityState }>()
 
 const {
   selectedPortfolio,
-  readState,
+  status,
   name,
   tagline,
   imageUrl,

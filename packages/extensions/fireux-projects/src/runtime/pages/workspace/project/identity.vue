@@ -6,13 +6,6 @@
       ai: 'Use the Identity editor to review and save changes.',
     }"
   />
-  <WorkspaceFreemium
-    family="project"
-    capability="identity"
-    page-label="Identity"
-    hide-description
-    placement="top"
-  />
   <ProjectIdentity :key="identity.projectId.value" :identity="identity" />
 </template>
 
@@ -37,7 +30,6 @@ watchEffect(() =>
     },
   })
 )
-import WorkspaceFreemium from 'fireux-core/runtime/workspace/components/Freemium.vue'
 definePageMeta({
   layout: false,
   workspacePage: true,

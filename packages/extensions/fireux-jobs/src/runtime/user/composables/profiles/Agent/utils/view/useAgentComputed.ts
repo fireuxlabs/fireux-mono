@@ -1,4 +1,4 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ProfileRefs } from 'fireux-core/runtime/user/composables/profile/useProfileFetch'
 import type { Agent } from '../../../../../utils/profiles/Agent/agent'
 import { computed } from 'vue'
 
@@ -8,10 +8,7 @@ import { computed } from 'vue'
  * - Keeps business status and authority out of the identity capability seam
  * - Safe to spread into useAgent() return
  */
-export function useAgentComputed(
-  refs: ProfileRefs<Agent>,
-  pending?: unknown
-) {
+export function useAgentComputed(refs: ProfileRefs<Agent>, pending?: unknown) {
   void pending
 
   const agentProfile = computed(() => refs.profile.value ?? null)
@@ -31,9 +28,7 @@ export function useAgentComputed(
   const hasBio = computed(() =>
     Boolean(
       String(
-        agentProfile.value?.summary ||
-          agentProfile.value?.agent_bio ||
-          ''
+        agentProfile.value?.summary || agentProfile.value?.agent_bio || ''
       ).trim()
     )
   )

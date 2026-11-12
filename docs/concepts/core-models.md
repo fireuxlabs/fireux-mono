@@ -1,6 +1,6 @@
 # Core Models
 
-Updated: 2026-11-08
+Updated: 2026-11-12
 Ref: 470b97114
 Role: map, not canon
 
@@ -144,7 +144,7 @@ Read APIs are not evidence of complete UX CRUD. User editing uses
 fields. Avatar upload and attachment have a separate User-owned command at
 `user/server/avatar/update.ts`. AppUser owns no separate avatar; its displays
 hydrate the canonical User. AppUser administration (`useAppUsers`), guarded commands
-(`app/utils/runAppUserCommand.ts`), and membership controls are App-owned;
+(`app/composables/membership/run-app-user-command.ts`), and membership controls are App-owned;
 User may compose them but never stores their implementation. Unconsumed browser and server AppUser Create, Update, Delete helpers and command
 wrappers are retired. Named App-owned membership commands remain the authority;
 there is no separate generic creation input model.
@@ -323,6 +323,17 @@ Core's `runtime/ecosystem/server/identity/read.ts` owns the canonical root read.
 directory derives detail links from the document ID and supplies the App count
 from related Apps.
 
+Core's `runtime/models/utils/directory.ts` owns only generic collection, paged
+collection and detail response envelopes. Ecosystem's discovery projection is
+`runtime/ecosystem/models/ecosystem-directory.ts`, produced by its existing
+`ecosystem/server/directory/projection.ts`. FireUX App owns its cross-source
+`PlatformDirectoryResponse` in `projects/fireux/fireux-app/shared/platform-directory.ts`;
+the server aggregator and native Nuxt reader consume that same contract. The
+platform reader infers its local controller shape rather than publishing an
+App-specific controller through Core. None of these presentation contracts
+changes canonical records, source scope or authority. Verify with FireUX App's
+`app/tests/platform-directory.test.mjs` and Core's directory-reader tests.
+
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
 in the FireUX control-plane named database, each Project owns its
 `team/{uid}` access records, and the local meta adds only the named
@@ -361,22 +372,23 @@ Team records, and AppUser membership determine which roots an App Workspace
 may expose; there is no App-nested Project access record.
 
 `UserAccount` and User notifications are private, User-scoped support records.
-They are not additional User identities. Profile bases, directory DTOs and
-stamps are shared model utilities, not core records.
+They are not additional User identities. Profile bases and provisioning contracts
+belong to Core User's `user/models`; generic directory envelopes and stamps
+remain shared model utilities, not additional records.
 
 ## Library ownership
 
-| Library                           | Owns                                                                                                                                         | Does not own                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                     | User identity, generic app-shell state, configuration   |
-| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                       | App or project identity                                 |
-| `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                      | App membership or generic profile fragments             |
-| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                          | Module packages or App module configuration             |
-| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
-| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                 | Persisted entity authority                              |
-| `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                     | Canonical stored shape                                  |
-| `config/app`                      | Authored App composition and literature contracts                                                                                            | Firestore records                                       |
-| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                        | Generic Core vocabulary without another domain consumer |
+| Library                           | Owns                                                                                                                                    | Does not own                                            |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                | User identity, generic app-shell state, configuration   |
+| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                  | App or project identity                                 |
+| `runtime/user/models`             | Canonical User, shared User-profile contracts and User-owned private support contracts                                                  | App membership or domain-specific profile fields        |
+| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                     | Module packages or App module configuration             |
+| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, generic responses and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
+| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                            | Persisted entity authority                              |
+| `runtime/utils`                   | Shared stateless value rules: IDs, URLs, slugs, timestamps, read outcomes and mutation-target validation                                | Canonical stored shape, Entity policy, workflows        |
+| `config/app`                      | Authored App composition and literature contracts                                                                                       | Firestore records                                       |
+| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                   | Generic Core vocabulary without another domain consumer |
 
 ## Entity model file shape
 
@@ -386,6 +398,12 @@ a collection does not automatically need a separate model. Keep model types for
 real stored or transport contracts. Runtime seed objects use the `Defaults`
 suffix; `Model` is not used for a value or an alias for an entity.
 
+Retain only consumed contracts and their supporting declarations. A type used
+inside a consumed contract remains necessary even without a direct external
+import; an unused input wrapper, storage descriptor or default object does not
+become a supported API merely because it is exported. Check the owning readers,
+commands, module discovery and consumers before removing or relocating it.
+
 The former `scripts/` suite has been removed. Script and guard references in
 historical migration descriptions below are not runnable verification. Current
 checks live with the source packages and App tests.
@@ -394,6 +412,14 @@ The former `models/core`, `models/system`, and entity-owning parts of
 `models/operations` have moved into App, Ecosystem, User, and Project. Root
 models retain shared contracts only; no compatibility re-export bridge is
 accepted.
+
+App owns Conversation storage contracts at `app/models/conversation.model.ts`
+and Chat lifecycle at `app/server/chat`. Workspace owns the shared Test intent
+contract. The unconsumed Team-request base and its unused Kitchen wrappers are
+retired; the actively shared roster shape remains in
+`workspace/models/team-member.model.ts`. User provisioning's private input/result
+types stay with its implementation, and Misebox TemplateOne owns its specimen
+asset-source vocabulary. A one-consumer type does not require a model file.
 
 Module composition is source controlled through extension packages and App
 configuration. There is deliberately no generic Firestore `Module` model.
@@ -548,8 +574,23 @@ collection readers live under `user/composables/profile`; notification reads
 live under `user/composables/notifications`. Session composition lives under
 `user/composables/session`, private account reading under `account`, explicit
 bootstrap/profile editing under `identity`, and directory policy under `directory`.
-Nonreactive User commands and field helpers live in `user/utils`. Consumers import
-these owners directly; retired transport-based read paths have no compatibility wrappers.
+
+User-owned profile reads and commands use `useProfile`, `useProfileFetch`,
+`useProfileCreate` and `useProfileUpdateBase` beside the public profile readers.
+`user/server/profile/provision.ts` and `provision-contract.ts` own trusted,
+idempotent provisioning through the existing User targets and App membership
+checks. Jobs and Kitchens supply domain seeds and fixed endpoint adapters; moving
+these owners changes neither stored paths nor database placement. Verify server
+invariants with `src/test/user/server/profile/provision.test.mjs` and client
+account/lifetime behavior with each extension's `src/test/profile-create.test.mjs`.
+User's scope-aware account command lives beside `user/composables/account`;
+identity provisioning, handle and avatar commands live in
+`user/composables/identity`. Pure field helpers remain in `user/utils`. Command
+helpers retain their existing function names, explicit consumers and scope
+cleanup; they are not forwarding composables or another request engine.
+Retired paths have no compatibility wrappers. Verify credential-time scope changes,
+disposal, response identity and committed-result handling with
+`user-workflow-scope.test.mjs` and `foundation-command-intent.test.mjs`.
 
 All public User collections share `useUserCollection` and the bounded Users API.
 Tenant collections/details retain server-owned current-App membership eligibility;

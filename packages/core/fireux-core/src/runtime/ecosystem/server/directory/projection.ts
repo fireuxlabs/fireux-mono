@@ -1,4 +1,4 @@
-import type { EcosystemDirectoryEntry } from '../../../models/utils/directory.ts'
+import type { EcosystemDirectoryEntry } from '../../models/ecosystem-directory'
 import type { Ecosystem } from '../../models/ecosystem.model.ts'
 
 /** Add directory-only values derived from the Ecosystem and its related Apps. */

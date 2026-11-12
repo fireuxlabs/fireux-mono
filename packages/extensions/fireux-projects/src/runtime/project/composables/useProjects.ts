@@ -1,9 +1,11 @@
 import { useAsyncData } from 'nuxt/app'
-import { resolveReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
+import {
+  resolveReadOutcome,
+  type ReadOutcome,
+} from 'fireux-core/runtime/utils/read-outcome'
 
 import { computed, type Ref } from 'vue'
 import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
-import type { DirectoryOutcome } from 'fireux-core/runtime/types/directory-controller.types'
 import type { ProjectPublicSummary } from '../models/project.model'
 
 export type ProjectCollectionController = {
@@ -11,7 +13,7 @@ export type ProjectCollectionController = {
   count: Ref<number>
   pending: Ref<boolean>
   error: Ref<unknown>
-  outcome: Ref<DirectoryOutcome>
+  outcome: Ref<ReadOutcome>
   refresh: () => Promise<unknown>
 }
 
@@ -30,14 +32,13 @@ export function useProjects(
   const candidates = computed<ProjectPublicSummary[]>(
     () => data.value?.items ?? []
   )
-  const outcome = computed(
-    () =>
-      resolveReadOutcome({
-        enabled: true,
-        pending: pending.value,
-        failed: Boolean(error.value),
-        present: candidates.value.length > 0,
-      }) as DirectoryOutcome
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      enabled: true,
+      pending: pending.value,
+      failed: Boolean(error.value),
+      present: candidates.value.length > 0,
+    })
   )
   const projects = computed(() =>
     outcome.value === 'ready' ? candidates.value : []

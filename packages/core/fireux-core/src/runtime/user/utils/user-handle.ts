@@ -5,18 +5,11 @@ import { validatePublicSlug } from '../../utils/slug/validate-public-slug'
 const MIN_HANDLE_LENGTH = 3
 const MAX_HANDLE_LENGTH = 30
 
-const normalizeReservedHandleKey = (value: unknown): string =>
-  String(value ?? '')
-    .trim()
-    .toLowerCase()
-
-function getRegisteredReservedRouteKeys(): string[] {
+function runtimeReservedHandleKeys(): unknown[] {
   try {
     const rc = useRuntimeConfig()
     const keys = rc?.public?.fireux?.reservedRouteKeys
-    return Array.isArray(keys)
-      ? keys.map(normalizeReservedHandleKey).filter(Boolean)
-      : []
+    return Array.isArray(keys) ? keys : []
   } catch {
     return []
   }
@@ -32,7 +25,7 @@ export const validateUserHandleForPublicRoute = (rawHandle: string) => {
     maxLength: MAX_HANDLE_LENGTH,
     label: 'Handle',
     reservedScope: 'root',
-    registeredReserved: getRegisteredReservedRouteKeys(),
+    runtimeReservedRouteKeys: runtimeReservedHandleKeys(),
   })
 
   if (!result.isValid) {

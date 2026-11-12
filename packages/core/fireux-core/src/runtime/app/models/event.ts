@@ -1,20 +1,11 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { AppUserRole } from './app-user.model.ts'
 
-export const AppEventStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/events/{eventId}',
-  collection: 'events',
-  parent: 'app',
-  idParam: 'eventId',
-} as const
-
 export const AppEventNames = {
   userJoined: 'app.user.joined',
 } as const
 
-export type AppEventName =
-  (typeof AppEventNames)[keyof typeof AppEventNames]
+export type AppEventName = (typeof AppEventNames)[keyof typeof AppEventNames]
 
 export interface AppEvent {
   id: string

@@ -1,10 +1,10 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useAsyncData } from 'nuxt/app'
 
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import { useSupplierWorkspace } from './useSupplierWorkspace'
 
 export function useSupplierWorkspaceHome() {
@@ -17,7 +17,7 @@ export function useSupplierWorkspaceHome() {
         ) ?? null)
       : null
   )
-  const outcome = computed<WorkspaceTargetOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (workspace.outcome.value !== 'ready') return workspace.outcome.value
     if (workspace.collectionOutcome.value === 'empty') return 'empty'
     if (workspace.collectionOutcome.value !== 'ready')

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { workspaceLandingState } from '../runtime/workspace/models/outcome.ts'
+import { workspaceLandingState } from '../runtime/workspace/utils/landing-state.ts'
 
 const empty = {
   outcome: 'empty',

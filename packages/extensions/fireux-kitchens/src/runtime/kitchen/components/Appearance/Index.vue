@@ -22,12 +22,10 @@
       @save="save"
     />
   </div>
-  <FireStateCard
+  <FireState
     v-else
     entity="Kitchen"
-    kind="document"
-    :loading="outcome === 'pending' || outcome === 'idle'"
-    :state="outcome === 'error' ? 'error' : 'empty'"
+    :outcome="outcome === 'idle' ? 'pending' : outcome"
   />
   <ClientOnly v-if="outcome !== 'ready'">
     <FireDiagnosticsDebugPanel

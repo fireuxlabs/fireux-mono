@@ -1,6 +1,6 @@
 # Runtime package family
 
-Updated: 2026-11-10
+Updated: 2026-11-12
 Ref: 176bb5b27
 Role: map, not canon
 
@@ -80,6 +80,12 @@ Shared rules:
 - A product-neutral utility used at both Nuxt config time and runtime may live
   at `src/utils`; Core brand-asset normalization is the current proven seam.
   Runtime-only behavior remains under `src/runtime/utils`.
+- Slug defaults and key normalization live in `src/utils/public-slug-policy.ts`,
+  shared by configuration and runtime and emitted with the production config
+  dependencies. Mutable module registration stays in
+  `config/module/reserved-route-keys.ts`; module wiring publishes its snapshot
+  through `public.fireux.reservedRouteKeys`. Runtime validation consumes that
+  snapshot explicitly and never imports the build registry.
 - Declare every direct runtime, server, type-only, and stylesheet dependency in
   the owning package manifest.
 - Project Apps compose packages; they do not re-own reusable package behavior.
@@ -87,6 +93,15 @@ Shared rules:
   together with the Core layer. `fireux-ecosystem` builds on that bundle for
   Main Apps. Concrete Apps declare their selected bundle and any packages they
   import or configure directly. Core imports no App or product bundle.
+- `fireux-ai` owns optional App research under its `runtime/app` scope, together
+  with its native research API and pages. The module registers `AppSearchDemand*`
+  components independently of provider enablement. Static research needs no
+  provider and remains available with AI execution disabled; authored research
+  stays in each consuming App.
+- `fireux-ai` also owns provider/model presentation in `WorkspaceAIModelLabel`.
+  Its existing component-tree registration publishes that badge. Core's
+  `WorkspaceAIComposer` consumes only supplied `model` slot content; domain
+  adapters compose the badge without a Core-to-AI import or another prompt wrapper.
 - Cross-extension composition belongs in an ecosystem package or project that
   declares every participating package.
 - Do not place a nested `package.json` under `src`.
@@ -189,8 +204,12 @@ owns conventional pages, layouts, middleware, plugins, and server discovery.
 
 Tenant and standalone Apps use `defineFireuxApp`; Main Apps use
 `defineFireuxEcosystem`, which includes the App bundle. The App bundle supplies
-Core, Blogs, Products and AI. The Ecosystem bundle adds the shared Apps directory,
-its API routes and Main App landing composition. Named Ecosystem packages keep
+Core, Blogs, Products and AI plus its own native `fireux-app/layer`. That layer
+registers commercial pricing and public landing components, legal documents,
+public Operations/Solutions/Tools pages and read-only catalogue APIs, and landing
+styles. Its runtime exports ship with the package. Core keeps membership and
+capacity authority, neutral layouts and controls. The Ecosystem bundle adds the
+shared Apps directory, its API routes and Main App discovery/child-App composition. Named Ecosystem packages keep
 their own Firebase bindings and product runtime.
 
 Apps select their domain layers and module options in the same builder input.

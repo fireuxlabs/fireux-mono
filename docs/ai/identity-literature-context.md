@@ -1,6 +1,6 @@
 # Identity and product literature context
 
-Updated: 2026-11-09
+Updated: 2026-11-12
 Ref: d6240d394
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
@@ -44,7 +44,7 @@ shared public-language or pricing seam applies to them.
   BuenoHost and Granite lead with public discovery at `/`. Misebox's declared
   Workspace origin renders Kitchen Home at `/`; BuenoHost and Granite keep
   `/workspace/property` and `/workspace/portfolio`.
-  Core `landing/DirectoryHome.vue` owns the repeated discovery/Workspace framing;
+  Ecosystem `landing/DirectoryHome.vue` owns the repeated discovery/Workspace framing;
   Apps own the audience and wording, and domain components own their readers.
   BuenoHost and Granite consume only the existing published Property summary
   projection, never full operational Portfolio records. Product literature stays
@@ -58,24 +58,33 @@ shared public-language or pricing seam applies to them.
   toolbars remain for signed-in accounts, and unavailable AI composers are omitted
   until they have working actions. This does not change creation or access rules.
 
-- Core owns shared landing anatomy, motion, pricing meanings, tier routes,
-  `usePricing`, and reusable prop-driven presentation contracts. Each Main App
+- `fireux-app` owns shared public landing anatomy and styles, commercial offer
+  meanings and routes, `usePricing`, reusable prop-driven pricing presentation,
+  legal documents and public Operations, Solutions and Tools pages.
+  `fireux-ecosystem` owns Main App discovery and child-App composition. Core
+  retains neutral controls and layouts, account consent, membership
+  authority, subscription access and capacity checks. Each Main App
   owns one `useXPricing` wrapper for its Workspace name, capabilities, limits,
   contact, and explicit ecosystem-tier eligibility. Pricing literature is not
   App boot configuration and never enters App bundle configuration or public
   runtime config.
-- Core owns the product-literature Main App Hero font family and display weight.
+- Workspace capability pages render their domain content without repeated upgrade
+  or plan-allowance prompts. Commercial plan presentation stays on App pricing
+  and Product surfaces. Core membership and capacity checks and the owning domain
+  commands remain authoritative.
+- `fireux-app` owns the product-literature Main App Hero font family and display weight.
   FireUX's framework homepage is a separate App-owned surface composed with native
   Nuxt UI PageHero and theme defaults. Its `/product` explanation uses the same
   framework layout, shared foundation section and Core's public platform meaning;
   it does not wait for live App or Ecosystem directory reads.
 - Product-literature surfaces for Misebox, Werkbox, BuenoHost, Bringli,
-  and Granite use Core's shared immersive section dwell. Slap shares the anatomy but is an accepted
-  brand-commerce interaction delta and opts out through the Core seam.
+  and Granite use the App layer's shared immersive section dwell and landing
+  motion. Slap shares the anatomy but is an accepted
+  brand-commerce interaction delta and opts out through the same presentation seam.
 - Main App product literature uses Hero, pricing, product surfaces, then App-owned deeper
   features. A single surface has no selector; multiple genuine usage surfaces
   may use one. Capabilities inside a Workspace are not separate surfaces.
-- Core owns the landing region vocabulary and default order. Each Main App may
+- `fireux-app` owns the landing region vocabulary and default order. Each Main App may
   provide an ordered subset through the shared `regionOrder` seam so its real
   product layers remain truthful without copying the renderer or inventing
   another landing framework.
@@ -103,7 +112,7 @@ shared public-language or pricing seam applies to them.
   literature subset does not create a separate Operation layer. Derive that
   subset from its actual consumers and preserve their release boundaries.
 - Static ecosystem hero photography shows people doing the product's current
-  work through Core's sharp image frame. FireUX's framework presentation and
+  work through the App layer's sharp image frame. FireUX's framework presentation and
   Misebox Kitchen's product-surface composition are the explicit non-people
   hero exceptions. Reviewed static hero sources use the 1600 x 1000
   pixel, 8-bit opaque RGB PNG contract; subject, alternative text, and focal
@@ -136,7 +145,7 @@ shared public-language or pricing seam applies to them.
 Use this order:
 
 1. Current models, routes, catalogues, configuration, and source-owned tests.
-2. Core product-literature and pricing sources.
+2. App/Ecosystem public presentation and commercial sources; Core access and capacity contracts.
 3. This scoped router and the relevant App context.
 4. Concept maps.
 
@@ -170,21 +179,28 @@ Review implementation claims when their referenced owners change.
 
 ## Current source
 
-- `packages/core/fireux-core/src/runtime/components/landing/DirectoryHome.vue`
+- `packages/extensions/fireux-ecosystem/src/runtime/components/landing/DirectoryHome.vue`
 - `packages/core/fireux-core/src/runtime/workspace/components/Hero.vue`
 - `packages/core/fireux-core/src/runtime/workspace/components/GuestWelcome.vue`
 - `packages/core/fireux-core/src/runtime/workspace/components/EntityCollection.vue`
 
-- `packages/core/fireux-core/src/runtime/models/landing/product.ts`
-- `packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue`
+- `packages/extensions/fireux-app/src/runtime/models/landing/product.ts`
+- `packages/extensions/fireux-app/src/runtime/components/landing/ProductIndex.vue`
 - `packages/extensions/fireux-ecosystem/src/runtime/components/landing/EcosystemHome.vue`
-- `packages/core/fireux-core/src/runtime/components/landing/ProductSurfaceShowcase.vue`
-- `packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue`
-- `packages/core/fireux-core/src/runtime/app/components/Pricing/Catalogue.vue`
-- `packages/core/fireux-core/src/runtime/app/components/Pricing/Page.vue`
-- `packages/core/fireux-core/src/runtime/app/components/Pricing/Tier.vue`
-- `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`
-- `packages/core/fireux-core/src/runtime/app/utils/pricing/page.ts`
+- `packages/extensions/fireux-app/src/runtime/components/landing/ProductSurfaceShowcase.vue`
+- `packages/extensions/fireux-app/src/runtime/components/landing/ProductPricingStrip.vue`
+- `packages/extensions/fireux-app/src/runtime/app/components/Pricing/Catalogue.vue`
+- `packages/extensions/fireux-app/src/runtime/app/components/Pricing/Page.vue`
+- `packages/extensions/fireux-app/src/runtime/app/components/Pricing/Tier.vue`
+- `packages/extensions/fireux-app/src/runtime/app/composables/pricing/usePricing.ts`
+- `packages/extensions/fireux-app/src/runtime/app/utils/pricing/page.ts`
+- `packages/extensions/fireux-app/src/runtime/composables/landing/useLandingMotion.ts`
+- `packages/extensions/fireux-app/src/runtime/composables/landing/landing-sticky-motion.ts`
+- `packages/extensions/fireux-app/src/runtime/nuxt.config.ts`
+- `packages/extensions/fireux-app/src/test/public-runtime.test.mjs`
+- `packages/extensions/fireux-app/src/test/app/composables/pricing/usePricing.test.mjs`
+- `packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts`
+- `packages/core/fireux-core/src/runtime/app/utils/app-subscription-capacity.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 - `projects/fireux/fireux-app/app/content/meta/source.ts`
 - `projects/fireux/fireux-app/app/components/Framework/*`
@@ -199,7 +215,8 @@ tier, branded-App path, or ecosystem role:
 1. inspect the owning source and nearest working sibling;
 2. update the smallest owned literature atom;
 3. review the parent Workspace, pricing, and landing summaries;
-4. update Core only when the meaning is genuinely shared;
+4. update the App or Ecosystem layer for shared public presentation; change Core
+   only for shared mechanics or authority;
 5. update this context only when the durable scope or ownership rule changes.
 
 Do not record campaign drafts, temporary copy options, incomplete audits, or

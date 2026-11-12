@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-11-09
+Updated: 2026-11-12
 Ref: 426cb858c
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -42,6 +42,9 @@ Misebox App → fireux-misebox → domain extensions → fireux-core
 - Domain extensions own their Entities, capabilities, models, authority, UI,
   server behavior, and reusable Workspace implementation.
 - Core owns product-neutral FireUX/Nuxt mechanics.
+- `fireux-app` owns shared landing motion. Template One consumes its
+  `runtime/composables/landing/useLandingMotion.ts` directly; scenes keep their
+  existing semantic hooks and do not own a second animation lifecycle.
 
 Tenant-specific branches, ids, defaults, and copied domain models do not belong
 in the ecosystem package.
@@ -87,16 +90,18 @@ The Main App uses one host. Its native index opens Kitchen Workspace at
 headers. A hostname does not determine data authority or grant access.
 
 The Main App's `/products` composes Pro and Business from App-owned
-`useMiseboxPricing`, which selects Core's shared tiers, alongside the existing
+`useMiseboxPricing`, which selects the App layer's shared commercial tiers, alongside the existing
 Products reader without a type filter. App-owned `Products/Services.vue` selects the two offers, order, actions and
 Kitchen-owned `KitchenOffersPreview` variants. Products' shared `ProductSurface`
 renders saved copy, available benefits, optional image/preview, terms and action
 on catalogue and detail routes. No Product IDs or Kitchen language live in that
 shared surface. `Products/Plans.vue` composes
-native Nuxt UI pricing controls from Core tier data. `/pricing` consumes the
+native Nuxt UI pricing controls from App-owned tier data. `/pricing` consumes the
 same tier selection and Product collection; Free appears only as the default
 plan. Menu Hosting and Collection Ordering remain saved domain-backed offers.
-Misebox does not expose Core's Managed or branded-App packages as its own plans.
+Misebox does not expose the App layer's Managed or branded-App packages as its own plans.
+Kitchen capability pages omit repeated upgrade and plan-allowance prompts.
+Core membership/capacity checks and Kitchen command authority still govern use.
 The catalogue offers Menu Hosting for free, alongside direct
 Workspace use. Collection Ordering is a Kitchen capability without a separate Product
 purchase; Kitchen access, plan limits and service readiness still apply. Free is
@@ -245,8 +250,10 @@ link existing Core Conversations, Products checkout and Kitchen/Menu content.
 Intake, customer reads/actions, operator actions and payment each have a named
 App-owned command file. Source upload/download live in `sources.ts`; their Nitro
 handlers delegate to that owner. Their common request DTO and policy stay in `contract.ts`.
-Conversation creation, proof validation and messages compose the existing Core
-Chat transaction operations; the App does not construct their stored schema.
+Conversation creation, proof validation and messages compose Core App's
+`app/server/chat/session.ts` transaction operations and shared Chat start budget.
+Core App owns the stored Conversation schema in `app/models/conversation.model.ts`;
+the consuming App does not construct it.
 The customer and operator roots compose focused recovery, source, preparation,
 review, delivery and shared conversation components. Client intake draft, retained recovery identity and submission lifecycle belong
 to `useMenuExpressIntake`; `MenuExpress/Intake.vue` owns the visible form.
@@ -1320,14 +1327,14 @@ trusted commands for external AI consumers; they do not reimplement writes.
 
 Misebox App owns its market interpretation through
 `projects/misebox/misebox-app/app/search-demand.ts` and its named research files.
-It consumes Core's research contract without making Core responsible for Kitchen
+It consumes FireUX AI's research contract without making that shared owner responsible for Kitchen
 capability choices. `search-demand/industry-evidence.ts` links direct sources to
 operator-job clusters; `search-demand/capability-assessments.ts` separates need
 confidence and market-validation gaps from dated source implementation evidence.
 Research groupings do not change runtime navigation, record owners, entitlements
 or command authority. Historical observations retain their original dates.
 Refresh evidence and source assessments when their inputs change, and verify
-reference integrity through Core's `src/test/app-research.test.mjs`. Live operator
+reference integrity through FireUX AI's `src/test/research/review.test.mjs`. Live operator
 acceptance remains distinct from source inspection.
 
 ## Product literature and Demo
@@ -1356,7 +1363,7 @@ records and supplies no alternate card styling system. App `components` contains
 Vue components only: component-local styles stay in their SFC, authored copy and
 examples live under `app/content`, and App preview contracts live under `app/types`.
 The active Landing pricing adapter is `Landing/PricingStrip.vue`, using
-`useMiseboxPricing` and Core's Product pricing strip without overriding Core's
+`useMiseboxPricing` and the App layer's Product pricing strip without overriding its
 `FireLandingPricingStrip` registration. The shared Core Dashboard remains its owner.
 Verify this composition through `app/tests/components/Demo/Cards.test.mjs`, the
 existing product-demo foundation checks and the Main App typecheck.
@@ -2280,7 +2287,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 
 | Responsibility                    | Owning source                                                                    | Focused evidence and preserved limits                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dish/Drink create, update, delete | `runtime/kitchen/server/items/{create,update,delete}.ts`                        | `test/kitchen/item-commands.test.mjs`, `test/kitchen/item-ui-scope.test.mjs`, `test/kitchen/item-image-scope.test.mjs`. Delete is document-only and refuses saved Menu/Promotion references. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                               |
+| Dish/Drink create, update, delete | `runtime/kitchen/server/items/{create,update,delete}.ts`                         | `test/kitchen/item-commands.test.mjs`, `test/kitchen/item-ui-scope.test.mjs`, `test/kitchen/item-image-scope.test.mjs`. Delete is document-only and refuses saved Menu/Promotion references. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                               |
 | Recipe create, update, delete     | `runtime/kitchen/server/recipes/{create,update,delete}.ts`                       | `test/kitchen/recipe-commands.test.mjs`, `test/recipe-command-internals.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Direct route adapters consume each action. Delete removes an unused document after checking Dish and Prep Item references. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
 | Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                    | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                                                                                                                        |
 | Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                         | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                                                                             |

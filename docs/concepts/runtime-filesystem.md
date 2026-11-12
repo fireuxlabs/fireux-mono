@@ -1,6 +1,6 @@
 # Runtime filesystem ownership
 
-Updated: 2026-11-10
+Updated: 2026-11-12
 Ref: 176bb5b27
 Role: map, not canon
 
@@ -195,10 +195,13 @@ remain defensive at runtime, but module source must not advertise an absent
 shared or Entity role. Check declarations against existing source directories
 and generated imports/components to detect phantom targets.
 
-Core App proves the complete boundary: App-owned UI, pricing, state, models,
+Core App proves the foundation boundary: membership UI, access state, models,
 utilities, and server jobs live under
 `runtime/app/{components,composables,models,utils,server}`, while its
 Nuxt handlers remain under `runtime/server/api/**/app/` and delegate inward.
+Commercial offers, public landing and legal presentation, and public catalogue
+pages live in the `fireux-app` runtime layer. Main discovery and child-App
+composition live in `fireux-ecosystem`; Core retains neutral shells and controls.
 The App scope does not repeat `app-` in child names such as `membership`,
 `projection`, or `initialization`.
 
@@ -385,7 +388,7 @@ Portfolio context retained as explicit composition.
 ## Shared utility boundary
 
 Core `runtime/utils` contains only shared stateless value contracts: identifiers,
-URLs, read outcomes, timestamps, theme values and mutation-target validation.
+URLs, read outcomes, timestamps, shared palette values and mutation-target validation.
 These are admitted responsibilities, not mandatory folders or scaffolds.
 Reactive/browser lifecycle lives with the existing composable or plugin owner:
 PWA’s controller is beside `composables/pwa/usePwa.ts`; route-auth coordination
@@ -395,7 +398,30 @@ exported function names use camelCase. Core User owns onboarding destinations, A
 and Entity server owners define mutation targets. FireUX App public platform
 literature lives in that App’s `shared/platform-context.ts`.
 
+App theme validation and build-versioned asset URLs live under `app/utils` and
+are shared by App head and the runtime manifest. App-owned Chat storage and
+session/rate-limit workflows live under `app/models` and `app/server/chat`;
+generic Chat HTTP handlers delegate to that owner. Workspace's disposable Test
+intent contract lives under `workspace/models`. Neither server workflows nor
+Entity-owned contracts become generic utilities because several Apps consume them.
+
 Sitemap publication-filter validation is shared between configuration and runtime
 server generation, so its owner is Core `src/utils/sitemap-public-filters.ts`,
 not the projected runtime or a server-only folder. Core’s config build emits it
 with the other configuration-shared utilities.
+
+Public-slug policy follows the same config/runtime boundary. Core
+`src/utils/public-slug-policy.ts` owns fixed root/entity keys and normalization;
+`config/module/reserved-route-keys.ts` owns build-time registration. Runtime
+`utils/slug/validate-public-slug.ts` is stateless: callers provide their App's
+published `reservedRouteKeys` as `runtimeReservedRouteKeys`, plus any domain-local
+`reserved` keys. User handles, Kitchen publication, tenant Menu naming and Go QR
+document paths use that same input. Validation does not read or initialize the
+build registry. Kitchen's pure update parser receives the keys from its server
+command; it does not read Nuxt config itself.
+Verify normalization, scope, explicit snapshots and availability callbacks with
+`src/test/utils/slug/validate-public-slug.test.mjs`, and production dependency
+delivery with `src/test/package-artifact.test.mjs`.
+Consumer coverage also lives in Kitchens
+`src/test/kitchen/slug-validation.test.mjs` and Go QR
+`tests/server/utils/go-qr-docs.test.mjs`.

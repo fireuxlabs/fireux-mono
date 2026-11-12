@@ -13,7 +13,11 @@
       :suggestions-aria-label="`Available ${label} actions`"
       @submit="submit"
       @select-suggestion="prompt = $event.label"
-    />
+    >
+      <template #model>
+        <WorkspaceAIModelLabel />
+      </template>
+    </WorkspaceAIComposer>
   </WorkspaceAI>
 </template>
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { User } from 'firebase/auth'
-import { provisionSignedInUserAccount } from '../../utils/provision-user-account'
+import { provisionSignedInUserAccount } from './provision-user-account'
 
 export type UserSetupState = {
   uid: string | null

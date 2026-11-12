@@ -215,7 +215,6 @@ export default defineNuxtModule<ModuleOptions>({
           './runtime/app/composables/initialization',
           './runtime/app/composables/brand',
           './runtime/app/composables/config',
-          './runtime/app/composables/pricing',
           './runtime/ecosystem/composables',
           './runtime/user/composables',
           './runtime/user/composables/account',

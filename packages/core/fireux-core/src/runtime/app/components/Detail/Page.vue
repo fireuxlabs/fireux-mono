@@ -2,23 +2,19 @@
   <UPage>
     <UPageBody>
       <AppDetail v-if="app" :app="app" />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'pending'"
         entity="app"
-        kind="document"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
-        v-else-if="outcome === 'error'"
-        entity="app"
-        kind="document"
-        state="error"
-      />
-      <FireStateCard
+      <FireState v-else-if="outcome === 'error'" entity="app" outcome="error" />
+      <UAlert
         v-else-if="outcome === 'empty'"
-        entity="app"
-        kind="document"
-        state="empty"
+        title="App not found"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
       <FireDiagnosticsDebugPanel
         title="App detail acquisition"

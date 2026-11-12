@@ -11,7 +11,24 @@
       "production": "./dist/config.mjs",
       "default": "./src/config.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./layer": "./src/runtime/nuxt.config.ts",
+    "./runtime/*.vue": {
+      "types": "./src/runtime/*.vue",
+      "default": "./src/runtime/*.vue"
+    },
+    "./runtime/*.css": {
+      "types": "./src/runtime/*.css",
+      "default": "./src/runtime/*.css"
+    },
+    "./runtime/*.scss": {
+      "types": "./src/runtime/*.scss",
+      "default": "./src/runtime/*.scss"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    }
   },
   "files": [
     "src/**/*",
@@ -28,11 +45,14 @@
     "fireux-blogs": "workspace:*",
     "fireux-products": "workspace:*",
     "@nuxt/eslint": "^1.12.1",
-    "fireux-ai": "workspace:*"
+    "fireux-ai": "workspace:*",
+    "h3": "^1.15.4",
+    "gsap": "^3.15.0"
   },
   "peerDependencies": {
     "@nuxt/schema": "^4.6.1",
-    "nuxt": "^4.6.1"
+    "nuxt": "^4.6.1",
+    "vue": "^3.5.40"
   },
   "devDependencies": {
     "typescript": "^5.9.2"
@@ -40,5 +60,21 @@
   "engines": {
     "node": ">=22.23 <23",
     "pnpm": "11.9.0"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*.css": [
+        "src/runtime/*.css"
+      ],
+      "runtime/*.scss": [
+        "src/runtime/*.scss"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
+    }
   }
 }

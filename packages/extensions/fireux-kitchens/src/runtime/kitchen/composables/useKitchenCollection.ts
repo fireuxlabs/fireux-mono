@@ -1,7 +1,7 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import { useKitchenAccess } from './useKitchenAccess'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/workspace/models/outcome'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import type { KitchenSurface } from '../models/kitchen-interface.model'
@@ -14,7 +14,7 @@ export type UseKitchenCollectionReturn = {
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
-  outcome: ComputedRef<WorkspaceTargetOutcome>
+  outcome: ComputedRef<ReadOutcome>
 }
 
 /** Live, membership-bounded Kitchen targets and their Place presentation. */

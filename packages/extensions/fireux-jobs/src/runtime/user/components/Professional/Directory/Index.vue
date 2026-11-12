@@ -31,25 +31,36 @@
       </template>
     </FireCollectionHeader>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-if="outcome === 'pending'"
+      aria-atomic="true"
       title="Loading professionals"
       description="Finding professional profiles…"
       icon="i-lucide-loader-circle"
-      loading
-      aria-atomic="true"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else-if="outcome === 'error'"
+      aria-atomic="true"
       title="Professionals unavailable"
       description="Professional profiles could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      state="error"
-      aria-atomic="true"
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Professionals unavailable&#10;Professional profiles could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
 
     <ProfessionalCollectionList
       v-else-if="cardsFiltered.length"
@@ -64,16 +75,19 @@
       </template>
     </ProfessionalCollectionList>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-briefcase-business"
       :title="query ? 'No matching professionals' : 'No professionals yet'"
       :description="
         query
           ? 'Try a different search term.'
           : 'Professional profiles will appear here once they are available.'
       "
+      icon="i-lucide-briefcase-business"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>
@@ -81,7 +95,7 @@
         object-origin="fetched"
         launcher
         include-route
-        :title="'Professionals (JSON)'"
+        title="Professionals (JSON)"
         context="collection manager · professionals"
         :objects="{ profiles: devJsonData, users: profileUsers }"
         :derived="{}"

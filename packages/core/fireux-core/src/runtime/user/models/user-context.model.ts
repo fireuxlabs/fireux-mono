@@ -17,8 +17,6 @@ export const UserContextStorage = {
   idParam: 'userId',
 } as const
 
-export type UserContextUpdateInput = Pick<UserContext, 'context'>
-
 export type CurrentUserContextResponse = {
   ok: true
   context: string

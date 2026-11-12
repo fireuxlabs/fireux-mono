@@ -1,6 +1,6 @@
 # Theming and branded presentation
 
-Updated: 2026-11-07
+Updated: 2026-11-12
 Ref: 614700fd9
 Role: map, not canon
 
@@ -74,9 +74,12 @@ shared file checks. Core owns the runtime PWA manifest and composes its identity
 colours, and versioned icon URLs from App config plus this bundle; tenant Apps
 must not add a static local manifest.
 
-The executable stage contract lives in
-`runtime/models/operations/entity-asset-onboarding.ts`. Inspection surfaces
-must show missing or invalid roles honestly before branded template work begins.
+Core App's file and dimension requirements live in
+`runtime/app/models/app-media-requirements.ts`, consumed by App media validation
+and brand-asset inspection. Misebox TemplateOne's specimen asset-source vocabulary
+is local to `fireux-misebox/src/runtime/models/template-one.ts`; it is not a shared
+Core model or readiness check. Inspection surfaces must show missing or invalid
+roles honestly before branded template work begins.
 
 Firebase Storage is the durable binary authority. App identity objects use
 `apps/<appId>/img/app/<filename>`, matching the owning bundle's

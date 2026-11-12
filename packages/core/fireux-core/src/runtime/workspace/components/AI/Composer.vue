@@ -38,20 +38,7 @@
         </slot>
       </div>
       <div class="fx-card__actions">
-        <UButton
-          to="https://fireux.app/gpt"
-          target="_blank"
-          :label="modelLabel || activeModel.label"
-          color="neutral"
-          variant="ghost"
-          size="xs"
-          :title="modelLabel || activeModel.label"
-          aria-label="About this FireUX AI model"
-        >
-          <template #leading>
-            <img src="/img/core/brand/logo.svg" alt="" width="16" height="16" />
-          </template>
-        </UButton>
+        <slot name="model" />
         <slot name="submit">
           <UChatPromptSubmit
             :status="submitting ? 'submitted' : 'ready'"
@@ -84,7 +71,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRuntimeConfig } from '#imports'
 
 export interface WorkspaceAISuggestion {
   label: string
@@ -105,7 +91,6 @@ const props = withDefaults(
     suggestionsAriaLabel?: string
     suggestionsDisabled?: boolean
     spacious?: boolean
-    modelLabel?: string
   }>(),
   {
     modelValue: '',
@@ -120,7 +105,6 @@ const props = withDefaults(
     suggestionsAriaLabel: 'Suggested Workspace AI actions',
     suggestionsDisabled: false,
     spacious: false,
-    modelLabel: '',
   }
 )
 const emit = defineEmits<{
@@ -208,31 +192,5 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopHint()
   motionQuery?.removeEventListener('change', motionChanged)
-})
-
-const runtime = useRuntimeConfig() as {
-  public?: {
-    fireux?: {
-      ai?: {
-        mode?: string
-        provider?: string
-        model?: string
-      }
-    }
-  }
-}
-const ai = computed(() => runtime.public?.fireux?.ai ?? {})
-const activeModel = computed(() => {
-  const mode = String(ai.value.mode || '').trim()
-  const provider = String(ai.value.provider || '').trim()
-  const model = String(ai.value.model || '').trim() || 'gpt-4o-mini'
-  const value = mode === 'codex' ? 'codex-dev' : model
-  const label =
-    mode === 'codex'
-      ? 'Codex · development override'
-      : mode === 'simulator'
-        ? 'FireUX AI · simulator'
-        : `${provider === 'openai' ? 'OpenAI' : provider || 'FireUX AI'} · ${model}`
-  return { value, label }
 })
 </script>

@@ -19,12 +19,21 @@
       description="Choose a Kitchen before viewing its ingredients."
     />
 
-    <FireStateCard
+    <UAlert
       v-else-if="loadError"
-      state="error"
       title="Ingredient unavailable"
       description="Ingredient details could not be loaded. Please try again."
-    />
+      color="error"
+      variant="soft"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <FireCopyError
+          message="Ingredient unavailable&#10;Ingredient details could not be loaded. Please try again."
+        />
+      </template>
+    </UAlert>
 
     <UAlert
       v-else-if="pending"
@@ -61,12 +70,25 @@
     >
       <template #body>
         <p>{{ ingredient?.name }}</p>
-        <FireStateCard
+        <UAlert
           v-if="deleteError"
-          state="error"
           title="Ingredient not removed"
           :description="deleteError"
-        />
+          color="error"
+          variant="soft"
+          role="alert"
+          aria-live="assertive"
+        >
+          <template #actions>
+            <FireCopyError
+              :message="
+                ['Ingredient not removed', deleteError]
+                  .filter(Boolean)
+                  .join('\n')
+              "
+            />
+          </template>
+        </UAlert>
       </template>
       <template #footer>
         <div>

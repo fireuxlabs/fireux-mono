@@ -55,10 +55,10 @@
   />
 </template>
 <script setup lang="ts">
+import type { ReadOutcome } from '../../../utils/read-outcome'
 import { computed, ref } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import type { TeamContext } from '../../composables/useWorkspaceTeam'
-import type { WorkspaceOutcome } from '../../models/outcome'
 const props = defineProps<{
   readOnly?: boolean
   memberPath?: (memberId: string) => string
@@ -76,7 +76,7 @@ const { state, derived, primitives } = props.team
 const members = computed(() =>
   [...state.value.team.members].sort((a, b) => a.name.localeCompare(b.name))
 )
-const outcome = computed<WorkspaceOutcome>(() => {
+const outcome = computed<ReadOutcome>(() => {
   const status = derived.value.status
   if (status === 'loading') return 'pending'
   if (status === 'error') return 'error'

@@ -221,22 +221,26 @@ test('media sync rejects alternate owners, unknown kinds and invalid images befo
 
 test('the media adapter sends only selected kinds through the authenticated command', async () => {
   let request
-  const sync = compile('app/utils/sync-app-media.ts', 'syncAppMediaToStorage', {
-    useRequireUser: async () => ({
-      uid: 'actor',
-      getIdToken: async () => 'test-token',
-    }),
-    useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
-    useFireUXConfig: () => ({ appId: 'child' }),
-    captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
-    fetch: async (url, options) => {
-      request = { url, options }
-      return {
-        ok: true,
-        json: async () => ({ appId: 'child', uploaded: {}, failed: [] }),
-      }
-    },
-  })
+  const sync = compile(
+    'app/composables/media/sync-app-media.ts',
+    'syncAppMediaToStorage',
+    {
+      useRequireUser: async () => ({
+        uid: 'actor',
+        getIdToken: async () => 'test-token',
+      }),
+      useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
+      useFireUXConfig: () => ({ appId: 'child' }),
+      captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
+      fetch: async (url, options) => {
+        request = { url, options }
+        return {
+          ok: true,
+          json: async () => ({ appId: 'child', uploaded: {}, failed: [] }),
+        }
+      },
+    }
+  )
   await sync(['logo'])
   assert.equal(request.url, '/api/internal/app/sync-media')
   assert.equal(request.options.headers.authorization, 'Bearer test-token')

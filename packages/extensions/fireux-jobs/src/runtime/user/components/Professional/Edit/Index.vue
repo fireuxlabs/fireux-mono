@@ -101,12 +101,7 @@
       />
     </div>
 
-    <FireStateCard
-      v-else
-      entity="professional profile"
-      kind="document"
-      loading
-    />
+    <FireState v-else entity="professional profile" outcome="pending" />
   </ClientOnly>
 </template>
 

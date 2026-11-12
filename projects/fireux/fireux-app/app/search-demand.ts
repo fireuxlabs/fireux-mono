@@ -1,6 +1,6 @@
 import { currentProjectEvidence } from './search-demand/current-evidence'
 import { projectReconciliation } from './search-demand/reconciliation'
-import { defineAppSearchDemand } from 'fireux-core/runtime/app/utils/search-demand'
+import { defineAppSearchDemand } from 'fireux-ai/runtime/app/utils/search-demand'
 import { demandAnalysis, demandSummary } from './search-demand/analysis'
 import { demandCapabilities } from './search-demand/capabilities'
 import { demandObservations } from './search-demand/evidence'

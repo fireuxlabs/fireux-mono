@@ -5,7 +5,7 @@ import type { AppUserSubscription } from '../../models/app-user.model.ts'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useAppUserRead } from './useAppUserRead'
 import { useFireUXConfig } from '../config/FireUXConfig'
-import { runAppUserCommand } from '../../utils/runAppUserCommand'
+import { runAppUserCommand } from './run-app-user-command'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 
 export type AppUserMembershipRecord = Pick<

@@ -1,6 +1,6 @@
 # Landing templates context
 
-Updated: 2026-11-06
+Updated: 2026-11-12
 Ref: 97ab6b477
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
@@ -122,11 +122,11 @@ injected owner data.
   layout keeps header/page chrome in normal document flow and mounts the page;
   reusable scenes never compensate for header height or position. Extract a
   shared configurable header only after a second real App proves the contract.
-- Core owns landing motion infrastructure. Template One declares semantic
-  hero parts and reveal directions, then calls Core's `useLandingMotion` once
+- `fireux-app` owns shared landing motion and its GSAP dependency. Template One declares semantic
+  hero parts and reveal directions, then calls the App layer's `useLandingMotion` once
   at its shared page root. Scenes never import GSAP, create observers, or add a
   competing motion abstraction. Reduced-motion and visible fallbacks remain
-  Core responsibilities.
+  App presentation responsibilities.
 
 ## Authority and current source
 

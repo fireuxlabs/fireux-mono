@@ -1,3 +1,4 @@
+import type { ReadOutcome } from 'fireux-core/runtime/utils/read-outcome'
 import { useAsyncData } from 'nuxt/app'
 import { readPages } from 'fireux-core/runtime/composables/http/readPages'
 
@@ -15,8 +16,6 @@ import {
   type JobDirectoryPage,
 } from '../models/job-collection.model.ts'
 
-export type JobDirectoryOutcome = 'pending' | 'error' | 'empty' | 'ready'
-
 type JobDirectoryControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
   'pending' | 'error' | 'refresh'
@@ -26,7 +25,7 @@ export type UseJobDirectoryReturn = JobDirectoryControls & {
   jobs: ComputedRef<JobDirectoryEntry[]>
   count: ComputedRef<number>
   ready: Promise<void>
-  outcome: ComputedRef<JobDirectoryOutcome>
+  outcome: ComputedRef<ReadOutcome>
   hasMore: ComputedRef<boolean>
   loadingMore: Ref<boolean>
   loadMoreError: Ref<unknown>
@@ -75,7 +74,7 @@ export function useJobDirectory(
   )
   const nextCursor = computed(() => state.data.value?.nextCursor || '')
   const hasMore = computed(() => Boolean(nextCursor.value))
-  const outcome = computed<JobDirectoryOutcome>(() => {
+  const outcome = computed<ReadOutcome>(() => {
     if (error.value) return 'error'
     if (pending.value) return 'pending'
     if (!state.data.value) return 'error'

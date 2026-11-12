@@ -1,4 +1,4 @@
-import { requireChatSessionAccess } from 'fireux-core/runtime/server/utils/chat/session'
+import { requireChatSessionAccess } from 'fireux-core/runtime/app/server/chat/session'
 import Stripe from 'stripe'
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'

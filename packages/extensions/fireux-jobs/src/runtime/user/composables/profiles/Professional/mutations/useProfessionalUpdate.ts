@@ -4,8 +4,8 @@ import { refreshNuxtData } from 'nuxt/app'
 // Concurrent edit — 2026-07-20 20:17 CEST — Repo Efficiency Pass 2 of 6: expose only bounded single-family Professional mutations.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: route every structured family through fixed-user Admin validation.
 
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import type { ProfileRefs } from 'fireux-core/runtime/user/composables/profile/useProfileFetch'
+import { useProfileUpdateBase } from 'fireux-core/runtime/user/composables/profile/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/https-url'
@@ -59,7 +59,9 @@ export function useProfessionalUpdate(
     ProfessionalStorage.document,
     profile
   )
-  const { uploadImage } = useImageStorage({ endpoint: '/api/internal/profiles/professional/image' })
+  const { uploadImage } = useImageStorage({
+    endpoint: '/api/internal/profiles/professional/image',
+  })
 
   const commitUpdate = async (
     patch: Partial<Professional>,

@@ -42,6 +42,7 @@ test('table count uses the existing exact Kitchen authority and root update', as
   for (const authorized of [true, false]) {
     const writes = []
     const { updateKitchen } = load('update', 'updateKitchen', {
+      useRuntimeConfig: () => ({ public: {} }),
       createError,
       parseKitchenUpdate,
       requireFirestoreDocumentId: (value) => value,

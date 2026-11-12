@@ -1,5 +1,5 @@
 import { researchReconciliation } from './research-reconciliation'
-import { defineAppSearchDemand } from 'fireux-core/runtime/app/utils/search-demand'
+import { defineAppSearchDemand } from 'fireux-ai/runtime/app/utils/search-demand'
 
 export const searchDemand = defineAppSearchDemand({
   reconciliation: researchReconciliation,

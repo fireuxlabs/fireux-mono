@@ -74,13 +74,21 @@
         />
       </div>
 
-      <FireStateCard
+      <UAlert
         v-else-if="error"
-        entity="products"
-        state="error"
         title="The shop could not be loaded"
         description="Please try again in a moment."
-      />
+        color="error"
+        variant="soft"
+        role="alert"
+        aria-live="assertive"
+      >
+        <template #actions>
+          <FireCopyError
+            message="The shop could not be loaded&#10;Please try again in a moment."
+          />
+        </template>
+      </UAlert>
 
       <section
         v-else-if="filteredProducts.length"
@@ -112,12 +120,14 @@
         </NuxtLink>
       </section>
 
-      <FireStateCard
+      <UAlert
         v-else
-        entity="products"
-        state="empty"
         title="Nothing found"
         description="Try another search or category."
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
     </UContainer>
   </div>

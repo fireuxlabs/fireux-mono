@@ -54,7 +54,7 @@
       </div>
     </UPageCard>
 
-    <FireStateCard v-else entity="chef profile" kind="document" loading />
+    <FireState v-else entity="chef profile" outcome="pending" />
   </ClientOnly>
 </template>
 

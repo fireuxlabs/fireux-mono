@@ -3,7 +3,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import {
   stageChatMessage,
   requireChatSessionAccess,
-} from 'fireux-core/runtime/server/utils/chat/session'
+} from 'fireux-core/runtime/app/server/chat/session'
 import { requireKitchenWriterAccount } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
 import { readKitchenMenuReview } from 'fireux-kitchens/runtime/menu/server/publication/review'
 import { stagePublishKitchenMenu } from 'fireux-kitchens/runtime/menu/server/publication/publish'

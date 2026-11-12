@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: accept canonical User separately from Agent storage.
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+import type { ProfileRefs } from 'fireux-core/runtime/user/composables/profile/useProfileFetch'
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: map stored, detail, and exact directory Agent shapes without compatibility fields.
 import {
   resolveProfileBadges,
@@ -92,9 +92,7 @@ export function useAgentInterface(
 
     return {
       id,
-      to: routeKey
-        ? `/agents/${encodeURIComponent(routeKey)}`
-        : '',
+      to: routeKey ? `/agents/${encodeURIComponent(routeKey)}` : '',
 
       imageUrl: profileImage || userAvatar,
       avatarUrl: profileImage || userAvatar,

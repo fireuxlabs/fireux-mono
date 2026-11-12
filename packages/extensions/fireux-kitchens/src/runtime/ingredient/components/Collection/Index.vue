@@ -55,10 +55,8 @@
       </template>
     </IngredientCollectionList>
 
-    <FireStateCard
-      surface="collection"
+    <UAlert
       v-else
-      icon="i-lucide-carrot"
       :title="
         query
           ? 'No ingredients match your search'
@@ -73,6 +71,11 @@
             ? 'Try a different category.'
             : 'Once ingredients are added, they will display here.'
       "
+      icon="i-lucide-carrot"
+      color="neutral"
+      variant="soft"
+      role="status"
+      aria-live="polite"
     />
 
     <div>

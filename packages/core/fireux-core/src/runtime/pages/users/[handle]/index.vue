@@ -2,23 +2,23 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'pending'"
         entity="user"
-        kind="document"
-        loading
+        outcome="pending"
       />
-      <FireStateCard
+      <FireState
         v-else-if="outcome === 'error'"
         entity="user"
-        kind="document"
-        state="error"
+        outcome="error"
       />
-      <FireStateCard
+      <UAlert
         v-else-if="outcome === 'empty'"
-        entity="user"
-        kind="document"
-        state="empty"
+        title="User not found"
+        color="neutral"
+        variant="soft"
+        role="status"
+        aria-live="polite"
       />
       <FireDiagnosticsDebugPanel
         title="User detail acquisition"

@@ -61,7 +61,7 @@ import type {
   LandingOperationRailItem,
   LandingProductIndexContent,
   LandingProductSurface,
-} from 'fireux-core/runtime/models/landing/product'
+} from 'fireux-app/runtime/models/landing/product'
 
 const props = withDefaults(
   defineProps<{

@@ -48,9 +48,9 @@ canonical User + typed profile data
     → Pill / Cell / Preview / Overview presentation
 ```
 
-Core's [profile contracts](../../packages/core/fireux-core/src/runtime/models/utils/profile.model.ts)
+Core User's [profile contracts](../../packages/core/fireux-core/src/runtime/user/models/profile.model.ts)
 define the shared identity and configuration vocabulary. The shared
-[`useProfile`](../../packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/useProfile.ts)
+[`useProfile`](../../packages/core/fireux-core/src/runtime/user/composables/profile/useProfile.ts)
 reader and provisioning mechanics support the domain owners, which retain exact
 models, commands and authority. Public directory/detail consumers use
 [`ProfileDirectoryEntry<TProfile>`](../../packages/core/fireux-core/src/runtime/user/models/user-directory.model.ts)
